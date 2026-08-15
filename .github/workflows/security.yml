@@ -1,53 +1,38 @@
-name: Security and Supply Chain
+name: security
+
+# Free replacement for CodeQL, which is licensed for open source only unless
+# you hold GitHub Code Security.
+#
+# This workflow deliberately contains no scanning logic — it just calls
+# scripts/security-scan.sh, the same script you run locally:
+#
+#     ./scripts/security-scan.sh
+#
+# so local and CI results are identical by construction, and neither of you is
+# ever blocked waiting on a runner to find out whether your code is clean.
+#
+# Runs on the self-hosted Macs: no billed minutes, and no dependency on the
+# Actions billing state. Once billing is healthy, switch to ubuntu-latest for
+# cleaner isolation — Linux minutes fit inside the included tier.
 
 on:
-  pull_request:
-    branches: [main]
   push:
-    branches: [main, 'codex/**']
-  workflow_dispatch:
+    branches: [main]
+  pull_request:
 
 permissions:
   contents: read
-  pull-requests: read
 
 jobs:
-  audit:
-    runs-on: ubuntu-latest
+  scan:
+    name: security scan
+    runs-on: [self-hosted, macOS]
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
+          # gitleaks scans history, not just the tip
           fetch-depth: 0
-      - name: Secret scan
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          cache: pip
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22.23.1'
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-      - name: Python dependency and static audit
-        working-directory: backend
-        run: |
-          python -m pip install -e '.[dev]'
-          python -m pip_audit
-          python -m bandit -q -ll -r . -x ./.venv,./tests,./patchhive/tests,./patchhive/runes/tests
-      - name: Frontend dependency audit
-        working-directory: frontend
-        run: |
-          npm ci
-          npm run audit
-      - name: Generate SBOMs
-        run: |
-          mkdir -p security-artifacts
-          cd backend && cyclonedx-py environment --output-reproducible --output-file ../security-artifacts/python.cdx.json
-          cd ../frontend && npm sbom --sbom-format cyclonedx > ../security-artifacts/npm.cdx.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: patchhive-sboms
-          path: security-artifacts/*.json
+
+      - name: Run security scan
+        run: ./scripts/security-scan.sh
