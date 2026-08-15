@@ -1,38 +1,58 @@
-name: security
-
-# Free replacement for CodeQL, which is licensed for open source only unless
-# you hold GitHub Code Security.
-#
-# This workflow deliberately contains no scanning logic — it just calls
-# scripts/security-scan.sh, the same script you run locally:
-#
-#     ./scripts/security-scan.sh
-#
-# so local and CI results are identical by construction, and neither of you is
-# ever blocked waiting on a runner to find out whether your code is clean.
-#
-# Runs on the self-hosted Macs: no billed minutes, and no dependency on the
-# Actions billing state. Once billing is healthy, switch to ubuntu-latest for
-# cleaner isolation — Linux minutes fit inside the included tier.
+name: Security and Supply Chain
 
 on:
-  push:
-    branches: [main]
   pull_request:
+    branches: [main]
+  push:
+    branches: [main, 'codex/**']
+  workflow_dispatch:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
-  scan:
-    name: security scan
-    runs-on: [self-hosted, macOS]
-    timeout-minutes: 30
+  audit:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          # gitleaks scans history, not just the tip
           fetch-depth: 0
-
-      - name: Run security scan
-        run: ./scripts/security-scan.sh
+      # gitleaks-action v2 requires a paid licence for organisations, which is
+      # why this job has been failing. The gitleaks binary itself is MIT, so
+      # run that directly instead. Same scanner, no licence.
+      - name: Secret scan
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/gitleaks.tar.gz" \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          tar xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" detect --source . --config .gitleaks.toml --redact --no-banner
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.1'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Python dependency and static audit
+        working-directory: backend
+        run: |
+          python -m pip install -e '.[dev]'
+          python -m pip_audit
+          python -m bandit -q -ll -r . -x ./.venv,./tests,./patchhive/tests,./patchhive/runes/tests
+      - name: Frontend dependency audit
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run audit
+      - name: Generate SBOMs
+        run: |
+          mkdir -p security-artifacts
+          cd backend && cyclonedx-py environment --output-reproducible --output-file ../security-artifacts/python.cdx.json
+          cd ../frontend && npm sbom --sbom-format cyclonedx > ../security-artifacts/npm.cdx.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: patchhive-sboms
+          path: security-artifacts/*.json
