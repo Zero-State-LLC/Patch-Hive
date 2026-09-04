@@ -226,6 +226,8 @@ CI is authoritative only for the exact commit it evaluates. Missing Postgres is 
 
 | Document | Responsibility |
 |---|---|
+| [AGENTS.md](AGENTS.md) | Contributor/agent instruction router (Intent, Escalation, team-context) |
+| [intent/](intent/README.md) | SDLC stage-0 intent drafts. Copy `_TEMPLATE.md`. |
 | [CURRENT_STATE.md](CURRENT_STATE.md) | Live repository posture |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Versioned capability roadmap |
 | [docs/PRODUCTION_READINESS.md](docs/PRODUCTION_READINESS.md) | RC / GA gate framework |
