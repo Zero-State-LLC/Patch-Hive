@@ -1,7 +1,7 @@
 /**
  * API client for PatchHive backend.
  */
-import axios from 'axios';
+import axios from "axios";
 import type {
   CatalogMaterializeResponse,
   CatalogModuleListResponse,
@@ -34,27 +34,27 @@ import type {
   RegistrySearchResult,
   Manufacturer,
   DeviceModel,
-} from '@/types/api';
+} from "@/types/api";
 import type {
   AdminUserList,
   AdminGalleryRevisionList,
   AdminRunList,
   AdminLeaderboardEntry,
-} from '@/types/admin';
+} from "@/types/admin";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Add auth token to requests
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth_token');
+  const token = localStorage.getItem("auth_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -71,7 +71,7 @@ export const moduleApi = {
     hp_min?: number;
     hp_max?: number;
     tag?: string;
-  }) => api.get<ModuleListResponse>('/modules/', { params }),
+  }) => api.get<ModuleListResponse>("/modules/", { params }),
 
   /** Lightweight research/curated catalog browse (module_catalog table). */
   catalog: (params?: {
@@ -87,30 +87,28 @@ export const moduleApi = {
     source?: string;
     sort_by?: string;
     sort_order?: string;
-  }) => api.get<CatalogModuleListResponse>('/modules/catalog', { params }),
+  }) => api.get<CatalogModuleListResponse>("/modules/catalog", { params }),
 
-  catalogStats: () => api.get<CatalogModuleStats>('/modules/catalog/stats'),
+  catalogStats: () => api.get<CatalogModuleStats>("/modules/catalog/stats"),
 
   catalogBrands: () =>
     api.get<{ total: number; brands: { name: string; module_count: number }[] }>(
-      '/modules/catalog/brands',
+      "/modules/catalog/brands",
     ),
 
   catalogCategories: () =>
     api.get<{ total: number; categories: { name: string; module_count: number }[] }>(
-      '/modules/catalog/categories',
+      "/modules/catalog/categories",
     ),
 
   /** Materialize catalog row → full modules record (requires known HP). */
   materializeCatalog: (slug: string) =>
-    api.post<CatalogMaterializeResponse>(`/modules/catalog/${encodeURIComponent(slug)}/materialize`),
+    api.post<CatalogMaterializeResponse>(
+      `/modules/catalog/${encodeURIComponent(slug)}/materialize`,
+    ),
 
   /** Bulk materialize HP-known catalog rows into placeable modules. */
-  materializeCatalogBatch: (params?: {
-    brand?: string;
-    hp_known_only?: boolean;
-    limit?: number;
-  }) =>
+  materializeCatalogBatch: (params?: { brand?: string; hp_known_only?: boolean; limit?: number }) =>
     api.post<{
       status: string;
       scanned: number;
@@ -118,11 +116,11 @@ export const moduleApi = {
       exists: number;
       failed: number;
       failed_samples?: { catalog_slug: string; error: string }[];
-    }>('/modules/catalog/materialize-batch', null, { params }),
+    }>("/modules/catalog/materialize-batch", null, { params }),
 
   get: (id: number) => api.get<Module>(`/modules/${id}`),
 
-  create: (data: Partial<Module>) => api.post<Module>('/modules/', data),
+  create: (data: Partial<Module>) => api.post<Module>("/modules/", data),
 
   update: (id: number, data: Partial<Module>) => api.patch<Module>(`/modules/${id}`, data),
 
@@ -143,11 +141,11 @@ export type CaseListParams = {
 };
 
 export const caseApi = {
-  list: (params?: CaseListParams) => api.get<CaseListResponse>('/cases/', { params }),
+  list: (params?: CaseListParams) => api.get<CaseListResponse>("/cases/", { params }),
 
   get: (id: number) => api.get<Case>(`/cases/${id}`),
 
-  create: (data: Partial<Case>) => api.post<Case>('/cases/', data),
+  create: (data: Partial<Case>) => api.post<Case>("/cases/", data),
 
   update: (id: number, data: Partial<Case>) => api.patch<Case>(`/cases/${id}`, data),
 
@@ -175,11 +173,11 @@ export type CatalogListParams = {
 
 export const caseCatalogApi = {
   list: (params?: CatalogListParams) =>
-    api.get<CatalogCaseListResponse>('/cases/catalog', { params }),
+    api.get<CatalogCaseListResponse>("/cases/catalog", { params }),
 
-  formats: () => api.get<CatalogFormatListResponse>('/cases/catalog/formats'),
+  formats: () => api.get<CatalogFormatListResponse>("/cases/catalog/formats"),
 
-  stats: () => api.get<CatalogStatsResponse>('/cases/catalog/stats'),
+  stats: () => api.get<CatalogStatsResponse>("/cases/catalog/stats"),
 
   get: (slug: string) => api.get(`/cases/catalog/${encodeURIComponent(slug)}`),
 
@@ -198,7 +196,7 @@ export const caseCatalogApi = {
       updated: number;
       failed: number;
       failures: { catalog_slug: string; error: string }[];
-    }>('/cases/catalog/materialize-batch', null, { params }),
+    }>("/cases/catalog/materialize-batch", null, { params }),
 
   compatibility: (
     slug: string,
@@ -228,16 +226,14 @@ export const caseCatalogApi = {
 // Rack API
 export const rackApi = {
   list: (params?: { skip?: number; limit?: number; is_public?: boolean; user_id?: number }) =>
-    api.get<RackListResponse>('/racks/', { params }),
+    api.get<RackListResponse>("/racks/", { params }),
 
   get: (id: number) => api.get<Rack>(`/racks/${id}`),
 
-  create: (data: Partial<Rack>) => api.post<Rack>('/racks/', data),
+  create: (data: Partial<Rack>) => api.post<Rack>("/racks/", data),
 
-  update: (
-    id: number,
-    data: Partial<Omit<Rack, 'modules'>> & { modules?: RackModuleSpec[] },
-  ) => api.patch<Rack>(`/racks/${id}`, data),
+  update: (id: number, data: Partial<Omit<Rack, "modules">> & { modules?: RackModuleSpec[] }) =>
+    api.patch<Rack>(`/racks/${id}`, data),
 
   delete: (id: number) => api.delete(`/racks/${id}`),
 
@@ -261,11 +257,11 @@ export const patchApi = {
     rack_id?: number;
     category?: string;
     is_public?: boolean;
-  }) => api.get<PatchListResponse>('/patches', { params }),
+  }) => api.get<PatchListResponse>("/patches", { params }),
 
   get: (id: number) => api.get<Patch>(`/patches/${id}`),
 
-  create: (data: Partial<Patch>) => api.post<Patch>('/patches', data),
+  create: (data: Partial<Patch>) => api.post<Patch>("/patches", data),
 
   update: (id: number, data: Partial<Patch>) => api.patch<Patch>(`/patches/${id}`, data),
 
@@ -289,6 +285,13 @@ export interface EvidenceCandidate {
   image_asset_id?: string | null;
   gallery_revision_id?: string | null;
   gallery_module_id?: string | null;
+  /** Optional, non-authoritative Decision Intelligence projection. */
+  decision_advisory?: {
+    disposition: "auto_propose" | "user_review" | "unresolved" | "escalate" | "reject";
+    provider?: string;
+    confidence?: number | null;
+    reason_codes?: string[];
+  } | null;
 }
 
 export interface EvidenceCandidateListResponse {
@@ -333,8 +336,7 @@ export interface InventoryRevisionListResponse {
 }
 
 /** F4: evidence under canon prefix (rig_id ≡ rack_id). Legacy /racks/.../evidence still works. */
-const evidencePath = (rigId: number, suffix: string) =>
-  `/canon/rigs/${rigId}/evidence/${suffix}`;
+const evidencePath = (rigId: number, suffix: string) => `/canon/rigs/${rigId}/evidence/${suffix}`;
 
 export const evidenceApi = {
   uploadImages: (
@@ -347,22 +349,22 @@ export const evidenceApi = {
     },
   ) => {
     const form = new FormData();
-    files.forEach((file) => form.append('files', file));
-    form.append('retention_days', String(options?.retention_days ?? 30));
+    files.forEach((file) => form.append("files", file));
+    form.append("retention_days", String(options?.retention_days ?? 30));
     form.append(
-      'consent_provider_processing',
+      "consent_provider_processing",
       String(options?.consent_provider_processing ?? false),
     );
-    form.append('run_vision_mock', String(options?.run_vision_mock ?? true));
-    return api.post<MultiImageUploadResponse>(evidencePath(rackId, 'images'), form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+    form.append("run_vision_mock", String(options?.run_vision_mock ?? true));
+    return api.post<MultiImageUploadResponse>(evidencePath(rackId, "images"), form, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
   },
 
-  listImages: (rackId: number) => api.get(evidencePath(rackId, 'images')),
+  listImages: (rackId: number) => api.get(evidencePath(rackId, "images")),
 
   listCandidates: (rackId: number) =>
-    api.get<EvidenceCandidateListResponse>(evidencePath(rackId, 'candidates')),
+    api.get<EvidenceCandidateListResponse>(evidencePath(rackId, "candidates")),
 
   reconcile: (rackId: number) =>
     api.get<{
@@ -387,7 +389,7 @@ export const evidenceApi = {
       conflict_count: number;
       status: string;
       note: string;
-    }>(evidencePath(rackId, 'reconcile')),
+    }>(evidencePath(rackId, "reconcile")),
 
   confirm: (
     rackId: number,
@@ -400,35 +402,38 @@ export const evidenceApi = {
         notes?: string | null;
       }>;
     },
-  ) => api.post<ConfirmationBatchResponse>(evidencePath(rackId, 'confirmations'), body),
+  ) => api.post<ConfirmationBatchResponse>(evidencePath(rackId, "confirmations"), body),
 
   listInventory: (rackId: number) =>
-    api.get<InventoryRevisionListResponse>(evidencePath(rackId, 'inventory')),
+    api.get<InventoryRevisionListResponse>(evidencePath(rackId, "inventory")),
 };
 
 // Run API — list prefers canon alias; patches still legacy until dual-written.
 export const runApi = {
   /** @deprecated Prefer `canonApi.listRuns` (same bridge DTO). */
-  list: (rackId: number) =>
-    api.get<RunListResponse>('/canon/runs', { params: { rig_id: rackId } }),
+  list: (rackId: number) => api.get<RunListResponse>("/canon/runs", { params: { rig_id: rackId } }),
   patches: (runId: number) => api.get<RunPatchesResponse>(`/runs/${runId}/patches`),
 };
 
 // Auth API
 export const authApi = {
-  login: (data: LoginRequest) => api.post<TokenResponse>('/community/auth/login', data),
+  login: (data: LoginRequest) => api.post<TokenResponse>("/community/auth/login", data),
 
   register: (data: { username: string; email: string; password: string }) =>
-    api.post<User>('/community/users', data),
+    api.post<User>("/community/users", data),
 
   getUser: (id: number) => api.get<User>(`/community/users/${id}`),
 
   getUserByUsername: (username: string) => api.get<User>(`/community/users/username/${username}`),
 
-  updateProfile: (data: { avatar_url?: string; bio?: string; display_name?: string; allow_public_avatar?: boolean }) =>
-    api.patch<User>('/community/users/me', data),
+  updateProfile: (data: {
+    avatar_url?: string;
+    bio?: string;
+    display_name?: string;
+    allow_public_avatar?: boolean;
+  }) => api.patch<User>("/community/users/me", data),
 
-  getMe: () => api.get<User>('/community/users/me'),
+  getMe: () => api.get<User>("/community/users/me"),
 };
 
 // Community social API clients live under `src/legacy/apiClients.ts` (unrouted MVP).
@@ -452,9 +457,9 @@ export const exportApi = {
 export const canonApi = {
   /** Matrix slice B — same bridge DTO as GET /api/runs?rack_id= */
   listRuns: (rigId: number) =>
-    api.get<RunListResponse>('/canon/runs', { params: { rig_id: rigId } }),
+    api.get<RunListResponse>("/canon/runs", { params: { rig_id: rigId } }),
 
-  getBalance: () => api.get<{ balance: number }>('/canon/credits/balance'),
+  getBalance: () => api.get<{ balance: number }>("/canon/credits/balance"),
 
   getCreditsSummary: () =>
     api.get<{
@@ -466,9 +471,9 @@ export const canonApi = {
         export_id: string | null;
         created_at: string;
       }>;
-    }>('/canon/credits/summary'),
+    }>("/canon/credits/summary"),
 
-  listExports: () => api.get<CanonicalExportRecord[]>('/canon/exports'),
+  listExports: () => api.get<CanonicalExportRecord[]>("/canon/exports"),
 
   getExport: (exportId: string) => api.get<CanonicalExportRecord>(`/canon/exports/${exportId}`),
 
@@ -476,13 +481,13 @@ export const canonApi = {
     source_run_id: string;
     source_rig_revision_id: string;
     artifact_manifest_hash: string;
-    formats?: Array<'pdf' | 'svg' | 'json' | 'zip'>;
+    formats?: Array<"pdf" | "svg" | "json" | "zip">;
     license?: string;
     credit_cost?: number | null;
     idempotency_key: string;
     style_recipe?: Record<string, unknown> | null;
     style_recipe_id?: string | null;
-  }) => api.post<CanonicalExportRecord>('/canon/exports', body),
+  }) => api.post<CanonicalExportRecord>("/canon/exports", body),
 
   /** Free Design Engine preview — no debit (KD-15). */
   previewExport: (body: {
@@ -513,7 +518,7 @@ export const canonApi = {
         warnings?: Array<{ code: string; severity: string; message: string }>;
       }>;
       composition_preview_hash?: string | null;
-    }>('/canon/exports/preview', body),
+    }>("/canon/exports/preview", body),
 
   listStyleRecipes: () =>
     api.get<
@@ -526,7 +531,7 @@ export const canonApi = {
         created_at: string;
         updated_at: string;
       }>
-    >('/canon/style-recipes'),
+    >("/canon/style-recipes"),
 
   createStyleRecipe: (body: {
     name: string;
@@ -541,7 +546,7 @@ export const canonApi = {
       recipe_hash: string;
       created_at: string;
       updated_at: string;
-    }>('/canon/style-recipes', body),
+    }>("/canon/style-recipes", body),
 
   deleteStyleRecipe: (recipeId: string) =>
     api.delete(`/canon/style-recipes/${encodeURIComponent(recipeId)}`),
@@ -555,10 +560,10 @@ export const canonApi = {
   /** Build authenticated artifact URL (requires prior download token). */
   exportArtifactUrl: (
     exportId: string,
-    artifact: 'pdf' | 'companion' | 'manifest' | 'zip',
+    artifact: "pdf" | "companion" | "manifest" | "zip",
     token: string,
   ) => {
-    const base = API_BASE_URL.replace(/\/$/, '');
+    const base = API_BASE_URL.replace(/\/$/, "");
     const q = new URLSearchParams({ token });
     return `${base}/canon/exports/${encodeURIComponent(exportId)}/artifacts/${artifact}?${q}`;
   },
@@ -596,17 +601,12 @@ export const canonApi = {
     }>(`/canon/style-recipes/shared/${encodeURIComponent(recipeId)}`),
 
   /** F2: list inventory rigs via canon prefix (rig_id ≡ rack_id). Optional FE cutover. */
-  listRigs: (params?: {
-    skip?: number;
-    limit?: number;
-    is_public?: boolean;
-    user_id?: number;
-  }) => {
+  listRigs: (params?: { skip?: number; limit?: number; is_public?: boolean; user_id?: number }) => {
     const q = new URLSearchParams();
-    if (params?.skip != null) q.set('skip', String(params.skip));
-    if (params?.limit != null) q.set('limit', String(params.limit));
-    if (params?.is_public != null) q.set('is_public', String(params.is_public));
-    if (params?.user_id != null) q.set('user_id', String(params.user_id));
+    if (params?.skip != null) q.set("skip", String(params.skip));
+    if (params?.limit != null) q.set("limit", String(params.limit));
+    if (params?.is_public != null) q.set("is_public", String(params.is_public));
+    if (params?.user_id != null) q.set("user_id", String(params.user_id));
     const qs = q.toString();
     return api.get<{
       total: number;
@@ -624,7 +624,7 @@ export const canonApi = {
         created_at: string;
         updated_at: string;
       }>;
-    }>(`/canon/rigs${qs ? `?${qs}` : ''}`);
+    }>(`/canon/rigs${qs ? `?${qs}` : ""}`);
   },
 
   /** F2: single inventory rig (≡ GET /api/racks/{id}). */
@@ -697,7 +697,7 @@ export const monetizationApi = {
 // Admin API
 export const adminApi = {
   listUsers: (query?: string) =>
-    api.get<AdminUserList>('/admin/users', { params: query ? { query } : undefined }),
+    api.get<AdminUserList>("/admin/users", { params: query ? { query } : undefined }),
 
   updateUserRole: (userId: number, role: string, reason: string) =>
     api.patch(`/admin/users/${userId}/role`, { role, reason }),
@@ -719,16 +719,18 @@ export const adminApi = {
     api.patch(`/admin/modules/${moduleId}/merge`, { replacement_module_id, reason }),
 
   listGalleryRevisions: (status?: string) =>
-    api.get<AdminGalleryRevisionList>('/admin/gallery/revisions', {
+    api.get<AdminGalleryRevisionList>("/admin/gallery/revisions", {
       params: status ? { status } : undefined,
     }),
 
-  approveRevision: (revisionId: number) => api.post(`/admin/gallery/revisions/${revisionId}/approve`),
+  approveRevision: (revisionId: number) =>
+    api.post(`/admin/gallery/revisions/${revisionId}/approve`),
 
-  confirmRevision: (revisionId: number) => api.post(`/admin/gallery/revisions/${revisionId}/confirm`),
+  confirmRevision: (revisionId: number) =>
+    api.post(`/admin/gallery/revisions/${revisionId}/confirm`),
 
   listRuns: (status?: string) =>
-    api.get<AdminRunList>('/admin/runs', { params: status ? { status } : undefined }),
+    api.get<AdminRunList>("/admin/runs", { params: status ? { status } : undefined }),
 
   rerunRig: (rigId: number) => api.post(`/admin/runs/${rigId}/rerun`),
 
@@ -779,20 +781,22 @@ export const accountApi = {
       ...listed,
       data: listed.data.map((record) => ({
         id: record.export_id,
-        export_type: 'canon',
+        export_type: "canon",
         entity_id: record.source_run_id,
         run_id: record.source_run_id,
-        unlocked: record.status === 'succeeded' || record.status === 'queued' || record.status === 'running',
+        unlocked:
+          record.status === "succeeded" ||
+          record.status === "queued" ||
+          record.status === "running",
         license_type: undefined,
         created_at: record.created_at,
         status: record.status,
-        source: 'canon' as const,
+        source: "canon" as const,
       })),
     };
   },
-  getReferrals: () => api.get<ReferralSummary>('/me/referrals'),
+  getReferrals: () => api.get<ReferralSummary>("/me/referrals"),
 };
-
 
 // Registry / PDB API (Phase 2)
 export const registryApi = {
@@ -804,7 +808,6 @@ export const registryApi = {
   getManufacturer: (slug: string) => api.get<Manufacturer>(`/registry/manufacturers/${slug}`),
   listModelsForManufacturer: (slug: string) =>
     api.get<{ models: DeviceModel[] }>(`/registry/manufacturers/${slug}/models`),
-
 };
 
 export default api;

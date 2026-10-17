@@ -54,6 +54,16 @@ class Settings(BaseSettings):
     enable_legacy_leaderboards: bool = False
     enable_legacy_referrals: bool = False
 
+    # Decision Intelligence. Provider integration remains fail-closed by default.
+    enable_decision_intelligence: bool = False
+    decision_provider: str = "disabled"
+    typesafe_api_key: str = ""
+    jev_base_url: str = "https://api.typesafe.ai"
+    jev_model: str = ""
+    decision_auto_propose_at: float = 0.90
+    decision_user_review_at: float = 0.65
+    decision_probability_margin: float = 0.10
+
     # Patch Engine
     patch_engine_version: str = "1.0.0"
     # Compatibility alias used by some call sites / older tests.
@@ -94,6 +104,14 @@ class Settings(BaseSettings):
 
     # Git tracking (optional, for provenance)
     git_commit: str = ""  # Set by environment or CI/CD
+
+    @field_validator("decision_provider")
+    @classmethod
+    def _validate_decision_provider(cls, value: str) -> str:
+        normalized = value.strip().lower()
+        if normalized not in {"disabled", "jev"}:
+            raise ValueError("decision_provider must be 'disabled' or 'jev'")
+        return normalized
 
     @field_validator("cors_origins", mode="before")
     @classmethod

@@ -1,37 +1,37 @@
-import { Link } from 'react-router-dom';
-import { AdminGuard } from './AdminGuard';
-import { AdminNav } from './AdminNav';
+import { Link } from "react-router-dom";
+import { AdminGuard } from "./AdminGuard";
+import { AdminNav } from "./AdminNav";
 
 const areas = [
   {
-    title: 'Users',
-    description: 'Roles, credit grants, and profile maintenance. Mutations are audited.',
-    to: '/admin/users',
+    title: "Users",
+    description: "Roles, credit grants, and profile maintenance. Mutations are audited.",
+    to: "/admin/users",
   },
   {
-    title: 'Modules',
-    description: 'Deprecate, tombstone, or merge catalog modules. No hard deletes.',
-    to: '/admin/modules',
+    title: "Modules",
+    description: "Deprecate, tombstone, or merge catalog modules. No hard deletes.",
+    to: "/admin/modules",
   },
   {
-    title: 'Gallery',
-    description: 'Inspect gallery revisions and inventory evidence state.',
-    to: '/admin/gallery',
+    title: "Gallery",
+    description: "Inspect gallery revisions and inventory evidence state.",
+    to: "/admin/gallery",
   },
   {
-    title: 'Runs',
-    description: 'Browse generation runs bound to rig revisions and seeds.',
-    to: '/admin/runs',
+    title: "Runs",
+    description: "Browse generation runs bound to rig revisions and seeds.",
+    to: "/admin/runs",
   },
   {
-    title: 'Exports',
-    description: 'Canonical export ledger and fulfillment status.',
-    to: '/admin/exports',
+    title: "Exports",
+    description: "Canonical export ledger and fulfillment status.",
+    to: "/admin/exports",
   },
   {
-    title: 'Leaderboards',
-    description: 'Community ranking surfaces when feature flags allow.',
-    to: '/admin/leaderboards',
+    title: "Leaderboards",
+    description: "Community ranking surfaces when feature flags allow.",
+    to: "/admin/leaderboards",
   },
 ] as const;
 
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
         <AdminNav />
         <div className="panel">
           <p className="eyebrow">Guardrails</p>
-          <ul className="auth-brand-list" style={{ marginTop: 'var(--space-3)' }}>
+          <ul className="auth-brand-list" style={{ marginTop: "var(--space-3)" }}>
             <li>All admin mutations are audited</li>
             <li>Credit changes append to the canonical ledger</li>
             <li>Modules are deprecated or tombstoned (no hard deletes)</li>

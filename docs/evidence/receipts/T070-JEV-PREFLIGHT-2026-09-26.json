@@ -1,0 +1,23 @@
+{
+  "schema_version": "patchhive.jev-preflight.v1",
+  "created_at": "2026-09-26T06:00:15.782949+00:00",
+  "provider": "jev",
+  "model": "jev-1.13.0",
+  "base_url": "https://api.typesafe.ai",
+  "request_hash": "c0482f1fb6aed9573cbb172a44236c552b4de8fa17b1110825eaec039b0788dd",
+  "response_hash": "bdc19f28072642edaadce668e1e2b2f747c0539b8c7328914368b888144b9198",
+  "http_status": 200,
+  "latency_ms": 210.791,
+  "status": "SUCCEEDED",
+  "error_code": null,
+  "answer_shape_valid": true,
+  "canonical_authority": false,
+  "feature_enabled": false,
+  "source_sha": "5b14034c204c93e56da8230efbe37b39790c9fd4",
+  "workflow_run_id": "36222430963",
+  "artifact_id": "10898464361",
+  "artifact_zip_sha256": "5f245135742d16229d8db2085b2bd38757a6b949676cf318c0692bedc1796a8e",
+  "interpretation": "PROTOCOL_COMPATIBILITY_ONLY",
+  "threshold_authority": "NOT_COMPUTABLE",
+  "production_enablement": false
+}

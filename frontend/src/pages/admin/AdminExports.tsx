@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { adminApi } from '@/lib/api';
-import { AdminGuard } from './AdminGuard';
-import { AdminNav } from './AdminNav';
+import { useState } from "react";
+import { adminApi } from "@/lib/api";
+import { AdminGuard } from "./AdminGuard";
+import { AdminNav } from "./AdminNav";
 
 export default function AdminExports() {
-  const [exportId, setExportId] = useState('');
-  const [cacheRunId, setCacheRunId] = useState('');
-  const [cacheExportType, setCacheExportType] = useState('');
-  const [reason, setReason] = useState('');
-  const [message, setMessage] = useState('');
+  const [exportId, setExportId] = useState("");
+  const [cacheRunId, setCacheRunId] = useState("");
+  const [cacheExportType, setCacheExportType] = useState("");
+  const [reason, setReason] = useState("");
+  const [message, setMessage] = useState("");
 
   return (
     <AdminGuard>
@@ -17,7 +17,9 @@ export default function AdminExports() {
           <div>
             <p className="eyebrow">Ops</p>
             <h1>Exports</h1>
-            <p className="muted">Unlock, revoke, and invalidate export caches with audit reasons.</p>
+            <p className="muted">
+              Unlock, revoke, and invalidate export caches with audit reasons.
+            </p>
           </div>
         </header>
         <AdminNav />
@@ -30,7 +32,7 @@ export default function AdminExports() {
           <p className="eyebrow">Access</p>
           <h2 style={{ marginTop: 0 }}>Unlock / revoke</h2>
           <div className="toolbar">
-            <label className="field" style={{ flex: '1 1 12rem' }}>
+            <label className="field" style={{ flex: "1 1 12rem" }}>
               Audit reason
               <input
                 value={reason}
@@ -38,7 +40,7 @@ export default function AdminExports() {
                 placeholder="Required for mutations"
               />
             </label>
-            <label className="field" style={{ flex: '1 1 10rem' }}>
+            <label className="field" style={{ flex: "1 1 10rem" }}>
               Export ID
               <input
                 value={exportId}
@@ -51,7 +53,7 @@ export default function AdminExports() {
               className="button button-primary"
               onClick={async () => {
                 if (!exportId) return;
-                await adminApi.unlockExport(Number(exportId), reason || 'unlock');
+                await adminApi.unlockExport(Number(exportId), reason || "unlock");
                 setMessage(`Unlocked export ${exportId}`);
               }}
             >
@@ -62,7 +64,7 @@ export default function AdminExports() {
               className="button button-secondary"
               onClick={async () => {
                 if (!exportId) return;
-                await adminApi.revokeExport(Number(exportId), reason || 'revoke');
+                await adminApi.revokeExport(Number(exportId), reason || "revoke");
                 setMessage(`Revoked export ${exportId}`);
               }}
             >
@@ -74,7 +76,7 @@ export default function AdminExports() {
           <p className="eyebrow">Cache</p>
           <h2 style={{ marginTop: 0 }}>Invalidate</h2>
           <div className="toolbar">
-            <label className="field" style={{ flex: '1 1 8rem' }}>
+            <label className="field" style={{ flex: "1 1 8rem" }}>
               Run ID
               <input
                 value={cacheRunId}
@@ -82,7 +84,7 @@ export default function AdminExports() {
                 placeholder="Optional"
               />
             </label>
-            <label className="field" style={{ flex: '1 1 10rem' }}>
+            <label className="field" style={{ flex: "1 1 10rem" }}>
               Export type
               <input
                 value={cacheExportType}
@@ -97,9 +99,9 @@ export default function AdminExports() {
                 await adminApi.invalidateCache({
                   run_id: cacheRunId ? Number(cacheRunId) : undefined,
                   export_type: cacheExportType || undefined,
-                  reason: reason || 'cache invalidate',
+                  reason: reason || "cache invalidate",
                 });
-                setMessage('Cache invalidation requested');
+                setMessage("Cache invalidation requested");
               }}
             >
               Invalidate

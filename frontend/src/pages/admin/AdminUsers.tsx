@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
-import { adminApi } from '@/lib/api';
-import type { AdminUser } from '@/types/admin';
-import { AdminGuard } from './AdminGuard';
-import { AdminNav } from './AdminNav';
+import { useEffect, useState } from "react";
+import { adminApi } from "@/lib/api";
+import type { AdminUser } from "@/types/admin";
+import { AdminGuard } from "./AdminGuard";
+import { AdminNav } from "./AdminNav";
 
-const ROLE_OPTIONS = ['Admin', 'Ops', 'Support', 'ReadOnly', 'User'];
+const ROLE_OPTIONS = ["Admin", "Ops", "Support", "ReadOnly", "User"];
 
 export default function AdminUsers() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [reasonByUser, setReasonByUser] = useState<Record<number, string>>({});
 
@@ -33,7 +33,7 @@ export default function AdminUsers() {
         </header>
         <AdminNav />
         <div className="panel toolbar" style={{ marginBottom: 0 }}>
-          <label className="field" style={{ flex: '1 1 14rem' }}>
+          <label className="field" style={{ flex: "1 1 14rem" }}>
             Search
             <input
               value={query}
@@ -41,7 +41,11 @@ export default function AdminUsers() {
               placeholder="Username or email"
             />
           </label>
-          <button className="button button-secondary" type="button" onClick={() => void fetchUsers()}>
+          <button
+            className="button button-secondary"
+            type="button"
+            onClick={() => void fetchUsers()}
+          >
             Search
           </button>
         </div>
@@ -50,13 +54,13 @@ export default function AdminUsers() {
             <article key={user.id} className="catalog-card">
               <h2>{user.username}</h2>
               <p className="catalog-card-meta">{user.email}</p>
-              <p className="muted" style={{ margin: 0, fontSize: '0.9rem' }}>
-                Role: {user.role} · Display: {user.display_name || '—'}
+              <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
+                Role: {user.role} · Display: {user.display_name || "—"}
               </p>
               <label className="field">
                 Audit reason
                 <input
-                  value={reasonByUser[user.id] || ''}
+                  value={reasonByUser[user.id] || ""}
                   onChange={(e) =>
                     setReasonByUser((prev) => ({ ...prev, [user.id]: e.target.value }))
                   }
@@ -69,7 +73,7 @@ export default function AdminUsers() {
                   <select
                     value={user.role}
                     onChange={async (e) => {
-                      const reason = reasonByUser[user.id] || 'role update';
+                      const reason = reasonByUser[user.id] || "role update";
                       await adminApi.updateUserRole(user.id, e.target.value, reason);
                       void fetchUsers();
                     }}
@@ -85,7 +89,7 @@ export default function AdminUsers() {
                   type="button"
                   className="button button-primary"
                   onClick={async () => {
-                    const reason = reasonByUser[user.id] || 'grant credits';
+                    const reason = reasonByUser[user.id] || "grant credits";
                     await adminApi.grantCredits(user.id, 3, reason);
                     void fetchUsers();
                   }}
@@ -96,7 +100,7 @@ export default function AdminUsers() {
                   type="button"
                   className="button button-quiet"
                   onClick={async () => {
-                    const reason = reasonByUser[user.id] || 'clear avatar';
+                    const reason = reasonByUser[user.id] || "clear avatar";
                     await adminApi.updateUserAvatar(user.id, null, reason);
                     void fetchUsers();
                   }}

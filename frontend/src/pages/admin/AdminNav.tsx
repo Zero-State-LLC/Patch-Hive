@@ -1,13 +1,13 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from "react-router-dom";
 
 const links = [
-  { to: '/admin', label: 'Dashboard', exact: true },
-  { to: '/admin/users', label: 'Users' },
-  { to: '/admin/modules', label: 'Modules' },
-  { to: '/admin/gallery', label: 'Gallery' },
-  { to: '/admin/runs', label: 'Runs' },
-  { to: '/admin/exports', label: 'Exports' },
-  { to: '/admin/leaderboards', label: 'Leaderboards' },
+  { to: "/admin", label: "Dashboard", exact: true },
+  { to: "/admin/users", label: "Users" },
+  { to: "/admin/modules", label: "Modules" },
+  { to: "/admin/gallery", label: "Gallery" },
+  { to: "/admin/runs", label: "Runs" },
+  { to: "/admin/exports", label: "Exports" },
+  { to: "/admin/leaderboards", label: "Leaderboards" },
 ];
 
 export function AdminNav() {
@@ -20,7 +20,7 @@ export function AdminNav() {
           ? pathname === link.to
           : pathname === link.to || pathname.startsWith(`${link.to}/`);
         return (
-          <Link key={link.to} to={link.to} className={active ? 'active' : undefined}>
+          <Link key={link.to} to={link.to} className={active ? "active" : undefined}>
             {link.label}
           </Link>
         );

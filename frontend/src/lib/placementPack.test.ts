@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { firstFreeStartHp, packModulesOntoRows } from './placementPack';
+import { describe, expect, it } from "vitest";
+import { firstFreeStartHp, packModulesOntoRows } from "./placementPack";
 
 const hpMap: Record<number, number> = {
   1: 10,
@@ -11,12 +11,12 @@ const hpMap: Record<number, number> = {
 
 const resolveHp = (id: number) => (id in hpMap ? hpMap[id] : null);
 
-describe('firstFreeStartHp', () => {
-  it('returns 0 on empty row', () => {
+describe("firstFreeStartHp", () => {
+  it("returns 0 on empty row", () => {
     expect(firstFreeStartHp(0, 10, [], resolveHp, 84)).toBe(0);
   });
 
-  it('snaps after occupied blocks', () => {
+  it("snaps after occupied blocks", () => {
     const placed = [
       { module_id: 1, row_index: 0, start_hp: 0 },
       { module_id: 2, row_index: 0, start_hp: 10 },
@@ -24,14 +24,14 @@ describe('firstFreeStartHp', () => {
     expect(firstFreeStartHp(0, 14, placed, resolveHp, 84)).toBe(18);
   });
 
-  it('returns null when module cannot fit', () => {
+  it("returns null when module cannot fit", () => {
     const placed = [{ module_id: 4, row_index: 0, start_hp: 0 }];
     expect(firstFreeStartHp(0, 10, placed, resolveHp, 84)).toBeNull();
   });
 });
 
-describe('packModulesOntoRows', () => {
-  it('packs multiple modules on one row left-to-right', () => {
+describe("packModulesOntoRows", () => {
+  it("packs multiple modules on one row left-to-right", () => {
     const result = packModulesOntoRows([1, 2, 3], [], resolveHp, [84], 0);
     expect(result.unplaced).toEqual([]);
     expect(result.added).toEqual([
@@ -41,7 +41,7 @@ describe('packModulesOntoRows', () => {
     ]);
   });
 
-  it('spills to next row when current is full', () => {
+  it("spills to next row when current is full", () => {
     const fullish = [
       { module_id: 1, row_index: 0, start_hp: 0 }, // 10
       { module_id: 3, row_index: 0, start_hp: 10 }, // 14 → used 24
@@ -57,13 +57,13 @@ describe('packModulesOntoRows', () => {
     expect(withExisting.added).toEqual([{ module_id: 2, row_index: 0, start_hp: 24 }]);
   });
 
-  it('marks unknown or zero HP as unplaced without inventing width', () => {
+  it("marks unknown or zero HP as unplaced without inventing width", () => {
     const result = packModulesOntoRows([5, 99, 1], [], resolveHp, [84], 0);
     expect(result.added).toEqual([{ module_id: 1, row_index: 0, start_hp: 0 }]);
     expect(result.unplaced.map((u) => u.module_id).sort()).toEqual([5, 99]);
   });
 
-  it('reports unplaced when no free gap remains', () => {
+  it("reports unplaced when no free gap remains", () => {
     const existing = [{ module_id: 4, row_index: 0, start_hp: 0 }];
     const result = packModulesOntoRows([1], existing, resolveHp, [84], 0);
     expect(result.added).toEqual([]);

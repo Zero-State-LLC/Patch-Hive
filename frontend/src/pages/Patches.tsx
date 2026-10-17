@@ -1,23 +1,23 @@
 /**
  * Patches list — browse generated patches with loading / empty / error parity.
  */
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { patchApi } from '@/lib/api';
-import type { Patch } from '@/types/api';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { patchApi } from "@/lib/api";
+import type { Patch } from "@/types/api";
 
-type LoadState = 'loading' | 'ready' | 'empty' | 'error';
+type LoadState = "loading" | "ready" | "empty" | "error";
 
 export default function PatchesPage() {
   const [patches, setPatches] = useState<Patch[]>([]);
   const [total, setTotal] = useState(0);
-  const [state, setState] = useState<LoadState>('loading');
-  const [error, setError] = useState('');
-  const [category, setCategory] = useState('');
+  const [state, setState] = useState<LoadState>("loading");
+  const [error, setError] = useState("");
+  const [category, setCategory] = useState("");
 
   const load = async () => {
-    setState('loading');
-    setError('');
+    setState("loading");
+    setError("");
     try {
       const response = await patchApi.list({
         limit: 100,
@@ -26,12 +26,12 @@ export default function PatchesPage() {
       const rows = response.data.patches ?? [];
       setPatches(rows);
       setTotal(response.data.total ?? rows.length);
-      setState(rows.length === 0 ? 'empty' : 'ready');
+      setState(rows.length === 0 ? "empty" : "ready");
     } catch {
       setPatches([]);
       setTotal(0);
-      setError('Unable to load patches. Generate a run from a rig, then refresh.');
-      setState('error');
+      setError("Unable to load patches. Generate a run from a rig, then refresh.");
+      setState("error");
     }
   };
 
@@ -74,13 +74,13 @@ export default function PatchesPage() {
         </div>
       </header>
 
-      {state === 'loading' ? (
+      {state === "loading" ? (
         <p className="status" role="status">
           Loading patches…
         </p>
       ) : null}
 
-      {state === 'error' ? (
+      {state === "error" ? (
         <div className="panel" role="alert">
           <p className="status status-danger">{error}</p>
           <div className="page-hero-actions">
@@ -94,7 +94,7 @@ export default function PatchesPage() {
         </div>
       ) : null}
 
-      {state === 'empty' ? (
+      {state === "empty" ? (
         <div className="panel">
           <p className="status status-warning">No patches match this filter.</p>
           <p className="muted">
@@ -106,9 +106,9 @@ export default function PatchesPage() {
         </div>
       ) : null}
 
-      {state === 'ready' ? (
+      {state === "ready" ? (
         <>
-          <p className="muted" role="status" style={{ marginBottom: 'var(--space-4)' }}>
+          <p className="muted" role="status" style={{ marginBottom: "var(--space-4)" }}>
             Showing {patches.length} of {total} patches
           </p>
           <div className="catalog-grid">
@@ -117,12 +117,12 @@ export default function PatchesPage() {
                 <h2>{patch.name_override || patch.suggested_name || patch.name}</h2>
                 <p className="catalog-card-meta">
                   {patch.category}
-                  {patch.difficulty ? ` · ${patch.difficulty}` : ''} ·{' '}
+                  {patch.difficulty ? ` · ${patch.difficulty}` : ""} ·{" "}
                   {patch.connections?.length ?? 0} cables · rack #{patch.rack_id}
-                  {patch.run_id != null ? ` · run #${patch.run_id}` : ''}
+                  {patch.run_id != null ? ` · run #${patch.run_id}` : ""}
                 </p>
                 {patch.description ? (
-                  <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                  <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.9rem" }}>
                     {patch.description}
                   </p>
                 ) : null}

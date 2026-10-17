@@ -1,14 +1,14 @@
-import { spawnSync } from 'node:child_process';
-import { evaluateAuditReport } from './audit-policy.mjs';
+import { spawnSync } from "node:child_process";
+import { evaluateAuditReport } from "./audit-policy.mjs";
 
-const result = spawnSync('npm', ['audit', '--json'], {
-  cwd: new URL('..', import.meta.url),
-  encoding: 'utf8',
-  shell: process.platform === 'win32',
+const result = spawnSync("npm", ["audit", "--json"], {
+  cwd: new URL("..", import.meta.url),
+  encoding: "utf8",
+  shell: process.platform === "win32",
 });
 
 if (!result.stdout) {
-  process.stderr.write(result.stderr || 'npm audit produced no JSON output\n');
+  process.stderr.write(result.stderr || "npm audit produced no JSON output\n");
   process.exit(1);
 }
 
@@ -20,11 +20,10 @@ try {
   process.exit(1);
 }
 
-const { directAdvisories, unexpectedAdvisories, unexpectedWrappers } =
-  evaluateAuditReport(report);
+const { directAdvisories, unexpectedAdvisories, unexpectedWrappers } = evaluateAuditReport(report);
 
 if (unexpectedAdvisories.length || unexpectedWrappers.length) {
-  process.stderr.write('Unexpected npm audit findings:\n');
+  process.stderr.write("Unexpected npm audit findings:\n");
   for (const advisory of unexpectedAdvisories) {
     process.stderr.write(`- ${advisory.severity}: ${advisory.title} (${advisory.url})\n`);
   }
@@ -35,7 +34,7 @@ if (unexpectedAdvisories.length || unexpectedWrappers.length) {
 }
 
 if (directAdvisories.length === 0 && result.status !== 0) {
-  process.stderr.write(result.stderr || 'npm audit failed without a recognized advisory\n');
+  process.stderr.write(result.stderr || "npm audit failed without a recognized advisory\n");
   process.exit(1);
 }
 
@@ -44,5 +43,5 @@ if (directAdvisories.length > 0) {
     `Accepted ${directAdvisories.length} documented, unreachable advisory; no unexpected findings.\n`,
   );
 } else {
-  process.stdout.write('No known npm vulnerabilities found.\n');
+  process.stdout.write("No known npm vulnerabilities found.\n");
 }

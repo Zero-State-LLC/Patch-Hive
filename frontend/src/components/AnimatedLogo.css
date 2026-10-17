@@ -13,7 +13,8 @@
 }
 
 @keyframes hex-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -50,7 +51,8 @@
 }
 
 @keyframes core-breathe {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(1);
   }
@@ -89,7 +91,8 @@
 }
 
 @keyframes pathway-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -115,7 +118,8 @@
 }
 
 @keyframes signal-flow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.2;
     transform: scale(1);
   }

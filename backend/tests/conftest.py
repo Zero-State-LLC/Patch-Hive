@@ -41,6 +41,7 @@ from community.models import Comment  # Import to ensure tables are created
 from community.models import User, Vote
 from core.database import Base
 from gallery.models import GalleryRevision  # noqa: F401
+from intelligence.models import DecisionReceiptRecord  # noqa: F401
 from modules.models import Module
 from monetization.models import CreditsLedger, Export, License, Referral  # noqa: F401
 from patches.models import Patch  # Import to ensure patches table is created

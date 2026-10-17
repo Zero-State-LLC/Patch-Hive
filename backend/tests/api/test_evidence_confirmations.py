@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import io
 
+import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 from sqlalchemy.orm import Session
 
-from canon.models import SystemInventoryRevisionRecord
+from canon.models import ClassificationEvidenceRecord, ImageAssetRecord, SystemInventoryRevisionRecord
+from intelligence.models import DecisionReceiptRecord
 from main import app
 from racks.models import Rack
 
@@ -24,6 +26,14 @@ def _client(db_session: Session) -> TestClient:
 
     app.dependency_overrides[get_db] = override_get_db
     return TestClient(app)
+
+
+@pytest.fixture
+def client(db_session: Session):
+    """Bind the app to the in-memory session, matching the other API suites."""
+    test_client = _client(db_session)
+    yield test_client
+    app.dependency_overrides.clear()
 
 
 def _jpeg_bytes() -> bytes:
@@ -100,3 +110,157 @@ def test_list_and_confirm_candidates(
     assert inv_body["latest"]["confirmed_count"] == 1
 
     app.dependency_overrides.clear()
+
+
+def test_candidate_list_decision_advisory_is_optional_and_non_authoritative(
+    client, db_session, sample_rack_basic
+) -> None:
+    """Candidate DTO may carry advisory metadata without changing confirmation authority."""
+    listed = client.get(f"/api/racks/{sample_rack_basic.id}/evidence/candidates")
+    assert listed.status_code == 200
+    for candidate in listed.json()["candidates"]:
+        assert "decision_advisory" in candidate
+        advisory = candidate["decision_advisory"]
+        if advisory is not None:
+            assert set(advisory) == {"disposition", "provider", "confidence", "reason_codes"}
+        # Canonical authority fields are never projected by Decision Intelligence.
+        assert "canonical_module_id" not in candidate
+        assert "confirmed" not in (advisory or {})
+
+
+def test_decision_advisory_does_not_cross_evidence_boundary(
+    client, db_session, sample_rack_basic
+) -> None:
+    """Same candidate ID on unrelated evidence must not inherit an advisory."""
+    from datetime import datetime, timezone
+
+    now = datetime.now(timezone.utc)
+    asset = ImageAssetRecord(
+        id="img-advisory-scope",
+        rack_id=sample_rack_basic.id,
+        user_id=sample_rack_basic.user_id,
+        content_sha256="a" * 64,
+        media_type="image/jpeg",
+        width=128,
+        height=96,
+        byte_length=123,
+        storage_path="/tmp/not-used.jpg",
+        retention_days=30,
+        retention_expires_at=now,
+        consent_provider_processing=False,
+        created_at=now,
+    )
+    db_session.add(asset)
+    db_session.flush()
+    candidate = {
+        "candidate_id": "shared-module-id",
+        "entity_type": "module",
+        "manufacturer": "Example",
+        "model": "Shared",
+        "confidence": 0.8,
+        "confidence_method": "fixture",
+        "classification_status": "INFERRED",
+        "evidence_id": "ev-current",
+    }
+    db_session.add(
+        ClassificationEvidenceRecord(
+            id="ev-current",
+            image_asset_id=asset.id,
+            inventory_revision_id=None,
+            evidence_packet={"devices": [candidate]},
+            provider="fixture",
+            pipeline_version="vision-evidence.v1",
+            status="INFERRED",
+            created_at=now,
+        )
+    )
+    db_session.add(
+        DecisionReceiptRecord(
+            id="receipt-unrelated",
+            request_id="req-unrelated",
+            schema_version="patchhive.decision.v1",
+            provider="fixture",
+            provider_version="1",
+            purpose="module_identity",
+            evidence_hash="ev-other-rack",
+            candidate_set_hash="candidate-set",
+            rubric_hash=None,
+            answer_type="choice",
+            selected_choice="shared-module-id",
+            score=None,
+            probability_yes=None,
+            confidence=0.99,
+            provider_status="succeeded",
+            error_code=None,
+            policy_version="test-v1",
+            disposition="AUTO_PROPOSE",
+            reason_codes=["CONFIDENCE_AUTO_PROPOSE"],
+            packet_hash="b" * 64,
+            raw_payload_hash=None,
+            created_at=now,
+        )
+    )
+    db_session.commit()
+
+    listed = client.get(f"/api/racks/{sample_rack_basic.id}/evidence/candidates")
+    assert listed.status_code == 200
+    shared = next(c for c in listed.json()["candidates"] if c["candidate_id"] == "shared-module-id")
+    assert shared["decision_advisory"] is None
+
+
+def test_decision_advisory_projects_only_matching_evidence(
+    client, db_session, sample_rack_basic
+) -> None:
+    """A receipt bound to the candidate's exact evidence may be shown as advisory."""
+    from datetime import datetime, timezone
+
+    now = datetime.now(timezone.utc)
+    asset = ImageAssetRecord(
+        id="img-advisory-match",
+        rack_id=sample_rack_basic.id,
+        user_id=sample_rack_basic.user_id,
+        content_sha256="c" * 64,
+        media_type="image/jpeg",
+        width=128,
+        height=96,
+        byte_length=123,
+        storage_path="/tmp/not-used-2.jpg",
+        retention_days=30,
+        retention_expires_at=now,
+        consent_provider_processing=False,
+        created_at=now,
+    )
+    db_session.add(asset)
+    db_session.flush()
+    candidate = {
+        "candidate_id": "matched-module-id",
+        "entity_type": "module",
+        "manufacturer": "Example",
+        "model": "Matched",
+        "confidence": 0.8,
+        "confidence_method": "fixture",
+        "classification_status": "INFERRED",
+        "evidence_id": "ev-match",
+    }
+    db_session.add(ClassificationEvidenceRecord(
+        id="ev-match", image_asset_id=asset.id, inventory_revision_id=None,
+        evidence_packet={"devices": [candidate]}, provider="fixture",
+        pipeline_version="vision-evidence.v1", status="INFERRED", created_at=now,
+    ))
+    db_session.add(DecisionReceiptRecord(
+        id="receipt-match", request_id="req-match", schema_version="patchhive.decision.v1",
+        provider="fixture", provider_version="1", purpose="module_identity",
+        evidence_hash="ev-match", candidate_set_hash="candidate-set", rubric_hash=None,
+        answer_type="choice", selected_choice="matched-module-id", score=None,
+        probability_yes=None, confidence=0.93, provider_status="succeeded", error_code=None,
+        policy_version="test-v1", disposition="AUTO_PROPOSE",
+        reason_codes=["CONFIDENCE_AUTO_PROPOSE"], packet_hash="d" * 64,
+        raw_payload_hash=None, created_at=now,
+    ))
+    db_session.commit()
+
+    listed = client.get(f"/api/racks/{sample_rack_basic.id}/evidence/candidates")
+    assert listed.status_code == 200
+    matched = next(c for c in listed.json()["candidates"] if c["candidate_id"] == "matched-module-id")
+    assert matched["decision_advisory"]["confidence"] == 0.93
+    assert matched["decision_advisory"]["disposition"] == "auto_propose"
