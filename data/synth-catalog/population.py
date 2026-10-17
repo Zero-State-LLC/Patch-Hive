@@ -158,7 +158,7 @@ def _stamp() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-POWER_OVERLAY_LATEST = 9
+POWER_OVERLAY_LATEST = 10
 CATALOG_ADDITIONS_LATEST = 2
 ENTRY_VERIFICATION = {"verified", "corrected", "flagged"}
 
@@ -228,9 +228,10 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
             kind="modules_full_spec",
         )
 
-    hp_overlay = _load_optional(CATALOG / "overlays" / "module-catalog-hp-v1.json")
-    for entry in hp_overlay.get("entries") or []:
-        _schedule_hp(plan, catalog, entry)
+    for hp_path in sorted((CATALOG / "overlays").glob("module-catalog-hp-v*.json")):
+        hp_overlay = _load_optional(hp_path)  # v1 maker/retail; v2+ maker re-verify (2026-10-17)
+        for entry in hp_overlay.get("entries") or []:
+            _schedule_hp(plan, catalog, entry)
 
     for row in candidates.get("rows") or []:
         _schedule_candidate(plan, catalog, modules, row, verification)
