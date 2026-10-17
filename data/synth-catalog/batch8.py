@@ -142,8 +142,8 @@ def verify_candidate(scraper: CatalogScraper, row: dict[str, Any], known_slugs: 
 
 
 def _html_to_text(page: str) -> str:
-    text = re.sub(r"<script[\s\S]*?</script>", " ", page or "", flags=re.I)
-    text = re.sub(r"<style[\s\S]*?</style>", " ", text, flags=re.I)
+    text = re.sub(r"<script\b[\s\S]*?</script\b[^>]*>", " ", page or "", flags=re.I)
+    text = re.sub(r"<style\b[\s\S]*?</style\b[^>]*>", " ", text, flags=re.I)
     text = re.sub(r"<[^>]+>", " ", text)
     text = html.unescape(text)
     return re.sub(r"\s+", " ", text)
