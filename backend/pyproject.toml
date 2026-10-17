@@ -1,6 +1,6 @@
 [project]
 name = "patchhive-backend"
-version = "0.1.0"
+version = "0.3.0a2"
 description = "PatchHive Backend - Eurorack system design and patch exploration API"
 readme = "README.md"
 requires-python = ">=3.11"

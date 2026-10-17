@@ -6,6 +6,18 @@ This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with th
 
 ## Unreleased
 
+## 0.3.0-alpha.2 — Proposed (untagged until the release PR merges)
+
+### Changed
+
+- Synced the personal repository main (964ce18) into the org repository: `.specify/memory/constitution.md`, `specs/005-decision-intelligence`, and the T050, T061, and T070 work.
+- Aligned `backend/pyproject.toml` (`0.3.0a2`) and `frontend/package.json` (`0.3.0-alpha.2`) with the tag scheme. Both were `0.1.0`.
+
+### Added
+
+- `scripts/check_version_consistency.py` and `.github/workflows/release.yml`. The workflow checks versions on PRs, verifies tag/version match on tag push, and creates the GitHub release.
+
+
 ### Added
 
 - Cases C1–C3: `format_family` / `capacity_unit` / `powered` columns + migration; list filters on columns; power validation (POWER_UNSPECIFIED advisory, hard fail when rails known or unpowered+draw); non-Eurorack placement blocked; staging bootstrap doc; rack `validation_warnings` on create/update.
