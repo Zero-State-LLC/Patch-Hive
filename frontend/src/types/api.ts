@@ -89,7 +89,7 @@ export interface CatalogModuleStats {
 }
 
 export interface CatalogMaterializeResponse {
-  status: 'exists' | 'created';
+  status: "exists" | "created";
   catalog_slug: string;
   module_id: number;
   module: {
@@ -197,7 +197,7 @@ export interface CatalogStatsResponse {
   publication_note?: string;
 }
 
-export type CompatibilityStatus = 'verified' | 'incomplete' | 'conflict';
+export type CompatibilityStatus = "verified" | "incomplete" | "conflict";
 
 export interface CompatibilityCheck {
   status: CompatibilityStatus;
@@ -430,7 +430,7 @@ export interface UserExportRecord {
   license_type?: string;
   created_at: string;
   status?: string;
-  source?: 'canon' | 'legacy';
+  source?: "canon" | "legacy";
 }
 
 export interface ReferralRecord {
@@ -467,7 +467,7 @@ export interface TokenResponse {
 
 // Feed types
 export interface FeedItem {
-  type: 'rack' | 'patch';
+  type: "rack" | "patch";
   id: number;
   name: string;
   description?: string;
@@ -491,7 +491,7 @@ export interface ExportArtifactUrls {
 
 export interface ExportRecord {
   id: number;
-  export_type: 'patch' | 'rack';
+  export_type: "patch" | "rack";
   license: string;
   run_id: string;
   generated_at: string;
@@ -504,8 +504,8 @@ export interface PublicationRecord {
   id: number;
   export_id: number;
   slug: string;
-  visibility: 'public' | 'unlisted';
-  status: 'published' | 'hidden' | 'draft' | 'removed';
+  visibility: "public" | "unlisted";
+  status: "published" | "hidden" | "draft" | "removed";
   allow_download: boolean;
   allow_remix: boolean;
   title: string;
@@ -523,7 +523,7 @@ export interface PublicPublicationResponse {
   title: string;
   description?: string;
   cover_image_url?: string;
-  export_type: 'patch' | 'rack';
+  export_type: "patch" | "rack";
   license: string;
   provenance: {
     run_id: string;
@@ -546,7 +546,7 @@ export interface PublicationCard {
   title: string;
   description?: string;
   cover_image_url?: string;
-  export_type: 'patch' | 'rack';
+  export_type: "patch" | "rack";
   published_at?: string;
 }
 

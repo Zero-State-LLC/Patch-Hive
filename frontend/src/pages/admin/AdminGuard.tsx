@@ -1,6 +1,6 @@
-import { useAuthStore } from '@/lib/store';
+import { useAuthStore } from "@/lib/store";
 
-const READ_ROLES = new Set(['Admin', 'Ops', 'Support', 'ReadOnly']);
+const READ_ROLES = new Set(["Admin", "Ops", "Support", "ReadOnly"]);
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
   const { user } = useAuthStore();

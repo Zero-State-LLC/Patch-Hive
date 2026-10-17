@@ -1,16 +1,10 @@
-import { useEffect, useState } from 'react';
-import { adminApi } from '@/lib/api';
-import type { AdminLeaderboardEntry } from '@/types/admin';
-import { AdminGuard } from './AdminGuard';
-import { AdminNav } from './AdminNav';
+import { useEffect, useState } from "react";
+import { adminApi } from "@/lib/api";
+import type { AdminLeaderboardEntry } from "@/types/admin";
+import { AdminGuard } from "./AdminGuard";
+import { AdminNav } from "./AdminNav";
 
-function LeaderboardTable({
-  title,
-  entries,
-}: {
-  title: string;
-  entries: AdminLeaderboardEntry[];
-}) {
+function LeaderboardTable({ title, entries }: { title: string; entries: AdminLeaderboardEntry[] }) {
   return (
     <section className="panel">
       <p className="eyebrow">Ranking</p>
@@ -69,7 +63,7 @@ export default function AdminLeaderboards() {
           </div>
         </header>
         <AdminNav />
-        <div style={{ display: 'grid', gap: 'var(--space-5)' }}>
+        <div style={{ display: "grid", gap: "var(--space-5)" }}>
           <LeaderboardTable title="Popular modules" entries={popular} />
           <LeaderboardTable title="Trending modules (14 days)" entries={trending} />
           <LeaderboardTable title="Exported categories" entries={exported} />

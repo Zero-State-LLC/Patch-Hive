@@ -5,6 +5,7 @@ Component tests for the PatchHive React frontend using Vitest and React Testing 
 ## Test Coverage
 
 **Component Tests** (2 test suites, 50+ assertions):
+
 - ✅ **LoadingSpinner** (24 tests)
   - Rendering with default and custom props
   - SVG structure validation
@@ -161,13 +162,13 @@ describe('Async Component', () => {
 ### Mock API Calls
 
 ```typescript
-import { vi } from 'vitest';
-import axios from 'axios';
+import { vi } from "vitest";
+import axios from "axios";
 
-vi.mock('axios');
+vi.mock("axios");
 
-describe('API Component', () => {
-  it('fetches data', async () => {
+describe("API Component", () => {
+  it("fetches data", async () => {
     axios.get.mockResolvedValue({ data: { modules: [] } });
     // ... test code
   });
@@ -191,12 +192,14 @@ const renderWithRouter = (component) => {
 ## Coverage Goals
 
 Target coverage metrics:
+
 - **Statements**: >80%
 - **Branches**: >75%
 - **Functions**: >80%
 - **Lines**: >80%
 
 View coverage report:
+
 ```bash
 npm run test:coverage
 open coverage/index.html
@@ -205,6 +208,7 @@ open coverage/index.html
 ## CI/CD Integration
 
 Tests run automatically on:
+
 - Push to `main`, `develop`, `claude/**` branches
 - Pull requests to `main` or `develop`
 - Via GitHub Actions workflow

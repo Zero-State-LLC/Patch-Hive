@@ -17,8 +17,7 @@ export const communityApi = {
   getFeed: (params?: { skip?: number; limit?: number }) =>
     api.get<FeedResponse>("/community/feed", { params }),
 
-  vote: (data: { rack_id?: number; patch_id?: number }) =>
-    api.post("/community/votes", data),
+  vote: (data: { rack_id?: number; patch_id?: number }) => api.post("/community/votes", data),
 
   deleteVote: (voteId: number) => api.delete(`/community/votes/${voteId}`),
 

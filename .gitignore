@@ -111,3 +111,19 @@ TAGS
 
 # Local staging secrets
 .env.staging.local
+
+# OS / editor duplicate and patch debris
+._*
+*.orig
+*.rej
+*.patch
+*.diff
+*.swp
+*.swn
+*.swo
+
+# Local Python / tooling
+.python-version.local
+.pyright/
+.pytype/
+coverage/

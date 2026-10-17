@@ -47,6 +47,10 @@ This campaign implements VSI **P0 contracts** (evidence adapter, inventory, patc
 - [x] Multi-image evidence upload + retention soft-delete
 - [ ] Live vision provider behind adapter (ops secret + evaluation dataset)
 
+## 2026-09-25 Decision Intelligence campaign
+
+SpecKit normalization and feature 005 are specified on the campaign branch. Implementation order is contract-first: DecisionProvider schemas -> deterministic DecisionPolicy -> fixture provider -> persistence/telemetry -> Jev adapter (flag off) -> module/capability/port intelligence -> evaluation -> staging enablement. Do not wire Jev directly into legacy modules/racks or canonical mutation paths. See [`../specs/005-decision-intelligence/tasks.md`](../specs/005-decision-intelligence/tasks.md).
+
 ## Recommended work order
 
 ### P0 — Ship gate (post-#47 / #49)

@@ -268,3 +268,10 @@ See [ABX_CORE_COMPLIANCE.md](ABX_CORE_COMPLIANCE.md) for detailed compliance doc
 - **Microservices**: Split export/visualization into separate service
 - **GraphQL**: Alternative API for more efficient data fetching
 - **Event sourcing**: Full audit trail of all system changes
+
+
+## Decision Intelligence boundary (specified 2026-09-25)
+
+Decision Intelligence is an evidence-side subsystem, not part of canonical authority. Normalized vision/OCR/retrieval evidence may be sent to a provider-neutral `DecisionProvider`; its immutable `DecisionPacket` is evaluated by a deterministic, versioned `DecisionPolicy`. The result is a proposal, review requirement, unresolved state, rejection, or bounded escalation. Existing confirmation/application services remain the only path from probabilistic evidence to canonical inventory.
+
+Jev is a planned adapter behind this contract. Canonical packages MUST NOT import Jev-specific types. See [`specs/005-decision-intelligence/`](../specs/005-decision-intelligence/spec.md) and [DECISION_INTELLIGENCE.md](DECISION_INTELLIGENCE.md).

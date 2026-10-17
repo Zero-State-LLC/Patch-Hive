@@ -2,10 +2,10 @@
  * Public Product Database Explorer (PDB)
  * Manufacturer directory + search + detail — PatchHive workspace chrome.
  */
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { registryApi } from '@/lib/api';
-import type { DeviceModel, Manufacturer, RegistryCoverage } from '@/types/api';
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { registryApi } from "@/lib/api";
+import type { DeviceModel, Manufacturer, RegistryCoverage } from "@/types/api";
 
 interface SelectedMan extends Manufacturer {
   models?: DeviceModel[];
@@ -15,7 +15,9 @@ export default function RegistryPage() {
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [coverage, setCoverage] = useState<RegistryCoverage | null>(null);
   const [searchParams] = useSearchParams();
-  const [query, setQuery] = useState(() => searchParams.get('query') || searchParams.get('q') || '');
+  const [query, setQuery] = useState(
+    () => searchParams.get("query") || searchParams.get("q") || "",
+  );
   const [selected, setSelected] = useState<SelectedMan | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState<DeviceModel[]>([]);
@@ -81,11 +83,11 @@ export default function RegistryPage() {
           <p className="eyebrow">Catalog</p>
           <h1>Product Database</h1>
           <p className="muted">
-            Live registry · {coverage?.total_manufacturers || manufacturers.length} manufacturers ·{' '}
+            Live registry · {coverage?.total_manufacturers || manufacturers.length} manufacturers ·{" "}
             {coverage?.total_models || 0} models
           </p>
         </div>
-        <label className="field" style={{ minWidth: 'min(18rem, 100%)' }}>
+        <label className="field" style={{ minWidth: "min(18rem, 100%)" }}>
           <span className="visually-hidden">Search manufacturers or models</span>
           <input
             className="input"
@@ -100,7 +102,7 @@ export default function RegistryPage() {
       </header>
 
       {searchResults.length > 0 ? (
-        <div className="panel" style={{ marginBottom: 'var(--space-5)' }}>
+        <div className="panel" style={{ marginBottom: "var(--space-5)" }}>
           <p className="eyebrow">Model search</p>
           <ul className="registry-search-list">
             {searchResults.map((r, i) => (
@@ -119,7 +121,7 @@ export default function RegistryPage() {
         <aside className="split-aside" aria-label="Manufacturers">
           <div className="split-aside-head">
             <h2>Manufacturers</h2>
-            <span className="muted" style={{ fontSize: '0.8rem' }}>
+            <span className="muted" style={{ fontSize: "0.8rem" }}>
               {filtered.length}/{manufacturers.length}
             </span>
           </div>
@@ -131,9 +133,9 @@ export default function RegistryPage() {
                 <button
                   key={m.slug || m.id}
                   type="button"
-                  className={`side-item${selected?.slug === m.slug ? ' is-selected' : ''}`}
+                  className={`side-item${selected?.slug === m.slug ? " is-selected" : ""}`}
                   onClick={() => void selectMan(m)}
-                  aria-current={selected?.slug === m.slug ? 'true' : undefined}
+                  aria-current={selected?.slug === m.slug ? "true" : undefined}
                 >
                   <span className="side-item-title">{manLabel(m)}</span>
                   <span className="side-item-meta">{m.slug}</span>
@@ -155,7 +157,7 @@ export default function RegistryPage() {
                 <div>
                   <dt>Status</dt>
                   <dd>
-                    <code>{selected.status || 'active'}</code>
+                    <code>{selected.status || "active"}</code>
                   </dd>
                 </div>
                 {selected.website ? (
@@ -169,7 +171,7 @@ export default function RegistryPage() {
                   </div>
                 ) : null}
               </dl>
-              <p className="eyebrow" style={{ marginTop: 'var(--space-5)' }}>
+              <p className="eyebrow" style={{ marginTop: "var(--space-5)" }}>
                 Models (sample)
               </p>
               {(selected.models || []).length === 0 ? (

@@ -30,6 +30,7 @@ from canon.models import (  # noqa: F401
 )
 from community.models import Comment, User, Vote  # noqa: F401
 from gallery.models import GalleryRevision  # noqa: F401
+from intelligence.models import DecisionReceiptRecord  # noqa: F401
 from modules.models import Module  # noqa: F401
 from monetization.models import CreditsLedger, Export, License, Referral  # noqa: F401
 from patches.models import Patch  # noqa: F401

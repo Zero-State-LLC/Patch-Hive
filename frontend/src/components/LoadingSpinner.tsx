@@ -2,8 +2,8 @@
  * PatchHive Loading Spinner
  * Rotating hexagon with signal flow — token color, no glow blur.
  */
-import React from 'react';
-import './LoadingSpinner.css';
+import React from "react";
+import "./LoadingSpinner.css";
 
 interface LoadingSpinnerProps {
   size?: number;
@@ -15,7 +15,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 80, messa
     <div className="loading-spinner-container" role="status" aria-live="polite">
       <svg
         role="img"
-        aria-label={message || 'Loading'}
+        aria-label={message || "Loading"}
         width={size}
         height={size}
         viewBox="0 0 100 100"
@@ -37,7 +37,14 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 80, messa
           opacity="0.6"
           className="spinner-hex-inner"
         />
-        <circle cx="50" cy="42.5" r="8" fill="currentColor" opacity="0.4" className="spinner-core" />
+        <circle
+          cx="50"
+          cy="42.5"
+          r="8"
+          fill="currentColor"
+          opacity="0.4"
+          className="spinner-core"
+        />
         <circle cx="50" cy="42.5" r="4" fill="currentColor" className="spinner-core-inner" />
         <circle cx="50" cy="10" r="2.5" fill="currentColor" className="spinner-dot dot-1" />
         <circle cx="80" cy="25" r="2.5" fill="currentColor" className="spinner-dot dot-2" />

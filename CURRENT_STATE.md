@@ -41,6 +41,12 @@
 | Production deploy | **Not performed** |
 | Production readiness | **Not ready** (beta-staging engineering) — [assessment](docs/evidence/PRODUCTION_READINESS_ASSESSMENT_2026-07-21.md) · [matrix](docs/evidence/PRODUCTION_READINESS_MATRIX.md) · [delta](docs/evidence/PRODUCTION_READINESS_DELTA_2026-07-26.md) |
 
+## Decision Intelligence specification campaign (2026-09-25)
+
+**OBSERVED:** provider-neutral Decision Intelligence is now specified under `specs/005-decision-intelligence/`; implementation remains pending and Jev is not enabled. The constitution makes evidence non-canonical and forbids probabilistic direct-to-canon writes.
+
+**Next implementation gate:** contracts + deterministic policy + fixture provider before any Jev adapter.
+
 ## Immediate continuation priorities
 
 1. Operator: pick named staging host; optional domain cutover ([DOMAIN_CUTOVER_CHECKLIST.md](docs/evidence/DOMAIN_CUTOVER_CHECKLIST.md)).
@@ -64,3 +70,5 @@
 | [docs/evidence/PRODUCTION_READINESS_ASSESSMENT_2026-07-21.md](docs/evidence/PRODUCTION_READINESS_ASSESSMENT_2026-07-21.md) | Latest readiness narrative |
 | [docs/FEATURE_FLAGS.md](docs/FEATURE_FLAGS.md) | Flags |
 | [brand/README.md](brand/README.md) | Brand kit |
+| [.specify/memory/constitution.md](.specify/memory/constitution.md) | SpecKit constitution |
+| [specs/005-decision-intelligence/spec.md](specs/005-decision-intelligence/spec.md) | Decision Intelligence requirements |
