@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { adminApi } from '@/lib/api';
-import type { AdminGalleryRevision } from '@/types/admin';
-import { AdminGuard } from './AdminGuard';
-import { AdminNav } from './AdminNav';
+import { useEffect, useState } from "react";
+import { adminApi } from "@/lib/api";
+import type { AdminGalleryRevision } from "@/types/admin";
+import { AdminGuard } from "./AdminGuard";
+import { AdminNav } from "./AdminNav";
 
 export default function AdminGallery() {
   const [revisions, setRevisions] = useState<AdminGalleryRevision[]>([]);
@@ -25,7 +25,11 @@ export default function AdminGallery() {
             <h1>Gallery revisions</h1>
             <p className="muted">Approve or confirm gallery inventory evidence.</p>
           </div>
-          <button className="button button-secondary" type="button" onClick={() => void fetchRevisions()}>
+          <button
+            className="button button-secondary"
+            type="button"
+            onClick={() => void fetchRevisions()}
+          >
             Refresh
           </button>
         </header>

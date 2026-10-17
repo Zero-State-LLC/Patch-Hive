@@ -2,27 +2,27 @@
  * Module gallery — browse lightweight module_catalog (research + curated)
  * with optional materialize into full-spec inventory for rack placement.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { CSSProperties } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { moduleApi, rackApi } from '@/lib/api';
-import type { CatalogModule, CatalogModuleStats, Rack } from '@/types/api';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { moduleApi, rackApi } from "@/lib/api";
+import type { CatalogModule, CatalogModuleStats, Rack } from "@/types/api";
 
-type LoadState = 'loading' | 'ready' | 'empty' | 'error';
-type SortKey = 'brand' | 'name' | 'hp' | 'category';
-type HpFilter = 'all' | 'known' | 'unknown';
+type LoadState = "loading" | "ready" | "empty" | "error";
+type SortKey = "brand" | "name" | "hp" | "category";
+type HpFilter = "all" | "known" | "unknown";
 
 const PAGE_SIZE = 48;
 
 function parseHpFilter(raw: string | null): HpFilter {
-  if (raw === 'known' || raw === 'true' || raw === '1') return 'known';
-  if (raw === 'unknown' || raw === 'false' || raw === '0') return 'unknown';
-  return 'all';
+  if (raw === "known" || raw === "true" || raw === "1") return "known";
+  if (raw === "unknown" || raw === "false" || raw === "0") return "unknown";
+  return "all";
 }
 
 function parseSort(raw: string | null): SortKey {
-  if (raw === 'name' || raw === 'hp' || raw === 'category' || raw === 'brand') return raw;
-  return 'brand';
+  if (raw === "name" || raw === "hp" || raw === "category" || raw === "brand") return raw;
+  return "brand";
 }
 
 export default function ModulesPage() {
@@ -34,27 +34,29 @@ export default function ModulesPage() {
   const [stats, setStats] = useState<CatalogModuleStats | null>(null);
   const [brands, setBrands] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [state, setState] = useState<LoadState>('loading');
-  const [error, setError] = useState('');
-  const [query, setQuery] = useState(() => searchParams.get('q') || searchParams.get('search') || '');
-  const [brandFilter, setBrandFilter] = useState(() => searchParams.get('brand') || 'all');
+  const [state, setState] = useState<LoadState>("loading");
+  const [error, setError] = useState("");
+  const [query, setQuery] = useState(
+    () => searchParams.get("q") || searchParams.get("search") || "",
+  );
+  const [brandFilter, setBrandFilter] = useState(() => searchParams.get("brand") || "all");
   const [typeFilter, setTypeFilter] = useState(
-    () => searchParams.get('category') || searchParams.get('type') || 'all',
+    () => searchParams.get("category") || searchParams.get("type") || "all",
   );
   const [hpFilter, setHpFilter] = useState<HpFilter>(() =>
-    parseHpFilter(searchParams.get('hp') || searchParams.get('hp_known')),
+    parseHpFilter(searchParams.get("hp") || searchParams.get("hp_known")),
   );
-  const [sourceFilter, setSourceFilter] = useState(() => searchParams.get('source') || 'all');
+  const [sourceFilter, setSourceFilter] = useState(() => searchParams.get("source") || "all");
   const [availabilityFilter, setAvailabilityFilter] = useState(
-    () => searchParams.get('status') || searchParams.get('availability') || 'all',
+    () => searchParams.get("status") || searchParams.get("availability") || "all",
   );
-  const [sortKey, setSortKey] = useState<SortKey>(() => parseSort(searchParams.get('sort')));
+  const [sortKey, setSortKey] = useState<SortKey>(() => parseSort(searchParams.get("sort")));
   const [page, setPage] = useState(() => {
-    const p = Number(searchParams.get('page') || '1');
+    const p = Number(searchParams.get("page") || "1");
     return Number.isFinite(p) && p > 1 ? p - 1 : 0;
   });
   const [busySlug, setBusySlug] = useState<string | null>(null);
-  const [actionMsg, setActionMsg] = useState('');
+  const [actionMsg, setActionMsg] = useState("");
   const [lastPrepared, setLastPrepared] = useState<{
     brand: string;
     name: string;
@@ -67,15 +69,15 @@ export default function ModulesPage() {
   // Keep URL in sync so filters are shareable / back-button friendly
   useEffect(() => {
     const next = new URLSearchParams();
-    if (query.trim()) next.set('q', query.trim());
-    if (brandFilter !== 'all') next.set('brand', brandFilter);
-    if (typeFilter !== 'all') next.set('category', typeFilter);
-    if (hpFilter === 'known') next.set('hp', 'known');
-    if (hpFilter === 'unknown') next.set('hp', 'unknown');
-    if (sourceFilter !== 'all') next.set('source', sourceFilter);
-    if (availabilityFilter !== 'all') next.set('status', availabilityFilter);
-    if (sortKey !== 'brand') next.set('sort', sortKey);
-    if (page > 0) next.set('page', String(page + 1));
+    if (query.trim()) next.set("q", query.trim());
+    if (brandFilter !== "all") next.set("brand", brandFilter);
+    if (typeFilter !== "all") next.set("category", typeFilter);
+    if (hpFilter === "known") next.set("hp", "known");
+    if (hpFilter === "unknown") next.set("hp", "unknown");
+    if (sourceFilter !== "all") next.set("source", sourceFilter);
+    if (availabilityFilter !== "all") next.set("status", availabilityFilter);
+    if (sortKey !== "brand") next.set("sort", sortKey);
+    if (page > 0) next.set("page", String(page + 1));
     setSearchParams(next, { replace: true });
   }, [
     query,
@@ -90,22 +92,22 @@ export default function ModulesPage() {
   ]);
 
   const load = useCallback(() => {
-    setState('loading');
-    setError('');
-    setActionMsg('');
+    setState("loading");
+    setError("");
+    setActionMsg("");
     const params: Record<string, string | number | boolean> = {
       skip: page * PAGE_SIZE,
       limit: PAGE_SIZE,
-      sort_by: sortKey === 'category' ? 'category' : sortKey,
-      sort_order: 'asc',
+      sort_by: sortKey === "category" ? "category" : sortKey,
+      sort_order: "asc",
     };
     if (query.trim()) params.search = query.trim();
-    if (brandFilter !== 'all') params.brand = brandFilter;
-    if (typeFilter !== 'all') params.category = typeFilter;
-    if (hpFilter === 'known') params.hp_known = true;
-    if (hpFilter === 'unknown') params.hp_known = false;
-    if (sourceFilter !== 'all') params.source = sourceFilter;
-    if (availabilityFilter !== 'all') params.is_available = availabilityFilter;
+    if (brandFilter !== "all") params.brand = brandFilter;
+    if (typeFilter !== "all") params.category = typeFilter;
+    if (hpFilter === "known") params.hp_known = true;
+    if (hpFilter === "unknown") params.hp_known = false;
+    if (sourceFilter !== "all") params.source = sourceFilter;
+    if (availabilityFilter !== "all") params.is_available = availabilityFilter;
 
     Promise.all([
       moduleApi.catalog(params),
@@ -120,13 +122,13 @@ export default function ModulesPage() {
         setStats(statsRes.data);
         setBrands((brandsRes.data.brands ?? []).map((b) => b.name));
         setCategories((catsRes.data.categories ?? []).map((c) => c.name).filter(Boolean));
-        setState(listRes.data.total === 0 ? 'empty' : 'ready');
+        setState(listRes.data.total === 0 ? "empty" : "ready");
       })
       .catch(() => {
         setModules([]);
         setTotal(0);
-        setError('Unable to load module catalog. Check that the API is reachable and try again.');
-        setState('error');
+        setError("Unable to load module catalog. Check that the API is reachable and try again.");
+        setState("error");
       });
   }, [page, sortKey, query, brandFilter, typeFilter, hpFilter, sourceFilter, availabilityFilter]);
 
@@ -135,82 +137,82 @@ export default function ModulesPage() {
   }, [load]);
 
   const clearFilters = () => {
-    setQuery('');
-    setBrandFilter('all');
-    setTypeFilter('all');
-    setHpFilter('all');
-    setSourceFilter('all');
-    setAvailabilityFilter('all');
-    setSortKey('brand');
+    setQuery("");
+    setBrandFilter("all");
+    setTypeFilter("all");
+    setHpFilter("all");
+    setSourceFilter("all");
+    setAvailabilityFilter("all");
+    setSortKey("brand");
     setPage(0);
   };
 
   const filtersActive =
     query.trim() ||
-    brandFilter !== 'all' ||
-    typeFilter !== 'all' ||
-    hpFilter !== 'all' ||
-    sourceFilter !== 'all' ||
-    availabilityFilter !== 'all';
+    brandFilter !== "all" ||
+    typeFilter !== "all" ||
+    hpFilter !== "all" ||
+    sourceFilter !== "all" ||
+    availabilityFilter !== "all";
 
   const activeFilterChips = useMemo(() => {
     const chips: { key: string; label: string; clear: () => void }[] = [];
     if (query.trim()) {
       chips.push({
-        key: 'q',
+        key: "q",
         label: `Search: ${query.trim()}`,
         clear: () => {
-          setQuery('');
+          setQuery("");
           setPage(0);
         },
       });
     }
-    if (brandFilter !== 'all') {
+    if (brandFilter !== "all") {
       chips.push({
-        key: 'brand',
+        key: "brand",
         label: `Brand: ${brandFilter}`,
         clear: () => {
-          setBrandFilter('all');
+          setBrandFilter("all");
           setPage(0);
         },
       });
     }
-    if (typeFilter !== 'all') {
+    if (typeFilter !== "all") {
       chips.push({
-        key: 'cat',
+        key: "cat",
         label: `Category: ${typeFilter}`,
         clear: () => {
-          setTypeFilter('all');
+          setTypeFilter("all");
           setPage(0);
         },
       });
     }
-    if (hpFilter !== 'all') {
+    if (hpFilter !== "all") {
       chips.push({
-        key: 'hp',
-        label: hpFilter === 'known' ? 'HP known' : 'HP unknown',
+        key: "hp",
+        label: hpFilter === "known" ? "HP known" : "HP unknown",
         clear: () => {
-          setHpFilter('all');
+          setHpFilter("all");
           setPage(0);
         },
       });
     }
-    if (sourceFilter !== 'all') {
+    if (sourceFilter !== "all") {
       chips.push({
-        key: 'source',
+        key: "source",
         label: `Source: ${sourceFilter}`,
         clear: () => {
-          setSourceFilter('all');
+          setSourceFilter("all");
           setPage(0);
         },
       });
     }
-    if (availabilityFilter !== 'all') {
+    if (availabilityFilter !== "all") {
       chips.push({
-        key: 'status',
+        key: "status",
         label: `Status: ${availabilityFilter}`,
         clear: () => {
-          setAvailabilityFilter('all');
+          setAvailabilityFilter("all");
           setPage(0);
         },
       });
@@ -230,13 +232,18 @@ export default function ModulesPage() {
     const res = await moduleApi.materializeCatalog(row.slug);
     const mid = res.data.module_id;
     setLastPrepared({ brand: res.data.module.brand, name: res.data.module.name, moduleId: mid });
-    return { mid, status: res.data.status, brand: res.data.module.brand, name: res.data.module.name };
+    return {
+      mid,
+      status: res.data.status,
+      brand: res.data.module.brand,
+      name: res.data.module.name,
+    };
   };
 
   /** Primary path: materialize → create-rig flow with module preselected. */
   const placeFromCatalog = async (row: CatalogModule) => {
     setBusySlug(row.slug);
-    setActionMsg('');
+    setActionMsg("");
     setLastPrepared(null);
     setPickerOpen(false);
     try {
@@ -247,9 +254,7 @@ export default function ModulesPage() {
       );
       navigate(`/racks/new?module_id=${prep.mid}`);
     } catch {
-      setActionMsg(
-        `${row.brand} ${row.name}: materialize failed (needs known HP or API error).`,
-      );
+      setActionMsg(`${row.brand} ${row.name}: materialize failed (needs known HP or API error).`);
     } finally {
       setBusySlug(null);
     }
@@ -258,7 +263,7 @@ export default function ModulesPage() {
   /** Secondary path: materialize → pick an existing rig for placement. */
   const prepareForExistingRig = async (row: CatalogModule) => {
     setBusySlug(row.slug);
-    setActionMsg('');
+    setActionMsg("");
     setLastPrepared(null);
     try {
       const prep = await materializeRow(row);
@@ -272,9 +277,7 @@ export default function ModulesPage() {
         `${prep.brand} ${prep.name} ready (module #${prep.mid}). Choose a rig to open placement.`,
       );
     } catch {
-      setActionMsg(
-        `${row.brand} ${row.name}: materialize or rig list failed.`,
-      );
+      setActionMsg(`${row.brand} ${row.name}: materialize or rig list failed.`);
       setPickerOpen(false);
     } finally {
       setBusySlug(null);
@@ -309,24 +312,28 @@ export default function ModulesPage() {
       </header>
 
       {stats ? (
-        <div className="panel" style={{ marginBottom: 'var(--space-4)' }} aria-label="Catalog stats">
+        <div
+          className="panel"
+          style={{ marginBottom: "var(--space-4)" }}
+          aria-label="Catalog stats"
+        >
           <p className="muted" style={{ margin: 0 }}>
-            <strong>{stats.total_modules}</strong> modules · <strong>{stats.total_brands}</strong>{' '}
-            brands · HP known <strong>{stats.hp_stats.known}</strong> (
-            {stats.hp_stats.coverage_pct}%) · unknown <strong>{stats.hp_stats.unknown}</strong> ·
-            available <strong>{stats.availability.available}</strong>
+            <strong>{stats.total_modules}</strong> modules · <strong>{stats.total_brands}</strong>{" "}
+            brands · HP known <strong>{stats.hp_stats.known}</strong> ({stats.hp_stats.coverage_pct}
+            %) · unknown <strong>{stats.hp_stats.unknown}</strong> · available{" "}
+            <strong>{stats.availability.available}</strong>
             {stats.by_source
               ? ` · sources ${Object.entries(stats.by_source)
-                  .map(([k, n]) => `${k || 'unknown'}=${n}`)
-                  .join(', ')}`
-              : ''}
+                  .map(([k, n]) => `${k || "unknown"}=${n}`)
+                  .join(", ")}`
+              : ""}
           </p>
-          <div className="gate-chip-row" style={{ marginTop: 'var(--space-3)' }}>
+          <div className="gate-chip-row" style={{ marginTop: "var(--space-3)" }}>
             <button
               type="button"
-              className={`status-chip status-chip--interactive${hpFilter === 'known' ? ' status-chip--success' : ''}`}
+              className={`status-chip status-chip--interactive${hpFilter === "known" ? " status-chip--success" : ""}`}
               onClick={() => {
-                setHpFilter('known');
+                setHpFilter("known");
                 setPage(0);
               }}
             >
@@ -334,9 +341,9 @@ export default function ModulesPage() {
             </button>
             <button
               type="button"
-              className={`status-chip status-chip--interactive${hpFilter === 'unknown' ? ' status-chip--warning' : ''}`}
+              className={`status-chip status-chip--interactive${hpFilter === "unknown" ? " status-chip--warning" : ""}`}
               onClick={() => {
-                setHpFilter('unknown');
+                setHpFilter("unknown");
                 setPage(0);
               }}
             >
@@ -344,9 +351,9 @@ export default function ModulesPage() {
             </button>
             <button
               type="button"
-              className={`status-chip status-chip--interactive${hpFilter === 'all' ? ' status-chip--neutral is-active' : ''}`}
+              className={`status-chip status-chip--interactive${hpFilter === "all" ? " status-chip--neutral is-active" : ""}`}
               onClick={() => {
-                setHpFilter('all');
+                setHpFilter("all");
                 setPage(0);
               }}
             >
@@ -358,29 +365,27 @@ export default function ModulesPage() {
 
       {actionMsg ? (
         <div
-          className={`panel${lastPrepared ? ' module-preselect-banner' : ''}`}
+          className={`panel${lastPrepared ? " module-preselect-banner" : ""}`}
           role="status"
-          style={{ marginBottom: 'var(--space-4)' }}
+          style={{ marginBottom: "var(--space-4)" }}
         >
           <p className="status" style={{ margin: 0 }}>
             {actionMsg}
           </p>
           {lastPrepared && !pickerOpen ? (
-            <p className="muted" style={{ margin: 'var(--space-2) 0 0' }}>
+            <p className="muted" style={{ margin: "var(--space-2) 0 0" }}>
               Next: pick a case → create rig → module #{lastPrepared.moduleId} is preselected for
               placement.
             </p>
           ) : null}
           {pickerOpen && lastPrepared ? (
-            <div className="toolbar" style={{ marginTop: 'var(--space-3)' }}>
-              <label className="field" style={{ flex: '1 1 14rem' }}>
+            <div className="toolbar" style={{ marginTop: "var(--space-3)" }}>
+              <label className="field" style={{ flex: "1 1 14rem" }}>
                 Existing rig
                 <select
-                  value={pickRackId ?? ''}
+                  value={pickRackId ?? ""}
                   aria-label="Select existing rig"
-                  onChange={(e) =>
-                    setPickRackId(e.target.value ? Number(e.target.value) : null)
-                  }
+                  onChange={(e) => setPickRackId(e.target.value ? Number(e.target.value) : null)}
                 >
                   {existingRacks.length === 0 ? (
                     <option value="">No rigs yet — create one</option>
@@ -388,7 +393,7 @@ export default function ModulesPage() {
                     existingRacks.map((r) => (
                       <option key={r.id} value={r.id}>
                         #{r.id} · {r.name}
-                        {r.case_id != null ? ` · case #${r.case_id}` : ''}
+                        {r.case_id != null ? ` · case #${r.case_id}` : ""}
                       </option>
                     ))
                   )}
@@ -413,13 +418,13 @@ export default function ModulesPage() {
         </div>
       ) : null}
 
-      {state === 'loading' ? (
+      {state === "loading" ? (
         <p className="status" role="status">
           Loading catalog…
         </p>
       ) : null}
 
-      {state === 'error' ? (
+      {state === "error" ? (
         <div className="panel" role="alert">
           <p className="status status-danger">{error}</p>
           <button className="button button-primary" type="button" onClick={load}>
@@ -428,7 +433,7 @@ export default function ModulesPage() {
         </div>
       ) : null}
 
-      {state === 'empty' ? (
+      {state === "empty" ? (
         <div className="panel">
           <p className="status status-warning">No modules in the catalog yet.</p>
           <p className="muted">
@@ -437,11 +442,15 @@ export default function ModulesPage() {
         </div>
       ) : null}
 
-      {state === 'ready' ? (
+      {state === "ready" ? (
         <>
-          <div className="panel" aria-label="Module filters" style={{ marginBottom: 'var(--space-4)' }}>
+          <div
+            className="panel"
+            aria-label="Module filters"
+            style={{ marginBottom: "var(--space-4)" }}
+          >
             <div className="toolbar">
-              <label className="field" htmlFor="module-search" style={{ flex: '1 1 12rem' }}>
+              <label className="field" htmlFor="module-search" style={{ flex: "1 1 12rem" }}>
                 Search modules
                 <input
                   id="module-search"
@@ -592,9 +601,9 @@ export default function ModulesPage() {
             ) : null}
           </div>
 
-          <p className="muted" role="status" style={{ marginBottom: 'var(--space-4)' }}>
+          <p className="muted" role="status" style={{ marginBottom: "var(--space-4)" }}>
             Showing {modules.length} of {total} catalog modules
-            {filtersActive ? ' (filtered)' : ''} · page {page + 1}/{totalPages}
+            {filtersActive ? " (filtered)" : ""} · page {page + 1}/{totalPages}
           </p>
 
           {modules.length === 0 ? (
@@ -608,20 +617,20 @@ export default function ModulesPage() {
             <ul className="catalog-grid" aria-label="Module catalog results">
               {modules.map((module) => (
                 <li key={module.slug}>
-                  <article className="catalog-card" style={{ height: '100%' }}>
+                  <article className="catalog-card" style={{ height: "100%" }}>
                     {(() => {
                       const hp = module.hp ?? 0;
                       const hpScale = Math.min(Math.max(hp / 42, 0.2), 1); // normalize to ~42HP max
                       return (
                         <div
                           className="module-mockup"
-                          data-category={module.category || 'UTIL'}
-                          style={{ '--hp-scale': hpScale } as CSSProperties}
-                          title={`${module.brand} — ${module.name} (${hp || '?'}HP)`}
-                          aria-label={`Module: ${module.brand} ${module.name}, ${hp} HP, ${module.category || 'UTIL'}`}
+                          data-category={module.category || "UTIL"}
+                          style={{ "--hp-scale": hpScale } as CSSProperties}
+                          title={`${module.brand} — ${module.name} (${hp || "?"}HP)`}
+                          aria-label={`Module: ${module.brand} ${module.name}, ${hp} HP, ${module.category || "UTIL"}`}
                         >
                           <div className="mockup-hp">
-                            <div className="hp-num">{hp || '—'}</div>
+                            <div className="hp-num">{hp || "—"}</div>
                             <div className="hp-label">HP</div>
                             {hp > 0 && <div className="hp-bar" />}
                           </div>
@@ -638,9 +647,7 @@ export default function ModulesPage() {
                         </div>
                       );
                     })()}
-                    <p className="catalog-card-meta">
-                      {module.category ?? 'UTIL'}
-                    </p>
+                    <p className="catalog-card-meta">{module.category ?? "UTIL"}</p>
                     <div className="gate-chip-row" aria-label="Module status">
                       {module.hp != null ? (
                         <span className="status-chip status-chip--success">placeable</span>
@@ -651,16 +658,19 @@ export default function ModulesPage() {
                         <span className="status-chip status-chip--neutral">{module.source}</span>
                       ) : null}
                       {module.registry_manufacturer_slug ? (
-                        <Link 
+                        <Link
                           to={`/products?query=${encodeURIComponent(module.registry_manufacturer_slug)}`}
                           className="status-chip status-chip--neutral hover:bg-zinc-700 no-underline"
                           title="View in Product Database (Registry)"
-                          onClick={e => e.stopPropagation()}
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          reg:{module.registry_manufacturer_slug}{module.registry_device_slug ? `/${module.registry_device_slug.split("-").pop()}` : ""}
+                          reg:{module.registry_manufacturer_slug}
+                          {module.registry_device_slug
+                            ? `/${module.registry_device_slug.split("-").pop()}`
+                            : ""}
                         </Link>
                       ) : null}
-                      {module.is_available && module.is_available !== 'available' ? (
+                      {module.is_available && module.is_available !== "available" ? (
                         <span className="status-chip status-chip--warning">
                           {module.is_available}
                         </span>
@@ -673,16 +683,16 @@ export default function ModulesPage() {
                         disabled={busySlug === module.slug || module.hp == null}
                         title={
                           module.hp == null
-                            ? 'Needs manufacturer-confirmed HP before placement'
-                            : 'Materialize full module record, then open rack builder with it preselected'
+                            ? "Needs manufacturer-confirmed HP before placement"
+                            : "Materialize full module record, then open rack builder with it preselected"
                         }
                         onClick={() => placeFromCatalog(module)}
                       >
                         {busySlug === module.slug
-                          ? 'Preparing…'
+                          ? "Preparing…"
                           : module.hp == null
-                            ? 'Needs HP'
-                            : 'Prepare for rig'}
+                            ? "Needs HP"
+                            : "Prepare for rig"}
                       </button>
                       <button
                         className="button button-secondary"
@@ -704,7 +714,7 @@ export default function ModulesPage() {
           )}
 
           {totalPages > 1 ? (
-            <div className="toolbar" style={{ marginTop: 'var(--space-4)' }}>
+            <div className="toolbar" style={{ marginTop: "var(--space-4)" }}>
               <button
                 className="button button-secondary"
                 type="button"

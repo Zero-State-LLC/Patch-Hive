@@ -1,0 +1,26 @@
+{
+  "schema_version": "patchhive.operator-shot-intake.v1",
+  "instructions": [
+    "Use only photographs you took or otherwise have explicit rights to use.",
+    "Do not infer module identity from the registry. Verify the visible physical module.",
+    "Keep used_for_tuning false for material reserved for locked_test.",
+    "A second reviewer is recommended for ambiguous revision or panel variants."
+  ],
+  "intake": {
+    "source_url": "operator://local",
+    "rights_status": "RIGHTS_CONFIRMED",
+    "license": null,
+    "consent_record": "operator-owned-photo",
+    "image_sha256": null,
+    "manufacturer": null,
+    "model": null,
+    "revision": null,
+    "scene_conditions": [],
+    "proposed_cohort": null,
+    "proposed_partition": "locked_test",
+    "ground_truth_status": "UNVERIFIED",
+    "reviewer": null,
+    "used_for_tuning": false,
+    "notes": null
+  }
+}

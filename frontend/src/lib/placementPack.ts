@@ -1,7 +1,7 @@
 /**
  * Contiguous HP packing for Eurorack rows (fail-closed: never invents HP).
  */
-import type { RackModuleSpec } from '@/types/api';
+import type { RackModuleSpec } from "@/types/api";
 
 export type ResolveHp = (moduleId: number) => number | null;
 
@@ -78,7 +78,7 @@ export function packModulesOntoRows(
       added,
       unplaced: moduleIds.map((module_id) => ({
         module_id,
-        reason: 'No row capacity on case',
+        reason: "No row capacity on case",
       })),
     };
   }
@@ -91,7 +91,7 @@ export function packModulesOntoRows(
     if (hp == null || hp <= 0) {
       unplaced.push({
         module_id: moduleId,
-        reason: 'HP unknown or non-positive — not placeable',
+        reason: "HP unknown or non-positive — not placeable",
       });
       continue;
     }

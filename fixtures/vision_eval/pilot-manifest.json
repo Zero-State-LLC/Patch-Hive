@@ -1,0 +1,42 @@
+{
+  "pilot_version": "patchhive.vision-pilot.v1",
+  "status": "COLLECTION_OPEN_NOT_ADMITTED",
+  "purpose": "Representative real-world pilot for vision candidate generation and Decision Intelligence evaluation.",
+  "target": {
+    "identity_count_min": 50,
+    "identity_count_max": 100,
+    "required_cohorts": [
+      "clear_front_panel",
+      "installed_rack",
+      "partial_occlusion",
+      "cable_obscured",
+      "low_light_or_glare",
+      "revision_or_panel_variant",
+      "hard_negative",
+      "unknown_open_set"
+    ]
+  },
+  "partition_policy": {
+    "development": {"tuning_allowed": true},
+    "validation": {"tuning_allowed": false, "threshold_selection_allowed": true},
+    "locked_test": {"tuning_allowed": false, "threshold_selection_allowed": false},
+    "adversarial_degraded": {"tuning_allowed": false},
+    "unknown_open_set": {"tuning_allowed": false}
+  },
+  "admission_requirements": {
+    "rights_status_allowed": ["RIGHTS_CONFIRMED"],
+    "ground_truth_status_allowed": ["OPERATOR_VERIFIED", "TWO_SOURCE_VERIFIED"],
+    "annotation_status_required": "REVIEWED",
+    "minimum_reviewers": 1,
+    "source_asset_hash_required": true,
+    "candidate_set_hash_required": true,
+    "none_of_above_path_required": true
+  },
+  "cases": [],
+  "metrics_status": "NOT_COMPUTABLE",
+  "notes": [
+    "This manifest is an intake shell, not evidence that a representative corpus exists.",
+    "Registry-admitted identities may populate candidate vocabulary but do not establish image ground truth.",
+    "No case enters locked_test after use for prompt, model, ranking, or threshold tuning."
+  ]
+}

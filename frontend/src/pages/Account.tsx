@@ -1,11 +1,11 @@
 /**
  * User dashboard: canonical credits/exports + optional referrals + profile.
  */
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { accountApi, authApi, canonApi } from '@/lib/api';
-import { useAuthStore } from '@/lib/store';
-import type { CreditsSummary, UserExportRecord, ReferralSummary, User } from '@/types/api';
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { accountApi, authApi, canonApi } from "@/lib/api";
+import { useAuthStore } from "@/lib/store";
+import type { CreditsSummary, UserExportRecord, ReferralSummary, User } from "@/types/api";
 
 /** Only allow http(s) avatar URLs — blocks javascript:/data: DOM XSS vectors. */
 function safeHttpUrl(value: string): string | null {
@@ -25,18 +25,18 @@ export default function AccountPage() {
   const [exports, setExports] = useState<UserExportRecord[]>([]);
   const [referrals, setReferrals] = useState<ReferralSummary | null>(null);
   const [profile, setProfile] = useState<User | null>(null);
-  const [displayName, setDisplayName] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [displayName, setDisplayName] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [saving, setSaving] = useState(false);
-  const [copyStatus, setCopyStatus] = useState('');
+  const [copyStatus, setCopyStatus] = useState("");
   const [tokenBusy, setTokenBusy] = useState<string | null>(null);
-  const [tokenMessage, setTokenMessage] = useState('');
+  const [tokenMessage, setTokenMessage] = useState("");
 
   const safeAvatarUrl = useMemo(() => safeHttpUrl(avatarUrl.trim()), [avatarUrl]);
 
   useEffect(() => {
     if (!isAuthenticated()) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
@@ -51,8 +51,8 @@ export default function AccountPage() {
       setExports(exportsRes.data as UserExportRecord[]);
       setProfile(profileRes.data);
       setDisplayName(profileRes.data.display_name || profileRes.data.username);
-      setAvatarUrl(profileRes.data.avatar_url || '');
-      setAuth(profileRes.data, localStorage.getItem('auth_token') || '');
+      setAvatarUrl(profileRes.data.avatar_url || "");
+      setAuth(profileRes.data, localStorage.getItem("auth_token") || "");
 
       try {
         const referralsRes = await accountApi.getReferrals();
@@ -77,7 +77,7 @@ export default function AccountPage() {
         avatar_url: avatarUrl || undefined,
       });
       setProfile(res.data);
-      setAuth(res.data, localStorage.getItem('auth_token') || '');
+      setAuth(res.data, localStorage.getItem("auth_token") || "");
     } finally {
       setSaving(false);
     }
@@ -86,20 +86,20 @@ export default function AccountPage() {
   const exportRows = useMemo(() => {
     return exports.map((record) => ({
       ...record,
-      label: record.source === 'canon' ? 'Canonical export' : record.export_type,
-      canRequestToken: Boolean(record.unlocked && record.source === 'canon'),
+      label: record.source === "canon" ? "Canonical export" : record.export_type,
+      canRequestToken: Boolean(record.unlocked && record.source === "canon"),
     }));
   }, [exports]);
 
   const handleDownloadToken = async (exportId: string) => {
     setTokenBusy(exportId);
-    setTokenMessage('');
+    setTokenMessage("");
     try {
       const res = await canonApi.createDownloadToken(exportId, 300);
       setTokenMessage(`Download token issued for ${exportId} (TTL ${res.data.ttl_seconds}s).`);
     } catch (error: unknown) {
       const apiError = error as { response?: { data?: { detail?: string } } };
-      setTokenMessage(apiError.response?.data?.detail || 'Could not issue download token.');
+      setTokenMessage(apiError.response?.data?.detail || "Could not issue download token.");
     } finally {
       setTokenBusy(null);
     }
@@ -108,8 +108,8 @@ export default function AccountPage() {
   const handleCopy = async () => {
     if (!referrals?.referral_link) return;
     await navigator.clipboard.writeText(referrals.referral_link);
-    setCopyStatus('Copied');
-    setTimeout(() => setCopyStatus(''), 2000);
+    setCopyStatus("Copied");
+    setTimeout(() => setCopyStatus(""), 2000);
   };
 
   return (
@@ -125,7 +125,7 @@ export default function AccountPage() {
         </div>
       </header>
 
-      <div style={{ display: 'grid', gap: 'var(--space-5)' }}>
+      <div style={{ display: "grid", gap: "var(--space-5)" }}>
         <section className="panel" aria-labelledby="credits-heading">
           <p className="eyebrow">Ledger</p>
           <h2 id="credits-heading" style={{ marginTop: 0 }}>
@@ -136,14 +136,17 @@ export default function AccountPage() {
               <p className="muted" style={{ margin: 0 }}>
                 Canonical balance
               </p>
-              <h3>{credits ? credits.balance : '—'}</h3>
+              <h3>{credits ? credits.balance : "—"}</h3>
             </div>
           </div>
-          <p className="muted" style={{ marginTop: 'var(--space-4)', marginBottom: 'var(--space-2)' }}>
+          <p
+            className="muted"
+            style={{ marginTop: "var(--space-4)", marginBottom: "var(--space-2)" }}
+          >
             Ledger history
           </p>
           {credits?.entries.length ? (
-            <div style={{ overflowX: 'auto' }}>
+            <div style={{ overflowX: "auto" }}>
               <table className="data-table">
                 <thead>
                   <tr>
@@ -159,7 +162,7 @@ export default function AccountPage() {
                       <td>{entry.entry_type}</td>
                       <td>{entry.amount}</td>
                       <td>{new Date(entry.created_at).toLocaleString()}</td>
-                      <td className="muted">{entry.description || '—'}</td>
+                      <td className="muted">{entry.description || "—"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -181,7 +184,7 @@ export default function AccountPage() {
             </p>
           ) : null}
           {exportRows.length ? (
-            <div style={{ overflowX: 'auto' }}>
+            <div style={{ overflowX: "auto" }}>
               <table className="data-table">
                 <thead>
                   <tr>
@@ -197,7 +200,7 @@ export default function AccountPage() {
                     <tr key={String(record.id)}>
                       <td>{record.label}</td>
                       <td className="muted">{record.run_id}</td>
-                      <td>{record.status || '—'}</td>
+                      <td>{record.status || "—"}</td>
                       <td>{new Date(record.created_at).toLocaleString()}</td>
                       <td>
                         {record.canRequestToken ? (
@@ -207,10 +210,10 @@ export default function AccountPage() {
                             onClick={() => handleDownloadToken(String(record.id))}
                             disabled={tokenBusy === String(record.id)}
                           >
-                            {tokenBusy === String(record.id) ? 'Issuing…' : 'Issue token'}
+                            {tokenBusy === String(record.id) ? "Issuing…" : "Issue token"}
                           </button>
                         ) : (
-                          <span className="muted">{record.unlocked ? 'Ready' : 'Locked'}</span>
+                          <span className="muted">{record.unlocked ? "Ready" : "Locked"}</span>
                         )}
                       </td>
                     </tr>
@@ -233,12 +236,16 @@ export default function AccountPage() {
               <p className="muted">
                 You’ll receive free credits if your friend makes their first purchase.
               </p>
-              <div className="toolbar" style={{ marginTop: 'var(--space-3)' }}>
-                <label className="field" style={{ flex: 1, minWidth: '12rem' }}>
+              <div className="toolbar" style={{ marginTop: "var(--space-3)" }}>
+                <label className="field" style={{ flex: 1, minWidth: "12rem" }}>
                   Referral link
-                  <input type="text" value={referrals.referral_link || ''} readOnly />
+                  <input type="text" value={referrals.referral_link || ""} readOnly />
                 </label>
-                <button type="button" className="button button-primary" onClick={() => void handleCopy()}>
+                <button
+                  type="button"
+                  className="button button-primary"
+                  onClick={() => void handleCopy()}
+                >
                   Invite a friend
                 </button>
                 {copyStatus ? (
@@ -247,18 +254,18 @@ export default function AccountPage() {
                   </span>
                 ) : null}
               </div>
-              <div className="stat-row" style={{ marginTop: 'var(--space-4)' }}>
+              <div className="stat-row" style={{ marginTop: "var(--space-4)" }}>
                 <div className="stat-block">
                   <p className="muted" style={{ margin: 0 }}>
                     Pending
                   </p>
-                  <h3>{referrals.pending_count ?? '—'}</h3>
+                  <h3>{referrals.pending_count ?? "—"}</h3>
                 </div>
                 <div className="stat-block">
                   <p className="muted" style={{ margin: 0 }}>
                     Earned
                   </p>
-                  <h3>{referrals.earned_count ?? '—'}</h3>
+                  <h3>{referrals.earned_count ?? "—"}</h3>
                 </div>
               </div>
             </>
@@ -275,7 +282,7 @@ export default function AccountPage() {
           <h2 id="profile-heading" style={{ marginTop: 0 }}>
             Profile
           </h2>
-          <div style={{ display: 'grid', gap: 'var(--space-4)', maxWidth: '28rem' }}>
+          <div style={{ display: "grid", gap: "var(--space-4)", maxWidth: "28rem" }}>
             <label className="field">
               Display name
               <input
@@ -301,11 +308,11 @@ export default function AccountPage() {
                 width={96}
                 height={96}
                 style={{
-                  width: '96px',
-                  height: '96px',
-                  borderRadius: '50%',
-                  border: '1px solid var(--border)',
-                  objectFit: 'cover',
+                  width: "96px",
+                  height: "96px",
+                  borderRadius: "50%",
+                  border: "1px solid var(--border)",
+                  objectFit: "cover",
                 }}
               />
             ) : null}
@@ -314,13 +321,13 @@ export default function AccountPage() {
               className="button button-primary"
               onClick={() => void handleSaveProfile()}
               disabled={saving}
-              style={{ justifySelf: 'start' }}
+              style={{ justifySelf: "start" }}
             >
-              {saving ? 'Saving…' : 'Save profile'}
+              {saving ? "Saving…" : "Save profile"}
             </button>
           </div>
           {profile ? (
-            <p className="muted" style={{ marginTop: 'var(--space-4)', marginBottom: 0 }}>
+            <p className="muted" style={{ marginTop: "var(--space-4)", marginBottom: 0 }}>
               Signed in as <strong>{profile.username}</strong>
             </p>
           ) : null}

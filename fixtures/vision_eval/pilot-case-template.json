@@ -1,0 +1,34 @@
+{
+  "pilot_version": "patchhive.vision-pilot.v1",
+  "generated_for": "corpus acquisition agents",
+  "instructions": [
+    "Populate values only from retained evidence.",
+    "Do not place a case in locked_test if it was used for tuning.",
+    "RIGHTS_CONFIRMED is required for admission.",
+    "Registry identity is candidate vocabulary, not image ground truth."
+  ],
+  "case_template": {
+    "case_id": "REPLACE",
+    "partition": "development",
+    "cohort": "clear_front_panel",
+    "rights_and_consent": {
+      "rights_status": "RIGHTS_UNKNOWN",
+      "source_url": "",
+      "license": null,
+      "consent_record": null
+    },
+    "image_asset_hashes": [],
+    "scene_conditions": ["front_panel"],
+    "ground_truth_inventory": [],
+    "ground_truth_status": "UNVERIFIED",
+    "annotation_status": "DISCOVERED",
+    "reviewers": [],
+    "candidate_set_hash": "",
+    "expected_choice": "none_of_above",
+    "none_of_above_allowed": true,
+    "contamination": {
+      "used_for_tuning": false,
+      "notes": null
+    }
+  }
+}

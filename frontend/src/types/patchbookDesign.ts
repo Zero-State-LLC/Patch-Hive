@@ -41,11 +41,7 @@ export type TemplateFamilyId =
   | "impossible_instrument";
 
 export type OutputProfile =
-  | "print_pdf"
-  | "screen_pdf"
-  | "svg_pack"
-  | "html_companion"
-  | "archive_zip";
+  "print_pdf" | "screen_pdf" | "svg_pack" | "html_companion" | "archive_zip";
 
 export type BookProfile = "execution_page" | "publication";
 
@@ -110,11 +106,7 @@ export type ResolvedStyleRecipe = RequestStyleRecipe & {
 };
 
 export type PageKind =
-  | "execution"
-  | "plate"
-  | "front_matter"
-  | "back_matter"
-  | "appendix_execution";
+  "execution" | "plate" | "front_matter" | "back_matter" | "appendix_execution";
 
 export type StylePreviewResponse = {
   resolved_recipe: ResolvedStyleRecipe;
@@ -218,9 +210,7 @@ export function deleteRecipeFromLibrary(id: string): SavedStyleRecipe[] {
   return next;
 }
 
-export function defaultRequestStyleRecipe(
-  seed = 0,
-): RequestStyleRecipe {
+export function defaultRequestStyleRecipe(seed = 0): RequestStyleRecipe {
   return {
     schema_version: STYLE_RECIPE_SCHEMA_VERSION,
     engine_version: DESIGN_ENGINE_VERSION,
