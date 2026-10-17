@@ -15,8 +15,13 @@ def test_db_load_workflow_contract() -> None:
     assert "PATCHHIVE_DATABASE_URL_STAGING" in text
     assert "PATCHHIVE_DATABASE_URL_PROD" in text
     assert "actions/upload-artifact@v4" in text
-    assert "load-artifacts/pre-apply.dump" in text
-    assert "if-no-files-found: error" in text
+    # Public repo: raw dumps and row-level SQL must never be uploaded as artifacts.
+    assert "catalog-load-pre-apply" not in text
+    assert "rm -f load-artifacts/pre-apply.dump load-artifacts/population-upsert.sql" in text
+    upload = text[text.index("actions/upload-artifact@v4"):]
+    assert "pre-apply.dump" not in upload
+    assert "population-upsert.sql" not in upload
+    assert "test -s load-artifacts/pre-apply.dump" in text
     assert "catalog_actions_load.py --allow-nonlocal" in text
     assert "set -x" not in text
     assert "echo " not in text

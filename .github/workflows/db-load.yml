@@ -1,7 +1,10 @@
 name: DB load
 
 # Manual catalog load against Neon. Dry-run is the default and writes nothing.
-# Apply mode dumps the affected tables first and uploads that dump.
+# Apply mode dumps the affected tables first. The repo is public and Actions
+# artifacts are downloadable by anyone, so the raw dump and the row-level upsert
+# SQL never leave the runner: only the dump's size and sha256 go to the job
+# summary, and the uploaded receipt holds counts only.
 # DATABASE_URL is taken from Actions secrets and is never echoed.
 
 on:
@@ -49,21 +52,26 @@ jobs:
           PATCHHIVE_DB_ENV: ${{ inputs.env }}
           PATCHHIVE_LOAD_MODE: ${{ inputs.mode }}
         run: python scripts/catalog_actions_load.py --allow-nonlocal
-      - name: Upload receipt
+      - name: Record pre-apply dump checksum
+        if: inputs.mode == 'apply'
+        run: |
+          test -s load-artifacts/pre-apply.dump
+          {
+            printf '\n### Pre-apply dump (not uploaded)\n\n'
+            printf -- '- bytes: %s\n' "$(stat -c %s load-artifacts/pre-apply.dump)"
+            printf -- '- sha256: %s\n' "$(sha256sum load-artifacts/pre-apply.dump | cut -d' ' -f1)"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Remove raw dump and row-level SQL before upload
+        if: always()
+        run: rm -f load-artifacts/pre-apply.dump load-artifacts/population-upsert.sql
+      - name: Upload counts-only receipt
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: catalog-load-receipt-${{ inputs.env }}-${{ inputs.mode }}
           path: |
             load-artifacts/receipt.json
-            load-artifacts/population-upsert.sql
             load-artifacts/counts-before.json
             load-artifacts/counts-after.json
           if-no-files-found: warn
-      - name: Upload pre-apply dump
-        if: always() && inputs.mode == 'apply'
-        uses: actions/upload-artifact@v4
-        with:
-          name: catalog-load-pre-apply-${{ inputs.env }}
-          path: load-artifacts/pre-apply.dump
-          if-no-files-found: error
+          retention-days: 7
