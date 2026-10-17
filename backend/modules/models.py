@@ -6,6 +6,7 @@ from datetime import datetime
 
 from sqlalchemy import (
     JSON,
+    Boolean,
     CheckConstraint,
     Column,
     DateTime,
@@ -69,6 +70,8 @@ class Module(Base):
     # Brand check for catalog candidates. Unverified until a source page confirms it.
     verification_status = Column(String(20), nullable=False, default="unverified", server_default="unverified")
     verification_source_url = Column(String(500), nullable=True)
+    # True when ModularGrid-derived values were removed and the row needs a maker-page check.
+    needs_reverify = Column(Boolean, nullable=False, default=False, server_default="false")
     imported_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     # Timestamps

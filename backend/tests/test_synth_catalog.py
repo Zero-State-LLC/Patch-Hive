@@ -158,7 +158,20 @@ def test_phase3_seed_import(db_session: Session):
 def test_enrich_catalog_hp_from_curated(db_session: Session):
     from integrations.synth_catalog_importer import enrich_catalog_hp_from_known_specs
 
-    # Catalog row with null HP matching curated ModularGrid Maths
+    # The curated ModularGrid list was removed (2026-10-17); known HP now comes
+    # from existing modules rows only.
+    db_session.add(
+        Module(
+            brand="Make Noise",
+            name="Maths",
+            hp=20,
+            module_type="ENV",
+            io_ports=[],
+            tags=[],
+            source="Manual",
+        )
+    )
+    # Catalog row with null HP matching the modules row
     db_session.add(
         ModuleCatalog(
             slug="make-noise-maths",

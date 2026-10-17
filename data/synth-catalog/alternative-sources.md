@@ -43,7 +43,7 @@ provenance: "OBSERVED (direct recommendations + known industry sources)"
 ### Community & Forum Archives
 9. **MuffWiggler Forum** (muffwiggler.com) — **OBSERVED** — Historical discussions, module comparisons, clone information, and discontinued product threads.
 10. **Reddit r/modular & r/synthesizers** — **INFERRED** — Current user experiences, patch examples, and market sentiment (use search with `site:reddit.com`).
-11. **ModularGrid Forum & Marketplace** (modulargrid.net/forum) — **OBSERVED** — Secondary use only (avoid heavy scraping).
+11. **ModularGrid** — **not used**. Never fetched (Danny 2026-10-17); earlier ModularGrid-derived values are archived and flagged `needs_reverify`.
 
 ### Review & Educational Sources
 12. **DivKid Video Archive** (YouTube) — **OBSERVED** — In-depth module demos, calibration data, and feature breakdowns.

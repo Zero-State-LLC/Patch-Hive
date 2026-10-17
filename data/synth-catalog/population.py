@@ -25,6 +25,7 @@ ROOT = CATALOG.parents[1]
 VERIFICATION_STATUSES = {"verified", "corrected", "flagged", "unverified"}
 POWER_FIELDS = ("power_12v_ma", "power_neg12v_ma", "power_5v_ma", "depth_mm")
 AFFECTED_TABLES = (
+    "catalog_value_archive",
     "manufacturers",
     "module_catalog",
     "modules",
@@ -130,6 +131,7 @@ class Plan:
     conflicts: list[dict[str, Any]] = field(default_factory=list)
     unmatched: dict[str, int] = field(default_factory=dict)
     verification: dict[str, int] = field(default_factory=dict)
+    provenance: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def add_insert(self, kind: str, op: Op) -> None:
         self.ops.append(op)
@@ -168,15 +170,26 @@ def _entry_verification(entry: dict[str, Any]) -> tuple[str | None, str | None]:
     return status, entry.get("verification_source_url") or entry.get("source_url")
 
 
+def _load_optional(path: Path) -> dict[str, Any]:
+    return _load(path) if path.is_file() else {}
+
+
 def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Plan:
     plan = Plan()
     phase2 = _load(CATALOG / "seed-phase2-v1.json")
     phase3 = _load(CATALOG / "seed-phase3-v1.json")
-    candidates = _load(CATALOG / "overlays" / "catalog-new-brand-candidates-v1.json")
+    # Removed 2026-10-17 (ModularGrid-derived); kept optional so old checkouts still load.
+    candidates = _load_optional(CATALOG / "overlays" / "catalog-new-brand-candidates-v1.json")
     verification = _verification_index(verification_path)
     catalog = _catalog_state(conn)
     modules = _module_state(conn)
     manufacturers = _manufacturer_state(conn)
+
+    # Archive-then-null runs first, so later fills from manufacturer overlays
+    # can fill a field this run just cleared.
+    for manifest_path in PROVENANCE_MANIFESTS:
+        if manifest_path.is_file():
+            _schedule_provenance(plan, catalog, modules, _load(manifest_path), _archive_state(conn, manifest_path))
 
     for brand in phase2.get("brands") or []:
         _schedule_manufacturer(plan, manufacturers, brand)
@@ -215,7 +228,7 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
             kind="modules_full_spec",
         )
 
-    hp_overlay = _load(CATALOG / "overlays" / "module-catalog-hp-v1.json")
+    hp_overlay = _load_optional(CATALOG / "overlays" / "module-catalog-hp-v1.json")
     for entry in hp_overlay.get("entries") or []:
         _schedule_hp(plan, catalog, entry)
 
@@ -247,6 +260,282 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
         if row.get("_planned"):
             _bump(plan.verification, row.get("verification_status") or "unverified")
     return plan
+
+
+PROVENANCE_MANIFESTS = (CATALOG / "provenance" / "modulargrid-reverify-v1.json",)
+ARCHIVE_FIELDS = {
+    "modules": {
+        "hp",
+        "power_12v_ma",
+        "power_neg12v_ma",
+        "power_5v_ma",
+        "depth_mm",
+        "verification_status",
+        "verification_source_url",
+    },
+    "module_catalog": {"hp"},
+}
+NULLABLE = {"modules": set(POWER_FIELDS) | {"verification_source_url"}, "module_catalog": {"hp"}}
+ARCHIVE_ACTIONS = {"null", "keep", "flag", "relabel"}
+ROW_MARKER = "*"
+
+
+def module_row_key(brand: str, name: str) -> str:
+    return f"{brand}::{name}"
+
+
+def _archive_state(conn: Connection, manifest_path: Path) -> set[tuple[str, str, str]]:
+    batch = _load(manifest_path).get("batch")
+    if conn is None:
+        return set()
+    rows = conn.execute(
+        text("SELECT table_name, row_key, field FROM catalog_value_archive WHERE batch = :batch"),
+        {"batch": batch},
+    ).mappings()
+    return {(row["table_name"], row["row_key"], row["field"]) for row in rows}
+
+
+def _schedule_provenance(
+    plan: Plan,
+    catalog: dict[str, dict[str, Any]],
+    modules: dict[tuple[str, str], dict[str, Any]],
+    manifest: dict[str, Any],
+    archived: set[tuple[str, str, str]],
+) -> None:
+    """Archive listed values with their source tag, then null, flag or relabel.
+
+    The manifest carries no values. Each statement copies the current DB value
+    into catalog_value_archive first; the follow-up UPDATE only clears a field
+    whose archived copy matches the current value, so nothing is lost and a
+    re-run is a no-op. Never deletes.
+    """
+    batch = manifest.get("batch") or ""
+    stats = plan.provenance.setdefault(
+        batch,
+        {
+            "archived_values": 0,
+            "already_archived": 0,
+            "rows_missing": 0,
+            "null_in_db": 0,
+            "by_action": {},
+            "nulled_values": 0,
+            "relabeled_rows": 0,
+            "flagged_rows": 0,
+        },
+    )
+    stats.setdefault("rows_already_processed", 0)
+    markers: list[tuple[str, str, str, str]] = []
+    for row in manifest.get("rows") or []:
+        table = row.get("table")
+        if table not in ARCHIVE_FIELDS:
+            plan.conflict(table="catalog_value_archive", reason="bad_manifest_table")
+            continue
+        brand = (row.get("brand") or "").strip()
+        name = (row.get("name") or "").strip()
+        if table == "modules":
+            state = modules.get((brand, name))
+            row_key = module_row_key(brand, name)
+            if state and state.get("_duplicate"):
+                plan.conflict(table="modules", brand=brand, name=name, reason="duplicate_brand_name")
+                continue
+        else:
+            row_key = row.get("slug") or create_slug(brand, name)
+            state = catalog.get(row_key)
+            if state and (state["brand"] != brand or state["name"] != name):
+                plan.conflict(table="module_catalog", slug=row_key, reason="provenance_identity_mismatch")
+                continue
+        # A row is processed once per batch. Rows inserted later (or fields filled
+        # later from manufacturer overlays) are never touched by this batch.
+        if (table, row_key, ROW_MARKER) in archived:
+            stats["rows_already_processed"] += 1
+            continue
+        markers.append((table, row_key, brand, name))
+        if state is None:
+            stats["rows_missing"] += 1
+            continue
+        todo: list[dict[str, Any]] = []
+        for item in row.get("fields") or []:
+            field_name = item.get("field")
+            action = item.get("action")
+            if field_name not in ARCHIVE_FIELDS[table] or action not in ARCHIVE_ACTIONS:
+                plan.conflict(table=table, field=field_name, reason="bad_manifest_field")
+                continue
+            if action == "null" and field_name not in NULLABLE[table]:
+                plan.conflict(table=table, field=field_name, reason="not_nullable")
+                continue
+            if (table, row_key, field_name) in archived:
+                stats["already_archived"] += 1
+                continue
+            if state.get(field_name) is None:
+                stats["null_in_db"] += 1
+                continue
+            todo.append(item)
+        if not todo:
+            continue
+        _archive_row(plan, batch, table, row_key, brand, name, todo)
+        stats["archived_values"] += len(todo)
+        for item in todo:
+            _bump(stats["by_action"], item["action"])
+        nulls = [item["field"] for item in todo if item["action"] == "null"]
+        relabel = any(item["action"] == "relabel" for item in todo)
+        if not nulls and not relabel and all(item["action"] == "keep" for item in todo):
+            continue
+        _reverify_row(plan, batch, table, row_key, brand, name, nulls, relabel)
+        for field_name in nulls:
+            state[field_name] = None
+        stats["nulled_values"] += len(nulls)
+        if relabel and state.get("verification_status") in {"verified", "corrected"}:
+            state["verification_status"] = "unverified"
+            state["verification_source_url"] = None
+            stats["relabeled_rows"] += 1
+        stats["flagged_rows"] += 1
+    if markers:
+        _archive_markers(plan, batch, markers)
+
+
+def _archive_markers(plan: Plan, batch: str, markers: list[tuple[str, str, str, str]]) -> None:
+    params: dict[str, Any] = {"batch": batch, "marker": ROW_MARKER}
+    values = []
+    for index, (table, row_key, brand, name) in enumerate(markers):
+        params[f"mt{index}"] = table
+        params[f"mk{index}"] = row_key
+        params[f"mb{index}"] = brand
+        params[f"mn{index}"] = name
+        values.append(f"(:mt{index}, :mk{index}, :mb{index}, :mn{index})")
+    plan.add_insert(
+        "catalog_value_archive_markers",
+        Op(
+            "archive_markers",
+            """
+            INSERT INTO catalog_value_archive (
+                batch, table_name, row_key, brand, name, field,
+                old_value, source_tag, maker_check, action, archived_at
+            )
+            SELECT :batch, v.table_name, v.row_key, v.brand, v.name, :marker,
+                   NULL, 'row_processed', NULL, 'processed', CURRENT_TIMESTAMP
+            FROM (VALUES
+                """
+            + ",\n                ".join(values)
+            + """
+            ) AS v(table_name, row_key, brand, name)
+            WHERE NOT EXISTS (
+                SELECT 1 FROM catalog_value_archive a
+                WHERE a.batch = :batch AND a.table_name = v.table_name
+                  AND a.row_key = v.row_key AND a.field = :marker
+            )
+            """,
+            params,
+        ),
+    )
+
+
+def _row_where(table: str) -> str:
+    if table == "modules":
+        return "brand = :brand AND name = :name"
+    return "slug = :row_key AND brand = :brand AND name = :name"
+
+
+def _archive_row(
+    plan: Plan,
+    batch: str,
+    table: str,
+    row_key: str,
+    brand: str,
+    name: str,
+    items: list[dict[str, Any]],
+) -> None:
+    params: dict[str, Any] = {"batch": batch, "table_name": table, "row_key": row_key, "brand": brand, "name": name}
+    selects = []
+    for index, item in enumerate(items):
+        column = item["field"]
+        if column not in ARCHIVE_FIELDS[table]:
+            raise RuntimeError("refusing unknown archive field")
+        params[f"f{index}"] = column
+        params[f"t{index}"] = str(item.get("source_tag") or "unknown")[:200]
+        params[f"m{index}"] = (item.get("maker_check") or None) and str(item["maker_check"])[:40]
+        params[f"a{index}"] = item["action"]
+        selects.append(
+            f"""
+            SELECT :batch, :table_name, :row_key, :brand, :name, :f{index},
+                   CAST(t.{column} AS TEXT), :t{index}, :m{index}, :a{index}, CURRENT_TIMESTAMP
+            FROM {table} t
+            WHERE {_row_where(table).replace("brand =", "t.brand =").replace("name =", "t.name =").replace("slug =", "t.slug =")}
+              AND t.{column} IS NOT NULL
+              AND NOT EXISTS (
+                SELECT 1 FROM catalog_value_archive a
+                WHERE a.batch = :batch AND a.table_name = :table_name
+                  AND a.row_key = :row_key AND a.field = :f{index}
+              )"""
+        )
+    plan.add_insert(
+        "catalog_value_archive",
+        Op(
+            "archive_values",
+            """
+            INSERT INTO catalog_value_archive (
+                batch, table_name, row_key, brand, name, field,
+                old_value, source_tag, maker_check, action, archived_at
+            )"""
+            + "\n            UNION ALL".join(selects),
+            params,
+        ),
+    )
+
+
+def _reverify_row(
+    plan: Plan,
+    batch: str,
+    table: str,
+    row_key: str,
+    brand: str,
+    name: str,
+    nulls: list[str],
+    relabel: bool,
+) -> None:
+    def archived(field_name: str, action: str, column: str | None = None) -> str:
+        match = f" AND a.old_value = CAST({table}.{column} AS TEXT)" if column else ""
+        return (
+            "EXISTS (SELECT 1 FROM catalog_value_archive a WHERE a.batch = :batch "
+            f"AND a.table_name = '{table}' AND a.row_key = :row_key AND a.field = '{field_name}' "
+            f"AND a.action = '{action}'{match})"
+        )
+
+    sets = []
+    for column in nulls:
+        if column not in NULLABLE[table]:
+            raise RuntimeError("refusing to null a NOT NULL column")
+        sets.append(f"{column} = CASE WHEN {archived(column, 'null', column)} THEN NULL ELSE {column} END")
+    if relabel and table == "modules":
+        sets.append(
+            "verification_status = CASE WHEN verification_status IN ('verified', 'corrected') AND "
+            f"{archived('verification_status', 'relabel', 'verification_status')} THEN 'unverified' "
+            "ELSE verification_status END"
+        )
+        sets.append(
+            "verification_source_url = CASE WHEN "
+            f"{archived('verification_source_url', 'relabel', 'verification_source_url')} THEN NULL "
+            "ELSE verification_source_url END"
+        )
+    sets.append("needs_reverify = TRUE")
+    sets.append("updated_at = :updated_at" if table == "module_catalog" else "updated_at = CURRENT_TIMESTAMP")
+    assignments = ",\n                ".join(sets)
+    plan.add_update(
+        f"{table}_reverify",
+        Op(
+            "reverify_row",
+            f"""
+            UPDATE {table} SET
+                {assignments}
+            WHERE {_row_where(table)}
+              AND EXISTS (
+                SELECT 1 FROM catalog_value_archive a
+                WHERE a.batch = :batch AND a.table_name = '{table}' AND a.row_key = :row_key
+                  AND a.field <> '*'
+              )
+            """,
+            {"batch": batch, "row_key": row_key, "brand": brand, "name": name, "updated_at": _stamp()},
+        ),
+    )
 
 
 def _verification_index(path: Path | None) -> dict[str, dict[str, Any]]:
@@ -767,6 +1056,19 @@ def case_receipt(engine: Engine, *, apply: bool) -> dict[str, Any]:
     return receipt
 
 
+def provenance_counts(conn: Connection) -> dict[str, int]:
+    """Read-only counts for the receipt (no values)."""
+    queries = {
+        "archive_rows": "SELECT COUNT(*) FROM catalog_value_archive",
+        "modules_needs_reverify": "SELECT COUNT(*) FROM modules WHERE needs_reverify",
+        "module_catalog_needs_reverify": "SELECT COUNT(*) FROM module_catalog WHERE needs_reverify",
+        "modules_verified": "SELECT COUNT(*) FROM modules WHERE verification_status = 'verified'",
+        "modules_legacy_source_modulargrid": "SELECT COUNT(*) FROM modules WHERE source = 'ModularGrid'",
+        "module_catalog_with_modulargrid_url": "SELECT COUNT(*) FROM module_catalog WHERE modulargrid_url IS NOT NULL",
+    }
+    return {key: int(conn.execute(text(sql)).scalar_one()) for key, sql in queries.items()}
+
+
 def receipt_for(plan: Plan, *, database_url: str, apply: bool, cases: dict[str, Any]) -> dict[str, Any]:
     return {
         "mode": "apply" if apply else "dry-run",
@@ -776,6 +1078,7 @@ def receipt_for(plan: Plan, *, database_url: str, apply: bool, cases: dict[str, 
         "conflicts": plan.conflicts,
         "unmatched": plan.unmatched,
         "verification_on_planned_modules": plan.verification,
+        "provenance": plan.provenance,
         "cases": cases,
         "destructive_sql": False,
     }
@@ -873,6 +1176,7 @@ def populate(
         try:
             with engine.connect() as conn:
                 plan = build_plan(conn, verification_path=verification_path)
+                counts_before = provenance_counts(conn)
         except ProgrammingError:
             raise SystemExit(
                 "schema is missing importer columns; run alembic upgrade head (db-migrate.yml) first"
@@ -883,6 +1187,10 @@ def populate(
             with engine.begin() as conn:
                 apply_plan(conn, plan)
         receipt = receipt_for(plan, database_url=database_url, apply=apply, cases=cases)
+        receipt["provenance_counts_before"] = counts_before
+        if apply:
+            with engine.connect() as conn:
+                receipt["provenance_counts_after"] = provenance_counts(conn)
     except SQLAlchemyError as exc:
         raise SystemExit(f"database operation failed ({exc.__class__.__name__})") from None
     finally:
