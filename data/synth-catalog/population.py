@@ -156,6 +156,17 @@ def _stamp() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
+POWER_OVERLAY_LATEST = 8
+ENTRY_VERIFICATION = {"verified", "corrected", "flagged"}
+
+
+def _entry_verification(entry: dict[str, Any]) -> tuple[str | None, str | None]:
+    status = entry.get("verification_status")
+    if status not in ENTRY_VERIFICATION:
+        return None, None
+    return status, entry.get("verification_source_url") or entry.get("source_url")
+
+
 def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Plan:
     plan = Plan()
     phase2 = _load(CATALOG / "seed-phase2-v1.json")
@@ -171,6 +182,11 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
 
     for row in list(phase2.get("catalog_modules") or []) + list(phase3.get("catalog_modules") or []):
         _schedule_catalog(plan, catalog, row, modulargrid_url=row.get("modulargrid_url"))
+
+    additions = CATALOG / "overlays" / "catalog-additions-v1.json"
+    if additions.is_file():
+        for row in _load(additions).get("rows") or []:
+            _schedule_catalog(plan, catalog, row, modulargrid_url=None)
 
     for row in phase2.get("full_spec_modules") or []:
         _schedule_module(
@@ -204,9 +220,24 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     for row in candidates.get("rows") or []:
         _schedule_candidate(plan, catalog, modules, row, verification)
 
-    for version in range(1, 8):
-        overlay = _load(CATALOG / "overlays" / f"module-power-depth-v{version}.json")
+    overlays = [
+        _load(CATALOG / "overlays" / f"module-power-depth-v{version}.json")
+        for version in range(1, POWER_OVERLAY_LATEST + 1)
+    ]
+    # A manufacturer-verified entry is authoritative for its module: older
+    # unverified entries for the same module are skipped so their values can
+    # never fill a field the verified source left empty.
+    verified_keys = {
+        ((entry.get("brand") or "").strip(), (entry.get("name") or "").strip())
+        for overlay in overlays
+        for entry in overlay.get("entries") or []
+        if entry.get("verification_status") == "verified"
+    }
+    for overlay in overlays:
         for entry in overlay.get("entries") or []:
+            key = ((entry.get("brand") or "").strip(), (entry.get("name") or "").strip())
+            if key in verified_keys and entry.get("verification_status") != "verified":
+                continue
             _schedule_power(plan, catalog, modules, entry)
 
     for row in modules.values():
@@ -631,8 +662,8 @@ def _schedule_power(
                 "source_reference": entry.get("source_url"),
                 "io_ports": [],
                 "tags": [],
-                "verification_status": "unverified",
-                "verification_source_url": None,
+                "verification_status": _entry_verification(entry)[0] or "unverified",
+                "verification_source_url": _entry_verification(entry)[1],
             },
             kind="modules_power_targets",
         )
@@ -645,8 +676,8 @@ def _schedule_power(
             "power_neg12v_ma": entry.get("power_neg12v_ma"),
             "power_5v_ma": entry.get("power_5v_ma"),
             "depth_mm": entry.get("depth_mm"),
-            "verification_status": None,
-            "verification_source_url": None,
+            "verification_status": _entry_verification(entry)[0],
+            "verification_source_url": _entry_verification(entry)[1],
         },
         kind="power_depth_overlay",
     )
