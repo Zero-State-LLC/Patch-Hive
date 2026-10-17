@@ -1,0 +1,58 @@
+{
+  "dataset_version": "module-power-depth-overlay-v6",
+  "policy": "batch8 search; fill-null only; OBSERVED values with source_url; unresolved rows omitted",
+  "count": 3,
+  "entries": [
+    {
+      "module_id": 126,
+      "brand": "Befaco",
+      "name": "STmix",
+      "source_url": "https://www.perfectcircuit.com/befaco-stmix.html",
+      "sources": {
+        "power_12v_ma": "https://www.perfectcircuit.com/befaco-stmix.html",
+        "power_neg12v_ma": "https://www.perfectcircuit.com/befaco-stmix.html",
+        "depth_mm": "https://www.perfectcircuit.com/befaco-stmix.html"
+      },
+      "power_12v_ma": 8,
+      "power_neg12v_ma": 10,
+      "power_5v_ma": null,
+      "depth_mm": 20.0,
+      "provenance": "OBSERVED",
+      "status": "found"
+    },
+    {
+      "module_id": 371,
+      "brand": "Joranalogue",
+      "name": "Filter 8",
+      "source_url": "https://www.perfectcircuit.com/joranalogue-filter-8.html",
+      "sources": {
+        "power_12v_ma": "https://www.perfectcircuit.com/joranalogue-filter-8.html",
+        "power_neg12v_ma": "https://www.perfectcircuit.com/joranalogue-filter-8.html",
+        "depth_mm": "https://www.perfectcircuit.com/joranalogue-filter-8.html"
+      },
+      "power_12v_ma": 75,
+      "power_neg12v_ma": 75,
+      "power_5v_ma": null,
+      "depth_mm": 43.0,
+      "provenance": "OBSERVED",
+      "status": "found"
+    },
+    {
+      "module_id": 372,
+      "brand": "Joranalogue",
+      "name": "Generate 3",
+      "source_url": "https://www.perfectcircuit.com/joranalogue-generate-3.html",
+      "sources": {
+        "power_12v_ma": "https://www.perfectcircuit.com/joranalogue-generate-3.html",
+        "power_neg12v_ma": "https://www.perfectcircuit.com/joranalogue-generate-3.html",
+        "depth_mm": "https://www.perfectcircuit.com/joranalogue-generate-3.html"
+      },
+      "power_12v_ma": 130,
+      "power_neg12v_ma": 115,
+      "power_5v_ma": null,
+      "depth_mm": 43.0,
+      "provenance": "OBSERVED",
+      "status": "found"
+    }
+  ]
+}

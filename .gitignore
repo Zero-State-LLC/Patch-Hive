@@ -78,6 +78,8 @@ alembic/versions/__pycache__/
 *.tmp
 *.bak
 *.cache
+data/synth-catalog/.cache/
+load-artifacts/
 tmp/
 backend/.venv-acceptance/
 

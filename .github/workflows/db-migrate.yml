@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: db-migrate-${{ inputs.target }}
+  group: neon-db-${{ inputs.target }}
   cancel-in-progress: false
 
 jobs:

@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Catalog batch 7: power/depth residuals + HP residual + new-brand discovery, via the shared scrape-router.
+"""Catalog batch 7: power/depth residuals + HP residual + new-brand discovery.
 
-Uses the Zero State scrape-router (free HTTP first, then crawl4ai, then context.dev / Firecrawl
-with enhanced proxy on block), so all calls share one ledger, cache, rate limit and receipt log.
-Never invents values: only parsed OBSERVED fields are emitted; everything else stays null.
+Uses the in-repo catalog scraper (free HTTP first, then context.dev, then Firecrawl).
+Paid calls stay off unless ``--max-paid-fetches`` is greater than zero. The legacy
+``--power-cap`` and ``--search-cap`` values are credit skip thresholds only; they do
+not raise the paid-fetch budget. Never invents values.
 
-  python scripts/catalog_batch7_router.py --power-cap 250 --search-cap 60 --brands 40
+  python scripts/catalog_batch7_router.py --max-paid-fetches 0 --brands 40
 """
 from __future__ import annotations
 import argparse, json, re, sys, time
@@ -15,35 +16,49 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SC = ROOT / "data/synth-catalog"
 sys.path.insert(0, str(ROOT / "scripts"))
+sys.path.insert(0, str(ROOT / "data" / "synth-catalog"))
 import enrich_module_power_depth_mg as mg  # noqa: E402
-from scrape_router import Router  # noqa: E402
+from catalog_scrape import CatalogScraper  # noqa: E402
 
-R = Router.from_config()  # shared ledger/cache in ~/.scrape-router
+SCRAPER: CatalogScraper | None = None
+PAID_CAP = 0
 LEDGER = {"credits": 0.0, "calls": 0, "by_backend": {}, "receipts": []}
 
 
-def routed_fetch(url: str, cap: float) -> str | None:
-    remaining = cap - LEDGER["credits"]
-    if remaining <= 0:
-        return None
-    res = R.fetch(url, caller="patchhive:batch7", max_credits=remaining, fmt="html")
-    rc = res.receipt
-    rd = rc.to_dict() if hasattr(rc, "to_dict") else dict(rc.__dict__)
-    cr = sum((rd.get("credits_by_backend") or {}).values())
-    LEDGER["credits"] += cr
+def _scraper() -> CatalogScraper:
+    global SCRAPER
+    if SCRAPER is None:
+        SCRAPER = CatalogScraper.for_repo(max_paid_fetches=PAID_CAP)
+    return SCRAPER
+
+
+def routed_fetch(url: str, cap: float = 0) -> str | None:
+    """Fetch one URL. ``cap`` is retained for batch 7b callers and is not a paid budget."""
+    del cap
+    scraper = _scraper()
+    result = scraper.fetch(url)
+    credits = float(result.receipt.get("credits") or 0)
+    method = result.receipt.get("method") or "none"
+    LEDGER["credits"] += credits
     LEDGER["calls"] += 1
-    LEDGER["by_backend"][res.backend or "none"] = LEDGER["by_backend"].get(res.backend or "none", 0) + 1
-    LEDGER["receipts"].append({k: rd.get(k) for k in ("receipt_id", "target", "backend", "credits_by_backend", "http_status", "content_sha256", "captured_at")})
-    return res.text if res.ok else None
+    LEDGER["by_backend"][method] = LEDGER["by_backend"].get(method, 0) + 1
+    LEDGER["receipts"].append(
+        {key: result.receipt.get(key) for key in ("url", "method", "status", "sha256", "timestamp")}
+    )
+    return result.text if result.ok else None
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--power-cap", type=float, default=250)
     ap.add_argument("--search-cap", type=float, default=60)
+    ap.add_argument("--max-paid-fetches", type=int, default=0)
     ap.add_argument("--brands", type=int, default=40)
     ap.add_argument("--urls-per-target", type=int, default=4)
     a = ap.parse_args()
+    global PAID_CAP, SCRAPER
+    PAID_CAP = max(0, int(a.max_paid_fetches))
+    SCRAPER = CatalogScraper.for_repo(max_paid_fetches=PAID_CAP)
     hr = SC / "hermes-research"
 
     # 1) targets
@@ -59,7 +74,7 @@ def main() -> None:
     (hr / "batch7-targets.json").write_text(json.dumps(targets, indent=2) + "\n")
 
     # 2) power/depth + hp via router
-    mg.fetch = lambda url, timeout=25: routed_fetch(url, a.power_cap)
+    mg.fetch = lambda url, timeout=25: routed_fetch(url)
     orig = mg.candidate_urls
     mg.candidate_urls = lambda *x, **k: orig(*x, **k)[: a.urls_per_target]
     results = [mg.process_one(t, 0) for t in pd + hp_retry]
@@ -70,11 +85,10 @@ def main() -> None:
     for b in new_brands:
         if LEDGER["credits"] - power_credits >= a.search_cap:
             disc.append({"brand": b, "status": "skipped_cap"}); continue
-        res = R.search(f"{b} eurorack module modulargrid", limit=10, caller="patchhive:batch7",
-                       max_credits=a.search_cap - (LEDGER["credits"] - power_credits))
-        rd = res.receipt.to_dict() if hasattr(res.receipt, "to_dict") else dict(res.receipt.__dict__)
-        LEDGER["credits"] += sum((rd.get("credits_by_backend") or {}).values())
-        urls = sorted(set(re.findall(r"https?://modulargrid\.net/e/[A-Za-z0-9%\-_.]+", res.text or "")))
+        scraper = _scraper()
+        res = scraper.search(f"{b} eurorack module modulargrid", limit=10)
+        LEDGER["credits"] += sum(float(item.get("credits") or 0) for item in res.receipts)
+        urls = sorted(set(re.findall(r"https?://modulargrid\.net/e/[A-Za-z0-9%\-_.]+", "\n".join(res.urls))))
         disc.append({"brand": b, "status": "ok" if res.ok else "failed", "candidate_urls": urls[:25], "provenance": "INFERRED"})
         time.sleep(0.2)
 
