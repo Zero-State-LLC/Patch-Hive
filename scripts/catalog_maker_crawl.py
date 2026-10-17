@@ -2,7 +2,7 @@
 """Manufacturer-site catalog crawl (approved by Danny 2026-10-17, $15 combined cap).
 
 Stages: resolve (brand -> official site) -> discover (robots, sitemaps, Shopify
-feeds, homepage links) -> fetch (free, then context.dev, then Firecrawl) ->
+feeds, homepage links) -> fetch (free, then the shared scrape-router: context.dev, then Firecrawl, under its caps and ledger) ->
 extract (deterministic regex + open-weights model; every accepted value must be
 parsed deterministically or appear verbatim on the maker's page).
 
@@ -22,6 +22,7 @@ import html
 import json
 import os
 import re
+import sys
 import threading
 import time
 import urllib.error
@@ -196,59 +197,90 @@ def _post(url: str, payload: dict, key: str, timeout: float = 90) -> tuple[int, 
         return 0, {}
 
 
+_ROUTER = None
+_ROUTER_LOCK = threading.Lock()
+ROUTER_CALLER = "patchhive-catalog-maker-crawl"
+
+
+def router():
+    """Shared scrape-router (budget caps, min-balance floors, ledger, receipts).
+
+    Paid search and paid fetch go through it; this script never calls
+    context.dev or Firecrawl directly. Set SCRAPE_ROUTER_SITE to the router's
+    site-packages if it is not importable. Without the router, paid calls are off.
+    """
+    global _ROUTER
+    with _ROUTER_LOCK:
+        if _ROUTER is None:
+            site = os.environ.get("SCRAPE_ROUTER_SITE", "").strip()
+            if site and site not in sys.path:
+                sys.path.insert(0, site)
+            try:
+                from scrape_router.router import Router  # type: ignore
+
+                _ROUTER = Router.from_config()
+            except Exception:
+                _ROUTER = False
+                print("scrape-router not importable: paid search/fetch disabled", file=sys.stderr)
+        return _ROUTER or None
+
+
+def _account(res) -> None:
+    receipt = getattr(res, "receipt", None)
+    spent = dict(getattr(receipt, "credits_by_backend", None) or {})
+    with BUDGET.lock:
+        BUDGET.ctx_used += float(spent.get("context_dev") or 0)
+        BUDGET.fc_used += float(spent.get("firecrawl") or 0)
+
+
 def ctx_search(query: str) -> list[dict]:
     hit = cached("search", query)
     if hit is not None:
         return hit
-    if not BUDGET.can_spend():
+    r = router()
+    if r is None or not BUDGET.can_spend():
         return []
-    status, data = 0, {}
-    for attempt in range(5):
-        with CTX_SEM:
-            status, data = _post("https://api.context.dev/v1/web/search", {"query": query, "numResults": 10}, os.environ["CONTEXT_DEV_API_KEY"])
-        if status == 200 or status in (400, 401, 402, 404):
-            break
-        time.sleep(2 * (attempt + 1))
-    credits = float((data.get("key_metadata") or {}).get("credits_consumed") or (1 if status == 200 else 0))
+    res = r.search(query, limit=10, caller=ROUTER_CALLER, allow="paid")
+    _account(res)
     with BUDGET.lock:
-        BUDGET.ctx_used += credits
         BUDGET.calls["ctx_search"] += 1
-    results = [{"url": r.get("url"), "title": (r.get("title") or "")[:120], "desc": (r.get("description") or "")[:160]} for r in data.get("results") or [] if r.get("url")]
-    if status == 200:
-        store("search", query, results)
+    if not res.ok:
+        return []
+    try:
+        raw = json.loads(res.text or "[]")
+    except (TypeError, ValueError):
+        raw = res.data or []
+    if isinstance(raw, dict):
+        raw = raw.get("results") or raw.get("data") or raw.get("web") or []
+    results = [
+        {
+            "url": r_.get("url") or r_.get("link"),
+            "title": (r_.get("title") or "")[:120],
+            "desc": (r_.get("description") or r_.get("snippet") or "")[:160],
+        }
+        for r_ in raw
+        if isinstance(r_, dict) and (r_.get("url") or r_.get("link"))
+    ]
+    store("search", query, results)
     return results
 
 
 def paid_fetch(url: str) -> tuple[str, str]:
-    """context.dev scrape (proxies included), then Firecrawl with auto proxy."""
-    if BUDGET.can_spend():
-        with CTX_SEM:
-            status, data = _post("https://api.context.dev/v1/web/scrape", {"url": url, "formats": {"html": True}, "sharedParams": {"mainContentOnly": False}}, os.environ["CONTEXT_DEV_API_KEY"])
-        credits = float((data.get("key_metadata") or {}).get("credits_consumed") or (1 if status == 200 else 0))
-        with BUDGET.lock:
-            BUDGET.ctx_used += credits
-            BUDGET.calls["ctx_scrape"] += 1
-        body = ""
-        for key in ("html", "markdown"):
-            val = data.get(key)
-            if isinstance(val, dict):
-                val = val.get("data")
-            if isinstance(val, str) and val.strip():
-                body = val
-                break
-        if status == 200 and body:
-            return body, "context_dev"
-    if BUDGET.can_spend():
-        with FC_SEM:
-            status, data = _post("https://api.firecrawl.dev/v2/scrape", {"url": url, "formats": ["html"], "onlyMainContent": False, "proxy": "auto"}, os.environ["FIRECRAWL_API_KEY"])
-        inner = data.get("data") if isinstance(data.get("data"), dict) else {}
-        credits = float((inner.get("metadata") or {}).get("creditsUsed") or data.get("creditsUsed") or (1 if status == 200 else 0))
-        with BUDGET.lock:
-            BUDGET.fc_used += credits
+    """Paid fetch through the scrape-router (context.dev, then Firecrawl, within its caps)."""
+    if EXCLUDED.search(url):
+        return "", "failed"
+    r = router()
+    if r is None or not BUDGET.can_spend():
+        return "", "failed"
+    res = r.fetch(url, caller=ROUTER_CALLER, allow="paid", fmt="html")
+    _account(res)
+    with BUDGET.lock:
+        if res.backend == "firecrawl":
             BUDGET.calls["fc_scrape"] += 1
-        body = inner.get("html") or inner.get("markdown") or ""
-        if status == 200 and body:
-            return body, "firecrawl"
+        else:
+            BUDGET.calls["ctx_scrape"] += 1
+    if res.ok and res.text:
+        return res.text, res.backend or "router"
     return "", "failed"
 
 

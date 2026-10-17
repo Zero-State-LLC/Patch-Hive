@@ -13,7 +13,7 @@ This allows:
 
 from datetime import datetime
 
-from sqlalchemy import Column, Index, Integer, String
+from sqlalchemy import Boolean, Column, Index, Integer, String
 
 from core.database import Base
 
@@ -59,6 +59,8 @@ class ModuleCatalog(Base):
     # Provenance (SEED): which pipeline admitted this lightweight row.
     # e.g. SynthCatalogResearch, ModularGrid, Manual — null only pre-migration.
     source = Column(String(50), nullable=True, index=True)
+    # True when a ModularGrid-derived value (hp) was removed; see catalog_value_archive.
+    needs_reverify = Column(Boolean, nullable=False, default=False, server_default="false")
 
     # Metadata
     created_at = Column(String(50), default=lambda: datetime.utcnow().isoformat())

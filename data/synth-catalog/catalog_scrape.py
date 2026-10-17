@@ -30,6 +30,10 @@ USER_AGENT = (
     "PatchHiveCatalogBot/1.0 (+https://github.com/Zero-State-LLC/Patch-Hive; "
     "catalog research; respects robots.txt)"
 )
+# Never fetched (Danny 2026-10-17): ModularGrid terms forbid scraping, and
+# Patch Hive specs must come from manufacturer pages. Checked before any
+# free or paid fetch.
+DENY_HOSTS = ("modulargrid.net",)
 CONTEXT_SCRAPE_URL = "https://api.context.dev/v1/web/scrape"
 CONTEXT_SEARCH_URL = "https://api.context.dev/v1/web/search"
 FIRECRAWL_SCRAPE_URL = "https://api.firecrawl.dev/v1/scrape"
@@ -91,6 +95,11 @@ def public_http_url(url: str) -> bool:
         or ip.is_multicast
         or ip.is_unspecified
     )
+
+
+def denied_host(url: str) -> bool:
+    host = (urlparse(url).hostname or "").lower().rstrip(".")
+    return any(host == d or host.endswith("." + d) for d in DENY_HOSTS)
 
 
 def _sha256(data: bytes) -> str:
@@ -271,7 +280,7 @@ class CatalogScraper:
         self.ledger_path = ledger_path
         self.max_paid_fetches = max(0, int(max_paid_fetches))
         self.min_interval_s = min_interval_s
-        self.host_intervals = host_intervals or {"modulargrid.net": 2.0, "www.modulargrid.net": 2.0}
+        self.host_intervals = host_intervals or {}
         self.user_agent = user_agent
         self.transport = transport or default_transport
         self.sleeper = sleeper or time.sleep
@@ -529,6 +538,8 @@ class CatalogScraper:
         self._next_ok[host] = self.monotonic() + interval
 
     def _block_reason(self, url: str) -> str | None:
+        if denied_host(url):
+            return "denied_host"
         if not public_http_url(url):
             return "blocked_url"
         if not self.resolve_hosts:

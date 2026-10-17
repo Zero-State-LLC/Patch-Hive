@@ -1,8 +1,30 @@
 # PatchHive Data Sources Documentation
 
-**Last Updated**: 2026-07-21
+**Last Updated**: 2026-10-17
 **ABX-Core Version**: 1.3
 **Database Schema Version**: 1.0
+
+> **Correction (2026-10-17).** Earlier versions of this file said the Phase 2 seed was
+> "not a ModularGrid dump" and that ModularGrid was "reference only, not bulk scraped".
+> That was wrong. The Phase 2 seed (`seed-phase2-v1.json`) was built from a browser scrape of
+> ModularGrid manufacturer pages, its 703-name brand list came from the ModularGrid
+> manufacturer index, and several HP and power/depth overlays (v1-v5, the batch-7b candidates,
+> part of `module-catalog-hp-v1.json`) were scraped from ModularGrid module pages.
+>
+> What changed (Danny approval 2026-10-17):
+> - About 2,281 ModularGrid-derived spec values (catalog HP; modules +12V/-12V/+5V/depth;
+>   candidate HP) are preserved with source tags in the database table
+>   `catalog_value_archive` (batch `modulargrid-provenance-v1`). The manifest without values is
+>   `data/synth-catalog/provenance/modulargrid-reverify-v1.json`.
+> - Values that a manufacturer page confirmed are kept. Every other ModularGrid-only value is
+>   set to NULL and the row gets `needs_reverify = true`. `modules.hp` is NOT NULL, so candidate
+>   HP is archived and flagged, not nulled.
+> - The 179 batch-7b candidates were labelled `verified`. That only meant the ModularGrid vendor
+>   name matched; they are now `unverified` with `needs_reverify = true`.
+> - The extracted ModularGrid files were removed from the repo (history is unchanged) and
+>   archived privately. Manufacturer rows (703) stay in the database.
+> - ModularGrid is never fetched. `scripts/check_no_modulargrid.py` runs in CI and the fetch
+>   layers deny `modulargrid.net`.
 
 ## Overview
 
@@ -11,6 +33,8 @@ This document provides complete provenance tracking for all data in the PatchHiv
 ## Data Sources
 
 ### 1. Eurorack Modules (32 modules)
+
+**Status (2026-10-17)**: removed. The 32 modules and 7 cases in `integrations/modulargrid_data.py` were partly curated from ModularGrid; the file was removed and archived privately. `integrations/seed_data.py` keeps manufacturer names only. Rows already imported with `source="ModularGrid"` stay in the database (never deleted).
 
 **Source Type**: Manual curation from manufacturer specifications and ModularGrid community data
 **Provenance**: `source="ModularGrid"`, `source_reference="https://www.modulargrid.net/"`
@@ -123,14 +147,14 @@ This document provides complete provenance tracking for all data in the PatchHiv
 | `category` | Mapped from free-text research categories | Inferred | Taxonomy via `map_category()` |
 | `is_available` | Research status column | OBSERVED | discontinued / available / upcoming |
 | `power_*` / `io_ports` | Curated full-spec only | Direct when present | Null never filled with guesses |
-| Brand index | Phase 1 ModularGrid manufacturer list reference | OBSERVED | Browse/filter support, not bulk scrape of modules |
+| Brand index | ModularGrid manufacturer index (names only) | MODULARGRID_UNVERIFIED | 703 names; manufacturer rows stay in the DB |
 
 #### Data Quality Notes
 
-- **Not a ModularGrid dump**: Research used multi-source rotation (official, retailer, community) to avoid ToS bulk scrape
+- **ModularGrid-derived**: identities, categories, descriptions and the brand list came from a browser scrape of ModularGrid manufacturer pages (corrected 2026-10-17; earlier text wrongly said "not a ModularGrid dump"). Spec values from ModularGrid were removed; re-verify on manufacturer pages
 - **Sparse HP**: Most Phase 2 rows lack HP; catalog admits them for discovery; full rack placement still needs HP later
 - **Idempotent**: Catalog skips existing slugs; full modules skip existing `(brand, name)` from any source
-- **Rebuild**: `python3 scripts/build_synth_catalog_seed.py` (optional `--source-dir` to Abraxas skill references)
+- **Rebuild**: retired. The seed is frozen; its ModularGrid inputs are no longer in the repo
 
 #### API
 
@@ -139,7 +163,7 @@ This document provides complete provenance tracking for all data in the PatchHiv
 - `POST /api/synth-catalog/import/catalog?dry_run=`
 - `POST /api/synth-catalog/import/modules?dry_run=&clear_existing=`
 - `POST /api/synth-catalog/import/all?dry_run=&clear_existing=`
-- `POST /api/synth-catalog/enrich/hp?dry_run=` — fill null catalog HP from curated ModularGrid + `modules` table
+- `POST /api/synth-catalog/enrich/hp?dry_run=` — fill null catalog HP from the `modules` table (the curated ModularGrid list was removed 2026-10-17)
 
 #### HP enrichment
 
@@ -153,8 +177,8 @@ Only copies HP (and UTIL→specific category) when a manufacturer-curated match 
 
 ### Principles
 
-1. **No Unauthorized Scraping**: All data manually curated from official sources
-2. **ToS Compliance**: ModularGrid data used as reference only, not bulk scraped
+1. **No ModularGrid**: ModularGrid is never fetched (CI guard + fetch-layer deny). Earlier ModularGrid-derived values are archived and flagged `needs_reverify`
+2. **Manufacturer pages first**: new specs come from manufacturer pages and manuals, robots.txt respected
 3. **Manufacturer Permission**: Product specs are publicly available marketing material
 4. **Community Standards**: Follows established Eurorack taxonomy and conventions
 
@@ -242,9 +266,9 @@ Status: Success
 
 ### Adding New Modules
 
-1. Add to `integrations/modulargrid_data.py`
-2. Include all required fields with provenance
-3. Run importer: `python -m integrations.modulargrid_importer`
+1. Add a manufacturer-sourced overlay under `data/synth-catalog/overlays/` (never ModularGrid)
+2. Include `source_url` and `verification_status` for every entry
+3. Run the DB load workflow (dry run first)
 4. Verify import via API: `GET /api/modules/`
 
 ### Data Quality Checks

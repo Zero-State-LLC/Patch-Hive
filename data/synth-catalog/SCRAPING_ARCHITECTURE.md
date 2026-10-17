@@ -22,7 +22,7 @@ Labels: OBSERVED means checked on the box or in the repo. INFERRED means a recom
 3. Use search-first URL resolution for residuals. Slug guessing failed for the 22 power and depth residuals, because pages exist but carry no power block. Next, search manufacturer manuals, and accept only strict `+12V ... mA` patterns, labeled OBSERVED with `source_url`.
 4. Dedupe on `(brand, slug)` across the seed, the overlays, and the candidates before admitting. Verify brand from the page's manufacturer field, not from the URL prefix.
 5. Add a candidate importer for `catalog-new-brand-candidates-v1.json`, with a dry run and a receipt. None exists yet.
-6. Respect rate limits: ModularGrid at 1 req/s (router default). Add `domains.modulargrid.net.min_interval_s: 2` for bulk runs.
+6. Never fetch ModularGrid (Danny 2026-10-17). The in-repo router and the shared scrape-router both deny that host; `scripts/check_no_modulargrid.py` runs in CI.
 7. Store receipts in the repo (hashes and metadata only, never page text). This matches the shared rule that repos hold row refs only.
 
 ## Paid scraping methods and proxies on the box (names only; no values printed)
@@ -57,7 +57,7 @@ python scripts/catalog_batch8.py --max-paid-fetches 200
 
 Free-only run on 2026-10-17 (`--max-paid-fetches 0`, `paid_attempts` 0). OBSERVED:
 
-- 179 candidate pages returned HTTP 200. 178 `verified` (`span.vendor-name` matched the candidate brand). 1 `corrected`: the URL-inferred brand Analogue Systems is Analogue Solutions HH88 on `https://modulargrid.net/e/analogue-solutions-hh88`. 0 flagged. 0 slug duplicates against the phase 2 and phase 3 catalogs.
+- 179 candidate pages returned HTTP 200. 178 `verified` (`span.vendor-name` matched the candidate brand). **Correction 2026-10-17:** these were ModularGrid pages and `verified` only meant the ModularGrid vendor name matched; the rows are now `unverified` with `needs_reverify`, and the batch 7/8 scripts and results were removed from the repo. 1 `corrected`: the URL-inferred brand Analogue Systems is Analogue Solutions HH88 (ModularGrid page; URL removed 2026-10-17). 0 flagged. 0 slug duplicates against the phase 2 and phase 3 catalogs.
 - Batch 7's power/depth target list has 22 rows. 1 was already `found` (Intellijel μAtt). The other 21 were searched. 3 resolved from a single Perfect Circuit spec line, written to `overlays/module-power-depth-v6.json` and not applied by the importer (the importer still stops at v5): Befaco STmix 8 mA +12V / 10 mA −12V / 20 mm; Joranalogue Filter 8 75 / 75 mA / 43 mm; Joranalogue Generate 3 130 / 115 mA / 43 mm. 18 stay unresolved. DuckDuckGo lite answered HTTP 202 with no result links. `www.befaco.org`, `www.dreadbox-fx.com`, and `cwejman.net` did not return a readable robots.txt, so those free fetches were skipped. Several guessed official URLs returned HTTP 404 and were not sent to a paid backend.
 
 ## Batch 7 spend (OBSERVED from the router ledger)

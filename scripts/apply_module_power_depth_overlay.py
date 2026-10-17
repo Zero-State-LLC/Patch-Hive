@@ -15,7 +15,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--overlay",
         type=Path,
-        default=REPO / "data/synth-catalog/overlays/module-power-depth-v1.json",
+        default=REPO / "data/synth-catalog/overlays/module-power-depth-v9.json",
     )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--receipt", type=Path, default=None)

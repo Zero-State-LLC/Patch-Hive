@@ -90,10 +90,10 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     for name in (
-        "module-power-depth-v1.json",
-        "module-power-depth-v2.json",
-        "module-power-depth-v3.json",
-        "module-power-depth-v4.json",
+        "module-power-depth-v6.json",
+        "module-power-depth-v7.json",
+        "module-power-depth-v8.json",
+        "module-power-depth-v9.json",
     ):
         path = ov / name
         if not path.is_file():

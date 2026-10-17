@@ -15,7 +15,7 @@ from cases.models import Case
 from community.models import Comment, User, Vote
 from core.database import SessionLocal
 from core.provenance import Provenance
-from integrations.modulargrid_data import CASES_DATABASE, MANUFACTURERS, MODULES_DATABASE
+from integrations.seed_data import CASES_DATABASE, MANUFACTURERS, MODULES_DATABASE
 
 # Import all models to resolve SQLAlchemy relationships
 from modules.models import Module
@@ -62,7 +62,7 @@ def import_modules(db: Session, clear_existing: bool = False) -> Dict[str, Any]:
         module_data_with_source = {
             **module_data,
             "source": "ModularGrid",
-            "source_reference": "https://www.modulargrid.net/",
+            "source_reference": "integrations/seed_data.py",
         }
 
         module = Module(**module_data_with_source)
@@ -126,7 +126,7 @@ def import_cases(db: Session, clear_existing: bool = False) -> Dict[str, Any]:
         case_data_with_source = {
             **case_data,
             "source": "ModularGrid",
-            "source_reference": "https://www.modulargrid.net/",
+            "source_reference": "integrations/seed_data.py",
         }
 
         case = Case(**case_data_with_source)

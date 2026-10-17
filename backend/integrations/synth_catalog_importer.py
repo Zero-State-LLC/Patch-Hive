@@ -23,7 +23,7 @@ from cases.models import Case  # noqa: F401 — SQLAlchemy mapper registration
 from community.models import Comment, User, Vote  # noqa: F401
 from core.database import SessionLocal
 from core.provenance import Provenance
-from integrations.modulargrid_data import MODULES_DATABASE
+from integrations.seed_data import MODULES_DATABASE
 from integrations.synth_catalog_data import (
     DEFAULT_SEED_PATH,
     SOURCE_NAME,
@@ -290,7 +290,7 @@ def enrich_catalog_hp_from_known_specs(
     Fill null module_catalog.hp (and empty category) from known manufacturer specs.
 
     Sources (fail-closed — only explicit values):
-    1. integrations.modulargrid_data.MODULES_DATABASE
+    1. integrations.seed_data.MODULES_DATABASE (empty since 2026-10-17)
     2. existing modules table rows with non-null hp
 
     Never overwrites a non-null catalog.hp.

@@ -91,10 +91,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if not args.skip_power_overlay:
         overlays = args.power_overlay or [
-            REPO / "data/synth-catalog/overlays/module-power-depth-v1.json",
-            REPO / "data/synth-catalog/overlays/module-power-depth-v2.json",
-            REPO / "data/synth-catalog/overlays/module-power-depth-v3.json",
-            REPO / "data/synth-catalog/overlays/module-power-depth-v4.json",
+            REPO / "data/synth-catalog/overlays/module-power-depth-v6.json",
+            REPO / "data/synth-catalog/overlays/module-power-depth-v7.json",
+            REPO / "data/synth-catalog/overlays/module-power-depth-v8.json",
+            REPO / "data/synth-catalog/overlays/module-power-depth-v9.json",
         ]
         for ov in overlays:
             ov = Path(ov)
