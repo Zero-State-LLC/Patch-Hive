@@ -1,0 +1,17 @@
+{
+  "dataset_version": "module-power-depth-overlay-v5",
+  "policy": "batch7 via shared scrape-router; fill-null only; OBSERVED only; residual-3 still_null re-tried",
+  "count": 1,
+  "entries": [
+    {
+      "module_id": 370,
+      "brand": "Intellijel",
+      "name": "\u03bcAtt",
+      "source_url": "https://modulargrid.net/e/intellijel-uatt",
+      "depth_mm": 15.0,
+      "provenance": "OBSERVED",
+      "status": "found",
+      "notes": "batch7;scrape-router;depth-only"
+    }
+  ]
+}
