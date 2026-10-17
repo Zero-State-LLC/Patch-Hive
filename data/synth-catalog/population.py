@@ -572,7 +572,7 @@ def _schedule_fill(plan: Plan, existing: dict[str, Any], incoming: dict[str, Any
         existing["verification_status"] = incoming_status
     elif (
         incoming_status
-        and existing.get("verification_status") not in {None, "unverified", incoming_status}
+        and existing.get("verification_status") not in {None, "unverified", "flagged", incoming_status}
     ):
         plan.conflict(
             table="modules",
