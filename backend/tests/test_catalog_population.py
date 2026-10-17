@@ -6,6 +6,7 @@ Uses the local superuser credentials from CI. Refuses to touch patchhive_test.
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -114,9 +115,11 @@ def test_population_dry_run_then_apply_is_idempotent(population_url: str, tmp_pa
     assert _counts(population_url) == before
     sql = sql_path.read_text(encoding="utf-8")
     assert_safe_sql(sql)
-    upper = sql.upper()
-    for forbidden in ("DELETE ", "DROP ", "TRUNCATE ", "ALTER "):
-        assert forbidden not in upper
+    # Ignore string literals so module names such as "Tin Teardrop VCF" are not
+    # mistaken for statements; keywords must still appear as whole words.
+    upper = re.sub(r"'(?:[^']|'')*'", "''", sql).upper()
+    for forbidden in ("DELETE", "DROP", "TRUNCATE", "ALTER"):
+        assert not re.search(rf"\b{forbidden}\s", upper)
 
     applied = populate(
         population_url,
