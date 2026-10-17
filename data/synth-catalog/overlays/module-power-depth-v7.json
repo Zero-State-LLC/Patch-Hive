@@ -1,67 +1,22 @@
 {
   "dataset_version": "module-power-depth-overlay-v7",
-  "policy": "batch8 search; fill-null only; OBSERVED values with source_url; unresolved rows omitted",
-  "count": 8,
+  "policy": "fill-null only; values verified against manufacturer pages on 2026-10-17. Dropped wrong matches: Befaco Input/Output (DivKid Stereo Strip listing), Befaco RING MOD (A*B+C listing), Befaco Out (Out V3 kit, different product), Cwejman AP-1 (AP-1 MK2 page; values mismatched). No ModularGrid data is used (its ToS prohibits reuse).",
+  "count": 4,
   "entries": [
     {
       "module_id": 55,
       "brand": "ALM Busy Circuits",
       "name": "Pamela's NEW Workout",
-      "source_url": "https://www.animatoaudio.com/products/pamela-s-new-workout?srsltid=AU7gw4U5d07G9Il1bawutpfF63qK1ufYE6lSV4LV2KsRRGULBazkkgKD",
+      "source_url": "https://busycircuits.com/alm017/",
       "sources": {
-        "depth_mm": "https://www.animatoaudio.com/products/pamela-s-new-workout?srsltid=AU7gw4U5d07G9Il1bawutpfF63qK1ufYE6lSV4LV2KsRRGULBazkkgKD"
+        "power_12v_ma": "https://busycircuits.com/alm017/",
+        "power_neg12v_ma": "https://busycircuits.com/alm017/",
+        "depth_mm": "https://busycircuits.com/alm017/"
       },
-      "power_12v_ma": null,
-      "power_neg12v_ma": null,
+      "power_12v_ma": 50,
+      "power_neg12v_ma": 5,
       "power_5v_ma": null,
       "depth_mm": 32.0,
-      "provenance": "OBSERVED",
-      "status": "found"
-    },
-    {
-      "module_id": 107,
-      "brand": "Befaco",
-      "name": "Input/Output",
-      "source_url": "https://reverb.com/item/54830500-divkid-stereo-strip-eurorack-input-output-vca-and-panner-module",
-      "sources": {
-        "power_12v_ma": "https://reverb.com/item/54830500-divkid-stereo-strip-eurorack-input-output-vca-and-panner-module",
-        "power_neg12v_ma": "https://reverb.com/item/54830500-divkid-stereo-strip-eurorack-input-output-vca-and-panner-module",
-        "depth_mm": "https://reverb.com/item/54830500-divkid-stereo-strip-eurorack-input-output-vca-and-panner-module"
-      },
-      "power_12v_ma": 63,
-      "power_neg12v_ma": 63,
-      "power_5v_ma": null,
-      "depth_mm": 33.0,
-      "provenance": "OBSERVED",
-      "status": "found"
-    },
-    {
-      "module_id": 116,
-      "brand": "Befaco",
-      "name": "Out",
-      "source_url": "https://www.guitarplectrum.com/product/befaco-out-v3-diy-kit/",
-      "sources": {
-        "power_5v_ma": "https://www.guitarplectrum.com/product/befaco-out-v3-diy-kit/"
-      },
-      "power_12v_ma": null,
-      "power_neg12v_ma": null,
-      "power_5v_ma": 0,
-      "depth_mm": null,
-      "provenance": "OBSERVED",
-      "status": "found"
-    },
-    {
-      "module_id": 123,
-      "brand": "Befaco",
-      "name": "RING MOD",
-      "source_url": "https://reverb.com/item/92130013-befaco-a-b-c-eurorack-module-dual-vca-ring-mod-mixer-6hp",
-      "sources": {
-        "depth_mm": "https://reverb.com/item/92130013-befaco-a-b-c-eurorack-module-dual-vca-ring-mod-mixer-6hp"
-      },
-      "power_12v_ma": null,
-      "power_neg12v_ma": null,
-      "power_5v_ma": null,
-      "depth_mm": 30.0,
       "provenance": "OBSERVED",
       "status": "found"
     },
@@ -69,30 +24,16 @@
       "module_id": 126,
       "brand": "Befaco",
       "name": "STmix",
-      "source_url": "https://www.notice-facile.com/en/manual/1206125/befaco+stmix",
+      "source_url": "https://www.befaco.org/stmix/",
       "sources": {
-        "depth_mm": "https://www.notice-facile.com/en/manual/1206125/befaco+stmix"
+        "power_12v_ma": "https://www.befaco.org/stmix/",
+        "power_neg12v_ma": "https://www.befaco.org/stmix/",
+        "depth_mm": "https://www.befaco.org/stmix/"
       },
-      "power_12v_ma": null,
-      "power_neg12v_ma": null,
+      "power_12v_ma": 8,
+      "power_neg12v_ma": 10,
       "power_5v_ma": null,
       "depth_mm": 20.0,
-      "provenance": "OBSERVED",
-      "status": "found"
-    },
-    {
-      "module_id": 135,
-      "brand": "Cwejman",
-      "name": "AP-1",
-      "source_url": "https://www.cwejmanmusic.com/ap-1mk2",
-      "sources": {
-        "power_neg12v_ma": "https://www.cwejmanmusic.com/ap-1mk2",
-        "depth_mm": "https://www.gear4music.com/us/en/Recording-and-Computers/DISC-Cwejman-AP-1-Audio-Processor/21M1"
-      },
-      "power_12v_ma": null,
-      "power_neg12v_ma": 60,
-      "power_5v_ma": null,
-      "depth_mm": 25.0,
       "provenance": "OBSERVED",
       "status": "found"
     },
@@ -100,10 +41,10 @@
       "module_id": 371,
       "brand": "Joranalogue",
       "name": "Filter 8",
-      "source_url": "https://www.notice-facile.com/en/manual/976684/joranalogue+filter-8",
+      "source_url": "https://joranalogue.com/products/filter-8",
       "sources": {
-        "power_12v_ma": "https://www.notice-facile.com/en/manual/976684/joranalogue+filter-8",
-        "power_neg12v_ma": "https://www.notice-facile.com/en/manual/976684/joranalogue+filter-8"
+        "power_12v_ma": "https://joranalogue.com/products/filter-8",
+        "power_neg12v_ma": "https://joranalogue.com/products/filter-8"
       },
       "power_12v_ma": 75,
       "power_neg12v_ma": 75,
@@ -116,10 +57,10 @@
       "module_id": 372,
       "brand": "Joranalogue",
       "name": "Generate 3",
-      "source_url": "https://www.perfectcircuit.com/joranalogue-generate-3.html",
+      "source_url": "https://joranalogue.com/products/generate-3",
       "sources": {
-        "power_12v_ma": "https://www.perfectcircuit.com/joranalogue-generate-3.html",
-        "power_neg12v_ma": "https://www.perfectcircuit.com/joranalogue-generate-3.html"
+        "power_12v_ma": "https://joranalogue.com/products/generate-3",
+        "power_neg12v_ma": "https://joranalogue.com/products/generate-3"
       },
       "power_12v_ma": 130,
       "power_neg12v_ma": 115,

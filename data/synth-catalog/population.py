@@ -204,7 +204,7 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     for row in candidates.get("rows") or []:
         _schedule_candidate(plan, catalog, modules, row, verification)
 
-    for version in range(1, 6):
+    for version in range(1, 8):
         overlay = _load(CATALOG / "overlays" / f"module-power-depth-v{version}.json")
         for entry in overlay.get("entries") or []:
             _schedule_power(plan, catalog, modules, entry)
