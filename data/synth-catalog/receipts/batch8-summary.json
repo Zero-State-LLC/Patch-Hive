@@ -1,7 +1,7 @@
 {
-  "mode": "free-only",
-  "max_paid_fetches": 0,
-  "paid_attempts": 0,
+  "mode": "paid",
+  "max_paid_fetches": 200,
+  "paid_attempts": 144,
   "brands": {
     "candidates": 179,
     "verified": 178,
@@ -11,8 +11,8 @@
   },
   "power_depth": {
     "targets": 21,
-    "found": 3,
-    "unresolved": 18
+    "found": 8,
+    "unresolved": 13
   },
   "paid_command": "python scripts/catalog_batch8.py --max-paid-fetches 200"
 }

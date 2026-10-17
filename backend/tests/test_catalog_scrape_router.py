@@ -196,3 +196,16 @@ def test_private_url_is_blocked(tmp_path: Path) -> None:
     result = scraper.fetch("http://127.0.0.1/secret")
     assert result.receipt["method"] == "blocked_url"
     assert scraper.transport.calls == []  # type: ignore[attr-defined]
+
+
+def test_fake_ip_range_only_trusted_with_opt_in(monkeypatch):
+    import ipaddress
+    import catalog_scrape as cs
+
+    ip = ipaddress.ip_address("198.18.0.1")
+    monkeypatch.delenv("PATCHHIVE_SCRAPE_TRUST_FAKE_IP", raising=False)
+    assert cs._trusted_fake_ip(ip) is False
+    monkeypatch.setenv("PATCHHIVE_SCRAPE_TRUST_FAKE_IP", "1")
+    assert cs._trusted_fake_ip(ip) is True
+    assert cs._trusted_fake_ip(ipaddress.ip_address("10.0.0.1")) is False
+    assert cs._trusted_fake_ip(ipaddress.ip_address("127.0.0.1")) is False

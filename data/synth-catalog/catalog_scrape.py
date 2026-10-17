@@ -543,6 +543,8 @@ class CatalogScraper:
                 ip = ipaddress.ip_address(ip_text)
             except ValueError:
                 return "blocked_url"
+            if _trusted_fake_ip(ip):
+                continue
             if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast:
                 return "blocked_url"
         return None
@@ -681,6 +683,21 @@ def _context_body(data: dict) -> str:
         if isinstance(block, str) and block:
             return block
     return ""
+
+
+_FAKE_IP_NET = ipaddress.ip_network("198.18.0.0/15")
+
+
+def _trusted_fake_ip(ip: ipaddress._BaseAddress) -> bool:
+    """Allow the RFC 2544 fake-IP range only when explicitly opted in.
+
+    Some sandboxes resolve every public host to 198.18.0.0/15 and route it
+    through an egress proxy. Set PATCHHIVE_SCRAPE_TRUST_FAKE_IP=1 there. All
+    other private, loopback, link-local and reserved ranges stay blocked.
+    """
+    if os.environ.get("PATCHHIVE_SCRAPE_TRUST_FAKE_IP", "").strip() != "1":
+        return False
+    return ip.version == 4 and ip in _FAKE_IP_NET
 
 
 def _credits(data: dict, default: float) -> float:

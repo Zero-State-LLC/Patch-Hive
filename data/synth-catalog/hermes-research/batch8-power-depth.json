@@ -9,18 +9,22 @@
       "power_12v_ma": null,
       "power_neg12v_ma": null,
       "power_5v_ma": null,
-      "depth_mm": null,
-      "sources": {},
-      "status": "unresolved",
-      "provenance": "NOT_COMPUTABLE",
+      "depth_mm": 32.0,
+      "sources": {
+        "depth_mm": "https://www.animatoaudio.com/products/pamela-s-new-workout?srsltid=AU7gw4U5d07G9Il1bawutpfF63qK1ufYE6lSV4LV2KsRRGULBazkkgKD"
+      },
+      "status": "found",
+      "provenance": "OBSERVED",
       "conflicts": [],
       "candidate_urls": [
+        "https://eurorackref.com/modules/alm-busy-circuits/pamelas-new-workout/",
+        "https://www.animatoaudio.com/products/pamela-s-new-workout?srsltid=AU7gw4U5d07G9Il1bawutpfF63qK1ufYE6lSV4LV2KsRRGULBazkkgKD",
+        "https://device.report/manual/6509780",
         "https://busycircuits.com/pamela-s-new-workout/",
         "https://busycircuits.com/almpamela-s-new-workout/",
-        "https://www.perfectcircuit.com/alm-busy-circuits-pamela-s-new-workout.html",
-        "https://www.perfectcircuit.com/pamela-s-new-workout.html"
+        "https://www.perfectcircuit.com/alm-busy-circuits-pamela-s-new-workout.html"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 98,
@@ -35,13 +39,14 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
+        "https://www.ebay.com/itm/127850402820",
+        "https://reverb.com/item/94519234-befaco-slicer-v3-sequencer-audio-slicer-diy-used",
+        "https://modularbase.org/modules/befaco-befaco-slicer-v3",
+        "https://iw.manuals.plus/category/befaco/page/3",
         "https://www.befaco.org/en/befaco-slicer-v3/",
-        "https://www.befaco.org/befaco-slicer-v3/",
-        "https://www.befaco.org/en/befacoslicerv3/",
-        "https://www.perfectcircuit.com/befaco-befaco-slicer-v3.html",
-        "https://www.perfectcircuit.com/befaco-slicer-v3.html"
+        "https://www.befaco.org/befaco-slicer-v3/"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 99,
@@ -56,34 +61,40 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
+        "https://www.befaco.org/mixer-2/",
+        "https://www.befaco.org/axbc/",
+        "https://www.befaco.org/bf-22/",
+        "https://www.befaco.org/docs/Pony_VCF/Pony_VCF_User_Manual.pdf",
         "https://www.befaco.org/en/bf20-vcf/",
-        "https://www.befaco.org/bf20-vcf/",
-        "https://www.befaco.org/en/bf20vcf/",
-        "https://www.perfectcircuit.com/befaco-bf20-vcf.html",
-        "https://www.perfectcircuit.com/bf20-vcf.html"
+        "https://www.befaco.org/bf20-vcf/"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 107,
       "brand": "Befaco",
       "name": "Input/Output",
-      "power_12v_ma": null,
-      "power_neg12v_ma": null,
+      "power_12v_ma": 63,
+      "power_neg12v_ma": 63,
       "power_5v_ma": null,
-      "depth_mm": null,
-      "sources": {},
-      "status": "unresolved",
-      "provenance": "NOT_COMPUTABLE",
+      "depth_mm": 33.0,
+      "sources": {
+        "power_12v_ma": "https://reverb.com/item/54830500-divkid-stereo-strip-eurorack-input-output-vca-and-panner-module",
+        "power_neg12v_ma": "https://reverb.com/item/54830500-divkid-stereo-strip-eurorack-input-output-vca-and-panner-module",
+        "depth_mm": "https://reverb.com/item/54830500-divkid-stereo-strip-eurorack-input-output-vca-and-panner-module"
+      },
+      "status": "found",
+      "provenance": "OBSERVED",
       "conflicts": [],
       "candidate_urls": [
+        "https://www.ebay.com/itm/336601379221",
+        "https://www.ebay.com/itm/227398369323",
+        "https://reverb.com/item/102927385-befaco-stereo-strip-eurorack-synthesizer-module-2010-present-black",
+        "https://reverb.com/item/54830500-divkid-stereo-strip-eurorack-input-output-vca-and-panner-module",
         "https://www.befaco.org/en/input-output/",
-        "https://www.befaco.org/input-output/",
-        "https://www.befaco.org/en/inputoutput/",
-        "https://www.perfectcircuit.com/befaco-input-output.html",
-        "https://www.perfectcircuit.com/input-output.html"
+        "https://www.befaco.org/input-output/"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 113,
@@ -98,13 +109,14 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
+        "https://www.befaco.org/noise-plethora/",
+        "https://www.befaco.org/pedal-pow/",
+        "https://befaco.org/docs/Pedal_POW/Pedal_Pow_User_Manual.pdf",
+        "https://www.befaco.org/burst-2/",
         "https://www.befaco.org/en/noise-lag/",
-        "https://www.befaco.org/noise-lag/",
-        "https://www.befaco.org/en/noiselag/",
-        "https://www.perfectcircuit.com/befaco-noise-lag.html",
-        "https://www.perfectcircuit.com/noise-lag.html"
+        "https://www.befaco.org/noise-lag/"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 116,
@@ -112,19 +124,27 @@
       "name": "Out",
       "power_12v_ma": null,
       "power_neg12v_ma": null,
-      "power_5v_ma": null,
+      "power_5v_ma": 0,
       "depth_mm": null,
-      "sources": {},
-      "status": "unresolved",
-      "provenance": "NOT_COMPUTABLE",
-      "conflicts": [],
-      "candidate_urls": [
-        "https://www.befaco.org/en/out/",
-        "https://www.befaco.org/out/",
-        "https://www.perfectcircuit.com/befaco-out.html",
-        "https://www.perfectcircuit.com/out.html"
+      "sources": {
+        "power_5v_ma": "https://www.guitarplectrum.com/product/befaco-out-v3-diy-kit/"
+      },
+      "status": "found",
+      "provenance": "OBSERVED",
+      "conflicts": [
+        "power_12v_ma",
+        "power_neg12v_ma",
+        "depth_mm"
       ],
-      "search_hit_count": 0
+      "candidate_urls": [
+        "http://www.befaco.org/out-v3/",
+        "https://equipboard.com/items/befaco-out-1u-eurorack-synthesizer-module",
+        "https://www.befaco.org/1u-out/",
+        "https://www.guitarplectrum.com/product/befaco-out-v3-diy-kit/",
+        "https://www.befaco.org/en/out/",
+        "https://www.befaco.org/out/"
+      ],
+      "search_hit_count": 5
     },
     {
       "module_id": 123,
@@ -133,19 +153,22 @@
       "power_12v_ma": null,
       "power_neg12v_ma": null,
       "power_5v_ma": null,
-      "depth_mm": null,
-      "sources": {},
-      "status": "unresolved",
-      "provenance": "NOT_COMPUTABLE",
+      "depth_mm": 30.0,
+      "sources": {
+        "depth_mm": "https://reverb.com/item/92130013-befaco-a-b-c-eurorack-module-dual-vca-ring-mod-mixer-6hp"
+      },
+      "status": "found",
+      "provenance": "OBSERVED",
       "conflicts": [],
       "candidate_urls": [
+        "https://modularbase.org/modules/befaco-ring-mod",
+        "https://reverb.com/item/92130013-befaco-a-b-c-eurorack-module-dual-vca-ring-mod-mixer-6hp",
+        "https://www.exploding-shed.com/diy-kits/modular/envelope-modulation/modulation-various/?p=2",
         "https://www.befaco.org/en/ring-mod/",
         "https://www.befaco.org/ring-mod/",
-        "https://www.befaco.org/en/ringmod/",
-        "https://www.perfectcircuit.com/befaco-ring-mod.html",
-        "https://www.perfectcircuit.com/ring-mod.html"
+        "https://www.befaco.org/en/ringmod/"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 125,
@@ -160,37 +183,41 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
+        "https://www.befaco.org/slew/",
+        "https://www.befaco.org/burst-2/",
         "https://www.befaco.org/en/s-h-lag/",
         "https://www.befaco.org/s-h-lag/",
         "https://www.befaco.org/en/shlag/",
-        "https://www.perfectcircuit.com/befaco-s-h-lag.html",
-        "https://www.perfectcircuit.com/s-h-lag.html"
+        "https://www.perfectcircuit.com/befaco-s-h-lag.html"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 126,
       "brand": "Befaco",
       "name": "STmix",
-      "power_12v_ma": 8,
-      "power_neg12v_ma": 10,
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
       "power_5v_ma": null,
       "depth_mm": 20.0,
       "sources": {
-        "power_12v_ma": "https://www.perfectcircuit.com/befaco-stmix.html",
-        "power_neg12v_ma": "https://www.perfectcircuit.com/befaco-stmix.html",
-        "depth_mm": "https://www.perfectcircuit.com/befaco-stmix.html"
+        "depth_mm": "https://www.notice-facile.com/en/manual/1206125/befaco+stmix"
       },
       "status": "found",
       "provenance": "OBSERVED",
-      "conflicts": [],
-      "candidate_urls": [
-        "https://www.befaco.org/en/stmix/",
-        "https://www.befaco.org/stmix/",
-        "https://www.perfectcircuit.com/befaco-stmix.html",
-        "https://www.perfectcircuit.com/stmix.html"
+      "conflicts": [
+        "power_12v_ma",
+        "power_neg12v_ma"
       ],
-      "search_hit_count": 0
+      "candidate_urls": [
+        "https://befaco.org/docs/StMix/StMix_User_Manual.pdf",
+        "https://www.notice-facile.com/en/manual/1206125/befaco+stmix",
+        "https://befaco.org/docs/StMix/1U_STMix_User_Manual.pdf",
+        "https://www.manualslib.com/manual/1567105/Befaco-Stmix.html",
+        "https://www.manualslib.com/manual/3044433/Befaco-1u-Stmix.html",
+        "https://www.befaco.org/en/stmix/"
+      ],
+      "search_hit_count": 5
     },
     {
       "module_id": 129,
@@ -205,13 +232,14 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
+        "https://www.ebay.com/itm/127850402820",
+        "https://reverb.com/item/94519234-befaco-slicer-v3-sequencer-audio-slicer-diy-used",
+        "https://modularbase.org/modules/befaco-befaco-slicer-v3",
+        "https://www.befaco.org/out-v3/",
         "https://www.befaco.org/en/slicer-v3/",
-        "https://www.befaco.org/slicer-v3/",
-        "https://www.befaco.org/en/slicerv3/",
-        "https://www.perfectcircuit.com/befaco-slicer-v3.html",
-        "https://www.perfectcircuit.com/slicer-v3.html"
+        "https://www.befaco.org/slicer-v3/"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 131,
@@ -226,13 +254,14 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
+        "https://modularbase.org/modules/befaco-tube-distortion-vca",
+        "https://is.manuals.plus/category/befaco/page/3",
+        "https://manuals.plus/ru/befaco/hex-mix-vca-module-manual",
+        "https://eu.manuals.plus/befaco/hex-mix-vca-module-manual",
         "https://www.befaco.org/en/tube-distortion-vca/",
-        "https://www.befaco.org/tube-distortion-vca/",
-        "https://www.befaco.org/en/tubedistortionvca/",
-        "https://www.perfectcircuit.com/befaco-tube-distortion-vca.html",
-        "https://www.perfectcircuit.com/tube-distortion-vca.html"
+        "https://www.befaco.org/tube-distortion-vca/"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 132,
@@ -247,33 +276,39 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
+        "https://www.befaco.org/pony-vco/",
+        "https://www.befaco.org/octaves-vco/",
+        "https://www.befaco.org/even-vco/",
         "https://www.befaco.org/en/vco-iii/",
         "https://www.befaco.org/vco-iii/",
-        "https://www.befaco.org/en/vcoiii/",
-        "https://www.perfectcircuit.com/befaco-vco-iii.html",
-        "https://www.perfectcircuit.com/vco-iii.html"
+        "https://www.befaco.org/en/vcoiii/"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 135,
       "brand": "Cwejman",
       "name": "AP-1",
       "power_12v_ma": null,
-      "power_neg12v_ma": null,
+      "power_neg12v_ma": 60,
       "power_5v_ma": null,
-      "depth_mm": null,
-      "sources": {},
-      "status": "unresolved",
-      "provenance": "NOT_COMPUTABLE",
+      "depth_mm": 25.0,
+      "sources": {
+        "power_neg12v_ma": "https://www.cwejmanmusic.com/ap-1mk2",
+        "depth_mm": "https://www.gear4music.com/us/en/Recording-and-Computers/DISC-Cwejman-AP-1-Audio-Processor/21M1"
+      },
+      "status": "found",
+      "provenance": "OBSERVED",
       "conflicts": [],
       "candidate_urls": [
+        "https://www.cwejmanmusic.com/ap-1mk2",
+        "https://www.gear4music.com/us/en/Recording-and-Computers/DISC-Cwejman-AP-1-Audio-Processor/21M1",
+        "https://www.beatgroovemusic.com/product/cwejman-ap-1-mk2-audio-processor/",
         "https://cwejman.net/ap-1/",
         "https://www.cwejman.com/ap-1",
-        "https://www.perfectcircuit.com/cwejman-ap-1.html",
-        "https://www.perfectcircuit.com/ap-1.html"
+        "https://www.perfectcircuit.com/cwejman-ap-1.html"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 141,
@@ -288,12 +323,14 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
+        "https://www.cwejmanmusic.com/dmf-2",
+        "https://synthpedia.net/cwejman/dmf-2/",
+        "https://modularbase.org/modules/cwejman-dmf-2",
         "https://cwejman.net/dmf-2/",
         "https://www.cwejman.com/dmf-2",
-        "https://www.perfectcircuit.com/cwejman-dmf-2.html",
-        "https://www.perfectcircuit.com/dmf-2.html"
+        "https://www.perfectcircuit.com/cwejman-dmf-2.html"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 155,
@@ -308,12 +345,14 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
+        "https://www.bigcitymusic.com/products/vc-fcs-stereo-forward-compressor",
+        "https://www.cwejmanmusic.com/cwejmannet-news",
+        "https://reverb.com/item/34132594-cwejman-vc-fcs-stereo-compressor",
         "https://cwejman.net/vc-fcs-stereo-forward-compressor/",
         "https://www.cwejman.com/vc-fcs-stereo-forward-compressor",
-        "https://www.perfectcircuit.com/cwejman-vc-fcs-stereo-forward-compressor.html",
-        "https://www.perfectcircuit.com/vc-fcs-stereo-forward-compressor.html"
+        "https://www.perfectcircuit.com/cwejman-vc-fcs-stereo-forward-compressor.html"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 165,
@@ -328,14 +367,14 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
-        "https://doepfer.de/a1014.htm",
-        "https://doepfer.de/a101_4.htm",
-        "https://doepfer.de/a101.htm",
-        "https://doepfer.de/a-101-4.htm",
-        "https://www.perfectcircuit.com/doepfer-a-101-4.html",
-        "https://www.perfectcircuit.com/a-101-4.html"
+        "https://www.notice-facile.com/en/manual/1000942/doepfer+a-101",
+        "https://doepfer.de/a100s_e.htm",
+        "https://doepfer.de/WWW2/wp-content/uploads/2014/01/A100_short_form_manual.pdf",
+        "https://doepfer.de/a100_man/A100_intro_e.pdf",
+        "https://doepfer.de/manual_e.htm",
+        "https://doepfer.de/a1014.htm"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 225,
@@ -350,12 +389,14 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
-        "https://www.dreadbox-fx.com/product/milky-way-1u-silver/",
-        "https://www.dreadbox-fx.com/milky-way-1u-silver/",
-        "https://www.perfectcircuit.com/dreadbox-milky-way-1u-silver.html",
-        "https://www.perfectcircuit.com/milky-way-1u-silver.html"
+        "https://www.juno.co.uk/downloads/manual/734890-01U.pdf/",
+        "https://www.endorphin.es/modules/p/milky-way-1u",
+        "https://www.elevatorsound.com/product/endorphin-es-milky-way-eurorack-stereo-fx-module-1u-silver/?srsltid=AU7gw4WICkpw7nbPRtqlY4blQbRIUBvBRpyFcid9zR_ezOhLns-xOTwA",
+        "https://www.manual.pe/endorphines/milky-way/manual",
+        "https://endorphines.info/manuals/Milky_Way_manual_new.pdf",
+        "https://www.dreadbox-fx.com/product/milky-way-1u-silver/"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 248,
@@ -370,12 +411,14 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
+        "https://equipboard.com/items/dreadbox-ypsilon-module",
+        "https://vintageking.com/dreadbox-ypsilon-eurorack-module",
+        "https://www.guitarcenter.com/Dreadbox/Ypsilon-Module-1500000026772.gc",
+        "https://www.musicstore.com/en_US/USD/Dreadbox-Ypsilon-LFO-Attenuator/art-SYN0004969-000",
         "https://www.dreadbox-fx.com/product/ypsilon/",
-        "https://www.dreadbox-fx.com/ypsilon/",
-        "https://www.perfectcircuit.com/dreadbox-ypsilon.html",
-        "https://www.perfectcircuit.com/ypsilon.html"
+        "https://www.dreadbox-fx.com/ypsilon/"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 280,
@@ -390,12 +433,14 @@
       "provenance": "NOT_COMPUTABLE",
       "conflicts": [],
       "candidate_urls": [
-        "https://www.ericasynths.lv/shop/eurorack-modules/matrix-mixer/",
-        "https://www.ericasynths.lv/shop/desktop-devices/matrix-mixer/",
-        "https://www.perfectcircuit.com/erica-synths-matrix-mixer.html",
-        "https://www.perfectcircuit.com/matrix-mixer.html"
+        "https://www.manualslib.com/manual/2551355/Erica-Synths-Matrix-Mixer.html",
+        "https://manuals.plus/asin/B09B7HTVR8.pdf",
+        "https://www.ericasynths.lv/desktop-matrix-mixer-1982/",
+        "https://manuals.plus/erica-synths/matrix-mixer-manual.pdf",
+        "https://images.equipboard.com/uploads/item/manual/112512/erica-synths-matrix-mixer-manual.pdf",
+        "https://www.ericasynths.lv/shop/eurorack-modules/matrix-mixer/"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 371,
@@ -404,21 +449,25 @@
       "power_12v_ma": 75,
       "power_neg12v_ma": 75,
       "power_5v_ma": null,
-      "depth_mm": 43.0,
+      "depth_mm": null,
       "sources": {
-        "power_12v_ma": "https://www.perfectcircuit.com/joranalogue-filter-8.html",
-        "power_neg12v_ma": "https://www.perfectcircuit.com/joranalogue-filter-8.html",
-        "depth_mm": "https://www.perfectcircuit.com/joranalogue-filter-8.html"
+        "power_12v_ma": "https://www.notice-facile.com/en/manual/976684/joranalogue+filter-8",
+        "power_neg12v_ma": "https://www.notice-facile.com/en/manual/976684/joranalogue+filter-8"
       },
       "status": "found",
       "provenance": "OBSERVED",
-      "conflicts": [],
+      "conflicts": [
+        "depth_mm"
+      ],
       "candidate_urls": [
         "https://joranalogue.com/products/filter-8",
-        "https://www.perfectcircuit.com/joranalogue-filter-8.html",
-        "https://www.perfectcircuit.com/filter-8.html"
+        "https://www.manualslib.com/manual/2065127/Joranalogue-Filter-8.html",
+        "https://www.notice-facile.com/en/manual/976684/joranalogue+filter-8",
+        "https://www.manua.ls/joranalogue/filter-8/manual",
+        "https://manualmachine.com/joranalogueaudiodesign/filter8/2574658-user-manual/",
+        "https://www.perfectcircuit.com/joranalogue-filter-8.html"
       ],
-      "search_hit_count": 0
+      "search_hit_count": 5
     },
     {
       "module_id": 372,
@@ -427,21 +476,25 @@
       "power_12v_ma": 130,
       "power_neg12v_ma": 115,
       "power_5v_ma": null,
-      "depth_mm": 43.0,
+      "depth_mm": null,
       "sources": {
         "power_12v_ma": "https://www.perfectcircuit.com/joranalogue-generate-3.html",
-        "power_neg12v_ma": "https://www.perfectcircuit.com/joranalogue-generate-3.html",
-        "depth_mm": "https://www.perfectcircuit.com/joranalogue-generate-3.html"
+        "power_neg12v_ma": "https://www.perfectcircuit.com/joranalogue-generate-3.html"
       },
       "status": "found",
       "provenance": "OBSERVED",
-      "conflicts": [],
-      "candidate_urls": [
-        "https://joranalogue.com/products/generate-3",
-        "https://www.perfectcircuit.com/joranalogue-generate-3.html",
-        "https://www.perfectcircuit.com/generate-3.html"
+      "conflicts": [
+        "depth_mm"
       ],
-      "search_hit_count": 0
+      "candidate_urls": [
+        "https://manuals.plus/joranalogue-audio-design/478960-generate-3-eurorack-module-manual.pdf",
+        "https://www.manualslib.com/manual/2065133/Joranalogue-Generate-3.html",
+        "https://manuals.plus/m/88f76530d2ff1a0110410ff01e034d71727b860517f6df95e178944536ae0d5a",
+        "https://joranalogue.com/products/generate-3",
+        "https://www.analoguehaven.com/joranalogue-audio-design/generate-3/manual.pdf",
+        "https://www.perfectcircuit.com/joranalogue-generate-3.html"
+      ],
+      "search_hit_count": 5
     }
   ]
 }
