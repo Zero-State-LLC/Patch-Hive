@@ -1,0 +1,939 @@
+{
+ "dataset_version": "module-catalog-hp-overlay-v2",
+ "generated_from": "maker re-verify of ModularGrid-derived values (scrape-router free fetch: http/crawl4ai; robots.txt honoured; ModularGrid never fetched)",
+ "policy": "fill-null only; maker page values only; ModularGrid values are archived in catalog_value_archive, never written here",
+ "generated_at": "2026-10-17T12:20:22-0700",
+ "count": 93,
+ "entries": [
+  {
+   "slug": "1010-music-bluebox",
+   "brand": "1010 Music",
+   "name": "bluebox",
+   "hp": 30,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://1010music.com/product/bluebox-eurorack",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "1v-oct-the-centre",
+   "brand": "1V/Oct",
+   "name": "The Centre",
+   "hp": 16,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://1voct.com/product/update/2021/05/28/the-centre-is-here.html",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "333modules-333-cv4lfo",
+   "brand": "333modules",
+   "name": "333-CV4LFO",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://333modules.com/cv4lfo/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "333modules-333-dual-lfo-s-h",
+   "brand": "333modules",
+   "name": "333-Dual LFO-S&H",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://333modules.com/dual-lfo-sh/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "333modules-333-in-v2",
+   "brand": "333modules",
+   "name": "333-IN V2",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://333modules.com/in-v2/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "333modules-333-out-v2",
+   "brand": "333modules",
+   "name": "333-OUT V2",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://333modules.com/out-v2/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "333modules-333-overfeed",
+   "brand": "333modules",
+   "name": "333-OVERFEED",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://333modules.com/overfeed/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "333modules-333-vco-3340",
+   "brand": "333modules",
+   "name": "333-Vco 3340",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://333modules.com/vco-3340/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "4ms-company-listen-four",
+   "brand": "4ms Company",
+   "name": "Listen Four",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://4mscompany.com/p.php?p=813",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "4ms-company-row-power-25",
+   "brand": "4ms Company",
+   "name": "ROW POWER 25",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://4mscompany.com/rowpow25.php",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "4ms-company-stereo-triggered-sampler",
+   "brand": "4ms Company",
+   "name": "Stereo Triggered Sampler",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://4mscompany.com/sts.php",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "acl-envelope-x3-v2",
+   "brand": "ACL",
+   "name": "Envelope X3 v2",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.acl-synth.com/products/envelope-x3.php",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "acl-m-s-matrix",
+   "brand": "ACL",
+   "name": "M/S-MATRIX",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.acl-synth.com/products/ms-matrix.php",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "acl-oktave",
+   "brand": "ACL",
+   "name": "Oktave",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://acl-synth.com/products/oktave.php",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "acl-sinfonion",
+   "brand": "ACL",
+   "name": "Sinfonion",
+   "hp": 42,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.acl-synth.com/products/sinfonion.php",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "ai-synthesis-ai001-multiple",
+   "brand": "AI Synthesis",
+   "name": "AI001 Multiple",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://aisynthesis.com/product/multiple-eurorack-synthesizer-module/?srsltid=AU7gw4WdkRUTc84bRu2RU2Y5sk6tb9P9yFmyj0tdjPPYhHrIHR_T1nqV",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "ajh-synth-finaliser-r-eq",
+   "brand": "AJH Synth",
+   "name": "FINALISER R-EQ",
+   "hp": 18,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ajhsynth.com/Finaliser.html",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "ajh-synth-next-phase",
+   "brand": "AJH Synth",
+   "name": "Next Phase",
+   "hp": 18,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://ajhsynth.com/NextPhase.html",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "ajh-synth-ring-sm-black",
+   "brand": "AJH Synth",
+   "name": "Ring SM (Black)",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://ajhsynth.com/Ring_SM.html",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "alm-busy-circuits-akemie-s-castle",
+   "brand": "ALM Busy Circuits",
+   "name": "Akemie's Castle",
+   "hp": 38,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://busycircuits.com/pages/alm011?srsltid=AU7gw4UYJ1vyBk1LqO8fHWaOxUo8H3o9hnReIUgmOqQvzAgnySZHGoT4",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "alm-busy-circuits-mco",
+   "brand": "ALM Busy Circuits",
+   "name": "MCO",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://busycircuits.com/pages/alm021?srsltid=AU7gw4Wbz3iOIY1d_t_B4XaSJiB-mKNBOZ86HYqniEkAF72S2ITxL06e",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "alm-busy-circuits-mco-mkii",
+   "brand": "ALM Busy Circuits",
+   "name": "MCO (mkII)",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://busycircuits.com/pages/alm046?srsltid=AU7gw4XNdgm2YbrPicKpcd_8PtJ_KpY30y9RUCW9BUASfmAkXcHptu2H",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "alm-busy-circuits-squid-salmple",
+   "brand": "ALM Busy Circuits",
+   "name": "Squid Salmple",
+   "hp": 21,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://busycircuits.com/pages/alm022?srsltid=AU7gw4Wl3kmJkYfP_u1VNZoLnisqewlnT0D8Ax1dI-jRwBeUpmFjiS7U",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "amsynths-am1031-multi-purpose-filter",
+   "brand": "AMSynths",
+   "name": "AM1031 Multi Purpose Filter",
+   "hp": 7,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://amsynths.co.uk/aiovg_videos/am1031-multipurpose-filter/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "amsynths-am8069",
+   "brand": "AMSynths",
+   "name": "AM8069",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://amsynths.co.uk/home/products/filters/am8069-vcf-vca/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "amsynths-am8132-cv-mixer",
+   "brand": "AMSynths",
+   "name": "AM8132 CV MIXER",
+   "hp": 16,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://amsynths.co.uk/home/products/mixers/am8132-cv-mixer/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "abyss-devices-amix",
+   "brand": "Abyss Devices",
+   "name": "aMix",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://abyssdevices.com/product/octamix/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "abyss-devices-amp",
+   "brand": "Abyss Devices",
+   "name": "AMP",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://abyssdevices.com/product/line-level-instrument-amplifier-50x-gain-for-eurorack/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "abyss-devices-mtr",
+   "brand": "Abyss Devices",
+   "name": "MTR",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://abyssdevices.com/product/mtr-2hp-eurorack-led-vu-meter/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "acid-rain-technology-junction",
+   "brand": "Acid Rain Technology",
+   "name": "Junction",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://acidraintechnology.com/products/junction",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "acid-rain-technology-trellis",
+   "brand": "Acid Rain Technology",
+   "name": "Trellis",
+   "hp": 22,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://acidraintechnology.com/products/trellis",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "after-later-audio-brooks",
+   "brand": "After Later Audio",
+   "name": "Brooks",
+   "hp": 104,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://afterlateraudio.com/products/brooks",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "after-later-audio-cloverleaf",
+   "brand": "After Later Audio",
+   "name": "Cloverleaf",
+   "hp": 104,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://afterlateraudio.com/products/cloverleaf",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "after-later-audio-g-t",
+   "brand": "After Later Audio",
+   "name": "G&T",
+   "hp": 104,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://afterlateraudio.com/products/gt-gates-and-triggers?srsltid=AU7gw4WxbvM8Rj8WKOzNdsJqsq8VoT_WBo8DTr6f1od6GpL0CN0dP6By",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "after-later-audio-quarks",
+   "brand": "After Later Audio",
+   "name": "Quarks",
+   "hp": 104,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://afterlateraudio.com/products/quarks",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "after-later-audio-scenes",
+   "brand": "After Later Audio",
+   "name": "Scenes",
+   "hp": 104,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://afterlateraudio.com/products/scenes",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "after-later-audio-valley",
+   "brand": "After Later Audio",
+   "name": "Valley",
+   "hp": 104,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://afterlateraudio.com/products/valley",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "aircraft-designs-ember",
+   "brand": "Aircraft Designs",
+   "name": "EMBER",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://aircraftdesigns.info/ember",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "allen-synthesis-europi",
+   "brand": "Allen Synthesis",
+   "name": "EuroPi",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://allensynthesis.co.uk/europi/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "allen-synthesis-usb-router",
+   "brand": "Allen Synthesis",
+   "name": "USB Router",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://allensynthesis.co.uk/usb-router/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "alright-devices-chronoblob",
+   "brand": "Alright Devices",
+   "name": "Chronoblob",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://alrightdevices.bigcartel.com/product/chronoblob",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "alright-devices-chronoblob2",
+   "brand": "Alright Devices",
+   "name": "Chronoblob2",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://alrightdevices.bigcartel.com/product/chronoblob2",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "alright-devices-t-wrex",
+   "brand": "Alright Devices",
+   "name": "T-Wrex",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://alrightdevices.bigcartel.com/product/t-wrex",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "alright-devices-zzzorb",
+   "brand": "Alright Devices",
+   "name": "Zzzorb",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://alrightdevices.bigcartel.com/product/zzzorb",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "alyseum-hold",
+   "brand": "Alyseum",
+   "name": "HOLD",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.alyseum.com/hold.html",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "alyseum-matrix-ii",
+   "brand": "Alyseum",
+   "name": "MATRIX II",
+   "hp": 22,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://alyseum.com/matrix2.html",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "alyseum-push",
+   "brand": "Alyseum",
+   "name": "PUSH",
+   "hp": 3,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.alyseum.com/push.html",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "alyseum-q-mix",
+   "brand": "Alyseum",
+   "name": "Q-MIX",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.alyseum.com/q-mix.html",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "analogue-systems-rs-30",
+   "brand": "Analogue Systems",
+   "name": "RS-30",
+   "hp": 84,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs300",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "analogue-systems-rs-375",
+   "brand": "Analogue Systems",
+   "name": "RS-375",
+   "hp": 48,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs375",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "analogue-systems-rs-40",
+   "brand": "Analogue Systems",
+   "name": "RS-40",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs40",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "analogue-systems-rs-60",
+   "brand": "Analogue Systems",
+   "name": "RS-60",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs60",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "animodule-gate-mod",
+   "brand": "AniModule",
+   "name": "Gate_Mod",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.animodule.com/product/gate_mod",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "animodule-lil-monster-vco",
+   "brand": "AniModule",
+   "name": "Lil' Monster VCO",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.animodule.com/product/lil-monster-lm-vco",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "animodule-xxx-or",
+   "brand": "AniModule",
+   "name": "XXX_OR",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.animodule.com/product/xxx_or",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "animal-factory-amplification-bonesaw",
+   "brand": "Animal Factory Amplification",
+   "name": "Bonesaw",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://animalfactoryamps.com/products/bonesaw-eurorack-filter",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "animal-factory-amplification-godeater",
+   "brand": "Animal Factory Amplification",
+   "name": "Godeater",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://animalfactoryamps.com/products/godeater-eurorack-fuzztortion-module",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "animal-factory-amplification-pit-viper",
+   "brand": "Animal Factory Amplification",
+   "name": "Pit Viper",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://animalfactoryamps.com/products/racketier-2-pit-viper-module",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "animal-factory-amplification-tannh-user-gates",
+   "brand": "Animal Factory Amplification",
+   "name": "Tannh\u00e4user Gates",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://animalfactoryamps.com/products/eurorack-tannhauser-gates",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "befaco-adsr",
+   "brand": "Befaco",
+   "name": "ADSR",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/vc-adsr/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "befaco-instrument-interface",
+   "brand": "Befaco",
+   "name": "Instrument Interface",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/i4-instrument-interface/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "befaco-sallen-key-filter-bf-22",
+   "brand": "Befaco",
+   "name": "Sallen Key Filter BF-22",
+   "hp": 17,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/bf-22/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "cwejman-adsr-vc2",
+   "brand": "Cwejman",
+   "name": "ADSR-VC2",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.cwejmanmusic.com/adsr-vc2",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "cwejman-ap-1",
+   "brand": "Cwejman",
+   "name": "AP-1",
+   "hp": 18,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.cwejmanmusic.com/ap-1mk2",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "cwejman-bld",
+   "brand": "Cwejman",
+   "name": "BLD",
+   "hp": 24,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.cwejmanmusic.com/bld-2",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "cwejman-mmf-1",
+   "brand": "Cwejman",
+   "name": "MMF-1",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.cwejmanmusic.com/mmf-1s",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "doepfer-a-101-3",
+   "brand": "Doepfer",
+   "name": "A-101-3",
+   "hp": 30,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/A1013.htm",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "doepfer-a-101-9",
+   "brand": "Doepfer",
+   "name": "A-101-9",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/A1019.htm",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "doepfer-a-118-1",
+   "brand": "Doepfer",
+   "name": "A-118-1",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a118.htm",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "doepfer-a-137-2",
+   "brand": "Doepfer",
+   "name": "A-137-2",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1372.htm",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "doepfer-a-170-2",
+   "brand": "Doepfer",
+   "name": "A-170-2",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a170.htm",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "endorphin-es-autopilot-golden",
+   "brand": "Endorphin.es",
+   "name": "Autopilot (golden)",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.endorphin.es/modules/p/autopilot",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "endorphin-es-blck-noir-black",
+   "brand": "Endorphin.es",
+   "name": "Blck_Noir (black)",
+   "hp": 30,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.endorphin.es/modules/p/blck-noir",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "endorphin-es-gateway-terminal-expansion-black",
+   "brand": "Endorphin.es",
+   "name": "Gateway Terminal Expansion (black)",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.endorphin.es/discontinued/p/gateway",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "endorphin-es-gateway-terminal-expansion-golden",
+   "brand": "Endorphin.es",
+   "name": "Gateway Terminal Expansion (golden)",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.endorphin.es/discontinued/p/gateway",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "endorphin-es-grand-terminal-black",
+   "brand": "Endorphin.es",
+   "name": "Grand Terminal (black)",
+   "hp": 26,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.endorphin.es/modules/p/grand-terminal",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "endorphin-es-grand-terminal-golden",
+   "brand": "Endorphin.es",
+   "name": "Grand Terminal (golden)",
+   "hp": 26,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.endorphin.es/modules/p/grand-terminal",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "endorphin-es-milky-way-1u-silver",
+   "brand": "Endorphin.es",
+   "name": "Milky Way 1U (silver)",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.endorphin.es/modules/p/milky-way",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "endorphin-es-terminal",
+   "brand": "Endorphin.es",
+   "name": "Terminal",
+   "hp": 26,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.endorphin.es/discontinued/p/terminal",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "erica-synths-fusion-ring-modulator",
+   "brand": "Erica Synths",
+   "name": "Fusion Ring modulator",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/fusion-ring-modulator-v2-33/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "erica-synths-sequential-switch",
+   "brand": "Erica Synths",
+   "name": "Sequential Switch",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/sequential-switch-v2-73/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "expert-sleepers-disting-mk1",
+   "brand": "Expert Sleepers",
+   "name": "Disting mk1",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/distingmk3.html",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "expert-sleepers-es-1",
+   "brand": "Expert Sleepers",
+   "name": "ES-1",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/es1.html",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "expert-sleepers-esx-4cv",
+   "brand": "Expert Sleepers",
+   "name": "ESX-4CV",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/esx4cv.html",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "instruo-c-is-2",
+   "brand": "Instruo",
+   "name": "c\u00e8is[2]",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.instruomodular.com/product/ceis2/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "instruo-glo-c",
+   "brand": "Instruo",
+   "name": "glo\u0304c",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.instruomodular.com/product/gloc/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "intellijel-aux-mix",
+   "brand": "Intellijel",
+   "name": "Aux Mix",
+   "hp": 32,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/1u/aux-mix-1u/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "intellijel-corgasmatron",
+   "brand": "Intellijel",
+   "name": "Corgasmatron",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/morgasmatron/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "intellijel-planar",
+   "brand": "Intellijel",
+   "name": "Planar",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/planar-2/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "intellijel-stereo-line-out-1u",
+   "brand": "Intellijel",
+   "name": "Stereo Line Out 1U",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/1u/stereo-line-out-1u/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "make-noise-analogue-memory",
+   "brand": "Make Noise",
+   "name": "Analogue Memory",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/retired/retired-modules/analog-memory/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "make-noise-format-jumbler",
+   "brand": "Make Noise",
+   "name": "Format Jumbler",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/jumbler/",
+   "verification": "maker-reverify-v1"
+  },
+  {
+   "slug": "apf-audio-tiliqua-expander-eurorack-pmod",
+   "brand": "apf.audio",
+   "name": "Tiliqua Expander ('eurorack-pmod')",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://apf.audio/modules/current/tiliqua/",
+   "verification": "maker-reverify-v1"
+  }
+ ]
+}
