@@ -76,3 +76,20 @@ def test_verified_entry_that_disagrees_with_stored_values_flags_instead_of_verif
     assert existing["power_neg12v_ma"] == 10
     assert existing["verification_status"] == "flagged"
     assert existing["depth_mm"] == 38.0
+
+
+def test_flagged_row_is_left_for_review_without_conflict():
+    plan = P.Plan()
+    existing = {
+        "brand": "Noise Engineering",
+        "name": "Basimilus Iteritas Alter",
+        "power_12v_ma": 70,
+        "power_neg12v_ma": 10,
+        "power_5v_ma": 0,
+        "depth_mm": 38.0,
+        "verification_status": "flagged",
+        "verification_source_url": "https://example.com/manual",
+    }
+    P._schedule_fill(plan, existing, {"verification_status": "verified"}, kind="modules_candidates")
+    assert plan.conflicts == []
+    assert existing["verification_status"] == "flagged"
