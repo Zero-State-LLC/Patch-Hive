@@ -550,6 +550,15 @@ def _schedule_module(plan: Plan, modules: dict[tuple[str, str], dict[str, Any]],
 
 def _schedule_fill(plan: Plan, existing: dict[str, Any], incoming: dict[str, Any], *, kind: str) -> None:
     fill: dict[str, Any] = {}
+    if incoming.get("verification_status") == "verified" and any(
+        existing.get(name) is not None
+        and incoming.get(name) is not None
+        and float(existing[name]) != float(incoming[name])
+        for name in POWER_FIELDS
+    ):
+        # Stored values disagree with the verified source. Never overwrite them;
+        # mark the row for review instead of calling it verified.
+        incoming = {**incoming, "verification_status": "flagged"}
     for field_name in POWER_FIELDS:
         if existing.get(field_name) is None and incoming.get(field_name) is not None:
             fill[field_name] = incoming[field_name]
