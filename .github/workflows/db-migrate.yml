@@ -1,0 +1,40 @@
+name: DB migrate
+
+# Manual only. Runs `alembic upgrade head` against the Neon staging or prod branch.
+# Connection strings come from repo secrets PATCHHIVE_DATABASE_URL_STAGING / _PROD.
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Database to migrate
+        required: true
+        type: choice
+        options: [staging, prod]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-migrate-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install backend
+        working-directory: backend
+        run: python -m pip install -e .
+      - name: alembic upgrade head
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ inputs.target == 'prod' && secrets.PATCHHIVE_DATABASE_URL_PROD || secrets.PATCHHIVE_DATABASE_URL_STAGING }}
+        run: |
+          python -m alembic upgrade head
+          python -m alembic current
