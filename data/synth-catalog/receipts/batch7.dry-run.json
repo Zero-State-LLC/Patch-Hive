@@ -1,0 +1,32 @@
+{
+  "receipt": "batch7-dry-run",
+  "generated_at": "2026-10-17T02:41:28.831247+00:00",
+  "mode": "DRY_RUN (no DB writes)",
+  "inputs": {
+    "overlays/module-power-depth-v5.json": "230e82280230fd04f48e137aaa0581b0e9bd429c54f6d85fc439838c7cdfda4e",
+    "overlays/catalog-new-brand-candidates-v1.json": "991f9cf853cf2261a3feea12e9a9c8cebe638f4b94778f9d6c0e6be57e87d336",
+    "hermes-research/batch7-targets.json": "2343141785378bb3b923ad09f2e9a6534e5e7009470d396bb20e85212e07aadc",
+    "hermes-research/batch7-results.json": "3ac8dc28dec2936d952eccfeaf349ac193ce3fd55ae80b397eed432a26d93a89",
+    "hermes-research/batch7b-new-brand-modules.json": "f2a19b8af1045038325380e069c26959bcc302972f71fd3a5da4f328fd85c371"
+  },
+  "power_depth_v5": {
+    "entries": 1,
+    "would_fill_null_only": true,
+    "targets_retried": 23,
+    "still_null": 22
+  },
+  "new_brand_candidates": {
+    "rows": 179,
+    "brands": 39,
+    "with_hp": 179,
+    "with_power_12v": 144,
+    "with_depth": 144
+  },
+  "hp_excluded_non_eurorack": 3,
+  "spend": {
+    "router_credits": 68,
+    "backends": "http (free) + cache; context.dev search 40 credits; 28 credits on 7b fallbacks",
+    "usd_marginal": "0 within prepaid plan quotas (context.dev Developer 7,500/mo; overage would be $0.15 at $2.20/1k)"
+  },
+  "admit_requires": "Danny yes; then python scripts/apply_module_power_depth_overlay.py --overlay data/synth-catalog/overlays/module-power-depth-v5.json --receipt ... ; new-brand candidates need an importer path (not yet built)"
+}
