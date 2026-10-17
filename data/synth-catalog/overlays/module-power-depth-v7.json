@@ -1,6 +1,6 @@
 {
   "dataset_version": "module-power-depth-overlay-v7",
-  "policy": "fill-null only; values verified against manufacturer pages or ModularGrid on 2026-10-17. Dropped wrong matches: Befaco Input/Output (DivKid Stereo Strip listing), Befaco RING MOD (A*B+C listing), Befaco Out (Out V3 kit, different product), Cwejman AP-1 (AP-1 MK2 page; values mismatched).",
+  "policy": "fill-null only; values verified against manufacturer pages on 2026-10-17. Dropped wrong matches: Befaco Input/Output (DivKid Stereo Strip listing), Befaco RING MOD (A*B+C listing), Befaco Out (Out V3 kit, different product), Cwejman AP-1 (AP-1 MK2 page; values mismatched). No ModularGrid data is used (its ToS prohibits reuse).",
   "count": 4,
   "entries": [
     {
@@ -41,10 +41,10 @@
       "module_id": 371,
       "brand": "Joranalogue",
       "name": "Filter 8",
-      "source_url": "https://modulargrid.net/e/joranalogue-audio-design-filter-8",
+      "source_url": "https://joranalogue.com/products/filter-8",
       "sources": {
-        "power_12v_ma": "https://modulargrid.net/e/joranalogue-audio-design-filter-8",
-        "power_neg12v_ma": "https://modulargrid.net/e/joranalogue-audio-design-filter-8"
+        "power_12v_ma": "https://joranalogue.com/products/filter-8",
+        "power_neg12v_ma": "https://joranalogue.com/products/filter-8"
       },
       "power_12v_ma": 75,
       "power_neg12v_ma": 75,
@@ -57,10 +57,10 @@
       "module_id": 372,
       "brand": "Joranalogue",
       "name": "Generate 3",
-      "source_url": "https://modulargrid.net/e/joranalogue-audio-design-generate-3",
+      "source_url": "https://joranalogue.com/products/generate-3",
       "sources": {
-        "power_12v_ma": "https://modulargrid.net/e/joranalogue-audio-design-generate-3",
-        "power_neg12v_ma": "https://modulargrid.net/e/joranalogue-audio-design-generate-3"
+        "power_12v_ma": "https://joranalogue.com/products/generate-3",
+        "power_neg12v_ma": "https://joranalogue.com/products/generate-3"
       },
       "power_12v_ma": 130,
       "power_neg12v_ma": 115,
