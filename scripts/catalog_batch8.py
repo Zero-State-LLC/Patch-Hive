@@ -99,7 +99,7 @@ def main(argv: list[str] | None = None) -> int:
     found = [row for row in power_rows if row.get("status") == "found"]
     if found:
         overlay = {
-            "dataset_version": "module-power-depth-overlay-v6",
+            "dataset_version": "module-power-depth-overlay-v7",
             "policy": "batch8 search; fill-null only; OBSERVED values with source_url; unresolved rows omitted",
             "count": len(found),
             "entries": [
@@ -119,7 +119,7 @@ def main(argv: list[str] | None = None) -> int:
                 for row in found
             ],
         }
-        _write(CATALOG / "overlays" / "module-power-depth-v6.json", overlay)
+        _write(CATALOG / "overlays" / "module-power-depth-v7.json", overlay)
 
     summary = {
         "mode": "free-only" if args.max_paid_fetches == 0 else "paid",
