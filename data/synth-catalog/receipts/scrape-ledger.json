@@ -1,0 +1,11 @@
+{
+  "paid_fetches": 0,
+  "credits_by_backend": {},
+  "calls_by_method": {
+    "free_http": 254,
+    "skipped_no_key": 42,
+    "robots_unavailable": 38,
+    "cache": 1
+  },
+  "updated_at": "2026-10-17T05:10:01Z"
+}

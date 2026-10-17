@@ -1,0 +1,69 @@
+name: DB load
+
+# Manual catalog load against Neon. Dry-run is the default and writes nothing.
+# Apply mode dumps the affected tables first and uploads that dump.
+# DATABASE_URL is taken from Actions secrets and is never echoed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Database to load
+        required: true
+        type: choice
+        options: [staging, prod]
+      mode:
+        description: dry-run writes nothing; apply writes after a dump
+        required: true
+        type: choice
+        default: dry-run
+        options: [dry-run, apply]
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: neon-db-${{ inputs.env }}
+  cancel-in-progress: false
+
+jobs:
+  load:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install backend
+        working-directory: backend
+        run: python -m pip install -e .
+      - name: Install pg_dump
+        if: inputs.mode == 'apply'
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Load catalog
+        env:
+          DATABASE_URL: ${{ inputs.env == 'prod' && secrets.PATCHHIVE_DATABASE_URL_PROD || secrets.PATCHHIVE_DATABASE_URL_STAGING }}
+          PATCHHIVE_DB_ENV: ${{ inputs.env }}
+          PATCHHIVE_LOAD_MODE: ${{ inputs.mode }}
+        run: python scripts/catalog_actions_load.py --allow-nonlocal
+      - name: Upload receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog-load-receipt-${{ inputs.env }}-${{ inputs.mode }}
+          path: |
+            load-artifacts/receipt.json
+            load-artifacts/population-upsert.sql
+            load-artifacts/counts-before.json
+            load-artifacts/counts-after.json
+          if-no-files-found: warn
+      - name: Upload pre-apply dump
+        if: always() && inputs.mode == 'apply'
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog-load-pre-apply-${{ inputs.env }}
+          path: load-artifacts/pre-apply.dump
+          if-no-files-found: error

@@ -1,0 +1,447 @@
+{
+  "batch": "batch8",
+  "complete": true,
+  "rows": [
+    {
+      "module_id": 55,
+      "brand": "ALM Busy Circuits",
+      "name": "Pamela's NEW Workout",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://busycircuits.com/pamela-s-new-workout/",
+        "https://busycircuits.com/almpamela-s-new-workout/",
+        "https://www.perfectcircuit.com/alm-busy-circuits-pamela-s-new-workout.html",
+        "https://www.perfectcircuit.com/pamela-s-new-workout.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 98,
+      "brand": "Befaco",
+      "name": "BEFACO SLICER V3",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.befaco.org/en/befaco-slicer-v3/",
+        "https://www.befaco.org/befaco-slicer-v3/",
+        "https://www.befaco.org/en/befacoslicerv3/",
+        "https://www.perfectcircuit.com/befaco-befaco-slicer-v3.html",
+        "https://www.perfectcircuit.com/befaco-slicer-v3.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 99,
+      "brand": "Befaco",
+      "name": "BF20 VCF",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.befaco.org/en/bf20-vcf/",
+        "https://www.befaco.org/bf20-vcf/",
+        "https://www.befaco.org/en/bf20vcf/",
+        "https://www.perfectcircuit.com/befaco-bf20-vcf.html",
+        "https://www.perfectcircuit.com/bf20-vcf.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 107,
+      "brand": "Befaco",
+      "name": "Input/Output",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.befaco.org/en/input-output/",
+        "https://www.befaco.org/input-output/",
+        "https://www.befaco.org/en/inputoutput/",
+        "https://www.perfectcircuit.com/befaco-input-output.html",
+        "https://www.perfectcircuit.com/input-output.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 113,
+      "brand": "Befaco",
+      "name": "Noise & Lag",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.befaco.org/en/noise-lag/",
+        "https://www.befaco.org/noise-lag/",
+        "https://www.befaco.org/en/noiselag/",
+        "https://www.perfectcircuit.com/befaco-noise-lag.html",
+        "https://www.perfectcircuit.com/noise-lag.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 116,
+      "brand": "Befaco",
+      "name": "Out",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.befaco.org/en/out/",
+        "https://www.befaco.org/out/",
+        "https://www.perfectcircuit.com/befaco-out.html",
+        "https://www.perfectcircuit.com/out.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 123,
+      "brand": "Befaco",
+      "name": "RING MOD",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.befaco.org/en/ring-mod/",
+        "https://www.befaco.org/ring-mod/",
+        "https://www.befaco.org/en/ringmod/",
+        "https://www.perfectcircuit.com/befaco-ring-mod.html",
+        "https://www.perfectcircuit.com/ring-mod.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 125,
+      "brand": "Befaco",
+      "name": "S&H + Lag",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.befaco.org/en/s-h-lag/",
+        "https://www.befaco.org/s-h-lag/",
+        "https://www.befaco.org/en/shlag/",
+        "https://www.perfectcircuit.com/befaco-s-h-lag.html",
+        "https://www.perfectcircuit.com/s-h-lag.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 126,
+      "brand": "Befaco",
+      "name": "STmix",
+      "power_12v_ma": 8,
+      "power_neg12v_ma": 10,
+      "power_5v_ma": null,
+      "depth_mm": 20.0,
+      "sources": {
+        "power_12v_ma": "https://www.perfectcircuit.com/befaco-stmix.html",
+        "power_neg12v_ma": "https://www.perfectcircuit.com/befaco-stmix.html",
+        "depth_mm": "https://www.perfectcircuit.com/befaco-stmix.html"
+      },
+      "status": "found",
+      "provenance": "OBSERVED",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.befaco.org/en/stmix/",
+        "https://www.befaco.org/stmix/",
+        "https://www.perfectcircuit.com/befaco-stmix.html",
+        "https://www.perfectcircuit.com/stmix.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 129,
+      "brand": "Befaco",
+      "name": "Slicer V3",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.befaco.org/en/slicer-v3/",
+        "https://www.befaco.org/slicer-v3/",
+        "https://www.befaco.org/en/slicerv3/",
+        "https://www.perfectcircuit.com/befaco-slicer-v3.html",
+        "https://www.perfectcircuit.com/slicer-v3.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 131,
+      "brand": "Befaco",
+      "name": "Tube Distortion VCA",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.befaco.org/en/tube-distortion-vca/",
+        "https://www.befaco.org/tube-distortion-vca/",
+        "https://www.befaco.org/en/tubedistortionvca/",
+        "https://www.perfectcircuit.com/befaco-tube-distortion-vca.html",
+        "https://www.perfectcircuit.com/tube-distortion-vca.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 132,
+      "brand": "Befaco",
+      "name": "VCO III",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.befaco.org/en/vco-iii/",
+        "https://www.befaco.org/vco-iii/",
+        "https://www.befaco.org/en/vcoiii/",
+        "https://www.perfectcircuit.com/befaco-vco-iii.html",
+        "https://www.perfectcircuit.com/vco-iii.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 135,
+      "brand": "Cwejman",
+      "name": "AP-1",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://cwejman.net/ap-1/",
+        "https://www.cwejman.com/ap-1",
+        "https://www.perfectcircuit.com/cwejman-ap-1.html",
+        "https://www.perfectcircuit.com/ap-1.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 141,
+      "brand": "Cwejman",
+      "name": "DMF-2",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://cwejman.net/dmf-2/",
+        "https://www.cwejman.com/dmf-2",
+        "https://www.perfectcircuit.com/cwejman-dmf-2.html",
+        "https://www.perfectcircuit.com/dmf-2.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 155,
+      "brand": "Cwejman",
+      "name": "VC-FCS Stereo Forward Compressor",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://cwejman.net/vc-fcs-stereo-forward-compressor/",
+        "https://www.cwejman.com/vc-fcs-stereo-forward-compressor",
+        "https://www.perfectcircuit.com/cwejman-vc-fcs-stereo-forward-compressor.html",
+        "https://www.perfectcircuit.com/vc-fcs-stereo-forward-compressor.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 165,
+      "brand": "Doepfer",
+      "name": "A-101-4",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://doepfer.de/a1014.htm",
+        "https://doepfer.de/a101_4.htm",
+        "https://doepfer.de/a101.htm",
+        "https://doepfer.de/a-101-4.htm",
+        "https://www.perfectcircuit.com/doepfer-a-101-4.html",
+        "https://www.perfectcircuit.com/a-101-4.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 225,
+      "brand": "Dreadbox",
+      "name": "Milky Way 1U (silver)",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.dreadbox-fx.com/product/milky-way-1u-silver/",
+        "https://www.dreadbox-fx.com/milky-way-1u-silver/",
+        "https://www.perfectcircuit.com/dreadbox-milky-way-1u-silver.html",
+        "https://www.perfectcircuit.com/milky-way-1u-silver.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 248,
+      "brand": "Dreadbox",
+      "name": "Ypsilon",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.dreadbox-fx.com/product/ypsilon/",
+        "https://www.dreadbox-fx.com/ypsilon/",
+        "https://www.perfectcircuit.com/dreadbox-ypsilon.html",
+        "https://www.perfectcircuit.com/ypsilon.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 280,
+      "brand": "Erica Synths",
+      "name": "Matrix Mixer",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "sources": {},
+      "status": "unresolved",
+      "provenance": "NOT_COMPUTABLE",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://www.ericasynths.lv/shop/eurorack-modules/matrix-mixer/",
+        "https://www.ericasynths.lv/shop/desktop-devices/matrix-mixer/",
+        "https://www.perfectcircuit.com/erica-synths-matrix-mixer.html",
+        "https://www.perfectcircuit.com/matrix-mixer.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 371,
+      "brand": "Joranalogue",
+      "name": "Filter 8",
+      "power_12v_ma": 75,
+      "power_neg12v_ma": 75,
+      "power_5v_ma": null,
+      "depth_mm": 43.0,
+      "sources": {
+        "power_12v_ma": "https://www.perfectcircuit.com/joranalogue-filter-8.html",
+        "power_neg12v_ma": "https://www.perfectcircuit.com/joranalogue-filter-8.html",
+        "depth_mm": "https://www.perfectcircuit.com/joranalogue-filter-8.html"
+      },
+      "status": "found",
+      "provenance": "OBSERVED",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://joranalogue.com/products/filter-8",
+        "https://www.perfectcircuit.com/joranalogue-filter-8.html",
+        "https://www.perfectcircuit.com/filter-8.html"
+      ],
+      "search_hit_count": 0
+    },
+    {
+      "module_id": 372,
+      "brand": "Joranalogue",
+      "name": "Generate 3",
+      "power_12v_ma": 130,
+      "power_neg12v_ma": 115,
+      "power_5v_ma": null,
+      "depth_mm": 43.0,
+      "sources": {
+        "power_12v_ma": "https://www.perfectcircuit.com/joranalogue-generate-3.html",
+        "power_neg12v_ma": "https://www.perfectcircuit.com/joranalogue-generate-3.html",
+        "depth_mm": "https://www.perfectcircuit.com/joranalogue-generate-3.html"
+      },
+      "status": "found",
+      "provenance": "OBSERVED",
+      "conflicts": [],
+      "candidate_urls": [
+        "https://joranalogue.com/products/generate-3",
+        "https://www.perfectcircuit.com/joranalogue-generate-3.html",
+        "https://www.perfectcircuit.com/generate-3.html"
+      ],
+      "search_hit_count": 0
+    }
+  ]
+}

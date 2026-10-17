@@ -1,0 +1,33 @@
+{
+  "mode": "dry-run",
+  "database": "127.0.0.1:5432/patchhive_population_test",
+  "inserts": {
+    "manufacturers": 703,
+    "module_catalog": 564,
+    "modules_full_spec": 3,
+    "modules_candidates": 179,
+    "modules_power_targets": 348
+  },
+  "updates": {
+    "hp_overlay": 377,
+    "power_depth_overlay": 12
+  },
+  "conflicts": [],
+  "unmatched": {
+    "hp": 23,
+    "power_depth": 16
+  },
+  "verification_on_planned_modules": {
+    "unverified": 351,
+    "verified": 178,
+    "corrected": 1
+  },
+  "cases": {
+    "input_records": 50,
+    "inserts": 50,
+    "updates": 0,
+    "rejected": 0,
+    "warnings": []
+  },
+  "destructive_sql": false
+}

@@ -1,0 +1,3395 @@
+[
+  {
+    "url": "https://modulargrid.net/e/1010-music-bitbox-2-0",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "de2093e5a7d4fb1e60061812b7735a82caff03f302e21c8930457d6ec94e393c",
+    "timestamp": "2026-10-17T05:02:39Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/1010-music-bitbox-micro--",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "babb8504f8b0075d25cba37a064b578c9916f87372e4401283f228afae5766fd",
+    "timestamp": "2026-10-17T05:02:41Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/1010-music-bluebox-",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "96fff180ac0019f0ef2b3122f61cabb935db59e22826ce12486b12d1f7b1d57f",
+    "timestamp": "2026-10-17T05:02:43Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/1010-music-fxbox",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "f3f648ed018bc3ebbc0a0a1f6aad222b709805b46e812c0afed471eff538393e",
+    "timestamp": "2026-10-17T05:02:45Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/1010-music-laserbox",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "2fb10e30a71874e199a87d0c9f244c132e5ad3e576dd8de5871889755a6f589a",
+    "timestamp": "2026-10-17T05:02:47Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/1010-music-toolbox",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "1c7aba3970f873125850da2ed8c22d6e3a494839c8f4b67bde0bd1708a2af961",
+    "timestamp": "2026-10-17T05:02:49Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/1010-music-toolbox-black",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "2b8b53a69ab585e9302bd82680c22ef7280df85524476b3ace0a5189c5ce7cae",
+    "timestamp": "2026-10-17T05:02:51Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/1v-oct-taipo",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "3b21561b023e27e59453ade7f0a39b905f2291d14748729d6933bbd6d9e90597",
+    "timestamp": "2026-10-17T05:02:53Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/1v-oct-the-centre",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "2d4ca0bae9395b44fcfcb79cadeb537a1dbf3b90d3f519e6ca74df5e195b59d7",
+    "timestamp": "2026-10-17T05:02:55Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/256klabs-flip",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "f774bae70c046c88ed8c67dfba23985764faa1f913d50d591d1c33be209ff786",
+    "timestamp": "2026-10-17T05:02:57Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/256klabs-formingle",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "06b405e4095a4ae948b7db24d91cfdf2b04075a8583d19e304915b2f37642985",
+    "timestamp": "2026-10-17T05:02:59Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/256klabs-hexor",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "3f2c72053129346dd91f57bb846bb901b9a48e1a0265727aa00cd8526d94f2b3",
+    "timestamp": "2026-10-17T05:03:01Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/256klabs-matrix-mixer",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "1f1bc022ea19550cee8a77f53f64da8247210a55cf7da87d503657f80b2e9350",
+    "timestamp": "2026-10-17T05:03:03Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/256klabs-vca",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "26eb973a7b276c9a173f4c6ce4e652c1a08a92daf247cc2a0a1babc61d0187e2",
+    "timestamp": "2026-10-17T05:03:05Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/2hp-3-1",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "23facd020f84de8055d8a6c0c9ce22aa38106293925ae54d5ae28e12bb539f3d",
+    "timestamp": "2026-10-17T05:03:07Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/2hp-dc",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ec7a33734462412cf30e77997677359de794524f12c30473b594121032c92f1b",
+    "timestamp": "2026-10-17T05:03:09Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/2hp-mix",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "1014d17e0050bddc6df4f75d0ebd5073267d3095eed52beb8dc4886bc3eed7e2",
+    "timestamp": "2026-10-17T05:03:12Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/2hp-play",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "432549a1c6380e418e2bf08d46f9dd518e40aee019cdf053e11dca3232372c93",
+    "timestamp": "2026-10-17T05:03:13Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/2hp-sine",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "7aeff0da96d50a08e98a6d26d3564660b2f0bacdb1a4eb101ecbd8170e4e519f",
+    "timestamp": "2026-10-17T05:03:15Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/333modules-333-cv4lfo",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "690094f38bee05373d11f716bca1c8950e45d382e0a13436ebd59ad89cb1e144",
+    "timestamp": "2026-10-17T05:03:17Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/333modules-333-dual-lfo-s-h",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "4b3387bb987335b06cb5f536d40855ed536b3777af57c01a433efa21e5981ab8",
+    "timestamp": "2026-10-17T05:03:19Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/333modules-333-envfoll",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "f5e5aa865701cf5d445f562aa58a9e7df34b8915a308f09d52dca2285f3464bb",
+    "timestamp": "2026-10-17T05:03:21Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/333modules-333-in-v2",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "85d3717c60b4b1fd941352eb29c91219f54b0ca5205b94e6f3fbac53c2c836f8",
+    "timestamp": "2026-10-17T05:03:23Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/333modules-333-midimerge",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "4ba72faa5904abac20f5cec0d9183d77ba22702a2e19409655ff838f5d21d89b",
+    "timestamp": "2026-10-17T05:03:25Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/333modules-333-noizeq",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "34ecb3534a2ded643cb7a70ad990631691379382076393bdb1d1d6da5f3df0c6",
+    "timestamp": "2026-10-17T05:03:27Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/333modules-333-out-v2",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ef18205edfdcec97b08f31914cb6de903501d913383a92ba625c9baf91a9aeac",
+    "timestamp": "2026-10-17T05:03:29Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/333modules-333-overfeed",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "657ec689d3a6080c39ec4e109ddd36d9cbd0ff982e8a71d663a6baa1938ce8df",
+    "timestamp": "2026-10-17T05:03:31Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/333modules-333-vco-3340",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "c630fb11c61cf2ed2736a43f8ddfae78eada11df025519e88a760b59df2ad98e",
+    "timestamp": "2026-10-17T05:03:33Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/4ms-company-listen-four",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "767dbfd55726e475bfca9554c8cb83ce99b967bfbe14bd56d0fbc168b9f98952",
+    "timestamp": "2026-10-17T05:03:35Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/4ms-company-metaaio",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "e45274c49ba8d0c99709a1df413d4d1456bebb8d16d062c903bb99558228531b",
+    "timestamp": "2026-10-17T05:03:37Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/4ms-company-qcd-quad-clock-distributor",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "79b4a3f6bf41220d3b20f21fdaa7db530470bebd11b849eee09fa0a126b33811",
+    "timestamp": "2026-10-17T05:03:40Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/4ms-company-row-power-25-",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "5d2948614e6ac8a3262e7ae22dd90abf29b8a85b9a2ea8b3d4287e7e7f578452",
+    "timestamp": "2026-10-17T05:03:41Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/4ms-company-stereo-triggered-sampler",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "fb9b2afe94b7bed1f8f94a2e92814ff16ff4df2270c00edb20512be14afa6594",
+    "timestamp": "2026-10-17T05:03:43Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/5540lab-lpg",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "7f1b7de5d37da8789e92280a33905e04117703a4ddb05985b020721b011c8520",
+    "timestamp": "2026-10-17T05:03:45Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/5540lab-triga",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "a182d8400a4de2b6ef59564ceff142c0e4cd3eccf2b74882e42df06dc9b05dc3",
+    "timestamp": "2026-10-17T05:03:47Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/5540lab-y-y",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "35de8932a5168738f035672acb69a09d30266dab15853faa4fe2ee5889df8af3",
+    "timestamp": "2026-10-17T05:03:49Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/7-dials-cv-express",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "5f1e6b5576f2a456de02d7f3f8d81bf5b13aa3d9a9c80b4a8819d243e7900884",
+    "timestamp": "2026-10-17T05:03:51Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/7-dials-route-four",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "1d75d6085c3c5bc27e9cbb8550dfdc171a92e557c90aad28f6263a854733a3aa",
+    "timestamp": "2026-10-17T05:03:53Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/abstract-data-ade-10-reactive-shaper",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "7d7e5cc37df3ddf14e0e99d1a961e6b592e242570d60fe846d55c9677ff2838e",
+    "timestamp": "2026-10-17T05:03:55Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/abstract-data-ade-20-multi-mode-vcf",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "9a27070df199641cbfd4ed447815094fd39f9ead846c564e8657860d2a365d74",
+    "timestamp": "2026-10-17T05:03:57Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/abstract-data-ade-30-wave-boss",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "af18890d9c2259fa77165cadd3ba098941d451994d5cd2adeca5dced8d0c162d",
+    "timestamp": "2026-10-17T05:03:59Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/abstract-data-ade-32-octocontroller",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "8da2f393fc8ed2f02b09ba8918c2ff092ec2064ebaf0a2f9c990907a4b19de92",
+    "timestamp": "2026-10-17T05:04:01Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/abstract-data-ade-33-event-boss",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "e01cbe7b0f8f67356637f0af28a4e2045c3c6acacd81dff0cc5568a0ec9945c9",
+    "timestamp": "2026-10-17T05:04:03Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/abstract-data-ade-60-4-4-mix-utility",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ea70834ce3a2e78a4960b74b215c80cf0defba14ff2fdb7c1dab918046d076e5",
+    "timestamp": "2026-10-17T05:04:05Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/abyss-devices-amix",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "d0a22ab025ad3c1697012d3ad99e10fa7b49213913a91936d61cc56f8bb7b1c8",
+    "timestamp": "2026-10-17T05:04:07Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/abyss-devices-amp",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "99996c3c17fa8377c711ccca4881be55376f2bfce8fec6d5bcee164c7d350831",
+    "timestamp": "2026-10-17T05:04:09Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/abyss-devices-mtr",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "83d7ba80ec0862bdd2190c5242fdad144cdd28c29959ca77d63d8fb17faa723d",
+    "timestamp": "2026-10-17T05:04:11Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/abyss-devices-saevitum",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "de8275eea0b45697387536f9d1b3808352191442998e498994046b8a609bd854",
+    "timestamp": "2026-10-17T05:04:13Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acidlab-3co",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "0c4955ca6c1f3472d8bbca8aba71c5887f154298a21474b9103e595c6c891888",
+    "timestamp": "2026-10-17T05:04:15Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acidlab-8cb",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "facb3489905eecf1a063a4f112b12d606daa9868ddc9ac657f99b037f2f8961b",
+    "timestamp": "2026-10-17T05:04:17Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acidlab-8cyhh",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "3c1631e143f330b817a8201e038800a1211eff84bc9a235374aa7391a4426ac7",
+    "timestamp": "2026-10-17T05:04:19Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acidlab-8lmht",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "c4ca23d2ad46a2f91a63c5c78c341b78c862ff3a5839ab8d9d403b044f64b8e4",
+    "timestamp": "2026-10-17T05:04:21Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acidlab-8rs",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "03894f6f4ec507947b6a9d3459fd1e064c790d1a046b9210b8566f2d631b3862",
+    "timestamp": "2026-10-17T05:04:23Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acidlab-mx",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "64f19d8a0755fb2863a89f203137e6e9067b0e3edd6f7a05f0a0d60640e802f7",
+    "timestamp": "2026-10-17T05:04:25Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acidlab-pow",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "42b381609d8f4022b6819e1820ead4d2de764f9585a791b1fc592f73d29f35df",
+    "timestamp": "2026-10-17T05:04:27Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acl-audio-interface",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "d752f34292c45d4c0f30893783e41be86a6e570c1041ce18e3c79748f4484ba6",
+    "timestamp": "2026-10-17T05:04:29Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acl-envelope-x3-v2",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ed3e38e08bc8c07cc3d6530f5b934b5c8fce00dd379914fcdd5c7f319c063f59",
+    "timestamp": "2026-10-17T05:04:31Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acl-m-s-matrix",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ec929c20a6dfdcdb1b5996e444e5d17e6517c850b750f6e32362ca861dc5560e",
+    "timestamp": "2026-10-17T05:04:33Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acl-oktave",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "c8fe48b27ade0973ff24c5abeba4db5db38b7aba83732a25c41da2a331d1d816",
+    "timestamp": "2026-10-17T05:04:35Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acl-sinfonion",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "7dec98b6ddb0a56a0d98a6c939b7a1251d455befa318fbe2eb7d55451f6d94c7",
+    "timestamp": "2026-10-17T05:04:37Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acxsynth-line-driver",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "5e0536e739ea59d3e9258818a7c0eaabdb7c1d25a3511fa1fe08c1a80ca93a8f",
+    "timestamp": "2026-10-17T05:04:39Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acxsynth-midi-external",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "5a5b2ba2bef92d2128e6357e9d5ea62d2ef6a19aed6cfb58d09880bf34f6f2c4",
+    "timestamp": "2026-10-17T05:04:41Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/acxsynth-polyphonic-midi-to-cv",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "d9cb855ad7aa814b3767678e427686d46720664931fa866808c03a8d91fce3ef",
+    "timestamp": "2026-10-17T05:04:43Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/adventure-audio-count",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "8d41d9827f3b48227fc8ea4f6221bd4774ffcfc49e37531db727b83bc7ba98b5",
+    "timestamp": "2026-10-17T05:04:45Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/adventure-audio-merge",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "279ca611febeaa77d8f7d7c8305cda3392b92a9a8439f2665789bf46592cc449",
+    "timestamp": "2026-10-17T05:04:47Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/adventure-audio-merge-black-panel",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "c7336e69e6e74337d4a9a4504619ed9123bba09bdf19fcd923ff7d37cd78cb2c",
+    "timestamp": "2026-10-17T05:04:49Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/adventure-audio-mult",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "cf757e4836de8a6fde29208525cb917cfb749b7f34aac1071b66a953b0e83abb",
+    "timestamp": "2026-10-17T05:04:51Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/adventure-audio-orx",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "418f719f5527479fc46ffae2f6d06f65ed11ab1fa0ba4e1cbac847f05a989eeb",
+    "timestamp": "2026-10-17T05:04:53Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/aemit-exit",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "a27176cf0e2d6a4ad4d39f27c58f265a74db2f0405b3195381b92e5e70d149d6",
+    "timestamp": "2026-10-17T05:04:55Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/aemit-variphase",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "54ae284f2a22bebcb288675ee2046a32bead84b41d511469e8d5688f9c6ed9db",
+    "timestamp": "2026-10-17T05:04:57Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/aemit-vco-ii",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "746e2e63b9dfa17cf7d6663774d5634ecf34624c7432bd9362d430ad42f1ed58",
+    "timestamp": "2026-10-17T05:04:59Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/after-later-audio-brooks",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "787779bea2f6b4607826842952aa66025a0ed6f18d8918c9d7345223be37ba39",
+    "timestamp": "2026-10-17T05:05:01Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/after-later-audio-cloverleaf",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "95570be450a91453b9c6319150e61433bc63483ed4c3f2d8961373e5be2a0617",
+    "timestamp": "2026-10-17T05:05:03Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/after-later-audio-g-t",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "b61b1c7eceb251fd58ed6323e695e68d4df51b5b49ce3cec0810ffe5e402cbfd",
+    "timestamp": "2026-10-17T05:05:05Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/after-later-audio-quarks",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "1432b70403138e4dbfa956f82a4ffc2df6da792f0e37a8868cd98035490ef20f",
+    "timestamp": "2026-10-17T05:05:07Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/after-later-audio-scenes-",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "5fa469af1f863dfeaa84ee3b880df493b7d5407d8813764f47b4b23b9d3be1bc",
+    "timestamp": "2026-10-17T05:05:09Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/after-later-audio-storm",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "724b83646c9b0f4b0dcac2505d11f00cb110cab65854a449c753e6f8e9eb1a40",
+    "timestamp": "2026-10-17T05:05:11Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/after-later-audio-valley",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "022202dcd8b6caf6767e52d53694ad4639a0eeba4707175fa50d0ddb3c8fedf6",
+    "timestamp": "2026-10-17T05:05:13Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/after-later-audio-warp-drive-1-25a",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "a881143f372f36dad754b7e2c393a3fe200177c9f604205958343367d47e5933",
+    "timestamp": "2026-10-17T05:05:15Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/afterlife-laboratories-castle-series-video-processing-circuits-no-2",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "4793ae4426b26b5575a1020d2ee042a9636b4af2c236a50378361a0ef3853007",
+    "timestamp": "2026-10-17T05:05:17Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/afterlife-laboratories-video-calculator",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "e28fa250ecd6fc29d9298aa2c1a5342a463ff4a5c8486394cde538e87d4d23c4",
+    "timestamp": "2026-10-17T05:05:19Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/afterlife-laboratories-video-motion",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "f127ed4572106a547fdb64ba46ea855ae3b4a0a1912ba9a6216b19b07ffc4935",
+    "timestamp": "2026-10-17T05:05:21Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/afterlife-laboratories-video-multiplier",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "768e8f4b1946c88cf8ff64a86d6f60e5d549edc016201328f61e4d4b44f81361",
+    "timestamp": "2026-10-17T05:05:23Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/ai-synthesis-ai001-multiple",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "56aed329cf2d630c11e9d929cc97e1c39f497ecbefd75699110e30a5d7411522",
+    "timestamp": "2026-10-17T05:05:25Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/ai-synthesis-ai002-mixer",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "46c1a3b0013a1aeefedbabb54dd04b02668d2e0112287e5438a9c9cc2b8cf632",
+    "timestamp": "2026-10-17T05:05:27Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/ai-synthesis-ai018-stereo-matrix-mixer",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "b9fe9bdb610c52d69ddf728f7a9918f4523c2fbb9de780f441219beaf1c23292",
+    "timestamp": "2026-10-17T05:05:29Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/aion-modular-902-vca",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "6897d6800c5de864d242832b725f8eec7cecbf13d310ad4c415b165aa2e2e667",
+    "timestamp": "2026-10-17T05:05:31Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/aion-modular-904a",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "c22be6fda9fa1e2f70687975e931fb5702231e79ce000a79f67d6eeb5121ba3c",
+    "timestamp": "2026-10-17T05:05:33Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/aion-modular-904c",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "85b0cae62eaee7dc03e6f4e30d289235cb6c2712ddd60165375e3e0844b8e8ab",
+    "timestamp": "2026-10-17T05:05:35Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/aion-modular-907a-fixed-filter-bank",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "db3c968783dc783af851bb6c9ab71cce1b9a2bb691e7ee0e33ebedab0df4c6f5",
+    "timestamp": "2026-10-17T05:05:37Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/aion-modular-cp3",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ff8f262a2fbab8f7b40f29b6962d56866cfb8ab98a41b711d3e157c07dcaefd1",
+    "timestamp": "2026-10-17T05:05:39Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/aircraft-designs-cascade",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "30aa5dd0e5ac3bc263e83fec8048e333064ed264e1cda4df31c349f2c868636a",
+    "timestamp": "2026-10-17T05:05:41Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/aircraft-designs-ember",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "f6c9b830de16e4e83cc6cd578fd153426dafc55b60aa4ac52fe324fce9752fe9",
+    "timestamp": "2026-10-17T05:05:43Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/aircraft-designs-fl",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "6c78ef6034f5db8a9f6f34d2b85fe579bccdf1591ed6dd1e21f293c98c4a974b",
+    "timestamp": "2026-10-17T05:05:45Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/aircraft-designs-ld",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "649f5eca9327927e199339c83d12669b223a8411de930f9aa24230e6b4493321",
+    "timestamp": "2026-10-17T05:05:47Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/ajh-synth-finaliser-r-eq",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "80c2b7a0be21a3c227b946a9bd02f1ab92606d158fec824fdbb28c72a414e83d",
+    "timestamp": "2026-10-17T05:05:49Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/ajh-synth-minimod-dual-contour-generators",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "5849634ee8dddea2e412491708fcef17eee578c5034aa181a7e67e62f8ef1c48",
+    "timestamp": "2026-10-17T05:05:51Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/ajh-synth-next-phase",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "d0c7db49113bf09d9aa99f53955557eeb7e6facd0b8f4ad66e06bf85d09ad6bc",
+    "timestamp": "2026-10-17T05:05:53Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/ajh-synth-ring-sm-black",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "08666b90e76821142d7ca8548397be09bb23658cf6d6ade65cffa8c086b405e2",
+    "timestamp": "2026-10-17T05:05:55Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/ali-modular-esu-s-trifecta",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ed6116020f2f6f782333ce09cbce1784b580a155ddbd51bee4c853558c43181b",
+    "timestamp": "2026-10-17T05:05:57Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/allen-synthesis-europi",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "2c7877d5b40780e83d7bce92f9daaaf9f8567defe8a3b2d0079c39701cb6671a",
+    "timestamp": "2026-10-17T05:05:59Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/allen-synthesis-kompari",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "78998f142aa4b5bc92246f5a5314d4b17ddf639d3208d12629cb2a71720ae7fb",
+    "timestamp": "2026-10-17T05:06:01Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/allen-synthesis-usb-router",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "48b7dceaf457f3f05dc330cf7b3f368a221a7b5f6a2f242385762ea9e5073c4b",
+    "timestamp": "2026-10-17T05:06:03Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alm-busy-circuits-akemie-s-castle",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "666cd71b7b78dd663f7653fba35c4845fed3d08d4569bb6c2ae40b04711fe195",
+    "timestamp": "2026-10-17T05:06:05Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alm-busy-circuits-mco--",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "a64c7df223ff871c39c77adff97b01df9c95371470a41d6533744e6ffae86dbb",
+    "timestamp": "2026-10-17T05:06:07Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alm-busy-circuits-mco-mkii",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "15ab34fe062116dee37a98912c14074677e62946e9e758fccdce59b541ee2c0f",
+    "timestamp": "2026-10-17T05:06:09Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alm-busy-circuits-mult--",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "340077a79bceff2002805eba07d92969da2029ffb033a68e68bafc6ddbddec7c",
+    "timestamp": "2026-10-17T05:06:11Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alm-busy-circuits-squid-salmple",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "c70cbde4cd5b08a35ca9a658c16a22d11bc5ebc2e253677d08a1f4f7ba955892",
+    "timestamp": "2026-10-17T05:06:14Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alright-devices-chronoblob",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "56ec0608bf2cbae9287f5988d04af37339644c3ef899c92abb97795083df4fea",
+    "timestamp": "2026-10-17T05:06:15Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alright-devices-chronoblob-2-black-gold-panel",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "35f3c3251285302ff5cebbfd00b1b925a97edd2b3308da3cd576b48c4efc4adb",
+    "timestamp": "2026-10-17T05:06:17Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alright-devices-chronoblob2",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "16bd74cff773f9bde6c7899b7e796fc774f074da64fa436759978438af724c73",
+    "timestamp": "2026-10-17T05:06:19Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alright-devices-t-wrex",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "3f7191816cd09a9a20e61006f447eb4163d1415ee825774e0a95eb629b1672c1",
+    "timestamp": "2026-10-17T05:06:21Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alright-devices-zzzorb",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "0fb6b1c17064bfd6f09929d5be264fac6dfcc85793ac924308fb7d9c3f0e9fce",
+    "timestamp": "2026-10-17T05:06:23Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/altered-state-machines-aristotle",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "d4857d5a9a7e4af79aaa1258d2b051b6fceeba4862dd3ad52b708e592b60c0ac",
+    "timestamp": "2026-10-17T05:06:25Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/altered-state-machines-bubo",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "7adf48848a94a87075ceabfff0784d81174ece4cd973b9cd12682d53272d1505",
+    "timestamp": "2026-10-17T05:06:27Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/altered-state-machines-eris",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "32fe9903020733a3b01a1b13d2f7bd3d4653197beffa84b1338ba6eee08ace19",
+    "timestamp": "2026-10-17T05:06:29Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alyseum-hold",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "a99ef262b4e0c759ddf2a62e1ebf7fa9deeb9f9b4be7c6dee8925951c11221c2",
+    "timestamp": "2026-10-17T05:06:31Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alyseum-matrix-ii",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "cb86929f3e23663dcb1617463503434f343780c5695d27deea9c044254fead96",
+    "timestamp": "2026-10-17T05:06:33Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alyseum-push",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "a0843d35a48cbff8bd355330c4c2a47eadaf92c9fd0216dc22a6de5e5df2c63f",
+    "timestamp": "2026-10-17T05:06:35Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alyseum-q-mix",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "299af1c5c623ab9b7fa5623354a6a7ac774ef23d7cf40fcadd995bef0bbd63a6",
+    "timestamp": "2026-10-17T05:06:37Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/alyseum-selector",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "0dcf1b8f456258dd6d15a9142eeab3422e4da8840f8438e7a9b6b8906df38357",
+    "timestamp": "2026-10-17T05:06:39Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/amsynths-am1031-multi-purpose-filter",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "b4d734d69683d6f66b02f74807bdbd48557a6ec03b8bd58756104b86aad8c35b",
+    "timestamp": "2026-10-17T05:06:41Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/amsynths-am303",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "2f1fb0360a6f75161ff0f637e61a68f2eefed2a6528451854458a91adedb920a",
+    "timestamp": "2026-10-17T05:06:43Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/amsynths-am8069",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "681d053dc5a02e417bb0def9a342131bc4d9bb5d5708547bf4e546ac29c82112",
+    "timestamp": "2026-10-17T05:06:45Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/amsynths-am8132-cv-mixer",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "f29c1fc83424b3312e21eb9dbe30d1ad1f79c1d341369f55fe58f0ca2349330c",
+    "timestamp": "2026-10-17T05:06:47Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/amsynths-am8319",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "966fa25d826ec3f3ec3f9c5e925c729035db410d40245df2b2887fec5b2ff5a5",
+    "timestamp": "2026-10-17T05:06:49Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analog-ordnance",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "45c1af1fee4de2b2eed2f5d42f7fe4f9bc39ee558801f64a5847d9a35dc13d50",
+    "timestamp": "2026-10-17T05:06:51Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analog-ordnance-chainsaw-gvtsfvck",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "1ddc1f64c8f33ca44eb224c6f7782bfed5484a111060fdfb43d4728276d6b81a",
+    "timestamp": "2026-10-17T05:06:53Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analog-ordnance-discrete-vcf",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "89bb811c7c8a54dbd110cd00d0512927fa7da710dfb5442a0cedc9e4bc2e40c5",
+    "timestamp": "2026-10-17T05:06:55Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analog-ordnance-drone-machine",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "c824b573681ea8325f8e395e7fb7babdc741e5b6d9309d6b8e73ffeec202b28e",
+    "timestamp": "2026-10-17T05:06:57Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analog-ordnance-multi-pass",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ce569ecc30e37e6b22e0317c9ccecb82f3ea2b5cb9c9ce7c34a4bfea94e3d8b4",
+    "timestamp": "2026-10-17T05:06:59Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analog-ordnance-pe-machine",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ceba9fe5c57a53d199b0b7ea024772de33895415bf13301c19e050ba23483d30",
+    "timestamp": "2026-10-17T05:07:01Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analog-ordnance-recti-combi",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "83fc48929bb4b5eb20974069fb6663e7c8aa6cf659d3b72ac023381da2bb8bef",
+    "timestamp": "2026-10-17T05:07:03Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analog-ordnance-shunt-matrix",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "b685ec21137e62e79239c9b5822de962492385608b78e4bd131e067dd44db9cc",
+    "timestamp": "2026-10-17T05:07:05Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogfx-ser-2020",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ed4c965156e24076b23cc28171e712136bfb669c084fc2ba657f4bad9396112b",
+    "timestamp": "2026-10-17T05:07:07Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogfx-vcf-3320",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "c9aa0bfc873867366c99b158ce155d8bf26e97d5ade31d958f41a4bf09ecd157",
+    "timestamp": "2026-10-17T05:07:09Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogrobotorchestra-analogue-robot-control",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "a485aa74ba25671a0ce86ee569c92826dca74bdada9d0c2f42579c94e4dad3ff",
+    "timestamp": "2026-10-17T05:07:11Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogrobotorchestra-trigger-length-control",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "3a881c9639769c72ba9cf97e655d7408e8438f23118bef66108aca1c189fb006",
+    "timestamp": "2026-10-17T05:07:13Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-solutions-adaptor",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "176ead74031dd3b9367759035e1c3ec14be9795a289de7b503755ed068e82926",
+    "timestamp": "2026-10-17T05:07:15Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-solutions-joystick",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "82d44203b2e871d0554937865a1482eb94aa56f05156b77d5c945fc8d06f349f",
+    "timestamp": "2026-10-17T05:07:17Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-solutions-rm-ring-mod",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "131da002364df24f9ab40f6d149679b21cb3f23d6db5fde4c6042caaf77afc3f",
+    "timestamp": "2026-10-17T05:07:19Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-solutions-rp08",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "33c821ebfeb2b1c38f98aaccaef34f87517368300e14acfec976f8afb2625b07",
+    "timestamp": "2026-10-17T05:07:21Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-solutions-sq8",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "eac6901714f8be56596c69457ea2b1c1e094534f8529663e90bb3cd5ad2d47e2",
+    "timestamp": "2026-10-17T05:07:23Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-solutions-station-x",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "304f7f185311423f2716ab7c881284f1315852e70ba6494a9ac3b50670f51ee6",
+    "timestamp": "2026-10-17T05:07:25Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-solutions-sy01-synthesizer",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "a0420a04f645b4009ad01082491ebc62c89e0ff7fd3abc1473a42b569189d2c3",
+    "timestamp": "2026-10-17T05:07:27Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-solutions-sy03",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "6ced678edc6b05ddb1c2c53de103f5522d7bce495764201f6149d1407b292424",
+    "timestamp": "2026-10-17T05:07:29Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-solutions-hh88",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "d038daabc0171b220b16a011664614cb6b6b7d398612ec357d926ecabb1e0c6c",
+    "timestamp": "2026-10-17T05:07:31Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-systems-rs-170",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "da90c0bc0bde8f5b877d3ed4eebf54f4e5d2417b6a16ef953421b650fe3d10e2",
+    "timestamp": "2026-10-17T05:07:33Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-systems-rs-30",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "c469389e52cc5728d1e303a2bc40e26164ef6ff489303b0609f040424675cb4d",
+    "timestamp": "2026-10-17T05:07:35Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-systems-rs-375",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "640bf255eb5817ecefc125c9bb8ce8da411d69a147106b5084d450b4f5410bcb",
+    "timestamp": "2026-10-17T05:07:37Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-systems-rs-40",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "99fdbf65f0d57d4e7a1f71df70c8e287c3c939750af1ad5e8828856c40c59a1e",
+    "timestamp": "2026-10-17T05:07:39Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/analogue-systems-rs-60",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "245a84b810ce196ee68ea74f6ea4851d6eecbef87ebf6fb8dadf7ec2cab45c02",
+    "timestamp": "2026-10-17T05:07:41Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animal-factory-amplification-bonesaw",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "e64c195fb587b949145c967ed9df4de6047dd89efd53476997dce02d6348a8c4",
+    "timestamp": "2026-10-17T05:07:43Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animal-factory-amplification-godeater",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "c6bd6ce17b2a1deb4c2dfddb1fd8050a8f7dda137129473fa22272099b353d2f",
+    "timestamp": "2026-10-17T05:07:45Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animal-factory-amplification-orobas",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "c9c1279552d7b100b0b67f8dcf851d7a1222fe0e6a6f5bb5e3a21701cb506f3a",
+    "timestamp": "2026-10-17T05:07:47Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animal-factory-amplification-pit-viper",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "eda81f315eeb7fe4b92e42f159090b2fd0a4d96124b73dac47f2d261cf5804d6",
+    "timestamp": "2026-10-17T05:07:49Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animal-factory-amplification-tannhaeuser-gates",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "4ec45adf8fcca2c2f75f4ea39009b570888049e54fc10693671694f6134b650a",
+    "timestamp": "2026-10-17T05:07:51Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animal-factory-amplification-vivisect",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "4083cbc39aa8f1b420ebc4dd460549bbec1236844d82b6aad9a0e80d1fb6b6f9",
+    "timestamp": "2026-10-17T05:07:53Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animodule-gate-mod",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "f7d483932418070c74f9fa62a782a41671a35ed137fc032543ec3efa9a7b39ee",
+    "timestamp": "2026-10-17T05:07:55Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animodule-lil-monster-vco",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "b39e97b378762eda652929021e6cb71a1fc4c6ac47428c7e27385a79a5c120d0",
+    "timestamp": "2026-10-17T05:07:57Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animodule-midi-gate",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "3ab0bcdb9fe2a841585a53cc44ce711ee96193eae7e7ae839e5c2ff1d9a5d41c",
+    "timestamp": "2026-10-17T05:07:59Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animodule-quad-comparator",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "124e9e77df5e5ba0c0fde65950a436ef2bab3ce992afaae1f89c0d0c3bbbeb65",
+    "timestamp": "2026-10-17T05:08:01Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animodule-sob-v1",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "153519499cc22458b06458b696021a8e288a546f644cc5d53217d7d0a581c94c",
+    "timestamp": "2026-10-17T05:08:03Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animodule-tiktok",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "035bcbc5d455fc707b06290199d70b21f4090d096bf403ceac118f1e0c90f205",
+    "timestamp": "2026-10-17T05:08:05Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/animodule-xxx-or",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "c9e0fbc08f2465c0c0c45e813e84c3b131da71e144386b97167e9cfbf7ae9367",
+    "timestamp": "2026-10-17T05:08:07Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/anti-kulture-precision-disrupter",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "cb0dcac8d3464ded7f2cc6c12d9c2f8c55bf0c56e60985a09034e64fb6174b30",
+    "timestamp": "2026-10-17T05:08:09Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/antimatter-audio-crossfold",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ef772d1b947f5f7de3b1c1712ca664c245907bb9d39449afd2ac5b0d3b42629e",
+    "timestamp": "2026-10-17T05:08:11Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/antimatter-audio-launch-codes",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "f7d80225b68b08bdac77064a4aaf36f4388dfc2ff3450353542602e73a2a6f0f",
+    "timestamp": "2026-10-17T05:08:13Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/antimatter-audio-sub-ring",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "4e85f8b7ff2b3139c87f9617d71c217ef75e28f086aa2dd7220d32cecb74cc72",
+    "timestamp": "2026-10-17T05:08:15Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/antimatter-audio-v3kt",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ab5890ce9d8f5da05b0c16f4e848be08103caac8a49fd9e5aa8aac5e049373d3",
+    "timestamp": "2026-10-17T05:08:17Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/antumbra-atom",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "aa4b538716ffcd85d8bb340ad6d6d197522b381b30e9ddad1626a66fb5bb87c5",
+    "timestamp": "2026-10-17T05:08:19Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/antumbra-cara",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "55ae29e8b3f3210f029f69e607a7786ee74de25b13e537d5ba3455d75cb922e8",
+    "timestamp": "2026-10-17T05:08:21Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/antumbra-grid",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "3bd46f45e7c4c35d850c09c90b61248459dd269c25ec27392eae4927dab5c213",
+    "timestamp": "2026-10-17T05:08:23Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/antumbra-mult",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "0bbff025df79660827704ae7cab126034073b4379d8258a38a659717e9365471",
+    "timestamp": "2026-10-17T05:08:25Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/antumbra-path",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ae6858aaa3ceec50b4d94060e5fd36159e7b271c2c39c3cc86781362a27025d3",
+    "timestamp": "2026-10-17T05:08:27Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/antumbra-smog",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "2e02955e9f5bcfa741b7af78bce4da1f6bed3ea1033bf1bedff7b5c3be1fe0a0",
+    "timestamp": "2026-10-17T05:08:29Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/antumbra-strampler-",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "ec31a8eb5fa8a437604e8f311b25a012b5d291894233644314f694acd06cfdde",
+    "timestamp": "2026-10-17T05:08:31Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/apf-audio-tiliqua",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "cc2d9bf35f58e2b9f138b9e774e7a27b9f46fff958c347b200558538fd8d0091",
+    "timestamp": "2026-10-17T05:08:33Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://modulargrid.net/e/apf-audio-tiliqua-expander-eurorack-pmod",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "3b3e6a62b977543db9a39e9e634c066fd76023a1a5d69ca6e7c9028c4ea35b26",
+    "timestamp": "2026-10-17T05:08:35Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22ALM+Busy+Circuits%22+%22Pamela%27s+NEW+Workout%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "44ad8f4f938309cd3b23a152e2a72a519dd63d5344dbf114fe146485470988db",
+    "timestamp": "2026-10-17T05:08:36Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22ALM+Busy+Circuits%22+%22Pamela%27s+NEW+Workout%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:36Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22ALM+Busy+Circuits%22+%22Pamela%27s+NEW+Workout%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:36Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:36Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:36Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://busycircuits.com/pamela-s-new-workout/",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "291aeb91fddc95c10315fb7abba362ef187187db2081b49cef0a7717378d0945",
+    "timestamp": "2026-10-17T05:08:37Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://busycircuits.com/almpamela-s-new-workout/",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "c91acbce512374139fd1ed1aeab5947187057f1b5f8d230b184e2b38f11054ce",
+    "timestamp": "2026-10-17T05:08:38Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/alm-busy-circuits-pamela-s-new-workout.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "de10785d94077950f273184d6b4d14ec7cf5f8a94d90813711a840f22b88435b",
+    "timestamp": "2026-10-17T05:08:40Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/pamela-s-new-workout.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "37bec7a8fde6ac4f4fa9d5f6032c39870b610e095d7f01bac8f35c9c7dfa094a",
+    "timestamp": "2026-10-17T05:08:41Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22BEFACO+SLICER+V3%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "8cbc331cd1ff675679608ad784d1ac8c19aaa53ac5bebfe12568fe1aeb9d9d24",
+    "timestamp": "2026-10-17T05:08:42Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22BEFACO+SLICER+V3%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:42Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22BEFACO+SLICER+V3%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:42Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:42Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:42Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.befaco.org/en/befaco-slicer-v3/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:42Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/befaco-slicer-v3/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:42Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/en/befacoslicerv3/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:42Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/befaco-befaco-slicer-v3.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "289594be4d05e77e24dab6797229f27fb925baa4d9e3883716add1c208c8cafa",
+    "timestamp": "2026-10-17T05:08:43Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/befaco-slicer-v3.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "29a195fcea5a7ab96b2f09b0a86388a91c40d65cd7370ef90b3093c8b7fac6d6",
+    "timestamp": "2026-10-17T05:08:44Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22BF20+VCF%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "a18982623e415257c598a05054b7e3709185cf7e176772d0cc2bb24e38a3606b",
+    "timestamp": "2026-10-17T05:08:44Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22BF20+VCF%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:44Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22BF20+VCF%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:44Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:44Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:44Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.befaco.org/en/bf20-vcf/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:44Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/bf20-vcf/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:44Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/en/bf20vcf/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:44Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/befaco-bf20-vcf.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "dec78125246ba9448f02d5ca1230ed057f6f723884fdaf45d3cfccc0009b1edf",
+    "timestamp": "2026-10-17T05:08:45Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/bf20-vcf.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "f069aad228c1908d3edbb2c70e12a81a2df31906cf471973af3187ca12954b28",
+    "timestamp": "2026-10-17T05:08:46Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Input%2FOutput%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "2bd99ff9af7ccd447b7de7f991c6de2c31c95cbcc3a23c9b1d30130115ea597f",
+    "timestamp": "2026-10-17T05:08:47Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Input%2FOutput%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:47Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Input%2FOutput%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:47Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:47Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:47Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.befaco.org/en/input-output/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:47Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/input-output/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:47Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/en/inputoutput/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:47Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/befaco-input-output.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "39de4c03ce8cb89a3a42977da61e7a221d8f953b7a1e26f342e38484a258a63b",
+    "timestamp": "2026-10-17T05:08:48Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/input-output.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "f22ed7f1e002d0f420d3d1cae8c9af479ca4b66fbce830f9cd0d6d1743ad7946",
+    "timestamp": "2026-10-17T05:08:49Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Noise+%26+Lag%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "0a162c78a38f9da9feed1be8526420c69cef77841ecddbe7dcaa0b4156b4ff60",
+    "timestamp": "2026-10-17T05:08:49Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Noise+%26+Lag%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:49Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Noise+%26+Lag%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:49Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:49Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:49Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.befaco.org/en/noise-lag/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:49Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/noise-lag/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:49Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/en/noiselag/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:49Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/befaco-noise-lag.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "63b8b82194867adbfa6d76edc1bc03ac1829d70460d7fc76a39e9b4f6a5f00e9",
+    "timestamp": "2026-10-17T05:08:50Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/noise-lag.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "e1b3cc1f1b1031c682decde02b81d5062f8fcdf3ba031f941b72b231ca790f41",
+    "timestamp": "2026-10-17T05:08:51Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Out%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "bcd2975cb5ed722e36f9208eea57c43729bd5b30506f2f576736f4178c90a83e",
+    "timestamp": "2026-10-17T05:08:51Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Out%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:51Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Out%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:51Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:51Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:51Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.befaco.org/en/out/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:51Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/out/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:51Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/befaco-out.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "456266aa3e9cc5b794fa28fc2702f85f156f021dbfefcc92cd9454fee3c0118b",
+    "timestamp": "2026-10-17T05:08:52Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/out.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "56f6ace85ba87fdc8c620cd390a940584977254ded31f55e2a8b766ce398bb84",
+    "timestamp": "2026-10-17T05:08:53Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22RING+MOD%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "d7285a4a81bcb4af2fd1e1d26c03ff31a0e9c5cfdc1b3d49f569679841a57457",
+    "timestamp": "2026-10-17T05:08:53Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22RING+MOD%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:53Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22RING+MOD%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:53Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:53Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:53Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.befaco.org/en/ring-mod/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:53Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/ring-mod/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:53Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/en/ringmod/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:54Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/befaco-ring-mod.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "23be422dfac69ae11aeb96a8d14fbc9328eb2b4b24e73cc28e0deeebbb0a29b9",
+    "timestamp": "2026-10-17T05:08:55Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/ring-mod.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "26ac95f608e83071e55ecb47d01b2328ba95ed94f84b758df97e0f800c6e8d4c",
+    "timestamp": "2026-10-17T05:08:55Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22S%26H+%2B+Lag%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "afd2e73d309c46b8b1f20a06fa8a1d6eca2a5a9db9ebc7f49fafe4ed8a7924e9",
+    "timestamp": "2026-10-17T05:08:56Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22S%26H+%2B+Lag%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:56Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22S%26H+%2B+Lag%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:56Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:56Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:56Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.befaco.org/en/s-h-lag/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:56Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/s-h-lag/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:56Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/en/shlag/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:56Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/befaco-s-h-lag.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "cf4dba27e8ae72ceafe4e94547a51dccd925a1a079fa5533f8766f49ee9a539e",
+    "timestamp": "2026-10-17T05:08:57Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/s-h-lag.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "e1388f44e6c6c224797b01d7371b524e6e06536cfa9bb4fb96a495e3a9536621",
+    "timestamp": "2026-10-17T05:08:58Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22STmix%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "e94f7f59a36debfa99a7bd68fe26f3435272a6547566961e170de2d22cd947d6",
+    "timestamp": "2026-10-17T05:08:58Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22STmix%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:58Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22STmix%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:58Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:58Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:58Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.befaco.org/en/stmix/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:58Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/stmix/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:08:58Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/befaco-stmix.html",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "19f128fbd7d931748e7beebff499680030a56ae746dd803b7176ef2a1c5b9b5f",
+    "timestamp": "2026-10-17T05:08:59Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/stmix.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "035159904804a4ca08207dce600c8d0d3b3cdf171034eaee91ae1e9aa70c29b5",
+    "timestamp": "2026-10-17T05:09:00Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Slicer+V3%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "9ca4e37884f5b8f41dc2c1bde3b4eed921793ae5102f365a229758e956ffa3fd",
+    "timestamp": "2026-10-17T05:09:00Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Slicer+V3%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:00Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Slicer+V3%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:00Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:00Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:00Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.befaco.org/en/slicer-v3/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:00Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/slicer-v3/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:00Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/en/slicerv3/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:00Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/befaco-slicer-v3.html",
+    "method": "cache",
+    "status": 404,
+    "sha256": "29a195fcea5a7ab96b2f09b0a86388a91c40d65cd7370ef90b3093c8b7fac6d6",
+    "timestamp": "2026-10-17T05:09:00Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/slicer-v3.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "612639f1c8e913461f3820315de940e85f783b6a0da5b3c4b3ca8597623f606a",
+    "timestamp": "2026-10-17T05:09:01Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Tube+Distortion+VCA%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "02007eea3f2b53c44001758b8de57fc8a5b47bfd6ad866012e468a6ec1a60233",
+    "timestamp": "2026-10-17T05:09:02Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Tube+Distortion+VCA%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:02Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22Tube+Distortion+VCA%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:02Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:02Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:02Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.befaco.org/en/tube-distortion-vca/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:02Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/tube-distortion-vca/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:02Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/en/tubedistortionvca/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:02Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/befaco-tube-distortion-vca.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "2501a5d4d5446934c0d7adb5c4302832406ffb29dfcd318e6d41771dfd47cd77",
+    "timestamp": "2026-10-17T05:09:03Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/tube-distortion-vca.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "14dbe348db52f32264613ed3cd024426fe9534ade33140a7833c5c196b4a483e",
+    "timestamp": "2026-10-17T05:09:04Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22VCO+III%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "05189fbf73e79d27d824eb159ded62f9c1588ebe37e076de60699928d8e72da1",
+    "timestamp": "2026-10-17T05:09:04Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22VCO+III%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:04Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Befaco%22+%22VCO+III%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:04Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:04Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:04Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.befaco.org/en/vco-iii/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:04Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/vco-iii/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:04Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.befaco.org/en/vcoiii/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:04Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/befaco-vco-iii.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "867c80a3284654162f58adf6b98ac52c29adae6d9b937179089d749817052967",
+    "timestamp": "2026-10-17T05:09:05Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/vco-iii.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "33202ea396149767543c0e99b3c7a2ca007bfbd8199dd3ed73e8a51ac51fc795",
+    "timestamp": "2026-10-17T05:09:06Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Cwejman%22+%22AP-1%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "690d3e9871b8d45c141f724054432d096f96e79e6be14c88f13939a7f2462650",
+    "timestamp": "2026-10-17T05:09:06Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Cwejman%22+%22AP-1%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:06Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Cwejman%22+%22AP-1%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:06Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:06Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:06Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://cwejman.net/ap-1/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:26Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.cwejman.com/ap-1",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "d5a89e26beae0bc03ad18a0b0d1d3d75f87c32047879d25da11970cb5c4662a3",
+    "timestamp": "2026-10-17T05:09:28Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/cwejman-ap-1.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "648bd44d7fff892d3446cfcf4173e17bb62f8a45ca2024f9d9731340605c9ea8",
+    "timestamp": "2026-10-17T05:09:29Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/ap-1.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "750863342441f453010a8d1362462fa0c459637a9e6363818bf134c4df77cba1",
+    "timestamp": "2026-10-17T05:09:29Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Cwejman%22+%22DMF-2%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "a2485c3e94df97e6cf947922aae8071d5df07e65c39add8e770424c8948bbaf3",
+    "timestamp": "2026-10-17T05:09:30Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Cwejman%22+%22DMF-2%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:30Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Cwejman%22+%22DMF-2%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:30Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:30Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:30Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://cwejman.net/dmf-2/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:30Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.cwejman.com/dmf-2",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "d5a89e26beae0bc03ad18a0b0d1d3d75f87c32047879d25da11970cb5c4662a3",
+    "timestamp": "2026-10-17T05:09:30Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/cwejman-dmf-2.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "41f919614fd3e2e1c70a19595b10a9025009496cf0cf18209a5f508b09ca5924",
+    "timestamp": "2026-10-17T05:09:31Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/dmf-2.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "acfb3122cc63df9e0ca67c1719bb9c2b0edcbdd83b7bcf689bc9551c34c202cf",
+    "timestamp": "2026-10-17T05:09:32Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Cwejman%22+%22VC-FCS+Stereo+Forward+Compressor%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "2e38b3a30da77a35289e3c9bdbf39b76ca5f7aa511a2850695f82835da448aee",
+    "timestamp": "2026-10-17T05:09:32Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Cwejman%22+%22VC-FCS+Stereo+Forward+Compressor%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:32Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Cwejman%22+%22VC-FCS+Stereo+Forward+Compressor%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:32Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:32Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:32Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://cwejman.net/vc-fcs-stereo-forward-compressor/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:32Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.cwejman.com/vc-fcs-stereo-forward-compressor",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "d5a89e26beae0bc03ad18a0b0d1d3d75f87c32047879d25da11970cb5c4662a3",
+    "timestamp": "2026-10-17T05:09:32Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/cwejman-vc-fcs-stereo-forward-compressor.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "7e58f8e10623bbbb1be06ec78aa105d171cf490c1838711c364b5e45a596462a",
+    "timestamp": "2026-10-17T05:09:33Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/vc-fcs-stereo-forward-compressor.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "edeea3e5f8aef940fb047e375ec7ea549a4ebc34a1f1c26979e039f5536b91ac",
+    "timestamp": "2026-10-17T05:09:34Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Doepfer%22+%22A-101-4%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "33ae4b2fc8e5d67e99edea6ba7189dc80a22eb6c0ce2fbaef25cd5e1d67b9cec",
+    "timestamp": "2026-10-17T05:09:35Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Doepfer%22+%22A-101-4%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:35Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Doepfer%22+%22A-101-4%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:35Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:35Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:35Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://doepfer.de/a1014.htm",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "d82e268d5c937cdbceb96425b29a0e587c03c86e4612c72be239ea6595fb4b91",
+    "timestamp": "2026-10-17T05:09:37Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://doepfer.de/a101_4.htm",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "e3a1783fe697f2b13807e497d9f91dcf017c479031d9b49bbc47a5ae546974a6",
+    "timestamp": "2026-10-17T05:09:37Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://doepfer.de/a101.htm",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "b6a265367f90870f21651344217116c55fa7d67d9d7fa9f98a6cd87e831ea07d",
+    "timestamp": "2026-10-17T05:09:39Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://doepfer.de/a-101-4.htm",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "e3a1783fe697f2b13807e497d9f91dcf017c479031d9b49bbc47a5ae546974a6",
+    "timestamp": "2026-10-17T05:09:40Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/doepfer-a-101-4.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "be64c2b0683fd6cab573a0cb7736d6b377dbf33a42ab728bd7d1bc1a03260e24",
+    "timestamp": "2026-10-17T05:09:41Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/a-101-4.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "6fdca7637d1f622ac25802a788b259dc16060430c981d9277924c9da28aeee0e",
+    "timestamp": "2026-10-17T05:09:42Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Dreadbox%22+%22Milky+Way+1U+%28silver%29%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "0a6985cf693bbcd9c71545c520bce6b83081ed0f467d6edba701b5cffbaee417",
+    "timestamp": "2026-10-17T05:09:42Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Dreadbox%22+%22Milky+Way+1U+%28silver%29%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:42Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Dreadbox%22+%22Milky+Way+1U+%28silver%29%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:42Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:42Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:42Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.dreadbox-fx.com/product/milky-way-1u-silver/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:42Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.dreadbox-fx.com/milky-way-1u-silver/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:42Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/dreadbox-milky-way-1u-silver.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "484f54e6d31fd17fb5183bc048a2e7f9b31a3f0d65b422125bf98e585a0663d6",
+    "timestamp": "2026-10-17T05:09:43Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/milky-way-1u-silver.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "62da10b4ac940ec6a7ae4f18f58642031df386f188380ce8572680ac040b98e2",
+    "timestamp": "2026-10-17T05:09:44Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Dreadbox%22+%22Ypsilon%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "2bd99569de1b961187e655c1c343bb49db3b77670c1b3c26f769d00cb85a7216",
+    "timestamp": "2026-10-17T05:09:45Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Dreadbox%22+%22Ypsilon%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:45Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Dreadbox%22+%22Ypsilon%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:45Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:45Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:45Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.dreadbox-fx.com/product/ypsilon/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:45Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.dreadbox-fx.com/ypsilon/",
+    "method": "robots_unavailable",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:45Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/dreadbox-ypsilon.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "bb904e16b9ddbca32391f8f89604bb8c84d9e1f03c99580fd4ed4959a216c6d1",
+    "timestamp": "2026-10-17T05:09:46Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/ypsilon.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "2fd88a98de3ef2026df342de84e542ca7ada5b22198292d691ec6d3328127051",
+    "timestamp": "2026-10-17T05:09:47Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Erica+Synths%22+%22Matrix+Mixer%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "d7bd1981e543c433da4fb4d62550ab93499d73f0cc5ed17e9bc952fdb0673ec4",
+    "timestamp": "2026-10-17T05:09:47Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Erica+Synths%22+%22Matrix+Mixer%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:47Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Erica+Synths%22+%22Matrix+Mixer%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:47Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:47Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:47Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://www.ericasynths.lv/shop/eurorack-modules/matrix-mixer/",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "593044a3dc97017363877986c59d574b641fc005bff48d26276d1b1a73bcf18a",
+    "timestamp": "2026-10-17T05:09:50Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.ericasynths.lv/shop/desktop-devices/matrix-mixer/",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "5c49b55a202cd9e621b955a68878d64dfabd96d28a3604adc7eefec553414b80",
+    "timestamp": "2026-10-17T05:09:52Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/erica-synths-matrix-mixer.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "d6aab15ea9eb36dac63b4a5cb366125172f1a7dfb13b23b2c651d807d8be13d8",
+    "timestamp": "2026-10-17T05:09:53Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/matrix-mixer.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "10ed2bd4be5090c5318b6b8e48656e3a8e3fb460fb1f38d13399429e9b09e1b0",
+    "timestamp": "2026-10-17T05:09:54Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Joranalogue%22+%22Filter+8%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "81ee0be9f58de605ac72bb846d7e0b1ef3110db4373c5e9f15dd9aff596fa7ba",
+    "timestamp": "2026-10-17T05:09:54Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Joranalogue%22+%22Filter+8%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:54Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Joranalogue%22+%22Filter+8%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:54Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:54Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:54Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://joranalogue.com/products/filter-8",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "a8ca8531eb0cbca8a79534a174e77fd297e2f19abf6a3573ea04173d1e8a4721",
+    "timestamp": "2026-10-17T05:09:55Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/joranalogue-filter-8.html",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "8bec38d232138f438ab79963dcb62f3c8f642d191e62315c447492e1672a94de",
+    "timestamp": "2026-10-17T05:09:57Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/filter-8.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "5b01e16f374833cb26e1c27bc0f35516529f348f7f0cb99d51e11a104392cd75",
+    "timestamp": "2026-10-17T05:09:57Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Joranalogue%22+%22Generate+3%22+eurorack+power+mA+depth+manual",
+    "method": "free_http",
+    "status": 202,
+    "sha256": "bca1a491fdbb7034fadb24e6262f281182515539603ede38384f71f7bcfebf2d",
+    "timestamp": "2026-10-17T05:09:58Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Joranalogue%22+%22Generate+3%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:58Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://lite.duckduckgo.com/lite/?q=%22Joranalogue%22+%22Generate+3%22+eurorack+power+mA+depth+manual",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:58Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://api.context.dev/v1/web/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:58Z",
+    "credits": 0.0,
+    "note": "context_dev"
+  },
+  {
+    "url": "https://api.firecrawl.dev/v1/search",
+    "method": "skipped_no_key",
+    "status": null,
+    "sha256": null,
+    "timestamp": "2026-10-17T05:09:58Z",
+    "credits": 0.0,
+    "note": "firecrawl"
+  },
+  {
+    "url": "https://joranalogue.com/products/generate-3",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "5893ec40d62b196e1d26ac8633e1833e1688ca2e2fd38472e94f14751587d858",
+    "timestamp": "2026-10-17T05:09:58Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/joranalogue-generate-3.html",
+    "method": "free_http",
+    "status": 200,
+    "sha256": "f5786442789c7cbc89018c3a00c0024f229ebc7f2559598ede2117c7fbc15648",
+    "timestamp": "2026-10-17T05:10:00Z",
+    "credits": 0.0,
+    "note": null
+  },
+  {
+    "url": "https://www.perfectcircuit.com/generate-3.html",
+    "method": "free_http",
+    "status": 404,
+    "sha256": "77ffc52dbc3515102a622d9e564aeb0574e599c217a764b325c6a0c0b9656fec",
+    "timestamp": "2026-10-17T05:10:01Z",
+    "credits": 0.0,
+    "note": null
+  }
+]

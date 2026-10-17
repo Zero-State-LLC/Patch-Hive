@@ -10,15 +10,8 @@ import argparse
 import json
 import re
 import time
-import urllib.error
-import urllib.request
 from pathlib import Path
 from typing import Any
-
-UA = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-)
 
 HP_PATTERNS = [
     re.compile(r"\b(\d{1,2})\s*(?:TE\s*/\s*)?[Hh][Pp]\b"),
@@ -30,20 +23,22 @@ HP_PATTERNS = [
 
 
 def fetch(url: str, timeout: int = 25) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "text/html"})
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            raw = resp.read()
-            # try encodings
-            for enc in ("utf-8", "latin-1", "iso-8859-1"):
-                try:
-                    return raw.decode(enc)
-                except UnicodeDecodeError:
-                    continue
-            return raw.decode("utf-8", errors="replace")
-    except Exception as e:
-        print(f"  fetch fail {url}: {e}")
-        return ""
+    import os
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    catalog = str(root / "data" / "synth-catalog")
+    if catalog not in sys.path:
+        sys.path.insert(0, catalog)
+    from catalog_scrape import CatalogScraper
+
+    scraper = getattr(fetch, "_scraper", None)
+    if scraper is None:
+        scraper = CatalogScraper.for_repo(max_paid_fetches=int(os.environ.get("PATCHHIVE_MAX_PAID_FETCHES", "0")))
+        fetch._scraper = scraper
+    result = scraper.fetch(url, timeout=timeout)
+    return result.text or ""
 
 
 def extract_hp(text: str) -> int | None:
