@@ -156,7 +156,8 @@ def _stamp() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-POWER_OVERLAY_LATEST = 8
+POWER_OVERLAY_LATEST = 9
+CATALOG_ADDITIONS_LATEST = 2
 ENTRY_VERIFICATION = {"verified", "corrected", "flagged"}
 
 
@@ -183,10 +184,11 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     for row in list(phase2.get("catalog_modules") or []) + list(phase3.get("catalog_modules") or []):
         _schedule_catalog(plan, catalog, row, modulargrid_url=row.get("modulargrid_url"))
 
-    additions = CATALOG / "overlays" / "catalog-additions-v1.json"
-    if additions.is_file():
-        for row in _load(additions).get("rows") or []:
-            _schedule_catalog(plan, catalog, row, modulargrid_url=None)
+    for version in range(1, CATALOG_ADDITIONS_LATEST + 1):
+        additions = CATALOG / "overlays" / f"catalog-additions-v{version}.json"
+        if additions.is_file():
+            for row in _load(additions).get("rows") or []:
+                _schedule_catalog(plan, catalog, row, modulargrid_url=None)
 
     for row in phase2.get("full_spec_modules") or []:
         _schedule_module(
@@ -223,6 +225,7 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     overlays = [
         _load(CATALOG / "overlays" / f"module-power-depth-v{version}.json")
         for version in range(1, POWER_OVERLAY_LATEST + 1)
+        if (CATALOG / "overlays" / f"module-power-depth-v{version}.json").is_file()
     ]
     # A manufacturer-verified entry is authoritative for its module: older
     # unverified entries for the same module are skipped so their values can
@@ -361,10 +364,10 @@ def _schedule_catalog(plan: Plan, catalog: dict[str, dict[str, Any]], row: dict[
             """
             INSERT INTO module_catalog (
                 slug, brand, name, hp, category, modulargrid_url, manufacturer_url,
-                is_available, source, created_at, updated_at
+                image_url, is_available, source, created_at, updated_at
             )
             SELECT :slug, :brand, :name, :hp, :category, :modulargrid_url, :manufacturer_url,
-                   :is_available, :source, :created_at, :updated_at
+                   :image_url, :is_available, :source, :created_at, :updated_at
             WHERE NOT EXISTS (SELECT 1 FROM module_catalog WHERE slug = :slug)
             """,
             {
@@ -375,6 +378,7 @@ def _schedule_catalog(plan: Plan, catalog: dict[str, dict[str, Any]], row: dict[
                 "category": row.get("category"),
                 "modulargrid_url": modulargrid_url,
                 "manufacturer_url": row.get("manufacturer_url"),
+                "image_url": (row.get("image_url") or None) and str(row.get("image_url"))[:500],
                 "is_available": row.get("is_available") or "available",
                 "source": row.get("source") or "SynthCatalogResearch",
                 "created_at": _stamp(),
