@@ -45,3 +45,34 @@ def test_entry_verification_rejects_unknown_status():
         "verified",
         "https://x.example",
     )
+
+
+def test_verified_entry_that_disagrees_with_stored_values_flags_instead_of_verifying():
+    plan = P.Plan()
+    existing = {
+        "brand": "Noise Engineering",
+        "name": "Basimilus Iteritas Alter",
+        "power_12v_ma": 70,
+        "power_neg12v_ma": 10,
+        "power_5v_ma": None,
+        "depth_mm": None,
+        "verification_status": "unverified",
+        "verification_source_url": None,
+    }
+    P._schedule_fill(
+        plan,
+        existing,
+        {
+            "power_12v_ma": 150,
+            "power_neg12v_ma": 5,
+            "power_5v_ma": 0,
+            "depth_mm": 38.0,
+            "verification_status": "verified",
+            "verification_source_url": "https://example.com/manual",
+        },
+        kind="power_depth_overlay",
+    )
+    assert existing["power_12v_ma"] == 70
+    assert existing["power_neg12v_ma"] == 10
+    assert existing["verification_status"] == "flagged"
+    assert existing["depth_mm"] == 38.0
