@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import {
   canonApi,
   evidenceApi,
@@ -7,16 +7,16 @@ import {
   patchApi,
   runApi,
   type InventoryRevisionSummary,
-} from '@/lib/api';
-import type { Patch, Run } from '@/types/api';
+} from "@/lib/api";
+import type { Patch, Run } from "@/types/api";
 
-type WorkspaceTab = 'overview' | 'patches' | 'exports' | 'gallery';
+type WorkspaceTab = "overview" | "patches" | "exports" | "gallery";
 
 const tabLabels: Record<WorkspaceTab, string> = {
-  overview: 'Overview',
-  patches: 'Patches',
-  exports: 'Exports',
-  gallery: 'Module gallery',
+  overview: "Overview",
+  patches: "Patches",
+  exports: "Exports",
+  gallery: "Module gallery",
 };
 
 interface RigRevision {
@@ -39,29 +39,33 @@ export default function RigDetailPage() {
   const rigIdNum = Number(rigId);
   const [runs, setRuns] = useState<Run[]>([]);
   const [revisions, setRevisions] = useState<RigRevision[]>([]);
-  const [activeTab, setActiveTab] = useState<WorkspaceTab>('overview');
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>("overview");
   const [activeRevisionId, setActiveRevisionId] = useState<string | null>(null);
   const [activeRunId, setActiveRunId] = useState<number | null>(null);
   const [patches, setPatches] = useState<Patch[]>([]);
   const [selectedPatchId, setSelectedPatchId] = useState<number | null>(null);
-  const [overlay, setOverlay] = useState<OverlayState>({ notes: '', favorite: false, tried: false });
-  const [overlayStatus, setOverlayStatus] = useState('');
+  const [overlay, setOverlay] = useState<OverlayState>({
+    notes: "",
+    favorite: false,
+    tried: false,
+  });
+  const [overlayStatus, setOverlayStatus] = useState("");
   const [credits, setCredits] = useState(0);
-  const [exportStatus, setExportStatus] = useState('');
+  const [exportStatus, setExportStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [patchesLoading, setPatchesLoading] = useState(false);
   const [latestInventory, setLatestInventory] = useState<InventoryRevisionSummary | null>(null);
-  const [inventoryError, setInventoryError] = useState('');
+  const [inventoryError, setInventoryError] = useState("");
   const [generating, setGenerating] = useState(false);
-  const [generateStatus, setGenerateStatus] = useState('');
+  const [generateStatus, setGenerateStatus] = useState("");
   const [lastGenerateRunId, setLastGenerateRunId] = useState<number | null>(null);
 
   const hasRuns = runs.length > 0;
   const inventoryReady = Boolean(latestInventory?.ready_for_generation);
   const inventorySealed = Boolean(latestInventory?.inventory_revision_id);
   const tabs = useMemo<WorkspaceTab[]>(
-    () => (hasRuns ? ['overview', 'patches', 'exports', 'gallery'] : ['overview', 'gallery']),
+    () => (hasRuns ? ["overview", "patches", "exports", "gallery"] : ["overview", "gallery"]),
     [hasRuns],
   );
 
@@ -77,13 +81,13 @@ export default function RigDetailPage() {
 
   useEffect(() => {
     if (!rigIdNum) return;
-    setInventoryError('');
+    setInventoryError("");
     evidenceApi
       .listInventory(rigIdNum)
       .then((res) => setLatestInventory(res.data.latest ?? null))
       .catch(() => {
         setLatestInventory(null);
-        setInventoryError('Inventory receipt unavailable.');
+        setInventoryError("Inventory receipt unavailable.");
       });
   }, [rigIdNum]);
 
@@ -106,10 +110,10 @@ export default function RigDetailPage() {
     });
     Promise.allSettled([runsPromise, revsPromise])
       .then((results) => {
-        const ordered = results[0].status === 'fulfilled' ? results[0].value : [];
-        const revs = results[1].status === 'fulfilled' ? results[1].value : [];
-        if (results[0].status !== 'fulfilled') setRuns([]);
-        if (results[1].status !== 'fulfilled') {
+        const ordered = results[0].status === "fulfilled" ? results[0].value : [];
+        const revs = results[1].status === "fulfilled" ? results[1].value : [];
+        if (results[0].status !== "fulfilled") setRuns([]);
+        if (results[1].status !== "fulfilled") {
           // Derive revision options from run bridge fields when API absent.
           const derived: RigRevision[] = [];
           const seen = new Set<string>();
@@ -158,7 +162,7 @@ export default function RigDetailPage() {
 
   useEffect(() => {
     if (selectedPatchId == null) {
-      setOverlay({ notes: '', favorite: false, tried: false });
+      setOverlay({ notes: "", favorite: false, tried: false });
       return;
     }
     const ref = legacyPatchRef(selectedPatchId);
@@ -166,15 +170,15 @@ export default function RigDetailPage() {
       .getOverlay(ref)
       .then((response) => {
         setOverlay({
-          notes: response.data.notes ?? '',
+          notes: response.data.notes ?? "",
           favorite: response.data.favorite,
           tried: response.data.tried,
         });
-        setOverlayStatus('');
+        setOverlayStatus("");
       })
       .catch(() => {
         // Unauthenticated or network — keep local draft only
-        setOverlay({ notes: '', favorite: false, tried: false });
+        setOverlay({ notes: "", favorite: false, tried: false });
       });
   }, [selectedPatchId]);
 
@@ -195,16 +199,16 @@ export default function RigDetailPage() {
 
   const saveOverlay = async () => {
     if (selectedPatchId == null) return;
-    setOverlayStatus('Saving…');
+    setOverlayStatus("Saving…");
     try {
       await canonApi.upsertOverlay(legacyPatchRef(selectedPatchId), {
         notes: overlay.notes,
         favorite: overlay.favorite,
         tried: overlay.tried,
       });
-      setOverlayStatus('Personal overlay saved (does not mutate canonical patch).');
+      setOverlayStatus("Personal overlay saved (does not mutate canonical patch).");
     } catch {
-      setOverlayStatus('Sign in required to persist notes/favorite/tried on the server.');
+      setOverlayStatus("Sign in required to persist notes/favorite/tried on the server.");
     }
   };
 
@@ -217,7 +221,9 @@ export default function RigDetailPage() {
       );
       setRuns(ordered);
       const pick =
-        (preferRunId != null ? ordered.find((r) => r.id === preferRunId) : null) ?? ordered[0] ?? null;
+        (preferRunId != null ? ordered.find((r) => r.id === preferRunId) : null) ??
+        ordered[0] ??
+        null;
       if (pick) {
         setActiveRevisionId(pick.rig_revision_id);
         setActiveRunId(pick.id);
@@ -229,38 +235,36 @@ export default function RigDetailPage() {
 
   const handleGenerate = async () => {
     if (!rigIdNum) return;
-    setGenerateStatus('');
+    setGenerateStatus("");
     setGenerating(true);
     try {
       const result = await patchApi.generate(rigIdNum, {});
       const body = result.data;
-      const status = body.generation_status ?? 'OK';
+      const status = body.generation_status ?? "OK";
       const count = body.generated_count ?? body.patches?.length ?? 0;
-      if (status === 'NOT_COMPUTABLE' || count === 0) {
+      if (status === "NOT_COMPUTABLE" || count === 0) {
         setGenerateStatus(
           `Generation ${status}: no patches produced` +
-            (body.inventory_gate_code ? ` (${body.inventory_gate_code})` : '') +
-            '. Confirm inventory modules, then retry.',
+            (body.inventory_gate_code ? ` (${body.inventory_gate_code})` : "") +
+            ". Confirm inventory modules, then retry.",
         );
       } else {
         setGenerateStatus(
-          `Generated ${count} patch${count === 1 ? '' : 'es'}` +
-            (body.run_id != null ? ` · run ${body.run_id}` : '') +
-            (body.inventory_revision_id
-              ? ` · inventory ${body.inventory_revision_id}`
-              : '') +
-            (body.rig_revision_id ? ` · ${body.rig_revision_id.slice(0, 16)}…` : '') +
-            '.',
+          `Generated ${count} patch${count === 1 ? "" : "es"}` +
+            (body.run_id != null ? ` · run ${body.run_id}` : "") +
+            (body.inventory_revision_id ? ` · inventory ${body.inventory_revision_id}` : "") +
+            (body.rig_revision_id ? ` · ${body.rig_revision_id.slice(0, 16)}…` : "") +
+            ".",
         );
         setLastGenerateRunId(body.run_id ?? null);
         await reloadRunsAndSelect(body.run_id ?? null);
-        setActiveTab('patches');
+        setActiveTab("patches");
       }
       // Refresh inventory receipt after generate (gate may seal a placement-based revision).
       try {
         const inv = await evidenceApi.listInventory(rigIdNum);
         setLatestInventory(inv.data.latest ?? null);
-        setInventoryError('');
+        setInventoryError("");
       } catch {
         /* keep prior inventory */
       }
@@ -268,9 +272,7 @@ export default function RigDetailPage() {
       const apiError = error as { response?: { data?: { detail?: string }; status?: number } };
       const detail = apiError.response?.data?.detail;
       setGenerateStatus(
-        typeof detail === 'string'
-          ? detail
-          : 'Generation failed. Confirm inventory and retry.',
+        typeof detail === "string" ? detail : "Generation failed. Confirm inventory and retry.",
       );
     } finally {
       setGenerating(false);
@@ -280,10 +282,10 @@ export default function RigDetailPage() {
   const handleExport = async () => {
     if (!activeRun) return;
     if (!activeRun.export_bridge_ready) {
-      setExportStatus('Export bridge not ready for this run; reload the workspace and retry.');
+      setExportStatus("Export bridge not ready for this run; reload the workspace and retry.");
       return;
     }
-    setExportStatus('');
+    setExportStatus("");
     setExporting(true);
     try {
       const idempotency_key = `patchbook-run-${activeRun.id}-${crypto.randomUUID()}`;
@@ -291,8 +293,8 @@ export default function RigDetailPage() {
         source_run_id: activeRun.source_run_id,
         source_rig_revision_id: activeRun.rig_revision_id,
         artifact_manifest_hash: activeRun.artifact_manifest_hash,
-        formats: ['pdf', 'json'],
-        license: 'personal',
+        formats: ["pdf", "json"],
+        license: "personal",
         idempotency_key,
       });
       setExportStatus(
@@ -303,9 +305,9 @@ export default function RigDetailPage() {
       const apiError = error as { response?: { data?: { detail?: string }; status?: number } };
       const detail = apiError.response?.data?.detail;
       if (apiError.response?.status === 402) {
-        setExportStatus('INSUFFICIENT_CREDITS — no debit recorded on the canonical ledger.');
+        setExportStatus("INSUFFICIENT_CREDITS — no debit recorded on the canonical ledger.");
       } else {
-        setExportStatus(detail || 'Export failed; no successful canonical debit recorded.');
+        setExportStatus(detail || "Export failed; no successful canonical debit recorded.");
       }
     } finally {
       setExporting(false);
@@ -319,23 +321,24 @@ export default function RigDetailPage() {
           <p className="eyebrow">Canonical rig workspace</p>
           <h1 id="rig-title">Rig {rigId}</h1>
           <p className="muted">
-            Pick an immutable revision, inspect its runs, and keep personal notes as a mutable overlay.
+            Pick an immutable revision, inspect its runs, and keep personal notes as a mutable
+            overlay.
           </p>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           {revisions.length > 0 ? (
             <div className="field">
               <label htmlFor="revision-selector">Rig revision</label>
               <select
                 id="revision-selector"
-                value={activeRevisionId ?? ''}
+                value={activeRevisionId ?? ""}
                 onChange={(event) => handleRevisionChange(event.target.value)}
               >
                 {revisions.map((rev, index) => (
                   <option key={rev.rig_revision_id} value={rev.rig_revision_id}>
-                    {index === 0 ? 'Latest · ' : ''}
+                    {index === 0 ? "Latest · " : ""}
                     {rev.rig_revision_id.slice(0, 20)}… · {rev.run_count} run
-                    {rev.run_count === 1 ? '' : 's'}
+                    {rev.run_count === 1 ? "" : "s"}
                   </option>
                 ))}
               </select>
@@ -346,12 +349,12 @@ export default function RigDetailPage() {
               <label htmlFor="run-selector">Source run (within revision)</label>
               <select
                 id="run-selector"
-                value={activeRun?.id ?? ''}
+                value={activeRun?.id ?? ""}
                 onChange={(event) => setActiveRunId(Number(event.target.value))}
               >
                 {runsForRevision.map((run, index) => (
                   <option key={run.id} value={run.id}>
-                    {index === 0 ? 'Latest · ' : ''}Run {run.id} ·{' '}
+                    {index === 0 ? "Latest · " : ""}Run {run.id} ·{" "}
                     {new Date(run.created_at).toLocaleDateString()}
                   </option>
                 ))}
@@ -389,13 +392,13 @@ export default function RigDetailPage() {
           className="panel"
           role="status"
           aria-label="Generation receipt"
-          style={{ marginBottom: '1rem' }}
+          style={{ marginBottom: "1rem" }}
         >
           <p
             className={`status ${
-              generateStatus.includes('NOT_COMPUTABLE') || generateStatus.includes('failed')
-                ? 'status-warning'
-                : 'status-success'
+              generateStatus.includes("NOT_COMPUTABLE") || generateStatus.includes("failed")
+                ? "status-warning"
+                : "status-success"
             }`}
           >
             {generateStatus}
@@ -403,20 +406,20 @@ export default function RigDetailPage() {
         </div>
       ) : null}
 
-      {!loading && activeTab === 'overview' ? (
+      {!loading && activeTab === "overview" ? (
         <div className="panel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
-          <h2>{hasRuns ? 'Rig ready' : 'Build the source of truth'}</h2>
+          <h2>{hasRuns ? "Rig ready" : "Build the source of truth"}</h2>
           <p className="muted">
             {hasRuns
-              ? `${revisions.length} revision${revisions.length === 1 ? '' : 's'} · ${runs.length} generation run${runs.length === 1 ? '' : 's'}.`
-              : 'Add modules manually or review photo evidence before generating.'}
+              ? `${revisions.length} revision${revisions.length === 1 ? "" : "s"} · ${runs.length} generation run${runs.length === 1 ? "" : "s"}.`
+              : "Add modules manually or review photo evidence before generating."}
           </p>
           {activeRevisionId ? (
             <p className="muted">
               Active revision: <code>{activeRevisionId}</code>
               {activeRun ? (
                 <>
-                  {' '}
+                  {" "}
                   · run <code>{activeRun.id}</code>
                 </>
               ) : null}
@@ -425,16 +428,22 @@ export default function RigDetailPage() {
 
           <ol
             className="panel"
-            style={{ marginTop: '1rem', marginBottom: '1rem', paddingLeft: '1.25rem' }}
+            style={{ marginTop: "1rem", marginBottom: "1rem", paddingLeft: "1.25rem" }}
             aria-label="Inventory to generation loop"
           >
-            <li style={{ marginBottom: '0.5rem' }}>
+            <li style={{ marginBottom: "0.5rem" }}>
               <strong>1 · Confirm inventory</strong>
-              <span className="muted"> — photo evidence or manual placements (never auto-confirm)</span>
+              <span className="muted">
+                {" "}
+                — photo evidence or manual placements (never auto-confirm)
+              </span>
             </li>
-            <li style={{ marginBottom: '0.5rem' }}>
+            <li style={{ marginBottom: "0.5rem" }}>
               <strong>2 · Generate patches</strong>
-              <span className="muted"> — constrained to confirmed modules; empty inventory → NOT_COMPUTABLE</span>
+              <span className="muted">
+                {" "}
+                — constrained to confirmed modules; empty inventory → NOT_COMPUTABLE
+              </span>
             </li>
             <li>
               <strong>3 · Review &amp; export</strong>
@@ -444,7 +453,7 @@ export default function RigDetailPage() {
 
           <div
             className="panel"
-            style={{ marginTop: '1rem', marginBottom: '1rem' }}
+            style={{ marginTop: "1rem", marginBottom: "1rem" }}
             aria-label="Confirmed inventory receipt"
           >
             <h3>Confirmed inventory</h3>
@@ -456,21 +465,21 @@ export default function RigDetailPage() {
             {latestInventory ? (
               <>
                 <p
-                  className={`status status-${inventoryReady ? 'success' : 'warning'}`}
+                  className={`status status-${inventoryReady ? "success" : "warning"}`}
                   role="status"
                 >
                   Inventory revision: <code>{latestInventory.inventory_revision_id}</code>
-                  {inventoryReady ? ' · ready for generation' : ' · not ready for generation'}
+                  {inventoryReady ? " · ready for generation" : " · not ready for generation"}
                 </p>
                 <p className="muted">
                   {latestInventory.confirmed_count} confirmed module
-                  {latestInventory.confirmed_count === 1 ? '' : 's'}
+                  {latestInventory.confirmed_count === 1 ? "" : "s"}
                   {latestInventory.unresolved_count
                     ? ` · ${latestInventory.unresolved_count} unresolved candidate(s)`
-                    : ''}
+                    : ""}
                   {latestInventory.created_at
                     ? ` · sealed ${new Date(latestInventory.created_at).toLocaleString()}`
-                    : ''}
+                    : ""}
                 </p>
               </>
             ) : !inventoryError ? (
@@ -482,18 +491,18 @@ export default function RigDetailPage() {
 
           <div
             className="panel"
-            style={{ marginBottom: '1rem' }}
+            style={{ marginBottom: "1rem" }}
             aria-label="Generate patches from inventory"
           >
             <h3>Generate patches</h3>
             <p className="muted">
               {inventoryReady
-                ? 'Sealed inventory is ready. Generation uses confirmed modules only.'
+                ? "Sealed inventory is ready. Generation uses confirmed modules only."
                 : inventorySealed
-                  ? 'Inventory is sealed but not ready for generation — resolve candidates or place modules, then retry.'
-                  : 'No sealed inventory yet. You can still open evidence confirmation; generation fails closed if no confirmed modules exist on the rig.'}
+                  ? "Inventory is sealed but not ready for generation — resolve candidates or place modules, then retry."
+                  : "No sealed inventory yet. You can still open evidence confirmation; generation fails closed if no confirmed modules exist on the rig."}
             </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center' }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
               <button
                 className="button button-primary"
                 type="button"
@@ -502,44 +511,47 @@ export default function RigDetailPage() {
                 aria-describedby="generate-help"
               >
                 {generating
-                  ? 'Generating…'
+                  ? "Generating…"
                   : inventoryReady
-                    ? 'Generate patches'
-                    : 'Generate patches (may be blocked)'}
+                    ? "Generate patches"
+                    : "Generate patches (may be blocked)"}
               </button>
               <Link
-                className={inventoryReady ? 'button button-secondary' : 'button button-primary'}
+                className={inventoryReady ? "button button-secondary" : "button button-primary"}
                 to={`/racks/${rigId}/edit`}
               >
-                {inventorySealed ? 'Update inventory evidence' : 'Confirm inventory (photo / manual)'}
+                {inventorySealed
+                  ? "Update inventory evidence"
+                  : "Confirm inventory (photo / manual)"}
               </Link>
               {hasRuns ? (
                 <button
                   className="button button-quiet"
                   type="button"
-                  onClick={() => setActiveTab('patches')}
+                  onClick={() => setActiveTab("patches")}
                 >
                   View patch library
                 </button>
               ) : null}
             </div>
-            <p id="generate-help" className="muted" style={{ marginTop: '0.5rem' }}>
+            <p id="generate-help" className="muted" style={{ marginTop: "0.5rem" }}>
               {inventoryReady
-                ? 'Primary path: inventory ready → generate → review patches → export when credits allow.'
-                : 'Complete inventory confirmation for a clear green path. Generation never invents modules.'}
+                ? "Primary path: inventory ready → generate → review patches → export when credits allow."
+                : "Complete inventory confirmation for a clear green path. Generation never invents modules."}
             </p>
             {lastGenerateRunId != null ? (
-              <p className="muted" style={{ marginTop: '0.5rem' }}>
-                Latest generation run: <code>{lastGenerateRunId}</code> · open Patches tab to review.
+              <p className="muted" style={{ marginTop: "0.5rem" }}>
+                Latest generation run: <code>{lastGenerateRunId}</code> · open Patches tab to
+                review.
               </p>
             ) : null}
           </div>
         </div>
       ) : null}
 
-      {!loading && activeTab === 'patches' && hasRuns ? (
+      {!loading && activeTab === "patches" && hasRuns ? (
         <div className="panel" id="panel-patches" role="tabpanel" aria-labelledby="tab-patches">
-          <p className="eyebrow">Run {activeRun?.id ?? '—'}</p>
+          <p className="eyebrow">Run {activeRun?.id ?? "—"}</p>
           <h2>Patch library</h2>
           <p className="muted">
             Canonical patches are immutable. Favorite / tried / notes are personal overlays.
@@ -548,18 +560,18 @@ export default function RigDetailPage() {
           {!patchesLoading && patches.length === 0 ? (
             <p className="status status-warning">No patches for this run.</p>
           ) : null}
-          <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
-            <ul aria-label="Patches in run" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+          <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "1fr 1fr" }}>
+            <ul aria-label="Patches in run" style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {patches.map((patch) => (
                 <li key={patch.id}>
                   <button
                     type="button"
-                    className={`button ${selectedPatchId === patch.id ? 'button-primary' : 'button-quiet'}`}
-                    style={{ width: '100%', textAlign: 'left', marginBottom: '0.5rem' }}
+                    className={`button ${selectedPatchId === patch.id ? "button-primary" : "button-quiet"}`}
+                    style={{ width: "100%", textAlign: "left", marginBottom: "0.5rem" }}
                     onClick={() => setSelectedPatchId(patch.id)}
                   >
                     {patch.name_override || patch.suggested_name || patch.name}
-                    <span className="muted" style={{ display: 'block', fontSize: '0.8rem' }}>
+                    <span className="muted" style={{ display: "block", fontSize: "0.8rem" }}>
                       {patch.category} · {patch.connections?.length ?? 0} cables
                     </span>
                   </button>
@@ -578,10 +590,10 @@ export default function RigDetailPage() {
                     value={overlay.notes}
                     onChange={(event) => setOverlay((o) => ({ ...o, notes: event.target.value }))}
                     rows={4}
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                   />
                 </label>
-                <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <label style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                   <input
                     type="checkbox"
                     checked={overlay.favorite}
@@ -591,7 +603,7 @@ export default function RigDetailPage() {
                   />
                   Favorite
                 </label>
-                <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <label style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                   <input
                     type="checkbox"
                     checked={overlay.tried}
@@ -599,7 +611,11 @@ export default function RigDetailPage() {
                   />
                   Tried
                 </label>
-                <button className="button button-secondary" type="button" onClick={() => void saveOverlay()}>
+                <button
+                  className="button button-secondary"
+                  type="button"
+                  onClick={() => void saveOverlay()}
+                >
                   Save overlay
                 </button>
                 {overlayStatus ? (
@@ -613,7 +629,7 @@ export default function RigDetailPage() {
         </div>
       ) : null}
 
-      {!loading && activeTab === 'exports' && hasRuns ? (
+      {!loading && activeTab === "exports" && hasRuns ? (
         <div className="panel" id="panel-exports" role="tabpanel" aria-labelledby="tab-exports">
           <p className="eyebrow">Canonical monetization boundary</p>
           <h2>Exports</h2>
@@ -621,17 +637,17 @@ export default function RigDetailPage() {
             Available credits: <strong>{credits}</strong>
           </p>
           <p className="muted">
-            Debits post only via <code>/api/canon/exports</code>. Bound to revision{' '}
+            Debits post only via <code>/api/canon/exports</code>. Bound to revision{" "}
             <code>{activeRun?.rig_revision_id}</code>.
           </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
             <button
               className="button button-primary"
               type="button"
               onClick={handleExport}
               disabled={credits <= 0 || exporting || !activeRun}
             >
-              {exporting ? 'Requesting…' : 'Export PDF patch book'}
+              {exporting ? "Requesting…" : "Export PDF patch book"}
             </button>
             {activeRun?.export_bridge_ready ? (
               <a
@@ -653,12 +669,13 @@ export default function RigDetailPage() {
         </div>
       ) : null}
 
-      {!loading && activeTab === 'gallery' ? (
+      {!loading && activeTab === "gallery" ? (
         <div className="panel" id="panel-gallery" role="tabpanel" aria-labelledby="tab-gallery">
           <p className="eyebrow">Evidence and revisions</p>
           <h2>Module gallery</h2>
           <p className="muted">
-            Confirmed gallery evidence is separated from inferred, disputed, and missing specifications.
+            Confirmed gallery evidence is separated from inferred, disputed, and missing
+            specifications.
           </p>
           <Link className="button button-secondary" to={`/racks/${rigId}/edit`}>
             Open photo / inventory confirmation

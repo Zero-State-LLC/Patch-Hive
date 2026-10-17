@@ -1,0 +1,54 @@
+name: T070 Jev Staging Preflight
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    env:
+      TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+      JEV_MODEL: ${{ vars.JEV_MODEL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install preflight dependency
+        run: python -m pip install httpx
+      - name: Verify required configuration exists
+        shell: bash
+        run: |
+          test -n "$TYPESAFE_API_KEY"
+          test -n "$JEV_MODEL"
+      - name: Run bounded synthetic Jev preflight
+        id: preflight
+        shell: bash
+        run: |
+          set +e
+          python scripts/jev_staging_preflight.py > t070-jev-preflight.json
+          code=$?
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path("t070-jev-preflight.json")
+          data = json.loads(path.read_text())
+          data["source_sha"] = os.environ["GITHUB_SHA"]
+          data["workflow_run_id"] = os.environ["GITHUB_RUN_ID"]
+          path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
+          print(json.dumps(data, sort_keys=True))
+          PY
+          exit "$code"
+      - name: Retain T070 receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: t070-jev-preflight-receipt
+          path: t070-jev-preflight.json
+          if-no-files-found: error
+          retention-days: 90

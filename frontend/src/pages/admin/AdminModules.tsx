@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
-import { adminApi, moduleApi } from '@/lib/api';
-import type { Module } from '@/types/api';
-import { AdminGuard } from './AdminGuard';
-import { AdminNav } from './AdminNav';
+import { useEffect, useState } from "react";
+import { adminApi, moduleApi } from "@/lib/api";
+import type { Module } from "@/types/api";
+import { AdminGuard } from "./AdminGuard";
+import { AdminNav } from "./AdminNav";
 
-const STATUS_OPTIONS = ['active', 'deprecated', 'tombstoned'];
+const STATUS_OPTIONS = ["active", "deprecated", "tombstoned"];
 
 export default function AdminModules() {
   const [modules, setModules] = useState<Module[]>([]);
-  const [reason, setReason] = useState('');
+  const [reason, setReason] = useState("");
   const [mergeTarget, setMergeTarget] = useState<Record<number, number>>({});
 
   const fetchModules = async () => {
@@ -49,7 +49,7 @@ export default function AdminModules() {
               <h2>
                 {module.brand} — {module.name}
               </h2>
-              <p className="catalog-card-meta">Status: {module.status || 'active'}</p>
+              <p className="catalog-card-meta">Status: {module.status || "active"}</p>
               <div className="toolbar">
                 <label className="inline-field">
                   Status
@@ -58,11 +58,11 @@ export default function AdminModules() {
                       await adminApi.updateModuleStatus(
                         module.id,
                         e.target.value,
-                        reason || 'status update',
+                        reason || "status update",
                       );
                       void fetchModules();
                     }}
-                    defaultValue={module.status || 'active'}
+                    defaultValue={module.status || "active"}
                   >
                     {STATUS_OPTIONS.map((status) => (
                       <option key={status} value={status}>
@@ -76,14 +76,14 @@ export default function AdminModules() {
                   <input
                     type="number"
                     placeholder="ID"
-                    value={mergeTarget[module.id] || ''}
+                    value={mergeTarget[module.id] || ""}
                     onChange={(e) =>
                       setMergeTarget((prev) => ({
                         ...prev,
                         [module.id]: Number(e.target.value),
                       }))
                     }
-                    style={{ width: '7rem' }}
+                    style={{ width: "7rem" }}
                   />
                 </label>
                 <button
@@ -92,7 +92,7 @@ export default function AdminModules() {
                   onClick={async () => {
                     const replacementId = mergeTarget[module.id];
                     if (!replacementId) return;
-                    await adminApi.mergeModule(module.id, replacementId, reason || 'merge');
+                    await adminApi.mergeModule(module.id, replacementId, reason || "merge");
                     void fetchModules();
                   }}
                 >

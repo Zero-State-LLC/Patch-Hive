@@ -34,6 +34,7 @@ from canon.models import (  # noqa: F401
 from community.models import Comment, User, Vote  # noqa: F401
 from core import get_db, init_db, settings
 from gallery.models import GalleryRevision  # noqa: F401
+from intelligence.models import DecisionReceiptRecord  # noqa: F401
 from modules.catalog import ModuleCatalog  # noqa: F401
 
 # Import all models to register them with SQLAlchemy before init_db()

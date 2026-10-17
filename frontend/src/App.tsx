@@ -1,32 +1,32 @@
-import { useState } from 'react';
-import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
-import { useAuthStore } from '@/lib/store';
-import AccountPage from '@/pages/Account';
-import AdminDashboard from '@/pages/admin/AdminDashboard';
-import AdminExports from '@/pages/admin/AdminExports';
-import AdminGallery from '@/pages/admin/AdminGallery';
-import AdminModules from '@/pages/admin/AdminModules';
-import AdminRuns from '@/pages/admin/AdminRuns';
-import AdminUsers from '@/pages/admin/AdminUsers';
-import CaseDetailPage from '@/pages/CaseDetail';
-import CasesPage from '@/pages/Cases';
-import Home from '@/pages/Home';
-import LoginPage from '@/pages/Login';
-import ModulesPage from '@/pages/Modules';
-import NotFoundPage from '@/pages/NotFound';
-import PatchesPage from '@/pages/Patches';
-import RackBuilderPage from '@/pages/RackBuilder';
-import RacksPage from '@/pages/Racks';
-import RigDetailPage from '@/pages/RigDetail';
-import PatchBookStyleStudioPage from '@/pages/PatchBookStyleStudio';
-import RegistryPage from '@/pages/Registry';
+import { useState } from "react";
+import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
+import { useAuthStore } from "@/lib/store";
+import AccountPage from "@/pages/Account";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminExports from "@/pages/admin/AdminExports";
+import AdminGallery from "@/pages/admin/AdminGallery";
+import AdminModules from "@/pages/admin/AdminModules";
+import AdminRuns from "@/pages/admin/AdminRuns";
+import AdminUsers from "@/pages/admin/AdminUsers";
+import CaseDetailPage from "@/pages/CaseDetail";
+import CasesPage from "@/pages/Cases";
+import Home from "@/pages/Home";
+import LoginPage from "@/pages/Login";
+import ModulesPage from "@/pages/Modules";
+import NotFoundPage from "@/pages/NotFound";
+import PatchesPage from "@/pages/Patches";
+import RackBuilderPage from "@/pages/RackBuilder";
+import RacksPage from "@/pages/Racks";
+import RigDetailPage from "@/pages/RigDetail";
+import PatchBookStyleStudioPage from "@/pages/PatchBookStyleStudio";
+import RegistryPage from "@/pages/Registry";
 
-type Theme = 'dark' | 'light';
+type Theme = "dark" | "light";
 
 function App() {
   const { user, logout, isAuthenticated } = useAuthStore();
-  const [theme, setTheme] = useState<Theme>('dark');
-  const canSeeAdmin = user && ['Admin', 'Ops', 'Support', 'ReadOnly'].includes(user.role);
+  const [theme, setTheme] = useState<Theme>("dark");
+  const canSeeAdmin = user && ["Admin", "Ops", "Support", "ReadOnly"].includes(user.role);
 
   return (
     <BrowserRouter>
@@ -52,17 +52,19 @@ function App() {
             <button
               className="button button-quiet"
               type="button"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              aria-label={`Use ${theme === 'dark' ? 'light' : 'dark'} theme`}
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label={`Use ${theme === "dark" ? "light" : "dark"} theme`}
             >
-              {theme === 'dark' ? 'Light' : 'Dark'}
+              {theme === "dark" ? "Light" : "Dark"}
             </button>
             {isAuthenticated() ? (
               <button className="button button-secondary" type="button" onClick={logout}>
                 Sign out {user?.username}
               </button>
             ) : (
-              <NavLink className="button button-primary" to="/login">Sign in</NavLink>
+              <NavLink className="button button-primary" to="/login">
+                Sign in
+              </NavLink>
             )}
           </div>
         </header>

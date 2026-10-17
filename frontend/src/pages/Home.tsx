@@ -2,14 +2,14 @@
  * Home — PatchHive brand-first fold (Cyber Hive / Zero State).
  * Hallmark: full-bleed hero, no feature-card grid, brand as hero signal.
  */
-import { Link } from 'react-router-dom';
-import { useAuthStore } from '@/lib/store';
+import { Link } from "react-router-dom";
+import { useAuthStore } from "@/lib/store";
 
 const laws = [
-  'Vision output is evidence only — never silent inventory truth',
-  'Immutable rig revisions and deterministic generation seeds',
-  'Signal types describe ports and cables, not DSP',
-  'Credits debit only at the canonical export boundary',
+  "Vision output is evidence only — never silent inventory truth",
+  "Immutable rig revisions and deterministic generation seeds",
+  "Signal types describe ports and cables, not DSP",
+  "Credits debit only at the canonical export boundary",
 ] as const;
 
 export default function Home() {

@@ -2,47 +2,47 @@
  * Auth gate — PatchHive Cyber Hive / Zero State.
  * Sign in or create an account with accessible, token-aligned UI.
  */
-import { useId, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { authApi } from '@/lib/api';
-import { useAuthStore } from '@/lib/store';
+import { useId, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { authApi } from "@/lib/api";
+import { useAuthStore } from "@/lib/store";
 
-type AuthMode = 'signin' | 'register';
+type AuthMode = "signin" | "register";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
   const formId = useId();
 
-  const [mode, setMode] = useState<AuthMode>('signin');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [mode, setMode] = useState<AuthMode>("signin");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setSubmitting(true);
 
     try {
-      if (mode === 'register') {
+      if (mode === "register") {
         await authApi.register({ username, email, password });
       }
       const res = await authApi.login({ username, password });
       setAuth(res.data.user, res.data.access_token);
-      navigate('/racks');
+      navigate("/racks");
     } catch (err: unknown) {
       const apiError = err as { response?: { data?: { detail?: string | { msg?: string }[] } } };
       const detail = apiError.response?.data?.detail;
-      if (typeof detail === 'string') {
+      if (typeof detail === "string") {
         setError(detail);
       } else if (Array.isArray(detail)) {
-        setError(detail.map((d) => d.msg || 'Validation error').join(' · '));
+        setError(detail.map((d) => d.msg || "Validation error").join(" · "));
       } else {
-        setError(mode === 'register' ? 'Could not create account' : 'Sign in failed');
+        setError(mode === "register" ? "Could not create account" : "Sign in failed");
       }
     } finally {
       setSubmitting(false);
@@ -51,17 +51,17 @@ export default function LoginPage() {
 
   // Must match scripts/seed_golden_demo.py (Admin/Admin is NOT a real account).
   const fillDemoUser = () => {
-    setMode('signin');
-    setUsername('golden_demo');
-    setPassword('demo-pass');
-    setError('');
+    setMode("signin");
+    setUsername("golden_demo");
+    setPassword("demo-pass");
+    setError("");
   };
 
   const fillDemoAdmin = () => {
-    setMode('signin');
-    setUsername('admin_demo');
-    setPassword('admin-pass');
-    setError('');
+    setMode("signin");
+    setUsername("admin_demo");
+    setPassword("admin-pass");
+    setError("");
   };
 
   return (
@@ -70,15 +70,15 @@ export default function LoginPage() {
         <aside className="auth-brand panel" aria-label="Product identity">
           <div className="auth-brand-grid" aria-hidden="true" />
           <div className="auth-brand-photo" aria-hidden="true" />
-          <p className="home-brand" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
+          <p className="home-brand" style={{ fontSize: "clamp(2rem, 5vw, 3rem)" }}>
             PatchHive
           </p>
           <h1 id={`${formId}-title`} className="auth-brand-title">
             Enter the hive
           </h1>
           <p className="auth-brand-lede">
-            Confirm modular rigs, generate hardware-constrained patches, and export
-            provenance-bound PatchBooks — without inventing gear or running DSP.
+            Confirm modular rigs, generate hardware-constrained patches, and export provenance-bound
+            PatchBooks — without inventing gear or running DSP.
           </p>
           <ul className="auth-brand-list">
             <li>Immutable rig revisions</li>
@@ -97,7 +97,7 @@ export default function LoginPage() {
             <div>
               <p className="eyebrow">Access</p>
               <h2 className="auth-card-title">
-                {mode === 'signin' ? 'Sign in' : 'Create account'}
+                {mode === "signin" ? "Sign in" : "Create account"}
               </h2>
             </div>
           </div>
@@ -107,10 +107,10 @@ export default function LoginPage() {
               type="button"
               role="tab"
               className="auth-tab"
-              aria-selected={mode === 'signin'}
+              aria-selected={mode === "signin"}
               onClick={() => {
-                setMode('signin');
-                setError('');
+                setMode("signin");
+                setError("");
               }}
             >
               Sign in
@@ -119,10 +119,10 @@ export default function LoginPage() {
               type="button"
               role="tab"
               className="auth-tab"
-              aria-selected={mode === 'register'}
+              aria-selected={mode === "register"}
               onClick={() => {
-                setMode('register');
-                setError('');
+                setMode("register");
+                setError("");
               }}
             >
               Create account
@@ -145,7 +145,7 @@ export default function LoginPage() {
               />
             </label>
 
-            {mode === 'register' ? (
+            {mode === "register" ? (
               <label className="field" htmlFor={`${formId}-email`}>
                 Email
                 <input
@@ -167,12 +167,12 @@ export default function LoginPage() {
                 <input
                   id={`${formId}-password`}
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+                  type={showPassword ? "text" : "password"}
+                  autoComplete={mode === "signin" ? "current-password" : "new-password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  minLength={mode === 'register' ? 8 : 1}
+                  minLength={mode === "register" ? 8 : 1}
                   disabled={submitting}
                 />
                 <button
@@ -180,9 +180,9 @@ export default function LoginPage() {
                   className="button button-quiet auth-password-toggle"
                   onClick={() => setShowPassword((v) => !v)}
                   aria-pressed={showPassword}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? 'Hide' : 'Show'}
+                  {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
             </label>
@@ -199,19 +199,17 @@ export default function LoginPage() {
               disabled={submitting}
             >
               {submitting
-                ? mode === 'signin'
-                  ? 'Signing in…'
-                  : 'Creating account…'
-                : mode === 'signin'
-                  ? 'Sign in to PatchHive'
-                  : 'Create account & continue'}
+                ? mode === "signin"
+                  ? "Signing in…"
+                  : "Creating account…"
+                : mode === "signin"
+                  ? "Sign in to PatchHive"
+                  : "Create account & continue"}
             </button>
           </form>
 
           <div className="auth-demo">
-            <p className="muted">
-              Local / Docker staging demo accounts (after golden seed):
-            </p>
+            <p className="muted">Local / Docker staging demo accounts (after golden seed):</p>
             <p>
               User: <code>golden_demo</code> / <code>demo-pass</code>
             </p>

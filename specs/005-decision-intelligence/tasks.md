@@ -1,0 +1,32 @@
+# Tasks
+
+- [x] T001 Add PatchHive constitution.
+- [x] T002 Add SpecKit feature 005 specification chain.
+- [x] T003 Add specification authority/index documentation.
+- [x] T010 Implement DecisionProvider protocol and schemas.
+- [x] T011 Implement deterministic DecisionPolicy and reason codes.
+- [x] T012 Add contract/property tests for malformed and adversarial packets.
+- [x] T020 Add append-only persistence migration.
+- [x] T021 Add telemetry without raw sensitive evidence.
+- [x] T030 Implement fixture DecisionProvider.
+- [x] T031 Implement Jev adapter behind default-off feature flag.
+- [x] T040 Implement module candidate ranking service.
+- [x] T041 Implement hierarchical function/capability decisions.
+- [x] T042 Implement port-semantic decisions.
+- [x] T043 Implement evidence-conflict decisions.
+- [x] T050 Integrate proposals into existing confirmation UI.
+  - [x] T050a Project retained receipts into confirmation UI without canonical authority.
+  - [x] T050b Bind advisory projection to exact candidate + evidence identity.
+  - [x] T050c Invoke DecisionProvider from an evidence-resolution command path and persist append-only DecisionReceipt records.
+    - [x] T050c1 Add idempotent append-only proposal persistence service.
+    - [x] T050c2 Add flag-gated evidence-resolution orchestration using exact evidence + bounded candidates.
+    - [x] T050c3 Expose the bounded resolution command/API and test it end-to-end. Service tests cover flag-off, exact binding, provider failure, idempotency, advisory persistence, and zero canonical mutation; API test covers request → receipt → advisory projection.
+- [x] T060 Build evaluation harness and synthetic CI corpus contract.\n- [x] T060a Harden provider production boundary: pinned Jev model, idempotency propagation, stable transport errors, malformed-candidate rejection, immutable receipt collision guard.\n- [x] T060b Reject cross-partition image-hash leakage before pilot admission.
+- [ ] T061 Define operator-approved thresholds from baseline results.
+  - [x] T061a Add governed real-world pilot intake/schema/validator.
+  - [x] T061b Add GrokBot/Firecrawl acquisition brief and coverage reporter.
+  - [x] T061b2 Define evidence-to-case promotion workflow and harden admission checks.
+  - [ ] T061c Promote rights-cleared evidence into a representative reviewed pilot and freeze corpus SHA.
+  - [ ] T061d Run baseline vs Jev-assisted evaluation and propose thresholds for operator approval.
+- [ ] T062 Retain SHA-pinned evaluation receipt.
+- [ ] T070 Staging enablement only after gate passes.

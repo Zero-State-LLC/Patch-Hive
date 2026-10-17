@@ -1,0 +1,39 @@
+{
+  "corpus_contract_version": "patchhive.decision-eval.v1",
+  "extends_dataset": "vision-eval.v1",
+  "status": "synthetic_ci_only",
+  "production_thresholds": "NOT_COMPUTABLE",
+  "authority": {
+    "protocol": "docs/COMPUTER_VISION_EVALUATION.md",
+    "decision_extension": "docs/evidence/DECISION_INTELLIGENCE_EVALUATION.md"
+  },
+  "partitions": {
+    "development": {"admitted": false},
+    "validation": {"admitted": false},
+    "locked_test": {"admitted": false, "tuning_prohibited": true},
+    "adversarial_degraded": {"admitted": false},
+    "unknown_open_set": {"admitted": false}
+  },
+  "required_real_world_case_fields": [
+    "case_id",
+    "partition",
+    "cohort",
+    "rights_and_consent",
+    "image_asset_hashes",
+    "scene_conditions",
+    "ground_truth_inventory",
+    "annotation_status",
+    "reviewers"
+  ],
+  "decision_identity_fields": [
+    "candidate_set_hash",
+    "expected_choice",
+    "none_of_above_allowed",
+    "decision_packet"
+  ],
+  "notes": [
+    "Device Registry supplies candidate identity vocabulary but is not ground truth by itself.",
+    "Synthetic fixtures may validate CI and contracts but may not set production thresholds.",
+    "Locked-test cases may not tune prompts, models, ranking policy, or thresholds."
+  ]
+}

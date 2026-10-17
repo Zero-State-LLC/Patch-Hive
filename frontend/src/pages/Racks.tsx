@@ -1,25 +1,30 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { canonApi, exportApi, patchApi, rackApi, runApi } from '@/lib/api';
-import type { CompatibilityResponse, Patch, Rack, Run } from '@/types/api';
-import { difficultyFromConnections, filterPatches, patchCategories, weirdnessFromConnections } from './racksPageUtils';
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { canonApi, exportApi, patchApi, rackApi, runApi } from "@/lib/api";
+import type { CompatibilityResponse, Patch, Rack, Run } from "@/types/api";
+import {
+  difficultyFromConnections,
+  filterPatches,
+  patchCategories,
+  weirdnessFromConnections,
+} from "./racksPageUtils";
 
-type TabKey = 'overview' | 'patches' | 'exports' | 'modules';
+type TabKey = "overview" | "patches" | "exports" | "modules";
 
 const tabs: { key: TabKey; label: string }[] = [
-  { key: 'overview', label: 'Overview' },
-  { key: 'patches', label: 'Patches' },
-  { key: 'exports', label: 'Exports' },
-  { key: 'modules', label: 'Module Gallery' },
+  { key: "overview", label: "Overview" },
+  { key: "patches", label: "Patches" },
+  { key: "exports", label: "Exports" },
+  { key: "modules", label: "Module Gallery" },
 ];
 
-function gateTone(status?: string | null): 'success' | 'warning' | 'danger' | 'neutral' {
-  if (!status) return 'neutral';
+function gateTone(status?: string | null): "success" | "warning" | "danger" | "neutral" {
+  if (!status) return "neutral";
   const s = status.toLowerCase();
-  if (s === 'verified' || s === 'ok' || s === 'pass') return 'success';
-  if (s === 'incomplete' || s === 'warning' || s === 'unknown') return 'warning';
-  if (s === 'conflict' || s === 'fail' || s === 'error') return 'danger';
-  return 'neutral';
+  if (s === "verified" || s === "ok" || s === "pass") return "success";
+  if (s === "incomplete" || s === "warning" || s === "unknown") return "warning";
+  if (s === "conflict" || s === "fail" || s === "error") return "danger";
+  return "neutral";
 }
 
 export default function RacksPage() {
@@ -28,14 +33,14 @@ export default function RacksPage() {
   const [runs, setRuns] = useState<Run[]>([]);
   const [selectedRunId, setSelectedRunId] = useState<number | null>(null);
   const [patches, setPatches] = useState<Patch[]>([]);
-  const [activeTab, setActiveTab] = useState<TabKey>('overview');
+  const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [loading, setLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState({
-    category: 'All',
-    difficulty: 'All',
-    weirdness: 'Any',
+    category: "All",
+    difficulty: "All",
+    weirdness: "Any",
   });
   const [compat, setCompat] = useState<{
     bridge_status: string;
@@ -86,7 +91,7 @@ export default function RacksPage() {
       }
     } catch {
       setRacks([]);
-      setError('Unable to load rigs. Please try again.');
+      setError("Unable to load rigs. Please try again.");
     } finally {
       setListLoading(false);
     }
@@ -140,9 +145,9 @@ export default function RacksPage() {
       if (latestRuns[0]?.id) {
         await loadPatches(latestRuns[0].id);
       }
-      setActiveTab('patches');
+      setActiveTab("patches");
     } catch {
-      setError('Patch generation failed. Please retry.');
+      setError("Patch generation failed. Please retry.");
     } finally {
       setLoading(false);
     }
@@ -182,7 +187,7 @@ export default function RacksPage() {
             New
           </Link>
         </div>
-        <p className="muted" style={{ margin: 0, fontSize: '0.9rem' }}>
+        <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
           Rig-centric workspace. Each rig carries runs and patch libraries.
         </p>
         <div className="side-list">
@@ -194,7 +199,11 @@ export default function RacksPage() {
           {!listLoading && error && racks.length === 0 ? (
             <div className="panel" role="alert">
               <p className="status status-danger">{error}</p>
-              <button className="button button-secondary" type="button" onClick={() => void loadRacks()}>
+              <button
+                className="button button-secondary"
+                type="button"
+                onClick={() => void loadRacks()}
+              >
                 Retry
               </button>
             </div>
@@ -204,14 +213,12 @@ export default function RacksPage() {
                 <button
                   key={rack.id}
                   type="button"
-                  className={`side-item${rack.id === selectedRackId ? ' is-selected' : ''}`}
-                  aria-current={rack.id === selectedRackId ? 'true' : undefined}
+                  className={`side-item${rack.id === selectedRackId ? " is-selected" : ""}`}
+                  aria-current={rack.id === selectedRackId ? "true" : undefined}
                   onClick={() => setSelectedRackId(rack.id)}
                 >
                   <span className="side-item-title">{rack.name}</span>
-                  <span className="side-item-meta">
-                    Suggested: {rack.name_suggested || '—'}
-                  </span>
+                  <span className="side-item-meta">Suggested: {rack.name_suggested || "—"}</span>
                 </button>
               ))
             : null}
@@ -233,13 +240,13 @@ export default function RacksPage() {
               <div>
                 <p className="eyebrow">Rig workspace</p>
                 <h1>{selectedRack.name}</h1>
-                <p className="muted">{selectedRack.description || 'No rig notes yet.'}</p>
+                <p className="muted">{selectedRack.description || "No rig notes yet."}</p>
               </div>
             </header>
 
             <nav className="tab-list" role="tablist" aria-label="Rig sections">
               {tabs.map((tab) => {
-                const disabled = (tab.key === 'patches' || tab.key === 'exports') && !hasRuns;
+                const disabled = (tab.key === "patches" || tab.key === "exports") && !hasRuns;
                 return (
                   <button
                     key={tab.key}
@@ -257,13 +264,13 @@ export default function RacksPage() {
             </nav>
 
             {error ? (
-              <div className="panel" role="alert" style={{ marginBottom: 'var(--space-4)' }}>
+              <div className="panel" role="alert" style={{ marginBottom: "var(--space-4)" }}>
                 <p className="status status-danger">{error}</p>
               </div>
             ) : null}
 
-            {activeTab === 'overview' ? (
-              <div style={{ display: 'grid', gap: 'var(--space-5)' }}>
+            {activeTab === "overview" ? (
+              <div style={{ display: "grid", gap: "var(--space-5)" }}>
                 {selectedRack.modules.length === 0 ? (
                   <div className="panel placement-cta" role="region" aria-label="Place modules">
                     <p className="eyebrow" style={{ marginTop: 0 }}>
@@ -275,10 +282,7 @@ export default function RacksPage() {
                       module gallery first.
                     </p>
                     <div className="page-hero-actions">
-                      <Link
-                        className="button button-primary"
-                        to={`/racks/${selectedRack.id}/edit`}
-                      >
+                      <Link className="button button-primary" to={`/racks/${selectedRack.id}/edit`}>
                         Place modules
                       </Link>
                       <Link className="button button-secondary" to="/modules?hp=known">
@@ -291,7 +295,7 @@ export default function RacksPage() {
                 <div className="panel">
                   <p className="eyebrow">Summary</p>
                   <h2 style={{ marginTop: 0 }}>Rig inventory</h2>
-                  <div className="stat-row" style={{ marginTop: 'var(--space-4)' }}>
+                  <div className="stat-row" style={{ marginTop: "var(--space-4)" }}>
                     <div className="stat-block">
                       <p className="muted" style={{ margin: 0 }}>
                         Modules
@@ -308,49 +312,49 @@ export default function RacksPage() {
                       <p className="muted" style={{ margin: 0 }}>
                         Latest run
                       </p>
-                      <h3 style={{ fontSize: '1rem' }}>{runs[0]?.created_at || 'None yet'}</h3>
+                      <h3 style={{ fontSize: "1rem" }}>{runs[0]?.created_at || "None yet"}</h3>
                     </div>
                   </div>
                   {selectedRack.case ? (
-                    <p className="muted" style={{ marginBottom: 0, marginTop: 'var(--space-3)' }}>
+                    <p className="muted" style={{ marginBottom: 0, marginTop: "var(--space-3)" }}>
                       Case: {selectedRack.case.brand} — {selectedRack.case.name}
                       {selectedRack.case.catalog_slug
                         ? ` · catalog ${selectedRack.case.catalog_slug}`
-                        : ' · not linked to normalized catalog'}
+                        : " · not linked to normalized catalog"}
                       {selectedRack.case.total_hp != null
                         ? ` · ${selectedRack.case.total_hp}HP`
-                        : ''}
+                        : ""}
                     </p>
                   ) : null}
                   {selectedRack.modules.length > 0 ? (
                     <div
                       className="power-rail-panel"
-                      style={{ marginTop: 'var(--space-3)' }}
+                      style={{ marginTop: "var(--space-3)" }}
                       aria-label="Inventory power summary"
                     >
-                      <p className="muted" style={{ margin: 0, fontSize: '0.9rem' }}>
+                      <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
                         Power known on <strong>{inventoryPower.known}</strong>/
                         {selectedRack.modules.length} modules
                         {inventoryPower.unknown
                           ? ` · ${inventoryPower.unknown} unknown (not assumed)`
-                          : ''}
+                          : ""}
                       </p>
                       {selectedRack.case ? (
-                        <div className="gate-chip-row" style={{ marginTop: 'var(--space-2)' }}>
+                        <div className="gate-chip-row" style={{ marginTop: "var(--space-2)" }}>
                           {(
                             [
                               {
-                                rail: '+12V',
+                                rail: "+12V",
                                 draw: inventoryPower.draw12,
                                 cap: selectedRack.case.power_12v_ma,
                               },
                               {
-                                rail: '−12V',
+                                rail: "−12V",
                                 draw: inventoryPower.drawN12,
                                 cap: selectedRack.case.power_neg12v_ma,
                               },
                               {
-                                rail: '+5V',
+                                rail: "+5V",
                                 draw: inventoryPower.draw5,
                                 cap: selectedRack.case.power_5v_ma,
                               },
@@ -358,18 +362,15 @@ export default function RacksPage() {
                           ).map((r) => {
                             const tone =
                               r.cap == null
-                                ? 'neutral'
+                                ? "neutral"
                                 : r.draw > r.cap
-                                  ? 'danger'
+                                  ? "danger"
                                   : r.cap > 0 && r.draw / r.cap >= 0.85
-                                    ? 'warning'
-                                    : 'success';
+                                    ? "warning"
+                                    : "success";
                             return (
                               <span key={r.rail} className={`status-chip status-chip--${tone}`}>
-                                {r.rail}{' '}
-                                {r.cap == null
-                                  ? `${r.draw}mA`
-                                  : `${r.draw}/${r.cap}mA`}
+                                {r.rail} {r.cap == null ? `${r.draw}mA` : `${r.draw}/${r.cap}mA`}
                               </span>
                             );
                           })}
@@ -378,7 +379,7 @@ export default function RacksPage() {
                     </div>
                   ) : null}
                   {selectedRack.modules.length > 0 ? (
-                    <div className="page-hero-actions" style={{ marginTop: 'var(--space-3)' }}>
+                    <div className="page-hero-actions" style={{ marginTop: "var(--space-3)" }}>
                       <Link
                         className="button button-secondary"
                         to={`/racks/${selectedRack.id}/edit`}
@@ -398,7 +399,7 @@ export default function RacksPage() {
                     <>
                       <p>
                         Bridge: <strong>{compat.bridge_status}</strong>
-                        {compat.catalog_slug ? ` · ${compat.catalog_slug}` : ''}
+                        {compat.catalog_slug ? ` · ${compat.catalog_slug}` : ""}
                       </p>
                       <p className="muted">{compat.message}</p>
                       {compat.compatibility ? (
@@ -429,37 +430,35 @@ export default function RacksPage() {
                                 key={r.rail}
                                 className={`status-chip status-chip--${gateTone(r.status)}`}
                                 title={
-                                  r.headroom_ma != null
-                                    ? `headroom ${r.headroom_ma}mA`
-                                    : r.message
+                                  r.headroom_ma != null ? `headroom ${r.headroom_ma}mA` : r.message
                                 }
                               >
                                 {r.rail}: {r.status}
                               </span>
                             ))}
                           </div>
-                          {compat.compatibility.overall_status === 'incomplete' ? (
-                            <p className="muted" style={{ fontSize: '0.9rem' }}>
+                          {compat.compatibility.overall_status === "incomplete" ? (
+                            <p className="muted" style={{ fontSize: "0.9rem" }}>
                               Soft gaps only — missing power/depth/case rails stay missing (never
                               invented).
                             </p>
                           ) : null}
-                          {compat.compatibility.overall_status === 'conflict' ? (
-                            <p className="status status-danger" style={{ fontSize: '0.9rem' }}>
+                          {compat.compatibility.overall_status === "conflict" ? (
+                            <p className="status status-danger" style={{ fontSize: "0.9rem" }}>
                               Hard fail — overflow, connectors, or rail over budget.
                             </p>
                           ) : null}
                           {compat.compatibility.warnings?.length ? (
-                            <p className="status status-warning" style={{ fontSize: '0.9rem' }}>
+                            <p className="status status-warning" style={{ fontSize: "0.9rem" }}>
                               {compat.compatibility.warnings.length} soft warning
-                              {compat.compatibility.warnings.length === 1 ? '' : 's'}
+                              {compat.compatibility.warnings.length === 1 ? "" : "s"}
                               {compat.compatibility.warnings[0]?.code
                                 ? ` · e.g. ${compat.compatibility.warnings[0].code}`
-                                : ''}
+                                : ""}
                             </p>
                           ) : null}
-                          <details style={{ marginTop: 'var(--space-2)' }}>
-                            <summary className="muted" style={{ cursor: 'pointer' }}>
+                          <details style={{ marginTop: "var(--space-2)" }}>
+                            <summary className="muted" style={{ cursor: "pointer" }}>
                               Full dual-gate detail
                             </summary>
                             <ul>
@@ -467,25 +466,20 @@ export default function RacksPage() {
                                 Format: {compat.compatibility.format_check.status}
                                 {compat.compatibility.format_check.message
                                   ? ` — ${compat.compatibility.format_check.message}`
-                                  : ''}
+                                  : ""}
                               </li>
+                              <li>Physical fit: {compat.compatibility.physical_fit.status}</li>
                               <li>
-                                Physical fit: {compat.compatibility.physical_fit.status}
-                              </li>
-                              <li>
-                                Connectors:{' '}
-                                {compat.compatibility.connector_availability.status}
+                                Connectors: {compat.compatibility.connector_availability.status}
                                 {compat.compatibility.connector_availability.message
                                   ? ` — ${compat.compatibility.connector_availability.message}`
-                                  : ''}
+                                  : ""}
                               </li>
                               <li>+5V: {compat.compatibility.pos5_compatibility.status}</li>
                               {compat.compatibility.power_headroom?.map((r) => (
                                 <li key={r.rail}>
                                   {r.rail}: {r.status}
-                                  {r.headroom_ma != null
-                                    ? ` · headroom ${r.headroom_ma}mA`
-                                    : ''}
+                                  {r.headroom_ma != null ? ` · headroom ${r.headroom_ma}mA` : ""}
                                 </li>
                               ))}
                             </ul>
@@ -507,16 +501,13 @@ export default function RacksPage() {
                       disabled={loading || selectedRack.modules.length === 0}
                       title={
                         selectedRack.modules.length === 0
-                          ? 'Place at least one module before generating'
+                          ? "Place at least one module before generating"
                           : undefined
                       }
                     >
-                      {loading ? 'Generating…' : 'Generate patch library'}
+                      {loading ? "Generating…" : "Generate patch library"}
                     </button>
-                    <Link
-                      className="button button-secondary"
-                      to={`/racks/${selectedRack.id}/edit`}
-                    >
+                    <Link className="button button-secondary" to={`/racks/${selectedRack.id}/edit`}>
                       Place modules
                     </Link>
                     <Link className="button button-secondary" to="/racks/new">
@@ -526,7 +517,7 @@ export default function RacksPage() {
                       Upload rig (soon)
                     </button>
                   </div>
-                  <p className="muted" style={{ marginBottom: 0, marginTop: 'var(--space-3)' }}>
+                  <p className="muted" style={{ marginBottom: 0, marginTop: "var(--space-3)" }}>
                     Generate once. Patches and exports open as tabs after a run exists. Placement
                     uses catalog compatibility when the case is materialized.
                   </p>
@@ -534,8 +525,8 @@ export default function RacksPage() {
               </div>
             ) : null}
 
-            {activeTab === 'patches' ? (
-              <div style={{ display: 'grid', gap: 'var(--space-4)' }}>
+            {activeTab === "patches" ? (
+              <div style={{ display: "grid", gap: "var(--space-4)" }}>
                 <div className="panel toolbar" aria-label="Patch filters">
                   <label className="inline-field">
                     Category
@@ -582,7 +573,7 @@ export default function RacksPage() {
                   <label className="inline-field">
                     Run
                     <select
-                      value={selectedRunId ?? ''}
+                      value={selectedRunId ?? ""}
                       onChange={(event) => setSelectedRunId(Number(event.target.value))}
                       disabled={!hasRuns}
                     >
@@ -600,14 +591,14 @@ export default function RacksPage() {
                     <article key={patch.id} className="catalog-card">
                       <h3>{patch.name}</h3>
                       <p className="catalog-card-meta">
-                        {patch.suggested_name || 'Suggested name missing'}
+                        {patch.suggested_name || "Suggested name missing"}
                       </p>
-                      <p className="muted" style={{ margin: 0, fontSize: '0.85rem' }}>
-                        {patch.category} · {difficultyFromConnections(patch)} · weirdness{' '}
+                      <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>
+                        {patch.category} · {difficultyFromConnections(patch)} · weirdness{" "}
                         {weirdnessFromConnections(patch)}
                       </p>
-                      <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                        {patch.description || 'No description yet.'}
+                      <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                        {patch.description || "No description yet."}
                       </p>
                     </article>
                   ))}
@@ -620,7 +611,7 @@ export default function RacksPage() {
               </div>
             ) : null}
 
-            {activeTab === 'exports' ? (
+            {activeTab === "exports" ? (
               <div className="panel">
                 <p className="eyebrow">PatchBooks</p>
                 <h2 style={{ marginTop: 0 }}>Exports</h2>
@@ -642,42 +633,36 @@ export default function RacksPage() {
               </div>
             ) : null}
 
-            {activeTab === 'modules' ? (
+            {activeTab === "modules" ? (
               <div className="catalog-grid">
                 {selectedRack.modules.map((module) => (
                   <article key={module.id} className="catalog-card">
-                    <h3>{module.module?.name || 'Unknown module'}</h3>
+                    <h3>{module.module?.name || "Unknown module"}</h3>
                     <p className="catalog-card-meta">
-                      {module.module?.brand || 'Unknown brand'} ·{' '}
-                      {module.module?.module_type || '—'} · {module.module?.hp ?? '—'}HP
+                      {module.module?.brand || "Unknown brand"} ·{" "}
+                      {module.module?.module_type || "—"} · {module.module?.hp ?? "—"}HP
                       {module.module?.depth_mm != null
                         ? ` · depth ${module.module.depth_mm}mm`
-                        : ' · depth unspecified'}
+                        : " · depth unspecified"}
                     </p>
-                    <p className="muted" style={{ margin: 0, fontSize: '0.85rem' }}>
+                    <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>
                       Row {module.row_index} · start HP {module.start_hp}
                       {module.module?.power_12v_ma != null
                         ? ` · +12 ${module.module.power_12v_ma}mA`
-                        : ''}
+                        : ""}
                     </p>
                   </article>
                 ))}
                 {selectedRack.modules.length === 0 ? (
                   <div className="panel">
                     <p className="status status-warning">No modules loaded for this rig.</p>
-                    <Link
-                      className="button button-secondary"
-                      to={`/racks/${selectedRack.id}/edit`}
-                    >
+                    <Link className="button button-secondary" to={`/racks/${selectedRack.id}/edit`}>
                       Place modules
                     </Link>
                   </div>
                 ) : (
                   <div className="panel">
-                    <Link
-                      className="button button-secondary"
-                      to={`/racks/${selectedRack.id}/edit`}
-                    >
+                    <Link className="button button-secondary" to={`/racks/${selectedRack.id}/edit`}>
                       Edit placements
                     </Link>
                   </div>
@@ -689,7 +674,9 @@ export default function RacksPage() {
           <div className="panel">
             <p className="eyebrow">Workspace</p>
             <h2 style={{ marginTop: 0 }}>Select a rig to begin</h2>
-            <p className="muted">Choose a rig from the list, or create a new one to confirm inventory.</p>
+            <p className="muted">
+              Choose a rig from the list, or create a new one to confirm inventory.
+            </p>
             <Link className="button button-primary" to="/racks/new">
               New rig
             </Link>
