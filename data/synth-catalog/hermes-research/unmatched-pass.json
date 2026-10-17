@@ -1,0 +1,265 @@
+{
+  "rows": [
+    {
+      "brand": "ALM Busy Circuits",
+      "name": "Akemie's Castle",
+      "fetched": "https://busycircuits.com/alm028/",
+      "snippets": [
+        "UK. Technical Specifications Supply: +12V 30mA / -12V 10mA Size: 4HP Depth: 38mm Manual The Pip Slope PDF Manual is available for download. Down"
+      ],
+      "method": "free_http",
+      "review": "rejected: alm028 page is Pip Slope"
+    },
+    {
+      "brand": "ALM Busy Circuits",
+      "name": "Pamela's NEW Workout",
+      "fetched": "https://busycircuits.com/alm017/",
+      "snippets": [
+        "ness. Technical Specifications Supply: +12V 50mA / -12V 5mA Size: 8HP Depth: 32mm Manual The Pamela's NEW Workout PDF Manual is available for dow"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Befaco",
+      "name": "Hexmix VCA",
+      "fetched": "https://www.befaco.org/hexmix-vca/",
+      "snippets": [
+        "ix VCA directly SPECS Current needs: +12V: 50mA, -12V: 50mA Width: 14 HP Depth: 20mm, (28mm DIY ) including power connector Aluminium, heat-tr"
+      ],
+      "method": "context_dev",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Doepfer",
+      "name": "A-106-5",
+      "fetched": "https://doepfer.de/a1065.htm",
+      "snippets": [
+        "ngselemente: Audio-Abschw\ufffdcher, CV2-Polarizer, Frequenz, Resonanz, LP/HP-Mix Von den Funktionen her ist das Modul sehr \ufffdhnlich zum Wasp-Filter",
+        "t Controls: Audio Attenuator, CV2 Polarizer, Frequency, Resonance, LP/HP Mix The function and operation of this module is very similar to the",
+        "08/doepfer-a-106-5-sem-filter-example/ Breite/Width: 8TE / 8HP / 40.3 mm Tiefe/Depth: 55 mm (gemessen ab der R\ufffdckseite der Frontplatte / measu"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Doepfer",
+      "name": "A-110-1",
+      "fetched": "https://doepfer.de/a1101.htm",
+      "snippets": [
+        "itzt dieses Filter f\ufffdr die Tiefpass (LP), Bandpass (BP) und Hochpass (HP) je einen eigenen Eingang (!) und einen gemeinsamen Ausgang, an dem a",
+        "n. Different filter types (low pass / LP, band pass / BP, high pass / HP) are realized by injecting the audio signal into different points of",
+        "taneously. Each signal is filtered correspondingly (LP resp. BP resp. HP) and the sum of the three filtered signals appears at the output. Of",
+        "hree inputs. In this case one obtains different combinations of LP/BP/HP according to the settings of the three input attenuators for LP/BP/HP",
+        "rovided that no cable is plugged into the BP socket (same applies for HP/BP inputs). If you are interested in technical details concerning the",
+        "101-1-vactrol-multitype-vcf-example/ Breite/Width: 16TE / 16HP / 80.9 mm Tiefe/Depth: 50 mm (gemessen ab der R\ufffdckseite der Frontplatte / measu"
+      ],
+      "method": "free_http",
+      "review": "corrected: a1101.htm is A-101-1; verified on doepfer.de/a110.htm"
+    },
+    {
+      "brand": "Erica Synths",
+      "name": "Fusion VCO",
+      "fetched": "https://www.ericasynths.lv/shop/eurorack-modules/by-series/fusion-series/fusion-vco/",
+      "snippets": [
+        ", eurorack standard Power consumption Eurorack PSU configuration: 215 mA @ +12V, 185 mA @ -12V (NB \u2013 start-up power consuption for few seconds",
+        "is +-250 mA) Module width 24HP Module depth 35mm Erica Fusion VCO on Modulargrid Product Highlights Product Featu",
+        ", eurorack standard Power consumption Eurorack PSU configuration: 215 mA @ +12V, 185 mA @ -12V (NB \u2013 start-up power consuption for few seconds",
+        "is +-250 mA) Module width 24HP Module depth 35mm Erica Fusion VCO on Modulargrid Product Highlights Product Featu"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Intellijel",
+      "name": "Quadrax",
+      "fetched": "https://intellijel.com/shop/eurorack/quadrax/",
+      "snippets": [
+        "en stock is Updated. Notify Me \u2192 $ 69.00 Specs + Downloads Width 14HP Depth 38mm Power 106mA @ +12V 9mA @ -12V Manual Manual (1.4.5 / 2026.09.11)"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Intellijel",
+      "name": "Rubicon 2",
+      "fetched": "https://intellijel.com/downloads/manuals/rubicon-2_manual_2021.08.16.pdf",
+      "snippets": [
+        "TECHNICAL SPECIFICATIONS Width 20hp Maximum Depth 38mm Current Draw 142mA@+12V 150mA@-12V"
+      ],
+      "method": "free_http",
+      "review": "verified from manual PDF tech specs: 20hp, 38mm, 142mA +12V, 150mA -12V"
+    },
+    {
+      "brand": "Joranalogue",
+      "name": "Filter 8",
+      "fetched": "https://joranalogue.com/products/filter-8",
+      "snippets": [
+        "Default Title - \u20ac0.00 Quantity MULTIMODE FILTER/8-PHASE OSCILLATOR 12 HP | +12: 75 mA, \u221212: 75 mA | JORF8 User Manual (PDF) | ModularGrid Avai",
+        "design, Filter 8 offers more possibilities and higher fidelity in 12 HP than ever before. Starting from the classic OTA-style 4-pole cascaded",
+        "and coarse tuning. Simultaneous exponential and linear FM, including depth polarisers, dedicated 1 volt/octave input and LFM AC-coupling switch.",
+        "im potentiometers accessible from the front panel. Precision-milled 2 mm anodised aluminium front panel with high-resolution, non-erasable gra"
+      ],
+      "method": "cache",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Joranalogue",
+      "name": "Generate 3",
+      "fetched": "https://joranalogue.com/products/generate-3",
+      "snippets": [
+        "t Title - \u20ac0.00 Quantity THROUGH-ZERO MULTIPHONIC SIGNAL GENERATOR 12 HP | +12: 130 mA, \u221212: 115 mA | JORG3 User Manual (PDF) | ModularGrid Av",
+        "Extensive User Guide by Simon De Rycke (BRiES) provides even more in-depth information on how to use G3 in your patches. Any signal can be expre",
+        "trol all its parameters by through-zero modulation within a single 12 HP wide module. Everything starts with the exceptionally precise triangl",
+        "rim potentiometer accessible from the front panel. Precision-milled 2 mm anodised aluminium front panel with high-resolution, non-erasable gra"
+      ],
+      "method": "cache",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Rene 2",
+      "fetched": "https://www.makenoisemusic.com/modules/rene",
+      "snippets": [
+        "ines included with power distribution. SPECIFICATIONS Width: 34hp Max Depth (incl. power cable): 32mm Power: 235mA@ +12V 0mA @ -12V MSRP: $525 MA"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Braids",
+      "fetched": "https://pichenettes.github.io/mutable-instruments-documentation/modules/braids/",
+      "snippets": [
+        "nd variants 2015 Key data Macro-oscillator Parameter Value Width 16HP Depth 25mm +12V current 100mA -12V current 15mA Lifetime 08/13 to 10/17 Mod",
+        "tings are accessible through a menu, and are not CV controllable. Bit-depth (from 4 to 16 bits) and sample rate (from 4kHz to 96kHz). Quantizer o"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Clouds",
+      "fetched": "https://pichenettes.github.io/mutable-instruments-documentation/modules/clouds/",
+      "snippets": [
+        "variants 2015 Key data Texture synthesizer Parameter Value Width 18HP Depth 25mm +12V current 120mA -12V current 10mA Lifetime 01/15 to 10/17 Mod"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Marbles",
+      "fetched": "https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/",
+      "snippets": [
+        "ing Specifications Key data Random sampler Parameter Value Width 18HP Depth 25mm +12V current 80mA -12V current 20mA Lifetime 03/18 to 04/22 Modu"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Plaits",
+      "fetched": "https://pichenettes.github.io/mutable-instruments-documentation/modules/plaits/",
+      "snippets": [
+        "laits vs Braids? Key data Macro-oscillator Parameter Value Width 12HP Depth 25mm +12V current 50mA -12V current 5mA Lifetime 03/18 to 11/22 Modul",
+        "ncies (Braids could not reach LFO ranges). Lean hardware design: less HP, mA and \u20ac. Previous Next Built with MkDocs using a theme provided by"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Rings",
+      "fetched": "https://pichenettes.github.io/mutable-instruments-documentation/modules/rings/",
+      "snippets": [
+        "otes: Rings vs Elements Key data Resonator Parameter Value Width 14HP Depth 25mm +12V current 110mA -12V current 5mA Lifetime 12/15 to 04/22 Modu"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Stages",
+      "fetched": "https://pichenettes.github.io/mutable-instruments-documentation/modules/stages/",
+      "snippets": [
+        "Specifications Key data Segment generator Parameter Value Width 14HP Depth 25mm +12V current 80mA -12V current 20mA Lifetime 03/18 to 07/22 Modu"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Noise Engineering",
+      "name": "Basimilus Iteritas Alter",
+      "fetched": "https://www.manualslib.com/manual/1316602/Noise-Engineering-Basimilus-Iteritas-Alter.html",
+      "snippets": [
+        "pired parameterized drum synthesizer Type LFSR VCO Size 10HP Eurorack Depth 1.5 Inches Power 2x8 Eurorack +12 mA 150 / 80 (if 5v on) -12 mA 5 / 5",
+        "+5 mA 0 / 90 (optional) Basimilus Iteritas Alter is a parameterized digital"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Noise Engineering",
+      "name": "Desmodus Versio",
+      "fetched": "https://noiseengineering.us/manuals/desmodus-versio/",
+      "snippets": [
+        "d of Versio page here . Type : Stereo reverb/DSP platform Size : 10HP Depth : 1.5 Inches Etymology Desmodus -- from Latin: \"vampire bat\" Versio -"
+      ],
+      "method": "free_http",
+      "review": "power omitted: two hardware revisions"
+    },
+    {
+      "brand": "Qu-Bit Electronix",
+      "name": "Chord v2",
+      "fetched": "https://www.qubitelectronix.com/shop/p/chord-v2",
+      "snippets": [
+        "stom Wavetables Get The Stock Config Text File Tech Specs Width: 14HP Depth: 23mm Power: 122 mA +12V, 25 mA -12V, 0 mA 5V Get notified by email w",
+        "stom Wavetables Get The Stock Config Text File Tech Specs Width: 14HP Depth: 23mm Power: 122 mA +12V, 25 mA -12V, 0 mA 5V \u201c Chord V2 is an impres"
+      ],
+      "method": "free_http",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Qu-Bit Electronix",
+      "name": "Data Bender",
+      "fetched": "https://www.qubitelectronix.com/shop/data-bender",
+      "snippets": [
+        "e bugs, old tape machine, scratched records 96kHz sample rate, 24-bit depth for high fidelity audio with over a minute of stereo sampling time St",
+        "g Started Guide Get The New Firmware (v1.4.7) Tech Specs: Width: 14HP Depth: 28mm Power: 58 mA +12V, 60 mA -12V, 0 mA 5V Get notified by email wh",
+        "e bugs, old tape machine, scratched records 96kHz sample rate, 24-bit depth for high fidelity audio with over a minute of stereo sampling time St",
+        "g Started Guide Get The New Firmware (v1.4.7) Tech Specs: Width: 14HP Depth: 28mm Power: 58 mA +12V, 60 mA -12V, 0 mA 5V Newsletter Block This ne"
+      ],
+      "method": "context_dev",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Xaoc Devices",
+      "name": "Batumi",
+      "fetched": "http://xaocdevices.com/main/batumi/",
+      "snippets": [
+        "rotection Technical details eurorack standard compliant 10 hp wide 45 mm deep (skiff friendly) +12/-12V powered current draw: 45mA at +12V rai"
+      ],
+      "method": "context_dev",
+      "review": "verified (manufacturer source)"
+    },
+    {
+      "brand": "Xaoc Devices",
+      "name": "Zadar",
+      "fetched": "https://www.thomannmusic.com/xaoc_devices_zadar.htm",
+      "snippets": [
+        "anagement (up to 18 Presets) Connections: 4 x CV input and output 3.5 mm mini-jack 4 Trigger inputs 3.5mm mini-jack Can be expanded with trigg",
+        "nal NIN expander (Art. 461981 - not included) Current consumption: 90 mA (+12 V) / 40 mA (-12 V) Dimensions: 10 HP Depth: 30 mm 30 30-Day Mone",
+        "September 2018 Item number 447263 Sales Unit 1 piece(s) Width 10 TE / HP B-Stock available from $281 $ 309 The shipping costs are calculated o",
+        "538 Befaco Synth Duster $12.90 649 the sssnake Adapter Cable 6.3/3.5 mm $3.66 14 XAOC Devices Hel $79 149 Tiptop Audio Stackcable Green 20 cm"
+      ],
+      "method": "free_http",
+      "review": "rejected: reseller only (Thomann)"
+    }
+  ],
+  "paid_attempts": 15,
+  "credits_this_pass": {
+    "context_dev": 14,
+    "firecrawl": 1
+  }
+}
