@@ -76,10 +76,19 @@
 }
 
 @media (max-width: 600px) {
-  .not-found-container { padding: var(--space-4); }
-  .broken-patch { width: 280px; height: 280px; }
-  .error-actions { flex-direction: column; }
-  .error-actions .button { width: 100%; }
+  .not-found-container {
+    padding: var(--space-4);
+  }
+  .broken-patch {
+    width: 280px;
+    height: 280px;
+  }
+  .error-actions {
+    flex-direction: column;
+  }
+  .error-actions .button {
+    width: 100%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

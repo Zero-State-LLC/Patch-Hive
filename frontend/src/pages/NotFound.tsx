@@ -1,8 +1,8 @@
 /**
  * 404 Not Found — Cyber Hive broken patch cable
  */
-import { Link } from 'react-router-dom';
-import './NotFound.css';
+import { Link } from "react-router-dom";
+import "./NotFound.css";
 
 export default function NotFound() {
   return (

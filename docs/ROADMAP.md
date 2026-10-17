@@ -193,3 +193,10 @@ Unless separately authorized:
 - automatic electrical-safety certification;
 - arbitrary plugin execution;
 - audio simulation presented as ground truth.
+
+
+## Decision Intelligence (cross-cutting) — SPECIFIED
+
+Authoritative spec: [`specs/005-decision-intelligence/`](../specs/005-decision-intelligence/spec.md). The provider-neutral decision layer sits between normalized evidence and deterministic policy. Jev is a planned default-off adapter for bounded classification/scoring/routing; it is not a vision provider and has no canonical write authority.
+
+Sequence: contracts/policy -> persistence/telemetry -> fixture provider -> Jev adapter -> module/capability/port decisions -> confirmation UI -> labeled evaluation -> controlled staging enablement.

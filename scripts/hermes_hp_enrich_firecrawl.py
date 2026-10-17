@@ -20,6 +20,12 @@ from typing import Any
 
 API_SCRAPE = "https://api.firecrawl.dev/v1/scrape"
 
+SOURCE_AUTHORITY_BY_CLASS = {
+    "official": "MANUFACTURER_PRIMARY",
+    "retailer": "RETAILER_DISTRIBUTOR",
+    "modulargrid": "COMMUNITY_CATALOG",
+}
+
 HP_PATTERNS = [
     re.compile(r"\b(\d{1,2})\s*[Hh][Pp]\b"),
     re.compile(r"\b[Ww]idth\s*[:\-]?\s*(\d{1,2})\s*[Hh][Pp]\b"),
@@ -260,7 +266,12 @@ def process_one(target: dict, sleep_s: float) -> dict:
             "slug": slug,
             "hp": hp,
             "source_url": url,
+            # OBSERVED means observed in the cited source, not canonical truth.
             "provenance": "OBSERVED",
+            "epistemic_status": "OBSERVED",
+            "source_authority": SOURCE_AUTHORITY_BY_CLASS.get(kind, "UNKNOWN_SOURCE_AUTHORITY"),
+            "admission_status": "EVIDENCE_ONLY",
+            "rights_status": "RIGHTS_UNKNOWN",
             "status": "found",
             "notes": f"source_class={kind}",
         }
@@ -272,6 +283,10 @@ def process_one(target: dict, sleep_s: float) -> dict:
         "hp": None,
         "source_url": None,
         "provenance": "NOT_COMPUTABLE",
+        "epistemic_status": "NOT_COMPUTABLE",
+        "source_authority": "UNKNOWN_SOURCE_AUTHORITY",
+        "admission_status": "EVIDENCE_ONLY",
+        "rights_status": "RIGHTS_UNKNOWN",
         "status": "not_found",
         "notes": "no HP on candidate official/retailer URLs",
     }

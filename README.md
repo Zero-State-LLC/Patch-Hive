@@ -77,6 +77,8 @@ PatchHive is a compiler and publishing system — not a preset marketplace, audi
 | Production deployment | Not performed |
 | Hardware activation | Explicitly out of scope |
 
+Decision Intelligence (Jev-ready, provider-neutral) is specified in [`specs/005-decision-intelligence/`](specs/005-decision-intelligence/spec.md); probabilistic decisions remain evidence-side and cannot write canon.  
+
 For exact commit and ops posture: [CURRENT_STATE.md](CURRENT_STATE.md).  
 For ordered work: [docs/CONTINUATION.md](docs/CONTINUATION.md).  
 For capability sequence: [docs/ROADMAP.md](docs/ROADMAP.md).
@@ -240,6 +242,8 @@ CI is authoritative only for the exact commit it evaluates. Missing Postgres is 
 | [docs/PATCH_BOOK_GENERATOR.md](docs/PATCH_BOOK_GENERATOR.md) | One-page publishing contract |
 | [docs/design/PATCHBOOK_DESIGN_ENGINE.md](docs/design/PATCHBOOK_DESIGN_ENGINE.md) | Design Engine contracts |
 | [CHANGELOG.md](CHANGELOG.md) | Notable changes |
+| [.specify/memory/constitution.md](.specify/memory/constitution.md) | Engineering invariants / SpecKit doctrine |
+| [specs/README.md](specs/README.md) | Feature-spec authority and traceability |
 
 ## Safety and scope
 

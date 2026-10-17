@@ -313,6 +313,7 @@ class CandidateResponse(BaseModel):
     image_asset_id: str | None = None
     gallery_revision_id: str | None = None
     gallery_module_id: str | None = None
+    decision_advisory: dict | None = None
 
 
 class CandidateListResponse(BaseModel):
@@ -347,7 +348,10 @@ def _load_candidates_for_rack(db: Session, rack_id: int) -> list[dict]:
 
     rows = (
         db.query(ClassificationEvidenceRecord)
-        .join(ImageAssetRecord, ImageAssetRecord.id == ClassificationEvidenceRecord.image_asset_id)
+        .join(
+            ImageAssetRecord,
+            ImageAssetRecord.id == ClassificationEvidenceRecord.image_asset_id,
+        )
         .filter(
             ImageAssetRecord.rack_id == rack_id,
             ImageAssetRecord.deleted_at.is_(None),
@@ -404,9 +408,49 @@ def list_rack_evidence_candidates(
     if rack is None:
         raise HTTPException(status_code=404, detail="Rack not found")
     items = _load_candidates_for_rack(db, rack_id)
-    candidates = [
-        CandidateResponse(**{k: v for k, v in item.items() if k != "_raw"}) for item in items
-    ]
+    # Decision Intelligence is deliberately read-only here. We project the newest
+    # retained receipt for a candidate when one exists; no provider call occurs on GET,
+    # and this projection cannot confirm or mutate inventory.
+    from intelligence.models import DecisionReceiptRecord
+
+    # Bind advisories to the exact evidence packet as well as candidate identity.
+    # Candidate IDs can recur across racks/images; candidate-only lookup can leak a
+    # valid advisory from unrelated evidence into this rack's review surface.
+    candidate_ids = [item["candidate_id"] for item in items]
+    evidence_hashes = {str(item["evidence_id"]) for item in items}
+    receipts_by_binding: dict[tuple[str, str], DecisionReceiptRecord] = {}
+    if candidate_ids and evidence_hashes:
+        receipt_rows = (
+            db.query(DecisionReceiptRecord)
+            .filter(
+                DecisionReceiptRecord.purpose == "module_identity",
+                DecisionReceiptRecord.provider_status == "succeeded",
+                DecisionReceiptRecord.selected_choice.in_(candidate_ids),
+                DecisionReceiptRecord.evidence_hash.in_(evidence_hashes),
+            )
+            .order_by(DecisionReceiptRecord.created_at.desc())
+            .all()
+        )
+        for receipt in receipt_rows:
+            if receipt.selected_choice:
+                key = (receipt.selected_choice, receipt.evidence_hash)
+                if key not in receipts_by_binding:
+                    receipts_by_binding[key] = receipt
+
+    candidates = []
+    for item in items:
+        receipt = receipts_by_binding.get((item["candidate_id"], str(item["evidence_id"])))
+        advisory = None
+        if receipt is not None:
+            advisory = {
+                "disposition": receipt.disposition.lower(),
+                "provider": receipt.provider,
+                "confidence": receipt.confidence,
+                "reason_codes": list(receipt.reason_codes or []),
+            }
+        payload = {k: v for k, v in item.items() if k != "_raw"}
+        payload["decision_advisory"] = advisory
+        candidates.append(CandidateResponse(**payload))
     return CandidateListResponse(total=len(candidates), candidates=candidates)
 
 
@@ -643,4 +687,100 @@ def confirm_rack_evidence_candidates(
         confirmed_count=len(inventory.items),
         unresolved_candidate_ids=list(inventory.unresolved_candidate_ids),
         ready_for_generation=inventory_ready_for_generation(inventory),
+    )
+
+
+class DecisionResolutionRequest(BaseModel):
+    evidence_id: str = Field(min_length=1)
+    idempotency_key: str = Field(min_length=1, max_length=128)
+
+
+class DecisionResolutionResponse(BaseModel):
+    evidence_id: str
+    selected_choice: str | None
+    disposition: str
+    provider: str
+    confidence: float | None
+    canonical_authority: bool = False
+
+
+def _configured_decision_provider():
+    """Construct only an explicitly configured production provider."""
+    if settings.decision_provider == "jev":
+        from intelligence.jev_provider import JevDecisionProvider
+
+        if not settings.typesafe_api_key:
+            raise RuntimeError("JEV_API_KEY_NOT_CONFIGURED")
+        return JevDecisionProvider(
+            api_key=settings.typesafe_api_key,
+            base_url=settings.jev_base_url,
+            model=settings.jev_model,
+        )
+    raise RuntimeError("DECISION_PROVIDER_NOT_CONFIGURED")
+
+
+@router.post(
+    "/racks/{rack_id}/evidence/decision-resolution",
+    response_model=DecisionResolutionResponse,
+)
+def resolve_rack_evidence_decision(
+    rack_id: int,
+    body: DecisionResolutionRequest,
+    db: Session = Depends(get_db),
+) -> DecisionResolutionResponse:
+    """Produce and retain one non-canonical identity advisory."""
+    from intelligence.evidence_resolution import (
+        DecisionIntelligenceDisabled,
+        EvidenceResolutionError,
+        resolve_module_identity,
+    )
+    from intelligence.policy import DecisionPolicy, PolicyThresholds
+    from intelligence.jev_provider import JevProviderError
+
+    rack = db.get(Rack, rack_id)
+    if rack is None:
+        raise HTTPException(status_code=404, detail="Rack not found")
+
+    evidence = db.get(ClassificationEvidenceRecord, body.evidence_id)
+    if evidence is None:
+        raise HTTPException(status_code=404, detail="Evidence record not found")
+    asset = db.get(ImageAssetRecord, evidence.image_asset_id)
+    if asset is None or int(asset.rack_id) != rack_id or asset.deleted_at is not None:
+        raise HTTPException(status_code=400, detail="EVIDENCE_NOT_BOUND_TO_RACK")
+
+    if not settings.enable_decision_intelligence:
+        raise HTTPException(status_code=409, detail="DECISION_INTELLIGENCE_DISABLED")
+
+    try:
+        provider = _configured_decision_provider()
+        thresholds = PolicyThresholds(
+            policy_version="decision-policy-v1",
+            auto_propose_at=settings.decision_auto_propose_at,
+            user_review_at=settings.decision_user_review_at,
+            probability_margin=settings.decision_probability_margin,
+        )
+        proposal = resolve_module_identity(
+            db,
+            evidence_id=body.evidence_id,
+            provider=provider,
+            policy=DecisionPolicy(thresholds),
+            enabled=True,
+            idempotency_key=body.idempotency_key,
+        )
+    except DecisionIntelligenceDisabled as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except JevProviderError as exc:
+        status_code = 504 if str(exc) == "JEV_TIMEOUT" else 502
+        raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+    except (EvidenceResolutionError, RuntimeError, ValueError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    db.commit()
+    return DecisionResolutionResponse(
+        evidence_id=body.evidence_id,
+        selected_choice=proposal.packet.selected_choice,
+        disposition=proposal.policy.disposition.value,
+        provider=proposal.packet.provider,
+        confidence=proposal.packet.confidence,
+        canonical_authority=False,
     )

@@ -10,6 +10,7 @@ from alembic import context
 from cases.models import Case  # noqa: F401
 from canon import models as canonical_models  # noqa: F401
 from community.models import Comment, User, Vote  # noqa: F401
+from intelligence.models import DecisionReceiptRecord  # noqa: F401
 
 # Import all models to ensure they're registered with Base.metadata
 from core.database import Base
