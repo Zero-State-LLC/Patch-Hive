@@ -1,3 +1,7 @@
+## Current next milestone — closed staging beta
+
+PatchHive remains late alpha (`v0.3.0-alpha`) and production payments remain disabled. The next milestone is a closed staging beta: land the active Cyber Hive UI slice, align demo authentication with seed data, capture a Design Engine walkthrough receipt with flags enabled in test mode, pin readiness docs to the resulting SHA, and choose a staging host. The milestone is complete only when its documented staging exit criteria pass; no calendar ship date is claimed.
+
 # PatchHive roadmap
 
 ## Roadmap rules
