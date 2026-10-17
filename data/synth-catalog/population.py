@@ -678,14 +678,14 @@ def case_receipt(engine: Engine, *, apply: bool) -> dict[str, Any]:
     backend = ROOT / "backend"
     if str(backend) not in sys.path:
         sys.path.insert(0, str(backend))
-    from cases.models import CaseCatalog
     from integrations.case_catalog_populator import import_records, validate_record
 
     payload = _load(ROOT / "data" / "cases" / "seed-v1.json")
     records = payload["cases"]
-    with engine.connect() as conn:
-        existing = {row.slug for row in conn.execute(text("SELECT slug FROM case_catalog"))}
-    inserts = updates = rejected = 0
+    from sqlalchemy.orm import sessionmaker
+
+    valid = []
+    rejected = 0
     warnings: list[str] = []
     for index, record in enumerate(records):
         errors = validate_record(record, index)
@@ -693,22 +693,22 @@ def case_receipt(engine: Engine, *, apply: bool) -> dict[str, Any]:
             rejected += 1
             warnings.extend(errors[:2])
             continue
-        slug = record.get("slug") or CaseCatalog.create_slug(record["manufacturer"].strip(), record["model"].strip())
-        if slug in existing:
-            updates += 1
-        else:
-            inserts += 1
-            existing.add(slug)
+        valid.append(record)
+    # Plan with a rolled-back import so the counts reflect real fill-null writes only.
+    session = sessionmaker(bind=engine)()
+    try:
+        planned = import_records(session, valid, dry_run=True)
+    finally:
+        session.close()
     receipt: dict[str, Any] = {
         "input_records": len(records),
-        "inserts": inserts,
-        "updates": updates,
+        "inserts": planned.get("inserted", 0),
+        "updates": planned.get("updated", 0),
+        "unchanged": planned.get("unchanged", 0),
         "rejected": rejected,
         "warnings": warnings[:20],
     }
     if apply:
-        from sqlalchemy.orm import sessionmaker
-
         session = sessionmaker(bind=engine)()
         try:
             applied = import_records(session, records, dry_run=False)
