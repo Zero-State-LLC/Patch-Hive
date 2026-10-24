@@ -42,12 +42,26 @@ its SHA-256).
    `git rev-parse HEAD` is used.
 3. Run `python scripts/staging/design_engine_walkthrough.py --receipt-out design-walkthrough-receipt.json`.
    The script seeds the golden demo, verifies the seeded credentials read-only
-   (it never rewrites a password hash), collects alias and FE cutover evidence,
-   calls `POST /api/patches/generate/{rig_id}` once on the seeded rig for the F3
+   (it never rewrites a password hash), collects alias evidence and refuses to
+   continue unless it passes the same checks as the `expose_canon_alias` guard
+   (`alias_evidence_failures`), then reads the TARGET server's effective flags
+   from the admin-only, read-only `GET /api/admin/ops/runtime-flags` (seeded
+   admin login) and refuses to continue unless they verify as test mode with
+   production payments disabled and `environment` equal to `--environment`
+   (default `staging`). The local overlay file is never trusted for this. Both
+   checks run before any generate/export call. It then collects FE cutover
+   evidence, calls `POST /api/patches/generate/{rig_id}` once on the seeded rig for the F3
    dual-write audit, runs preview -> credit grant -> export debit -> fulfillment ->
    download token -> download pack with the seeded accounts, and writes the
-   evidence bundle. It exits non-zero (fail closed) on seed auth drift, health
-   failure, non-test-mode flags, any failed step, or an unpinned source SHA.
+   evidence bundle. The server flags are re-read after the walkthrough and must
+   be unchanged before the receipt is sealed; the receipt's `flags` are the
+   server-reported values. It exits non-zero (fail closed, no receipt written,
+   no PASS line) on seed auth drift, rejected alias evidence, server flags that
+   are unreadable, missing, loosely typed, or not test mode
+   (`SERVER_FLAGS_UNVERIFIABLE`, `FLAGS_NOT_TEST_MODE`,
+   `SERVER_ENVIRONMENT_MISMATCH`, `SERVER_FLAGS_CHANGED`), health failure, any
+   failed step, or an unpinned source SHA. A server that predates the
+   runtime-flags endpoint (HTTP 404) therefore fails closed.
    If seed auth is not aligned, re-run the seeder; do not patch credentials.
 4. Pin (T050). Replace each `PENDING_OPERATOR_WALKTHROUGH` value in both docs
    with the receipt values (`receipt.source_commit_sha`, `receipt.record_sha256`,
@@ -82,5 +96,10 @@ its SHA-256).
 - T040: "flags enabled in test mode" means design engine and canon export
   fulfillment on, `stripe_test_mode` true, production payments off, and the
   environment not production. A missing attribute is treated as unsafe.
+  Codex review: these values must come from the running server, so a read-only
+  `GET /api/admin/ops/runtime-flags` (Admin/Ops/Support/ReadOnly roles) was added.
+  It returns `schema_version`, `environment`, and the six booleans only (no keys,
+  secrets, or URLs) and changes nothing. The client accepts only that exact field
+  set with real JSON booleans; anything else is `SERVER_FLAGS_UNVERIFIABLE`.
 - T050 / operator_pin: "SHA-linked evidence" also requires a verified Spec 007
   enablement receipt (the declared upstream dependency).

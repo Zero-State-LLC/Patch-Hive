@@ -32,6 +32,7 @@ export default function RacksPage() {
   const [racks, setRacks] = useState<Rack[]>([]);
   const [selectedRackId, setSelectedRackId] = useState<number | null>(null);
   const [rackDetail, setRackDetail] = useState<Rack | null>(null);
+  const [detailError, setDetailError] = useState<string | null>(null);
   const detailRequest = useRef(0);
   const [runs, setRuns] = useState<Run[]>([]);
   const [selectedRunId, setSelectedRunId] = useState<number | null>(null);
@@ -109,6 +110,7 @@ export default function RacksPage() {
     // Only the latest request may update state, so a slow earlier response
     // cannot replace the detail of the rig selected after it.
     const request = ++detailRequest.current;
+    setDetailError(null);
     try {
       const response = await canonApi.getRig(rackId);
       if (request !== detailRequest.current) return;
@@ -116,7 +118,9 @@ export default function RacksPage() {
     } catch {
       if (request !== detailRequest.current) return;
       setRackDetail(null);
-      setError("Unable to load rig details. Please try again.");
+      // Rendered in the workspace itself (independent of selectedRack) with a
+      // retry that re-requests this rig directly.
+      setDetailError("Unable to load rig details. Please try again.");
     }
   };
 
@@ -694,6 +698,21 @@ export default function RacksPage() {
               </div>
             ) : null}
           </>
+        ) : selectedRackId !== null && detailError ? (
+          <div className="panel" role="alert">
+            <p className="status status-danger">{detailError}</p>
+            <button
+              className="button button-secondary"
+              type="button"
+              onClick={() => void loadRackDetail(selectedRackId)}
+            >
+              Retry
+            </button>
+          </div>
+        ) : selectedRackId !== null ? (
+          <div className="panel" aria-busy="true">
+            <p className="muted">Loading rig details...</p>
+          </div>
         ) : (
           <div className="panel">
             <p className="eyebrow">Workspace</p>

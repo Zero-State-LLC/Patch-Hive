@@ -39,6 +39,12 @@ SEED_AUTH_SCHEMA = "patchhive.seed-auth-check.v1"
 WALKTHROUGH_START_SCHEMA = "patchhive.design-walkthrough-start.v1"
 WALKTHROUGH_RECEIPT_SCHEMA = "patchhive.design-walkthrough-receipt.v1"
 READINESS_PIN_SCHEMA = "patchhive.readiness-pin.v1"
+RUNTIME_FLAGS_SCHEMA = "patchhive.runtime-flags.v1"
+
+# Read-only, admin-only introspection of the target server's EFFECTIVE flags
+# (booleans plus the environment name; no secrets). The walkthrough verifies the
+# server, never the local overlay file.
+RUNTIME_FLAGS_ROUTE = ("GET", "/api/admin/ops/runtime-flags")
 
 CANON_LIST_ROUTE = ("GET", "/api/canon/rigs")
 CANON_DETAIL_ROUTE = ("GET", "/api/canon/rigs/{rig_id}")
@@ -177,6 +183,22 @@ def collect_alias_evidence(
         new_write_surface=tuple(new_surface),
     )
     return record.sealed()
+
+
+def alias_evidence_failures(alias: AliasParityEvidence | None) -> tuple[str, ...]:
+    """Content checks shared by the expose_canon_alias guard and the live walkthrough."""
+    if alias is None:
+        return ("ALIAS_EVIDENCE_MISSING",)
+    failed: list[str] = []
+    if not alias.intact():
+        failed.append("ALIAS_EVIDENCE_TAMPERED")
+    if alias.missing_alias_routes:
+        failed.append("F2_F4_ALIASES_MISSING")
+    if not alias.same_set or alias.legacy_ids_sha256 != alias.canon_ids_sha256:
+        failed.append("ALIAS_SET_DIFFERS_FROM_LEGACY")
+    if alias.new_write_surface:
+        failed.append("NEW_WRITE_SURFACE")
+    return tuple(failed)
 
 
 # ---------------------------------------------------------------------------
@@ -376,6 +398,48 @@ class DesignEngineFlags(BaseModel):
             stripe_test_mode=bool(getattr(settings_obj, "stripe_test_mode", False)),
             allow_production_payments=bool(getattr(settings_obj, "allow_production_payments", True)),
         )
+
+
+_RUNTIME_FLAG_BOOLS: tuple[str, ...] = (
+    "enable_patchbook_design_engine",
+    "enable_canon_export_fulfillment",
+    "enable_inline_export_fulfillment",
+    "enable_patchbook_publication_profile",
+    "stripe_test_mode",
+    "allow_production_payments",
+)
+
+
+def runtime_flags_payload(settings_obj: Any) -> dict[str, Any]:
+    """Server side of ``RUNTIME_FLAGS_ROUTE``: effective flag values, no secrets."""
+    flags = DesignEngineFlags.from_settings(settings_obj)
+    return {"schema_version": RUNTIME_FLAGS_SCHEMA, **flags.model_dump(mode="json")}
+
+
+def flags_from_server_payload(payload: Any) -> DesignEngineFlags:
+    """Parse the server's effective flags, failing closed on anything ambiguous.
+
+    Every field must be present with its exact JSON type (real booleans, a
+    non-empty environment string) and nothing else may be reported. Missing,
+    extra, or loosely typed values raise ``SERVER_FLAGS_UNVERIFIABLE`` so a
+    receipt is never sealed on flags the server did not clearly state.
+    """
+    if not isinstance(payload, Mapping):
+        raise CutoverError("SERVER_FLAGS_UNVERIFIABLE", "payload is not an object")
+    if payload.get("schema_version") != RUNTIME_FLAGS_SCHEMA:
+        raise CutoverError("SERVER_FLAGS_UNVERIFIABLE", "schema_version")
+    expected = {"schema_version", "environment", *_RUNTIME_FLAG_BOOLS}
+    if set(payload) != expected:
+        raise CutoverError("SERVER_FLAGS_UNVERIFIABLE", "unexpected or missing fields")
+    environment = payload["environment"]
+    if not isinstance(environment, str) or not environment.strip():
+        raise CutoverError("SERVER_FLAGS_UNVERIFIABLE", "environment")
+    for name in _RUNTIME_FLAG_BOOLS:
+        if type(payload[name]) is not bool:
+            raise CutoverError("SERVER_FLAGS_UNVERIFIABLE", name)
+    return DesignEngineFlags(
+        environment=environment, **{name: payload[name] for name in _RUNTIME_FLAG_BOOLS}
+    )
 
 
 def flags_test_mode_failures(flags: DesignEngineFlags) -> tuple[str, ...]:
@@ -679,19 +743,7 @@ def new_machine() -> CutoverMachine:
 
 
 def _guard_alias(m: CutoverMachine, ev: CutoverEvent) -> tuple[str, ...]:
-    alias = ev.alias
-    if alias is None:
-        return ("ALIAS_EVIDENCE_MISSING",)
-    failed: list[str] = []
-    if not alias.intact():
-        failed.append("ALIAS_EVIDENCE_TAMPERED")
-    if alias.missing_alias_routes:
-        failed.append("F2_F4_ALIASES_MISSING")
-    if not alias.same_set or alias.legacy_ids_sha256 != alias.canon_ids_sha256:
-        failed.append("ALIAS_SET_DIFFERS_FROM_LEGACY")
-    if alias.new_write_surface:
-        failed.append("NEW_WRITE_SURFACE")
-    return tuple(failed)
+    return alias_evidence_failures(ev.alias)
 
 
 def _guard_fe(m: CutoverMachine, ev: CutoverEvent) -> tuple[str, ...]:

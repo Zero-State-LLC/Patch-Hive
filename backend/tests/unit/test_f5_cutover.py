@@ -9,6 +9,10 @@ from pydantic import ValidationError
 
 from core.ops.f5_cutover import (
     REQUIRED_PIN_DOCUMENTS,
+    RUNTIME_FLAGS_SCHEMA,
+    alias_evidence_failures,
+    flags_from_server_payload,
+    runtime_flags_payload,
     CutoverError,
     DesignEngineFlags,
     SeedAccount,
@@ -363,3 +367,75 @@ def test_receipt_embeds_sealed_seed_auth(art) -> None:
     assert receipt.seed_auth.intact()
     assert receipt.seed_auth.aligned
     assert receipt.seed_auth_sha256 == receipt.seed_auth.record_sha256
+
+
+# --- Codex review: shared alias checks, strict server flag parsing -------------
+
+
+def test_alias_evidence_failures_matches_guard_codes() -> None:
+    art = chain()
+    assert alias_evidence_failures(art["alias"]) == ()
+    assert alias_evidence_failures(None) == ("ALIAS_EVIDENCE_MISSING",)
+    drift = art["alias"].model_copy(update={"same_set": False, "new_write_surface": ("POST /x",)})
+    assert alias_evidence_failures(drift) == (
+        "ALIAS_EVIDENCE_TAMPERED",
+        "ALIAS_SET_DIFFERS_FROM_LEGACY",
+        "NEW_WRITE_SURFACE",
+    )
+
+
+def test_runtime_flags_payload_round_trips_and_has_no_extra_fields() -> None:
+    class S:
+        environment = "staging"
+        enable_patchbook_design_engine = True
+        enable_canon_export_fulfillment = True
+        enable_inline_export_fulfillment = False
+        enable_patchbook_publication_profile = False
+        stripe_test_mode = True
+        allow_production_payments = False
+        download_token_secret = "y" * 40
+        database_url = "sqlite:///example.invalid.db"
+
+    payload = runtime_flags_payload(S())
+    assert payload["schema_version"] == RUNTIME_FLAGS_SCHEMA
+    assert flags_from_server_payload(payload) == DesignEngineFlags.from_settings(S())
+    text = json.dumps(payload)
+    assert "y" * 40 not in text and "example.invalid" not in text
+
+
+def test_runtime_flags_payload_defaults_missing_production_switch_to_unsafe() -> None:
+    class Bare:
+        environment = "staging"
+
+    flags = flags_from_server_payload(runtime_flags_payload(Bare()))
+    assert flags.allow_production_payments is True
+    assert "PRODUCTION_PAYMENTS_ENABLED" in flags_test_mode_failures(flags)
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda p: p.pop("allow_production_payments"),
+        lambda p: p.pop("schema_version"),
+        lambda p: p.update(allow_production_payments="false"),
+        lambda p: p.update(allow_production_payments=0),
+        lambda p: p.update(stripe_test_mode=None),
+        lambda p: p.update(environment=" "),
+        lambda p: p.update(environment=None),
+        lambda p: p.update(extra_flag=True),
+    ],
+)
+def test_flags_from_server_payload_fails_closed_on_ambiguity(mutate) -> None:
+    payload = {"schema_version": RUNTIME_FLAGS_SCHEMA, **flags().model_dump(mode="json")}
+    assert flags_from_server_payload(dict(payload)) == flags()
+    mutate(payload)
+    with pytest.raises(CutoverError) as exc:
+        flags_from_server_payload(payload)
+    assert exc.value.code == "SERVER_FLAGS_UNVERIFIABLE"
+
+
+@pytest.mark.parametrize("payload", [None, [], "flags", 1])
+def test_flags_from_server_payload_rejects_non_objects(payload) -> None:
+    with pytest.raises(CutoverError) as exc:
+        flags_from_server_payload(payload)
+    assert exc.value.code == "SERVER_FLAGS_UNVERIFIABLE"

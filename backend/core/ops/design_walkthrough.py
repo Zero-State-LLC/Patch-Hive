@@ -11,9 +11,30 @@ from __future__ import annotations
 
 import hashlib
 import uuid
-from typing import Any, Mapping
+from dataclasses import dataclass
+from typing import Any, Callable, Mapping
 
-from core.ops.f5_cutover import HealthSnapshot, SeedAccount, WalkthroughOutcome, WalkthroughStep
+from core.ops.f5_cutover import (
+    RUNTIME_FLAGS_ROUTE,
+    AliasParityEvidence,
+    CutoverError,
+    DesignEngineFlags,
+    FeCutoverEvidence,
+    HealthSnapshot,
+    SeedAccount,
+    SeedAuthCheck,
+    WalkthroughOutcome,
+    WalkthroughReceipt,
+    WalkthroughStart,
+    WalkthroughStep,
+    alias_evidence_failures,
+    capture_walkthrough_receipt,
+    collect_fe_cutover_evidence,
+    flags_from_server_payload,
+    flags_test_mode_failures,
+    route_table,
+    start_walkthrough,
+)
 
 
 def _json(resp: Any) -> dict[str, Any]:
@@ -174,9 +195,9 @@ def fetch_all_ids(http: Any, path: str, *, items_key: str, id_field: str, page: 
         skip += page
 
 
-def collect_live_alias_evidence(http: Any) -> Any:
+def collect_live_alias_evidence(http: Any) -> AliasParityEvidence:
     """T010 evidence from a running API: OpenAPI route table plus full id sets."""
-    from core.ops.f5_cutover import collect_alias_evidence, route_table
+    from core.ops.f5_cutover import collect_alias_evidence
 
     spec = http.get("/openapi.json")
     if spec.status_code != 200:
@@ -185,4 +206,136 @@ def collect_live_alias_evidence(http: Any) -> Any:
         route_table(_json(spec)),
         legacy_ids=fetch_all_ids(http, "/api/racks/", items_key="racks", id_field="id"),
         canon_ids=fetch_all_ids(http, "/api/canon/rigs", items_key="rigs", id_field="rig_id"),
+    )
+
+
+def fetch_server_flags(http: Any, *, admin: SeedAccount) -> DesignEngineFlags:
+    """Effective flags reported by the TARGET server (not a local overlay).
+
+    Logs in with the seeded admin and reads ``RUNTIME_FLAGS_ROUTE``. Any failure
+    to obtain an unambiguous answer raises ``SERVER_FLAGS_UNVERIFIABLE``. The
+    token stays in this function and is never returned or logged.
+    """
+    login = http.post(
+        "/api/community/auth/login",
+        json={"username": admin.username, "password": admin.password},
+    )
+    token = _json(login).get("access_token") if login.status_code == 200 else None
+    if not token:
+        raise CutoverError("SERVER_FLAGS_UNVERIFIABLE", f"admin login http {login.status_code}")
+    resp = http.get(RUNTIME_FLAGS_ROUTE[1], headers={"Authorization": f"Bearer {token}"})
+    if resp.status_code != 200:
+        raise CutoverError("SERVER_FLAGS_UNVERIFIABLE", f"runtime flags http {resp.status_code}")
+    try:
+        payload = resp.json()
+    except ValueError:
+        payload = None
+    return flags_from_server_payload(payload)
+
+
+def verify_server_flags(
+    http: Any, *, admin: SeedAccount, expected_environment: str | None = None
+) -> DesignEngineFlags:
+    """Server flags that are verified test-mode with production payments disabled."""
+    flags = fetch_server_flags(http, admin=admin)
+    failed = flags_test_mode_failures(flags)
+    if failed:
+        raise CutoverError("FLAGS_NOT_TEST_MODE", ",".join(failed))
+    if expected_environment is not None and flags.environment != expected_environment:
+        raise CutoverError("SERVER_ENVIRONMENT_MISMATCH", flags.environment)
+    return flags
+
+
+@dataclass(frozen=True)
+class StagingWalkthroughRun:
+    """Every record produced by one successful staging walkthrough (no secrets)."""
+
+    alias: AliasParityEvidence
+    fe_cutover: FeCutoverEvidence
+    start: WalkthroughStart
+    seed_auth: SeedAuthCheck
+    receipt: WalkthroughReceipt
+
+    def bundle(self) -> dict[str, Any]:
+        return {
+            "alias_evidence": self.alias.model_dump(mode="json"),
+            "fe_cutover": self.fe_cutover.model_dump(mode="json"),
+            "flags_source": f"{RUNTIME_FLAGS_ROUTE[0]} {RUNTIME_FLAGS_ROUTE[1]}",
+            "walkthrough_start": self.start.model_dump(mode="json"),
+            "seed_auth": self.seed_auth.model_dump(mode="json"),
+            "receipt": self.receipt.model_dump(mode="json"),
+        }
+
+
+def run_staging_walkthrough(
+    http: Any,
+    *,
+    seed_auth: SeedAuthCheck,
+    user: SeedAccount,
+    admin: SeedAccount,
+    user_id: int,
+    rig_id: int,
+    sources: Mapping[str, str],
+    fe_sources: Mapping[str, str],
+    source_commit_sha: str,
+    expected_environment: str | None = None,
+    log: Callable[[str], None] = lambda _message: None,
+) -> StagingWalkthroughRun:
+    """Spec 008 live walkthrough with every gate enforced before side effects.
+
+    Order: alias evidence must pass the same checks as the expose_canon_alias
+    guard; the target server's effective flags must be verified (test mode,
+    production payments disabled); only then are generate/export calls made.
+    The flags are re-read after the walkthrough and must be unchanged before
+    the receipt is sealed. Any failure raises ``CutoverError`` and no receipt
+    is produced.
+    """
+    log("=== F5 alias evidence ===")
+    alias = collect_live_alias_evidence(http)
+    log(f"  same_set={alias.same_set} new_write_surface={list(alias.new_write_surface)}")
+    alias_failed = alias_evidence_failures(alias)
+    if alias_failed:
+        raise CutoverError("ALIAS_EVIDENCE_REJECTED", ",".join(alias_failed))
+
+    log("=== Target server effective flags ===")
+    flags = verify_server_flags(http, admin=admin, expected_environment=expected_environment)
+    log(
+        f"  environment={flags.environment} stripe_test_mode={flags.stripe_test_mode} "
+        f"allow_production_payments={flags.allow_production_payments}"
+    )
+
+    log("=== FE cutover evidence (generate dual-write audit) ===")
+    gen = http.post(f"/api/patches/generate/{rig_id}", json={})
+    spec = http.get("/openapi.json")
+    if spec.status_code != 200:
+        raise CutoverError("OPENAPI_UNAVAILABLE", str(spec.status_code))
+    fe = collect_fe_cutover_evidence(
+        alias,
+        route_table(_json(spec)),
+        fe_sources=fe_sources,
+        generate_response=_json(gen) if gen.status_code == 200 else {},
+    )
+    log(f"  dual_write_passed={fe.dual_write.passed} legacy_list_callers={list(fe.legacy_list_callers)}")
+    start = start_walkthrough(fe, flags)
+
+    log("=== Walkthrough: preview -> debit -> fulfillment -> download pack ===")
+    health, outcome = execute_walkthrough(
+        http, user=user, admin=admin, user_id=user_id, sources=sources
+    )
+    for step in outcome.steps:
+        log(f"  {step.name}: {'PASS' if step.passed else 'FAIL'} ({step.http_status})")
+
+    after = verify_server_flags(http, admin=admin, expected_environment=expected_environment)
+    if after != flags:
+        raise CutoverError("SERVER_FLAGS_CHANGED")
+
+    receipt = capture_walkthrough_receipt(
+        start=start,
+        seed_auth=seed_auth,
+        health=health,
+        outcome=outcome,
+        source_commit_sha=source_commit_sha,
+    )
+    return StagingWalkthroughRun(
+        alias=alias, fe_cutover=fe, start=start, seed_auth=seed_auth, receipt=receipt
     )

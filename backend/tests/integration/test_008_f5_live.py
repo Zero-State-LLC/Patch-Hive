@@ -19,8 +19,15 @@ from sqlalchemy.orm import Session
 from community.models import User
 from core.config import settings
 from core.database import get_db
-from core.ops.design_walkthrough import collect_live_alias_evidence, execute_walkthrough
+from canon.models import CanonicalExportRecord
+from core.ops.design_walkthrough import (
+    collect_live_alias_evidence,
+    execute_walkthrough,
+    run_staging_walkthrough,
+)
 from core.ops.f5_cutover import (
+    RUNTIME_FLAGS_ROUTE,
+    RUNTIME_FLAGS_SCHEMA,
     CutoverError,
     CutoverEvent,
     CutoverEventType,
@@ -31,6 +38,7 @@ from core.ops.f5_cutover import (
     capture_walkthrough_receipt,
     check_seed_auth,
     collect_fe_cutover_evidence,
+    flags_from_server_payload,
     pin_readiness_docs,
     replay,
     route_table,
@@ -284,13 +292,291 @@ def _walkthrough_script():
     return mod, path.read_text(encoding="utf-8")
 
 
-def test_staging_overlay_flags_are_test_mode_and_script_does_not_patch_credentials() -> None:
-    from core.ops.f5_cutover import flags_test_mode_failures
-
+def test_staging_script_trusts_server_flags_not_overlay_and_does_not_patch_credentials() -> None:
     mod, source = _walkthrough_script()
-    overlay = mod._overlay_flags("staging")
-    assert flags_test_mode_failures(overlay) == ()
-    assert overlay.allow_production_payments is False
-    assert flags_test_mode_failures(mod._overlay_flags("production")) == ("PRODUCTION_ENVIRONMENT",)
+    assert not hasattr(mod, "_overlay_flags")
+    assert "docker-compose.staging.design-engine.yml" not in source
+    assert "run_staging_walkthrough" in source
     assert "get_password_hash" not in source
     assert "password_hash" not in source
+
+
+# --- Codex review: effective server flags, alias guard ------------------------
+
+
+class _Resp:
+    def __init__(self, status_code: int, payload: object) -> None:
+        self.status_code = status_code
+        self._payload = payload
+
+    def json(self) -> object:
+        if isinstance(self._payload, Exception):
+            raise self._payload
+        return self._payload
+
+
+class _ServerFlagsOverride:
+    """Real app client, except the runtime-flags route answers with ``responses``."""
+
+    def __init__(self, inner, responses) -> None:
+        self._inner = inner
+        self._responses = list(responses)
+        self.flag_reads = 0
+
+    def get(self, path, **kwargs):
+        if path == RUNTIME_FLAGS_ROUTE[1]:
+            self.flag_reads += 1
+            resp = self._responses[min(self.flag_reads, len(self._responses)) - 1]
+            return resp(kwargs) if callable(resp) else resp
+        return self._inner.get(path, **kwargs)
+
+    def post(self, path, **kwargs):
+        return self._inner.post(path, **kwargs)
+
+
+def _side_effect_counts(db_session) -> tuple[int, int]:
+    db_session.expire_all()
+    return (
+        db_session.query(Run).count(),
+        db_session.query(CanonicalExportRecord).count(),
+    )
+
+
+def _run(db_session, http, seeded, **kwargs):
+    result, user, admin = seeded
+    return run_staging_walkthrough(
+        http,
+        seed_auth=check_seed_auth(db_session, (user, admin)),
+        user=user,
+        admin=admin,
+        user_id=result.user_id,
+        rig_id=result.rig_id,
+        sources=_bridge_sources(db_session, result.run_id),
+        fe_sources=_fe_sources(),
+        source_commit_sha=WALKTHROUGH_SHA,
+        **kwargs,
+    )
+
+
+def test_runtime_flags_endpoint_is_admin_only_read_only_and_secret_free(
+    client, seeded, design_flags
+) -> None:
+    _, user, admin = seeded
+    assert client.get(RUNTIME_FLAGS_ROUTE[1]).status_code in (401, 403)
+
+    def token(account):
+        resp = client.post(
+            "/api/community/auth/login",
+            json={"username": account.username, "password": account.password},
+        )
+        return resp.json()["access_token"]
+
+    as_user = client.get(RUNTIME_FLAGS_ROUTE[1], headers={"Authorization": f"Bearer {token(user)}"})
+    assert as_user.status_code == 403
+    resp = client.get(RUNTIME_FLAGS_ROUTE[1], headers={"Authorization": f"Bearer {token(admin)}"})
+    assert resp.status_code == 200
+    flags = flags_from_server_payload(resp.json())
+    assert flags == DesignEngineFlags.from_settings(settings)
+    assert flags.allow_production_payments is False and flags.stripe_test_mode is True
+    assert set(resp.json()) == {"schema_version", *DesignEngineFlags.model_fields}
+    assert settings.download_token_secret not in resp.text
+    assert ("GET", RUNTIME_FLAGS_ROUTE[1]) in route_table(app.openapi())
+    assert not any(
+        path == RUNTIME_FLAGS_ROUTE[1] and method != "GET" for method, path in route_table(app.openapi())
+    )
+
+
+def test_verified_payments_disabled_server_proceeds_and_receipt_carries_server_flags(
+    db_session, client, seeded, design_flags
+) -> None:
+    before = _side_effect_counts(db_session)
+    run = _run(db_session, client, seeded, expected_environment="staging")
+    after = _side_effect_counts(db_session)
+    # The counters used by the refusal tests do move on a real run.
+    assert after[0] > before[0] and after[1] > before[1]
+    server = DesignEngineFlags.from_settings(settings)
+    assert run.receipt.intact() and run.receipt.outcome_passed
+    assert run.receipt.flags == server == run.start.flags
+    assert run.receipt.flags.allow_production_payments is False
+    bundle = json.dumps(run.bundle())
+    assert "/api/admin/ops/runtime-flags" in bundle
+    _, user, admin = seeded
+    for forbidden in (user.password, admin.password, "access_token", "Bearer "):
+        assert forbidden not in bundle
+
+
+def test_server_reporting_live_production_payments_aborts_before_side_effects(
+    db_session, client, seeded, design_flags, monkeypatch
+) -> None:
+    _run(db_session, client, seeded)  # warm the bridge so counts are stable
+    before = _side_effect_counts(db_session)
+    monkeypatch.setattr(settings, "allow_production_payments", True)
+    monkeypatch.setattr(settings, "stripe_test_mode", False)
+    with pytest.raises(CutoverError) as exc:
+        _run(db_session, client, seeded)
+    assert exc.value.code == "FLAGS_NOT_TEST_MODE"
+    assert "PRODUCTION_PAYMENTS_ENABLED" in exc.value.detail
+    assert "PAYMENTS_NOT_TEST_MODE" in exc.value.detail
+    assert _side_effect_counts(db_session) == before  # no generate, no export
+
+
+def test_production_environment_server_aborts(db_session, client, seeded, design_flags, monkeypatch) -> None:
+    monkeypatch.setattr(settings, "environment", "production")
+    with pytest.raises(CutoverError) as exc:
+        _run(db_session, client, seeded)
+    assert exc.value.code == "FLAGS_NOT_TEST_MODE"
+    assert "PRODUCTION_ENVIRONMENT" in exc.value.detail
+
+
+def test_server_environment_must_match_expected(db_session, client, seeded, design_flags) -> None:
+    with pytest.raises(CutoverError) as exc:
+        _run(db_session, client, seeded, expected_environment="qa")
+    assert exc.value.code == "SERVER_ENVIRONMENT_MISMATCH"
+
+
+_GOOD_PAYLOAD = {
+    "schema_version": RUNTIME_FLAGS_SCHEMA,
+    "environment": "staging",
+    "enable_patchbook_design_engine": True,
+    "enable_canon_export_fulfillment": True,
+    "enable_inline_export_fulfillment": True,
+    "enable_patchbook_publication_profile": False,
+    "stripe_test_mode": True,
+    "allow_production_payments": False,
+}
+
+
+def _without(key: str) -> dict:
+    return {k: v for k, v in _GOOD_PAYLOAD.items() if k != key}
+
+
+@pytest.mark.parametrize(
+    "response",
+    [
+        _Resp(404, {"detail": "Not Found"}),  # server predates the endpoint
+        _Resp(500, {}),
+        _Resp(200, ValueError("not json")),
+        _Resp(200, []),
+        _Resp(200, _without("allow_production_payments")),
+        _Resp(200, _without("stripe_test_mode")),
+        _Resp(200, {**_GOOD_PAYLOAD, "allow_production_payments": "false"}),
+        _Resp(200, {**_GOOD_PAYLOAD, "allow_production_payments": None}),
+        _Resp(200, {**_GOOD_PAYLOAD, "stripe_test_mode": 1}),
+        _Resp(200, {**_GOOD_PAYLOAD, "environment": ""}),
+        _Resp(200, {**_GOOD_PAYLOAD, "schema_version": "other"}),
+        _Resp(200, {**_GOOD_PAYLOAD, "payments_live": False}),
+    ],
+)
+def test_missing_or_ambiguous_server_flags_fail_closed(
+    db_session, client, seeded, design_flags, response
+) -> None:
+    http = _ServerFlagsOverride(client, [response])
+    _run(db_session, client, seeded)  # warm the bridge so counts are stable
+    before = _side_effect_counts(db_session)
+    with pytest.raises(CutoverError) as exc:
+        _run(db_session, http, seeded)
+    assert exc.value.code == "SERVER_FLAGS_UNVERIFIABLE"
+    assert _side_effect_counts(db_session) == before
+
+
+def test_server_flags_changed_during_walkthrough_refuses_to_seal(
+    db_session, client, seeded, design_flags
+) -> None:
+    flipped = {**_GOOD_PAYLOAD, "enable_patchbook_publication_profile": True}
+    http = _ServerFlagsOverride(client, [_Resp(200, _GOOD_PAYLOAD), _Resp(200, flipped)])
+    with pytest.raises(CutoverError) as exc:
+        _run(db_session, http, seeded)
+    assert exc.value.code == "SERVER_FLAGS_CHANGED"
+    assert http.flag_reads == 2
+
+
+def test_server_flags_flipped_to_live_payments_mid_run_refuses_to_seal(
+    db_session, client, seeded, design_flags
+) -> None:
+    live = {**_GOOD_PAYLOAD, "allow_production_payments": True}
+    http = _ServerFlagsOverride(client, [_Resp(200, _GOOD_PAYLOAD), _Resp(200, live)])
+    with pytest.raises(CutoverError) as exc:
+        _run(db_session, http, seeded)
+    assert exc.value.code == "FLAGS_NOT_TEST_MODE"
+
+
+def _reject_alias(monkeypatch, **changes) -> None:
+    from core.ops import design_walkthrough
+
+    real = design_walkthrough.collect_live_alias_evidence
+
+    def tampered(http):
+        alias = real(http)
+        return alias.model_copy(update={**changes, "record_sha256": ""}).sealed()
+
+    monkeypatch.setattr(design_walkthrough, "collect_live_alias_evidence", tampered)
+
+
+@pytest.mark.parametrize(
+    ("changes", "reason"),
+    [
+        ({"new_write_surface": ("POST /api/canon/rigs/{rig_id}/clone",)}, "NEW_WRITE_SURFACE"),
+        ({"same_set": False}, "ALIAS_SET_DIFFERS_FROM_LEGACY"),
+        ({"missing_alias_routes": ("GET /api/canon/rigs",)}, "F2_F4_ALIASES_MISSING"),
+    ],
+)
+def test_failed_alias_evidence_aborts_before_side_effects(
+    db_session, client, seeded, design_flags, monkeypatch, changes, reason
+) -> None:
+    _run(db_session, client, seeded)  # warm the bridge so counts are stable
+    before = _side_effect_counts(db_session)
+    _reject_alias(monkeypatch, **changes)
+    with pytest.raises(CutoverError) as exc:
+        _run(db_session, client, seeded)
+    assert exc.value.code == "ALIAS_EVIDENCE_REJECTED"
+    assert reason in exc.value.detail
+    assert _side_effect_counts(db_session) == before
+
+
+# --- the script end to end (no PASS / no receipt on any refusal) --------------
+
+
+def _run_script(monkeypatch, tmp_path, db_engine, http):
+    from types import SimpleNamespace
+
+    mod, _ = _walkthrough_script()
+    out = tmp_path / "receipt.json"
+    monkeypatch.setattr(mod, "create_engine", lambda _url: db_engine)
+    monkeypatch.setattr(mod, "httpx", SimpleNamespace(Client=lambda **_kw: http))
+    monkeypatch.setenv("WALKTHROUGH_SOURCE_SHA", WALKTHROUGH_SHA)
+    monkeypatch.setattr(sys, "argv", ["design_engine_walkthrough.py", "--receipt-out", str(out)])
+    return mod.main(), out
+
+
+def test_script_passes_and_writes_receipt_on_verified_server(
+    db_engine, db_session, client, design_flags, monkeypatch, tmp_path, capsys
+) -> None:
+    code, out = _run_script(monkeypatch, tmp_path, db_engine, client)
+    printed = capsys.readouterr().out
+    assert code == 0, printed
+    assert "WALKTHROUGH PASS" in printed
+    bundle = json.loads(out.read_text(encoding="utf-8"))
+    assert bundle["receipt"]["flags"] == DesignEngineFlags.from_settings(settings).model_dump(mode="json")
+    assert bundle["flags_source"] == "GET /api/admin/ops/runtime-flags"
+
+
+@pytest.mark.parametrize("scenario", ["live_payments", "flags_unavailable", "alias_rejected"])
+def test_script_refusal_prints_no_pass_and_writes_no_receipt(
+    db_engine, db_session, client, design_flags, monkeypatch, tmp_path, capsys, scenario
+) -> None:
+    http = client
+    if scenario == "live_payments":
+        monkeypatch.setattr(settings, "allow_production_payments", True)
+        expected = "FAIL FLAGS_NOT_TEST_MODE"
+    elif scenario == "flags_unavailable":
+        http = _ServerFlagsOverride(client, [_Resp(404, {"detail": "Not Found"})])
+        expected = "FAIL SERVER_FLAGS_UNVERIFIABLE"
+    else:
+        _reject_alias(monkeypatch, new_write_surface=("POST /api/canon/rigs/{rig_id}/clone",))
+        expected = "FAIL ALIAS_EVIDENCE_REJECTED"
+    code, out = _run_script(monkeypatch, tmp_path, db_engine, http)
+    printed = capsys.readouterr().out
+    assert code == 1
+    assert expected in printed
+    assert "WALKTHROUGH PASS" not in printed
+    assert not out.exists()

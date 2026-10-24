@@ -77,6 +77,22 @@ def _record_pending_functions(db: Session, module: Module) -> int:
     return created
 
 
+@router.get("/ops/runtime-flags")
+def runtime_flags(current_user: User = Depends(require_admin_read)) -> dict:
+    """Effective Design Engine and payment flags of THIS server (read-only).
+
+    Spec 008 review: the staging walkthrough must verify the target server's
+    effective configuration, not a local overlay file, before it runs or seals a
+    receipt. Returns booleans plus the environment name only; no secrets, keys,
+    or URLs, and it changes nothing.
+    """
+    from core.config import settings
+    from core.ops.f5_cutover import runtime_flags_payload
+
+    _ = current_user
+    return runtime_flags_payload(settings)
+
+
 @router.get("/users", response_model=AdminUserList)
 def list_users(
     query: Optional[str] = None,
