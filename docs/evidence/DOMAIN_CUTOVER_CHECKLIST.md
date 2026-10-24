@@ -54,3 +54,17 @@ Use **local Docker staging**:
 
 - App: http://localhost:5173  
 - API: http://localhost:8000  
+
+## Spec 008 walkthrough pin (T050)
+
+Domain cutover stays blocked until the Design Engine staging walkthrough
+receipt is pinned here.
+
+- [ ] walkthrough_source_sha: PENDING_OPERATOR_WALKTHROUGH
+- [ ] walkthrough_receipt_sha256: PENDING_OPERATOR_WALKTHROUGH
+- [ ] No unresolved P0 integrity regressions at that SHA
+- [ ] Production payments remain disabled (`ALLOW_PRODUCTION_PAYMENTS=false`)
+
+The pin validator (`core.ops.f5_cutover.pin_readiness_docs`) requires this file
+and `PRODUCTION_READINESS_MATRIX.md` to contain the receipt's exact
+`source_commit_sha`. See `specs/008-dual-path-f5-design-receipts/OPERATOR_NOTES.md`.
