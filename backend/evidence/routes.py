@@ -6,6 +6,7 @@ import os
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any, Callable
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
@@ -704,7 +705,7 @@ class DecisionResolutionResponse(BaseModel):
     canonical_authority: bool = False
 
 
-def _configured_decision_provider():
+def _configured_decision_provider(*, image_loader: Callable[..., Any] | None = None):
     """Construct only an explicitly configured production provider."""
     if settings.decision_provider == "jev":
         from intelligence.jev_provider import JevDecisionProvider
@@ -728,6 +729,7 @@ def _configured_decision_provider():
             model=settings.clef_model,
             base_url=settings.clef_base_url,
             timeout_seconds=settings.clef_timeout_seconds,
+            image_loader=image_loader,
         )
     raise RuntimeError("DECISION_PROVIDER_NOT_CONFIGURED")
 
@@ -831,8 +833,19 @@ def _resolve_with_guarded_flow(
     )
     from intelligence.policy import DecisionPolicy, PolicyThresholds
 
+    # Retention- and consent-aware loader for the image asset bound to this evidence.
+    # It is lazy and only constructed when the Clef flag is on; a disabled adapter never
+    # invokes it, so the flag-off path performs no image load and no network call.
+    image_loader = None
+    if settings.enable_clef_provider:
+        from intelligence.evidence_images import BoundEvidenceImageLoader
+
+        image_loader = BoundEvidenceImageLoader(
+            db, evidence_id=body.evidence_id, storage_root=_evidence_root()
+        )
+
     try:
-        provider = _configured_decision_provider()
+        provider = _configured_decision_provider(image_loader=image_loader)
         thresholds = PolicyThresholds(
             policy_version=settings.decision_policy_version,
             auto_propose_at=settings.decision_auto_propose_at,

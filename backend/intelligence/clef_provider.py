@@ -23,6 +23,7 @@ from typing import Any, Callable, Mapping, NoReturn, Sequence
 import httpx
 from pydantic import ValidationError
 
+from intelligence.evidence_images import EvidenceImage
 from intelligence.contracts import (
     ChoiceRequest,
     DecisionPacket,
@@ -173,7 +174,9 @@ class ClefImage:
     data: bytes
 
 
-ImageLoader = Callable[[DecisionRequest], Sequence[ClefImage]]
+# Loaders may return the provider-neutral EvidenceImage (preferred, used by the
+# retention- and consent-gated evidence loader) or the internal ClefImage.
+ImageLoader = Callable[[DecisionRequest], Sequence["ClefImage | EvidenceImage"]]
 
 
 class _ClefMalformed(Exception):
@@ -204,8 +207,10 @@ def _encode_images(images: Sequence[ClefImage]) -> list[str]:
     encoded: list[str] = []
     total = 0
     for image in images:
-        if not isinstance(image, ClefImage):
+        if not isinstance(image, (ClefImage, EvidenceImage)):
             raise ValueError("image type invalid")
+        if not isinstance(image.data, bytes):
+            raise ValueError("image data invalid")
         if image.content_type not in _ALLOWED_CONTENT_TYPES:
             raise ValueError("image content type invalid")
         if not image.data:
@@ -330,13 +335,22 @@ class ClefDecisionProvider:
         self._last_state = ClefAdapterState.IDLE
 
         images: list[str] = []
+        loader_failed = False
         # Images are loaded only when the flag is on; a disabled adapter touches nothing.
         if self._enabled and request_valid and self._image_loader is not None:
             try:
-                images = _encode_images(tuple(self._image_loader(request)))
+                loaded = tuple(self._image_loader(request))
             except Exception:
-                request_valid = False
-                images = []
+                # Fail closed: a loader failure is treated as provider unavailability and
+                # no request is sent (no silent text-only fallback after a load error).
+                loaded = ()
+                loader_failed = True
+            if not loader_failed:
+                try:
+                    images = _encode_images(loaded)
+                except Exception:
+                    request_valid = False
+                    images = []
 
         invoked = adapter_transition(
             ClefAdapterState.IDLE,
@@ -350,6 +364,13 @@ class ClefDecisionProvider:
                 raise ClefProviderError("CLEF_DISABLED", state=invoked)
             raise ClefProviderError("CLEF_INVALID_REQUEST", state=invoked)
         self._state_trace.append(invoked)
+
+        if loader_failed:
+            self._fail(
+                ClefAdapterEvent.UNAVAILABLE,
+                "CLEF_UNAVAILABLE",
+                RuntimeError("image loader failed"),
+            )
 
         try:
             body = self._post(request=request, question=question, images=images)

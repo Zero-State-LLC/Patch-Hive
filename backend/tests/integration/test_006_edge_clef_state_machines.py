@@ -608,7 +608,7 @@ def test_api_clef_guarded_success_is_advisory_only(
     _seed_api_evidence(db_session, sample_rack_basic, evidence_id)
     provider = _mock_provider(_ok_handler())
 
-    monkeypatch.setattr(routes, "_configured_decision_provider", lambda: provider)
+    monkeypatch.setattr(routes, "_configured_decision_provider", lambda **_: provider)
     monkeypatch.setattr(settings, "enable_decision_intelligence", True)
     monkeypatch.setattr(settings, "decision_provider", "clef")
 
@@ -635,7 +635,7 @@ def test_api_clef_flag_off_returns_409(
     _seed_api_evidence(db_session, sample_rack_basic, evidence_id)
 
     monkeypatch.setattr(
-        routes, "_configured_decision_provider", lambda: ClefDecisionProvider()
+        routes, "_configured_decision_provider", lambda **_: ClefDecisionProvider()
     )
     monkeypatch.setattr(settings, "enable_decision_intelligence", True)
     monkeypatch.setattr(settings, "decision_provider", "clef")
@@ -658,7 +658,7 @@ def test_api_clef_timeout_returns_504(
     _seed_api_evidence(db_session, sample_rack_basic, evidence_id)
     provider = _mock_provider(_timeout_handler())
 
-    monkeypatch.setattr(routes, "_configured_decision_provider", lambda: provider)
+    monkeypatch.setattr(routes, "_configured_decision_provider", lambda **_: provider)
     monkeypatch.setattr(settings, "enable_decision_intelligence", True)
     monkeypatch.setattr(settings, "decision_provider", "clef")
 
