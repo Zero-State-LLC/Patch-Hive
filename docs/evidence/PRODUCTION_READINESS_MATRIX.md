@@ -77,3 +77,22 @@ summary:
 **Do not treat any percentage estimate as readiness.** This matrix supersedes informal readiness percentages in historical notes.
 
 **After merging ops/beta-staging or any release candidate:** update `source_sha`, re-run gates, and append a dated row or new assessment file under `docs/evidence/`.
+
+## Spec 008 walkthrough pin (T050)
+
+```yaml
+spec_008_design_walkthrough:
+  walkthrough_source_sha: PENDING_OPERATOR_WALKTHROUGH
+  walkthrough_receipt_sha256: PENDING_OPERATOR_WALKTHROUGH
+  enablement_receipt_007_sha256: PENDING_OPERATOR_WALKTHROUGH
+  unresolved_p0: PENDING_OPERATOR_WALKTHROUGH
+  production_payments_enabled: false
+  state: RECEIPT_PENDING  # BETA_ELIGIBLE only after core.ops.f5_cutover operator_pin accepts
+```
+
+The operator replaces each `PENDING_OPERATOR_WALKTHROUGH` value with the exact
+values from the staging receipt written by
+`scripts/staging/design_engine_walkthrough.py`. The pin validator
+(`core.ops.f5_cutover.pin_readiness_docs`) rejects this file until it contains
+the receipt's exact `source_commit_sha`. See
+`specs/008-dual-path-f5-design-receipts/OPERATOR_NOTES.md`.

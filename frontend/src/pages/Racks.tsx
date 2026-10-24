@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { canonApi, exportApi, patchApi, rackApi, runApi } from "@/lib/api";
 import type { CompatibilityResponse, Patch, Rack, Run } from "@/types/api";
+import { rigDetailToRack, rigSummaryToRack } from "@/lib/canonRigAdapter";
 import {
   difficultyFromConnections,
   filterPatches,
@@ -30,6 +31,8 @@ function gateTone(status?: string | null): "success" | "warning" | "danger" | "n
 export default function RacksPage() {
   const [racks, setRacks] = useState<Rack[]>([]);
   const [selectedRackId, setSelectedRackId] = useState<number | null>(null);
+  const [rackDetail, setRackDetail] = useState<Rack | null>(null);
+  const detailRequest = useRef(0);
   const [runs, setRuns] = useState<Run[]>([]);
   const [selectedRunId, setSelectedRunId] = useState<number | null>(null);
   const [patches, setPatches] = useState<Patch[]>([]);
@@ -50,9 +53,11 @@ export default function RacksPage() {
   } | null>(null);
   const [compatLoading, setCompatLoading] = useState(false);
 
+  // Spec 008 F5: list rows come from GET /api/canon/rigs (no placements); the
+  // selected rig's placements come from GET /api/canon/rigs/{rig_id}.
   const selectedRack = useMemo(
-    () => racks.find((rack) => rack.id === selectedRackId) || null,
-    [racks, selectedRackId],
+    () => (rackDetail && rackDetail.id === selectedRackId ? rackDetail : null),
+    [rackDetail, selectedRackId],
   );
 
   const inventoryPower = useMemo(() => {
@@ -84,16 +89,34 @@ export default function RacksPage() {
     setError(null);
     setListLoading(true);
     try {
-      const response = await rackApi.list({ limit: 50 });
-      setRacks(response.data.racks);
-      if (response.data.racks.length && selectedRackId === null) {
-        setSelectedRackId(response.data.racks[0].id);
+      const response = await canonApi.listRigs({ limit: 50 });
+      const rows = response.data.rigs.map(rigSummaryToRack);
+      setRacks(rows);
+      if (rows.length && selectedRackId === null) {
+        setSelectedRackId(rows[0].id);
+      } else if (selectedRackId !== null) {
+        void loadRackDetail(selectedRackId);
       }
     } catch {
       setRacks([]);
       setError("Unable to load rigs. Please try again.");
     } finally {
       setListLoading(false);
+    }
+  };
+
+  const loadRackDetail = async (rackId: number) => {
+    // Only the latest request may update state, so a slow earlier response
+    // cannot replace the detail of the rig selected after it.
+    const request = ++detailRequest.current;
+    try {
+      const response = await canonApi.getRig(rackId);
+      if (request !== detailRequest.current) return;
+      setRackDetail(rigDetailToRack(response.data));
+    } catch {
+      if (request !== detailRequest.current) return;
+      setRackDetail(null);
+      setError("Unable to load rig details. Please try again.");
     }
   };
 
@@ -160,6 +183,7 @@ export default function RacksPage() {
 
   useEffect(() => {
     if (selectedRackId !== null) {
+      void loadRackDetail(selectedRackId);
       void loadRuns(selectedRackId);
       void loadCompat(selectedRackId);
     } else {

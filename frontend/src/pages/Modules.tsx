@@ -5,7 +5,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { moduleApi, rackApi } from "@/lib/api";
+import { canonApi, moduleApi } from "@/lib/api";
+import { rigSummaryToRack } from "@/lib/canonRigAdapter";
 import type { CatalogModule, CatalogModuleStats, Rack } from "@/types/api";
 
 type LoadState = "loading" | "ready" | "empty" | "error";
@@ -268,8 +269,9 @@ export default function ModulesPage() {
     try {
       const prep = await materializeRow(row);
       if (!prep) return;
-      const racksRes = await rackApi.list({ limit: 50 });
-      const rows = racksRes.data.racks ?? [];
+      // Spec 008 F5: picker reads the canonical inventory list (rig_id = rack id).
+      const rigsRes = await canonApi.listRigs({ limit: 50 });
+      const rows = (rigsRes.data.rigs ?? []).map(rigSummaryToRack);
       setExistingRacks(rows);
       setPickRackId(rows[0]?.id ?? null);
       setPickerOpen(true);

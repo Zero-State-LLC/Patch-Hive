@@ -1,26 +1,35 @@
 #!/usr/bin/env python3
-"""API walkthrough: Design Engine preview + inline-fulfilled export on staging.
+"""API walkthrough: Design Engine preview + debit + fulfillment + download pack.
+
+Spec 008 T030/T040. Seeds the golden demo, verifies the seeded credentials
+(read-only, no password patching), collects F5 alias/FE cutover evidence, runs
+the walkthrough with the seeded accounts, and writes a SHA-sealed receipt.
 
 Prerequisites:
-  - Compose stack with design-engine overlay (flags on)
+  - Compose stack with design-engine overlay (flags on, test payments)
   - Host Python with backend deps (backend/.venv-acceptance is fine)
 
 Usage (repo root):
-  set DATABASE_URL=postgresql://patchhive:…@localhost:5433/patchhive
+  set DATABASE_URL=postgresql://patchhive:...@localhost:5433/patchhive
   set STAGING_API_URL=http://localhost:18000
   set PYTHONPATH=backend
-  python scripts/staging/design_engine_walkthrough.py
+  python scripts/staging/design_engine_walkthrough.py --receipt-out walkthrough-receipt.json
+
+The receipt holds hashes, flags, and step outcomes only. It never contains
+passwords, tokens, database URLs, or pack bytes.
 """
 from __future__ import annotations
 
+import argparse
 import importlib.util
 import json
 import os
+import subprocess
 import sys
-import uuid
 from pathlib import Path
 
 import httpx
+import yaml
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -32,24 +41,73 @@ if str(BACKEND) not in sys.path:
 # Register SQLAlchemy relationships used by User / ledger / exports (same as main.py).
 from account.models import CreditLedgerEntry, ExportRecord  # noqa: E402, F401
 from canon.models import CanonicalCreditLedgerEntryRecord, CanonicalExportRecord  # noqa: E402, F401
-from community.models import User  # noqa: E402
-from core.security import get_password_hash  # noqa: E402
+from core.ops.design_walkthrough import (  # noqa: E402
+    collect_live_alias_evidence,
+    execute_walkthrough,
+)
+from core.ops.f5_cutover import (  # noqa: E402
+    CutoverError,
+    DesignEngineFlags,
+    SeedAccount,
+    capture_walkthrough_receipt,
+    check_seed_auth,
+    collect_fe_cutover_evidence,
+    route_table,
+    start_walkthrough,
+)
 from monetization.models import CreditsLedger  # noqa: E402, F401
 from runs.bridge import ensure_legacy_run_export_bridge  # noqa: E402
 from runs.models import Run  # noqa: E402
+
+DESIGN_OVERLAY = REPO_ROOT / "docker-compose.staging.design-engine.yml"
+FE_PAGES_DIR = REPO_ROOT / "frontend" / "src" / "pages"
 
 
 def _load_seed_module():
     path = REPO_ROOT / "scripts" / "seed_golden_demo.py"
     spec = importlib.util.spec_from_file_location("seed_golden_demo", path)
-    assert spec and spec.loader
+    if spec is None or spec.loader is None:
+        raise RuntimeError("seed_golden_demo.py not loadable")
     mod = importlib.util.module_from_spec(spec)
     sys.modules["seed_golden_demo"] = mod
     spec.loader.exec_module(mod)
     return mod
 
 
+def _overlay_flags(environment: str) -> DesignEngineFlags:
+    """Flags the staging backend runs with, read from the design-engine overlay."""
+    env = yaml.safe_load(DESIGN_OVERLAY.read_text(encoding="utf-8"))["services"]["backend"]["environment"]
+
+    def flag(name: str, default: bool) -> bool:
+        return str(env.get(name, str(default))).strip().lower() == "true"
+
+    return DesignEngineFlags(
+        environment=environment,
+        enable_patchbook_design_engine=flag("ENABLE_PATCHBOOK_DESIGN_ENGINE", False),
+        enable_canon_export_fulfillment=flag("ENABLE_CANON_EXPORT_FULFILLMENT", False),
+        enable_inline_export_fulfillment=flag("ENABLE_INLINE_EXPORT_FULFILLMENT", False),
+        enable_patchbook_publication_profile=flag("ENABLE_PATCHBOOK_PUBLICATION_PROFILE", False),
+        stripe_test_mode=flag("STRIPE_TEST_MODE", False),
+        allow_production_payments=flag("ALLOW_PRODUCTION_PAYMENTS", True),
+    )
+
+
+def _source_sha() -> str:
+    pinned = os.environ.get("WALKTHROUGH_SOURCE_SHA", "").strip()
+    if pinned:
+        return pinned
+    out = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, capture_output=True, text=True, check=False
+    )
+    return out.stdout.strip()
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--receipt-out", default="design-walkthrough-receipt.json")
+    parser.add_argument("--environment", default="staging")
+    args = parser.parse_args()
+
     api = os.environ.get("STAGING_API_URL", "http://localhost:18000").rstrip("/")
     db_url = os.environ.get(
         "DATABASE_URL",
@@ -59,159 +117,90 @@ def main() -> int:
     print(f"DATABASE_URL host={db_url.split('@')[-1]}")
 
     engine = create_engine(db_url)
-    SessionLocal = sessionmaker(bind=engine)
-    db = SessionLocal()
+    db = sessionmaker(bind=engine)()
     seed_mod = _load_seed_module()
 
     print("=== Seed golden demo ===")
     seed = seed_mod.seed_golden_demo(db)
-    print(f"  user={seed.username} run_id={seed.run_id} patches={seed.patch_count}")
+    user = SeedAccount(seed.username, seed.password, seed_mod.DEMO_USER_ROLE)
+    admin = SeedAccount(seed.admin_username, seed.admin_password, seed_mod.DEMO_ADMIN_ROLE)
+    print(f"  user={seed.username} admin={seed.admin_username} run_id={seed.run_id}")
 
-    admin = db.query(User).filter(User.username == "admin_demo").first()
-    if admin is None:
-        admin = User(
-            username="admin_demo",
-            email="admin_demo@example.com",
-            password_hash=get_password_hash("admin-pass"),
-            display_name="admin_demo",
-            role="Admin",
-            referral_code="admin_demo-ref",
-        )
-        db.add(admin)
-    else:
-        admin.role = "Admin"
-        admin.password_hash = get_password_hash("admin-pass")
-    db.commit()
-    print("  admin ready (admin_demo / admin-pass)")
+    print("=== Seed auth alignment (read-only) ===")
+    seed_auth = check_seed_auth(db, (user, admin))
+    print(f"  aligned={seed_auth.aligned}")
+    if not seed_auth.aligned:
+        print("FAIL seed auth not aligned; re-run scripts/staging/seed-demo.* (no manual patching)")
+        return 1
 
     run = db.get(Run, seed.run_id)
-    assert run is not None
+    if run is None:
+        print("FAIL seeded run missing")
+        return 1
     bridge = ensure_legacy_run_export_bridge(db, run)
     db.commit()
     sources = bridge.as_export_body_fields()
-    print(f"  bridge ready={bridge.export_bridge_ready}")
     db.close()
 
     client = httpx.Client(base_url=api, timeout=90.0)
 
-    def login(username: str, password: str) -> str:
-        r = client.post(
-            "/api/community/auth/login",
-            json={"username": username, "password": password},
-        )
-        r.raise_for_status()
-        return r.json()["access_token"]
+    print("=== F5 alias evidence ===")
+    alias = collect_live_alias_evidence(client)
+    print(f"  same_set={alias.same_set} new_write_surface={list(alias.new_write_surface)}")
 
-    print("=== Login demo user ===")
-    token = login(seed.username, seed.password)
-    headers = {"Authorization": f"Bearer {token}"}
-
-    print("=== POST /api/canon/exports/preview (free) ===")
-    preview_body = {
-        "source_run_id": sources["source_run_id"],
-        "source_rig_revision_id": sources["source_rig_revision_id"],
-        "artifact_manifest_hash": sources["artifact_manifest_hash"],
-        "max_pages": 3,
+    print("=== FE cutover evidence (generate dual-write audit) ===")
+    gen = client.post(f"/api/patches/generate/{seed.rig_id}", json={})
+    routes = route_table(client.get("/openapi.json").json())
+    # Scan every active page (frontend/src/legacy is not routed); the guard also
+    # requires the known list pages to be on the canon alias.
+    fe_sources = {
+        path.relative_to(REPO_ROOT).as_posix(): path.read_text(encoding="utf-8")
+        for path in sorted(FE_PAGES_DIR.rglob("*.ts*"))
     }
-    prev = client.post("/api/canon/exports/preview", headers=headers, json=preview_body)
-    if prev.status_code != 200:
-        print(f"FAIL preview {prev.status_code}: {prev.text}")
-        return 1
-    prev_data = prev.json()
-    if not prev_data.get("style_recipe_hash"):
-        print(f"FAIL preview missing style_recipe_hash: {prev_data}")
-        return 1
-    print(
-        f"  style_recipe_hash={str(prev_data['style_recipe_hash'])[:16]}… "
-        f"pages={len(prev_data.get('page_summaries') or [])} "
-        f"load_path={prev_data.get('load_path')}"
+    fe = collect_fe_cutover_evidence(
+        alias,
+        routes,
+        fe_sources=fe_sources,
+        generate_response=gen.json() if gen.status_code == 200 else {},
     )
+    print(f"  dual_write_passed={fe.dual_write.passed} legacy_list_callers={list(fe.legacy_list_callers)}")
 
-    print("=== POST /api/canon/style-recipes ===")
-    recipe_name = f"staging-walkthrough-{uuid.uuid4().hex[:8]}"
-    cr = client.post(
-        "/api/canon/style-recipes",
-        headers=headers,
-        json={"name": recipe_name, "notes": "design engine staging", "style_recipe": {}},
+    try:
+        start = start_walkthrough(fe, _overlay_flags(args.environment))
+    except CutoverError as exc:
+        print(f"FAIL {exc.code}")
+        return 1
+
+    print("=== Walkthrough: preview -> debit -> fulfillment -> download pack ===")
+    health, outcome = execute_walkthrough(
+        client, user=user, admin=admin, user_id=seed.user_id, sources=sources
     )
-    style_recipe_id = None
-    if cr.status_code in (200, 201):
-        style_recipe_id = cr.json()["id"]
-        print(f"  recipe_id={style_recipe_id}")
-    else:
-        print(f"  WARN style-recipes {cr.status_code}: {cr.text[:200]}")
+    for step in outcome.steps:
+        print(f"  {step.name}: {'PASS' if step.passed else 'FAIL'} ({step.http_status})")
 
-    print("=== Admin grant credits ===")
-    admin_token = login("admin_demo", "admin-pass")
-    grant = client.post(
-        f"/api/admin/users/{seed.user_id}/credits/grant",
-        headers={"Authorization": f"Bearer {admin_token}"},
-        json={"credits": 10, "reason": "design-engine-staging-walkthrough"},
-    )
-    if grant.status_code not in (200, 201):
-        print(f"FAIL grant {grant.status_code}: {grant.text}")
-        return 1
-    print(f"  grant={grant.json().get('status')}")
-
-    print("=== POST /api/canon/exports (debit + inline fulfill) ===")
-    export_body = {
-        "source_run_id": sources["source_run_id"],
-        "source_rig_revision_id": sources["source_rig_revision_id"],
-        "artifact_manifest_hash": sources["artifact_manifest_hash"],
-        "formats": ["pdf", "json"],
-        "license": "personal",
-        "idempotency_key": f"design-walk-{uuid.uuid4().hex}",
-    }
-    if style_recipe_id:
-        export_body["style_recipe_id"] = style_recipe_id
-    else:
-        export_body["style_recipe"] = {}
-
-    ex = client.post("/api/canon/exports", headers=headers, json=export_body)
-    print(f"  export HTTP {ex.status_code}: {ex.text[:800]}")
-    if ex.status_code not in (200, 201):
-        print(f"FAIL export {ex.status_code}: {ex.text}")
-        return 1
-    export = ex.json()
-    # Response may nest under "export" or use export_id
-    if "id" not in export and isinstance(export.get("export"), dict):
-        export = export["export"]
-    export_id = export.get("id") or export.get("export_id")
-    if not export_id:
-        print(f"FAIL export response missing id: {export}")
-        return 1
-    status = export.get("status")
-    print(f"  export_id={export_id} status={status}")
-    if status != "succeeded":
-        g = client.get(f"/api/canon/exports/{export_id}", headers=headers)
-        print(f"  get export HTTP {g.status_code}: {g.text[:500]}")
-        g.raise_for_status()
-        export = g.json()
-        if "id" not in export and isinstance(export.get("export"), dict):
-            export = export["export"]
-        status = export.get("status")
-        print(f"  polled status={status}")
-    if status != "succeeded":
-        print(f"FAIL expected status=succeeded got {status}")
-        print(json.dumps(export, indent=2)[:1000])
-        return 1
-
-    print("=== Pack files in container ===")
-    # Best-effort: caller can check via compose exec
-    print(f"  export_id for pack dir: {export_id}")
-    print("WALKTHROUGH PASS")
-    print(
-        json.dumps(
-            {
-                "export_id": export_id,
-                "status": status,
-                "style_recipe_id": style_recipe_id,
-                "pack_manifest_hash": export.get("pack_manifest_hash"),
-                "composition_hash": export.get("composition_hash"),
-            },
-            indent=2,
+    try:
+        receipt = capture_walkthrough_receipt(
+            start=start,
+            seed_auth=seed_auth,
+            health=health,
+            outcome=outcome,
+            source_commit_sha=_source_sha(),
         )
-    )
+    except CutoverError as exc:
+        print(f"FAIL {exc.code}")
+        return 1
+
+    bundle = {
+        "alias_evidence": alias.model_dump(mode="json"),
+        "fe_cutover": fe.model_dump(mode="json"),
+        "walkthrough_start": start.model_dump(mode="json"),
+        "seed_auth": seed_auth.model_dump(mode="json"),
+        "receipt": receipt.model_dump(mode="json"),
+    }
+    Path(args.receipt_out).write_text(json.dumps(bundle, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(f"WALKTHROUGH PASS receipt_sha256={receipt.record_sha256}")
+    print(f"  source_commit_sha={receipt.source_commit_sha}")
+    print(f"  written to {args.receipt_out}")
     return 0
 
 
