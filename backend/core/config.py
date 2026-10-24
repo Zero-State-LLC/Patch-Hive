@@ -63,6 +63,16 @@ class Settings(BaseSettings):
     decision_auto_propose_at: float = 0.90
     decision_user_review_at: float = 0.65
     decision_probability_margin: float = 0.10
+    # Spec 006 Clef (Cloudflare Workers AI) adapter. Feature flag DEFAULT OFF and fail-closed:
+    # selecting decision_provider="clef" with the flag off makes every call return
+    # CLEF_DISABLED without any network call. Credentials come from env only.
+    enable_clef_provider: bool = False
+    clef_model: str = "clef"
+    cloudflare_account_id: str = ""
+    cloudflare_ai_api_token: str = ""
+    clef_base_url: str = "https://api.cloudflare.com/client/v4"
+    clef_timeout_seconds: float = 10.0
+    decision_policy_version: str = "decision-policy-v1"
 
     # Patch Engine
     patch_engine_version: str = "1.0.0"
@@ -109,8 +119,16 @@ class Settings(BaseSettings):
     @classmethod
     def _validate_decision_provider(cls, value: str) -> str:
         normalized = value.strip().lower()
-        if normalized not in {"disabled", "jev"}:
-            raise ValueError("decision_provider must be 'disabled' or 'jev'")
+        if normalized not in {"disabled", "jev", "clef"}:
+            raise ValueError("decision_provider must be 'disabled', 'jev', or 'clef'")
+        return normalized
+
+    @field_validator("clef_model")
+    @classmethod
+    def _validate_clef_model(cls, value: str) -> str:
+        normalized = value.strip().lower()
+        if normalized not in {"clef", "clef-flash"}:
+            raise ValueError("clef_model must be 'clef' or 'clef-flash'")
         return normalized
 
     @field_validator("cors_origins", mode="before")
