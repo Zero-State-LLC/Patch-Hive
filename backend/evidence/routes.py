@@ -716,7 +716,33 @@ def _configured_decision_provider():
             base_url=settings.jev_base_url,
             model=settings.jev_model,
         )
+    if settings.decision_provider == "clef":
+        from intelligence.clef_provider import ClefDecisionProvider
+
+        # Fail-closed: with enable_clef_provider off the adapter is inert and every
+        # call returns CLEF_DISABLED without a network call.
+        return ClefDecisionProvider(
+            enabled=settings.enable_clef_provider,
+            account_id=settings.cloudflare_account_id,
+            api_token=settings.cloudflare_ai_api_token,
+            model=settings.clef_model,
+            base_url=settings.clef_base_url,
+            timeout_seconds=settings.clef_timeout_seconds,
+        )
     raise RuntimeError("DECISION_PROVIDER_NOT_CONFIGURED")
+
+
+_GUARDED_FAILURE_STATUS = {
+    "CLEF_DISABLED": 409,
+    "CLEF_INVALID_REQUEST": 422,
+    "PACKET_SCHEMA_INVALID": 502,
+}
+
+
+def _guarded_failure_status(code: str) -> int:
+    if code in _GUARDED_FAILURE_STATUS:
+        return _GUARDED_FAILURE_STATUS[code]
+    return 504 if "TIMEOUT" in code or "TIMED_OUT" in code else 502
 
 
 @router.post(
@@ -751,6 +777,9 @@ def resolve_rack_evidence_decision(
     if not settings.enable_decision_intelligence:
         raise HTTPException(status_code=409, detail="DECISION_INTELLIGENCE_DISABLED")
 
+    if settings.decision_provider == "clef":
+        return _resolve_with_guarded_flow(db, body)
+
     try:
         provider = _configured_decision_provider()
         thresholds = PolicyThresholds(
@@ -776,6 +805,60 @@ def resolve_rack_evidence_decision(
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     db.commit()
+    return DecisionResolutionResponse(
+        evidence_id=body.evidence_id,
+        selected_choice=proposal.packet.selected_choice,
+        disposition=proposal.policy.disposition.value,
+        provider=proposal.packet.provider,
+        confidence=proposal.packet.confidence,
+        canonical_authority=False,
+    )
+
+
+def _resolve_with_guarded_flow(
+    db: Session, body: DecisionResolutionRequest
+) -> DecisionResolutionResponse:
+    """Spec 006 path: Clef behind the T010 resolution machine and Spec 005 policy.
+
+    Disposition stays owned by DecisionPolicy; the response is advisory only and
+    canonical inventory is never touched. Provider failures fail closed (REJECT)
+    and persist no receipt.
+    """
+    from intelligence.clef_resolution import resolve_module_identity_guarded
+    from intelligence.evidence_resolution import (
+        DecisionIntelligenceDisabled,
+        EvidenceResolutionError,
+    )
+    from intelligence.policy import DecisionPolicy, PolicyThresholds
+
+    try:
+        provider = _configured_decision_provider()
+        thresholds = PolicyThresholds(
+            policy_version=settings.decision_policy_version,
+            auto_propose_at=settings.decision_auto_propose_at,
+            user_review_at=settings.decision_user_review_at,
+            probability_margin=settings.decision_probability_margin,
+        )
+        resolution = resolve_module_identity_guarded(
+            db,
+            evidence_id=body.evidence_id,
+            provider=provider,
+            policy=DecisionPolicy(thresholds),
+            enabled=True,
+            idempotency_key=body.idempotency_key,
+            expected_policy_version=settings.decision_policy_version,
+        )
+    except DecisionIntelligenceDisabled as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except (EvidenceResolutionError, RuntimeError, ValueError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    if resolution.proposal is None:
+        code = resolution.error_code or "PROVIDER_ERROR"
+        raise HTTPException(status_code=_guarded_failure_status(code), detail=code)
+
+    db.commit()
+    proposal = resolution.proposal
     return DecisionResolutionResponse(
         evidence_id=body.evidence_id,
         selected_choice=proposal.packet.selected_choice,
