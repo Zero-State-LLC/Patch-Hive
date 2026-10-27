@@ -106,7 +106,8 @@ def main(seed_path: str = "/app/data/synth-catalog/seed-phase2-v1.json"):
                 is_available=m.get("is_available", "available"),
                 source=m.get("source", "SynthCatalogResearch"),
                 manufacturer_url=m.get("manufacturer_url"),
-                
+                access_basis=m.get("access_basis"),
+                evidence_status=m.get("evidence_status"),
                 registry_manufacturer_slug=reg_man_slug,
                 registry_device_slug=reg_dev_slug,
             )

@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-"""HP enrichment via Firecrawl scrape of official/retailer product pages.
+"""HP enrichment from official manufacturer product pages and manuals.
 
-Hermes research pipeline (batch mode). Never invents HP. Prefer OBSERVED
-official manufacturer pages, then Perfect Circuit / Thomann.
+Hermes research pipeline (batch mode). Never invents HP. Spec 003 D2 (2026-10-27): automated
+fetching targets official manufacturer pages and manuals only (access_basis =
+official_publication). Retailer values come only from one-off manual lookups, and ModularGrid is
+never fetched. Fetches go through the in-repo CatalogScraper: direct first (robots.txt honoured),
+then context.dev, then Firecrawl, behind PATCHHIVE_MAX_PAID_FETCHES. Firecrawl's managed proxy
+tier is PATCHHIVE_FIRECRAWL_PROXY (basic | stealth | auto, default auto).
 """
 
 from __future__ import annotations
@@ -17,9 +21,9 @@ from typing import Any
 
 SOURCE_AUTHORITY_BY_CLASS = {
     "official": "MANUFACTURER_PRIMARY",
-    "retailer": "RETAILER_DISTRIBUTOR",
-    "modulargrid": "COMMUNITY_CATALOG",
 }
+# Only official manufacturer pages and manuals are fetched (spec 003 D2, FR-004).
+ALLOWED_SOURCE_CLASSES = frozenset(SOURCE_AUTHORITY_BY_CLASS)
 
 HP_PATTERNS = [
     re.compile(r"\b(\d{1,2})\s*[Hh][Pp]\b"),
@@ -75,10 +79,10 @@ def slugify(name: str) -> str:
 
 
 def candidate_urls(brand: str, name: str) -> list[tuple[str, str]]:
-    """Return (url, provenance_class) candidates. provenance_class: official|retailer.
+    """Return (url, provenance_class) candidates; provenance_class is always "official".
 
-    Never use search-result pages (they mis-extract HP). Prefer official product pages,
-    then Perfect Circuit / Thomann product detail URL patterns only.
+    Never use search-result pages (they mis-extract HP). Official manufacturer product
+    pages and manuals only (spec 003 D2); no retailer or community-catalog URLs.
     """
     n = slugify(name)
     urls: list[tuple[str, str]] = []
@@ -178,40 +182,6 @@ def candidate_urls(brand: str, name: str) -> list[tuple[str, str]]:
         urls.append((f"https://cwejman.net/{n}/", "official"))
         urls.append((f"https://www.cwejman.com/{n}", "official"))
 
-    # Perfect Circuit product detail patterns only (no catalogsearch)
-    brand_slug = slugify(brand)
-    # common PC patterns
-    urls.append((f"https://www.perfectcircuit.com/{brand_slug}-{n}.html", "retailer"))
-    urls.append((f"https://www.perfectcircuit.com/{n}.html", "retailer"))
-    if brand == "Make Noise":
-        urls.append((f"https://www.perfectcircuit.com/make-noise-{n}.html", "retailer"))
-    if brand == "Intellijel":
-        urls.append((f"https://www.perfectcircuit.com/intellijel-{n}.html", "retailer"))
-    if brand == "Erica Synths":
-        urls.append((f"https://www.perfectcircuit.com/erica-synths-{n}.html", "retailer"))
-    if brand == "Doepfer":
-        urls.append((f"https://www.perfectcircuit.com/doepfer-{n}.html", "retailer"))
-    if brand == "Bastl Instruments":
-        urls.append((f"https://www.perfectcircuit.com/bastl-{n}.html", "retailer"))
-    if brand == "Befaco":
-        urls.append((f"https://www.perfectcircuit.com/befaco-{n}.html", "retailer"))
-    if brand == "ADDAC System":
-        m = re.search(r"addac\s*(\d+)", name, re.I)
-        if m:
-            urls.append(
-                (f"https://www.perfectcircuit.com/addac-system-addac{m.group(1)}.html", "retailer")
-            )
-    if brand == "Expert Sleepers":
-        urls.append((f"https://www.perfectcircuit.com/expert-sleepers-{n}.html", "retailer"))
-    if brand == "Endorphin.es":
-        urls.append((f"https://www.perfectcircuit.com/endorphin-es-{n}.html", "retailer"))
-    if brand == "Dreadbox":
-        urls.append((f"https://www.perfectcircuit.com/dreadbox-{n}.html", "retailer"))
-    if brand == "Acid Rain Technology":
-        urls.append((f"https://www.perfectcircuit.com/acid-rain-{n}.html", "retailer"))
-    if brand == "Instruo":
-        urls.append((f"https://www.perfectcircuit.com/instruo-{n}.html", "retailer"))
-
     # de-dupe preserve order
     seen: set[str] = set()
     out: list[tuple[str, str]] = []
@@ -229,8 +199,9 @@ def process_one(target: dict, sleep_s: float) -> dict:
     slug = target["slug"]
     print(f"→ {brand} / {name}", flush=True)
 
-    # Cap attempts so long batches finish (official first, then retailer product pages)
-    for url, kind in candidate_urls(brand, name)[:6]:
+    # Cap attempts so long batches finish. Only official classes are ever fetched.
+    candidates = [(u, k) for u, k in candidate_urls(brand, name) if k in ALLOWED_SOURCE_CLASSES]
+    for url, kind in candidates[:6]:
         md = scrape_markdown(url)
         time.sleep(sleep_s)
         if not md or len(md) < 80:
@@ -239,12 +210,8 @@ def process_one(target: dict, sleep_s: float) -> dict:
         if "catalogsearch" in url or "search_dir.html" in url or "/search?" in url:
             continue
         # Product pages should mention the module (or brand for single-product pages)
-        token = re.sub(r"[^a-z0-9]+", "", name.lower())[:8]
-        md_norm = re.sub(r"[^a-z0-9]+", "", md.lower())
-        if token and token not in md_norm and slugify(name).replace("-", "")[:8] not in md_norm:
-            # still allow short official pages that use different spelling
-            if kind == "retailer":
-                continue
+        # Official pages may spell the module differently (e.g. Doepfer "a110.htm"), so a
+        # missing name token does not reject them.
         hp = extract_hp(md)
         if hp is None:
             continue
@@ -262,6 +229,7 @@ def process_one(target: dict, sleep_s: float) -> dict:
             "epistemic_status": "OBSERVED",
             "source_authority": SOURCE_AUTHORITY_BY_CLASS.get(kind, "UNKNOWN_SOURCE_AUTHORITY"),
             "admission_status": "EVIDENCE_ONLY",
+            "access_basis": "official_publication",
             "rights_status": "RIGHTS_UNKNOWN",
             "status": "found",
             "notes": f"source_class={kind}",
@@ -279,7 +247,8 @@ def process_one(target: dict, sleep_s: float) -> dict:
         "admission_status": "EVIDENCE_ONLY",
         "rights_status": "RIGHTS_UNKNOWN",
         "status": "not_found",
-        "notes": "no HP on candidate official/retailer URLs",
+        "access_basis": None,
+        "notes": "no HP on candidate official manufacturer URLs",
     }
 
 

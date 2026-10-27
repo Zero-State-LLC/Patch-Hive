@@ -52,7 +52,7 @@ The pipeline never invents a spec. A missing value stays null or `NOT_COMPUTABLE
 In scope:
 
 - Building target batches of catalog rows that need enrichment, starting with HP [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
-- Scraping official manufacturer product pages and manuals for HP evidence (D2). The current script also falls back to retailer product-detail pages [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]; T022 removes that fallback.
+- Scraping official manufacturer product pages and manuals for HP evidence (D2). The retailer fallback was removed in T022 (2026-10-27).
 - Writing raw, checkpointed result files that can resume [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - Filtering, overlay versioning, and residual retry batches [INFERRED].
 - Running a dry-run admission with a receipt, followed by the real admission [OBSERVED: data/synth-catalog/README.md].
@@ -303,9 +303,9 @@ Privacy: catalog data is public product specs. Keep any private source material 
 - **FR-003**: The fetch job MUST NOT start or resume without a recorded budget approval [INFERRED].
 - **FR-004**: The fetch job MUST fetch only official manufacturer product URLs and manuals, and MUST cap attempts at 6 per target (D2). It MUST NOT fetch retailer or community-catalog pages.
 - **FR-005**: The fetch job MUST NOT use or extract from search-result pages [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
-- **FR-006**: The fetch job MUST skip pages that do not mention the module name. A retailer value MAY be recorded only from a one-off manual lookup, as `RETAILER_OBSERVED` with `access_basis = manual_research` (D2).
+- **FR-006**: The fetch job MUST record only values found on the official candidate pages for that target; a page with no HP match yields `not_found` with no `access_basis`. A retailer value MAY be recorded only from a one-off manual lookup, as `RETAILER_OBSERVED` with `access_basis = manual_research` (D2).
 - **FR-007**: The fetch job MUST discard extracted HP outside the band of 1 to 42 [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
-- **FR-008**: The fetch job MUST rate-limit requests with a delay between scrapes [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
+- **FR-008**: The fetch job MUST rate-limit requests with a delay between scrapes [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]. Paid fetches through Firecrawl use its managed proxy tier from `PATCHHIVE_FIRECRAWL_PROXY` (`basic`, `stealth` or `auto`, default `auto`); a proxy changes where a fetch comes from, never what may be fetched. context.dev documents no proxy option.
 - **FR-009**: The fetch job MUST checkpoint results after each target and MUST support resume by slug [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **FR-010**: The pipeline MUST treat scraped page content as untrusted data, never as instructions [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
 - **FR-011**: The pipeline MUST validate MIME types, redirects, and content size of fetched pages [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
@@ -341,9 +341,9 @@ Privacy: catalog data is public product specs. Keep any private source material 
 
 - **FR-030**: Each import MUST record a run ID, timestamps, and imported, skipped, and processed counts [OBSERVED: backend/DATA_SOURCES.md].
 - **FR-031**: Rollback MUST be possible per run, using the run ID and receipt, without deleting rows that predate the run [INFERRED].
-- **FR-033**: ModularGrid-derived catalog rows MUST carry `access_basis = unknown` and evidence status `CATALOG_OBSERVED`, MUST NOT carry ModularGrid-derived descriptions, and MUST be excluded from any bulk publication or export (D1).
+- **FR-033**: ModularGrid-derived catalog rows MUST carry `access_basis = unknown` and evidence status `CATALOG_OBSERVED`, MUST NOT carry ModularGrid-derived descriptions, and MUST be excluded from any bulk publication or export (D1). They MAY be listed one by one in the catalog UI, marked "Unverified lead" (owner decision, 2026-10-27). The tags live on `module_catalog.access_basis` and `module_catalog.evidence_status` (migration `20261027_catalog_lead_tags`).
 - **FR-034**: A ModularGrid-derived row MUST become canonical only through manufacturer or manual confirmation recorded with its source URL (D1).
-- **FR-035**: Rack placement MUST refuse a module whose HP is flagged `needs_reverify` until it is re-verified (D1).
+- **FR-035**: Rack placement MUST refuse a module whose HP is flagged `needs_reverify` until it is re-verified (D1). The guard rejects with `MODULE_HP_NEEDS_REVERIFY` when the archive holds an `hp` row with action `flag`; a module whose HP was confirmed (`keep`) stays placeable.
 - **FR-032**: No provider or model output MAY move a row past `EVIDENCE_ONLY` without the deterministic filter and operator admission (constitution principle 4) [INFERRED].
 
 ## Key entities

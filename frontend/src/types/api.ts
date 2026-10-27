@@ -54,6 +54,10 @@ export interface CatalogModule {
   is_available?: string | null;
   /** Admit pipeline, e.g. SynthCatalogResearch */
   source?: string | null;
+  /** External-source policy: "unknown" for ModularGrid-derived discovery leads */
+  access_basis?: string | null;
+  /** CATALOG_OBSERVED marks an unverified lead (spec 003 D1) */
+  evidence_status?: string | null;
   created_at?: string;
   updated_at?: string;
   /** Registry wiring */

@@ -100,6 +100,9 @@ def import_catalog(
             image_url=row.get("image_url"),
             is_available=row.get("is_available") or "available",
             source=(row.get("source") or SOURCE_NAME),
+            # ModularGrid-derived seed rows carry their lead tags (spec 003 D1).
+            access_basis=row.get("access_basis"),
+            evidence_status=row.get("evidence_status"),
         )
         db.add(entry)
         imported += 1

@@ -38,6 +38,10 @@ CONTEXT_SCRAPE_URL = "https://api.context.dev/v1/web/scrape"
 CONTEXT_SEARCH_URL = "https://api.context.dev/v1/web/search"
 FIRECRAWL_SCRAPE_URL = "https://api.firecrawl.dev/v1/scrape"
 FIRECRAWL_SEARCH_URL = "https://api.firecrawl.dev/v1/search"
+# Firecrawl's managed proxy tiers (v1 scrape `proxy`). Proxies change where a paid fetch comes
+# from, never what may be fetched: robots, the deny list and the paid cap still apply first.
+# context.dev routes through its own managed network; its scrape API has no proxy field.
+FIRECRAWL_PROXY_TIERS = ("basic", "stealth", "auto")
 DDG_LITE = "https://lite.duckduckgo.com/lite/"
 
 RETRY_STATUSES = {0, 429, 500, 502, 503, 504}
@@ -275,7 +279,13 @@ class CatalogScraper:
         max_age_s: float = 86400,
         resolve_hosts: bool = True,
         max_retries: int = 3,
+        firecrawl_proxy: str | None = None,
     ) -> None:
+        tier = (firecrawl_proxy or os.environ.get("PATCHHIVE_FIRECRAWL_PROXY", "") or "auto")
+        tier = tier.strip().lower()
+        if tier not in FIRECRAWL_PROXY_TIERS:
+            raise ValueError(f"firecrawl proxy must be one of {FIRECRAWL_PROXY_TIERS}, got {tier!r}")
+        self.firecrawl_proxy = tier
         self.cache_dir = cache_dir
         self.ledger_path = ledger_path
         self.max_paid_fetches = max(0, int(max_paid_fetches))
@@ -388,7 +398,10 @@ class CatalogScraper:
             status, body, credits = caller(url, key, timeout)
             self._bump_ledger(method, credits)
             ok = status == 200 and bool(body)
-            result = self._finish(url, method, status, body, ok=ok, credits=credits, remember=ok)
+            note = f"proxy={self.firecrawl_proxy}" if method == "firecrawl" else None
+            result = self._finish(
+                url, method, status, body, ok=ok, credits=credits, note=note, remember=ok
+            )
             if ok:
                 self._write_cache(url, result, body)
                 return result
@@ -412,7 +425,12 @@ class CatalogScraper:
         return status, text.encode("utf-8"), credits
 
     def _firecrawl_fetch(self, url: str, key: str, timeout: float) -> tuple[int, bytes, float]:
-        payload = {"url": url, "formats": ["html", "markdown"], "onlyMainContent": False}
+        payload = {
+            "url": url,
+            "formats": ["html", "markdown"],
+            "onlyMainContent": False,
+            "proxy": self.firecrawl_proxy,
+        }
         status, raw = self._post_json(FIRECRAWL_SCRAPE_URL, key, payload, timeout)
         if status != 200:
             return status, b"", 0.0

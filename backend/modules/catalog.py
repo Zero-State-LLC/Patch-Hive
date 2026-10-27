@@ -61,6 +61,10 @@ class ModuleCatalog(Base):
     source = Column(String(50), nullable=True, index=True)
     # True when a ModularGrid-derived value (hp) was removed; see catalog_value_archive.
     needs_reverify = Column(Boolean, nullable=False, default=False, server_default="false")
+    # External-source policy fields. ModularGrid-derived discovery leads carry
+    # access_basis="unknown" and evidence_status="CATALOG_OBSERVED" (spec 003 D1, FR-033).
+    access_basis = Column(String(40), nullable=True, index=True)
+    evidence_status = Column(String(40), nullable=True)
 
     # Metadata
     created_at = Column(String(50), default=lambda: datetime.utcnow().isoformat())
@@ -94,6 +98,8 @@ class ModuleCatalog(Base):
             "registry_device_slug": self.registry_device_slug,
             "is_available": self.is_available,
             "source": self.source,
+            "access_basis": self.access_basis,
+            "evidence_status": self.evidence_status,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }

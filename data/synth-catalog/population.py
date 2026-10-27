@@ -654,10 +654,12 @@ def _schedule_catalog(plan: Plan, catalog: dict[str, dict[str, Any]], row: dict[
             """
             INSERT INTO module_catalog (
                 slug, brand, name, hp, category, modulargrid_url, manufacturer_url,
-                image_url, is_available, source, created_at, updated_at
+                image_url, is_available, source, access_basis, evidence_status,
+                created_at, updated_at
             )
             SELECT :slug, :brand, :name, :hp, :category, :modulargrid_url, :manufacturer_url,
-                   :image_url, :is_available, :source, :created_at, :updated_at
+                   :image_url, :is_available, :source, :access_basis, :evidence_status,
+                   :created_at, :updated_at
             WHERE NOT EXISTS (SELECT 1 FROM module_catalog WHERE slug = :slug)
             """,
             {
@@ -671,6 +673,9 @@ def _schedule_catalog(plan: Plan, catalog: dict[str, dict[str, Any]], row: dict[
                 "image_url": (row.get("image_url") or None) and str(row.get("image_url"))[:500],
                 "is_available": row.get("is_available") or "available",
                 "source": row.get("source") or "SynthCatalogResearch",
+                # Spec 003 D1: ModularGrid-derived seed rows arrive tagged as leads.
+                "access_basis": row.get("access_basis"),
+                "evidence_status": row.get("evidence_status"),
                 "created_at": _stamp(),
                 "updated_at": _stamp(),
             },

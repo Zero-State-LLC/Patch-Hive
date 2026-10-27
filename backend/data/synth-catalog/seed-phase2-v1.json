@@ -2,7 +2,7 @@
   "fixture_version": "1.0",
   "name": "Synth Catalog Research — Phase 2 major-brand module catalog seed",
   "generated_at": "2026-07-21T00:00:00Z",
-  "source_note": "ModularGrid-derived: the module identities, categories and descriptions in catalog_modules were taken from a browser scrape of ModularGrid manufacturer pages (Abraxas Phase 2), and the brand list from the ModularGrid manufacturer index. Spec values from ModularGrid were removed on 2026-10-17 and archived privately; re-verify against manufacturer pages before use. full_spec_modules are hand-curated.",
+  "source_note": "ModularGrid-derived: the module identities, categories and descriptions in catalog_modules were taken from a browser scrape of ModularGrid manufacturer pages (Abraxas Phase 2), and the brand list from the ModularGrid manufacturer index. Spec values from ModularGrid were removed on 2026-10-17 and archived privately; re-verify against manufacturer pages before use. full_spec_modules are hand-curated. Scraped module descriptions were removed on 2026-10-27; catalog rows are discovery leads only (access_basis unknown, CATALOG_OBSERVED; spec 003 D1).",
   "abraxas_skill": "skills/modular-synth-catalog-research",
   "abraxas_pr": "https://github.com/scrimshawlife-ctrl/Abraxas-v2.0/pull/984",
   "content_hashes": {
@@ -756,11 +756,12 @@
       "category": "UTIL",
       "category_raw": "Blank Panel",
       "is_available": "available",
-      "description": "Panel adapter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Acid Rain Technology",
@@ -769,11 +770,12 @@
       "category": "VCO",
       "category_raw": "Oscillator / Digital / Dual-Stereo",
       "is_available": "discontinued",
-      "description": "Digital oscillator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Acid Rain Technology",
@@ -782,11 +784,12 @@
       "category": "SEQ",
       "category_raw": "Clock Generator / Clock Modulator / Logic / Sequencer",
       "is_available": "available",
-      "description": "Complex clock/sequencer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Acid Rain Technology",
@@ -795,13 +798,14 @@
       "category": "MIX",
       "category_raw": "Attenuator / Mixer / Multiple / Polarizer / Quad",
       "is_available": "available",
-      "description": "6-channel utility",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
       "research_phase": "phase2",
       "needs_reverify": true,
-      "spec_source": "modulargrid_unverified (hp removed 2026-10-17)"
+      "spec_source": "modulargrid_unverified (hp removed 2026-10-17)",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Acid Rain Technology",
@@ -810,11 +814,12 @@
       "category": "ENV",
       "category_raw": "Clock Generator / Clock Modulator / Controller / CV Modulation / Envelope Generator / LFO / Random / Sequencer",
       "is_available": "available",
-      "description": "Multi-function clock/sequencer/modulator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Acid Rain Technology",
@@ -823,11 +828,12 @@
       "category": "MIX",
       "category_raw": "Controller / Attenuator / Mixer / Polarizer / Utility",
       "is_available": "available",
-      "description": "Controller, attenuator, mixer, polarizer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Acid Rain Technology",
@@ -836,11 +842,12 @@
       "category": "VCO",
       "category_raw": "Oscillator / Digital / Dual-Stereo",
       "is_available": "available",
-      "description": "Digital oscillator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Acid Rain Technology",
@@ -849,11 +856,12 @@
       "category": "FX",
       "category_raw": "Digital / Distortion / Dual-Stereo / Effect / Equalizer / Waveshaper",
       "is_available": "available",
-      "description": "Waveshaper/distortion",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Acid Rain Technology",
@@ -862,11 +870,12 @@
       "category": "MIX",
       "category_raw": "Switch / Mixer / Utility",
       "is_available": "discontinued",
-      "description": "CV modulation, mixer, switch, utility",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Acid Rain Technology",
@@ -875,11 +884,12 @@
       "category": "VCA",
       "category_raw": "Attenuator / Dual-Stereo / Mixer / Multiple / VCA",
       "is_available": "available",
-      "description": "Utility/VCA/mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Acid Rain Technology",
@@ -888,11 +898,12 @@
       "category": "SEQ",
       "category_raw": "CV Modulation / Digital / Quad / Quantizer / Sample and Hold / Sequencer / Utility",
       "is_available": "available",
-      "description": "Complex quantizer/sequencer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -901,11 +912,12 @@
       "category": "SEQ",
       "category_raw": "Clock Generator / Clock Modulator / Controller / CV Modulation / Sequencer / Utility",
       "is_available": "discontinued",
-      "description": "Computer module",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -914,11 +926,12 @@
       "category": "UTIL",
       "category_raw": "Controller / CV Modulation / Utility",
       "is_available": "discontinued",
-      "description": "Manual inputs for VCC",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -927,11 +940,12 @@
       "category": "UTIL",
       "category_raw": "CV Modulation / Controller / Utility",
       "is_available": "discontinued",
-      "description": "Gate outputs for VCC",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -940,11 +954,12 @@
       "category": "SAMP",
       "category_raw": "Sampling",
       "is_available": "available",
-      "description": "WAV file player",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -953,11 +968,12 @@
       "category": "UTIL",
       "category_raw": "Noise / External",
       "is_available": "available",
-      "description": "FM radio receiver",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -966,11 +982,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "Passive multiples",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -979,11 +996,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -992,11 +1010,12 @@
       "category": "UTIL",
       "category_raw": "Utility",
       "is_available": "available",
-      "description": "Compact utility",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1005,11 +1024,12 @@
       "category": "UTIL",
       "category_raw": "Attenuator / CV Modulation / Dual-Stereo",
       "is_available": "available",
-      "description": "CV mapping, attenuator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1018,11 +1038,12 @@
       "category": "UTIL",
       "category_raw": "Attenuator",
       "is_available": "available",
-      "description": "VC CV mapping",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1031,11 +1052,12 @@
       "category": "UTIL",
       "category_raw": "Utility / Dual/Stereo",
       "is_available": "available",
-      "description": "Dual oscilloscope + AWG",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1044,11 +1066,12 @@
       "category": "SEQ",
       "category_raw": "Quantizer / Quad",
       "is_available": "available",
-      "description": "Intuitive Quantizer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1057,11 +1080,12 @@
       "category": "SEQ",
       "category_raw": "Quantizer / Quad",
       "is_available": "available",
-      "description": "Black panel version",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1070,11 +1094,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1083,11 +1108,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1096,11 +1122,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1109,11 +1136,12 @@
       "category": "UTIL",
       "category_raw": "Controller",
       "is_available": "discontinued",
-      "description": "Chunk control",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1122,11 +1150,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1135,11 +1164,12 @@
       "category": "UTIL",
       "category_raw": "Random",
       "is_available": "available",
-      "description": "Complex random source",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1148,11 +1178,12 @@
       "category": "UTIL",
       "category_raw": "Expander",
       "is_available": "available",
-      "description": "Expansion for ADDAC501",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1161,11 +1192,12 @@
       "category": "LFO",
       "category_raw": "LFO",
       "is_available": "discontinued",
-      "description": "Lissajous LFO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1174,11 +1206,12 @@
       "category": "UTIL",
       "category_raw": "CV Modulation",
       "is_available": "available",
-      "description": "Physics simulation",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1187,11 +1220,12 @@
       "category": "VCF",
       "category_raw": "Filter / Envelope Follower / VCA",
       "is_available": "available",
-      "description": "VC filterbank",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1200,11 +1234,12 @@
       "category": "UTIL",
       "category_raw": "Ring Modulator / Dual/Stereo",
       "is_available": "available",
-      "description": "Passive ring modulator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1213,11 +1248,12 @@
       "category": "MIX",
       "category_raw": "Mixer",
       "is_available": "available",
-      "description": "Simple mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1226,11 +1262,12 @@
       "category": "VCA",
       "category_raw": "Mixer / Panning / Quad / VCA",
       "is_available": "available",
-      "description": "VC mixer, panning, quad VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1239,11 +1276,12 @@
       "category": "VCF",
       "category_raw": "Filter / Envelope Follower / VCA",
       "is_available": "available",
-      "description": "Filter bank with envelope follower",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "ADDAC System",
@@ -1252,11 +1290,12 @@
       "category": "ENV",
       "category_raw": "External / Envelope Follower",
       "is_available": "available",
-      "description": "Audio integrator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1265,11 +1304,12 @@
       "category": "MIX",
       "category_raw": "Mixer",
       "is_available": "available",
-      "description": "6-channel signal mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1278,11 +1318,12 @@
       "category": "UTIL",
       "category_raw": "Blank Panel",
       "is_available": "available",
-      "description": "Blind panel",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1291,11 +1332,12 @@
       "category": "MIX",
       "category_raw": "External / Mixer / Utility",
       "is_available": "available",
-      "description": "Line outputs",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1304,11 +1346,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "Filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1317,11 +1360,12 @@
       "category": "UTIL",
       "category_raw": "Attenuator",
       "is_available": "available",
-      "description": "Attenuator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1330,11 +1374,12 @@
       "category": "ENV",
       "category_raw": "Envelope Generator / LFO / Utility",
       "is_available": "available",
-      "description": "3× EG/LFO/utility",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1343,11 +1388,12 @@
       "category": "UTIL",
       "category_raw": "Expander",
       "is_available": "available",
-      "description": "CV Trinity expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1356,11 +1402,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1369,11 +1416,12 @@
       "category": "UTIL",
       "category_raw": "Drum / External / Utility",
       "is_available": "available",
-      "description": "DC motor driver",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1382,11 +1430,12 @@
       "category": "SAMP",
       "category_raw": "Sampling",
       "is_available": "available",
-      "description": "Granular sampler",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1395,11 +1444,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1408,11 +1458,12 @@
       "category": "SEQ",
       "category_raw": "Sequencer / Clock Generator",
       "is_available": "available",
-      "description": "Sequencer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1421,11 +1472,12 @@
       "category": "UTIL",
       "category_raw": "Expander",
       "is_available": "available",
-      "description": "Knit Rider expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1434,11 +1486,12 @@
       "category": "SEQ",
       "category_raw": "Clock Modulator / Clock Generator / CV Modulation / Frequency Divider",
       "is_available": "available",
-      "description": "Clock modulator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1447,11 +1500,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "Passive multiple",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1460,11 +1514,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1473,11 +1528,12 @@
       "category": "VCO",
       "category_raw": "Noise / Oscillator",
       "is_available": "available",
-      "description": "Noise/oscillator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1486,11 +1542,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1499,11 +1556,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "Filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1512,11 +1570,12 @@
       "category": "VCA",
       "category_raw": "VCA / Attenuator / Mixer",
       "is_available": "available",
-      "description": "4× VCA/mixer/attenuator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1525,11 +1584,12 @@
       "category": "UTIL",
       "category_raw": "Controller",
       "is_available": "available",
-      "description": "Controller",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1538,11 +1598,12 @@
       "category": "UTIL",
       "category_raw": "Controller / Utility",
       "is_available": "available",
-      "description": "Servo controller",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1551,11 +1612,12 @@
       "category": "VCA",
       "category_raw": "Dual/Stereo / Envelope Generator / VCA",
       "is_available": "available",
-      "description": "Dual EG/VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1564,11 +1626,12 @@
       "category": "UTIL",
       "category_raw": "Drum / Utility",
       "is_available": "available",
-      "description": "Solenoid drum",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1577,11 +1640,12 @@
       "category": "UTIL",
       "category_raw": "Dynamics / Expander / Utility",
       "is_available": "available",
-      "description": "Solenoid expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1590,11 +1654,12 @@
       "category": "UTIL",
       "category_raw": "Controller / Expander",
       "is_available": "available",
-      "description": "GrandPa expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1603,11 +1668,12 @@
       "category": "MIX",
       "category_raw": "CV Modulation / Mixer / Multiple / Polarizer / Utility",
       "is_available": "available",
-      "description": "Utility",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1616,11 +1682,12 @@
       "category": "UTIL",
       "category_raw": "Drum",
       "is_available": "available",
-      "description": "Drum voice",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1629,11 +1696,12 @@
       "category": "UTIL",
       "category_raw": "Blank Panel / Multiple",
       "is_available": "available",
-      "description": "Wackel Kontakt",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Bastl Instruments",
@@ -1642,11 +1710,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1655,11 +1724,12 @@
       "category": "ENV",
       "category_raw": "Envelope Generator",
       "is_available": "discontinued",
-      "description": "ADSR envelope",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1668,11 +1738,12 @@
       "category": "VCF",
       "category_raw": "Filter / VCA / Mixer / Utility",
       "is_available": "available",
-      "description": "Band-pass filters + VCA + routing",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1681,11 +1752,12 @@
       "category": "SEQ",
       "category_raw": "Clock Generator",
       "is_available": "available",
-      "description": "8-step analog sequencer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1694,11 +1766,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "discontinued",
-      "description": "Filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1707,11 +1780,12 @@
       "category": "VCF",
       "category_raw": "Waveshaper / Filter",
       "is_available": "available",
-      "description": "Dual wavefolder with kink",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1720,11 +1794,12 @@
       "category": "FX",
       "category_raw": "Delay / Digital",
       "is_available": "discontinued",
-      "description": "Delay",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1733,11 +1808,12 @@
       "category": "UTIL",
       "category_raw": "Attenuator / Polarizer / Utility",
       "is_available": "discontinued",
-      "description": "Dual attenuverter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1746,11 +1822,12 @@
       "category": "VCO",
       "category_raw": "Oscillator",
       "is_available": "discontinued",
-      "description": "Even VCO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1759,11 +1836,12 @@
       "category": "VCA",
       "category_raw": "Mixer / VCA",
       "is_available": "discontinued",
-      "description": "6× VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1772,11 +1850,12 @@
       "category": "UTIL",
       "category_raw": "External",
       "is_available": "available",
-      "description": "I/O module",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1785,11 +1864,12 @@
       "category": "ENV",
       "category_raw": "Envelope Follower / Envelope Generator / Multiple",
       "is_available": "discontinued",
-      "description": "Instrument interface",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1798,11 +1878,12 @@
       "category": "ENV",
       "category_raw": "Envelope Follower / Envelope Generator / Multiple",
       "is_available": "available",
-      "description": "Instrument interface v2",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1811,11 +1892,12 @@
       "category": "MIDI",
       "category_raw": "Digital / MIDI / Synth Voice",
       "is_available": "available",
-      "description": "Programmable (Rebel Technology OWL)",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1824,11 +1906,12 @@
       "category": "MIDI",
       "category_raw": "MIDI",
       "is_available": "available",
-      "description": "MIDI interface",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1837,11 +1920,12 @@
       "category": "MIX",
       "category_raw": "Mixer / Quad",
       "is_available": "discontinued",
-      "description": "Quad mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1850,11 +1934,12 @@
       "category": "SEQ",
       "category_raw": "Switch / Sequencer / Utility",
       "is_available": "available",
-      "description": "Sequential switch/slicer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1863,11 +1948,12 @@
       "category": "FX",
       "category_raw": "Delay / Noise / Utility",
       "is_available": "available",
-      "description": "Noise + lag processor",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1876,11 +1962,12 @@
       "category": "UTIL",
       "category_raw": "Noise / Digital",
       "is_available": "available",
-      "description": "Complex noise generator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1889,11 +1976,12 @@
       "category": "VCO",
       "category_raw": "Oscillator",
       "is_available": "available",
-      "description": "Octave VCO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1902,11 +1990,12 @@
       "category": "UTIL",
       "category_raw": "External",
       "is_available": "discontinued",
-      "description": "Output module",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1915,11 +2004,12 @@
       "category": "UTIL",
       "category_raw": "Headphone Out / Utility",
       "is_available": "discontinued",
-      "description": "Headphone output",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1928,11 +2018,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "4HP VCF with ping",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1941,11 +2032,12 @@
       "category": "LFO",
       "category_raw": "LFO",
       "is_available": "available",
-      "description": "Compact analogue LFO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1954,11 +2046,12 @@
       "category": "ENV",
       "category_raw": "Envelope / Function Generator / LFO",
       "is_available": "available",
-      "description": "4HP EG/function/LFO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1967,11 +2060,12 @@
       "category": "VCA",
       "category_raw": "VCA / Quad",
       "is_available": "discontinued",
-      "description": "Quad VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1980,11 +2074,12 @@
       "category": "VCA",
       "category_raw": "Mixer / Quad / VCA",
       "is_available": "discontinued",
-      "description": "Quad VCA v2",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -1993,11 +2088,12 @@
       "category": "SEQ",
       "category_raw": "Clock Modulator / Sequencer",
       "is_available": "available",
-      "description": "Complex function generator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -2006,11 +2102,12 @@
       "category": "UTIL",
       "category_raw": "Ring Modulator / Utility",
       "is_available": "discontinued",
-      "description": "Ring modulator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -2019,11 +2116,12 @@
       "category": "SEQ",
       "category_raw": "Sample and Hold / Utility",
       "is_available": "available",
-      "description": "Sample & hold + lag",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -2032,11 +2130,12 @@
       "category": "VCF",
       "category_raw": "Filter / Dual-Stereo",
       "is_available": "available",
-      "description": "Sallen-Key filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -2045,11 +2144,12 @@
       "category": "UTIL",
       "category_raw": "CV Modulation",
       "is_available": "available",
-      "description": "DIY slew limiter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -2058,11 +2158,12 @@
       "category": "SEQ",
       "category_raw": "Sequencer",
       "is_available": "available",
-      "description": "8-step analog sequencer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -2071,11 +2172,12 @@
       "category": "VCO",
       "category_raw": "Envelope Generator / LFO / Oscillator / Utility",
       "is_available": "available",
-      "description": "Function generator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -2084,11 +2186,12 @@
       "category": "MIX",
       "category_raw": "Mixer",
       "is_available": "available",
-      "description": "Stereo mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -2097,11 +2200,12 @@
       "category": "VCA",
       "category_raw": "Attenuator / Distortion / VCA / Tube",
       "is_available": "discontinued",
-      "description": "Tube distortion VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Befaco",
@@ -2110,11 +2214,12 @@
       "category": "VCO",
       "category_raw": "LFO / Oscillator",
       "is_available": "available",
-      "description": "VCO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2123,11 +2228,12 @@
       "category": "ENV",
       "category_raw": "Envelope Generator / Dual/Stereo",
       "is_available": "available",
-      "description": "Dual ADSR",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2136,11 +2242,12 @@
       "category": "UTIL",
       "category_raw": "External",
       "is_available": "available",
-      "description": "Audio interface",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2149,11 +2256,12 @@
       "category": "ENV",
       "category_raw": "Envelope Follower / External / Dynamics / Envelope Generator",
       "is_available": "available",
-      "description": "Envelope follower",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2162,11 +2270,12 @@
       "category": "FX",
       "category_raw": "Attenuator / Quad / Utility / Waveshaper",
       "is_available": "available",
-      "description": "4× attenuator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2175,11 +2284,12 @@
       "category": "ENV",
       "category_raw": "Drum / Envelope Generator / Synth Voice",
       "is_available": "available",
-      "description": "Bass/lead drum synth",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2188,11 +2298,12 @@
       "category": "VCF",
       "category_raw": "Filter / Equalizer",
       "is_available": "available",
-      "description": "24dB filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2201,11 +2312,12 @@
       "category": "ENV",
       "category_raw": "Envelope Generator / Function Generator / LFO",
       "is_available": "available",
-      "description": "Function generator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2214,11 +2326,12 @@
       "category": "LFO",
       "category_raw": "LFO / Dual/Stereo",
       "is_available": "available",
-      "description": "Dual LFO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2227,11 +2340,12 @@
       "category": "VCF",
       "category_raw": "Dual/Stereo / Filter",
       "is_available": "discontinued",
-      "description": "Dual stereo filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2240,11 +2354,12 @@
       "category": "FX",
       "category_raw": "Pitch Shifter / Effect / Ring Modulator",
       "is_available": "available",
-      "description": "Frequency shifter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2253,11 +2368,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2266,11 +2382,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "Multimode filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2279,11 +2396,12 @@
       "category": "VCF",
       "category_raw": "Filter / Dual/Stereo",
       "is_available": "available",
-      "description": "2-pole multimode filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2292,11 +2410,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "6-pole multimode filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2305,11 +2424,12 @@
       "category": "MIX",
       "category_raw": "Mixer / Panning / Quad / Dual/Stereo",
       "is_available": "available",
-      "description": "Stereo mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2318,11 +2438,12 @@
       "category": "SEQ",
       "category_raw": "Noise / Sample and Hold / Random",
       "is_available": "available",
-      "description": "Noise + S&H",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2331,11 +2452,12 @@
       "category": "LFO",
       "category_raw": "LFO / Quad",
       "is_available": "available",
-      "description": "Quad LFO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2344,11 +2466,12 @@
       "category": "VCF",
       "category_raw": "Filter / Resonator",
       "is_available": "available",
-      "description": "4-pole resonator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2357,11 +2480,12 @@
       "category": "SEQ",
       "category_raw": "Clock Generator / Random / Clock Modulator / Sample and Hold / Slew Limiter",
       "is_available": "available",
-      "description": "Random generator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2370,11 +2494,12 @@
       "category": "FX",
       "category_raw": "Ring Modulator / Dual/Stereo / Effect",
       "is_available": "available",
-      "description": "Stereo ring mod",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2383,11 +2508,12 @@
       "category": "FX",
       "category_raw": "Phase Shifter / Effect",
       "is_available": "available",
-      "description": "Stereo phase shifter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2396,11 +2522,12 @@
       "category": "UTIL",
       "category_raw": "External / Dynamics",
       "is_available": "available",
-      "description": "Compressor",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2409,11 +2536,12 @@
       "category": "UTIL",
       "category_raw": "External / Dual/Stereo / Dynamics",
       "is_available": "available",
-      "description": "Stereo compressor",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2422,11 +2550,12 @@
       "category": "VCA",
       "category_raw": "VCA / Attenuator / Dual/Stereo / Panning",
       "is_available": "available",
-      "description": "2× VCA/panner",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2435,11 +2564,12 @@
       "category": "VCA",
       "category_raw": "VCA / Attenuator / Mixer / Quad",
       "is_available": "available",
-      "description": "4× VCA/mixer/attenuator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2448,11 +2578,12 @@
       "category": "FX",
       "category_raw": "Equalizer",
       "is_available": "available",
-      "description": "3-band EQ",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2461,11 +2592,12 @@
       "category": "VCO",
       "category_raw": "Oscillator / Ring Modulator / Dual/Stereo",
       "is_available": "available",
-      "description": "VCO + ring mod",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2474,11 +2606,12 @@
       "category": "VCO",
       "category_raw": "Oscillator",
       "is_available": "available",
-      "description": "6-output VCO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Cwejman",
@@ -2487,11 +2620,12 @@
       "category": "VCO",
       "category_raw": "Filter / Oscillator / Synth Voice",
       "is_available": "available",
-      "description": "Voice module",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2500,11 +2634,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2513,11 +2648,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2526,13 +2662,14 @@
       "category": "FX",
       "category_raw": "Effect / Phase Shifter",
       "is_available": "discontinued",
-      "description": "Phase shifter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
       "research_phase": "phase2",
       "needs_reverify": true,
-      "spec_source": "modulargrid_unverified (hp removed 2026-10-17)"
+      "spec_source": "modulargrid_unverified (hp removed 2026-10-17)",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2541,11 +2678,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2554,11 +2692,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2567,11 +2706,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2580,13 +2720,14 @@
       "category": "UTIL",
       "category_raw": "CV Modulation / Dual-Stereo",
       "is_available": "discontinued",
-      "description": "VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
       "research_phase": "phase2",
       "needs_reverify": true,
-      "spec_source": "modulargrid_unverified (hp removed 2026-10-17)"
+      "spec_source": "modulargrid_unverified (hp removed 2026-10-17)",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2595,11 +2736,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2608,11 +2750,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2621,11 +2764,12 @@
       "category": "VCF",
       "category_raw": "Filter / Equalizer",
       "is_available": "available",
-      "description": "VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2634,11 +2778,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "discontinued",
-      "description": "VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2647,11 +2792,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2660,11 +2806,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "SEM-style filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2673,11 +2820,12 @@
       "category": "VCO",
       "category_raw": "Filter / Oscillator",
       "is_available": "available",
-      "description": "Filter + VCO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2686,11 +2834,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "discontinued",
-      "description": "VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2699,11 +2848,12 @@
       "category": "VCF",
       "category_raw": "Filter / Panning / VCA",
       "is_available": "available",
-      "description": "Trapezoid VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2712,11 +2862,12 @@
       "category": "VCF",
       "category_raw": "Filter / Panning / VCA",
       "is_available": "discontinued",
-      "description": "Trapezoid VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2725,11 +2876,12 @@
       "category": "VCO",
       "category_raw": "Oscillator",
       "is_available": "available",
-      "description": "Standard VCO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2738,11 +2890,12 @@
       "category": "VCO",
       "category_raw": "Oscillator",
       "is_available": "discontinued",
-      "description": "High-end VCO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2751,11 +2904,12 @@
       "category": "VCO",
       "category_raw": "Envelope Generator / Filter / LFO / Oscillator / VCA / Synth Voice",
       "is_available": "available",
-      "description": "Mini synth voice",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2764,11 +2918,12 @@
       "category": "VCO",
       "category_raw": "Oscillator",
       "is_available": "available",
-      "description": "VCO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2777,11 +2932,12 @@
       "category": "FX",
       "category_raw": "Waveshaper / Frequency Divider",
       "is_available": "available",
-      "description": "Waveshaper + divider",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2790,11 +2946,12 @@
       "category": "UTIL",
       "category_raw": "Ring Modulator / Dual/Stereo",
       "is_available": "available",
-      "description": "Ring modulator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2803,11 +2960,12 @@
       "category": "UTIL",
       "category_raw": "Frequency Divider",
       "is_available": "available",
-      "description": "Frequency divider",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2816,11 +2974,12 @@
       "category": "FX",
       "category_raw": "Waveshaper",
       "is_available": "discontinued",
-      "description": "Waveshaper",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2829,11 +2988,12 @@
       "category": "UTIL",
       "category_raw": "Drum / Noise / Digital / Random",
       "is_available": "discontinued",
-      "description": "Drum/noise",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2842,11 +3002,12 @@
       "category": "UTIL",
       "category_raw": "Noise / Random",
       "is_available": "available",
-      "description": "Noise/random",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2855,11 +3016,12 @@
       "category": "UTIL",
       "category_raw": "Noise / Random",
       "is_available": "available",
-      "description": "Noise/random",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2868,11 +3030,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "SE Wasp filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2881,13 +3044,14 @@
       "category": "UTIL",
       "category_raw": "CV Modulation / Dual/Stereo",
       "is_available": "available",
-      "description": "Voltage controlled crossfader",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
       "research_phase": "phase2",
       "needs_reverify": true,
-      "spec_source": "modulargrid_unverified (hp removed 2026-10-17)"
+      "spec_source": "modulargrid_unverified (hp removed 2026-10-17)",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2896,11 +3060,12 @@
       "category": "MIX",
       "category_raw": "Attenuator / Mixer / Quad",
       "is_available": "available",
-      "description": "Mixer/attenuator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2909,11 +3074,12 @@
       "category": "ENV",
       "category_raw": "Envelope Generator",
       "is_available": "available",
-      "description": "Dual ADSR",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2922,11 +3088,12 @@
       "category": "ENV",
       "category_raw": "Envelope Generator",
       "is_available": "available",
-      "description": "Quad ADSR",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2935,11 +3102,12 @@
       "category": "UTIL",
       "category_raw": "Switch / Utility",
       "is_available": "available",
-      "description": "Sequential switch",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2948,11 +3116,12 @@
       "category": "SEQ",
       "category_raw": "Sequencer",
       "is_available": "available",
-      "description": "Analog sequencer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2961,11 +3130,12 @@
       "category": "SEQ",
       "category_raw": "Quantizer",
       "is_available": "available",
-      "description": "Quantizer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2974,11 +3144,12 @@
       "category": "SEQ",
       "category_raw": "Clock Generator / Clock Modulator",
       "is_available": "available",
-      "description": "Clock divider",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -2987,11 +3158,12 @@
       "category": "SEQ",
       "category_raw": "Clock Modulator",
       "is_available": "available",
-      "description": "Clock multiplier",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3000,11 +3172,12 @@
       "category": "SEQ",
       "category_raw": "Clock Modulator",
       "is_available": "available",
-      "description": "Trigger divider",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3013,11 +3186,12 @@
       "category": "UTIL",
       "category_raw": "PWM",
       "is_available": "available",
-      "description": "PWM",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3026,11 +3200,12 @@
       "category": "MIDI",
       "category_raw": "MIDI",
       "is_available": "available",
-      "description": "MIDI-CV",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3039,11 +3214,12 @@
       "category": "MIDI",
       "category_raw": "MIDI",
       "is_available": "available",
-      "description": "MIDI-CV",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3052,11 +3228,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "Buffered multiple",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3065,11 +3242,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "Buffered multiples",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3078,11 +3256,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "Buffered 1-in-3",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3091,11 +3270,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "discontinued",
-      "description": "Multiple",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3104,11 +3284,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "Switched multiple",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3117,11 +3298,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "Switched multiple",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3130,11 +3312,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "Switched multiple",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3143,11 +3326,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "Switched multiple",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3156,11 +3340,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "Switched multiple",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3169,11 +3354,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "Switched multiple",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3182,11 +3368,12 @@
       "category": "UTIL",
       "category_raw": "Bus / Multiple",
       "is_available": "available",
-      "description": "Bus board",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Doepfer",
@@ -3195,11 +3382,12 @@
       "category": "UTIL",
       "category_raw": "Bus / Multiple",
       "is_available": "available",
-      "description": "Bus board",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3208,11 +3396,12 @@
       "category": "ENV",
       "category_raw": "Dual/Stereo / Envelope Generator / MIDI",
       "is_available": "discontinued",
-      "description": "Alpha synth voice",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3221,11 +3410,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3234,11 +3424,12 @@
       "category": "FX",
       "category_raw": "Delay / Digital / Dual/Stereo",
       "is_available": "available",
-      "description": "Digital delay",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3247,11 +3438,12 @@
       "category": "VCO",
       "category_raw": "Drum / Envelope Generator / Filter / Noise / Oscillator / Synth Voice / Waveshaper",
       "is_available": "discontinued",
-      "description": "Drum/synth voice",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3260,11 +3452,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3273,11 +3466,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3286,11 +3480,12 @@
       "category": "VCF",
       "category_raw": "Synth Voice / Filter / VCA",
       "is_available": "discontinued",
-      "description": "Synth voice",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3299,11 +3494,12 @@
       "category": "UTIL",
       "category_raw": "Synth Voice",
       "is_available": "discontinued",
-      "description": "Synth voice",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3312,11 +3508,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3325,11 +3522,12 @@
       "category": "VCF",
       "category_raw": "Filter / Distortion / VCA",
       "is_available": "discontinued",
-      "description": "Filter/distortion/VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3338,11 +3536,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3351,11 +3550,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3364,11 +3564,12 @@
       "category": "VCO",
       "category_raw": "Dual/Stereo / Oscillator",
       "is_available": "discontinued",
-      "description": "Oscillator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3377,11 +3578,12 @@
       "category": "FX",
       "category_raw": "Effect / Reverb",
       "is_available": "discontinued",
-      "description": "Reverb",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3390,11 +3592,12 @@
       "category": "UTIL",
       "category_raw": "Ring Modulator / Tremolo",
       "is_available": "available",
-      "description": "Tremolo",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3403,11 +3606,12 @@
       "category": "LFO",
       "category_raw": "LFO / Noise / Sample and Hold / Clock Generator / CV Modulation",
       "is_available": "available",
-      "description": "LFO/noise/S&H",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3416,11 +3620,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3429,11 +3634,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3442,11 +3648,12 @@
       "category": "UTIL",
       "category_raw": "Attenuator",
       "is_available": "discontinued",
-      "description": "WL attenuator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3455,11 +3662,12 @@
       "category": "SEQ",
       "category_raw": "Utility / Clock Modulator / Frequency Divider",
       "is_available": "discontinued",
-      "description": "WL divider",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3468,11 +3676,12 @@
       "category": "FX",
       "category_raw": "Distortion",
       "is_available": "discontinued",
-      "description": "WL drive",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3481,11 +3690,12 @@
       "category": "VCA",
       "category_raw": "VCA",
       "is_available": "discontinued",
-      "description": "WL dual VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3494,11 +3704,12 @@
       "category": "FX",
       "category_raw": "Delay / Effect",
       "is_available": "discontinued",
-      "description": "WL echo",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3507,11 +3718,12 @@
       "category": "ENV",
       "category_raw": "Envelope Generator",
       "is_available": "discontinued",
-      "description": "WL envelope",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3520,11 +3732,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "discontinued",
-      "description": "WL filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3533,11 +3746,12 @@
       "category": "LFO",
       "category_raw": "LFO",
       "is_available": "discontinued",
-      "description": "WL LFO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3546,11 +3760,12 @@
       "category": "MIX",
       "category_raw": "Mixer",
       "is_available": "discontinued",
-      "description": "WL mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3559,11 +3774,12 @@
       "category": "ENV",
       "category_raw": "CV Modulation / Envelope Generator / Function Generator / LFO",
       "is_available": "discontinued",
-      "description": "WL modulator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3572,11 +3788,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "discontinued",
-      "description": "WL multiple",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3585,11 +3802,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "discontinued",
-      "description": "WL filter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3598,11 +3816,12 @@
       "category": "VCO",
       "category_raw": "Oscillator / LFO",
       "is_available": "discontinued",
-      "description": "WL series oscillator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3611,11 +3830,12 @@
       "category": "FX",
       "category_raw": "Effect / Phase Shifter",
       "is_available": "discontinued",
-      "description": "WL phaser",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3624,11 +3844,12 @@
       "category": "SEQ",
       "category_raw": "Clock Generator / Effect / Noise / Random / Sample and Hold",
       "is_available": "discontinued",
-      "description": "WL random",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3637,11 +3858,12 @@
       "category": "FX",
       "category_raw": "Effect",
       "is_available": "discontinued",
-      "description": "WL reflector",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Dreadbox",
@@ -3650,11 +3872,12 @@
       "category": "VCA",
       "category_raw": "LFO / VCA / Attenuator",
       "is_available": "discontinued",
-      "description": "LFO/VCA/attenuator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3663,11 +3886,12 @@
       "category": "UTIL",
       "category_raw": "Tuner / Dual/Stereo / Utility",
       "is_available": "available",
-      "description": "Auto-tuner",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3676,11 +3900,12 @@
       "category": "VCF",
       "category_raw": "Drum / Effect / Delay / Distortion / Filter / Reverb / Ring Modulator / Synth Voice",
       "is_available": "available",
-      "description": "Black Noir",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3689,11 +3914,12 @@
       "category": "MIX",
       "category_raw": "Mixer / Dynamics / Dual/Stereo / Attenuator / Utility",
       "is_available": "available",
-      "description": "Black Cockpit",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3702,11 +3928,12 @@
       "category": "MIX",
       "category_raw": "Mixer / Dynamics / Dual/Stereo / Attenuator / Utility",
       "is_available": "discontinued",
-      "description": "Cockpit",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3715,11 +3942,12 @@
       "category": "VCO",
       "category_raw": "Dual/Stereo / Function Generator / LFO / Noise / Oscillator / Random",
       "is_available": "available",
-      "description": "Black Furthrrrr",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3728,11 +3956,12 @@
       "category": "VCO",
       "category_raw": "Oscillator / Dual/Stereo / Function Generator / LFO / Noise / Random",
       "is_available": "available",
-      "description": "Complex oscillator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3741,11 +3970,12 @@
       "category": "MIX",
       "category_raw": "Tuner / Attenuator / Controller / Dual/Stereo / Expander / Mixer / Utility",
       "is_available": "discontinued",
-      "description": "Black Gateway",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3754,11 +3984,12 @@
       "category": "UTIL",
       "category_raw": "Expander / Tuner",
       "is_available": "discontinued",
-      "description": "Gateway expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3767,11 +3998,12 @@
       "category": "VCF",
       "category_raw": "Filter / Function Generator / Low Pass Gate / Digital / Dual/Stereo / Effect / Envelope Generator / VCA",
       "is_available": "available",
-      "description": "Black Grand Terminal",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3780,11 +4012,12 @@
       "category": "VCF",
       "category_raw": "Filter / Function Generator / Low Pass Gate / Dual/Stereo / Effect / Envelope Generator / Panning / VCA",
       "is_available": "available",
-      "description": "Grand Terminal",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3793,11 +4026,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3806,11 +4040,12 @@
       "category": "ENV",
       "category_raw": "MIDI / Power / Clock Generator / Controller / CV Modulation / Envelope Generator / Expression / Function Generator",
       "is_available": "available",
-      "description": "Black Shuttle Control",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3819,11 +4054,12 @@
       "category": "ENV",
       "category_raw": "MIDI / Power / Clock Generator / Controller / CV Modulation / Envelope Generator / Expression / Function Generator",
       "is_available": "available",
-      "description": "MIDI/CV converter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3832,11 +4068,12 @@
       "category": "MIDI",
       "category_raw": "Expander / MIDI / Utility",
       "is_available": "available",
-      "description": "Black Shuttle Mate",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3845,11 +4082,12 @@
       "category": "MIDI",
       "category_raw": "Expander / MIDI / Utility",
       "is_available": "available",
-      "description": "Shuttle expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3858,11 +4096,12 @@
       "category": "VCO",
       "category_raw": "Dual/Stereo / Effect / Envelope Generator / Filter / MIDI / Mixer / Oscillator / Synth Voice",
       "is_available": "available",
-      "description": "Black Shuttle System",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3871,11 +4110,12 @@
       "category": "VCO",
       "category_raw": "Dual/Stereo / Effect / Envelope Generator / Filter / MIDI / Mixer / Oscillator / Synth Voice",
       "is_available": "available",
-      "description": "Complete system",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3884,11 +4124,12 @@
       "category": "VCA",
       "category_raw": "Clock Generator / CV Modulation / Envelope Generator / Function Generator / Low Pass Gate / Mixer / Effect / VCA",
       "is_available": "discontinued",
-      "description": "Terminal",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Endorphin.es",
@@ -3897,11 +4138,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -3910,11 +4152,12 @@
       "category": "UTIL",
       "category_raw": "External",
       "is_available": "available",
-      "description": "Input module",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -3923,11 +4166,12 @@
       "category": "VCO",
       "category_raw": "Oscillator",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -3936,11 +4180,12 @@
       "category": "VCO",
       "category_raw": "Oscillator",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -3949,11 +4194,12 @@
       "category": "ENV",
       "category_raw": "Envelope",
       "is_available": "available",
-      "description": "VC EG expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -3962,11 +4208,12 @@
       "category": "VCA",
       "category_raw": "Crossfader / VCA",
       "is_available": "available",
-      "description": "Crossfader",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -3975,11 +4222,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "Digital/tech VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -3988,11 +4236,12 @@
       "category": "FX",
       "category_raw": "Delay / Tube / Effect",
       "is_available": "available",
-      "description": "Tube chorus/delay",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4001,11 +4250,12 @@
       "category": "VCF",
       "category_raw": "Filter / Tube",
       "is_available": "available",
-      "description": "Tube VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4014,11 +4264,12 @@
       "category": "UTIL",
       "category_raw": "Ring Modulator / Tube",
       "is_available": "available",
-      "description": "Tube ring mod",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4027,11 +4278,12 @@
       "category": "VCA",
       "category_raw": "VCA / Tube",
       "is_available": "discontinued",
-      "description": "Tube VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4040,11 +4292,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Graphic VCO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4053,11 +4306,12 @@
       "category": "SEQ",
       "category_raw": "Clock Generator / Mixer / Multiple",
       "is_available": "available",
-      "description": "Matrix mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4066,11 +4320,12 @@
       "category": "SEQ",
       "category_raw": "Clock Generator / MIDI",
       "is_available": "available",
-      "description": "MIDI-clock",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4079,11 +4334,12 @@
       "category": "MIX",
       "category_raw": "Mixer / Multiple",
       "is_available": "available",
-      "description": "Mixer/splitter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4092,11 +4348,12 @@
       "category": "UTIL",
       "category_raw": "Modulator / Noise",
       "is_available": "available",
-      "description": "Advanced modulator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4105,11 +4362,12 @@
       "category": "FX",
       "category_raw": "Equalizer",
       "is_available": "discontinued",
-      "description": "Moog EQ",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4118,11 +4376,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4131,11 +4390,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4144,11 +4404,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4157,11 +4418,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4170,11 +4432,12 @@
       "category": "ENV",
       "category_raw": "Envelope Generator",
       "is_available": "available",
-      "description": "Looping AD/ASR EG",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4183,11 +4446,12 @@
       "category": "MIX",
       "category_raw": "Mixer",
       "is_available": "available",
-      "description": "Mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4196,11 +4460,12 @@
       "category": "LFO",
       "category_raw": "LFO",
       "is_available": "available",
-      "description": "Modulator/LFO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4209,11 +4474,12 @@
       "category": "LFO",
       "category_raw": "LFO",
       "is_available": "available",
-      "description": "Custom panel mod",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4222,11 +4488,12 @@
       "category": "VCA",
       "category_raw": "VCA",
       "is_available": "available",
-      "description": "VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4235,11 +4502,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "Soviet filter clone",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4248,11 +4516,12 @@
       "category": "VCF",
       "category_raw": "Filter",
       "is_available": "available",
-      "description": "Custom panel VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4261,11 +4530,12 @@
       "category": "VCO",
       "category_raw": "Oscillator",
       "is_available": "available",
-      "description": "VCO1",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4274,11 +4544,12 @@
       "category": "VCO",
       "category_raw": "Oscillator",
       "is_available": "available",
-      "description": "VCO2",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4287,11 +4558,12 @@
       "category": "ENV",
       "category_raw": "Envelope Generator",
       "is_available": "available",
-      "description": "ADSR DIY",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4300,11 +4572,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4313,11 +4586,12 @@
       "category": "UTIL",
       "category_raw": "Switch / Random",
       "is_available": "available",
-      "description": "Sequential switch",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4326,11 +4600,12 @@
       "category": "UTIL",
       "category_raw": "Synth Voice",
       "is_available": "available",
-      "description": "DIY synth voice",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4339,11 +4614,12 @@
       "category": "UTIL",
       "category_raw": "Drum",
       "is_available": "available",
-      "description": "Low/Mid/High Tom",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4352,11 +4628,12 @@
       "category": "FX",
       "category_raw": "Mixer / Tube / Waveshaper",
       "is_available": "available",
-      "description": "VCO mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4365,11 +4642,12 @@
       "category": "VCO",
       "category_raw": "Clock Generator / Clock Modulator / CV Modulation / Oscillator / Random / Ring Modulator / Sample and Hold",
       "is_available": "discontinued",
-      "description": "Random source",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Erica Synths",
@@ -4378,11 +4656,12 @@
       "category": "VCO",
       "category_raw": "Clock Generator / Clock Modulator / CV Modulation / Oscillator / Random / Ring Modulator / Sample and Hold",
       "is_available": "discontinued",
-      "description": "Random source",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4391,11 +4670,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4404,11 +4684,12 @@
       "category": "VCO",
       "category_raw": "Delay / LFO / Oscillator / Sample and Hold / Slew Limiter / Waveshaper / Quantizer / Comparator",
       "is_available": "discontinued",
-      "description": "Multi-function",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4417,11 +4698,12 @@
       "category": "VCO",
       "category_raw": "Delay / Effect / LFO / Oscillator / Quantizer / Sample and Hold / Utility / Waveshaper",
       "is_available": "discontinued",
-      "description": "Multi-function",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4430,11 +4712,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4443,11 +4726,12 @@
       "category": "UTIL",
       "category_raw": "External / Utility",
       "is_available": "discontinued",
-      "description": "ADAT",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4456,11 +4740,12 @@
       "category": "UTIL",
       "category_raw": "External",
       "is_available": "discontinued",
-      "description": "DB25 ADAT",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4469,11 +4754,12 @@
       "category": "UTIL",
       "category_raw": "Utility",
       "is_available": "discontinued",
-      "description": "CV/gate",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4482,11 +4768,12 @@
       "category": "UTIL",
       "category_raw": "External",
       "is_available": "discontinued",
-      "description": "Lightpipe",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4495,11 +4782,12 @@
       "category": "UTIL",
       "category_raw": "Controller",
       "is_available": "discontinued",
-      "description": "Lightpipe/CV interface",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4508,11 +4796,12 @@
       "category": "MIDI",
       "category_raw": "MIDI / Utility / External",
       "is_available": "discontinued",
-      "description": "Lightpipe",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4521,11 +4810,12 @@
       "category": "UTIL",
       "category_raw": "Controller / External",
       "is_available": "available",
-      "description": "Lightpipe",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4534,11 +4824,12 @@
       "category": "UTIL",
       "category_raw": "Controller",
       "is_available": "available",
-      "description": "SPDIF/CV",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4547,11 +4838,12 @@
       "category": "SEQ",
       "category_raw": "Clock Generator / Controller / CV Modulation / MIDI / Utility",
       "is_available": "available",
-      "description": "SPDIF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4560,11 +4852,12 @@
       "category": "MIDI",
       "category_raw": "Expander / External / MIDI / Digital",
       "is_available": "discontinued",
-      "description": "Expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4573,11 +4866,12 @@
       "category": "UTIL",
       "category_raw": "Utility",
       "is_available": "available",
-      "description": "8 CV outputs",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4586,11 +4880,12 @@
       "category": "UTIL",
       "category_raw": "External",
       "is_available": "discontinued",
-      "description": "8 CV outputs",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4599,11 +4894,12 @@
       "category": "UTIL",
       "category_raw": "Utility / External",
       "is_available": "available",
-      "description": "CV input",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4612,11 +4908,12 @@
       "category": "MIDI",
       "category_raw": "Utility / External / MIDI",
       "is_available": "available",
-      "description": "USB audio interface",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4625,11 +4922,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4638,11 +4936,12 @@
       "category": "MIDI",
       "category_raw": "Digital / Expander / External / MIDI",
       "is_available": "discontinued",
-      "description": "CV expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4651,11 +4950,12 @@
       "category": "UTIL",
       "category_raw": "Expander",
       "is_available": "discontinued",
-      "description": "CV expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4664,11 +4964,12 @@
       "category": "UTIL",
       "category_raw": "Expander",
       "is_available": "discontinued",
-      "description": "Gate expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4677,11 +4978,12 @@
       "category": "UTIL",
       "category_raw": "Expander",
       "is_available": "discontinued",
-      "description": "Gate expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4690,11 +4992,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4703,11 +5006,12 @@
       "category": "SEQ",
       "category_raw": "Clock Generator / MIDI",
       "is_available": "discontinued",
-      "description": "MIDI expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4716,11 +5020,12 @@
       "category": "SEQ",
       "category_raw": "Clock Generator / MIDI",
       "is_available": "available",
-      "description": "MIDI expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4729,11 +5034,12 @@
       "category": "SEQ",
       "category_raw": "Controller / MIDI / Sequencer / Clock Generator / Clock Modulator / Digital",
       "is_available": "discontinued",
-      "description": "Fader host",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4742,11 +5048,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Expert Sleepers",
@@ -4755,11 +5062,12 @@
       "category": "MIDI",
       "category_raw": "Digital / Expander / MIDI",
       "is_available": "discontinued",
-      "description": "FH-1 expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4768,11 +5076,12 @@
       "category": "UTIL",
       "category_raw": "Attenuator / External / Dual/Stereo",
       "is_available": "discontinued",
-      "description": "Audio interface",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4781,11 +5090,12 @@
       "category": "MIX",
       "category_raw": "Mixer",
       "is_available": "available",
-      "description": "Aux mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4794,11 +5104,12 @@
       "category": "VCA",
       "category_raw": "Dual/Stereo / Panning / VCA",
       "is_available": "discontinued",
-      "description": "Panner/VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4807,11 +5118,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "Buffered multiple",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4820,11 +5132,12 @@
       "category": "UTIL",
       "category_raw": "Multiple",
       "is_available": "available",
-      "description": "1U buffered mult",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4833,11 +5146,12 @@
       "category": "VCO",
       "category_raw": "Dual/Stereo / Filter / Oscillator",
       "is_available": "discontinued",
-      "description": "Filter/oscillator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4846,11 +5160,12 @@
       "category": "VCO",
       "category_raw": "Digital / Envelope Generator / LFO / Oscillator / Random / Waveshaper / Logic / Phase Shifter",
       "is_available": "discontinued",
-      "description": "Complex digital",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4859,11 +5174,12 @@
       "category": "VCO",
       "category_raw": "LFO / Oscillator",
       "is_available": "discontinued",
-      "description": "VCO/LFO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4872,11 +5188,12 @@
       "category": "VCO",
       "category_raw": "LFO / Oscillator",
       "is_available": "discontinued",
-      "description": "VCO/LFO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4885,11 +5202,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "discontinued",
-      "description": "8-phase",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4898,11 +5216,12 @@
       "category": "VCA",
       "category_raw": "VCA / Logic / Mixer",
       "is_available": "discontinued",
-      "description": "6× VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4911,11 +5230,12 @@
       "category": "UTIL",
       "category_raw": "External",
       "is_available": "available",
-      "description": "Microphone",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4924,11 +5244,12 @@
       "category": "UTIL",
       "category_raw": "External",
       "is_available": "available",
-      "description": "Microphone",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4937,11 +5258,12 @@
       "category": "SEQ",
       "category_raw": "Sequencer / Clock Modulator / Random / Clock Generator",
       "is_available": "discontinued",
-      "description": "Sequencer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4950,11 +5272,12 @@
       "category": "SAMP",
       "category_raw": "Sampling / Granular",
       "is_available": "available",
-      "description": "Stereo granular sampler",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4963,11 +5286,12 @@
       "category": "SEQ",
       "category_raw": "Attenuator / Mixer / Sequencer / Switch",
       "is_available": "discontinued",
-      "description": "Mixer/sequencer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4976,11 +5300,12 @@
       "category": "VCA",
       "category_raw": "CV Modulation / Mixer / Panning / Quad / VCA / Controller",
       "is_available": "discontinued",
-      "description": "Vector mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -4989,11 +5314,12 @@
       "category": "SEQ",
       "category_raw": "Clock Generator / Clock Modulator / Sequencer",
       "is_available": "discontinued",
-      "description": "Clock/sequencer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -5002,11 +5328,12 @@
       "category": "VCA",
       "category_raw": "VCA / Quad",
       "is_available": "available",
-      "description": "4× VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -5015,11 +5342,12 @@
       "category": "ENV",
       "category_raw": "Envelope Generator / LFO / Quad / Function Generator",
       "is_available": "available",
-      "description": "Quad function generator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -5028,11 +5356,12 @@
       "category": "ENV",
       "category_raw": "CV Modulation / Envelope Generator / Quad / Expander",
       "is_available": "available",
-      "description": "Quadra expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -5041,11 +5370,12 @@
       "category": "UTIL",
       "category_raw": "Attenuator / Quad",
       "is_available": "available",
-      "description": "1U attenuator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -5054,11 +5384,12 @@
       "category": "VCO",
       "category_raw": "LFO / Oscillator",
       "is_available": "discontinued",
-      "description": "Complex VCO",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -5067,11 +5398,12 @@
       "category": "UTIL",
       "category_raw": "Logic",
       "is_available": "discontinued",
-      "description": "Logic",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -5080,11 +5412,12 @@
       "category": "UTIL",
       "category_raw": "External",
       "is_available": "available",
-      "description": "Stereo I/O",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -5093,11 +5426,12 @@
       "category": "UTIL",
       "category_raw": "External",
       "is_available": "available",
-      "description": "Stereo out",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -5106,11 +5440,12 @@
       "category": "FX",
       "category_raw": "Reverb",
       "is_available": "available",
-      "description": "Multi-model reverb",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -5119,11 +5454,12 @@
       "category": "MIX",
       "category_raw": "Mixer / Crossfader",
       "is_available": "available",
-      "description": "DJ crossfader",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -5132,11 +5468,12 @@
       "category": "VCO",
       "category_raw": "Filter / Oscillator",
       "is_available": "discontinued",
-      "description": "Micro VCF",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Intellijel",
@@ -5145,11 +5482,12 @@
       "category": "UTIL",
       "category_raw": "Attenuator / Quad",
       "is_available": "discontinued",
-      "description": "Micro attenuator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5158,11 +5496,12 @@
       "category": "UTIL",
       "category_raw": "Blank Panel",
       "is_available": "discontinued",
-      "description": "Blank panel",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5171,11 +5510,12 @@
       "category": "UTIL",
       "category_raw": "Blank Panel",
       "is_available": "discontinued",
-      "description": "Blank panel",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5184,11 +5524,12 @@
       "category": "UTIL",
       "category_raw": "Controller",
       "is_available": "discontinued",
-      "description": "Controller",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5197,11 +5538,12 @@
       "category": "UTIL",
       "category_raw": "Blank Panel",
       "is_available": "discontinued",
-      "description": "Blank panel",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5210,11 +5552,12 @@
       "category": "SEQ",
       "category_raw": "Sequencer",
       "is_available": "discontinued",
-      "description": "Sequencer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5223,11 +5566,12 @@
       "category": "UTIL",
       "category_raw": "Power",
       "is_available": "discontinued",
-      "description": "Power",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5236,11 +5580,12 @@
       "category": "VCO",
       "category_raw": "Dual/Stereo / Oscillator / Waveshaper / LFO",
       "is_available": "available",
-      "description": "Complex oscillator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5249,11 +5594,12 @@
       "category": "FX",
       "category_raw": "Delay / Pitch Shifter / Effect",
       "is_available": "available",
-      "description": "Delay/pitch shifter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5262,11 +5608,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5275,11 +5622,12 @@
       "category": "UTIL",
       "category_raw": "Multiple / External / Utility",
       "is_available": "discontinued",
-      "description": "Format jumbler",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5288,11 +5636,12 @@
       "category": "ENV",
       "category_raw": "Function Generator",
       "is_available": "discontinued",
-      "description": "Function generator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5301,11 +5650,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5314,11 +5664,12 @@
       "category": "ENV",
       "category_raw": "Envelope Generator / Envelope Follower / LFO / Mixer / Slew Limiter / Function Generator / Clock Generator / CV Modulation",
       "is_available": "discontinued",
-      "description": "Function generator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5327,11 +5678,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5340,11 +5692,12 @@
       "category": "VCA",
       "category_raw": "Mixer / Ring Modulator / VCA / Dual/Stereo",
       "is_available": "discontinued",
-      "description": "Mixer/ring mod/VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5353,11 +5706,12 @@
       "category": "UTIL",
       "category_raw": "Ring Modulator",
       "is_available": "discontinued",
-      "description": "Ring modulator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5366,11 +5720,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5379,11 +5734,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "discontinued",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5392,11 +5748,12 @@
       "category": "VCF",
       "category_raw": "Filter / Mixer / VCA / Low Pass Gate",
       "is_available": "available",
-      "description": "Low-pass gate",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5405,11 +5762,12 @@
       "category": "SAMP",
       "category_raw": "Sampling",
       "is_available": "discontinued",
-      "description": "Tape-style sampler",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5418,11 +5776,12 @@
       "category": "SEQ",
       "category_raw": "Controller / Sequencer",
       "is_available": "available",
-      "description": "Controller/sequencer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5431,11 +5790,12 @@
       "category": "VCF",
       "category_raw": "Filter / Mixer / VCA / Quad / Low Pass Gate",
       "is_available": "discontinued",
-      "description": "Quad low-pass gate",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5444,11 +5804,12 @@
       "category": "SEQ",
       "category_raw": "Sequencer / Logic",
       "is_available": "discontinued",
-      "description": "Cartesian sequencer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5457,11 +5818,12 @@
       "category": "SEQ",
       "category_raw": "Sequencer / Logic",
       "is_available": "discontinued",
-      "description": "Limited edition",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5470,11 +5832,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5483,11 +5846,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5496,11 +5860,12 @@
       "category": "UTIL",
       "category_raw": "—",
       "is_available": "available",
-      "description": "Referenced in news",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Make Noise",
@@ -5509,11 +5874,12 @@
       "category": "SEQ",
       "category_raw": "Random / Ring Modulator / Sample and Hold",
       "is_available": "discontinued",
-      "description": "Random source",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Mutable Instruments",
@@ -5522,11 +5888,12 @@
       "category": "VCO",
       "category_raw": "Digital / Drum / Envelope Generator / Filter / LFO / Oscillator / Sequencer / Synth Voice",
       "is_available": "discontinued",
-      "description": "Synth voice",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Mutable Instruments",
@@ -5535,11 +5902,12 @@
       "category": "MIDI",
       "category_raw": "MIDI",
       "is_available": "discontinued",
-      "description": "Anushri expander",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Mutable Instruments",
@@ -5548,11 +5916,12 @@
       "category": "VCO",
       "category_raw": "Oscillator / Digital / Drum",
       "is_available": "discontinued",
-      "description": "Macro oscillator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Mutable Instruments",
@@ -5561,11 +5930,12 @@
       "category": "SEQ",
       "category_raw": "Synth Voice / Quad / Sequencer / MIDI / Quantizer",
       "is_available": "discontinued",
-      "description": "Synth voice",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Mutable Instruments",
@@ -5574,11 +5944,12 @@
       "category": "VCA",
       "category_raw": "Attenuator / CV Modulation / Mixer / VCA / Panning / Quad / Sequ",
       "is_available": "available",
-      "description": null,
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Mutable Instruments",
@@ -5587,11 +5958,12 @@
       "category": "SEQ",
       "category_raw": "Sequencer",
       "is_available": "discontinued",
-      "description": "Pattern generator",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Mutable Instruments",
@@ -5600,11 +5972,12 @@
       "category": "MIX",
       "category_raw": "Multiple / Mixer",
       "is_available": "discontinued",
-      "description": "Multiple/mixer",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Mutable Instruments",
@@ -5613,11 +5986,12 @@
       "category": "VCO",
       "category_raw": "Filter / VCA / Oscillator",
       "is_available": "discontinued",
-      "description": "Filter/VCA",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Mutable Instruments",
@@ -5626,11 +6000,12 @@
       "category": "VCO",
       "category_raw": "Envelope Generator / Clock Generator / Digital / Frequency Divider / Function Generator / LFO / Oscillator",
       "is_available": "discontinued",
-      "description": "Tides",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     },
     {
       "brand": "Mutable Instruments",
@@ -5639,11 +6014,12 @@
       "category": "VCO",
       "category_raw": "MIDI / Sequencer / Oscillator / Quad",
       "is_available": "discontinued",
-      "description": "MIDI/CV converter",
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "access_basis": "unknown",
+      "evidence_status": "CATALOG_OBSERVED"
     }
   ],
   "full_spec_modules": [

@@ -47,6 +47,8 @@ def populate_catalog_from_curated_modules(db: Session) -> Dict[str, Any]:
             continue
 
         # Create catalog entry
+        source = module_data.get("source") or "ModularGrid"
+        lead = source in ("ModularGrid", "ModularGridCSV")
         catalog_entry = ModuleCatalog(
             slug=slug,
             brand=module_data["brand"],
@@ -55,7 +57,10 @@ def populate_catalog_from_curated_modules(db: Session) -> Dict[str, Any]:
             category=module_data["module_type"],
             manufacturer_url=module_data.get("manufacturer_url"),
             is_available="available",  # Assume available unless specified
-            source=module_data.get("source") or "ModularGrid",
+            source=source,
+            # ModularGrid-derived rows are discovery leads only (spec 003 D1).
+            access_basis="unknown" if lead else None,
+            evidence_status="CATALOG_OBSERVED" if lead else None,
         )
 
         db.add(catalog_entry)
@@ -125,6 +130,8 @@ def import_from_modulargrid_csv(db: Session, csv_path: str) -> Dict[str, Any]:
                         modulargrid_url=row.get("ModularGrid URL", "").strip() or None,
                         is_available="available",
                         source="ModularGridCSV",
+                        access_basis="unknown",
+                        evidence_status="CATALOG_OBSERVED",
                     )
 
                     db.add(catalog_entry)
