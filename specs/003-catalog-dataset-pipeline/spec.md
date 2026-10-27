@@ -2,6 +2,21 @@
 
 Status: DRAFT (2026-10-16). Filled by Opus 5.5 via OpenRouter from the repo docs and code listed under Sources. Each claim is labeled `[OBSERVED: <file>]` or `[INFERRED]`. The operator must confirm every `[INFERRED]` item before planning.
 
+## Owner decisions (2026-10-27)
+
+Recorded after the T001 review. These are confirmed and override the `[INFERRED]` text below where they differ. The other open questions are still open, so T001 stays open.
+
+- **D1 ModularGrid-derived identity layer: keep as discovery leads only.** `seed-phase2-v1.json` is ModularGrid-derived: its 703 brand names and 376 module identities came from a browser scrape. It is not "sealed research" (see `backend/DATA_SOURCES.md`, corrected 2026-10-17). Its spec values were already archived or nulled on 2026-10-17. What remains:
+  - Brand names and module identities stay, with `access_basis = unknown` and evidence status `CATALOG_OBSERVED`.
+  - The scraped module descriptions are removed.
+  - These rows are never bulk-published. Policy: unknown access basis blocks bulk publication.
+  - A row becomes canonical only after a manufacturer page or manual confirms it.
+  - A module whose HP still carries `needs_reverify` cannot be placed in a rig until it is re-verified.
+- **D2 Automated enrichment: manufacturer pages and manuals only.**
+  - The fetch job targets official manufacturer product pages and manuals (`access_basis = official_publication`).
+  - Retailer pages (Perfect Circuit, Thomann and others) are allowed only as one-off manual lookups, recorded as `RETAILER_OBSERVED` (`access_basis = manual_research`). They are never canonical and never bulk-crawled.
+  - ModularGrid is never fetched.
+
 ## Sources
 
 - `data/synth-catalog/README.md`
@@ -18,7 +33,7 @@ PatchHive's curated catalog is small: 25 brands, 32 full-spec modules, and 7 cas
 
 This feature grows the module and case catalog from external sources. It does the following:
 
-1. Scrapes evidence from official and retailer product pages.
+1. Scrapes evidence from official manufacturer product pages and manuals (D2; retailers are manual lookups only).
 2. Filters that evidence against the provenance packet.
 3. Builds a versioned overlay.
 4. Writes a dry-run receipt.
@@ -37,7 +52,7 @@ The pipeline never invents a spec. A missing value stays null or `NOT_COMPUTABLE
 In scope:
 
 - Building target batches of catalog rows that need enrichment, starting with HP [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
-- Scraping official manufacturer product pages, then retailer product-detail pages, for HP evidence [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
+- Scraping official manufacturer product pages and manuals for HP evidence (D2). The current script also falls back to retailer product-detail pages [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]; T022 removes that fallback.
 - Writing raw, checkpointed result files that can resume [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - Filtering, overlay versioning, and residual retry batches [INFERRED].
 - Running a dry-run admission with a receipt, followed by the real admission [OBSERVED: data/synth-catalog/README.md].
@@ -286,9 +301,9 @@ Privacy: catalog data is public product specs. Keep any private source material 
 - **FR-001**: The fetch job MUST read targets from a file of `{brand, name, slug}` rows and MUST support a limit [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **FR-002**: The fetch job MUST refuse to start without provider credentials [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **FR-003**: The fetch job MUST NOT start or resume without a recorded budget approval [INFERRED].
-- **FR-004**: The fetch job MUST try official manufacturer product URLs before retailer product-detail URLs and MUST cap attempts at 6 per target [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
+- **FR-004**: The fetch job MUST fetch only official manufacturer product URLs and manuals, and MUST cap attempts at 6 per target (D2). It MUST NOT fetch retailer or community-catalog pages.
 - **FR-005**: The fetch job MUST NOT use or extract from search-result pages [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
-- **FR-006**: The fetch job MUST skip retailer pages that do not mention the module name [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
+- **FR-006**: The fetch job MUST skip pages that do not mention the module name. A retailer value MAY be recorded only from a one-off manual lookup, as `RETAILER_OBSERVED` with `access_basis = manual_research` (D2).
 - **FR-007**: The fetch job MUST discard extracted HP outside the band of 1 to 42 [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **FR-008**: The fetch job MUST rate-limit requests with a delay between scrapes [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **FR-009**: The fetch job MUST checkpoint results after each target and MUST support resume by slug [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
@@ -326,6 +341,9 @@ Privacy: catalog data is public product specs. Keep any private source material 
 
 - **FR-030**: Each import MUST record a run ID, timestamps, and imported, skipped, and processed counts [OBSERVED: backend/DATA_SOURCES.md].
 - **FR-031**: Rollback MUST be possible per run, using the run ID and receipt, without deleting rows that predate the run [INFERRED].
+- **FR-033**: ModularGrid-derived catalog rows MUST carry `access_basis = unknown` and evidence status `CATALOG_OBSERVED`, MUST NOT carry ModularGrid-derived descriptions, and MUST be excluded from any bulk publication or export (D1).
+- **FR-034**: A ModularGrid-derived row MUST become canonical only through manufacturer or manual confirmation recorded with its source URL (D1).
+- **FR-035**: Rack placement MUST refuse a module whose HP is flagged `needs_reverify` until it is re-verified (D1).
 - **FR-032**: No provider or model output MAY move a row past `EVIDENCE_ONLY` without the deterministic filter and operator admission (constitution principle 4) [INFERRED].
 
 ## Key entities
@@ -377,8 +395,8 @@ Privacy: catalog data is public product specs. Keep any private source material 
 ## Open questions
 
 - **NOT_COMPUTABLE: Fetch cost and budget.** The per-batch Firecrawl cost, the budget ceiling, and where budget approval is recorded are not stated in the sources.
-- **NOT_COMPUTABLE: Retailer scraping permission.** Permission status for scraping Perfect Circuit and other retailer pages is unknown. Policy says bulk crawling requires permission [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md], and result rows carry `RIGHTS_UNKNOWN`. Do not assume any legal status.
-- **NOT_COMPUTABLE: Conflict between documents.** `backend/DATA_SOURCES.md` says "No Unauthorized Scraping: All data manually curated." The Firecrawl pipeline scrapes pages. The operator must reconcile this before admission of scraped rows.
+- **RESOLVED (D2): Retailer scraping permission.** There is no automated retailer crawling. Retailer values come only from one-off manual lookups.
+- **RESOLVED (D1, D2): Conflict between documents.** Automated fetching is limited to official manufacturer pages and manuals. The ModularGrid-derived seed is a discovery lead, not curated canon.
 - **NOT_COMPUTABLE: Access basis for scraped rows.** Policy lists allowed values, but none is assigned to Firecrawl output.
 - **NOT_COMPUTABLE: Thomann coverage.** The script docstring names Thomann, but the extracted URL patterns show none.
 - **NOT_COMPUTABLE: File conventions.** The schemas and naming for residual-N targets files, `*.filtered.json`, and `overlays/*-vN.json` do not appear in the sources.

@@ -26,6 +26,11 @@
 > - ModularGrid is never fetched. `scripts/check_no_modulargrid.py` runs in CI and the fetch
 >   layers deny `modulargrid.net`.
 
+> **Owner decisions (2026-10-27, spec 003 D1/D2).**
+> - The remaining ModularGrid-derived identities (703 brands, 376 modules) stay only as discovery leads (`access_basis = unknown`, `CATALOG_OBSERVED`). Their scraped descriptions are removed. They are never bulk-published, and a row becomes canonical only after manufacturer or manual confirmation.
+> - Modules whose HP is flagged `needs_reverify` cannot be placed until re-verified.
+> - Automated enrichment fetches official manufacturer pages and manuals only. Retailer values come from one-off manual lookups as `RETAILER_OBSERVED`.
+
 ## Overview
 
 This document provides complete provenance tracking for all data in the PatchHive database, in accordance with ABX-Core v1.3 SEED principles (no mystery data, full traceability).
