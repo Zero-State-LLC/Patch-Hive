@@ -1,8 +1,9 @@
 # Spec 006 Deploy Notes (Cloudflare Edge + Clef)
 
 Status: code for T010, T020, T060, T070, T080, T090 is implemented and tested in-repo.
-T030, T040 and T050 are DEFERRED operator actions. Nothing in this repository touches
-Cloudflare, and no real hostnames, account ids, or secrets are recorded here.
+T030 is PARTIAL (frontend live, API base pending T040). T040 and T050 are DEFERRED operator
+actions. The only Cloudflare config in this repository is `frontend/wrangler.jsonc`, which
+names the operator-chosen frontend hostname; no account ids or secrets are recorded here.
 
 ## Operator-locked decisions
 
@@ -21,7 +22,7 @@ cannot reach GATES_PASSED from config alone.
 
 | Task | Action | Status | Repo scaffolding |
 | --- | --- | --- | --- |
-| T030 | Cloudflare Pages project for the Vite frontend | DEFERRED, operator | `VITE_API_BASE_URL` documented in `.env.example` (read by `frontend/src/lib/api.ts`) |
+| T030 | Cloudflare edge deploy for the Vite frontend | PARTIAL, API base pending T040 | `frontend/wrangler.jsonc` (Workers static assets); `VITE_API_BASE_URL` documented in `.env.example` (read by `frontend/src/lib/api.ts`) |
 | T040 | Publish API hostname and restrict CORS to the exact origin | DEFERRED, operator-locked | `CORS_ORIGINS` exact-origin gate in `backend/core/ops/edge_readiness.py` |
 | T050 | Bind Hyperdrive to the Neon staging branch | DEFERRED, operator | none; existing `DATABASE_URL` path is unchanged |
 
@@ -30,10 +31,18 @@ existing database layer; it does not require Hyperdrive and does not change pers
 
 ### T030 checklist (operator)
 
-1. Create the Pages project from `frontend/` (build `npm run build`, output `dist`).
-2. Set `VITE_API_BASE_URL` to the operator-locked API hostname plus `/api`.
-3. Attach the operator-locked custom domain.
-4. Record the build receipt (commit SHA, Pages deployment id) as a checklist receipt.
+Shipped on Workers static assets instead of Pages (Cloudflare's current recommendation for
+static sites): `npx wrangler deploy` from `frontend/` uploads `dist` with SPA fallback, and a
+minimal `frontend/worker/index.ts` 301s `www` to the apex.
+
+1. Create the edge project from `frontend/` (build `npm run build`, output `dist`). DONE: Worker `patchhive-frontend`.
+2. Set `VITE_API_BASE_URL` to the operator-locked API hostname plus `/api`. PENDING: blocked on T040; builds currently fall back to `http://localhost:8000/api`.
+3. Attach the operator-locked custom domain. DONE: `patch-hive.com` (custom domain), `www.patch-hive.com` redirects to it; the shared `workers.dev` route is disabled.
+4. Record the build receipt (commit SHA, deployment id) as a checklist receipt.
+
+Receipt, 2026-10-26: built from `7a7791f`, Worker version `23639333-97bc-490d-bf11-8ae6ecfff132`.
+Production bundle verified free of demo credentials and seed-file hints. Redeploy after
+step 2 and append a new receipt line.
 
 ### T040 checklist (operator)
 
