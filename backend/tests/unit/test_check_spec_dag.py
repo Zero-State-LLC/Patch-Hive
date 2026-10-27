@@ -57,3 +57,30 @@ def test_cross_spec_dependency_resolves_and_spec_cycle_is_detected(tmp_path):
 def test_literal_newline_in_task_line_is_an_error(tmp_path):
     _feature(tmp_path, "001-a", "- [x] T010 One.\\n- [x] T011 Two.\n")
     assert _codes(tmp_path) == ["LITERAL-NEWLINE"]
+
+
+def test_ready_lists_open_tasks_with_done_dependencies_and_subtasks(tmp_path):
+    _feature(
+        tmp_path,
+        "001-a",
+        "- [x] T001 Confirm\n"
+        "- [ ] T002 Plan\n  - depends_on: [T001]\n"
+        "- [ ] T010 Tests\n  - depends_on: [T002]\n"
+        "- [ ] T020 Parent\n  - [x] T020a Code\n  - [ ] T020b Operator\n",
+    )
+    _feature(tmp_path, "002-b", "- [ ] T010 Downstream\n  - depends_on: [001:T002]\n")
+    tasks, errors, _ = module.check(tmp_path)
+    assert errors == []
+    assert module.ready(tasks) == ["001:T002", "001:T020b"]
+
+
+def test_help_prints_usage_without_scanning(capsys):
+    assert module.main(["--help"]) == 0
+    assert "--ready" in capsys.readouterr().out
+
+
+def test_ready_excludes_tasks_with_undefined_dependencies(tmp_path):
+    _feature(tmp_path, "001-a", "- [ ] T010 Blocked\n  - depends_on: [T099]\n- [ ] T020 Free\n")
+    tasks, errors, _ = module.check(tmp_path)
+    assert [e.split(": ", 1)[1].split()[0] for e in errors] == ["UNDEFINED"]
+    assert module.ready(tasks) == ["001:T020"]

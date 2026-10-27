@@ -29,6 +29,10 @@
   - [x] T061b Add GrokBot/Firecrawl acquisition brief and coverage reporter.
   - [x] T061b2 Define evidence-to-case promotion workflow and harden admission checks.
   - [ ] T061c Promote rights-cleared evidence into a representative reviewed pilot and freeze corpus SHA. Tracked as 007 T010b.
+    - depends_on: [T061b2, 007:T010b]
   - [ ] T061d Run baseline vs Jev-assisted evaluation and propose thresholds for operator approval. Tracked as 007 T020b and T030b.
+    - depends_on: [T061c, 007:T020b, 007:T030b]
 - [ ] T062 Retain SHA-pinned evaluation receipt. Tracked as 007 T060b.
+  - depends_on: [T061, 007:T060b]
 - [ ] T070 Staging enablement only after gate passes. Tracked as 007 T050b.
+  - depends_on: [T061, 007:T050b]
