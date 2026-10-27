@@ -9,6 +9,15 @@ import { useAuthStore } from "@/lib/store";
 
 type AuthMode = "signin" | "register";
 
+// Must match scripts/seed_golden_demo.py (Admin/Admin is NOT a real account).
+// Dev builds only: Vite folds this to null in production, so the strings never ship.
+const DEMO_ACCOUNTS = import.meta.env.DEV
+  ? {
+      user: { username: "golden_demo", password: "demo-pass" },
+      admin: { username: "admin_demo", password: "admin-pass" },
+    }
+  : null;
+
 export default function LoginPage() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
@@ -49,18 +58,10 @@ export default function LoginPage() {
     }
   };
 
-  // Must match scripts/seed_golden_demo.py (Admin/Admin is NOT a real account).
-  const fillDemoUser = () => {
+  const fillDemo = (account: { username: string; password: string }) => {
     setMode("signin");
-    setUsername("golden_demo");
-    setPassword("demo-pass");
-    setError("");
-  };
-
-  const fillDemoAdmin = () => {
-    setMode("signin");
-    setUsername("admin_demo");
-    setPassword("admin-pass");
+    setUsername(account.username);
+    setPassword(account.password);
     setError("");
   };
 
@@ -208,23 +209,35 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="auth-demo">
-            <p className="muted">Local / Docker staging demo accounts (after golden seed):</p>
-            <p>
-              User: <code>golden_demo</code> / <code>demo-pass</code>
-            </p>
-            <p>
-              Admin: <code>admin_demo</code> / <code>admin-pass</code>
-            </p>
-            <div className="auth-demo-actions">
-              <button type="button" className="button button-secondary" onClick={fillDemoUser}>
-                Fill demo user
-              </button>
-              <button type="button" className="button button-secondary" onClick={fillDemoAdmin}>
-                Fill demo admin
-              </button>
+          {DEMO_ACCOUNTS ? (
+            <div className="auth-demo">
+              <p className="muted">Local / Docker staging demo accounts (after golden seed):</p>
+              <p>
+                User: <code>{DEMO_ACCOUNTS.user.username}</code> /{" "}
+                <code>{DEMO_ACCOUNTS.user.password}</code>
+              </p>
+              <p>
+                Admin: <code>{DEMO_ACCOUNTS.admin.username}</code> /{" "}
+                <code>{DEMO_ACCOUNTS.admin.password}</code>
+              </p>
+              <div className="auth-demo-actions">
+                <button
+                  type="button"
+                  className="button button-secondary"
+                  onClick={() => fillDemo(DEMO_ACCOUNTS.user)}
+                >
+                  Fill demo user
+                </button>
+                <button
+                  type="button"
+                  className="button button-secondary"
+                  onClick={() => fillDemo(DEMO_ACCOUNTS.admin)}
+                >
+                  Fill demo admin
+                </button>
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <p className="auth-back muted">
             <Link to="/">← Back to workspace home</Link>

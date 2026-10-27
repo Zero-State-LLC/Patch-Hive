@@ -340,10 +340,12 @@ export default function CasesPage() {
       {state === "error" ? (
         <div className="panel" role="alert">
           <p className="status status-danger">{error}</p>
-          <p className="muted">
-            Dry-run seed lives in <code>data/cases/seed-v1.json</code>. Load with the catalog
-            populator against your API database when ready.
-          </p>
+          {import.meta.env.DEV ? (
+            <p className="muted">
+              Dry-run seed lives in <code>data/cases/seed-v1.json</code>. Load with the catalog
+              populator against your API database when ready.
+            </p>
+          ) : null}
           <button className="button button-primary" type="button" onClick={() => void load()}>
             Retry
           </button>
@@ -354,7 +356,13 @@ export default function CasesPage() {
         <div className="panel">
           <p className="status status-warning">No catalog cases match these filters.</p>
           <p className="muted">
-            Import <code>data/cases/seed-v1.json</code> (not dry-run) or clear filters.
+            {import.meta.env.DEV ? (
+              <>
+                Import <code>data/cases/seed-v1.json</code> (not dry-run) or clear filters.
+              </>
+            ) : (
+              "Clear filters to see more cases."
+            )}
           </p>
         </div>
       ) : null}

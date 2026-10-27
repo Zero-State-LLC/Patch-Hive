@@ -1144,8 +1144,16 @@ export default function RackBuilderPage() {
           ) : null}
           {!casesLoading && catalogCases.length === 0 && legacyCases.length === 0 ? (
             <p className="status status-warning" style={{ marginTop: "var(--space-3)" }}>
-              No Eurorack cases available. Import <code>data/cases/seed-v1.json</code> via the
-              catalog populator, or open <Link to="/cases">Cases</Link>.
+              No Eurorack cases available.{" "}
+              {import.meta.env.DEV ? (
+                <>
+                  Import <code>data/cases/seed-v1.json</code> via the catalog populator, or
+                  open{" "}
+                </>
+              ) : (
+                "Open "
+              )}
+              <Link to="/cases">Cases</Link>.
             </p>
           ) : null}
 
