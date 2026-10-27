@@ -198,11 +198,15 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     for row in list(phase2.get("catalog_modules") or []) + list(phase3.get("catalog_modules") or []):
         _schedule_catalog(plan, catalog, row, modulargrid_url=row.get("modulargrid_url"))
 
+    review = _load_optional(MAKER_REVIEW)
     for version in range(1, CATALOG_ADDITIONS_LATEST + 1):
         additions = CATALOG / "overlays" / f"catalog-additions-v{version}.json"
         if additions.is_file():
             for row in _load(additions).get("rows") or []:
-                _schedule_catalog(plan, catalog, row, modulargrid_url=None)
+                if (reviewed := _reviewed(row, review)) is not None:
+                    _schedule_catalog(plan, catalog, reviewed, modulargrid_url=None)
+    for row in review.get("catalog_rows") or []:
+        _schedule_catalog(plan, catalog, row, modulargrid_url=None)
 
     for row in phase2.get("full_spec_modules") or []:
         _schedule_module(
@@ -242,6 +246,9 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
         for version in range(1, POWER_OVERLAY_LATEST + 1)
         if (CATALOG / "overlays" / f"module-power-depth-v{version}.json").is_file()
     ]
+    for overlay in overlays:
+        reviewed = (_reviewed(entry, review) for entry in overlay.get("entries") or [])
+        overlay["entries"] = [entry for entry in reviewed if entry is not None]
     # A manufacturer-verified entry is authoritative for its module: older
     # unverified entries for the same module are skipped so their values can
     # never fill a field the verified source left empty.
@@ -264,9 +271,31 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     return plan
 
 
+# Owner-review decisions: renames that re-key misnamed crawl entries, and catalog rows for
+# the products those pages actually describe (spec 003 conflict review, 2026-10-27).
+MAKER_REVIEW = CATALOG / "overlays" / "maker-review-v1.json"
+
+
+def _reviewed(entry: dict[str, Any], review: dict[str, Any]) -> dict[str, Any] | None:
+    """The overlay entry or catalog row under the product name its maker page describes.
+
+    None when the review found the page is not a Eurorack module.
+    """
+    url = entry.get("source_url") or entry.get("manufacturer_url") or ""
+    for rename in review.get("renames") or []:
+        if (
+            entry.get("brand") == rename["brand"]
+            and entry.get("name") == rename["name"]
+            and url.startswith(rename["url_prefix"])
+        ):
+            return None if rename.get("not_module") else {**entry, "name": rename["to"]}
+    return entry
+
+
 PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "modulargrid-reverify-v1.json",
     CATALOG / "provenance" / "maker-crawl-v2-rail-fix-v1.json",
+    CATALOG / "provenance" / "maker-review-v1.json",
 )
 ARCHIVE_FIELDS = {
     "modules": {
@@ -393,7 +422,8 @@ def _schedule_provenance(
         relabel = any(item["action"] == "relabel" for item in todo)
         if not nulls and not relabel and all(item["action"] == "keep" for item in todo):
             continue
-        _reverify_row(plan, batch, table, row_key, brand, name, nulls, relabel, manifest.get("flag_reverify", True))
+        flag = row.get("flag_reverify", manifest.get("flag_reverify", True))
+        _reverify_row(plan, batch, table, row_key, brand, name, nulls, relabel, flag)
         for field_name in nulls:
             state[field_name] = None
         stats["nulled_values"] += len(nulls)
@@ -401,7 +431,7 @@ def _schedule_provenance(
             state["verification_status"] = "unverified"
             state["verification_source_url"] = None
             stats["relabeled_rows"] += 1
-        if manifest.get("flag_reverify", True):
+        if flag:
             stats["flagged_rows"] += 1
     if markers:
         _archive_markers(plan, batch, markers)

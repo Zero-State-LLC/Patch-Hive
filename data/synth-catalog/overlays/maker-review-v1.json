@@ -1,0 +1,101 @@
+{
+ "dataset_version": "maker-review-v1",
+ "created": "2026-10-27",
+ "policy": "Owner-review decisions for crawl identities. A rename re-keys every power/depth overlay entry with that brand, name and source page (url_prefix) to the product the page actually describes. A rename marked not_module drops that page's entries and catalog rows: it is not a Eurorack module. catalog_rows are insert-if-absent, sourced from the maker's own page. Values are never written here; they stay in the overlays.",
+ "renames": [
+  {
+   "brand": "ALM Busy Circuits",
+   "name": "MCO",
+   "url_prefix": "https://busycircuits.com/pages/alm021",
+   "to": "MCO (Legacy)",
+   "why": "alm021 is the legacy MCO; the current MCO is alm046"
+  },
+  {
+   "brand": "Atonal Circuits",
+   "name": "SEE",
+   "url_prefix": "https://www.atonal.be/see/",
+   "to": "SEE (V1)",
+   "why": "this page carries the V1 legacy specs; the store page is the current SEE"
+  },
+  {
+   "brand": "Sovage Engineering",
+   "name": "CHICANE",
+   "url_prefix": "https://www.sovageengineering.com/product-page/chicane-1u",
+   "to": "CHICANE 1U",
+   "why": "the 1U Intellijel tile (14 HP), not the 4 HP Eurorack module; kept out of the Eurorack catalog",
+   "not_module": true
+  },
+  {
+   "brand": "TLM Audio",
+   "name": "ST MODULAR",
+   "url_prefix": "https://www.tlm-audio.com/product-page/st-modular-langer-arm",
+   "to": "LANGER ARM (1U & 3U Expansion)",
+   "why": "ST MODULAR is TLM's product-line prefix; this page is an 84 HP expansion, not a module",
+   "not_module": true
+  },
+  {
+   "brand": "TLM Audio",
+   "name": "ST MODULAR",
+   "url_prefix": "https://www.tlm-audio.com/product-page/st-modular-cv-pan",
+   "to": "CV PAN",
+   "why": "ST MODULAR is TLM's product-line prefix"
+  },
+  {
+   "brand": "Wackylab",
+   "name": "Lords Of Chaos",
+   "url_prefix": "https://www.wackylab.ch/product/lords-of-chaos-4hp",
+   "to": "Lords Of Chaos 4HP",
+   "why": "the 4 HP diode version; the stored Lords Of Chaos row is the 10 HP tube version"
+  }
+ ],
+ "catalog_rows": [
+  {
+   "brand": "ALM Busy Circuits",
+   "name": "MCO (Legacy)",
+   "hp": 6,
+   "manufacturer_url": "https://busycircuits.com/pages/alm021",
+   "source": "ManufacturerCrawl",
+   "access_basis": "official_publication"
+  },
+  {
+   "brand": "Atonal Circuits",
+   "name": "SEE",
+   "hp": 2,
+   "manufacturer_url": "https://www.atonal.be/store/SEE-p551033267",
+   "source": "ManufacturerCrawl",
+   "access_basis": "official_publication"
+  },
+  {
+   "brand": "Atonal Circuits",
+   "name": "SEE (V1)",
+   "hp": 2,
+   "manufacturer_url": "https://www.atonal.be/see/",
+   "source": "ManufacturerCrawl",
+   "access_basis": "official_publication"
+  },
+  {
+   "brand": "TLM Audio",
+   "name": "CV PAN",
+   "hp": 6,
+   "manufacturer_url": "https://www.tlm-audio.com/product-page/st-modular-cv-pan",
+   "source": "ManufacturerCrawl",
+   "access_basis": "official_publication"
+  },
+  {
+   "brand": "Wackylab",
+   "name": "Lords Of Chaos 4HP",
+   "hp": 4,
+   "manufacturer_url": "https://www.wackylab.ch/product/lords-of-chaos-4hp-diodes-distortion/",
+   "source": "ManufacturerCrawl",
+   "access_basis": "official_publication"
+  },
+  {
+   "brand": "Sovage Engineering",
+   "name": "CHICANE",
+   "hp": 4,
+   "manufacturer_url": "https://www.sovageengineering.com/product-page/chicane",
+   "source": "ManufacturerCrawl",
+   "access_basis": "official_publication"
+  }
+ ]
+}
