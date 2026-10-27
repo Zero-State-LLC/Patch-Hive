@@ -1,33 +1,158 @@
 {
   "mode": "dry-run",
-  "database": "127.0.0.1:5432/patchhive_population_test",
+  "database": "127.0.0.1:5432/patchhive_test",
   "inserts": {
+    "catalog_value_archive_markers": 1,
     "manufacturers": 703,
-    "module_catalog": 564,
+    "module_catalog": 3878,
     "modules_full_spec": 3,
-    "modules_candidates": 179,
-    "modules_power_targets": 348
+    "modules_power_targets": 3601
   },
   "updates": {
-    "hp_overlay": 377,
-    "power_depth_overlay": 12
+    "hp_overlay": 229,
+    "power_depth_overlay": 41
   },
-  "conflicts": [],
+  "conflicts": [
+    {
+      "table": "modules",
+      "brand": "ALM Busy Circuits",
+      "name": "MCO",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Atonal Circuits",
+      "name": "SEE",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Joranalogue Audio Design",
+      "name": "Dim 2",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Mutable Instruments",
+      "name": "Braids",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Mutable Instruments",
+      "name": "Clouds",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Mutable Instruments",
+      "name": "Marbles",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Mutable Instruments",
+      "name": "Plaits",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Mutable Instruments",
+      "name": "Rings",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Mutable Instruments",
+      "name": "Stages",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Sovage Engineering",
+      "name": "CHICANE",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "TLM Audio",
+      "name": "ST MODULAR",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Verbos Electronics",
+      "name": "Complex Oscillator",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Verbos Electronics",
+      "name": "Foundation Oscillator",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Verbos Electronics",
+      "name": "Mini Horse",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Verbos Electronics",
+      "name": "Polyphonic Envelope",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Verbos Electronics",
+      "name": "Voltage Multistage 16",
+      "reason": "verification_conflict"
+    },
+    {
+      "table": "modules",
+      "brand": "Wackylab",
+      "name": "Lords Of Chaos",
+      "reason": "verification_conflict"
+    }
+  ],
   "unmatched": {
-    "hp": 23,
-    "power_depth": 16
+    "hp": 34,
+    "power_depth": 41
   },
   "verification_on_planned_modules": {
-    "unverified": 351,
-    "verified": 178,
-    "corrected": 1
+    "flagged": 1,
+    "verified": 3601,
+    "unverified": 2
+  },
+  "provenance": {
+    "modulargrid-provenance-v1": {
+      "archived_values": 0,
+      "already_archived": 0,
+      "rows_missing": 889,
+      "null_in_db": 0,
+      "by_action": {},
+      "nulled_values": 0,
+      "relabeled_rows": 0,
+      "flagged_rows": 0,
+      "rows_already_processed": 0
+    }
   },
   "cases": {
     "input_records": 50,
     "inserts": 50,
     "updates": 0,
+    "unchanged": 0,
     "rejected": 0,
     "warnings": []
   },
-  "destructive_sql": false
+  "destructive_sql": false,
+  "provenance_counts_before": {
+    "archive_rows": 0,
+    "modules_needs_reverify": 0,
+    "module_catalog_needs_reverify": 0,
+    "modules_verified": 0,
+    "modules_legacy_source_modulargrid": 0,
+    "module_catalog_with_modulargrid_url": 0
+  }
 }

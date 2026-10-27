@@ -85,6 +85,7 @@ NON_MODULE = re.compile(
     r"terms|policy|dealers|distributors|press|careers|tag/|category/|author/|page/\d)",
     re.I,
 )
+HP_MIN, HP_MAX = 1, 42  # FR-007: Eurorack module widths outside 1..42 HP are discarded
 HP_LABELLED = [
     r"(?:[Ww]idth|[Ss]ize|[Pp]anel)\s*[:=\-]?\s*(\d{1,3})\s*(?:HP|TE)\b",
     r"(\d{1,3})\s*(?:HP|TE)\s+(?:wide|width)\b",
@@ -399,7 +400,7 @@ def extract(brand: str, url: str, body: str, method: str) -> dict | None:
         out[field] = val
         if val is not None:
             sources[field] = url
-    if out["hp"] is None or not (1 <= out["hp"] <= 104):
+    if out["hp"] is None or not (HP_MIN <= out["hp"] <= HP_MAX):
         return None
     if out["depth_mm"] is not None and not (5 <= out["depth_mm"] <= 200):
         out["depth_mm"] = None
@@ -514,9 +515,9 @@ def deterministic(brand: str, url: str, text: str, name: str | None, body: str =
         return None
     window = spec_window(text, 2400)
     # A labelled width wins over stray mentions (menus list cases as "104HP").
-    hps = {int(m) for pat in HP_LABELLED for m in re.findall(pat, text, re.I) if 1 <= int(m) <= 104}
+    hps = {int(m) for pat in HP_LABELLED for m in re.findall(pat, text, re.I) if HP_MIN <= int(m) <= HP_MAX}
     if not hps:
-        hps = {int(m) for pat in HP for m in re.findall(pat, window, re.I) if 1 <= int(m) <= 104}
+        hps = {int(m) for pat in HP for m in re.findall(pat, window, re.I) if HP_MIN <= int(m) <= HP_MAX}
     if len(hps) != 1:
         return {"ambiguous_hp": sorted(hps)} if hps else None
     det = {"hp": hps.pop(), "power_12v_ma": first_num(P12, window), "power_neg12v_ma": first_num(N12, window), "power_5v_ma": first_num(P5, window), "depth_mm": first_num(DEPTH, window)}

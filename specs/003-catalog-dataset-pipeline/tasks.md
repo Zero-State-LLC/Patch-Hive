@@ -23,7 +23,7 @@
   - depends_on: [T023]
 - [ ] T026 Render pass for script-rendered makers (4ms, Erica) and adapter fixes for Frap, Tiptop and Pittsburgh, under a small approved paid cap.
   - depends_on: [T024]
-- [ ] T025 Build loader overlays from `maker-crawl-v2.json` (insert-if-absent, fill-null, flag disagreements) and load them to staging.
+- [ ] T025 Build loader overlays from `maker-crawl-v2.json` (insert-if-absent, fill-null, flag disagreements) and load them to staging. Overlays built 2026-10-27 (`catalog-additions-v3`, `module-power-depth-v11`; loader dry run: 3,878 catalog rows). Staging load via `db-load.yml` still to run.
   - depends_on: [T024]
 
 ## Foundational
