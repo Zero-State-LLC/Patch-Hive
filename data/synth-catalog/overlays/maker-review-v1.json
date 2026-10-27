@@ -22,7 +22,8 @@
    "name": "CHICANE",
    "url_prefix": "https://www.sovageengineering.com/product-page/chicane-1u",
    "to": "CHICANE 1U",
-   "why": "the 1U Intellijel tile, not the 4 HP Eurorack module"
+   "why": "the 1U Intellijel tile (14 HP), not the 4 HP Eurorack module; kept out of the Eurorack catalog",
+   "not_module": true
   },
   {
    "brand": "TLM Audio",
@@ -53,6 +54,14 @@
    "name": "MCO (Legacy)",
    "hp": 6,
    "manufacturer_url": "https://busycircuits.com/pages/alm021",
+   "source": "ManufacturerCrawl",
+   "access_basis": "official_publication"
+  },
+  {
+   "brand": "Atonal Circuits",
+   "name": "SEE",
+   "hp": 2,
+   "manufacturer_url": "https://www.atonal.be/store/SEE-p551033267",
    "source": "ManufacturerCrawl",
    "access_basis": "official_publication"
   },

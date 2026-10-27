@@ -176,8 +176,8 @@ The last 5 staging conflicts were pages for two different products filed under o
 
 - **ALM MCO:** now the current MCO (alm046, 70/30 mA). The legacy page becomes "MCO (Legacy)" (40/15 mA).
 - **Atonal SEE:** now the current SEE (65/8/0 mA, 41 mm). The V1 page becomes "SEE (V1)" (27/8/0 mA, 26 mm).
-- **Sovage CHICANE:** depth 12 mm and catalog HP 4 from the Eurorack page. The 1U page becomes "CHICANE 1U" with no catalog row. `modules.hp` still holds the 1U tile's 14 and cannot be cleared, so it is flagged and placement waits for re-verification (FR-035).
+- **Sovage CHICANE:** depth 12 mm and catalog HP 4 from the Eurorack page. The 1U page is `not_module`: its catalog addition and power entry are dropped, so the 14 HP tile never becomes a Eurorack row. `modules.hp` still holds the 1U tile's 14 and cannot be cleared, so it is flagged and placement waits for re-verification (FR-035).
 - **TLM "ST MODULAR":** this is TLM's product-line prefix, not a product. The CV PAN page becomes "CV PAN" (35/21 mA). The Langer Arm expansion (84 HP) is `not_module` and is dropped. The ST MODULAR row's values are cleared and the row is flagged.
 - **Wackylab Lords of Chaos:** the stored row is the 10 HP tube version (220/15 mA). The 4 HP diode page becomes "Lords Of Chaos 4HP" (10/10 mA).
 
-Simulated on a staging replica: 12 values archived (10 cleared, 2 HP flags), 5 catalog rows added, no conflicts left, and a second run was a no-op.
+Simulated on a fresh database and on a staging replica. Fresh: the current SEE and MCO and the legacy rows are all present, and nothing named CHICANE 1U, ST MODULAR or Langer Arm. Replica: 12 values archived (10 cleared, 2 HP flags), 4 catalog rows added, no conflicts left, and a second run was a no-op.

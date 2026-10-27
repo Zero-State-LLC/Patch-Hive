@@ -79,3 +79,39 @@ def test_every_review_rename_matches_exactly_one_overlay_entry():
             and (e.get("source_url") or "").startswith(rename["url_prefix"])
         ]
         assert len(hits) == 1, rename["to"]
+
+
+def _catalog_after_review():
+    import json
+
+    review = json.loads(P.MAKER_REVIEW.read_text(encoding="utf-8"))
+    rows = []
+    for name in ("seed-phase2-v1.json", "seed-phase3-v1.json"):
+        rows += json.loads((P.CATALOG / name).read_text(encoding="utf-8")).get("catalog_modules") or []
+    for path in sorted((P.CATALOG / "overlays").glob("catalog-additions-v*.json")):
+        for row in json.loads(path.read_text(encoding="utf-8")).get("rows") or []:
+            if (reviewed := P._reviewed(row, review)) is not None:
+                rows.append(reviewed)
+    rows += review.get("catalog_rows") or []
+    catalog: dict = {}
+    for row in rows:  # insert-if-absent: the first row for a name wins, as in the loader
+        catalog.setdefault((row["brand"], row["name"]), row)
+    return review, catalog
+
+
+def test_every_reviewed_product_has_a_catalog_target_on_a_fresh_database():
+    review, catalog = _catalog_after_review()
+    for rename in review["renames"]:
+        if rename.get("not_module"):
+            assert (rename["brand"], rename["to"]) not in catalog, rename["to"]
+        else:
+            assert (rename["brand"], rename["to"]) in catalog, rename["to"]
+    # The current product keeps its own row when its legacy page is renamed away.
+    assert catalog[("Atonal Circuits", "SEE")]["manufacturer_url"].startswith("https://www.atonal.be/store/")
+    assert catalog[("ALM Busy Circuits", "MCO")]["manufacturer_url"].endswith("/alm046")
+
+
+def test_the_1u_chicane_tile_never_becomes_a_eurorack_row():
+    _, catalog = _catalog_after_review()
+    assert ("Sovage Engineering", "CHICANE 1U") not in catalog
+    assert catalog[("Sovage Engineering", "CHICANE")]["hp"] == 4
