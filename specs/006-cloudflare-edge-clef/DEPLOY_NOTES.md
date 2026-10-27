@@ -14,7 +14,7 @@ Recorded 2026-10-26:
 - Frontend origin: `https://patch-hive.com` (`www` redirects to it).
 - API hostname: `api.patch-hive.com`.
 - API origin: Cloudflare Containers (`edge/api`), not Tunnel.
-- Database: Neon staging branch, pooled endpoint, connected directly from the container (FR-003 amendment pending approval).
+- Database: Neon staging branch, pooled endpoint, connected directly from the container (FR-003 amendment approved 2026-10-26).
 
 Still owned by the operator and NOT set in code or config:
 

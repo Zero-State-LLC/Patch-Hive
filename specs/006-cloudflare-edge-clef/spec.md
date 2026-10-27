@@ -30,7 +30,7 @@ A hostname (`api.patch-hive.com` or operator-chosen) MUST serve the existing Fas
 ### FR-003 Database continuity
 The API MUST use the Neon staging branch through its pooled connection string. No D1 schema migration.
 
-Amended 2026-10-26, pending operator approval: this previously required Hyperdrive. Hyperdrive's connection string is only reachable from the Workers runtime, and the FastAPI container's Postgres driver connects over TCP from inside the container, so Hyperdrive cannot serve it. Hyperdrive stays available for any future Worker-side database client.
+Amended 2026-10-26, approved by the operator 2026-10-26: this previously required Hyperdrive. Hyperdrive's connection string is only reachable from the Workers runtime, and the FastAPI container's Postgres driver connects over TCP from inside the container, so Hyperdrive cannot serve it. Hyperdrive stays available for any future Worker-side database client.
 
 ### FR-004 Clef as DecisionProvider
 Clef MUST implement the Spec 005 DecisionProvider protocol. System One responses (choice / noul / score + optional images) MUST map to DecisionPacket. Clef types MUST NOT leak outside the adapter. Feature flag default off. Fail-closed on timeout, malformed response, or unavailable.
