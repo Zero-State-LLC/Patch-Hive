@@ -1,3 +1,4 @@
+/* Hallmark · design-system: design.md · genre: atmospheric-technical · theme: cyber-hive */
 /**
  * PatchHive Loading Spinner Styles
  * Rotating hex with orbiting signal dots
@@ -9,7 +10,7 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  color: var(--action, #f5a623);
+  color: var(--action);
 }
 
 .loading-spinner {
@@ -124,11 +125,9 @@
 
 /* Loading message */
 .loading-message {
-  color: var(--action, #f5a623);
-  font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+  color: var(--action);
+  font-family: var(--font-ui);
   font-size: 0.875rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
   animation: message-fade 2s ease-in-out infinite;
 }
 

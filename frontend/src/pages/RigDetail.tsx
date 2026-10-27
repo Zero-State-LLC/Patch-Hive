@@ -305,7 +305,7 @@ export default function RigDetailPage() {
       const apiError = error as { response?: { data?: { detail?: string }; status?: number } };
       const detail = apiError.response?.data?.detail;
       if (apiError.response?.status === 402) {
-        setExportStatus("INSUFFICIENT_CREDITS — no debit recorded on the canonical ledger.");
+        setExportStatus("INSUFFICIENT_CREDITS: no debit recorded on the canonical ledger.");
       } else {
         setExportStatus(detail || "Export failed; no successful canonical debit recorded.");
       }
@@ -318,7 +318,6 @@ export default function RigDetailPage() {
     <section aria-labelledby="rig-title">
       <header className="workspace-header">
         <div>
-          <p className="eyebrow">Canonical rig workspace</p>
           <h1 id="rig-title">Rig {rigId}</h1>
           <p className="muted">
             Pick an immutable revision, inspect its runs, and keep personal notes as a mutable
@@ -432,22 +431,22 @@ export default function RigDetailPage() {
             aria-label="Inventory to generation loop"
           >
             <li style={{ marginBottom: "0.5rem" }}>
-              <strong>1 · Confirm inventory</strong>
+              <strong>1. Confirm inventory:</strong>
               <span className="muted">
                 {" "}
-                — photo evidence or manual placements (never auto-confirm)
+                photo evidence or manual placements (never auto-confirm)
               </span>
             </li>
             <li style={{ marginBottom: "0.5rem" }}>
-              <strong>2 · Generate patches</strong>
+              <strong>2. Generate patches:</strong>
               <span className="muted">
                 {" "}
-                — constrained to confirmed modules; empty inventory → NOT_COMPUTABLE
+                constrained to confirmed modules; empty inventory → NOT_COMPUTABLE
               </span>
             </li>
             <li>
-              <strong>3 · Review &amp; export</strong>
-              <span className="muted"> — patches tab; exports debit only via /api/canon</span>
+              <strong>3. Review &amp; export:</strong>
+              <span className="muted"> patches tab; exports debit only via /api/canon</span>
             </li>
           </ol>
 
@@ -499,7 +498,7 @@ export default function RigDetailPage() {
               {inventoryReady
                 ? "Sealed inventory is ready. Generation uses confirmed modules only."
                 : inventorySealed
-                  ? "Inventory is sealed but not ready for generation — resolve candidates or place modules, then retry."
+                  ? "Inventory is sealed but not ready for generation: resolve candidates or place modules, then retry."
                   : "No sealed inventory yet. You can still open evidence confirmation; generation fails closed if no confirmed modules exist on the rig."}
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
@@ -551,8 +550,8 @@ export default function RigDetailPage() {
 
       {!loading && activeTab === "patches" && hasRuns ? (
         <div className="panel" id="panel-patches" role="tabpanel" aria-labelledby="tab-patches">
-          <p className="eyebrow">Run {activeRun?.id ?? "—"}</p>
           <h2>Patch library</h2>
+          <p className="muted">Run {activeRun?.id ?? "none"}</p>
           <p className="muted">
             Canonical patches are immutable. Favorite / tried / notes are personal overlays.
           </p>
@@ -631,7 +630,6 @@ export default function RigDetailPage() {
 
       {!loading && activeTab === "exports" && hasRuns ? (
         <div className="panel" id="panel-exports" role="tabpanel" aria-labelledby="tab-exports">
-          <p className="eyebrow">Canonical monetization boundary</p>
           <h2>Exports</h2>
           <p>
             Available credits: <strong>{credits}</strong>
@@ -671,7 +669,6 @@ export default function RigDetailPage() {
 
       {!loading && activeTab === "gallery" ? (
         <div className="panel" id="panel-gallery" role="tabpanel" aria-labelledby="tab-gallery">
-          <p className="eyebrow">Evidence and revisions</p>
           <h2>Module gallery</h2>
           <p className="muted">
             Confirmed gallery evidence is separated from inferred, disputed, and missing

@@ -15,10 +15,9 @@ export default function AdminExports() {
       <div className="admin-shell">
         <header className="workspace-header">
           <div>
-            <p className="eyebrow">Ops</p>
             <h1>Exports</h1>
             <p className="muted">
-              Unlock, revoke, and invalidate export caches with audit reasons.
+              Grant or revoke export access and clear export caches, each with an audit reason.
             </p>
           </div>
         </header>
@@ -29,8 +28,7 @@ export default function AdminExports() {
           </p>
         ) : null}
         <div className="panel">
-          <p className="eyebrow">Access</p>
-          <h2 style={{ marginTop: 0 }}>Unlock / revoke</h2>
+          <h2 style={{ marginTop: 0 }}>Export access</h2>
           <div className="toolbar">
             <label className="field" style={{ flex: "1 1 12rem" }}>
               Audit reason
@@ -54,10 +52,10 @@ export default function AdminExports() {
               onClick={async () => {
                 if (!exportId) return;
                 await adminApi.unlockExport(Number(exportId), reason || "unlock");
-                setMessage(`Unlocked export ${exportId}`);
+                setMessage(`Granted access to export ${exportId}`);
               }}
             >
-              Unlock
+              Grant
             </button>
             <button
               type="button"
@@ -73,8 +71,7 @@ export default function AdminExports() {
           </div>
         </div>
         <div className="panel">
-          <p className="eyebrow">Cache</p>
-          <h2 style={{ marginTop: 0 }}>Invalidate</h2>
+          <h2 style={{ marginTop: 0 }}>Invalidate cache</h2>
           <div className="toolbar">
             <label className="field" style={{ flex: "1 1 8rem" }}>
               Run ID

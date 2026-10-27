@@ -26,7 +26,6 @@ export default function AdminUsers() {
       <div className="admin-shell">
         <header className="workspace-header">
           <div>
-            <p className="eyebrow">Ops</p>
             <h1>Users</h1>
             <p className="muted">Role changes and credit grants require an audit reason.</p>
           </div>
@@ -55,7 +54,7 @@ export default function AdminUsers() {
               <h2>{user.username}</h2>
               <p className="catalog-card-meta">{user.email}</p>
               <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
-                Role: {user.role} · Display: {user.display_name || "—"}
+                Role: {user.role} · Display: {user.display_name || "unknown"}
               </p>
               <label className="field">
                 Audit reason

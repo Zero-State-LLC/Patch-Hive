@@ -25,18 +25,18 @@ export default function GalleryPage() {
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
           <h2 style={{ margin: 0 }}>Gallery</h2>
-          <p style={{ color: "#aaa" }}>Public publications, sorted by recency.</p>
+          <p style={{ color: "var(--text-muted)" }}>Public publications, sorted by recency.</p>
         </div>
-        <label style={{ color: "#ccc" }}>
+        <label style={{ color: "var(--text-secondary)" }}>
           Export type
           <select
             value={exportType}
             onChange={(event) => setExportType(event.target.value)}
             style={{
               marginLeft: "0.5rem",
-              background: "#0d0d0d",
-              color: "#fff",
-              border: "1px solid #333",
+              background: "var(--surface-inset)",
+              color: "var(--text-primary)",
+              border: "1px solid var(--border)",
               borderRadius: "4px",
               padding: "0.3rem 0.6rem",
             }}
@@ -50,7 +50,7 @@ export default function GalleryPage() {
 
       {loading && <p>Loading gallery...</p>}
       {!loading && publications.length === 0 && (
-        <p style={{ color: "#aaa" }}>No public publications yet.</p>
+        <p style={{ color: "var(--text-muted)" }}>No public publications yet.</p>
       )}
 
       <div
@@ -65,17 +65,17 @@ export default function GalleryPage() {
             to={`/p/${publication.slug}`}
             key={publication.slug}
             style={{
-              background: "#111",
-              border: "1px solid #222",
+              background: "var(--surface-panel)",
+              border: "1px solid var(--surface-raised)",
               borderRadius: "8px",
               padding: "1rem",
-              color: "#fff",
+              color: "var(--text-primary)",
               textDecoration: "none",
             }}
           >
             <h3 style={{ marginTop: 0 }}>{publication.title}</h3>
-            <p style={{ color: "#aaa" }}>{publication.description}</p>
-            <p style={{ color: "#666", fontSize: "0.85rem" }}>
+            <p style={{ color: "var(--text-muted)" }}>{publication.description}</p>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>
               {publication.export_type.toUpperCase()} export
             </p>
           </Link>

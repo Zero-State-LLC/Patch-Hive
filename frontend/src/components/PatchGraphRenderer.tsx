@@ -47,7 +47,6 @@ export default function PatchGraphRenderer({ graph }: { graph: PatchGraph }) {
     <section className="patch-graph" aria-labelledby="patch-graph-title">
       <div className="patch-graph-header">
         <div>
-          <p className="eyebrow">Synchronized graph and cable table</p>
           <h2 id="patch-graph-title">Patch structure</h2>
         </div>
         <div className="graph-controls" aria-label="Graph controls">

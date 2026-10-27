@@ -140,12 +140,12 @@ export default function CaseDetailPage() {
     <section aria-labelledby="case-detail-title">
       <header className="workspace-header">
         <div>
-          <p className="eyebrow">
-            <Link to="/cases">Cases</Link> · {detail.format_family}
-          </p>
           <h1 id="case-detail-title">
-            {detail.manufacturer} — {detail.model}
+            {detail.manufacturer} {detail.model}
           </h1>
+          <p className="muted">
+            <Link to="/cases">Cases</Link>, {detail.format_family}
+          </p>
           <p className="muted">
             Slug <code>{detail.slug}</code> · status {detail.production_status}
             {detail.powered === true
@@ -190,7 +190,7 @@ export default function CaseDetailPage() {
                 Capacity
               </p>
               <h3 style={{ fontSize: "1rem" }}>
-                {rev.capacity_value ?? "—"} {rev.capacity_unit || ""}
+                {rev.capacity_value ?? "unknown"} {rev.capacity_unit || ""}
                 {rev.row_count != null ? ` · ${rev.row_count} row(s)` : ""}
               </h3>
             </div>
@@ -200,7 +200,7 @@ export default function CaseDetailPage() {
               </p>
               <h3 style={{ fontSize: "1rem" }}>
                 {rev.depth_min_mm != null || rev.depth_max_mm != null
-                  ? `${rev.depth_min_mm ?? "—"}–${rev.depth_max_mm ?? "—"} mm`
+                  ? `${rev.depth_min_mm ?? "unknown"}–${rev.depth_max_mm ?? "unknown"} mm`
                   : "Unspecified"}
               </h3>
             </div>
@@ -211,7 +211,7 @@ export default function CaseDetailPage() {
               <ul>
                 {rev.rows.map((r) => (
                   <li key={r.row_index}>
-                    Row {r.row_index}: {r.capacity_value ?? "—"} {r.capacity_unit || ""} (
+                    Row {r.row_index}: {r.capacity_value ?? "unknown"} {r.capacity_unit || ""} (
                     {r.format_family})
                   </li>
                 ))}
@@ -224,9 +224,9 @@ export default function CaseDetailPage() {
               <ul>
                 {rev.power_systems.map((p) => (
                   <li key={p.name}>
-                    {p.name}: +12 {p.current_pos12_ma ?? "—"}mA · −12 {p.current_neg12_ma ?? "—"}mA
-                    · +5 {p.current_pos5_ma ?? "—"}mA
-                    {p.connector_count != null ? ` · ${p.connector_count} headers` : ""}
+                    {p.name}: +12 V {p.current_pos12_ma ?? "unknown"} mA, −12 V{" "}
+                    {p.current_neg12_ma ?? "unknown"} mA, +5 V {p.current_pos5_ma ?? "unknown"} mA
+                    {p.connector_count != null ? `, ${p.connector_count} headers` : ""}
                   </li>
                 ))}
               </ul>
@@ -246,7 +246,7 @@ export default function CaseDetailPage() {
           <ul>
             {detail.sources.slice(0, 12).map((s, i) => (
               <li key={`${s.field_path}-${i}`}>
-                <code>{s.field_path || "—"}</code> · {s.source_type} · {s.confidence}
+                <code>{s.field_path || "unknown"}</code> · {s.source_type} · {s.confidence}
                 {s.policy
                   ? ` · ${s.policy.access_basis}/${s.policy.evidence_status}/${s.policy.review_state}`
                   : ""}

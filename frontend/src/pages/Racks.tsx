@@ -246,7 +246,9 @@ export default function RacksPage() {
                   onClick={() => setSelectedRackId(rack.id)}
                 >
                   <span className="side-item-title">{rack.name}</span>
-                  <span className="side-item-meta">Suggested: {rack.name_suggested || "—"}</span>
+                  <span className="side-item-meta">
+                    Suggested: {rack.name_suggested || "unknown"}
+                  </span>
                 </button>
               ))
             : null}
@@ -266,7 +268,6 @@ export default function RacksPage() {
           <>
             <header className="workspace-header">
               <div>
-                <p className="eyebrow">Rig workspace</p>
                 <h1>{selectedRack.name}</h1>
                 <p className="muted">{selectedRack.description || "No rig notes yet."}</p>
               </div>
@@ -301,9 +302,6 @@ export default function RacksPage() {
               <div style={{ display: "grid", gap: "var(--space-5)" }}>
                 {selectedRack.modules.length === 0 ? (
                   <div className="panel placement-cta" role="region" aria-label="Place modules">
-                    <p className="eyebrow" style={{ marginTop: 0 }}>
-                      Next step
-                    </p>
                     <h2 style={{ marginTop: 0 }}>This rig has no modules yet</h2>
                     <p className="muted">
                       Place catalog modules by row and start HP, or prepare placeable rows from the
@@ -321,7 +319,6 @@ export default function RacksPage() {
                 ) : null}
 
                 <div className="panel">
-                  <p className="eyebrow">Summary</p>
                   <h2 style={{ marginTop: 0 }}>Rig inventory</h2>
                   <div className="stat-row" style={{ marginTop: "var(--space-4)" }}>
                     <div className="stat-block">
@@ -345,7 +342,7 @@ export default function RacksPage() {
                   </div>
                   {selectedRack.case ? (
                     <p className="muted" style={{ marginBottom: 0, marginTop: "var(--space-3)" }}>
-                      Case: {selectedRack.case.brand} — {selectedRack.case.name}
+                      Case: {selectedRack.case.brand} {selectedRack.case.name}
                       {selectedRack.case.catalog_slug
                         ? ` · catalog ${selectedRack.case.catalog_slug}`
                         : " · not linked to normalized catalog"}
@@ -419,7 +416,6 @@ export default function RacksPage() {
                 </div>
 
                 <div className="panel" aria-live="polite">
-                  <p className="eyebrow">Catalog compatibility</p>
                   <h2 style={{ marginTop: 0 }}>Case fit report</h2>
                   {compatLoading ? (
                     <p className="muted">Loading compatibility…</p>
@@ -467,13 +463,13 @@ export default function RacksPage() {
                           </div>
                           {compat.compatibility.overall_status === "incomplete" ? (
                             <p className="muted" style={{ fontSize: "0.9rem" }}>
-                              Soft gaps only — missing power/depth/case rails stay missing (never
+                              Soft gaps only: missing power/depth/case rails stay missing (never
                               invented).
                             </p>
                           ) : null}
                           {compat.compatibility.overall_status === "conflict" ? (
                             <p className="status status-danger" style={{ fontSize: "0.9rem" }}>
-                              Hard fail — overflow, connectors, or rail over budget.
+                              Hard fail: overflow, connectors, or rail over budget.
                             </p>
                           ) : null}
                           {compat.compatibility.warnings?.length ? (
@@ -493,14 +489,14 @@ export default function RacksPage() {
                               <li>
                                 Format: {compat.compatibility.format_check.status}
                                 {compat.compatibility.format_check.message
-                                  ? ` — ${compat.compatibility.format_check.message}`
+                                  ? `: ${compat.compatibility.format_check.message}`
                                   : ""}
                               </li>
                               <li>Physical fit: {compat.compatibility.physical_fit.status}</li>
                               <li>
                                 Connectors: {compat.compatibility.connector_availability.status}
                                 {compat.compatibility.connector_availability.message
-                                  ? ` — ${compat.compatibility.connector_availability.message}`
+                                  ? `: ${compat.compatibility.connector_availability.message}`
                                   : ""}
                               </li>
                               <li>+5V: {compat.compatibility.pos5_compatibility.status}</li>
@@ -641,8 +637,7 @@ export default function RacksPage() {
 
             {activeTab === "exports" ? (
               <div className="panel">
-                <p className="eyebrow">PatchBooks</p>
-                <h2 style={{ marginTop: 0 }}>Exports</h2>
+                <h2 style={{ marginTop: 0 }}>PatchBook exports</h2>
                 <p className="muted">
                   Export actions trigger credit checks at download time. Credits debit only at the
                   canonical boundary.
@@ -668,7 +663,7 @@ export default function RacksPage() {
                     <h3>{module.module?.name || "Unknown module"}</h3>
                     <p className="catalog-card-meta">
                       {module.module?.brand || "Unknown brand"} ·{" "}
-                      {module.module?.module_type || "—"} · {module.module?.hp ?? "—"}HP
+                      {module.module?.module_type || "unknown"} · {module.module?.hp ?? "unknown"}HP
                       {module.module?.depth_mm != null
                         ? ` · depth ${module.module.depth_mm}mm`
                         : " · depth unspecified"}
@@ -715,7 +710,6 @@ export default function RacksPage() {
           </div>
         ) : (
           <div className="panel">
-            <p className="eyebrow">Workspace</p>
             <h2 style={{ marginTop: 0 }}>Select a rig to begin</h2>
             <p className="muted">
               Choose a rig from the list, or create a new one to confirm inventory.
