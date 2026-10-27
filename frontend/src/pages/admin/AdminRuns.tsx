@@ -22,7 +22,6 @@ export default function AdminRuns() {
       <div className="admin-shell">
         <header className="workspace-header">
           <div>
-            <p className="eyebrow">Ops</p>
             <h1>Runs</h1>
             <p className="muted">Generation runs bound to rig revisions and seeds.</p>
           </div>

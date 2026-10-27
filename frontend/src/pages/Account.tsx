@@ -11,7 +11,7 @@ import type { CreditsSummary, UserExportRecord, ReferralSummary, User } from "@/
 function safeHttpUrl(value: string): string | null {
   try {
     const parsed = new URL(value);
-    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
     return parsed.toString();
   } catch {
     return null;
@@ -116,7 +116,6 @@ export default function AccountPage() {
     <section aria-labelledby="account-title">
       <header className="workspace-header">
         <div>
-          <p className="eyebrow">Account</p>
           <h1 id="account-title">Credits & profile</h1>
           <p className="muted">
             PatchHive is free to explore. You only pay when you export something you want to keep.
@@ -127,7 +126,6 @@ export default function AccountPage() {
 
       <div style={{ display: "grid", gap: "var(--space-5)" }}>
         <section className="panel" aria-labelledby="credits-heading">
-          <p className="eyebrow">Ledger</p>
           <h2 id="credits-heading" style={{ marginTop: 0 }}>
             Credits
           </h2>
@@ -136,7 +134,7 @@ export default function AccountPage() {
               <p className="muted" style={{ margin: 0 }}>
                 Canonical balance
               </p>
-              <h3>{credits ? credits.balance : "—"}</h3>
+              <h3>{credits ? credits.balance : "unknown"}</h3>
             </div>
           </div>
           <p
@@ -162,7 +160,7 @@ export default function AccountPage() {
                       <td>{entry.entry_type}</td>
                       <td>{entry.amount}</td>
                       <td>{new Date(entry.created_at).toLocaleString()}</td>
-                      <td className="muted">{entry.description || "—"}</td>
+                      <td className="muted">{entry.description || "unknown"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -174,7 +172,6 @@ export default function AccountPage() {
         </section>
 
         <section className="panel" aria-labelledby="exports-heading">
-          <p className="eyebrow">Downloads</p>
           <h2 id="exports-heading" style={{ marginTop: 0 }}>
             Exports
           </h2>
@@ -200,7 +197,7 @@ export default function AccountPage() {
                     <tr key={String(record.id)}>
                       <td>{record.label}</td>
                       <td className="muted">{record.run_id}</td>
-                      <td>{record.status || "—"}</td>
+                      <td>{record.status || "unknown"}</td>
                       <td>{new Date(record.created_at).toLocaleString()}</td>
                       <td>
                         {record.canRequestToken ? (
@@ -227,7 +224,6 @@ export default function AccountPage() {
         </section>
 
         <section className="panel" aria-labelledby="referrals-heading">
-          <p className="eyebrow">Growth</p>
           <h2 id="referrals-heading" style={{ marginTop: 0 }}>
             Referrals
           </h2>
@@ -259,13 +255,13 @@ export default function AccountPage() {
                   <p className="muted" style={{ margin: 0 }}>
                     Pending
                   </p>
-                  <h3>{referrals.pending_count ?? "—"}</h3>
+                  <h3>{referrals.pending_count ?? "unknown"}</h3>
                 </div>
                 <div className="stat-block">
                   <p className="muted" style={{ margin: 0 }}>
                     Earned
                   </p>
-                  <h3>{referrals.earned_count ?? "—"}</h3>
+                  <h3>{referrals.earned_count ?? "unknown"}</h3>
                 </div>
               </div>
             </>
@@ -278,7 +274,6 @@ export default function AccountPage() {
         </section>
 
         <section className="panel" aria-labelledby="profile-heading">
-          <p className="eyebrow">Identity</p>
           <h2 id="profile-heading" style={{ marginTop: 0 }}>
             Profile
           </h2>

@@ -140,7 +140,7 @@ export default function PatchBookStyleStudioPage() {
       URL.revokeObjectURL(objectUrl);
       setStatus(`Downloaded ${artifact} for ${exportId}`);
     } catch {
-      setStatus("Download failed — is fulfillment enabled and export succeeded?");
+      setStatus("Download failed: is fulfillment enabled and export succeeded?");
     } finally {
       setDownloading(false);
     }
@@ -235,7 +235,7 @@ export default function PatchBookStyleStudioPage() {
     } catch (error: unknown) {
       const apiError = error as { response?: { data?: { detail?: string }; status?: number } };
       if (apiError.response?.status === 402) {
-        setStatus("INSUFFICIENT_CREDITS — no debit recorded.");
+        setStatus("INSUFFICIENT_CREDITS: no debit recorded.");
       } else {
         setStatus(apiError.response?.data?.detail || "Export failed");
       }
@@ -255,10 +255,9 @@ export default function PatchBookStyleStudioPage() {
     <section aria-labelledby="studio-title" className="style-studio">
       <header className="workspace-header">
         <div>
-          <p className="eyebrow">PatchBook Design Engine</p>
           <h1 id="studio-title">Style Studio</h1>
           <p className="muted">
-            Deterministic publishing instrument — presentation only. Canonical patch data is never
+            Deterministic publishing instrument, presentation only. Canonical patch data is never
             mutated.
           </p>
           {rigId ? (
@@ -659,7 +658,7 @@ export default function PatchBookStyleStudioPage() {
               <ul>
                 {preview.resolution_events.map((ev) => (
                   <li key={ev.code + (ev.field || "")}>
-                    <code>{ev.code}</code> — {ev.message}
+                    <code>{ev.code}</code>: {ev.message}
                   </li>
                 ))}
               </ul>

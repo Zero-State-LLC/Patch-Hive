@@ -24,7 +24,7 @@ function capacityLabel(item: CatalogCaseListItem): string {
   const rev = item.primary_revision;
   if (!rev) return "Capacity unspecified";
   const unit = (rev.capacity_unit || "units").replace(/_/g, " ");
-  const value = rev.capacity_value != null ? rev.capacity_value : "—";
+  const value = rev.capacity_value != null ? rev.capacity_value : "unknown";
   const rows =
     rev.row_count != null ? ` · ${rev.row_count} row${rev.row_count === 1 ? "" : "s"}` : "";
   return `${value} ${unit}${rows}`;
@@ -185,12 +185,10 @@ export default function CasesPage() {
     <section aria-labelledby="cases-title">
       <header className="workspace-header">
         <div>
-          <p className="eyebrow">Catalog</p>
           <h1 id="cases-title">Cases</h1>
           <p className="muted">
-            Normalized modular case catalog (research seed + manufacturer expansions). Missing power
-            or depth stays missing — never invented. Eurorack (and Intellijel 1U rows) can
-            materialize into a placement case for new rigs.
+            Modular cases from research seeds and manufacturer data. Missing power or depth stays
+            missing. Eurorack cases can seed a new rig.
           </p>
         </div>
         <div className="header-actions">
@@ -224,9 +222,9 @@ export default function CasesPage() {
           aria-label="Case catalog stats"
         >
           <p className="muted" style={{ margin: 0 }} role="status">
-            Catalog: {stats.case_count} cases · {stats.manufacturer_count} manufacturers ·{" "}
-            {stats.with_power_rails} with rail data · {stats.with_depth} with depth ·{" "}
-            {stats.source_packet_count} source packets
+            {stats.case_count} cases from {stats.manufacturer_count} manufacturers.{" "}
+            {stats.with_power_rails} with rail data, {stats.with_depth} with depth,{" "}
+            {stats.source_packet_count} source packets.
           </p>
           <div className="gate-chip-row" style={{ marginTop: "var(--space-3)" }}>
             <button
@@ -383,7 +381,7 @@ export default function CasesPage() {
               return (
                 <article key={item.slug} className="catalog-card">
                   <h2>
-                    {item.manufacturer} — {item.model}
+                    {item.manufacturer} {item.model}
                   </h2>
                   <p className="catalog-card-meta">{capacityLabel(item)}</p>
                   <p className="catalog-card-meta">{depthLabel(item)}</p>

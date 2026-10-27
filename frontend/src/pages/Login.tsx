@@ -79,7 +79,7 @@ export default function LoginPage() {
           </h1>
           <p className="auth-brand-lede">
             Confirm modular rigs, generate hardware-constrained patches, and export provenance-bound
-            PatchBooks — without inventing gear or running DSP.
+            PatchBooks, without inventing gear or running DSP.
           </p>
           <ul className="auth-brand-list">
             <li>Immutable rig revisions</li>
@@ -88,7 +88,7 @@ export default function LoginPage() {
             <li>Style Studio design recipes</li>
           </ul>
           <p className="auth-brand-foot muted">
-            A Zero State product · designed and engineered for signal clarity
+            A Zero State product, designed and engineered for signal clarity
           </p>
         </aside>
 
@@ -96,7 +96,6 @@ export default function LoginPage() {
           <div className="auth-card-head">
             <div className="auth-mark" aria-hidden="true" />
             <div>
-              <p className="eyebrow">Access</p>
               <h2 className="auth-card-title">
                 {mode === "signin" ? "Sign in" : "Create account"}
               </h2>

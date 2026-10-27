@@ -41,7 +41,6 @@ export default function AdminDashboard() {
       <div className="admin-shell">
         <header className="workspace-header">
           <div>
-            <p className="eyebrow">Ops</p>
             <h1>Admin console</h1>
             <p className="muted">
               Manage users, catalog, gallery revisions, runs, exports, and leaderboards. All
@@ -51,7 +50,7 @@ export default function AdminDashboard() {
         </header>
         <AdminNav />
         <div className="panel">
-          <p className="eyebrow">Guardrails</p>
+          <h2 style={{ marginTop: 0 }}>Guardrails</h2>
           <ul className="auth-brand-list" style={{ marginTop: "var(--space-3)" }}>
             <li>All admin mutations are audited</li>
             <li>Credit changes append to the canonical ledger</li>

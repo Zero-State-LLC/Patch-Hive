@@ -44,7 +44,6 @@ export default function PatchesPage() {
     <section aria-labelledby="patches-title">
       <header className="workspace-header">
         <div>
-          <p className="eyebrow">Library</p>
           <h1 id="patches-title">Patches</h1>
           <p className="muted">
             Generated patches constrained to confirmed inventory. Exports remain the credit

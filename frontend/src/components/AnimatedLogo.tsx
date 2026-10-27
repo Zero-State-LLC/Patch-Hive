@@ -18,6 +18,7 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({ size = 200, animate 
       viewBox="0 0 400 400"
       xmlns="http://www.w3.org/2000/svg"
       className={animate ? "patchhive-logo-animated" : "patchhive-logo-static"}
+      aria-hidden="true"
     >
       <defs>
         <filter id="glow-animated">

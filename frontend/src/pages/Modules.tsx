@@ -226,7 +226,7 @@ export default function ModulesPage() {
   const materializeRow = async (row: CatalogModule) => {
     if (row.hp == null) {
       setActionMsg(
-        `${row.brand} ${row.name}: HP unknown — cannot place until manufacturer width is confirmed.`,
+        `${row.brand} ${row.name}: HP unknown. Cannot place until manufacturer width is confirmed.`,
       );
       return null;
     }
@@ -295,11 +295,10 @@ export default function ModulesPage() {
     <section aria-labelledby="modules-title">
       <header className="workspace-header">
         <div>
-          <p className="eyebrow">Catalog</p>
           <h1 id="modules-title">Module gallery</h1>
           <p className="muted">
             Browse the lightweight module catalog (research seed + curated). Full power/I/O specs
-            load when you materialize a row with known HP for rack placement — unknown widths stay
+            load when you materialize a row with known HP for rack placement: unknown widths stay
             null (never invented).
           </p>
         </div>
@@ -320,12 +319,13 @@ export default function ModulesPage() {
           aria-label="Catalog stats"
         >
           <p className="muted" style={{ margin: 0 }}>
-            <strong>{stats.total_modules}</strong> modules · <strong>{stats.total_brands}</strong>{" "}
-            brands · HP known <strong>{stats.hp_stats.known}</strong> ({stats.hp_stats.coverage_pct}
-            %) · unknown <strong>{stats.hp_stats.unknown}</strong> · available{" "}
-            <strong>{stats.availability.available}</strong>
+            <strong>{stats.total_modules}</strong> modules from{" "}
+            <strong>{stats.total_brands}</strong> brands. HP known for{" "}
+            <strong>{stats.hp_stats.known}</strong> ({stats.hp_stats.coverage_pct}%), unknown for{" "}
+            <strong>{stats.hp_stats.unknown}</strong>,{" "}
+            <strong>{stats.availability.available}</strong> available.
             {stats.by_source
-              ? ` · sources ${Object.entries(stats.by_source)
+              ? ` Sources: ${Object.entries(stats.by_source)
                   .map(([k, n]) => `${k || "unknown"}=${n}`)
                   .join(", ")}`
               : ""}
@@ -390,7 +390,7 @@ export default function ModulesPage() {
                   onChange={(e) => setPickRackId(e.target.value ? Number(e.target.value) : null)}
                 >
                   {existingRacks.length === 0 ? (
-                    <option value="">No rigs yet — create one</option>
+                    <option value="">No rigs yet: create one</option>
                   ) : (
                     existingRacks.map((r) => (
                       <option key={r.id} value={r.id}>
@@ -628,11 +628,11 @@ export default function ModulesPage() {
                           className="module-mockup"
                           data-category={module.category || "UTIL"}
                           style={{ "--hp-scale": hpScale } as CSSProperties}
-                          title={`${module.brand} — ${module.name} (${hp || "?"}HP)`}
+                          title={`${module.brand} ${module.name} (${hp || "?"}HP)`}
                           aria-label={`Module: ${module.brand} ${module.name}, ${hp} HP, ${module.category || "UTIL"}`}
                         >
                           <div className="mockup-hp">
-                            <div className="hp-num">{hp || "—"}</div>
+                            <div className="hp-num">{hp || "?"}</div>
                             <div className="hp-label">HP</div>
                             {hp > 0 && <div className="hp-bar" />}
                           </div>
