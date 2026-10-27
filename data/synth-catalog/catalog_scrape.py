@@ -16,6 +16,7 @@ import json
 import os
 import random
 import re
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -42,9 +43,17 @@ FIRECRAWL_SEARCH_URL = "https://api.firecrawl.dev/v1/search"
 # from, never what may be fetched: robots, the deny list and the paid cap still apply first.
 # context.dev routes through its own managed network; its scrape API has no proxy field.
 FIRECRAWL_PROXY_TIERS = ("basic", "stealth", "auto")
+# Paid backends render the page (browser, proxies), which routinely takes longer than a plain GET.
+# A 25 s timeout made most context.dev calls fail in the first v2 run while still using the paid cap.
+PAID_TIMEOUT_S = 120.0
 DDG_LITE = "https://lite.duckduckgo.com/lite/"
 
 RETRY_STATUSES = {0, 429, 500, 502, 503, 504}
+# A 200 that is really a bot check. Treated as a failed free fetch so the paid backends
+# (which render and proxy) can try; never parsed as content.
+CHALLENGE = re.compile(
+    rb"(cf-chl-|challenge-platform|<title>\s*(?:Just a moment|Attention Required|Access denied|Are you a robot))", re.I
+)
 RECEIPT_KEYS = ("url", "method", "status", "sha256", "timestamp")
 
 
@@ -280,6 +289,7 @@ class CatalogScraper:
         resolve_hosts: bool = True,
         max_retries: int = 3,
         firecrawl_proxy: str | None = None,
+        on_receipt: Callable[[dict], None] | None = None,
     ) -> None:
         tier = (firecrawl_proxy or os.environ.get("PATCHHIVE_FIRECRAWL_PROXY", "") or "auto")
         tier = tier.strip().lower()
@@ -300,10 +310,14 @@ class CatalogScraper:
         self.resolve_hosts = resolve_hosts
         self.max_retries = max_retries
         self.receipts: list[dict] = []
+        # Called with every new receipt (fetch, paid attempt, skip, search), e.g. to book spend.
+        self.on_receipt = on_receipt
         self._memory: dict[str, FetchResult] = {}
         self._next_ok: dict[str, float] = {}
         self._robots: dict[str, str | None] = {}
         self.paid_attempts = 0
+        # One scraper may be shared by worker threads: the lock guards the paid cap and the ledger file.
+        self._lock = threading.RLock()
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -318,8 +332,10 @@ class CatalogScraper:
             **kwargs,  # type: ignore[arg-type]
         )
 
-    def fetch(self, url: str, timeout: float = 25, *, check_robots: bool = True) -> FetchResult:
-        if url in self._memory:
+    def fetch(self, url: str, timeout: float = 25, *, check_robots: bool = True, render: bool = False) -> FetchResult:
+        """Free first, then paid. `render=True` skips the free GET (robots still apply) for script-rendered
+        pages whose plain HTML is an empty shell, and ignores a cached copy that came from a free GET."""
+        if url in self._memory and not (render and self._memory[url].receipt.get("method") == "free_http"):
             cached = self._memory[url]
             receipt = dict(cached.receipt)
             receipt["method"] = "cache"
@@ -332,7 +348,7 @@ class CatalogScraper:
         if blocked:
             return self._finish(url, blocked, None, b"", ok=False)
 
-        disk = self._read_cache(url)
+        disk = self._read_cache(url, skip_free=render)
         if disk is not None:
             self._memory[url] = disk
             self.receipts.append(disk.receipt)
@@ -350,7 +366,15 @@ class CatalogScraper:
             if not allowed:
                 return self._finish(url, reason or "robots_disallowed", None, b"", ok=False)
 
+        if render:
+            paid = self._paid_fetch(url, timeout)
+            return paid if paid is not None else self._finish(url, "render_unavailable", None, b"", ok=False, remember=False)
+
         status, body = self._free_get(url, timeout)
+        if status == 200 and body and body.lstrip()[:1] == b"<" and CHALLENGE.search(body[:8000]):
+            challenged = self._finish(url, "free_http", status, b"", ok=False, note="challenge", remember=False)
+            paid = self._paid_fetch(url, timeout)
+            return paid if paid is not None else challenged
         if status == 200 and body:
             result = self._finish(url, "free_http", status, body, ok=True)
             self._write_cache(url, result, body)
@@ -391,11 +415,10 @@ class CatalogScraper:
             if not key:
                 self._finish(url, "skipped_no_key", None, b"", ok=False, note=method, remember=False)
                 continue
-            if self.paid_attempts >= self.max_paid_fetches:
+            if not self._reserve_paid():
                 self._finish(url, "skipped_paid_cap", None, b"", ok=False, note=method, remember=False)
                 continue
-            self.paid_attempts += 1
-            status, body, credits = caller(url, key, timeout)
+            status, body, credits = caller(url, key, max(timeout, PAID_TIMEOUT_S))
             self._bump_ledger(method, credits)
             ok = status == 200 and bool(body)
             note = f"proxy={self.firecrawl_proxy}" if method == "firecrawl" else None
@@ -459,11 +482,10 @@ class CatalogScraper:
             if not key:
                 receipts.append(self._receipt(target, "skipped_no_key", None, None, note=method))
                 continue
-            if self.paid_attempts >= self.max_paid_fetches:
+            if not self._reserve_paid():
                 receipts.append(self._receipt(target, "skipped_paid_cap", None, None, note=method))
                 continue
-            self.paid_attempts += 1
-            status, raw = self._post_json(endpoint, key, payload, timeout)
+            status, raw = self._post_json(endpoint, key, payload, max(timeout, PAID_TIMEOUT_S))
             body_hash = _sha256(raw) if raw else None
             credits = 0.0
             found: list[str] = []
@@ -478,6 +500,37 @@ class CatalogScraper:
             receipts.append(self._receipt(target, method, status, body_hash, credits=credits))
             urls.extend(found)
         return urls[:limit], receipts
+
+    def _reserve_paid(self) -> bool:
+        with self._lock:
+            if self.paid_attempts >= self.max_paid_fetches:
+                return False
+            self.paid_attempts += 1
+            return True
+
+    def robots_info(self, url: str, timeout: float = 25) -> tuple[bool, list[str], float]:
+        """(robots readable, Sitemap: lines, crawl-delay for our UA or *) for the URL's origin."""
+        parsed = urlparse(url)
+        origin = f"{parsed.scheme}://{parsed.netloc}"
+        self._robots_allow(origin + "/", timeout)
+        rules = self._robots.get(origin)
+        if rules is None:
+            return False, [], 0.0
+        sitemaps = re.findall(r"(?im)^\s*sitemap:\s*(\S+)", rules)
+        delay = 0.0
+        agent = None
+        for raw in rules.splitlines():
+            line = raw.split("#", 1)[0].strip()
+            key, _, value = line.partition(":")
+            key, value = key.strip().lower(), value.strip()
+            if key == "user-agent":
+                agent = value.lower()
+            elif key == "crawl-delay" and agent in ("*", "patchhivecatalogbot"):
+                try:
+                    delay = max(delay, float(value))
+                except ValueError:
+                    pass
+        return True, sitemaps, delay
 
     def _post_json(self, url: str, key: str, payload: dict, timeout: float) -> tuple[int, bytes]:
         body = json.dumps(payload).encode("utf-8")
@@ -549,11 +602,14 @@ class CatalogScraper:
     def _wait(self, url: str) -> None:
         host = (urlparse(url).hostname or "").lower()
         interval = self.host_intervals.get(host, self.min_interval_s)
-        now = self.monotonic()
-        delay = self._next_ok.get(host, 0.0) - now
-        if delay > 0:
-            self.sleeper(delay)
-        self._next_ok[host] = self.monotonic() + interval
+        # Reserve the next slot for this host atomically, so threads sharing a host
+        # are spaced `interval` apart instead of waking at the same deadline.
+        with self._lock:
+            now = self.monotonic()
+            slot = max(now, self._next_ok.get(host, 0.0))
+            self._next_ok[host] = slot + interval
+        if slot > now:
+            self.sleeper(slot - now)
 
     def _block_reason(self, url: str) -> str | None:
         if denied_host(url):
@@ -623,6 +679,8 @@ class CatalogScraper:
         if note:
             receipt["note"] = note
         self.receipts.append(receipt)
+        if self.on_receipt is not None:
+            self.on_receipt(receipt)
         return receipt
 
     def _cache_paths(self, url: str) -> tuple[Path, Path]:
@@ -630,7 +688,7 @@ class CatalogScraper:
         folder = self.cache_dir / digest[:2]
         return folder / f"{digest}.body", folder / f"{digest}.meta.json"
 
-    def _read_cache(self, url: str) -> FetchResult | None:
+    def _read_cache(self, url: str, skip_free: bool = False) -> FetchResult | None:
         body_path, meta_path = self._cache_paths(url)
         if not meta_path.is_file() or not body_path.is_file():
             return None
@@ -639,7 +697,7 @@ class CatalogScraper:
         except json.JSONDecodeError:
             return None
         age = self.wall_clock() - float(meta.get("fetched_at") or 0)
-        if age > self.max_age_s:
+        if age > self.max_age_s or (skip_free and meta.get("method") == "free_http"):
             return None
         body = body_path.read_bytes()
         receipt = {
@@ -672,6 +730,10 @@ class CatalogScraper:
         )
 
     def _bump_ledger(self, method: str, credits: float) -> None:
+        with self._lock:
+            self._bump_ledger_locked(method, credits)
+
+    def _bump_ledger_locked(self, method: str, credits: float) -> None:
         ledger = {
             "paid_fetches": 0,
             "credits_by_backend": {},
@@ -730,6 +792,9 @@ def _trusted_fake_ip(ip: ipaddress._BaseAddress) -> bool:
 
 
 def _credits(data: dict, default: float) -> float:
+    meta = data.get("key_metadata")  # context.dev reports per-request usage here
+    if isinstance(meta, dict) and isinstance(meta.get("credits_consumed"), (int, float)):
+        return float(meta["credits_consumed"])
     for key in ("credits", "creditsUsed", "credits_used"):
         if isinstance(data.get(key), (int, float)):
             return float(data[key])

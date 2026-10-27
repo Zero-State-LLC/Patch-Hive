@@ -63,3 +63,52 @@ Free-only run on 2026-10-17 (`--max-paid-fetches 0`, `paid_attempts` 0). OBSERVE
 ## Batch 7 spend (OBSERVED from the router ledger)
 
 68 router credits: 54 context.dev (40 for new-brand discovery searches, 14 for fetch fallbacks) and 14 Firecrawl (fetch fallbacks). Ledger day counters went from 41 to 95 for context.dev and from 4 to 18 for Firecrawl. Most fetches were free HTTP or cache. Marginal cost is $0 inside the prepaid plan quotas. The worst case at context.dev overage pricing is about $0.15. The cap was $10.
+
+## Manufacturer crawl v2 (2026-10-27)
+
+`scripts/catalog_maker_crawl.py` now uses the same in-repo router as every other catalog scraper (`catalog_scrape.py`). The external `scrape_router` package is no longer used. Free HTTP comes first (robots.txt, the deny list, a per-host delay of at least 2 s, and the disk cache), then context.dev, then Firecrawl with its managed proxy tier, all under one `--max-paid-fetches` cap and one ledger. The router gained a lock (the crawler shares one instance across worker threads), an `on_receipt` hook (the crawler books spend from it), `robots_info()` (sitemaps and crawl-delay), and escalation to the paid backends when a 200 response is a bot-check page.
+
+- `data/synth-catalog/maker-sources.json`:
+  - Curated homepages for brands the v1 crawl could not resolve, each with a check status. 39 `verified_free`, 46 `candidate` (the run must see the brand on the page first), 2 `robots_disallowed`, 2 `rejected` (domains now hold unrelated content).
+  - 25 adapters for the top makers: Shopify, Squarespace or WooCommerce store feeds, or `listing` (index pages plus a product URL pattern; sitemap URLs are filtered, never crawled).
+- `scripts/maker_adapters.py` enumerates products through the router. The crawler parses HP, power and depth deterministically from the feed text, or from the page when the feed has none. A labelled width ("Width 12HP") beats other mentions; two unlabelled widths count as ambiguous and go to the model on a paid run.
+- The resolution order is: adapter, curated homepage, the v1 crawl's resolved homepage, then search.
+- The page cap is `--max-pages` (default 250 per maker; v1 stopped at 80 model-picked pages plus 60 one-hop pages).
+- Fixed in v2: the reseller exclusion now matches host labels. Its `x.com` entry used to drop any maker whose domain ends in x.com, including Metasonix and Qu-Bit.
+
+`--dry-run` makes no paid fetch, search or model call and writes `receipts/maker-crawl-v2.dry-run.json`.
+
+Dry run on 2026-10-27, 703 brands. OBSERVED:
+
+- 3,213 candidate modules from 293 brands. v1 found 751 from 245. 1,462 candidates have +12 V power.
+- By path: generic 2,644; Shopify 288; listing 175; Squarespace 56; WooCommerce 50.
+- Top makers, v1 to v2: Make Noise 7 to 49, Intellijel 0 to 50, Noise Engineering 4 to 65, ALM 10 to 47, 2hp 0 to 26, Bastl 0 to 44, After Later 10 to 95, Mutable 0 to 30.
+- Still 0 on free HTTP, so they need the paid tier: 4ms, Erica, Xaoc (script-rendered), and Befaco, Tiptop, Frap (no free response from this box).
+- Generic-path candidates are regex-only in a dry run. The paid run confirms each one with the model, so the accepted count may be lower.
+- 145 brands still need a search, and 37 curated candidates could not be confirmed over free HTTP.
+- Projection for the paid run: 417 paid fetch URLs and 145 paid searches. That is 562 credits if context.dev answers, 1,124 in the worst case where every call also falls through to Firecrawl. About 3,530 model calls, about $0.63 at v1's measured cost per call. Paid overage if no included plan credits remain is at most $4.05.
+
+Paid run, after approval:
+
+```bash
+python scripts/catalog_maker_crawl.py --max-paid-fetches 1200 --cap 10 --ctx-start <included context.dev credits left> --fc-start <included Firecrawl credits left>
+```
+
+### Paid run (T024), 2026-10-27, context.dev only. OBSERVED
+
+Approved by Danny: `--max-paid-fetches 1200 --cap 10`, context.dev only (no Firecrawl key). It ran in three passes:
+
+1. **`--no-model`, before the OpenRouter key arrived.** 1,200 paid attempts, but only 147 succeeded: the router gave paid calls the free-fetch 25 s timeout, and rendered scrapes need longer. 286 context.dev credits, which includes the 145 searches. Fixed: paid calls now get 120 s.
+2. **With the model.** 1,200 paid attempts, 530 succeeded, 702 credits. Most of the failures are long-tail maker sites context.dev cannot reach either. Only about 9% of the 3,346 model calls returned usable JSON: `deepseek-v4.1-flash` now reasons by default, and the reasoning ran past `max_tokens` and cut off the answer. Fixed: model calls send `reasoning: {enabled: false}`.
+3. **Model pass on cached pages, `--max-paid-fetches 0`.** No context.dev calls. 3,641 model calls, $0.41.
+
+Result (`receipts/maker-crawl-v2.json`, rows in `hermes-research/maker-crawl-v2.json`):
+
+- **3,429 accepted modules from 315 brands.** v1 found 751 from 245.
+- With +12 V: 1,807. With −12 V: 1,800. With depth: 1,715.
+- By path: generic 2,821 (model-confirmed under v1's verbatim rule); Shopify 291; listing 202; Squarespace 65; WooCommerce 50.
+- **Spend:** context.dev 988 credits for the crawl, plus 6 for API checks; the balance went from 55,295 to 54,301. Firecrawl 0. OpenRouter $1.19. No overage, against a $10 cap.
+- **Still empty:**
+  - 4ms and Erica. The `render` flag was served the cached free shell; this is now fixed and needs a small paid render pass.
+  - Frap, Tiptop and Pittsburgh. Their adapter patterns need checking against the rendered pages.
+  - 79 brands with no search candidates and 40 with no model pick, plus 27 curated candidates still unconfirmed.
