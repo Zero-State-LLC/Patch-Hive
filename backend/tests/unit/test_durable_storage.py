@@ -33,6 +33,8 @@ class FakeS3:
         self.objects: dict[str, bytes] = {}
         self.page_size = page_size
         self.fail_writes = False
+        self.fail_deletes = 0  # number of upcoming delete_object calls that fail
+        self.delete_calls = 0
 
     def put_object(self, *, Bucket: str, Key: str, Body: bytes) -> None:
         if self.fail_writes:
@@ -45,6 +47,10 @@ class FakeS3:
         return {"Body": io.BytesIO(self.objects[Key])}
 
     def delete_object(self, *, Bucket: str, Key: str) -> None:
+        self.delete_calls += 1
+        if self.fail_deletes > 0:
+            self.fail_deletes -= 1
+            raise ConnectionError("down")
         self.objects.pop(Key, None)
 
     def list_objects_v2(self, *, Bucket: str, Prefix: str, ContinuationToken: str = "0") -> dict:
@@ -261,3 +267,67 @@ def test_design_pack_survives_local_loss_and_still_downloads(
     app.dependency_overrides.clear()
     assert pdf.status_code == 200, pdf.text
     assert pdf.content.startswith(b"%PDF")
+
+
+def _upload_one(db_session: Session, rack: Rack) -> ImageAssetRecord:
+    from main import app
+
+    client = _client(db_session)
+    resp = client.post(
+        f"/api/racks/{rack.id}/evidence/images",
+        files=[("files", ("a.jpg", _jpeg_bytes(), "image/jpeg"))],
+        data={"retention_days": "1", "consent_provider_processing": "false"},
+    )
+    app.dependency_overrides.clear()
+    assert resp.status_code == 201, resp.text
+    return db_session.get(ImageAssetRecord, resp.json()["uploaded"][0]["id"])
+
+
+def test_retention_retries_a_failed_durable_delete(
+    db_session: Session, sample_rack_basic: Rack, fake_s3: FakeS3
+) -> None:
+    from datetime import datetime, timedelta, timezone
+
+    from evidence.retention import expire_image_assets
+
+    record = _upload_one(db_session, sample_rack_basic)
+    record.retention_expires_at = datetime.now(timezone.utc) - timedelta(hours=1)
+    db_session.commit()
+    key = next(k for k in fake_s3.objects if k.startswith("exports/evidence/"))
+
+    fake_s3.fail_deletes = 1
+    first = expire_image_assets(db_session)
+    db_session.commit()
+    assert first == {"soft_deleted": 0, "purged_files": 0, "purge_deferred": 1}
+    assert db_session.get(ImageAssetRecord, record.id).deleted_at is None
+    assert key in fake_s3.objects
+
+    second = expire_image_assets(db_session)
+    db_session.commit()
+    assert second == {"soft_deleted": 1, "purged_files": 1, "purge_deferred": 0}
+    assert db_session.get(ImageAssetRecord, record.id).deleted_at is not None
+    assert key not in fake_s3.objects
+    assert fake_s3.delete_calls == 2
+
+
+def test_delete_endpoint_reports_a_failed_purge_and_retries(
+    db_session: Session, sample_rack_basic: Rack, fake_s3: FakeS3
+) -> None:
+    from main import app
+
+    record = _upload_one(db_session, sample_rack_basic)
+    key = next(k for k in fake_s3.objects if k.startswith("exports/evidence/"))
+    url = f"/api/racks/{sample_rack_basic.id}/evidence/images/{record.id}"
+
+    fake_s3.fail_deletes = 1
+    client = _client(db_session)
+    failed = client.delete(url, params={"purge_bytes": "true"})
+    assert failed.status_code == 503
+    assert failed.json()["detail"] == storage.WRITE_FAILED
+    assert db_session.get(ImageAssetRecord, record.id).deleted_at is not None
+    assert key in fake_s3.objects
+
+    retried = client.delete(url, params={"purge_bytes": "true"})
+    app.dependency_overrides.clear()
+    assert retried.status_code == 200, retried.text
+    assert key not in fake_s3.objects

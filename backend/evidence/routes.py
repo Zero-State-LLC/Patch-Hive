@@ -301,8 +301,11 @@ def delete_rack_evidence_image(
         if siblings == 0:
             try:
                 get_file_store().delete(path)
-            except StorageError:
-                pass
+            except StorageError as exc:
+                # Keep the soft-delete (access is revoked) and tell the caller the bytes
+                # are not gone yet; calling again retries the purge.
+                db.commit()
+                raise HTTPException(status_code=503, detail=exc.code) from exc
 
     db.commit()
     return {"status": "deleted", "asset_id": asset_id}
