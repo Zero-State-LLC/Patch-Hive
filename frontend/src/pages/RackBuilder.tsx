@@ -230,7 +230,7 @@ export default function RackBuilderPage() {
         const rows = res.data.modules ?? [];
         const m = rows.find((row) => row.id === preselectedModuleId);
         if (m) {
-          setPreselectedLabel(`${m.brand} — ${m.name} (${m.hp}HP)`);
+          setPreselectedLabel(`${m.brand} ${m.name} (${m.hp}HP)`);
           if (!liveMode) {
             setGalleryModules((prev) => (prev.length ? prev : rows));
           }
@@ -633,7 +633,7 @@ export default function RackBuilderPage() {
       return;
     }
     if (!rowCapacities.length) {
-      setPlacementError("Case row capacity unknown — cannot batch pack.");
+      setPlacementError("Case row capacity unknown: cannot batch pack.");
       return;
     }
     const result = packModulesOntoRows(
@@ -768,7 +768,7 @@ export default function RackBuilderPage() {
     }
     if (entity.conflict && status === "confirmed") {
       setError(
-        "Cannot confirm a conflicted fusion from the panel — resolve the underlying candidates individually.",
+        "Cannot confirm a conflicted fusion from the panel: resolve the underlying candidates individually.",
       );
       setFusionFeedback(null);
       return;
@@ -929,7 +929,6 @@ export default function RackBuilderPage() {
     <section aria-labelledby="builder-title">
       <header className="workspace-header">
         <div>
-          <p className="eyebrow">{liveMode ? "Place modules" : "Create rig"}</p>
           <h1 id="builder-title">
             {liveMode ? "Place modules on this rig" : "Establish your module inventory"}
           </h1>
@@ -970,13 +969,13 @@ export default function RackBuilderPage() {
           role="status"
           style={{ marginBottom: "var(--space-4)" }}
         >
-          <p className="eyebrow" style={{ marginTop: 0 }}>
-            Module ready to place
+          <p style={{ marginTop: 0 }}>
+            <strong>Module ready to place</strong>
           </p>
           <p style={{ margin: 0 }}>
             {preselectedLabel ||
               (preselectedModule
-                ? `${preselectedModule.brand} — ${preselectedModule.name} (${preselectedModule.hp}HP)`
+                ? `${preselectedModule.brand} ${preselectedModule.name} (${preselectedModule.hp}HP)`
                 : `Module #${preselectedModuleId}`)}
             {" · "}
             <strong>create a rig</strong>, then placement opens with this module preselected.
@@ -990,9 +989,8 @@ export default function RackBuilderPage() {
           style={{ marginBottom: "var(--space-4)" }}
           aria-labelledby="case-step-title"
         >
-          <p className="eyebrow">Step 1 · case envelope</p>
           <h2 id="case-step-title" style={{ marginTop: 0 }}>
-            Choose a case envelope
+            Step 1: choose a case envelope
           </h2>
           <p className="muted">
             Only Eurorack cases are selectable for placement. Other formats remain catalog-only on{" "}
@@ -1032,7 +1030,7 @@ export default function RackBuilderPage() {
                   const unit = c.primary_revision?.capacity_unit || "hp";
                   return (
                     <option key={c.slug} value={c.slug}>
-                      {c.manufacturer} — {c.model}
+                      {c.manufacturer} {c.model}
                       {cap != null ? ` (${cap} ${unit})` : ""}
                     </option>
                   );
@@ -1058,7 +1056,7 @@ export default function RackBuilderPage() {
                 </option>
                 {legacyCases.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.brand} — {c.name} ({c.total_hp}HP · {c.rows} row
+                    {c.brand} {c.name} ({c.total_hp}HP · {c.rows} row
                     {c.rows === 1 ? "" : "s"})
                   </option>
                 ))}
@@ -1089,7 +1087,7 @@ export default function RackBuilderPage() {
                   Layout
                 </p>
                 <h3 style={{ fontSize: "1rem" }}>
-                  {selectedCatalogCase.primary_revision?.capacity_value ?? "—"}{" "}
+                  {selectedCatalogCase.primary_revision?.capacity_value ?? "unknown"}{" "}
                   {selectedCatalogCase.primary_revision?.capacity_unit || "hp"}
                   {selectedCatalogCase.primary_revision?.row_count != null
                     ? ` · ${selectedCatalogCase.primary_revision.row_count} row(s)`
@@ -1144,8 +1142,16 @@ export default function RackBuilderPage() {
           ) : null}
           {!casesLoading && catalogCases.length === 0 && legacyCases.length === 0 ? (
             <p className="status status-warning" style={{ marginTop: "var(--space-3)" }}>
-              No Eurorack cases available. Import <code>data/cases/seed-v1.json</code> via the
-              catalog populator, or open <Link to="/cases">Cases</Link>.
+              No Eurorack cases available.{" "}
+              {import.meta.env.DEV ? (
+                <>
+                  Import <code>data/cases/seed-v1.json</code> via the catalog populator, or
+                  open{" "}
+                </>
+              ) : (
+                "Open "
+              )}
+              <Link to="/cases">Cases</Link>.
             </p>
           ) : null}
 
@@ -1209,12 +1215,12 @@ export default function RackBuilderPage() {
           </p>
           {liveRack?.case ? (
             <p className="muted">
-              Case: {liveRack.case.brand} — {liveRack.case.name}
+              Case: {liveRack.case.brand} {liveRack.case.name}
               {liveRack.case.catalog_slug
                 ? ` · catalog ${liveRack.case.catalog_slug}`
                 : " · no catalog link (materialize for full compatibility)"}
               {liveRack.case.total_hp != null
-                ? ` · ${liveRack.case.total_hp}HP / ${(liveRack.case.hp_per_row || []).join("+") || "—"} rows`
+                ? ` · ${liveRack.case.total_hp}HP / ${(liveRack.case.hp_per_row || []).join("+") || "unknown"} rows`
                 : ""}
             </p>
           ) : null}
@@ -1225,7 +1231,7 @@ export default function RackBuilderPage() {
                 Preselected from gallery:{" "}
                 <strong>
                   {preselectedModule
-                    ? `${preselectedModule.brand} — ${preselectedModule.name}`
+                    ? `${preselectedModule.brand} ${preselectedModule.name}`
                     : `module #${preselectedModuleId}`}
                 </strong>
                 {preselectedModule?.hp != null ? ` · ${preselectedModule.hp}HP` : ""}
@@ -1303,7 +1309,7 @@ export default function RackBuilderPage() {
                     >
                       <div
                         className={`usage-bar__fill usage-bar__fill--${tone}`}
-                        style={{ width: `${pct}%` }}
+                        style={{ transform: `scaleX(${pct / 100})` }}
                       />
                     </div>
                     <div
@@ -1453,12 +1459,9 @@ export default function RackBuilderPage() {
                         <div
                           className={`usage-bar__fill usage-bar__fill--${rail.tone}`}
                           style={{
-                            width:
-                              rail.capacity == null
-                                ? rail.draw > 0
-                                  ? "8%"
-                                  : "0%"
-                                : `${rail.pct}%`,
+                            transform: `scaleX(${
+                              rail.capacity == null ? (rail.draw > 0 ? 0.08 : 0) : rail.pct / 100
+                            })`,
                           }}
                         />
                       </div>
@@ -1472,8 +1475,8 @@ export default function RackBuilderPage() {
                   style={{ marginBottom: 0, fontSize: "0.85rem" }}
                 >
                   Soft gap: {placementPowerSummary.unknown} module
-                  {placementPowerSummary.unknown === 1 ? "" : "s"} without +12 specs — not assumed
-                  in draw totals.
+                  {placementPowerSummary.unknown === 1 ? "" : "s"} without +12 specs: not assumed in
+                  draw totals.
                 </p>
               ) : null}
             </div>
@@ -1500,7 +1503,7 @@ export default function RackBuilderPage() {
                 <option value="">Select module…</option>
                 {filteredGalleryModules.map((m) => (
                   <option key={m.id} value={m.id}>
-                    {m.brand} — {m.name} ({m.hp}HP
+                    {m.brand} {m.name} ({m.hp}HP
                     {m.power_12v_ma != null ? ` · +12 ${m.power_12v_ma}mA` : " · power unknown"}
                     {m.depth_mm != null ? ` · ${m.depth_mm}mm` : " · depth unknown"})
                   </option>
@@ -1549,9 +1552,6 @@ export default function RackBuilderPage() {
             style={{ marginTop: "var(--space-4)" }}
             aria-labelledby="batch-place-title"
           >
-            <p className="eyebrow" style={{ marginTop: 0 }}>
-              Multi-module
-            </p>
             <h3 id="batch-place-title" style={{ marginTop: 0 }}>
               Batch place
             </h3>
@@ -1616,7 +1616,7 @@ export default function RackBuilderPage() {
                       />
                       <span>
                         <strong>
-                          {m.brand} — {m.name}
+                          {m.brand} {m.name}
                         </strong>
                         <span className="muted">
                           {" "}
@@ -1634,7 +1634,7 @@ export default function RackBuilderPage() {
             </ul>
             {filteredGalleryModules.length > 80 ? (
               <p className="muted" style={{ fontSize: "0.85rem" }}>
-                Showing first 80 of {filteredGalleryModules.length} filtered — narrow the filter to
+                Showing first 80 of {filteredGalleryModules.length} filtered. Narrow the filter to
                 batch more precisely.
               </p>
             ) : null}
@@ -1668,7 +1668,7 @@ export default function RackBuilderPage() {
                     style={{ marginBottom: "var(--space-2)", padding: "var(--space-3)" }}
                   >
                     <strong>
-                      {mod ? `${mod.brand} — ${mod.name}` : `Module #${spec.module_id}`}
+                      {mod ? `${mod.brand} ${mod.name}` : `Module #${spec.module_id}`}
                     </strong>
                     <span className="muted">
                       {" "}
@@ -1728,32 +1728,32 @@ export default function RackBuilderPage() {
                   <p>
                     Overall: <strong>{rackCompat.compatibility.overall_status}</strong>
                     {rackCompat.compatibility.overall_status === "incomplete"
-                      ? " — soft gaps only (missing power/depth/case rails stay missing)"
+                      ? ": soft gaps only (missing power/depth/case rails stay missing)"
                       : null}
                     {rackCompat.compatibility.overall_status === "conflict"
-                      ? " — hard fail (overflow, connectors, or rail over budget)"
+                      ? ": hard fail (overflow, connectors, or rail over budget)"
                       : null}
                   </p>
                   <ul>
                     <li>
-                      Format: <strong>{rackCompat.compatibility.format_check.status}</strong> —{" "}
+                      Format: <strong>{rackCompat.compatibility.format_check.status}</strong>:{" "}
                       {rackCompat.compatibility.format_check.message}
                     </li>
                     <li>
                       Physical fit: <strong>{rackCompat.compatibility.physical_fit.status}</strong>{" "}
-                      — {rackCompat.compatibility.physical_fit.message}
+                      : {rackCompat.compatibility.physical_fit.message}
                     </li>
                     <li>
                       Connectors:{" "}
                       <strong>{rackCompat.compatibility.connector_availability.status}</strong>
                       {rackCompat.compatibility.connector_availability.message
-                        ? ` — ${rackCompat.compatibility.connector_availability.message}`
+                        ? `: ${rackCompat.compatibility.connector_availability.message}`
                         : ""}
                     </li>
                     <li>
                       +5V: <strong>{rackCompat.compatibility.pos5_compatibility.status}</strong>
                       {rackCompat.compatibility.pos5_compatibility.message
-                        ? ` — ${rackCompat.compatibility.pos5_compatibility.message}`
+                        ? `: ${rackCompat.compatibility.pos5_compatibility.message}`
                         : ""}
                     </li>
                     <li>
@@ -1762,9 +1762,7 @@ export default function RackBuilderPage() {
                   </ul>
                   {rackCompat.compatibility.power_headroom?.length ? (
                     <>
-                      <p className="eyebrow" style={{ marginBottom: 0 }}>
-                        Power rails
-                      </p>
+                      <h4 style={{ marginBottom: 0 }}>Power rails</h4>
                       <ul>
                         {rackCompat.compatibility.power_headroom.map((r) => (
                           <li key={r.rail}>
@@ -1773,7 +1771,7 @@ export default function RackBuilderPage() {
                               ? ` · ${r.module_draw_ma}/${r.case_capacity_ma}mA`
                               : ` · draw ${r.module_draw_ma}mA (case capacity unspecified)`}
                             {r.headroom_ma != null ? ` · headroom ${r.headroom_ma}mA` : ""}
-                            {r.message ? ` — ${r.message}` : ""}
+                            {r.message ? `: ${r.message}` : ""}
                           </li>
                         ))}
                       </ul>
@@ -1792,7 +1790,7 @@ export default function RackBuilderPage() {
                         ).map((w) => (
                           <li key={w.code || w.message}>
                             {w.code ? <code>{w.code}</code> : null}
-                            {w.code ? " — " : null}
+                            {w.code ? ": " : null}
                             {w.message}
                           </li>
                         ))}
@@ -1808,8 +1806,7 @@ export default function RackBuilderPage() {
 
       <div className="builder-grid">
         <article className="panel">
-          <p className="eyebrow">Method 01</p>
-          <h2>Manual selection</h2>
+          <h2>Method 1: manual selection</h2>
           <p className="muted">
             {liveMode
               ? "Use the placement panel above to add modules with row/HP coordinates."
@@ -1821,8 +1818,7 @@ export default function RackBuilderPage() {
         </article>
 
         <article className="panel" aria-labelledby="photo-title">
-          <p className="eyebrow">Method 02 · multi-photo evidence</p>
-          <h2 id="photo-title">Review rig photo(s)</h2>
+          <h2 id="photo-title">Method 2: review rig photos</h2>
           <div className="field">
             <label htmlFor="rig-photo">Rig photo</label>
             <input
@@ -1834,7 +1830,7 @@ export default function RackBuilderPage() {
               onChange={(event) => selectPhotos(event.target.files)}
             />
             <span id="photo-help" className="muted">
-              JPEG, PNG, or WebP · 12 MB each · multiple angles supported.
+              JPEG, PNG, or WebP, up to 12 MB each. Multiple angles supported.
               {activeRackId != null
                 ? ` Live: upload + GET /api/racks/${activeRackId}/evidence/reconcile`
                 : " Demo mode until a target rig is selected."}
@@ -1868,8 +1864,8 @@ export default function RackBuilderPage() {
       {evidenceState === "review" || evidenceState === "confirmed" ? (
         <section className="panel evidence-review" aria-labelledby="review-title">
           <div>
-            <p className="eyebrow">Human confirmation required</p>
             <h2 id="review-title">Review ranked detection candidates</h2>
+            <p className="muted">Human confirmation required.</p>
             <p className="muted">
               Provider suggestions remain inferred until you confirm an authoritative gallery match.
               Multi-photo fusion is advisory only.
@@ -1884,7 +1880,7 @@ export default function RackBuilderPage() {
             >
               <h3>Multi-photo reconciliation</h3>
               <p className="muted" role="status">
-                Status: {reconcileStatus ?? "—"}
+                Status: {reconcileStatus ?? "unknown"}
                 {imageCount ? ` · ${imageCount} image(s)` : ""}
                 {reconcileNote ? ` · ${reconcileNote}` : ""}
               </p>
@@ -2075,8 +2071,8 @@ export default function RackBuilderPage() {
           </ul>
 
           <p className="muted" role="status">
-            {confirmedCount} confirmed · {ranked.length - confirmedCount} not confirmed · all
-            resolved: {allResolved ? "yes" : "no"}
+            {confirmedCount} confirmed, {ranked.length - confirmedCount} not confirmed. All
+            resolved: {allResolved ? "yes" : "no"}.
           </p>
 
           <button

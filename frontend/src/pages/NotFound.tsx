@@ -79,7 +79,6 @@ export default function NotFound() {
           </text>
         </svg>
 
-        <p className="eyebrow">Signal loss</p>
         <h1 className="error-title">Patch not found</h1>
         <p className="error-description">
           The route you requested has been disconnected or never existed in this hive.

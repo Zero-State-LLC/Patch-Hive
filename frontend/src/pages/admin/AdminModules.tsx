@@ -25,7 +25,6 @@ export default function AdminModules() {
       <div className="admin-shell">
         <header className="workspace-header">
           <div>
-            <p className="eyebrow">Ops</p>
             <h1>Modules</h1>
             <p className="muted">
               Deprecate, tombstone, or merge catalog modules. No hard deletes.
@@ -47,7 +46,7 @@ export default function AdminModules() {
           {modules.map((module) => (
             <article key={module.id} className="catalog-card">
               <h2>
-                {module.brand} — {module.name}
+                {module.brand} {module.name}
               </h2>
               <p className="catalog-card-meta">Status: {module.status || "active"}</p>
               <div className="toolbar">

@@ -1,6 +1,6 @@
 # 006 — Cloudflare Edge Deploy with Clef Classifier
 
-**Status:** SPECIFIED  
+**Status:** IMPLEMENTED in code (#50); operator deploy tasks T030–T050 and T060b DEFERRED (see DEPLOY_NOTES.md)  
 **Date:** 2026-10-24  
 **Depends on:** Spec 005 (DecisionProvider + DecisionPolicy + DecisionPacket), constitution authority boundaries, Neon staging branch, existing Vite frontend + FastAPI backend.
 
@@ -28,7 +28,9 @@ The Vite build MUST deploy to Cloudflare Pages. Custom domain MUST be attached. 
 A hostname (`api.patch-hive.com` or operator-chosen) MUST serve the existing FastAPI surface. CORS MUST be restricted to the exact frontend origin. `ALLOW_PRODUCTION_PAYMENTS` MUST remain false.
 
 ### FR-003 Database continuity
-Hyperdrive MUST point at the Neon staging branch connection string. No D1 schema migration.
+The API MUST use the Neon staging branch through its pooled connection string. No D1 schema migration.
+
+Amended 2026-10-26, approved by the operator 2026-10-26: this previously required Hyperdrive. Hyperdrive's connection string is only reachable from the Workers runtime, and the FastAPI container's Postgres driver connects over TCP from inside the container, so Hyperdrive cannot serve it. Hyperdrive stays available for any future Worker-side database client.
 
 ### FR-004 Clef as DecisionProvider
 Clef MUST implement the Spec 005 DecisionProvider protocol. System One responses (choice / noul / score + optional images) MUST map to DecisionPacket. Clef types MUST NOT leak outside the adapter. Feature flag default off. Fail-closed on timeout, malformed response, or unavailable.
@@ -64,6 +66,18 @@ Clef remains flagged off until a retained labeled corpus (text + vision cases) m
 - DecisionPacket shape validated end-to-end.
 - Evaluation receipt retained and SHA-pinned.
 - Readiness state machine reaches GATES_PASSED only after operator approval.
+
+## Acceptance traceability
+
+| Requirement | Task | Acceptance |
+| --- | --- | --- |
+| FR-001 Edge frontend | T030 | build succeeds, custom domain attached, `VITE_API_BASE_URL` set |
+| FR-002 Public API surface | T040 | exact CORS origin, `ALLOW_PRODUCTION_PAYMENTS=false`, `/health/ready` ok |
+| FR-003 Database continuity | T050, T060b | API container on the Neon staging pooled endpoint; no D1 migration |
+| FR-004 Clef as DecisionProvider | T020, T060a | only SUCCESS emits a DecisionPacket; no type leakage; flag default off |
+| FR-005 Policy ownership | T060a | disposition policy-owned; idempotent receipts |
+| FR-006 State machines | T010, T020, T070, T090 | every path terminal or ARCHIVED; GATES_PASSED → BETA_READY only on operator approval |
+| FR-007 Evaluation gate | T080, Spec 007 | receipt SHA-pinned; thresholds operator-approved |
 
 ## Acceptance summary
 

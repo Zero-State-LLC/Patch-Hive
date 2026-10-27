@@ -1,0 +1,47 @@
+{
+  // FastAPI backend on Cloudflare Containers (spec 006 T040a/T050a).
+  // The Worker owns api.patch-hive.com and proxies every request to one container
+  // built from backend/Dockerfile. Secrets, set with `npx wrangler secret put`:
+  // DATABASE_URL (Neon pooled endpoint, sslmode=require), SECRET_KEY, and the R2
+  // S3 API values S3_ENDPOINT_URL, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY (T055).
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "patchhive-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "api.patch-hive.com", "custom_domain": true }],
+  "containers": [
+    {
+      "class_name": "PatchHiveApi",
+      "image": "../../backend/Dockerfile",
+      "image_build_context": "../../backend",
+      // One instance: the entrypoint runs `alembic upgrade head` on start, and
+      // concurrent migrations against the same database must not race.
+      "max_instances": 1,
+      "instance_type": "standard-1"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [{ "name": "API", "class_name": "PatchHiveApi" }]
+  },
+  "exports": {
+    "PatchHiveApi": { "type": "durable-object", "storage": "sqlite" }
+  },
+  "vars": {
+    "ENVIRONMENT": "staging",
+    "FRONTEND_BASE_URL": "https://patch-hive.com",
+    // Exact frontend origin, as the edge readiness gate requires (no wildcard, no path).
+    "CORS_ORIGINS": "[\"https://patch-hive.com\"]",
+    // Payments stay fail-closed on this host.
+    "STRIPE_TEST_MODE": "true",
+    "ALLOW_PRODUCTION_PAYMENTS": "false",
+    // The container disk is temporary; evidence, exports and design packs are mirrored
+    // to this R2 bucket and restored on read (backend/core/storage.py).
+    "STORAGE_BACKEND": "s3",
+    "S3_BUCKET": "patchhive-staging-files",
+    "S3_REGION": "auto",
+    "S3_KEY_PREFIX": "staging"
+  },
+  "observability": { "enabled": true }
+}

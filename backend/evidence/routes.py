@@ -18,6 +18,7 @@ from canon.models import (
     SystemInventoryRevisionRecord,
 )
 from core import get_db, settings
+from core.storage import StorageError, get_file_store
 from evidence.images import (
     SignatureImageScanner,
     UnsafeImageError,
@@ -166,6 +167,12 @@ async def upload_rack_evidence_images(
             storage_path = _evidence_root() / storage_name
             if not storage_path.exists():
                 storage_path.write_bytes(prepared.content)
+            # Never record a path whose bytes are not durable.
+            try:
+                get_file_store().persist(storage_path)
+            except StorageError as exc:
+                rejected.append({"filename": filename, "reason": exc.code})
+                continue
 
             record = ImageAssetRecord(
                 id=asset_id,
@@ -291,11 +298,14 @@ def delete_rack_evidence_image(
             )
             .count()
         )
-        if siblings == 0 and path.exists():
+        if siblings == 0:
             try:
-                os.remove(path)
-            except OSError:
-                pass
+                get_file_store().delete(path)
+            except StorageError as exc:
+                # Keep the soft-delete (access is revoked) and tell the caller the bytes
+                # are not gone yet; calling again retries the purge.
+                db.commit()
+                raise HTTPException(status_code=503, detail=exc.code) from exc
 
     db.commit()
     return {"status": "deleted", "asset_id": asset_id}

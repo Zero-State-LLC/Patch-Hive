@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "@/lib/store";
 
 const laws = [
-  "Vision output is evidence only — never silent inventory truth",
+  "Vision output is evidence only, never silent inventory truth",
   "Immutable rig revisions and deterministic generation seeds",
   "Signal types describe ports and cables, not DSP",
   "Credits debit only at the canonical export boundary",
@@ -25,10 +25,6 @@ export default function Home() {
             PatchHive
           </p>
           <h1 className="home-headline">Confirm the rig. Export the book.</h1>
-          <p className="home-lede">
-            Eurorack patch documentation without invented inventory, audio simulation, or hardware
-            control.
-          </p>
           <div className="home-cta">
             {isAuthenticated() ? (
               <Link className="button button-primary" to="/racks">
@@ -42,16 +38,12 @@ export default function Home() {
             <Link className="button button-secondary" to="/modules?hp=known">
               Placeable modules
             </Link>
-            <Link className="button button-quiet" to="/racks/new">
-              New rig
-            </Link>
           </div>
         </div>
       </section>
 
       <section className="home-laws" aria-labelledby="home-laws-title">
-        <p className="eyebrow">Product law</p>
-        <h2 id="home-laws-title">Boundaries that stay hard</h2>
+        <h2 id="home-laws-title">Product law</h2>
         <ol className="home-laws__list">
           {laws.map((law) => (
             <li key={law}>{law}</li>

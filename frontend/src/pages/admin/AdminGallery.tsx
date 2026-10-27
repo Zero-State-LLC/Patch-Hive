@@ -21,7 +21,6 @@ export default function AdminGallery() {
       <div className="admin-shell">
         <header className="workspace-header">
           <div>
-            <p className="eyebrow">Ops</p>
             <h1>Gallery revisions</h1>
             <p className="muted">Approve or confirm gallery inventory evidence.</p>
           </div>

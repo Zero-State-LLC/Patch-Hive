@@ -94,6 +94,16 @@ class Settings(BaseSettings):
     export_dir: str = "./exports"
     export_store_root: str = "./exports"
     waveform_dir: str = "./waveforms"
+    # Durable copy of the files above (core/storage.py). "local" keeps today's behavior;
+    # "s3" mirrors to an S3-compatible bucket such as Cloudflare R2 and fails closed if
+    # any S3_* value is missing.
+    storage_backend: str = "local"
+    s3_endpoint_url: str = ""
+    s3_bucket: str = ""
+    s3_access_key_id: str = ""
+    s3_secret_access_key: str = ""
+    s3_region: str = "auto"
+    s3_key_prefix: str = ""
 
     # PatchBook Design Engine (presentation layer; defaults off — no behavior change)
     enable_patchbook_design_engine: bool = False

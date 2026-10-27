@@ -1,0 +1,30 @@
+name: Release Please
+
+# Keeps one release PR open on main. Merging that PR tags the commit and creates
+# the GitHub release. Nothing deploys from here.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          # The repo does not let GitHub Actions open pull requests, so the
+          # default GITHUB_TOKEN cannot create the release PR. Set
+          # RELEASE_PLEASE_TOKEN (fine-grained PAT on this repo: Contents,
+          # Pull requests and Issues read/write). A PAT-opened release PR also
+          # triggers CI, which GITHUB_TOKEN-opened PRs do not.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

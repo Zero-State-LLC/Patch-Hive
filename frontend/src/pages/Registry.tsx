@@ -80,11 +80,10 @@ export default function RegistryPage() {
     <div className="registry-page">
       <header className="workspace-header">
         <div>
-          <p className="eyebrow">Catalog</p>
           <h1>Product Database</h1>
           <p className="muted">
-            Live registry · {coverage?.total_manufacturers || manufacturers.length} manufacturers ·{" "}
-            {coverage?.total_models || 0} models
+            Live registry of {coverage?.total_manufacturers || manufacturers.length} manufacturers
+            and {coverage?.total_models || 0} models.
           </p>
         </div>
         <label className="field" style={{ minWidth: "min(18rem, 100%)" }}>
@@ -103,12 +102,12 @@ export default function RegistryPage() {
 
       {searchResults.length > 0 ? (
         <div className="panel" style={{ marginBottom: "var(--space-5)" }}>
-          <p className="eyebrow">Model search</p>
+          <h3>Model search</h3>
           <ul className="registry-search-list">
             {searchResults.map((r, i) => (
               <li key={`${r.brand}-${r.name}-${i}`}>
                 <span>
-                  {r.brand} — {r.name}
+                  {r.brand} {r.name}
                 </span>
                 {r.hp != null ? <code>{r.hp} HP</code> : null}
               </li>
@@ -150,7 +149,6 @@ export default function RegistryPage() {
             <p className="muted">Select a manufacturer to inspect registry detail.</p>
           ) : (
             <>
-              <p className="eyebrow">Manufacturer</p>
               <h2 style={{ marginTop: 0 }}>{manLabel(selected)}</h2>
               <p className="catalog-card-meta">{selected.slug}</p>
               <dl className="registry-detail">
@@ -171,9 +169,7 @@ export default function RegistryPage() {
                   </div>
                 ) : null}
               </dl>
-              <p className="eyebrow" style={{ marginTop: "var(--space-5)" }}>
-                Models (sample)
-              </p>
+              <h3 style={{ marginTop: "var(--space-5)" }}>Models (sample)</h3>
               {(selected.models || []).length === 0 ? (
                 <p className="muted">No models loaded for this manufacturer yet.</p>
               ) : (

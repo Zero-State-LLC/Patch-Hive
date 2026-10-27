@@ -7,7 +7,6 @@ import { AdminNav } from "./AdminNav";
 function LeaderboardTable({ title, entries }: { title: string; entries: AdminLeaderboardEntry[] }) {
   return (
     <section className="panel">
-      <p className="eyebrow">Ranking</p>
       <h2 style={{ marginTop: 0 }}>{title}</h2>
       {entries.length ? (
         <table className="data-table">
@@ -57,7 +56,6 @@ export default function AdminLeaderboards() {
       <div className="admin-shell">
         <header className="workspace-header">
           <div>
-            <p className="eyebrow">Ops</p>
             <h1>Leaderboards</h1>
             <p className="muted">Community ranking surfaces when feature flags allow.</p>
           </div>

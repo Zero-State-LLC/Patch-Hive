@@ -69,17 +69,21 @@ export default function PublicationPage() {
           <img
             src={publication.cover_image_url}
             alt={publication.title}
-            style={{ width: "200px", borderRadius: "8px", border: "1px solid #222" }}
+            style={{
+              width: "200px",
+              borderRadius: "8px",
+              border: "1px solid var(--surface-raised)",
+            }}
           />
         )}
         <div>
           <h2 style={{ marginTop: 0 }}>{publication.title}</h2>
-          <p style={{ color: "#aaa" }}>{publication.description}</p>
-          <p style={{ color: "#666" }}>Published by {publication.publisher_display}</p>
+          <p style={{ color: "var(--text-muted)" }}>{publication.description}</p>
+          <p style={{ color: "var(--text-muted)" }}>Published by {publication.publisher_display}</p>
           <span
             style={{
-              background: "#222",
-              color: "#00ff88",
+              background: "var(--surface-raised)",
+              color: "var(--success)",
               padding: "0.2rem 0.6rem",
               borderRadius: "999px",
               fontSize: "0.85rem",
@@ -92,14 +96,14 @@ export default function PublicationPage() {
 
       <section
         style={{
-          background: "#111",
-          border: "1px solid #222",
+          background: "var(--surface-panel)",
+          border: "1px solid var(--surface-raised)",
           borderRadius: "8px",
           padding: "1.5rem",
         }}
       >
         <h3 style={{ marginTop: 0 }}>Provenance</h3>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, color: "#ccc" }}>
+        <ul style={{ listStyle: "none", padding: 0, margin: 0, color: "var(--text-secondary)" }}>
           <li>Run ID: {publication.provenance.run_id}</li>
           <li>Generated: {publication.provenance.generated_at}</li>
           <li>Patch count: {publication.provenance.patch_count ?? "N/A"}</li>
@@ -109,8 +113,8 @@ export default function PublicationPage() {
 
       <section
         style={{
-          background: "#111",
-          border: "1px solid #222",
+          background: "var(--surface-panel)",
+          border: "1px solid var(--surface-raised)",
           borderRadius: "8px",
           padding: "1.5rem",
         }}
@@ -120,38 +124,38 @@ export default function PublicationPage() {
           <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
             <a
               href={publication.download_urls.pdf_url}
-              style={{ color: "#00ff88", textDecoration: "none" }}
+              style={{ color: "var(--success)", textDecoration: "none" }}
             >
               PDF
             </a>
             <a
               href={publication.download_urls.svg_url}
-              style={{ color: "#00ff88", textDecoration: "none" }}
+              style={{ color: "var(--success)", textDecoration: "none" }}
             >
               SVG
             </a>
             <a
               href={publication.download_urls.zip_url}
-              style={{ color: "#00ff88", textDecoration: "none" }}
+              style={{ color: "var(--success)", textDecoration: "none" }}
             >
               ZIP
             </a>
           </div>
         ) : (
-          <p style={{ color: "#aaa" }}>Downloads are disabled for this publication.</p>
+          <p style={{ color: "var(--text-muted)" }}>Downloads are disabled for this publication.</p>
         )}
       </section>
 
       <section
         style={{
-          background: "#111",
-          border: "1px solid #222",
+          background: "var(--surface-panel)",
+          border: "1px solid var(--surface-raised)",
           borderRadius: "8px",
           padding: "1.5rem",
         }}
       >
         <h3 style={{ marginTop: 0 }}>Report</h3>
-        <label style={{ display: "block", color: "#ccc" }}>
+        <label style={{ display: "block", color: "var(--text-secondary)" }}>
           Reason
           <input
             value={reportReason}
@@ -159,15 +163,15 @@ export default function PublicationPage() {
             style={{
               width: "100%",
               marginTop: "0.4rem",
-              background: "#0d0d0d",
-              color: "#fff",
-              border: "1px solid #333",
+              background: "var(--surface-inset)",
+              color: "var(--text-primary)",
+              border: "1px solid var(--border)",
               borderRadius: "4px",
               padding: "0.4rem",
             }}
           />
         </label>
-        <label style={{ display: "block", color: "#ccc", marginTop: "0.6rem" }}>
+        <label style={{ display: "block", color: "var(--text-secondary)", marginTop: "0.6rem" }}>
           Details
           <textarea
             value={reportDetails}
@@ -176,9 +180,9 @@ export default function PublicationPage() {
             style={{
               width: "100%",
               marginTop: "0.4rem",
-              background: "#0d0d0d",
-              color: "#ccc",
-              border: "1px solid #333",
+              background: "var(--surface-inset)",
+              color: "var(--text-secondary)",
+              border: "1px solid var(--border)",
               borderRadius: "4px",
               padding: "0.4rem",
             }}
@@ -188,9 +192,9 @@ export default function PublicationPage() {
           onClick={submitReport}
           style={{
             marginTop: "0.8rem",
-            background: "#222",
-            color: "#fff",
-            border: "1px solid #333",
+            background: "var(--surface-raised)",
+            color: "var(--text-primary)",
+            border: "1px solid var(--border)",
             padding: "0.5rem 1rem",
             borderRadius: "6px",
             cursor: "pointer",
@@ -198,7 +202,9 @@ export default function PublicationPage() {
         >
           Report
         </button>
-        {reportStatus && <p style={{ color: "#aaa", marginTop: "0.6rem" }}>{reportStatus}</p>}
+        {reportStatus && (
+          <p style={{ color: "var(--text-muted)", marginTop: "0.6rem" }}>{reportStatus}</p>
+        )}
       </section>
     </div>
   );

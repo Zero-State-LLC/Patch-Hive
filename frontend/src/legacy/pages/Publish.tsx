@@ -101,20 +101,22 @@ export default function PublishPage() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-      <Link to="/account" style={{ color: "#00ff88" }}>
+      <Link to="/account" style={{ color: "var(--success)" }}>
         ← Back to account
       </Link>
 
       <section
         style={{
-          background: "#111",
-          border: "1px solid #222",
+          background: "var(--surface-panel)",
+          border: "1px solid var(--surface-raised)",
           borderRadius: "8px",
           padding: "1.5rem",
         }}
       >
         <h2 style={{ marginTop: 0 }}>Publish</h2>
-        <p style={{ color: "#aaa" }}>Generate export artifacts and publish when ready.</p>
+        <p style={{ color: "var(--text-muted)" }}>
+          Generate export artifacts and publish when ready.
+        </p>
         <div
           style={{
             display: "grid",
@@ -123,7 +125,7 @@ export default function PublishPage() {
           }}
         >
           <div>
-            <label style={{ display: "block", color: "#ccc" }}>
+            <label style={{ display: "block", color: "var(--text-secondary)" }}>
               Export source
               <select
                 value={sourceType}
@@ -131,9 +133,9 @@ export default function PublishPage() {
                 style={{
                   width: "100%",
                   marginTop: "0.4rem",
-                  background: "#0d0d0d",
-                  color: "#fff",
-                  border: "1px solid #333",
+                  background: "var(--surface-inset)",
+                  color: "var(--text-primary)",
+                  border: "1px solid var(--border)",
                   borderRadius: "4px",
                   padding: "0.4rem",
                 }}
@@ -144,7 +146,7 @@ export default function PublishPage() {
             </label>
           </div>
           <div>
-            <label style={{ display: "block", color: "#ccc" }}>
+            <label style={{ display: "block", color: "var(--text-secondary)" }}>
               Rack
               <select
                 value={selectedRackId}
@@ -154,9 +156,9 @@ export default function PublishPage() {
                 style={{
                   width: "100%",
                   marginTop: "0.4rem",
-                  background: "#0d0d0d",
-                  color: "#fff",
-                  border: "1px solid #333",
+                  background: "var(--surface-inset)",
+                  color: "var(--text-primary)",
+                  border: "1px solid var(--border)",
                   borderRadius: "4px",
                   padding: "0.4rem",
                 }}
@@ -172,7 +174,7 @@ export default function PublishPage() {
           </div>
           {sourceType === "patch" && (
             <div>
-              <label style={{ display: "block", color: "#ccc" }}>
+              <label style={{ display: "block", color: "var(--text-secondary)" }}>
                 Patch
                 <select
                   value={selectedPatchId}
@@ -182,9 +184,9 @@ export default function PublishPage() {
                   style={{
                     width: "100%",
                     marginTop: "0.4rem",
-                    background: "#0d0d0d",
-                    color: "#fff",
-                    border: "1px solid #333",
+                    background: "var(--surface-inset)",
+                    color: "var(--text-primary)",
+                    border: "1px solid var(--border)",
                     borderRadius: "4px",
                     padding: "0.4rem",
                   }}
@@ -204,9 +206,9 @@ export default function PublishPage() {
           onClick={handleCreateExport}
           style={{
             marginTop: "1rem",
-            background: "#222",
-            color: "#fff",
-            border: "1px solid #333",
+            background: "var(--surface-raised)",
+            color: "var(--text-primary)",
+            border: "1px solid var(--border)",
             padding: "0.5rem 1rem",
             borderRadius: "6px",
             cursor: "pointer",
@@ -218,15 +220,15 @@ export default function PublishPage() {
 
       <section
         style={{
-          background: "#111",
-          border: "1px solid #222",
+          background: "var(--surface-panel)",
+          border: "1px solid var(--surface-raised)",
           borderRadius: "8px",
           padding: "1.5rem",
         }}
       >
         <h3 style={{ marginTop: 0 }}>Publication details</h3>
         <div style={{ display: "grid", gap: "1rem" }}>
-          <label style={{ color: "#ccc" }}>
+          <label style={{ color: "var(--text-secondary)" }}>
             Export
             <select
               value={selectedExportId}
@@ -236,9 +238,9 @@ export default function PublishPage() {
               style={{
                 width: "100%",
                 marginTop: "0.4rem",
-                background: "#0d0d0d",
-                color: "#fff",
-                border: "1px solid #333",
+                background: "var(--surface-inset)",
+                color: "var(--text-primary)",
+                border: "1px solid var(--border)",
                 borderRadius: "4px",
                 padding: "0.4rem",
               }}
@@ -251,7 +253,7 @@ export default function PublishPage() {
               ))}
             </select>
           </label>
-          <label style={{ color: "#ccc" }}>
+          <label style={{ color: "var(--text-secondary)" }}>
             Title
             <input
               value={title}
@@ -259,15 +261,15 @@ export default function PublishPage() {
               style={{
                 width: "100%",
                 marginTop: "0.4rem",
-                background: "#0d0d0d",
-                color: "#fff",
-                border: "1px solid #333",
+                background: "var(--surface-inset)",
+                color: "var(--text-primary)",
+                border: "1px solid var(--border)",
                 borderRadius: "4px",
                 padding: "0.4rem",
               }}
             />
           </label>
-          <label style={{ color: "#ccc" }}>
+          <label style={{ color: "var(--text-secondary)" }}>
             Description
             <textarea
               value={description}
@@ -276,15 +278,15 @@ export default function PublishPage() {
               style={{
                 width: "100%",
                 marginTop: "0.4rem",
-                background: "#0d0d0d",
-                color: "#ccc",
-                border: "1px solid #333",
+                background: "var(--surface-inset)",
+                color: "var(--text-secondary)",
+                border: "1px solid var(--border)",
                 borderRadius: "4px",
                 padding: "0.4rem",
               }}
             />
           </label>
-          <label style={{ color: "#ccc" }}>
+          <label style={{ color: "var(--text-secondary)" }}>
             Cover image URL
             <input
               value={coverImageUrl}
@@ -292,15 +294,15 @@ export default function PublishPage() {
               style={{
                 width: "100%",
                 marginTop: "0.4rem",
-                background: "#0d0d0d",
-                color: "#fff",
-                border: "1px solid #333",
+                background: "var(--surface-inset)",
+                color: "var(--text-primary)",
+                border: "1px solid var(--border)",
                 borderRadius: "4px",
                 padding: "0.4rem",
               }}
             />
           </label>
-          <label style={{ color: "#ccc" }}>
+          <label style={{ color: "var(--text-secondary)" }}>
             Visibility
             <select
               value={visibility}
@@ -308,9 +310,9 @@ export default function PublishPage() {
               style={{
                 width: "100%",
                 marginTop: "0.4rem",
-                background: "#0d0d0d",
-                color: "#fff",
-                border: "1px solid #333",
+                background: "var(--surface-inset)",
+                color: "var(--text-primary)",
+                border: "1px solid var(--border)",
                 borderRadius: "4px",
                 padding: "0.4rem",
               }}
@@ -319,7 +321,7 @@ export default function PublishPage() {
               <option value="public">Public</option>
             </select>
           </label>
-          <label style={{ color: "#ccc" }}>
+          <label style={{ color: "var(--text-secondary)" }}>
             Allow download
             <input
               type="checkbox"
@@ -328,7 +330,7 @@ export default function PublishPage() {
               style={{ marginLeft: "0.5rem" }}
             />
           </label>
-          <label style={{ color: "#ccc" }}>
+          <label style={{ color: "var(--text-secondary)" }}>
             Allow remix
             <input
               type="checkbox"
@@ -342,8 +344,8 @@ export default function PublishPage() {
           onClick={handlePublish}
           style={{
             marginTop: "1rem",
-            background: "#00ff88",
-            color: "#000",
+            background: "var(--success)",
+            color: "var(--action-contrast)",
             border: "none",
             padding: "0.6rem 1.2rem",
             borderRadius: "6px",
@@ -353,7 +355,7 @@ export default function PublishPage() {
         >
           Publish
         </button>
-        {status && <p style={{ color: "#aaa", marginTop: "0.6rem" }}>{status}</p>}
+        {status && <p style={{ color: "var(--text-muted)", marginTop: "0.6rem" }}>{status}</p>}
       </section>
     </div>
   );
