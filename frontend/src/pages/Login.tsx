@@ -5,6 +5,7 @@
 import { useId, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authApi } from "@/lib/api";
+import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 import { useAuthStore } from "@/lib/store";
 
 type AuthMode = "signin" | "register";
@@ -92,156 +93,166 @@ export default function LoginPage() {
           </p>
         </aside>
 
-        <div className="auth-card panel">
-          <div className="auth-card-head">
-            <div className="auth-mark" aria-hidden="true" />
-            <div>
-              <h2 className="auth-card-title">
-                {mode === "signin" ? "Sign in" : "Create account"}
-              </h2>
+        {ACCOUNTS_OPEN ? (
+          <div className="auth-card panel">
+            <div className="auth-card-head">
+              <div className="auth-mark" aria-hidden="true" />
+              <div>
+                <h2 className="auth-card-title">
+                  {mode === "signin" ? "Sign in" : "Create account"}
+                </h2>
+              </div>
             </div>
-          </div>
 
-          <div className="auth-tabs" role="tablist" aria-label="Authentication mode">
-            <button
-              type="button"
-              role="tab"
-              className="auth-tab"
-              aria-selected={mode === "signin"}
-              onClick={() => {
-                setMode("signin");
-                setError("");
-              }}
-            >
-              Sign in
-            </button>
-            <button
-              type="button"
-              role="tab"
-              className="auth-tab"
-              aria-selected={mode === "register"}
-              onClick={() => {
-                setMode("register");
-                setError("");
-              }}
-            >
-              Create account
-            </button>
-          </div>
+            <div className="auth-tabs" role="tablist" aria-label="Authentication mode">
+              <button
+                type="button"
+                role="tab"
+                className="auth-tab"
+                aria-selected={mode === "signin"}
+                onClick={() => {
+                  setMode("signin");
+                  setError("");
+                }}
+              >
+                Sign in
+              </button>
+              <button
+                type="button"
+                role="tab"
+                className="auth-tab"
+                aria-selected={mode === "register"}
+                onClick={() => {
+                  setMode("register");
+                  setError("");
+                }}
+              >
+                Create account
+              </button>
+            </div>
 
-          <form className="auth-form" onSubmit={handleSubmit} noValidate>
-            <label className="field" htmlFor={`${formId}-username`}>
-              Username
-              <input
-                id={`${formId}-username`}
-                name="username"
-                type="text"
-                autoComplete="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                minLength={2}
-                disabled={submitting}
-              />
-            </label>
-
-            {mode === "register" ? (
-              <label className="field" htmlFor={`${formId}-email`}>
-                Email
+            <form className="auth-form" method="post" onSubmit={handleSubmit} noValidate>
+              <label className="field" htmlFor={`${formId}-username`}>
+                Username
                 <input
-                  id={`${formId}-email`}
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id={`${formId}-username`}
+                  name="username"
+                  type="text"
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
+                  minLength={2}
                   disabled={submitting}
                 />
               </label>
+
+              {mode === "register" ? (
+                <label className="field" htmlFor={`${formId}-email`}>
+                  Email
+                  <input
+                    id={`${formId}-email`}
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={submitting}
+                  />
+                </label>
+              ) : null}
+
+              <label className="field" htmlFor={`${formId}-password`}>
+                Password
+                <div className="auth-password-row">
+                  <input
+                    id={`${formId}-password`}
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={mode === "register" ? 8 : 1}
+                    disabled={submitting}
+                  />
+                  <button
+                    type="button"
+                    className="button button-quiet auth-password-toggle"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-pressed={showPassword}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </label>
+
+              {error ? (
+                <p className="status status-danger auth-error" role="alert">
+                  {error}
+                </p>
+              ) : null}
+
+              <button
+                type="submit"
+                className="button button-primary auth-submit"
+                disabled={submitting}
+              >
+                {submitting
+                  ? mode === "signin"
+                    ? "Signing in…"
+                    : "Creating account…"
+                  : mode === "signin"
+                    ? "Sign in to PatchHive"
+                    : "Create account & continue"}
+              </button>
+            </form>
+
+            {DEMO_ACCOUNTS ? (
+              <div className="auth-demo">
+                <p className="muted">Local / Docker staging demo accounts (after golden seed):</p>
+                <p>
+                  User: <code>{DEMO_ACCOUNTS.user.username}</code> /{" "}
+                  <code>{DEMO_ACCOUNTS.user.password}</code>
+                </p>
+                <p>
+                  Admin: <code>{DEMO_ACCOUNTS.admin.username}</code> /{" "}
+                  <code>{DEMO_ACCOUNTS.admin.password}</code>
+                </p>
+                <div className="auth-demo-actions">
+                  <button
+                    type="button"
+                    className="button button-secondary"
+                    onClick={() => fillDemo(DEMO_ACCOUNTS.user)}
+                  >
+                    Fill demo user
+                  </button>
+                  <button
+                    type="button"
+                    className="button button-secondary"
+                    onClick={() => fillDemo(DEMO_ACCOUNTS.admin)}
+                  >
+                    Fill demo admin
+                  </button>
+                </div>
+              </div>
             ) : null}
 
-            <label className="field" htmlFor={`${formId}-password`}>
-              Password
-              <div className="auth-password-row">
-                <input
-                  id={`${formId}-password`}
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={mode === "register" ? 8 : 1}
-                  disabled={submitting}
-                />
-                <button
-                  type="button"
-                  className="button button-quiet auth-password-toggle"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-pressed={showPassword}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
-            </label>
-
-            {error ? (
-              <p className="status status-danger auth-error" role="alert">
-                {error}
-              </p>
-            ) : null}
-
-            <button
-              type="submit"
-              className="button button-primary auth-submit"
-              disabled={submitting}
-            >
-              {submitting
-                ? mode === "signin"
-                  ? "Signing in…"
-                  : "Creating account…"
-                : mode === "signin"
-                  ? "Sign in to PatchHive"
-                  : "Create account & continue"}
-            </button>
-          </form>
-
-          {DEMO_ACCOUNTS ? (
-            <div className="auth-demo">
-              <p className="muted">Local / Docker staging demo accounts (after golden seed):</p>
-              <p>
-                User: <code>{DEMO_ACCOUNTS.user.username}</code> /{" "}
-                <code>{DEMO_ACCOUNTS.user.password}</code>
-              </p>
-              <p>
-                Admin: <code>{DEMO_ACCOUNTS.admin.username}</code> /{" "}
-                <code>{DEMO_ACCOUNTS.admin.password}</code>
-              </p>
-              <div className="auth-demo-actions">
-                <button
-                  type="button"
-                  className="button button-secondary"
-                  onClick={() => fillDemo(DEMO_ACCOUNTS.user)}
-                >
-                  Fill demo user
-                </button>
-                <button
-                  type="button"
-                  className="button button-secondary"
-                  onClick={() => fillDemo(DEMO_ACCOUNTS.admin)}
-                >
-                  Fill demo admin
-                </button>
-              </div>
-            </div>
-          ) : null}
-
-          <p className="auth-back muted">
-            <Link to="/">← Back to workspace home</Link>
-          </p>
-        </div>
+            <p className="auth-back muted">
+              <Link to="/">← Back to workspace home</Link>
+            </p>
+          </div>
+        ) : (
+          <div className="auth-card panel">
+            <h2 className="auth-card-title">Accounts are not open yet</h2>
+            <p className="muted">Sign-in opens when the PatchHive service goes live.</p>
+            <p className="auth-back muted">
+              <Link to="/">← Back to workspace home</Link>
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

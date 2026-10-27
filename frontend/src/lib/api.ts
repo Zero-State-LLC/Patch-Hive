@@ -41,12 +41,12 @@ import type {
   AdminRunList,
   AdminLeaderboardEntry,
 } from "@/types/admin";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+import { API_BASE_URL } from "./apiBase";
 
 // Create axios instance
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  // No API in this build: requests fail fast instead of reaching for localhost.
+  baseURL: API_BASE_URL ?? "/__no_api__",
   headers: {
     "Content-Type": "application/json",
   },
@@ -563,7 +563,7 @@ export const canonApi = {
     artifact: "pdf" | "companion" | "manifest" | "zip",
     token: string,
   ) => {
-    const base = API_BASE_URL.replace(/\/$/, "");
+    const base = (API_BASE_URL ?? "/__no_api__").replace(/\/$/, "");
     const q = new URLSearchParams({ token });
     return `${base}/canon/exports/${encodeURIComponent(exportId)}/artifacts/${artifact}?${q}`;
   },
