@@ -6,7 +6,8 @@
   "verified_free": "free fetch returned 200 and the page names the brand",
   "candidate": "free fetch was blocked or inconclusive; the crawl must see the brand on the page before using it",
   "robots_disallowed": "the maker's robots.txt disallows our crawler; never fetched",
-  "rejected": "the domain no longer belongs to the maker"
+  "rejected": "the domain no longer belongs to the maker",
+  "challenged": "the maker's site answers our crawler with a bot challenge (CAPTCHA); never fetched, never routed through a paid proxy to get past it"
  },
  "extra_brands": [
   "Instruo"
@@ -417,6 +418,11 @@
    "homepage": "https://zlobmodular.com/",
    "status": "candidate",
    "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Tiptop Audio": {
+   "homepage": "https://tiptopaudio.com/",
+   "status": "challenged",
+   "note": "2026-10-27: every path, robots.txt included, answers 202 with a SiteGround CAPTCHA (sg-captcha: challenge)"
   }
  },
  "adapters": {
@@ -437,8 +443,7 @@
    ],
    "product": "^/(p\\.php|[a-z0-9-]+)$",
    "exclude": "^/(index|modules|power|faceplates|modaccessories|eurorack|pods|kits|merch|stores|about|whoweare|contact|podcast|firmware|pedals|faqs|legacy)\\.php$|^/(metamodule|sampler|samplerkit|ldkit)$",
-   "note": "module index is script-rendered; links appear only through a paid render",
-   "render": true
+   "note": "the module and legacy indexes list every product as relative p.php?p=N links over free HTTP"
   },
   "After Later Audio": {
    "homepage": "https://afterlateraudio.com/",
@@ -504,11 +509,11 @@
     "/shop/eurorack-modules/"
    ],
    "depth": 2,
-   "follow": "^/shop/eurorack-modules/[^/]+-series/?$",
-   "product": "^/shop/eurorack-modules/[^/]+-series/[a-z0-9-]+/?$",
-   "exclude": "^/shop/eurorack-modules/?$",
-   "note": "series pages list products with script (Alpine.js); links appear only through a paid render",
-   "render": true
+   "follow": "^/shop/eurorack-modules/[a-z0-9-]+/?$",
+   "product": "^/[a-z0-9]+(?:-[a-z0-9]+)*-\\d+/?$",
+   "exclude": "^/(shop|support|checkout|customer|blog|about|contact)(/|$)",
+   "note": "Magento: series pages under /shop/eurorack-modules/ build their product grid with script, so only those index pages need a paid render (render_index); products sit at the root as /<name>-<id>/ and are fetched free. robots.txt disallows /graphql/ and /rest/: never used",
+   "render_index": true
   },
   "Expert Sleepers": {
    "homepage": "https://www.expert-sleepers.co.uk/",
@@ -571,14 +576,12 @@
   },
   "Pittsburgh Modular": {
    "homepage": "https://pittsburghmodular.com/",
-   "kind": "squarespace",
-   "collections": [
-    "/pittsburgh-oscillator-modules",
-    "/pittsburgh-filter-modules",
-    "/pittsburgh-envelope-generator-modules",
-    "/pittsburgh-effects-modules",
-    "/store"
-   ]
+   "kind": "listing",
+   "entries": [],
+   "sitemap": true,
+   "product": "^/[a-z0-9]+(?:-[a-z0-9]+)*/?$",
+   "exclude": "^/(store|news|about|contact|dealers|service|service-policies|modules|modulesx|modules-x|link-hosting-page|discontinued-products|microvolt-privacy-policy|braided-cables|noodle-cables|nazca-audio|waveforms|lifeforms-distro|pittsburgh-[a-z-]+|structure(-[a-z0-9-]+)?|system-[0-9-]+|[a-z-]*cases|taiga|microvolt(-[0-9]+)?|blackbox-sv1|sv1b-blackbox|lifeforms-(sv-1|sv-2|sv1b|kb-1|voltage-lab[a-z-]*|research-console|foundations?|foundation-[a-z0-9-]+|percussion-sequencer)|voltage-lab-2|voltage-research-laboratory|synthesizer-(box|block)|game-system|patch-box|move-cases|cell-dc-cases|local-florist|foundation-3-1(-1)?)/?$",
+   "note": "Squarespace store feed is merch and cases; each module has a root info page with Size, Depth and Power Usage. Sitemap URLs are filtered, never crawled; systems, cases and keyboards are excluded"
   },
   "Qu-Bit Electronix": {
    "homepage": "https://www.qubitelectronix.com/",
@@ -591,17 +594,6 @@
   "Schlappi Engineering": {
    "homepage": "https://schlappiengineering.com/",
    "kind": "shopify"
-  },
-  "Tiptop Audio": {
-   "homepage": "https://tiptopaudio.com/",
-   "kind": "listing",
-   "entries": [
-    "/"
-   ],
-   "sitemap": true,
-   "product": "^/(product|products|modules?)/[^/]+/?$",
-   "note": "unreachable over free HTTP from the dev box; needs the paid tier",
-   "render": true
   },
   "Verbos Electronics": {
    "homepage": "https://verboselectronics.com/",
