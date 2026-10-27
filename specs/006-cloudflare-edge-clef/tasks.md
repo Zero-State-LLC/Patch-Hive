@@ -52,38 +52,47 @@ Live payments, D1, and production-readiness claims stay forbidden until BETA_REA
 
 ## Tasks (topological order)
 
-- [ ] T001 Create feature tree `specs/006-cloudflare-edge-clef/` and add index line to `specs/README.md`.
+Status reflects `main` at e0fb6a1 (see `DEPLOY_NOTES.md`). Where a task mixes repository code with
+an operator action, the code half is sub-task `a` and the operator half is `b`, so a code task never
+shows done while it waits on an operator dependency. `scripts/check_spec_dag.py` checks this file.
+
+- [x] T001 Create feature tree `specs/006-cloudflare-edge-clef/` and add index line to `specs/README.md`.
   - depends_on: []
 
-- [ ] T010 Implement Decision / Evidence Resolution state machine.
+- [x] T010 Implement Decision / Evidence Resolution state machine.
   - depends_on: [T001]
   - acceptance: every path ends terminal or ARCHIVED; no canon write before CONFIRMED.
 
-- [ ] T020 Implement ClefProvider adapter state machine.
+- [x] T020 Implement ClefProvider adapter state machine.
   - depends_on: [T001]
   - acceptance: only SUCCESS emits DecisionPacket; no type leakage; flag default off.
 
-- [ ] T030 Create Cloudflare Pages project for Vite frontend.
+- [ ] T030 Create Cloudflare Pages project for Vite frontend. DEFERRED, operator. PR #55 ships the SPA on Cloudflare Workers and records this task as PARTIAL.
   - depends_on: [T001]
   - acceptance: build succeeds, custom domain attached, VITE_API_BASE_URL set.
 
-- [ ] T040 Publish API hostname and restrict CORS.
+- [ ] T040 Publish API hostname and restrict CORS. DEFERRED, operator-locked.
   - depends_on: [T030]
   - acceptance: exact origin, ALLOW_PRODUCTION_PAYMENTS=false, /health/ready ok.
 
-- [ ] T050 Bind Hyperdrive to Neon staging branch.
+- [ ] T050 Bind Hyperdrive to Neon staging branch. DEFERRED, operator.
   - depends_on: [T040]
 
 - [ ] T060 Wire ClefProvider into evidence-resolution path behind Spec 005 policy.
   - depends_on: [T020, T050]
   - acceptance: disposition policy-owned; idempotent receipts.
+  - [x] T060a Wire ClefProvider into the evidence-resolution path against the existing database layer (code).
+    - depends_on: [T010, T020]
+    - acceptance: disposition policy-owned; idempotent receipts; no persistence change.
+  - [ ] T060b Verify the wired path on the Hyperdrive-bound staging database (operator).
+    - depends_on: [T050, T060a]
 
-- [ ] T070 Implement Edge Deployment readiness state machine and gate checks.
-  - depends_on: [T060]
+- [x] T070 Implement Edge Deployment readiness state machine and gate checks.
+  - depends_on: [T060a]
   - acceptance: only GATES_PASSED → BETA_READY after operator approval.
 
-- [ ] T080 Extend evaluation harness; pin receipt SHA.
-  - depends_on: [T060]
+- [x] T080 Extend evaluation harness; pin receipt SHA.
+  - depends_on: [T060a]
 
-- [ ] T090 Integration tests for decision and deployment machines.
+- [x] T090 Integration tests for decision and deployment machines.
   - depends_on: [T010, T070]
