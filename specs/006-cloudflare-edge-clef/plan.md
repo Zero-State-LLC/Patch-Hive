@@ -37,4 +37,15 @@ Re-run STAGING_HOST_PLAN. Update DOMAIN_CUTOVER_CHECKLIST with receipts. Only th
 - CORS origin mismatch blocks frontend.
 - Tunnel/Containers choice affects latency and ops surface; operator must lock.
 - Clef vision cost/latency; flag stays off until evaluation.
-- GitHub connector currently lacks Contents write; reconnect required before commit.
+- Frontend hosting moved from Pages to Workers in PR #55; FR-001 and T030 still name Pages and need an operator decision.
+
+## Constitution check
+
+| Principle | How this feature complies |
+| --- | --- |
+| 4 Probabilistic systems propose | Clef never leaves CLASSIFYING; disposition is the Spec 005 policy. |
+| 7 Providers are replaceable adapters | Clef types stay inside `intelligence/clef_provider.py`. |
+| 9 Fail closed | Timeout, malformed, unavailable, and disabled all map to explicit errors with no receipt. |
+| Authority boundary | `canon_write_permitted` only in CONFIRMED via the existing confirmation path. |
+
+Gap: the constitution's chain also asks for journeys, workflows, contracts, security, and rollback. This feature records them only in DEPLOY_NOTES.md.
