@@ -117,7 +117,9 @@ export default function CasesPage() {
       setTotal(0);
       setStats(null);
       setError(
-        "Unable to load the normalized case catalog. Import seed-v1 or check that the API is reachable.",
+        import.meta.env.DEV
+          ? "Unable to load the normalized case catalog. Import seed-v1 or check that the API is reachable."
+          : "Unable to load the case catalog. Try again in a moment.",
       );
       setState("error");
     }
