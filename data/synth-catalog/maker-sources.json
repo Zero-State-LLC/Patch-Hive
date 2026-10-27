@@ -1,0 +1,627 @@
+{
+ "version": 1,
+ "checked": "2026-10-27",
+ "policy": "Maker-owned sites only (spec 003 D2). Every fetch goes through data/synth-catalog/catalog_scrape.py: robots.txt, the deny list, per-host delay, cache, then context.dev and Firecrawl under one paid cap.",
+ "status_meaning": {
+  "verified_free": "free fetch returned 200 and the page names the brand",
+  "candidate": "free fetch was blocked or inconclusive; the crawl must see the brand on the page before using it",
+  "robots_disallowed": "the maker's robots.txt disallows our crawler; never fetched",
+  "rejected": "the domain no longer belongs to the maker"
+ },
+ "extra_brands": [
+  "Instruo"
+ ],
+ "homepages": {
+  "2hp": {
+   "homepage": "https://www.twohp.com/",
+   "status": "verified_free"
+  },
+  "ACXSynth": {
+   "homepage": "https://acxsynth.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Adventure Audio": {
+   "homepage": "https://www.adventureaudio.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (free_http 200); the run confirms the brand on the page before crawling"
+  },
+  "Aemit": {
+   "homepage": "https://aemit.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Analog Ordnance": {
+   "homepage": "https://analogordnance.com/",
+   "status": "robots_disallowed",
+   "note": "robots.txt disallows our crawler; never fetched"
+  },
+  "Antumbra": {
+   "homepage": "https://antumbra.eu/",
+   "status": "verified_free"
+  },
+  "Après le bip": {
+   "homepage": "https://www.apreslebip.com/",
+   "status": "verified_free"
+  },
+  "Arturia": {
+   "homepage": "https://www.arturia.com/",
+   "status": "verified_free"
+  },
+  "Atomosynth": {
+   "homepage": "https://atomosynth.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (free_http 200); the run confirms the brand on the page before crawling"
+  },
+  "Audiothingies": {
+   "homepage": "https://www.audiothingies.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Bananalogue": {
+   "homepage": "https://bananalogue.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Barullo": {
+   "homepage": "https://barullo.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Big T Music": {
+   "homepage": "https://bigtmusic.com/",
+   "status": "verified_free"
+  },
+  "Black Market Modular": {
+   "homepage": "https://www.blackmarketmodular.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Dave Smith Modular": {
+   "homepage": "https://www.sequential.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (free_http 200); the run confirms the brand on the page before crawling"
+  },
+  "Detroit Underground": {
+   "homepage": "https://detroitunderground.net/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "DinSync": {
+   "homepage": "https://www.dinsync.info/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Division 6": {
+   "homepage": "https://www.division-6.com/",
+   "status": "verified_free"
+  },
+  "Dreadbox": {
+   "homepage": "https://www.dreadbox-fx.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "EAS": {
+   "homepage": "https://www.eas.ch/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Erthenvar": {
+   "homepage": "https://erthenvar.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Fancyyyyy": {
+   "homepage": "https://fancyyyyy.com/",
+   "status": "verified_free"
+  },
+  "Funkstill": {
+   "homepage": "https://funkstill.de/",
+   "status": "verified_free"
+  },
+  "Gezeiten": {
+   "homepage": "https://gezeiten.com/",
+   "status": "verified_free"
+  },
+  "Hexinverter Électronique": {
+   "homepage": "https://www.hexinverter.net/",
+   "status": "verified_free"
+  },
+  "Hikari Instruments": {
+   "homepage": "https://www.hikari-instruments.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Hinton Instruments": {
+   "homepage": "https://www.hinton-instruments.co.uk/",
+   "status": "verified_free"
+  },
+  "Hive Mind Synthesis": {
+   "homepage": "https://hivemindsynthesis.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Industrial Music Electronics": {
+   "homepage": "https://www.industrialmusicelectronics.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Instruo": {
+   "homepage": "https://www.instruomodular.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Jonah Senzel": {
+   "homepage": "https://jonahsenzel.com/",
+   "status": "robots_disallowed",
+   "note": "robots.txt disallows our crawler; never fetched"
+  },
+  "L-1": {
+   "homepage": "https://www.l-1.de/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "LA Circuits": {
+   "homepage": "https://lacircuits.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Ladik": {
+   "homepage": "https://ladik.eu/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Likaon Instruments": {
+   "homepage": "https://likaoninstruments.com/",
+   "status": "verified_free"
+  },
+  "Luna Modular": {
+   "homepage": "https://lunamodular.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (free_http 200); the run confirms the brand on the page before crawling"
+  },
+  "Macbeth Studio Systems": {
+   "homepage": "https://www.macbethstudiosystems.com/",
+   "status": "rejected",
+   "note": "domain now serves unrelated content; not the maker"
+  },
+  "Malekko Heavy Industry": {
+   "homepage": "https://malekkoheavyindustry.com/",
+   "status": "verified_free"
+  },
+  "Marion Systems Corporation": {
+   "homepage": "https://www.marionsystems.com/",
+   "status": "verified_free"
+  },
+  "Metasonix": {
+   "homepage": "https://www.metasonix.com/",
+   "status": "verified_free"
+  },
+  "MFB": {
+   "homepage": "https://mfberlin.de/",
+   "status": "verified_free"
+  },
+  "Moddict": {
+   "homepage": "https://moddict.com/",
+   "status": "verified_free"
+  },
+  "Music Thing Modular": {
+   "homepage": "https://www.musicthing.co.uk/",
+   "status": "verified_free"
+  },
+  "Mutable instruments": {
+   "homepage": "https://pichenettes.github.io/mutable-instruments-documentation/",
+   "status": "verified_free"
+  },
+  "Neutron Sound": {
+   "homepage": "https://neutron-sound.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Nexus Instruments": {
+   "homepage": "https://nexusinstruments.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (free_http 200); the run confirms the brand on the page before crawling"
+  },
+  "NIIO analog": {
+   "homepage": "https://niioanalog.com/",
+   "status": "verified_free"
+  },
+  "NoodleVolt": {
+   "homepage": "https://noodlevolt.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "nw2s": {
+   "homepage": "https://nw2s.net/",
+   "status": "verified_free"
+  },
+  "Olegtron": {
+   "homepage": "https://olegtron.com/",
+   "status": "verified_free"
+  },
+  "Otter Mods": {
+   "homepage": "https://ottermods.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Percussa": {
+   "homepage": "https://www.percussa.com/",
+   "status": "verified_free"
+  },
+  "Qu-Bit Electronix": {
+   "homepage": "https://www.qubitelectronix.com/",
+   "status": "verified_free"
+  },
+  "Quicco Sound": {
+   "homepage": "https://quiccosound.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Random*Source": {
+   "homepage": "https://www.randomsource.net/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "ReBach": {
+   "homepage": "https://www.rebach.eu/",
+   "status": "verified_free"
+  },
+  "Rebel Technology": {
+   "homepage": "https://www.rebeltech.org/",
+   "status": "verified_free"
+  },
+  "Retro Mechanical Labs": {
+   "homepage": "https://retromechanicallabs.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Robots Are Red": {
+   "homepage": "https://robotsarered.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Sacrament Modular": {
+   "homepage": "https://sacramentmodular.com/",
+   "status": "rejected",
+   "note": "domain now serves unrelated content; not the maker"
+  },
+  "Schippmann": {
+   "homepage": "https://www.schippmann-music.com/",
+   "status": "verified_free"
+  },
+  "Sebsongs Modular": {
+   "homepage": "https://sebsongs.com/",
+   "status": "verified_free"
+  },
+  "Sequentix": {
+   "homepage": "https://www.sequentix.com/",
+   "status": "verified_free"
+  },
+  "Serpens Modular": {
+   "homepage": "https://serpensmodular.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (free_http 404); the run confirms the brand on the page before crawling"
+  },
+  "Shock Electronix": {
+   "homepage": "https://shockelectronix.com/",
+   "status": "verified_free"
+  },
+  "Slow Nova": {
+   "homepage": "https://slownova.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Snazzy FX": {
+   "homepage": "https://www.snazzyfx.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Sonoclast": {
+   "homepage": "https://sonoclast.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Sputnik Modular": {
+   "homepage": "https://www.sputnikmodular.com/",
+   "status": "verified_free"
+  },
+  "STG Soundlabs": {
+   "homepage": "https://www.stgsoundlabs.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (free_http 200); the run confirms the brand on the page before crawling"
+  },
+  "Strange Science Instruments": {
+   "homepage": "https://strangescienceinstruments.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Syinsi": {
+   "homepage": "https://syinsi.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Synthesis Technology": {
+   "homepage": "https://www.synthtech.com/",
+   "status": "verified_free"
+  },
+  "Synthwerks": {
+   "homepage": "https://www.synthwerks.com/",
+   "status": "verified_free"
+  },
+  "Tesseract Modular": {
+   "homepage": "https://tesseractmodular.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Thawney": {
+   "homepage": "https://thawney.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Therevox": {
+   "homepage": "https://www.therevox.com/",
+   "status": "verified_free"
+  },
+  "Toadstool Tech": {
+   "homepage": "https://toadstooltech.com/",
+   "status": "verified_free"
+  },
+  "UFO Modular": {
+   "homepage": "https://ufomodular.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Venus Instruments": {
+   "homepage": "https://venus-instruments.com/",
+   "status": "verified_free"
+  },
+  "Voxmachina": {
+   "homepage": "https://voxmachina.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (free_http 200); the run confirms the brand on the page before crawling"
+  },
+  "Warm Star Electronics": {
+   "homepage": "https://warmstarelectronics.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "WaveWrecker Electronics": {
+   "homepage": "https://wavewrecker.com/",
+   "status": "verified_free"
+  },
+  "West Oakland Music Systems": {
+   "homepage": "https://www.westoaklandmusicsystems.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Xaoc Devices": {
+   "homepage": "https://xaocdevices.com/",
+   "status": "verified_free"
+  },
+  "Zebra Synth": {
+   "homepage": "https://zebrasynth.com/",
+   "status": "verified_free"
+  },
+  "Zerosum Inertia": {
+   "homepage": "https://zerosuminertia.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Zetaohm": {
+   "homepage": "https://zetaohm.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  },
+  "Złob": {
+   "homepage": "https://zlobmodular.com/",
+   "status": "candidate",
+   "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
+  }
+ },
+ "adapters": {
+  "2hp": {
+   "homepage": "https://www.twohp.com/",
+   "kind": "squarespace",
+   "collections": [
+    "/modules",
+    "/legacy"
+   ]
+  },
+  "4ms Company": {
+   "homepage": "https://4mscompany.com/",
+   "kind": "listing",
+   "entries": [
+    "/modules.php",
+    "/legacy.php"
+   ],
+   "product": "^/(p\\.php|[a-z0-9-]+)$",
+   "exclude": "^/(index|modules|power|faceplates|modaccessories|eurorack|pods|kits|merch|stores|about|whoweare|contact|podcast|firmware|pedals|faqs|legacy)\\.php$|^/(metamodule|sampler|samplerkit|ldkit)$",
+   "note": "module index is script-rendered; links appear only through a paid render"
+  },
+  "After Later Audio": {
+   "homepage": "https://afterlateraudio.com/",
+   "kind": "shopify"
+  },
+  "ALM Busy Circuits": {
+   "homepage": "https://busycircuits.com/",
+   "kind": "shopify"
+  },
+  "Bastl Instruments": {
+   "homepage": "https://bastl-instruments.com/",
+   "kind": "listing",
+   "entries": [
+    "/eurorack/modules"
+   ],
+   "sitemap": true,
+   "product": "^/eurorack/modules/[^/]+/?$"
+  },
+  "Befaco": {
+   "homepage": "https://www.befaco.org/",
+   "kind": "listing",
+   "entries": [
+    "/"
+   ],
+   "depth": 2,
+   "follow": "^/(modules|eurorack|products?)/?$",
+   "product": "^/[a-z0-9-]+-?\\d?/?$",
+   "exclude": "^/(shop|cart|contact|about|blog|news|faq|dealers|support|diy|kits?)/?$",
+   "note": "unreachable over free HTTP from the dev box; needs the paid tier"
+  },
+  "Behringer": {
+   "homepage": "https://www.behringer.com/",
+   "kind": "listing",
+   "sitemap": true,
+   "entries": [],
+   "product": "^/en/products/[^/]+$",
+   "max_pages": 650,
+   "note": "whole product range; non-Eurorack pages are dropped when no HP is stated"
+  },
+  "Doepfer": {
+   "homepage": "https://www.doepfer.de/",
+   "kind": "listing",
+   "entries": [
+    "/a100p_e.htm",
+    "/a100_man/a100m_e.htm"
+   ],
+   "product": "^/a1\\d\\d[^/]*\\.htm$",
+   "exclude": "^/a100(e|p_e|s_e|n_e|z_e|_mc|_systems_e|_diy_kits|r_hr|_custom)\\.htm$"
+  },
+  "Endorphin.es": {
+   "homepage": "https://www.endorphin.es/",
+   "kind": "squarespace",
+   "collections": [
+    "/modules",
+    "/shop"
+   ]
+  },
+  "Erica Synths": {
+   "homepage": "https://www.ericasynths.lv/",
+   "kind": "listing",
+   "entries": [
+    "/shop/eurorack-modules/"
+   ],
+   "depth": 2,
+   "follow": "^/shop/eurorack-modules/[^/]+-series/?$",
+   "product": "^/shop/eurorack-modules/[^/]+-series/[a-z0-9-]+/?$",
+   "exclude": "^/shop/eurorack-modules/?$",
+   "note": "series pages list products with script (Alpine.js); links appear only through a paid render"
+  },
+  "Expert Sleepers": {
+   "homepage": "https://www.expert-sleepers.co.uk/",
+   "kind": "listing",
+   "entries": [
+    "/moduleoverview.html"
+   ],
+   "product": "^/[a-z0-9]+\\.html$",
+   "exclude": "(firmware|manual|demos|content|compatibility|accessories|plugins|hardware|overview|breakout|news|index)"
+  },
+  "Frap Tools": {
+   "homepage": "https://frap.tools/",
+   "kind": "squarespace",
+   "collections": [
+    "/modules",
+    "/shop"
+   ]
+  },
+  "Intellijel": {
+   "homepage": "https://intellijel.com/",
+   "kind": "woocommerce",
+   "categories": [
+    "eurorack",
+    "legacy"
+   ]
+  },
+  "Joranalogue Audio Design": {
+   "homepage": "https://joranalogue.com/",
+   "kind": "shopify"
+  },
+  "Make Noise": {
+   "homepage": "https://www.makenoisemusic.com/",
+   "kind": "listing",
+   "entries": [
+    "/modules/",
+    "/retired/"
+   ],
+   "sitemap": true,
+   "depth": 2,
+   "follow": "^/retired/[^/]+/$",
+   "product": "^/(modules|retired/retired-modules)/[^/]+/$"
+  },
+  "Mannequins": {
+   "homepage": "https://www.whimsicalraps.com/",
+   "kind": "shopify"
+  },
+  "Mutable instruments": {
+   "homepage": "https://pichenettes.github.io/mutable-instruments-documentation/",
+   "kind": "listing",
+   "entries": [
+    "/mutable-instruments-documentation/"
+   ],
+   "product": "^/mutable-instruments-documentation/modules/[^/]+/$",
+   "note": "the designer's own archive of the discontinued line",
+   "name_from": "slug"
+  },
+  "Noise Engineering": {
+   "homepage": "https://noiseengineering.us/",
+   "kind": "shopify"
+  },
+  "Pittsburgh Modular": {
+   "homepage": "https://pittsburghmodular.com/",
+   "kind": "squarespace",
+   "collections": [
+    "/pittsburgh-oscillator-modules",
+    "/pittsburgh-filter-modules",
+    "/pittsburgh-envelope-generator-modules",
+    "/pittsburgh-effects-modules",
+    "/store"
+   ]
+  },
+  "Qu-Bit Electronix": {
+   "homepage": "https://www.qubitelectronix.com/",
+   "kind": "squarespace",
+   "collections": [
+    "/shop",
+    "/legacy-2026"
+   ]
+  },
+  "Schlappi Engineering": {
+   "homepage": "https://schlappiengineering.com/",
+   "kind": "shopify"
+  },
+  "Tiptop Audio": {
+   "homepage": "https://tiptopaudio.com/",
+   "kind": "listing",
+   "entries": [
+    "/"
+   ],
+   "sitemap": true,
+   "product": "^/(product|products|modules?)/[^/]+/?$",
+   "note": "unreachable over free HTTP from the dev box; needs the paid tier"
+  },
+  "Verbos Electronics": {
+   "homepage": "https://verboselectronics.com/",
+   "kind": "listing",
+   "entries": [
+    "/modules/"
+   ],
+   "product": "^/[a-z0-9-]+/$",
+   "exclude": "^/(modules|products|configurations|accessories|about|design-philosophy|bio|manufacturing|contact|marks-notes|privacy-policy|techcards|category/.*|feed|comments/.*|wp-json/.*)/$"
+  },
+  "WMD": {
+   "homepage": "https://www.wmdevices.com/",
+   "kind": "shopify"
+  },
+  "Xaoc Devices": {
+   "homepage": "https://xaocdevices.com/",
+   "kind": "listing",
+   "entries": [
+    "/"
+   ],
+   "depth": 2,
+   "follow": "^/(products?|modules?|eurorack)(/[^/]+)?/?$",
+   "product": "^/(products?|modules?)/[^/]+/?$",
+   "note": "site is script-rendered and has no sitemap; links appear only through a paid render"
+  }
+ }
+}

@@ -1,22 +1,29 @@
 #!/usr/bin/env python3
-"""Manufacturer-site catalog crawl (approved by Danny 2026-10-17, $15 combined cap).
+"""Manufacturer-site catalog crawl (spec 003 D2; v1 approved by Danny 2026-10-17, $15 combined cap).
 
-Stages: resolve (brand -> official site) -> discover (robots, sitemaps, Shopify
-feeds, homepage links) -> fetch (free, then the shared scrape-router: context.dev, then Firecrawl, under its caps and ledger) ->
-extract (deterministic regex + open-weights model; every accepted value must be
+Stages: resolve (curated homepage, else the v1 crawl's homepage, else search) ->
+discover (a per-maker adapter from maker-sources.json, else robots sitemaps, the
+Shopify feed and homepage links) -> fetch -> extract (deterministic regex; on the
+generic path an open-weights model confirms, and every accepted value must be
 parsed deterministically or appear verbatim on the maker's page).
 
-ModularGrid and resellers are never fetched. robots.txt is honoured for every
-host, including paid fetches. Keys come from the environment and are never
-printed. Spend is tracked as projected overage beyond included plan credits plus
-model cost, with a hard stop.
+Every request goes through the shared in-repo router, the same one the catalog
+scrapers use (`data/synth-catalog/catalog_scrape.py`): polite free HTTP with
+robots.txt, the ModularGrid deny list and a per-host delay, then context.dev,
+then Firecrawl with its managed proxy tier, under one paid-fetch cap and one
+ledger. Resellers are never fetched. Keys come from the environment and are
+never printed. Spend is tracked as projected overage beyond included plan
+credits plus model cost, with a hard stop.
+
+`--dry-run` makes no paid call and no model call. It writes a receipt with the
+yield per maker and the projected paid fetches, searches and model spend of the
+real run, so the paid run can be approved against numbers.
 """
 
 from __future__ import annotations
 
 import argparse
 import concurrent.futures as cf
-import gzip
 import hashlib
 import html
 import json
@@ -28,16 +35,26 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-import urllib.robotparser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG = ROOT / "data" / "synth-catalog"
+sys.path.insert(0, str(CATALOG))
+sys.path.insert(0, str(ROOT / "scripts"))
+
+import maker_adapters  # noqa: E402
+from catalog_scrape import CatalogScraper  # noqa: E402
+
 WORK = CATALOG / ".cache" / "maker-crawl"
 OUT = CATALOG / "hermes-research"
-UA = "PatchHiveCatalogBot/1.0 (+https://github.com/Zero-State-LLC/Patch-Hive)"
+RECEIPTS = CATALOG / "receipts"
+PRIOR_CRAWL = OUT / "maker-crawl-v1.json"
 MODEL = os.environ.get("PATCHHIVE_CRAWL_MODEL", "deepseek/deepseek-v4.1-flash")
 MODEL_IN, MODEL_OUT = 0.15 / 1e6, 0.60 / 1e6  # live OpenRouter price 2026-10-17
+# Measured in the v1 run (4,372 calls, $0.7816): used to project model spend from a dry run.
+V1_COST_PER_LLM_CALL = 0.7816 / 4372
+CTX_OVERAGE_USD, FC_OVERAGE_USD = 0.0022, 0.005  # per credit beyond the plan's included credits
+DEFAULT_MAX_PAGES = 250  # per maker; v1 stopped at 80 model-picked pages plus 60 one-hop pages
 
 EXCLUDED = re.compile(
     r"(modulargrid|reverb\.com|ebay\.|amazon\.|thomann|perfectcircuit|sweetwater|schneidersladen|"
@@ -51,6 +68,15 @@ EXCLUDED = re.compile(
     r"herzlichlabs|sinesquares|engadget|thomannmusic|notice-facile|manua\.ls|duckduckgo|google\.)",
     re.I,
 )
+EXCLUDED_HOST = re.compile(r"(?:^|\.)" + EXCLUDED.pattern, re.I)
+
+def excluded(url: str) -> bool:
+    """Reseller, marketplace, social or database host. Matched at a host label boundary, so the
+    `x.com` entry does not catch makers whose domain ends in x.com (metasonix.com, qubitelectronix.com)."""
+    host = (urllib.parse.urlparse(url).hostname or url).lower()
+    return EXCLUDED_HOST.search(host) is not None
+
+
 NON_MODULE = re.compile(
     r"(t-shirt|tshirt|shirt|hoodie|crewneck|sweater|hat|cap-|beanie|sticker|poster|mug|tote|merch|"
     r"gift|card|cable|patch-cable|skiff|case|rack|enclosure|power-supply|psu|busboard|bus-board|"
@@ -59,6 +85,10 @@ NON_MODULE = re.compile(
     r"terms|policy|dealers|distributors|press|careers|tag/|category/|author/|page/\d)",
     re.I,
 )
+HP_LABELLED = [
+    r"(?:[Ww]idth|[Ss]ize|[Pp]anel)\s*[:=\-]?\s*(\d{1,3})\s*(?:HP|TE)\b",
+    r"(\d{1,3})\s*(?:HP|TE)\s+(?:wide|width)\b",
+]
 PRODUCTISH = re.compile(r"(product|module|eurorack|shop|store|item|/p/|/e/|catalog)", re.I)
 
 HP = [r"(\d{1,3})\s*(?:HP|hp|Hp)\b", r"(\d{1,3})\s*TE\b"]
@@ -86,12 +116,14 @@ class Budget:
         self.ctx_used = self.fc_used = 0.0
         self.tok_in = self.tok_out = 0
         self.llm_cost = 0.0
-        self.calls = {"ctx_search": 0, "ctx_scrape": 0, "fc_scrape": 0, "llm": 0}
+        self.calls = {"search": 0, "ctx_scrape": 0, "fc_scrape": 0, "llm": 0}
+        # Dry run: what the real run would have spent.
+        self.would = {"paid_fetch_urls": 0, "paid_searches": 0, "llm_calls": 0}
         self.lock = threading.Lock()
 
     def overage(self) -> float:
-        ctx = max(0.0, self.ctx_used - self.ctx_start) * 0.0022
-        fc = max(0.0, self.fc_used - self.fc_start) * 0.005
+        ctx = max(0.0, self.ctx_used - self.ctx_start) * CTX_OVERAGE_USD
+        fc = max(0.0, self.fc_used - self.fc_start) * FC_OVERAGE_USD
         return ctx + fc
 
     def projected(self) -> float:
@@ -100,6 +132,10 @@ class Budget:
     def can_spend(self, margin: float = 0.25) -> bool:
         with self.lock:
             return self.projected() + margin < self.cap
+
+    def bump(self, key: str, n: int = 1) -> None:
+        with self.lock:
+            self.would[key] += n
 
     def snapshot(self) -> dict:
         with self.lock:
@@ -120,28 +156,15 @@ class Budget:
 
 
 BUDGET: Budget | None = None
-HOST_LOCKS: dict[str, threading.Lock] = {}
-HOST_NEXT: dict[str, float] = {}
-GLOBAL_LOCK = threading.Lock()
-CTX_SEM = threading.Semaphore(8)
-FC_SEM = threading.Semaphore(4)
+SCRAPER: CatalogScraper | None = None
+DRY_RUN = False
+SOURCES: dict = {}
+PRIOR: dict[str, str] = {}
 ASSET = re.compile(r"\.(jpe?g|png|gif|webp|svg|pdf|zip|mp3|wav|mp4|mov|css|js|xml|txt|stl|syx|bin|hex|dmg|exe)(\?|$)", re.I)
 
 
 def _host(url: str) -> str:
     return (urllib.parse.urlparse(url).hostname or "").lower()
-
-
-def polite_wait(url: str, delay: float) -> None:
-    host = _host(url)
-    with GLOBAL_LOCK:
-        lock = HOST_LOCKS.setdefault(host, threading.Lock())
-    with lock:
-        now = time.monotonic()
-        wait = HOST_NEXT.get(host, 0) - now
-        if wait > 0:
-            time.sleep(wait)
-        HOST_NEXT[host] = time.monotonic() + delay
 
 
 def _cache_path(kind: str, key: str) -> Path:
@@ -165,26 +188,61 @@ def store(kind: str, key: str, value) -> None:
     path.write_text(json.dumps(value))
 
 
-def http_get(url: str, timeout: float = 25, max_bytes: int = 3_000_000) -> tuple[int, str, str]:
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "text/html,application/xml,application/json;q=0.9,*/*;q=0.5", "Accept-Encoding": "gzip"})
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            raw = resp.read(max_bytes)
-            if resp.headers.get("Content-Encoding") == "gzip" or raw[:2] == b"\x1f\x8b":
-                try:
-                    raw = gzip.decompress(raw)
-                except Exception:
-                    pass
-            ctype = resp.headers.get("Content-Type", "")
-            return resp.status, raw.decode("utf-8", errors="replace"), ctype
-    except urllib.error.HTTPError as exc:
-        return exc.code, "", ""
-    except Exception:
-        return 0, "", ""
+def _account(rec: dict) -> None:
+    """Router receipt hook: book credits by backend, and in a dry run the paid fetches skipped."""
+    method = rec.get("method")
+    with BUDGET.lock:
+        if method == "context_dev":
+            BUDGET.ctx_used += float(rec.get("credits") or 0)
+            BUDGET.calls["ctx_scrape"] += 1
+        elif method == "firecrawl":
+            BUDGET.fc_used += float(rec.get("credits") or 0)
+            BUDGET.calls["fc_scrape"] += 1
+        elif DRY_RUN and method in ("skipped_paid_cap", "skipped_no_key") and rec.get("note") == "context_dev":
+            BUDGET.would["paid_fetch_urls"] += 1
+
+
+class _Fetcher:
+    """Thin view over the shared router that books each call's receipts."""
+
+    def fetch(self, url: str):
+        if excluded(url):
+            return SCRAPER._finish(url, "excluded_reseller", None, b"", ok=False, remember=False)
+        if not BUDGET.can_spend():
+            return SCRAPER._finish(url, "budget_stop", None, b"", ok=False, remember=False)
+        return SCRAPER.fetch(url)
+
+    def robots_info(self, url: str):
+        return SCRAPER.robots_info(url)
+
+
+FETCH = _Fetcher()
+
+
+def fetch_text(url: str) -> tuple[str, str]:
+    res = FETCH.fetch(url)
+    return (res.text or "", res.receipt.get("method") or "?") if res.ok else ("", res.receipt.get("method") or "failed")
+
+
+def search(query: str) -> list[str]:
+    hit = cached("search", query)
+    if hit is not None:
+        return hit
+    if DRY_RUN:
+        BUDGET.bump("paid_searches")
+        return []
+    if not BUDGET.can_spend():
+        return []
+    res = SCRAPER.search(query, limit=8)
+    with BUDGET.lock:
+        BUDGET.calls["search"] += 1
+    urls = [u for u in res.urls if not excluded(u)]
+    store("search", query, urls)
+    return urls
 
 
 def _post(url: str, payload: dict, key: str, timeout: float = 90) -> tuple[int, dict]:
-    req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json", "User-Agent": UA})
+    req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return resp.status, json.loads(resp.read().decode("utf-8", errors="replace"))
@@ -197,98 +255,14 @@ def _post(url: str, payload: dict, key: str, timeout: float = 90) -> tuple[int, 
         return 0, {}
 
 
-_ROUTER = None
-_ROUTER_LOCK = threading.Lock()
-ROUTER_CALLER = "patchhive-catalog-maker-crawl"
-
-
-def router():
-    """Shared scrape-router (budget caps, min-balance floors, ledger, receipts).
-
-    Paid search and paid fetch go through it; this script never calls
-    context.dev or Firecrawl directly. Set SCRAPE_ROUTER_SITE to the router's
-    site-packages if it is not importable. Without the router, paid calls are off.
-    """
-    global _ROUTER
-    with _ROUTER_LOCK:
-        if _ROUTER is None:
-            site = os.environ.get("SCRAPE_ROUTER_SITE", "").strip()
-            if site and site not in sys.path:
-                sys.path.insert(0, site)
-            try:
-                from scrape_router.router import Router  # type: ignore
-
-                _ROUTER = Router.from_config()
-            except Exception:
-                _ROUTER = False
-                print("scrape-router not importable: paid search/fetch disabled", file=sys.stderr)
-        return _ROUTER or None
-
-
-def _account(res) -> None:
-    receipt = getattr(res, "receipt", None)
-    spent = dict(getattr(receipt, "credits_by_backend", None) or {})
-    with BUDGET.lock:
-        BUDGET.ctx_used += float(spent.get("context_dev") or 0)
-        BUDGET.fc_used += float(spent.get("firecrawl") or 0)
-
-
-def ctx_search(query: str) -> list[dict]:
-    hit = cached("search", query)
-    if hit is not None:
-        return hit
-    r = router()
-    if r is None or not BUDGET.can_spend():
-        return []
-    res = r.search(query, limit=10, caller=ROUTER_CALLER, allow="paid")
-    _account(res)
-    with BUDGET.lock:
-        BUDGET.calls["ctx_search"] += 1
-    if not res.ok:
-        return []
-    try:
-        raw = json.loads(res.text or "[]")
-    except (TypeError, ValueError):
-        raw = res.data or []
-    if isinstance(raw, dict):
-        raw = raw.get("results") or raw.get("data") or raw.get("web") or []
-    results = [
-        {
-            "url": r_.get("url") or r_.get("link"),
-            "title": (r_.get("title") or "")[:120],
-            "desc": (r_.get("description") or r_.get("snippet") or "")[:160],
-        }
-        for r_ in raw
-        if isinstance(r_, dict) and (r_.get("url") or r_.get("link"))
-    ]
-    store("search", query, results)
-    return results
-
-
-def paid_fetch(url: str) -> tuple[str, str]:
-    """Paid fetch through the scrape-router (context.dev, then Firecrawl, within its caps)."""
-    if EXCLUDED.search(url):
-        return "", "failed"
-    r = router()
-    if r is None or not BUDGET.can_spend():
-        return "", "failed"
-    res = r.fetch(url, caller=ROUTER_CALLER, allow="paid", fmt="html")
-    _account(res)
-    with BUDGET.lock:
-        if res.backend == "firecrawl":
-            BUDGET.calls["fc_scrape"] += 1
-        else:
-            BUDGET.calls["ctx_scrape"] += 1
-    if res.ok and res.text:
-        return res.text, res.backend or "router"
-    return "", "failed"
-
-
 def llm(system: str, user: str, max_tokens: int = 300) -> dict | None:
     key = system[:40] + "\n" + user
     hit = cached("llm", key)
     if hit is not None:
         return hit
+    if DRY_RUN:
+        BUDGET.bump("llm_calls")
+        return None
     if not BUDGET.can_spend():
         return None
     payload = {
@@ -362,114 +336,11 @@ def domain_matches_brand(url: str, brand: str, title: str = "") -> bool:
     return False
 
 
-# ---------------------------------------------------------------- stage 1
 RESOLVE_SYS = (
     "You pick a Eurorack manufacturer's own official website from search results. "
     "Never pick resellers, marketplaces, forums, social media, databases (ModularGrid), or press. "
     'Reply JSON {"index": <int or -1>}. Use -1 if none is clearly the maker\'s own site.'
 )
-
-
-def resolve_brand(brand: str) -> dict:
-    hit = cached("resolve", brand)
-    if hit is not None:
-        return hit
-    results = [r for r in ctx_search(f"{brand} eurorack modules official website") if not EXCLUDED.search(r["url"] or "")]
-    out = {"brand": brand, "homepage": None, "status": "no_candidates"}
-    if results:
-        direct = next((r for r in results[:8] if domain_matches_brand(r["url"], brand, r["title"])), None)
-        cand, how = direct, "domain_match"
-        if cand is None:
-            listing = "\n".join(f"{i}. {r['url']} | {r['title']} | {r['desc'][:100]}" for i, r in enumerate(results[:8]))
-            pick = llm(RESOLVE_SYS, f"Brand: {brand}\nResults:\n{listing}", 150) or {}
-            idx = pick.get("index", -1) if isinstance(pick.get("index"), int) else -1
-            if 0 <= idx < len(results[:8]):
-                cand, how = results[idx], "model_pick"
-                brand_c = re.sub(r"[^a-z0-9]", "", brand.lower())
-                if brand_c not in re.sub(r"[^a-z0-9]", "", (cand["title"] + cand["desc"]).lower()):
-                    out = {"brand": brand, "homepage": None, "status": "model_pick_unconfirmed", "candidate": cand["url"]}
-                    cand = None
-            elif out["status"] == "no_candidates":
-                out = {"brand": brand, "homepage": None, "status": "model_none"}
-        if cand is not None:
-            parsed = urllib.parse.urlparse(cand["url"])
-            out = {"brand": brand, "homepage": f"{parsed.scheme}://{parsed.netloc}/", "status": "resolved", "how": how, "evidence": cand["url"]}
-    if results:
-        store("resolve", brand, out)
-    return out
-
-
-# ---------------------------------------------------------------- stage 2
-def robots_for(home: str):
-    hit = cached("robots", home)
-    rp = urllib.robotparser.RobotFileParser()
-    if hit is None:
-        status, body, _ = http_get(urllib.parse.urljoin(home, "/robots.txt"), timeout=20)
-        hit = {"status": status, "body": body[:200_000]}
-        store("robots", home, hit)
-    status, body = hit["status"], hit["body"]
-    if status == 0 or status >= 500:
-        return None, 0.0, []  # unreachable or erroring: skip host (conservative)
-    rp.parse(body.splitlines() if 200 <= status < 300 else [])
-    delay = rp.crawl_delay(UA) or rp.crawl_delay("*") or 0
-    sitemaps = re.findall(r"(?im)^\s*sitemap:\s*(\S+)", body) if 200 <= status < 300 else []
-    return rp, float(delay or 0), sitemaps
-
-
-def allowed(rp, url: str) -> bool:
-    return rp is not None and rp.can_fetch(UA, url) and not EXCLUDED.search(url)
-
-
-def _locs(xml: str) -> list[str]:
-    return [html.unescape(u.strip()) for u in re.findall(r"<loc>\s*([^<\s]+)\s*</loc>", xml or "", re.I)]
-
-
-def discover(home: str, rp, delay: float, sitemaps: list[str], limit: int = 4000) -> list[str]:
-    hit = cached("discover", home)
-    if hit is not None:
-        return hit
-    host = _host(home)
-    seen: set[str] = set()
-    urls: list[str] = []
-    queue = list(dict.fromkeys(sitemaps + [urllib.parse.urljoin(home, p) for p in ("/sitemap.xml", "/sitemap_index.xml", "/wp-sitemap.xml")]))
-    fetched_maps = 0
-    while queue and fetched_maps < 12 and len(urls) < limit:
-        sm = queue.pop(0)
-        if sm in seen or not allowed(rp, sm) or _host(sm).replace("www.", "") != host.replace("www.", ""):
-            continue
-        seen.add(sm)
-        polite_wait(sm, delay)
-        status, body, _ = http_get(sm)
-        fetched_maps += 1
-        if status != 200:
-            continue
-        for loc in _locs(body):
-            if loc.endswith(".xml") or "sitemap" in loc.lower():
-                if any(k in loc.lower() for k in ("product", "page", "post", "module", "sitemap_index", "sitemap.xml", "index")) and "blog" not in loc.lower():
-                    queue.append(loc)
-            elif _host(loc).replace("www.", "") == host.replace("www.", ""):
-                urls.append(loc)
-    feed = urllib.parse.urljoin(home, "/products.json?limit=250")
-    if allowed(rp, feed):
-        polite_wait(feed, delay)
-        status, body, ctype = http_get(feed)
-        if status == 200 and "json" in ctype:
-            try:
-                for p in json.loads(body).get("products", []):
-                    urls.append(urllib.parse.urljoin(home, f"/products/{p['handle']}"))
-            except Exception:
-                pass
-    if allowed(rp, home):
-        polite_wait(home, delay)
-        status, body, _ = http_get(home)
-        if status == 200:
-            for href in re.findall(r'href="([^"#]+)"', body):
-                u = urllib.parse.urljoin(home, html.unescape(href))
-                if _host(u).replace("www.", "") == host.replace("www.", ""):
-                    urls.append(u.split("?")[0])
-    urls = list(dict.fromkeys(u for u in urls if allowed(rp, u)))[:limit]
-    store("discover", home, urls)
-    return urls
 
 
 PICK_SYS = (
@@ -479,22 +350,6 @@ PICK_SYS = (
 )
 
 
-def choose_links(brand: str, urls: list[str]) -> list[str]:
-    cand = [u for u in urls if not NON_MODULE.search(urllib.parse.urlparse(u).path) and not ASSET.search(u)]
-    productish = [u for u in cand if PRODUCTISH.search(u)]
-    pool = productish if len(productish) >= 5 else cand
-    pool = list(dict.fromkeys(pool))[:300]
-    if not pool:
-        return []
-    if len(pool) <= 12:
-        return pool
-    listing = "\n".join(f"{i}. {urllib.parse.urlparse(u).path}" for i, u in enumerate(pool))
-    res = llm(PICK_SYS, f"Manufacturer: {brand}\n{listing}", 400) or {}
-    picks = [pool[i] for i in res.get("pick", []) if isinstance(i, int) and 0 <= i < len(pool)]
-    return picks[:80] if picks else pool[:40]
-
-
-# ---------------------------------------------------------------- stage 3/4
 EXTRACT_SYS = (
     "You read trimmed text from a manufacturer's product page. Decide if it is a single Eurorack module "
     "and copy its specs EXACTLY as written. Never guess: use null if a value is not stated. "
@@ -506,27 +361,6 @@ EXTRACT_SYS = (
 def verbatim(value: float, unit_pat: str, text: str) -> bool:
     v = int(value) if float(value).is_integer() else value
     return re.search(rf"(?<![\d.]){re.escape(str(v))}\s*{unit_pat}", text, re.I) is not None or re.search(rf"{unit_pat}[^0-9]{{0,12}}{re.escape(str(v))}(?![\d.])", text, re.I) is not None
-
-
-def fetch_page(url: str, delay: float) -> tuple[str, str]:
-    hit = cached("page", url)
-    if hit is not None:
-        return hit["body"], hit["method"]
-    polite_wait(url, delay)
-    status, body, ctype = http_get(url)
-    if status == 0 and url.startswith("http://"):
-        url_s = "https://" + url[len("http://"):]
-        polite_wait(url_s, delay)
-        status, body, ctype = http_get(url_s)
-    method = "free_http"
-    is_html = "html" in ctype or body.lstrip()[:1] == "<"
-    challenge = bool(re.search(r"(cf-chl|Just a moment\.\.\.|captcha|Access denied)", body[:5000], re.I))
-    if status in (0, 403, 429, 503) or challenge:
-        body, method = paid_fetch(url)
-    elif status != 200 or not is_html:
-        body, method = "", f"http_{status}"
-    store("page", url, {"body": body[:600_000], "method": method})
-    return body, method
 
 
 def extract(brand: str, url: str, body: str, method: str) -> dict | None:
@@ -584,101 +418,327 @@ def extract(brand: str, url: str, body: str, method: str) -> dict | None:
     }
 
 
-def crawl_brand(brand: str) -> dict:
-    rec = {"brand": brand, "modules": [], "pages": 0, "status": None}
-    if not BUDGET.can_spend():
-        rec["status"] = "budget_stop"
-        return rec
-    r = resolve_brand(brand)
-    if not r.get("homepage"):
-        rec["status"] = r["status"]
-        return rec
-    home = r["homepage"]
-    rec["homepage"] = home
-    rp, delay, sitemaps = robots_for(home)
-    if rp is None:
-        rec["status"] = "robots_unreachable"
-        return rec
-    if not allowed(rp, home):
-        rec["status"] = "robots_disallowed"
-        return rec
-    delay = max(2.0, min(delay, 15.0))
-    urls = discover(home, rp, delay, sitemaps)
-    picks = choose_links(brand, urls)
+# ---------------------------------------------------------------- stage 1
+def brand_on_page(brand: str, text: str) -> bool:
+    tokens = [t for t in re.findall(r"[a-z0-9]+", brand.lower()) if len(t) >= 3 and t not in {"modular", "audio", "music", "synth", "synths", "electronics", "instruments", "labs", "technology", "systems", "devices", "modules"}]
+    low = re.sub(r"[^a-z0-9]", "", text.lower()[:200_000])
+    return any(t in low for t in tokens or [re.sub(r"[^a-z0-9]", "", brand.lower())])
+
+
+def resolve_brand(brand: str) -> dict:
+    """Homepage in order: adapter, curated list, the v1 crawl's resolved site, then search."""
+    adapter = (SOURCES.get("adapters") or {}).get(brand)
+    if adapter:
+        return {"brand": brand, "homepage": adapter["homepage"], "status": "resolved", "how": f"adapter:{adapter['kind']}"}
+    curated = (SOURCES.get("homepages") or {}).get(brand)
+    if curated:
+        if curated["status"] in ("rejected", "robots_disallowed"):
+            return {"brand": brand, "homepage": None, "status": f"curated_{curated['status']}"}
+        if curated["status"] == "verified_free":
+            return {"brand": brand, "homepage": curated["homepage"], "status": "resolved", "how": "curated"}
+        body, _ = fetch_text(curated["homepage"])  # candidate: must show the brand first
+        if body and brand_on_page(brand, body):
+            return {"brand": brand, "homepage": curated["homepage"], "status": "resolved", "how": "curated_confirmed"}
+        return {"brand": brand, "homepage": None, "status": "curated_unconfirmed", "candidate": curated["homepage"]}
+    if PRIOR.get(brand):
+        return {"brand": brand, "homepage": PRIOR[brand], "status": "resolved", "how": "v1_crawl"}
+    hit = cached("resolve", brand)
+    if hit is not None:
+        return hit
+    urls = [u for u in search(f"{brand} eurorack modules official website") if not excluded(u)]
+    out = {"brand": brand, "homepage": None, "status": "needs_search" if DRY_RUN else "no_candidates"}
+    if urls:
+        cand = next((u for u in urls[:8] if domain_matches_brand(u, brand)), None)
+        how = "domain_match"
+        if cand is None:
+            listing = "\n".join(f"{i}. {u}" for i, u in enumerate(urls[:8]))
+            pick = llm(RESOLVE_SYS, f"Brand: {brand}\nResults:\n{listing}", 150) or {}
+            idx = pick.get("index", -1) if isinstance(pick.get("index"), int) else -1
+            if 0 <= idx < len(urls[:8]):
+                body, _ = fetch_text(urls[idx])
+                if body and brand_on_page(brand, body):
+                    cand, how = urls[idx], "model_pick_confirmed"
+                else:
+                    out = {"brand": brand, "homepage": None, "status": "model_pick_unconfirmed", "candidate": urls[idx]}
+            elif out["status"] == "no_candidates":
+                out = {"brand": brand, "homepage": None, "status": "model_none"}
+        if cand is not None:
+            parsed = urllib.parse.urlparse(cand)
+            out = {"brand": brand, "homepage": f"{parsed.scheme}://{parsed.netloc}/", "status": "resolved", "how": how, "evidence": cand}
+        store("resolve", brand, out)
+    return out
+
+
+# ---------------------------------------------------------------- stage 2
+def discover(home: str, limit: int = 4000) -> list[str]:
+    hit = cached("discover", home)
+    if hit is not None:
+        return hit
+    host = _host(home).replace("www.", "")
+    urls = maker_adapters.sitemap_urls(FETCH, home)
+    for cand in maker_adapters.enumerate_products(FETCH, {"homepage": home, "kind": "shopify"}):
+        urls.append(cand.url)
+    body, _ = fetch_text(home)
+    for href in maker_adapters.HREF.findall(body):
+        urls.append(urllib.parse.urljoin(home, html.unescape(href)).split("?")[0].split("#")[0])
+    urls = list(dict.fromkeys(u for u in urls if _host(u).replace("www.", "") == host and not excluded(u)))[:limit]
+    if urls:  # an empty result is usually a failed fetch: retry it next run
+        store("discover", home, urls)
+    return urls
+
+
+def choose_links(brand: str, urls: list[str], cap: int) -> list[str]:
+    cand = [u for u in urls if not NON_MODULE.search(urllib.parse.urlparse(u).path) and not ASSET.search(u)]
+    productish = [u for u in cand if PRODUCTISH.search(u)]
+    pool = productish if len(productish) >= 5 else cand
+    pool = list(dict.fromkeys(pool))[: max(300, cap)]
+    if len(pool) <= 12:
+        return pool
+    if DRY_RUN:
+        BUDGET.bump("llm_calls")  # the real run asks the model to pick from this pool
+        return pool[:cap]
+    listing = "\n".join(f"{i}. {urllib.parse.urlparse(u).path}" for i, u in enumerate(pool))
+    res = llm(PICK_SYS.replace("at most 80", f"at most {cap}"), f"Manufacturer: {brand}\n{listing}", min(4000, 400 + 4 * cap)) or {}
+    picks = [pool[i] for i in res.get("pick", []) if isinstance(i, int) and 0 <= i < len(pool)]
+    return picks[:cap] if picks else pool[: min(cap, 40)]
+
+
+# ---------------------------------------------------------------- stage 3/4
+def deterministic(brand: str, url: str, text: str, name: str | None, body: str = "") -> dict | None:
+    """Values parsed straight from the maker's text; no model. HP must be unambiguous."""
+    if len(text) < 8:
+        return None
+    window = spec_window(text, 2400)
+    # A labelled width wins over stray mentions (menus list cases as "104HP").
+    hps = {int(m) for pat in HP_LABELLED for m in re.findall(pat, text, re.I) if 1 <= int(m) <= 104}
+    if not hps:
+        hps = {int(m) for pat in HP for m in re.findall(pat, window, re.I) if 1 <= int(m) <= 104}
+    if len(hps) != 1:
+        return {"ambiguous_hp": sorted(hps)} if hps else None
+    det = {"hp": hps.pop(), "power_12v_ma": first_num(P12, window), "power_neg12v_ma": first_num(N12, window), "power_5v_ma": first_num(P5, window), "depth_mm": first_num(DEPTH, window)}
+    m = re.search(DEPTH[2], window)
+    if m and det["depth_mm"] is not None and float(m.group(1)) == det["depth_mm"]:
+        det["depth_mm"] = round(det["depth_mm"] * 25.4)
+    if det["depth_mm"] is not None and not (5 <= det["depth_mm"] <= 200):
+        det["depth_mm"] = None
+    if not name:
+        title_m = re.search(r'property="og:title"\s+content="([^"]+)"', body) or re.search(r"<title[^>]*>([^<]+)</title>", body, re.I)
+        name = html.unescape(title_m.group(1)).strip() if title_m else None
+    if name:
+        name = re.split(r"\s+[|–—-]\s+", name)[0]
+        name = re.sub(rf"^{re.escape(brand)}\s+", "", name, flags=re.I).strip()[:120]
+    if not name:
+        return None
+    img = re.search(r'property="og:image"\s+content="([^"]+)"', body)
+    return {
+        "brand": brand, "name": name, **{k: (int(v) if v is not None and float(v).is_integer() else v) for k, v in det.items()},
+        "image_url": img.group(1) if img else None, "source_url": url,
+        "sources": {k: url for k, v in det.items() if v is not None}, "tags": [],
+        "content_sha256": hashlib.sha256((body or text).encode("utf-8", "ignore")).hexdigest(),
+        "provenance": "OBSERVED", "extracted_by": "regex",
+    }
+
+
+def crawl_adapter(brand: str, cfg: dict, cap: int, rec: dict) -> None:
+    # An adapter may set its own page budget (e.g. Behringer lists its whole range).
+    cands = maker_adapters.enumerate_products(FETCH, {**cfg, "max_pages": int(cfg.get("max_pages") or cap)})
+    rec["discovered"] = len(cands)
+    for cand in cands:
+        row = deterministic(brand, cand.url, cand.text or "", cand.name) if cand.text else None
+        method = "feed"
+        if row is None or "ambiguous_hp" in row:
+            body, method = fetch_text(cand.url)
+            rec["pages"] += 1
+            rec["methods"][method] = rec["methods"].get(method, 0) + 1
+            if not body:
+                continue
+            text = page_text(body)
+            row = deterministic(brand, cand.url, text, cand.name, body)
+            if row and "ambiguous_hp" in row:
+                rec["ambiguous_hp"] += 1
+                # The model may settle it only when its value appears verbatim (same rule as v1).
+                row = None if DRY_RUN else extract(brand, cand.url, body, method)
+        if row and "ambiguous_hp" not in row:
+            row["fetch_method"] = method
+            rec["modules"].append(row)
+
+
+def crawl_generic(brand: str, home: str, cap: int, rec: dict) -> None:
+    urls = discover(home)
+    picks = choose_links(brand, urls, cap)
     rec["discovered"], rec["picked"] = len(urls), len(picks)
-    methods: dict = {}
     for url in picks:
         if not BUDGET.can_spend():
             rec["status"] = "budget_stop"
             break
-        body, method = fetch_page(url, delay)
-        methods[method] = methods.get(method, 0) + 1
+        body, method = fetch_text(url)
+        rec["methods"][method] = rec["methods"].get(method, 0) + 1
         rec["pages"] += 1
-        if body:
+        if not body:
+            continue
+        if DRY_RUN:
+            row = deterministic(brand, url, page_text(body), None, body)
+            if row and "ambiguous_hp" not in row:
+                BUDGET.bump("llm_calls")  # the real run confirms each generic row with the model
+                rec["modules"].append(row)
+            elif row:
+                rec["ambiguous_hp"] += 1
+        else:
             row = extract(brand, url, body, method)
             if row:
                 rec["modules"].append(row)
-    if len(rec["modules"]) < 3 and rec["status"] is None:
-        hop: list[str] = []
-        for url in picks[:30]:
-            h = cached("page", url)
-            for href in re.findall(r'href="([^"#]+)"', (h or {}).get("body", "")):
-                u = urllib.parse.urljoin(url, html.unescape(href)).split("?")[0]
-                if _host(u).replace("www.", "") == _host(home).replace("www.", "") and u not in picks and allowed(rp, u):
-                    hop.append(u)
-        hop_picks = choose_links(brand, list(dict.fromkeys(hop)))[:60]
-        rec["hop_picked"] = len(hop_picks)
-        for url in hop_picks:
-            if not BUDGET.can_spend():
-                rec["status"] = "budget_stop"
-                break
-            body, method = fetch_page(url, delay)
-            methods[method] = methods.get(method, 0) + 1
-            rec["pages"] += 1
-            if body:
-                row = extract(brand, url, body, method)
-                if row:
-                    rec["modules"].append(row)
-    rec["methods"] = methods
+
+
+def crawl_brand(brand: str, cap: int) -> dict:
+    rec = {"brand": brand, "modules": [], "pages": 0, "status": None, "methods": {}, "ambiguous_hp": 0}
+    if not BUDGET.can_spend():
+        rec["status"] = "budget_stop"
+        return rec
+    r = resolve_brand(brand)
+    rec["resolved_by"] = r.get("how")
+    if not r.get("homepage"):
+        rec["status"] = r["status"]
+        return rec
+    home = rec["homepage"] = r["homepage"]
+    readable, _, delay = FETCH.robots_info(home)
+    if readable:
+        SCRAPER.host_intervals[_host(home)] = max(2.0, min(delay, 15.0))
+    adapter = (SOURCES.get("adapters") or {}).get(brand)
+    rec["path"] = f"adapter:{adapter['kind']}" if adapter else "generic"
+    if adapter:
+        crawl_adapter(brand, adapter, cap, rec)
+    else:
+        crawl_generic(brand, home, cap, rec)
     rec["status"] = rec["status"] or "done"
-    seen = set()
+    seen: set[str] = set()
     rec["modules"] = [m for m in rec["modules"] if not (norm_name(brand, m["name"]) in seen or seen.add(norm_name(brand, m["name"])))]
     return rec
 
 
-def main() -> int:
-    global BUDGET
+# ---------------------------------------------------------------- run
+def summarize(results: list[dict], budget: dict, args) -> dict:
+    by_path: dict[str, dict] = {}
+    for r in results:
+        key = r.get("path") or "unresolved"
+        agg = by_path.setdefault(key, {"brands": 0, "brands_with_modules": 0, "modules": 0, "with_power": 0})
+        agg["brands"] += 1
+        agg["brands_with_modules"] += 1 if r["modules"] else 0
+        agg["modules"] += len(r["modules"])
+        agg["with_power"] += sum(1 for m in r["modules"] if m.get("power_12v_ma") is not None)
+    methods: dict[str, int] = {}
+    for r in results:
+        for k, v in (r.get("methods") or {}).items():
+            methods[k] = methods.get(k, 0) + v
+    statuses: dict[str, int] = {}
+    for r in results:
+        statuses[r["status"]] = statuses.get(r["status"], 0) + 1
+    would = BUDGET.would
+    # Worst case: every would-pay URL costs one context.dev credit and then one Firecrawl credit.
+    proj_credits = would["paid_fetch_urls"] + would["paid_searches"]
+    out = {
+        "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "mode": "dry-run" if DRY_RUN else "paid",
+        "max_pages_per_brand": args.max_pages,
+        "brands": len(results),
+        "statuses": dict(sorted(statuses.items())),
+        "yield_by_path": by_path,
+        "modules_total": sum(len(r["modules"]) for r in results),
+        "modules_with_power": sum(1 for r in results for m in r["modules"] if m.get("power_12v_ma") is not None),
+        "fetch_methods": dict(sorted(methods.items(), key=lambda kv: -kv[1])),
+        "budget": budget,
+        "per_brand": [
+            {k: r.get(k) for k in ("brand", "status", "path", "resolved_by", "homepage", "discovered", "picked", "pages", "ambiguous_hp")} | {"modules": len(r["modules"])}
+            for r in results
+        ],
+    }
+    if DRY_RUN:
+        out["projection"] = {
+            "paid_fetch_urls": would["paid_fetch_urls"],
+            "paid_searches": would["paid_searches"],
+            "llm_calls": would["llm_calls"],
+            "llm_usd": round(would["llm_calls"] * V1_COST_PER_LLM_CALL, 2),
+            "credits_low": proj_credits,
+            "credits_worst_case": proj_credits * 2,
+            "overage_usd_if_no_included_credits": round(proj_credits * CTX_OVERAGE_USD + proj_credits * FC_OVERAGE_USD, 2),
+            "basis": "would-pay URLs are free fetches the router would hand to context.dev (then Firecrawl); model cost uses the v1 run's measured $/call",
+        }
+    return out
+
+
+def render_receipt(summary: dict) -> str:
+    """Indented JSON with one line per brand, so receipts diff by brand."""
+    body = {k: v for k, v in summary.items() if k != "per_brand"}
+    rows = ",\n  ".join(json.dumps(row, ensure_ascii=False) for row in summary["per_brand"])
+    return json.dumps(body, indent=1, ensure_ascii=False)[:-2] + ',\n "per_brand": [\n  ' + rows + "\n ]\n}\n"
+
+
+def main(argv: list[str] | None = None) -> int:
+    global BUDGET, SCRAPER, DRY_RUN, SOURCES, PRIOR
     ap = argparse.ArgumentParser()
+    ap.add_argument("--dry-run", action="store_true", help="no paid fetch, search or model call; write a yield/spend receipt")
     ap.add_argument("--cap", type=float, default=14.5)
-    ap.add_argument("--ctx-start", type=float, required=True, help="included context.dev credits remaining at start")
-    ap.add_argument("--fc-start", type=float, required=True, help="included Firecrawl credits remaining at start")
+    ap.add_argument("--ctx-start", type=float, default=0.0, help="included context.dev credits remaining at start")
+    ap.add_argument("--fc-start", type=float, default=0.0, help="included Firecrawl credits remaining at start")
+    ap.add_argument("--max-paid-fetches", type=int, default=0, help="router paid-call cap (fetches and searches)")
+    ap.add_argument("--max-pages", type=int, default=DEFAULT_MAX_PAGES, help="pages per maker")
+    ap.add_argument("--brands", default="", help="comma-separated brand subset")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--workers", type=int, default=24)
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
+    if not args.dry_run and args.max_paid_fetches <= 0:
+        print("paid run needs --max-paid-fetches (approved cap); use --dry-run to measure first", file=sys.stderr)
+        return 2
+    if not args.dry_run and not os.environ.get("OPENROUTER_API_KEY"):
+        print("paid run needs OPENROUTER_API_KEY for the generic path's model checks", file=sys.stderr)
+        return 2
+    DRY_RUN = args.dry_run
     BUDGET = Budget(args.cap, args.ctx_start, args.fc_start)
-    brands = json.loads((CATALOG / "seed-phase2-v1.json").read_text())["brands"]
+    WORK.mkdir(parents=True, exist_ok=True)
+    SCRAPER = CatalogScraper(
+        cache_dir=CATALOG / ".cache" / "http",
+        # A dry run keeps its call counts out of the committed spend ledger.
+        ledger_path=(WORK / "ledger.dry-run.json") if DRY_RUN else (RECEIPTS / "scrape-ledger.json"),
+        max_paid_fetches=0 if DRY_RUN else args.max_paid_fetches,
+        min_interval_s=2.0,
+        max_age_s=7 * 86400,
+        max_retries=2,
+        on_receipt=_account,
+    )
+    SOURCES = maker_adapters.load_sources()
+    if PRIOR_CRAWL.is_file():
+        PRIOR = {b["brand"]: b["homepage"] for b in json.loads(PRIOR_CRAWL.read_text())["brands"] if b.get("homepage") and b.get("status") == "done"}
+    brands = json.loads((CATALOG / "seed-phase2-v1.json").read_text())["brands"] + list(SOURCES.get("extra_brands") or [])
+    brands = [b for b in dict.fromkeys(brands) if b != "Other/unknown"]
+    if args.brands:
+        wanted = {b.strip() for b in args.brands.split(",")}
+        brands = [b for b in brands if b in wanted]
     if args.limit:
         brands = brands[: args.limit]
-    WORK.mkdir(parents=True, exist_ok=True)
     results = []
     done = 0
     with cf.ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futs = {pool.submit(crawl_brand, b): b for b in brands}
+        futs = {pool.submit(crawl_brand, b, args.max_pages): b for b in brands}
         for fut in cf.as_completed(futs):
             try:
                 results.append(fut.result())
             except Exception as exc:  # keep crawling
-                results.append({"brand": futs[fut], "status": f"error:{exc.__class__.__name__}", "modules": []})
+                results.append({"brand": futs[fut], "status": f"error:{exc.__class__.__name__}", "modules": [], "methods": {}})
             done += 1
             if done % 20 == 0 or done == len(brands):
                 snap = BUDGET.snapshot()
                 mods = sum(len(r.get("modules", [])) for r in results)
-                print(f"[{time.strftime('%H:%M:%S')}] brands {done}/{len(brands)} modules {mods} spend ${snap['projected_total_usd']} ctx {snap['context_dev_credits']} fc {snap['firecrawl_credits']} llm ${snap['model_cost_usd']}", flush=True)
-                (WORK / "progress.json").write_text(json.dumps({"budget": snap, "done": done}, indent=1))
+                print(f"[{time.strftime('%H:%M:%S')}] brands {done}/{len(brands)} modules {mods} spend ${snap['projected_total_usd']} would-pay {BUDGET.would}", flush=True)
+                (WORK / "progress.json").write_text(json.dumps({"budget": snap, "would": BUDGET.would, "done": done}, indent=1))
     results.sort(key=lambda r: r["brand"].lower())
-    out = {"generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "budget": BUDGET.snapshot(), "brands": results}
-    (OUT / "maker-crawl-v1.json").write_text(json.dumps(out, indent=1) + "\n")
-    print(json.dumps(out["budget"], indent=1))
+    budget = BUDGET.snapshot()
+    summary = summarize(results, budget, args)
+    if DRY_RUN:
+        (WORK / "maker-crawl-v2.dry-run.rows.json").write_text(json.dumps(results, indent=1) + "\n")
+        (RECEIPTS / "maker-crawl-v2.dry-run.json").write_text(render_receipt(summary))
+    else:
+        (OUT / "maker-crawl-v2.json").write_text(json.dumps({"generated_at": summary["generated_at"], "budget": budget, "brands": results}, indent=1) + "\n")
+        (RECEIPTS / "maker-crawl-v2.json").write_text(render_receipt(summary))
+    print(json.dumps({k: summary[k] for k in ("modules_total", "modules_with_power", "yield_by_path", "statuses")} | {"projection": summary.get("projection"), "budget": budget}, indent=1))
     return 0
 
 
