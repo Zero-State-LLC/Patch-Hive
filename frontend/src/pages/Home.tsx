@@ -3,6 +3,7 @@
  * Hallmark: full-bleed hero, no feature-card grid, brand as hero signal.
  */
 import { Link } from "react-router-dom";
+import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 import { useAuthStore } from "@/lib/store";
 
 const laws = [
@@ -30,12 +31,15 @@ export default function Home() {
               <Link className="button button-primary" to="/racks">
                 Open rigs
               </Link>
-            ) : (
+            ) : ACCOUNTS_OPEN ? (
               <Link className="button button-primary" to="/login">
                 Sign in
               </Link>
-            )}
-            <Link className="button button-secondary" to="/modules?hp=known">
+            ) : null}
+            <Link
+              className={`button ${ACCOUNTS_OPEN ? "button-secondary" : "button-primary"}`}
+              to="/modules?hp=known"
+            >
               Placeable modules
             </Link>
           </div>

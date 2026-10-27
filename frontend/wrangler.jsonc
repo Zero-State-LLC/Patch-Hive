@@ -1,6 +1,7 @@
 {
   // Static SPA on Cloudflare Workers; worker/index.ts only redirects www to the apex.
   // Build with VITE_API_BASE_URL set to the public API, then `npx wrangler deploy`.
+  // Set VITE_ACCOUNTS_OPEN=true (.env.production) only once that API is live.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "patchhive-frontend",
   "compatibility_date": "2026-10-01",
