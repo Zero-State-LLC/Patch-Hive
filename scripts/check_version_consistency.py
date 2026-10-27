@@ -2,17 +2,18 @@
 """Check that backend, frontend, and (optionally) a git tag agree on one SemVer version.
 
 Usage: check_version_consistency.py [vX.Y.Z[-pre.N]]
-pyproject uses PEP 440 (0.3.0a2); package.json and tags use SemVer (0.3.0-alpha.2).
+pyproject uses PEP 440 (0.3.0a2, or 0.3.0-alpha.2 as written by release-please); package.json and
+tags use SemVer (0.3.0-alpha.2).
 """
 import json, re, sys, tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PEP = {"a": "alpha", "b": "beta", "rc": "rc"}
+PEP = {"a": "alpha", "alpha": "alpha", "b": "beta", "beta": "beta", "rc": "rc"}
 
 
 def pep440_to_semver(v: str) -> str:
-    m = re.fullmatch(r"(\d+\.\d+\.\d+)(?:(a|b|rc)(\d+))?", v)
+    m = re.fullmatch(r"(\d+\.\d+\.\d+)(?:-?(alpha|beta|rc|a|b)\.?(\d+))?", v)
     if not m:
         sys.exit(f"unparseable pyproject version: {v}")
     base, pre, n = m.groups()
