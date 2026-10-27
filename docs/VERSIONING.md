@@ -53,6 +53,15 @@ Application version and artifact version are related but not interchangeable. A 
 - Tag format: `vMAJOR.MINOR.PATCH[-prerelease]`.
 - A release tag must point to the exact commit covered by the release receipt.
 
+## Release automation
+
+- PR titles follow [Conventional Commits](https://www.conventionalcommits.org/); `.github/workflows/pr-title.yml` checks them. Squash merges make the PR title the commit on `main`. Allowed types: `feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `build`, `ci`, `chore`, `style`, `revert`, plus repo types `spec`, `data`, `ops`, `infra`, `release`, `sync`, `deps`.
+- `feat` bumps MINOR (pre-1.0 and prerelease rules below), `fix`/`perf` bump PATCH, `!` or `BREAKING CHANGE:` bumps MAJOR. Repo types appear in the changelog but do not bump.
+- `.github/workflows/release-please.yml` keeps one open release PR on `main`. It updates `CHANGELOG.md`, `.release-please-manifest.json`, `frontend/package.json`, and `backend/pyproject.toml`. Merging it tags `vX.Y.Z[-alpha.N]` and creates the GitHub release.
+- While on the alpha line, release-please increments the prerelease number (`-alpha.N`). To move to a new line, add a `Release-As: 0.4.0-alpha.1` footer to a commit, or edit the manifest in a PR.
+- `scripts/check_version_consistency.py` (run by `release.yml` on every PR) accepts both PEP 440 spellings in `pyproject.toml`.
+- Manual tags still work: pushing `v*.*.*` runs `release.yml`, which checks versions and creates the release.
+
 ## Retroactive baseline
 
 Historical work predates this policy. Do not invent version history or imply releases that were never tagged.
