@@ -126,10 +126,16 @@ def test_archive_then_null_relabel_and_rerun(url, tmp_path):
     after = _counts(engine)
     for table in ("modules", "module_catalog", "manufacturers"):
         assert after[table] >= before[table]
+    batch = {"b": _manifest()["batch"]}
     with engine.connect() as conn:
-        values = conn.execute(text("SELECT COUNT(*) FROM catalog_value_archive WHERE field <> '*'")).scalar_one()
+        values = conn.execute(
+            text("SELECT COUNT(*) FROM catalog_value_archive WHERE batch = :b AND field <> '*'"), batch
+        ).scalar_one()
+        markers = conn.execute(
+            text("SELECT COUNT(*) FROM catalog_value_archive WHERE batch = :b AND field = '*'"), batch
+        ).scalar_one()
     assert values == stats["archived_values"]
-    assert after["catalog_value_archive"] == values + len(_manifest()["rows"])  # one processed marker per row
+    assert markers == len(_manifest()["rows"])  # one processed marker per row
     with engine.connect() as conn:
         row = _row(conn, nulled["brand"], nulled["name"])
         for item in nulled["fields"]:
@@ -164,4 +170,52 @@ def test_archive_then_null_relabel_and_rerun(url, tmp_path):
     assert stats["archived_values"] == 0 and stats["nulled_values"] == 0
     assert stats["rows_already_processed"] == len(_manifest()["rows"])
     assert _counts(engine) == after
+    engine.dispose()
+
+
+RAIL_FIX = ROOT / "data" / "synth-catalog" / "provenance" / "maker-crawl-v2-rail-fix-v1.json"
+POWER_V11 = ROOT / "data" / "synth-catalog" / "overlays" / "module-power-depth-v11.json"
+
+
+def test_rail_fix_clears_only_the_misread_value_and_refills_it(url, tmp_path):
+    manifest = json.loads(RAIL_FIX.read_text(encoding="utf-8"))
+    assert manifest["flag_reverify"] is False
+    assert all(f["action"] == "null" and f["only_if_value"] is not None for r in manifest["rows"] for f in r["fields"])
+    fixed = {(e["brand"], e["name"]): e for e in json.loads(POWER_V11.read_text(encoding="utf-8"))["entries"]}
+    rows = [
+        r for r in manifest["rows"]
+        if r["fields"][0]["field"] == "power_neg12v_ma"
+        and fixed.get((r["brand"], r["name"]), {}).get("power_neg12v_ma") is not None
+    ]
+    loaded, untouched = rows[0], rows[1]  # staging loaded the misread value; prod holds another
+    wrong = loaded["fields"][0]["only_if_value"]
+    engine = create_engine(url)
+    insert = text(
+        "INSERT INTO modules (brand, name, hp, module_type, power_12v_ma, power_neg12v_ma, io_ports, tags, source, "
+        "status, verification_status, verification_source_url, imported_at, created_at, updated_at) VALUES "
+        "(:b, :n, 10, 'UNKNOWN', 100, :neg, '[]', '[]', 'SynthCatalogResearch', 'active', 'verified', :u, "
+        "NOW(), NOW(), NOW())"
+    )
+    other = untouched["fields"][0]["only_if_value"] + 1
+    with engine.begin() as conn:
+        conn.execute(insert, {"b": loaded["brand"], "n": loaded["name"], "neg": wrong, "u": "https://example.invalid/a"})
+        conn.execute(insert, {"b": untouched["brand"], "n": untouched["name"], "neg": other, "u": "https://example.invalid/b"})
+
+    report = P.populate(url, apply=True, verification_path=tmp_path / "none.json")
+    stats = report["provenance"][manifest["batch"]]
+    assert stats["nulled_values"] >= 1 and stats["value_not_matched"] >= 1 and stats["flagged_rows"] == 0
+    with engine.connect() as conn:
+        row = _row(conn, loaded["brand"], loaded["name"])
+        assert row["power_neg12v_ma"] == fixed[(loaded["brand"], loaded["name"])]["power_neg12v_ma"]
+        assert row["needs_reverify"] is False and row["power_12v_ma"] == 100
+        archived = conn.execute(
+            text("SELECT old_value FROM catalog_value_archive WHERE batch = :b AND row_key = :k AND field = 'power_neg12v_ma'"),
+            {"b": manifest["batch"], "k": P.module_row_key(loaded["brand"], loaded["name"])},
+        ).scalar_one()
+        assert float(archived) == float(wrong)
+        kept = _row(conn, untouched["brand"], untouched["name"])
+        assert kept["power_neg12v_ma"] == other and kept["needs_reverify"] is False
+
+    again = P.populate(url, apply=True, verification_path=tmp_path / "none.json")
+    assert again["provenance"][manifest["batch"]]["nulled_values"] == 0
     engine.dispose()

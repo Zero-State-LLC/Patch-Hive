@@ -93,17 +93,83 @@ HP_LABELLED = [
 PRODUCTISH = re.compile(r"(product|module|eurorack|shop|store|item|/p/|/e/|catalog)", re.I)
 
 HP = [r"(\d{1,3})\s*(?:HP|hp|Hp)\b", r"(\d{1,3})\s*TE\b"]
-P12 = [
-    r"(\d{1,4})\s*mA\s*(?:@|at|on|from)?\s*\+?\s*12\s*V",
-    r"\+\s*12\s*V?\s*(?:rail)?\s*[:=]?\s*(\d{1,4})\s*mA",
-    r"\+(\d{1,4})\s*mA\s*\(\+12V\)",
+# Rail draws are written rail first ("+12V current 100mA -12V current 15mA") or
+# value first ("170mA @ +12V 20mA @ -12V"). Each pattern alone misreads the other
+# style ("+12V 140mA -12V 115mA" read value first gives -12V = 140), so `rails`
+# picks the style a page uses from its first rail mention and applies it to every rail.
+RAIL_WORDS = r"(?:(?:rail|current|draw|consumption|supply)\s*){0,2}(?:ca\.?|approx\.?|max\.?|typ\.?|~)?"
+SEP = r"(?:[:=|@]|-(?=\s))?"
+# A value-first match is refused when its rail label reads as label first: it is
+# followed by a separator ("+5V: 180mA +12V: 14mA"), or by a value that is not
+# itself value first ("+12V 140mA -12V 115mA": "140mA -12V" is not -12V's draw).
+NEXT_RAIL = r"\s*(?:@|at|on|from)?\s*\(?(?:[-+\u2212\u2013]\s*\d{1,2}(?!\d)|\d{1,2}\s*V)"
+NOT_LABEL_FIRST = (
+    r"(?!\s*(?:[:=]|@\s*\d))(?!\s*" + RAIL_WORDS + r"\s*\d{1,4}(?:\.\d+)?\s*mA(?!" + NEXT_RAIL + r"))"
+)
+# A positive rail may drop its "+" ("49mA @ 12V"), but an unsigned one is never part
+# of "-12V", "- 12V" (a spaced minus), "0-5V" or "±12V". An explicit "+" always counts,
+# even after a list dash ("- +12 = 23ma").
+NOT_AFTER_SIGN = r"(?<![-\u2212\u2013\d.\u00b1])(?<![-\u2212\u2013\u00b1]\s)(?<![-\u2212\u2013\u00b1]\s\s)"
+SIGNED_RAIL = {
+    "power_12v_ma": r"(?<![\d.\u00b1])\+\s*12(?![\d.])",
+    "power_neg12v_ma": r"[-\u2212\u2013]\s*12(?![\d.])",
+    "power_5v_ma": r"(?<![\d.\u00b1])\+\s*5(?![\d.])",
+}
+RAIL = {
+    "power_12v_ma": r"(?:" + SIGNED_RAIL["power_12v_ma"] + "|" + NOT_AFTER_SIGN + r"12(?![\d.]))",
+    "power_neg12v_ma": SIGNED_RAIL["power_neg12v_ma"],
+    "power_5v_ma": r"(?:" + SIGNED_RAIL["power_5v_ma"] + "|" + NOT_AFTER_SIGN + r"5(?![\d.]))",
+}
+# Rail first: a signed rail may drop its "V" ("+12: 150 mA"); an unsigned one may not.
+RAIL_FIRST = {
+    k: r"(?:" + SIGNED_RAIL[k] + r"\s*V?|" + v + r"\s*V)\s*" + RAIL_WORDS + r"\s*" + SEP + r"\s*"
+    + RAIL_WORDS + r"\s*(\d{1,4}(?:\.\d+)?)\s*mA"
+    for k, v in RAIL.items()
+}
+VALUE_FIRST = {
+    # "20ma-12 $525": a signed rail may drop its "V" when no word follows ("-12 dB" is not a rail).
+    k: r"(?<![\d.])(\d{1,4}(?:\.\d+)?)\s*mA\s*(?:@|at|on|from)?\s*\(?(?:" + v + r"\s*V\b|" + SIGNED_RAIL[k]
+    + r"(?=\s+[^\sA-Za-z]|\s*$))\)?" + NOT_LABEL_FIRST
+    for k, v in RAIL.items()
+}
+# Signed values with the rails after them: "Power: +120mA / -45mA @+12V / -12V".
+SIGNED = {
+    "power_12v_ma": r"(?<![\w.])\+\s?(\d{1,4}(?:\.\d+)?)\s*mA\b",
+    "power_neg12v_ma": r"(?<![\w.])[-\u2212\u2013]\s?(\d{1,4}(?:\.\d+)?)\s*mA\b(?=[^.]{0,40}[-\u2212\u2013]\s*12\s*V)",
+}
+STYLES = {"rail": RAIL_FIRST, "value": VALUE_FIRST, "signed": SIGNED}
+# Both rails named once, then both values: "+12v/-12v Current: 90mA/30mA", "20mA, 10mA (+12V / -12V)".
+PAIRED = [
+    (r"\+\s*12\s*V?\s*/\s*[-\u2212\u2013]\s*12\s*V?\D{0,25}?(\d{1,4}(?:\.\d+)?)\s*mA\s*/\s*(\d{1,4}(?:\.\d+)?)\s*mA", 1, 2),
+    (r"(?<![\d.])(\d{1,4}(?:\.\d+)?)\s*mA\s*[,/]\s*(\d{1,4}(?:\.\d+)?)\s*mA\s*\(\s*\+\s*12\s*V?\s*/\s*[-\u2212\u2013]\s*12\s*V?\s*\)", 1, 2),
 ]
-N12 = [
-    r"(\d{1,4})\s*mA\s*(?:@|at|on|from)?\s*[-\u2212\u2013]\s*12\s*V",
-    r"[-\u2212\u2013]\s*12\s*V?\s*(?:rail)?\s*[:=]?\s*(\d{1,4})\s*mA",
-    r"-(\d{1,4})\s*mA\s*\(-12V\)",
-]
-P5 = [r"(\d{1,4})\s*mA\s*(?:@|at|on|from)?\s*\+?\s*5\s*V\b", r"\+\s*5\s*V\s*[:=]?\s*(\d{1,4})\s*mA"]
+
+
+def rails(text: str) -> dict[str, float | None]:
+    """+12V, -12V and +5V draw in mA, all read in the one style the page writes first.
+
+    No fallback to another style: a rail the page's style does not give stays empty
+    rather than borrowing a number written for another rail.
+    """
+    for pat, p12, n12 in PAIRED:
+        if m := re.search(pat, text, re.I):
+            return {"power_12v_ma": float(m.group(p12)), "power_neg12v_ma": float(m.group(n12)), "power_5v_ma": None}
+    first: dict[str, int] = {}
+    for style, pats in STYLES.items():
+        starts = [m.start() for pat in pats.values() if (m := re.search(pat, text, re.I))]
+        if style == "signed" and len(starts) < 2:
+            continue  # one signed number is not a pair of rails
+        if starts:
+            first[style] = min(starts)
+    out: dict[str, float | None] = dict.fromkeys(RAIL)
+    if first:
+        pats = STYLES[min(first, key=first.get)]
+        for field, pat in pats.items():
+            m = re.search(pat, text, re.I)
+            out[field] = float(m.group(1)) if m else None
+    return out
+
+
 DEPTH = [
     r"[Dd]epth[^0-9]{0,40}(\d{1,3}(?:\.\d+)?)\s*mm",
     r"(\d{1,3}(?:\.\d+)?)\s*mm\s*(?:deep|depth)",
@@ -372,13 +438,13 @@ def extract(brand: str, url: str, body: str, method: str) -> dict | None:
     text = page_text(body)
     if len(text) < 200:
         return None
-    det = {"hp": first_num(HP, text), "power_12v_ma": first_num(P12, text), "power_neg12v_ma": first_num(N12, text), "power_5v_ma": first_num(P5, text), "depth_mm": first_num(DEPTH, text)}
+    det = {"hp": first_num(HP, text), **rails(text), "depth_mm": first_num(DEPTH, text)}
     m = re.search(DEPTH[2], text)
     if m and det["depth_mm"] is not None and float(m.group(1)) == det["depth_mm"]:
         det["depth_mm"] = round(det["depth_mm"] * 25.4)
     title_m = re.search(r'property="og:title"\s+content="([^"]+)"', body) or re.search(r"<title[^>]*>([^<]+)</title>", body, re.I)
     title = html.unescape(title_m.group(1)).strip() if title_m else ""
-    if det["hp"] is None and det["power_12v_ma"] is None and det["power_neg12v_ma"] is None:
+    if all(det[f] is None for f in ("hp", "power_12v_ma", "power_neg12v_ma", "power_5v_ma")):
         return None  # no spec signal: not worth a model call
     window = spec_window(text)
     res = llm(EXTRACT_SYS, f"Brand: {brand}\nTitle: {title[:120]}\nText: {window}", 200) or {}
@@ -393,6 +459,10 @@ def extract(brand: str, url: str, body: str, method: str) -> dict | None:
         if isinstance(mv, (int, float)) and mv >= 0:
             if dv is not None and float(mv) == float(dv):
                 val = float(mv)
+            elif dv is not None and unit == r"mA":
+                # Parse and model disagree on a draw: store neither. Either may have
+                # read another number ("delivers 500 mA at 12 V" from an output).
+                val = None
             elif verbatim(float(mv), unit, text):
                 val = float(mv)
         elif dv is not None and mv is None and field in ("hp",):
@@ -520,7 +590,7 @@ def deterministic(brand: str, url: str, text: str, name: str | None, body: str =
         hps = {int(m) for pat in HP for m in re.findall(pat, window, re.I) if HP_MIN <= int(m) <= HP_MAX}
     if len(hps) != 1:
         return {"ambiguous_hp": sorted(hps)} if hps else None
-    det = {"hp": hps.pop(), "power_12v_ma": first_num(P12, window), "power_neg12v_ma": first_num(N12, window), "power_5v_ma": first_num(P5, window), "depth_mm": first_num(DEPTH, window)}
+    det = {"hp": hps.pop(), **rails(window), "depth_mm": first_num(DEPTH, window)}
     m = re.search(DEPTH[2], window)
     if m and det["depth_mm"] is not None and float(m.group(1)) == det["depth_mm"]:
         det["depth_mm"] = round(det["depth_mm"] * 25.4)

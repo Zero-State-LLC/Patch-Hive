@@ -1,22 +1,22 @@
 {
- "generated_at": "2026-10-27T04:13:45-0700",
+ "generated_at": "2026-10-27T14:25:07-0700",
  "budget": {
   "context_dev_credits": 0.0,
   "firecrawl_credits": 0.0,
-  "context_dev_included_at_start": 54301.0,
+  "context_dev_included_at_start": 0.0,
   "firecrawl_included_at_start": 0.0,
   "paid_overage_usd": 0.0,
   "model": "deepseek/deepseek-v4.1-flash",
-  "model_tokens_in": 1694525,
-  "model_tokens_out": 297516,
-  "model_cost_usd": 0.4104,
-  "projected_total_usd": 0.4104,
-  "cap_usd": 9.2,
+  "model_tokens_in": 4053,
+  "model_tokens_out": 1090,
+  "model_cost_usd": 0.001,
+  "projected_total_usd": 0.001,
+  "cap_usd": 0.5,
   "calls": {
    "search": 0,
    "ctx_scrape": 0,
    "fc_scrape": 0,
-   "llm": 3641
+   "llm": 8
   }
  },
  "brands": [
@@ -364,7 +364,7 @@
      "name": "Swarm",
      "hp": 2,
      "power_12v_ma": 82,
-     "power_neg12v_ma": 82,
+     "power_neg12v_ma": 4,
      "power_5v_ma": null,
      "depth_mm": 45,
      "image_url": null,
@@ -453,7 +453,7 @@
      "hp": 2,
      "power_12v_ma": 12,
      "power_neg12v_ma": 10,
-     "power_5v_ma": null,
+     "power_5v_ma": 0,
      "depth_mm": 45,
      "image_url": "http://static1.squarespace.com/static/573b5370b09f9524489340f2/573b5ef2c2ea5113612593f2/5c782fc26e9a7f3d1b0b9db3/1551380422148/2hp_SILVER-Panel_BLACK-Circles_Landscape.jpg?format=1500w",
      "source_url": "https://www.twohp.com/modules/p/dc",
@@ -461,6 +461,7 @@
       "hp": "https://www.twohp.com/modules/p/dc",
       "power_12v_ma": "https://www.twohp.com/modules/p/dc",
       "power_neg12v_ma": "https://www.twohp.com/modules/p/dc",
+      "power_5v_ma": "https://www.twohp.com/modules/p/dc",
       "depth_mm": "https://www.twohp.com/modules/p/dc"
      },
      "tags": [],
@@ -1890,14 +1891,15 @@
      "brand": "After Later Audio",
      "name": "Merge",
      "hp": 4,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 25,
+     "power_12v_ma": 25,
+     "power_neg12v_ma": 15,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/files/MergeProductImage.jpg?v=1767222849",
      "source_url": "https://afterlateraudio.com/products/merge",
      "sources": {
       "hp": "https://afterlateraudio.com/products/merge",
+      "power_12v_ma": "https://afterlateraudio.com/products/merge",
       "power_neg12v_ma": "https://afterlateraudio.com/products/merge"
      },
      "tags": [],
@@ -1908,28 +1910,9 @@
     },
     {
      "brand": "After Later Audio",
-     "name": "Boulder Folder (Pedal)",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/files/BoulderFolderImage.jpg?v=1757287997",
-     "source_url": "https://afterlateraudio.com/products/boulder-folder-pedal",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/boulder-folder-pedal"
-     },
-     "tags": [],
-     "content_sha256": "298423a1e84e842a207a0d890b2ce0367b1f9bf888d9843b362dcf2476183f39",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
      "name": "Ornate Criminal MIDI Expander",
      "hp": 2,
-     "power_12v_ma": null,
+     "power_12v_ma": 0,
      "power_neg12v_ma": 0,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -1937,6 +1920,7 @@
      "source_url": "https://afterlateraudio.com/products/ornate-criminal-midi",
      "sources": {
       "hp": "https://afterlateraudio.com/products/ornate-criminal-midi",
+      "power_12v_ma": "https://afterlateraudio.com/products/ornate-criminal-midi",
       "power_neg12v_ma": "https://afterlateraudio.com/products/ornate-criminal-midi"
      },
      "tags": [],
@@ -1947,54 +1931,17 @@
     },
     {
      "brand": "After Later Audio",
-     "name": "For Fuzz Sake, Grey (Pedal)",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/files/GreyFuzz_4ed3b871-873f-4779-ae9d-61cdfabdaea7.jpg?v=1757287763",
-     "source_url": "https://afterlateraudio.com/products/for-fuzz-sake-grey-pedal",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/for-fuzz-sake-grey-pedal"
-     },
-     "tags": [],
-     "content_sha256": "d32db04619a592935e011a9a0b8d3c151c21312d9a68ee44cce444841133ec00",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
-     "name": "Teensy 3.2",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/files/MFG_DEV-13736.jpg?v=1756750079",
-     "source_url": "https://afterlateraudio.com/products/teensy-3-2",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/teensy-3-2"
-     },
-     "tags": [],
-     "content_sha256": "5201ae020e6a8d3649a073ce35542cd20d6439935c7ca6eec0610ccba52d20f1",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
      "name": "Ornate Criminal",
      "hp": 10,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 120,
+     "power_12v_ma": 120,
+     "power_neg12v_ma": 20,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/files/OC41Photo_eea201a0-33b4-4706-a5c6-8af73aef9eab.jpg?v=1754861050",
      "source_url": "https://afterlateraudio.com/products/ornate-criminal",
      "sources": {
       "hp": "https://afterlateraudio.com/products/ornate-criminal",
+      "power_12v_ma": "https://afterlateraudio.com/products/ornate-criminal",
       "power_neg12v_ma": "https://afterlateraudio.com/products/ornate-criminal"
      },
      "tags": [],
@@ -2005,47 +1952,9 @@
     },
     {
      "brand": "After Later Audio",
-     "name": "Barback V1 Upgrade",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/files/PXL_20250719_213526613.jpg?v=1752961817",
-     "source_url": "https://afterlateraudio.com/products/barback-v1-upgrade",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/barback-v1-upgrade"
-     },
-     "tags": [],
-     "content_sha256": "e01367c169e40648c0634776d39ef7b7bc577a6183da3a6f80a99b8db8d4b3dc",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
-     "name": "Bartender V1 Upgrade",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/files/PXL_20250719_213627956.jpg?v=1752961689",
-     "source_url": "https://afterlateraudio.com/products/bartender-v1-upgrade",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/bartender-v1-upgrade"
-     },
-     "tags": [],
-     "content_sha256": "6e1c3daf253a422de3ab51647c420e6b6793364e0253ba7728d2ff5339069ca0",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
      "name": "Compactor",
      "hp": 8,
-     "power_12v_ma": null,
+     "power_12v_ma": 60,
      "power_neg12v_ma": 60,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -2053,6 +1962,7 @@
      "source_url": "https://afterlateraudio.com/products/compactor",
      "sources": {
       "hp": "https://afterlateraudio.com/products/compactor",
+      "power_12v_ma": "https://afterlateraudio.com/products/compactor",
       "power_neg12v_ma": "https://afterlateraudio.com/products/compactor"
      },
      "tags": [],
@@ -2065,7 +1975,7 @@
      "brand": "After Later Audio",
      "name": "Smoosher",
      "hp": 4,
-     "power_12v_ma": null,
+     "power_12v_ma": 40,
      "power_neg12v_ma": 40,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -2073,6 +1983,7 @@
      "source_url": "https://afterlateraudio.com/products/smoosher",
      "sources": {
       "hp": "https://afterlateraudio.com/products/smoosher",
+      "power_12v_ma": "https://afterlateraudio.com/products/smoosher",
       "power_neg12v_ma": "https://afterlateraudio.com/products/smoosher"
      },
      "tags": [],
@@ -2085,7 +1996,7 @@
      "brand": "After Later Audio",
      "name": "Inserts",
      "hp": 2,
-     "power_12v_ma": null,
+     "power_12v_ma": 40,
      "power_neg12v_ma": 40,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -2093,48 +2004,11 @@
      "source_url": "https://afterlateraudio.com/products/inserts",
      "sources": {
       "hp": "https://afterlateraudio.com/products/inserts",
+      "power_12v_ma": "https://afterlateraudio.com/products/inserts",
       "power_neg12v_ma": "https://afterlateraudio.com/products/inserts"
      },
      "tags": [],
      "content_sha256": "d1dba3821fc893e4054665ffdee9e39697caf3b6c16ad13596c6ebc08d93f38d",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
-     "name": "Hello World (Pedal)",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/files/PXL_20250621_214258141square.jpg?v=1750556126",
-     "source_url": "https://afterlateraudio.com/products/hello-world-pedal",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/hello-world-pedal"
-     },
-     "tags": [],
-     "content_sha256": "552141937809ca31026d7f35aa7a6b73735fbb54b425168d7758660d685c3a72",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
-     "name": "For Fuzz Sake (Pedal)",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/files/PXL_20250621_214250545square.jpg?v=1750552051",
-     "source_url": "https://afterlateraudio.com/products/for-fuzz-sake-pedal",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/for-fuzz-sake-pedal"
-     },
-     "tags": [],
-     "content_sha256": "11a7b28692abf414d645673cab557279b7d19199d70a7d1cd5cb39ee099d9e93",
      "provenance": "OBSERVED",
      "extracted_by": "regex",
      "fetch_method": "cache"
@@ -2200,7 +2074,7 @@
      "brand": "After Later Audio",
      "name": "Bal Outs",
      "hp": 4,
-     "power_12v_ma": null,
+     "power_12v_ma": 100,
      "power_neg12v_ma": 100,
      "power_5v_ma": null,
      "depth_mm": 30,
@@ -2208,6 +2082,7 @@
      "source_url": "https://afterlateraudio.com/products/bal-outs",
      "sources": {
       "hp": "https://afterlateraudio.com/products/bal-outs",
+      "power_12v_ma": "https://afterlateraudio.com/products/bal-outs",
       "power_neg12v_ma": "https://afterlateraudio.com/products/bal-outs",
       "depth_mm": "https://afterlateraudio.com/products/bal-outs"
      },
@@ -2235,44 +2110,6 @@
      "provenance": "OBSERVED",
      "extracted_by": "regex",
      "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
-     "name": "Warp Drive (1.25A)",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://afterlateraudio.com/products/warp-drive",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/warp-drive"
-     },
-     "tags": [],
-     "content_sha256": "ec0f48ab9d36da939f6f81579bece82b5a92464380537d5058591049e963b0e5",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "feed"
-    },
-    {
-     "brand": "After Later Audio",
-     "name": "The Force (2.5A)",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://afterlateraudio.com/products/the-force",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/the-force"
-     },
-     "tags": [],
-     "content_sha256": "4db8a4a835f591399d204158d471ed882a61fafe4e887f17d2e4cd0a55aa6e48",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "feed"
     },
     {
      "brand": "After Later Audio",
@@ -2316,14 +2153,15 @@
      "brand": "After Later Audio",
      "name": "Stairs",
      "hp": 10,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 80,
+     "power_12v_ma": 80,
+     "power_neg12v_ma": 65,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/files/ALAStairsMain02.jpg?v=1726185345",
      "source_url": "https://afterlateraudio.com/products/stairs",
      "sources": {
       "hp": "https://afterlateraudio.com/products/stairs",
+      "power_12v_ma": "https://afterlateraudio.com/products/stairs",
       "power_neg12v_ma": "https://afterlateraudio.com/products/stairs"
      },
      "tags": [],
@@ -2334,47 +2172,9 @@
     },
     {
      "brand": "After Later Audio",
-     "name": "USB-2CH",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/files/ALAUSBMain02.jpg?v=1704601953",
-     "source_url": "https://afterlateraudio.com/products/usb-2ch",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/usb-2ch"
-     },
-     "tags": [],
-     "content_sha256": "bdbe6ce2960532ad6a548961bc5f4a509917e59d2c6c2f4530402a485e7e040f",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
-     "name": "Send VCA",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/files/ALASendVCAMain02.jpg?v=1704601459",
-     "source_url": "https://afterlateraudio.com/products/send-vca",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/send-vca"
-     },
-     "tags": [],
-     "content_sha256": "1598207100b76fe41ccad264371d5b2d124bcc53d1d1562c1a1c62f6857b99ae",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
      "name": "Cast Iron",
      "hp": 4,
-     "power_12v_ma": null,
+     "power_12v_ma": 40,
      "power_neg12v_ma": 40,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -2382,6 +2182,7 @@
      "source_url": "https://afterlateraudio.com/products/cast-iron",
      "sources": {
       "hp": "https://afterlateraudio.com/products/cast-iron",
+      "power_12v_ma": "https://afterlateraudio.com/products/cast-iron",
       "power_neg12v_ma": "https://afterlateraudio.com/products/cast-iron"
      },
      "tags": [],
@@ -2451,14 +2252,15 @@
      "brand": "After Later Audio",
      "name": "Scenes",
      "hp": 14,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 80,
+     "power_12v_ma": 80,
+     "power_neg12v_ma": 20,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/files/ALAMICStagesMain01.png?v=1683339497",
      "source_url": "https://afterlateraudio.com/products/scenes",
      "sources": {
       "hp": "https://afterlateraudio.com/products/scenes",
+      "power_12v_ma": "https://afterlateraudio.com/products/scenes",
       "power_neg12v_ma": "https://afterlateraudio.com/products/scenes"
      },
      "tags": [],
@@ -2471,7 +2273,7 @@
      "brand": "After Later Audio",
      "name": "Cloaks",
      "hp": 10,
-     "power_12v_ma": null,
+     "power_12v_ma": 50,
      "power_neg12v_ma": 50,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -2479,6 +2281,7 @@
      "source_url": "https://afterlateraudio.com/products/cloaks",
      "sources": {
       "hp": "https://afterlateraudio.com/products/cloaks",
+      "power_12v_ma": "https://afterlateraudio.com/products/cloaks",
       "power_neg12v_ma": "https://afterlateraudio.com/products/cloaks"
      },
      "tags": [],
@@ -2489,73 +2292,17 @@
     },
     {
      "brand": "After Later Audio",
-     "name": "Pixie Aluminum Panel",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/products/ALAPlaitsSilverPanelOnlyRenderMain01.png?v=1680104882",
-     "source_url": "https://afterlateraudio.com/products/pixie-aluminum-panel",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/pixie-aluminum-panel"
-     },
-     "tags": [],
-     "content_sha256": "e19db08ebb1a76ee46c95bc1beae5f01b220daace3856c6dac6d5d67241e5a4d",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
-     "name": "Resonate Aluminum Panel",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/products/ALARingsSilverPanelOnlyRenderMain01.png?v=1680104556",
-     "source_url": "https://afterlateraudio.com/products/resonate-aluminum-panel",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/resonate-aluminum-panel"
-     },
-     "tags": [],
-     "content_sha256": "33ab6b7d2d3cf628e07fa010bdbc87c4924e0de806435b5bb2d7d23afca579e5",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
-     "name": "Auris",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/products/ALAMICEarsMain01.png?v=1677439712",
-     "source_url": "https://afterlateraudio.com/products/auris",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/auris"
-     },
-     "tags": [],
-     "content_sha256": "5ec81d0bdca07dd201437f6e2cfb394fc9ae343d81d95e246929e620fac0d5f2",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
      "name": "Currents",
      "hp": 14,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 50,
+     "power_12v_ma": 50,
+     "power_neg12v_ma": 20,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/products/ALAMICTidesMain01.png?v=1673235869",
      "source_url": "https://afterlateraudio.com/products/currents",
      "sources": {
       "hp": "https://afterlateraudio.com/products/currents",
+      "power_12v_ma": "https://afterlateraudio.com/products/currents",
       "power_neg12v_ma": "https://afterlateraudio.com/products/currents"
      },
      "tags": [],
@@ -2568,14 +2315,15 @@
      "brand": "After Later Audio",
      "name": "Pixie",
      "hp": 12,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 50,
+     "power_12v_ma": 50,
+     "power_neg12v_ma": 5,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/products/ALAMICPlaitsMain01.png?v=1670794754",
      "source_url": "https://afterlateraudio.com/products/pixie",
      "sources": {
       "hp": "https://afterlateraudio.com/products/pixie",
+      "power_12v_ma": "https://afterlateraudio.com/products/pixie",
       "power_neg12v_ma": "https://afterlateraudio.com/products/pixie"
      },
      "tags": [],
@@ -2588,7 +2336,7 @@
      "brand": "After Later Audio",
      "name": "Waves",
      "hp": 8,
-     "power_12v_ma": null,
+     "power_12v_ma": 35,
      "power_neg12v_ma": 35,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -2596,6 +2344,7 @@
      "source_url": "https://afterlateraudio.com/products/waves",
      "sources": {
       "hp": "https://afterlateraudio.com/products/waves",
+      "power_12v_ma": "https://afterlateraudio.com/products/waves",
       "power_neg12v_ma": "https://afterlateraudio.com/products/waves"
      },
      "tags": [],
@@ -2646,14 +2395,15 @@
      "brand": "After Later Audio",
      "name": "Razor",
      "hp": 18,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 150,
+     "power_12v_ma": 150,
+     "power_neg12v_ma": 140,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/products/RazorProductImage.png?v=1667257455",
      "source_url": "https://afterlateraudio.com/products/razor",
      "sources": {
       "hp": "https://afterlateraudio.com/products/razor",
+      "power_12v_ma": "https://afterlateraudio.com/products/razor",
       "power_neg12v_ma": "https://afterlateraudio.com/products/razor"
      },
      "tags": [],
@@ -2685,7 +2435,7 @@
      "brand": "After Later Audio",
      "name": "Monocle",
      "hp": 4,
-     "power_12v_ma": null,
+     "power_12v_ma": 35,
      "power_neg12v_ma": 35,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -2693,6 +2443,7 @@
      "source_url": "https://afterlateraudio.com/products/monocle",
      "sources": {
       "hp": "https://afterlateraudio.com/products/monocle",
+      "power_12v_ma": "https://afterlateraudio.com/products/monocle",
       "power_neg12v_ma": "https://afterlateraudio.com/products/monocle"
      },
      "tags": [],
@@ -2705,14 +2456,15 @@
      "brand": "After Later Audio",
      "name": "Alan 1U (micro Turing Machine)",
      "hp": 21,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 45,
+     "power_12v_ma": 45,
+     "power_neg12v_ma": 20,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/products/Alan1UProductImage.png?v=1667259187",
      "source_url": "https://afterlateraudio.com/products/alan-1u-micro-turing-machine",
      "sources": {
       "hp": "https://afterlateraudio.com/products/alan-1u-micro-turing-machine",
+      "power_12v_ma": "https://afterlateraudio.com/products/alan-1u-micro-turing-machine",
       "power_neg12v_ma": "https://afterlateraudio.com/products/alan-1u-micro-turing-machine"
      },
      "tags": [],
@@ -2725,14 +2477,15 @@
      "brand": "After Later Audio",
      "name": "Fuse",
      "hp": 10,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 110,
+     "power_12v_ma": 110,
+     "power_neg12v_ma": 5,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/products/Fuse-ProductImage.png?v=1667260063",
      "source_url": "https://afterlateraudio.com/products/fuse",
      "sources": {
       "hp": "https://afterlateraudio.com/products/fuse",
+      "power_12v_ma": "https://afterlateraudio.com/products/fuse",
       "power_neg12v_ma": "https://afterlateraudio.com/products/fuse"
      },
      "tags": [],
@@ -2783,14 +2536,15 @@
      "brand": "After Later Audio",
      "name": "Brooks",
      "hp": 4,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 30,
+     "power_12v_ma": 30,
+     "power_neg12v_ma": 15,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/products/COCOBrooksFarView01.jpg?v=1662769029",
      "source_url": "https://afterlateraudio.com/products/brooks",
      "sources": {
       "hp": "https://afterlateraudio.com/products/brooks",
+      "power_12v_ma": "https://afterlateraudio.com/products/brooks",
       "power_neg12v_ma": "https://afterlateraudio.com/products/brooks"
      },
      "tags": [],
@@ -2803,14 +2557,15 @@
      "brand": "After Later Audio",
      "name": "Canyon",
      "hp": 8,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 35,
+     "power_12v_ma": 35,
+     "power_neg12v_ma": 25,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/products/COCOCanyonFarView01.jpg?v=1662769127",
      "source_url": "https://afterlateraudio.com/products/canyon",
      "sources": {
       "hp": "https://afterlateraudio.com/products/canyon",
+      "power_12v_ma": "https://afterlateraudio.com/products/canyon",
       "power_neg12v_ma": "https://afterlateraudio.com/products/canyon"
      },
      "tags": [],
@@ -2823,7 +2578,7 @@
      "brand": "After Later Audio",
      "name": "Valley",
      "hp": 8,
-     "power_12v_ma": null,
+     "power_12v_ma": 45,
      "power_neg12v_ma": 45,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -2831,6 +2586,7 @@
      "source_url": "https://afterlateraudio.com/products/valley",
      "sources": {
       "hp": "https://afterlateraudio.com/products/valley",
+      "power_12v_ma": "https://afterlateraudio.com/products/valley",
       "power_neg12v_ma": "https://afterlateraudio.com/products/valley"
      },
      "tags": [],
@@ -2843,7 +2599,7 @@
      "brand": "After Later Audio",
      "name": "Sum+Inv",
      "hp": 2,
-     "power_12v_ma": null,
+     "power_12v_ma": 10,
      "power_neg12v_ma": 10,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -2851,6 +2607,7 @@
      "source_url": "https://afterlateraudio.com/products/sum-inv",
      "sources": {
       "hp": "https://afterlateraudio.com/products/sum-inv",
+      "power_12v_ma": "https://afterlateraudio.com/products/sum-inv",
       "power_neg12v_ma": "https://afterlateraudio.com/products/sum-inv"
      },
      "tags": [],
@@ -2862,27 +2619,27 @@
     {
      "brand": "After Later Audio",
      "name": "Cloverleaf",
-     "hp": 64,
+     "hp": 14,
      "power_12v_ma": null,
      "power_neg12v_ma": null,
      "power_5v_ma": null,
      "depth_mm": null,
-     "image_url": null,
+     "image_url": "http://afterlateraudio.com/cdn/shop/products/CloverleafProductImage.png?v=1662910713",
      "source_url": "https://afterlateraudio.com/products/cloverleaf",
      "sources": {
       "hp": "https://afterlateraudio.com/products/cloverleaf"
      },
      "tags": [],
-     "content_sha256": "00922cc8e32cbd283dc2bebbdd73e37cdddd8a22eddc66e3c014dab32bc24f58",
+     "content_sha256": "43a99c62504b6ee0258c621069453064dd2e3271c4c6ce9cb1d7141ed53c5d04",
      "provenance": "OBSERVED",
      "extracted_by": "regex",
-     "fetch_method": "feed"
+     "fetch_method": "cache"
     },
     {
      "brand": "After Later Audio",
      "name": "3:1 Mixer 1U",
      "hp": 10,
-     "power_12v_ma": null,
+     "power_12v_ma": 30,
      "power_neg12v_ma": 30,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -2890,6 +2647,7 @@
      "source_url": "https://afterlateraudio.com/products/3-1-mixer-1u",
      "sources": {
       "hp": "https://afterlateraudio.com/products/3-1-mixer-1u",
+      "power_12v_ma": "https://afterlateraudio.com/products/3-1-mixer-1u",
       "power_neg12v_ma": "https://afterlateraudio.com/products/3-1-mixer-1u"
      },
      "tags": [],
@@ -2902,14 +2660,15 @@
      "brand": "After Later Audio",
      "name": "Dice",
      "hp": 18,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 80,
+     "power_12v_ma": 80,
+     "power_neg12v_ma": 20,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/products/ALAMICMarblesFarView01.jpg?v=1662961150",
      "source_url": "https://afterlateraudio.com/products/dice",
      "sources": {
       "hp": "https://afterlateraudio.com/products/dice",
+      "power_12v_ma": "https://afterlateraudio.com/products/dice",
       "power_neg12v_ma": "https://afterlateraudio.com/products/dice"
      },
      "tags": [],
@@ -2941,14 +2700,15 @@
      "brand": "After Later Audio",
      "name": "Cumulus",
      "hp": 18,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 120,
+     "power_12v_ma": 120,
+     "power_neg12v_ma": 10,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/products/ALAMICCloudsFarView01.jpg?v=1662961093",
      "source_url": "https://afterlateraudio.com/products/cumulus",
      "sources": {
       "hp": "https://afterlateraudio.com/products/cumulus",
+      "power_12v_ma": "https://afterlateraudio.com/products/cumulus",
       "power_neg12v_ma": "https://afterlateraudio.com/products/cumulus"
      },
      "tags": [],
@@ -3018,14 +2778,15 @@
      "brand": "After Later Audio",
      "name": "Flip",
      "hp": 14,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 10,
+     "power_12v_ma": 10,
+     "power_neg12v_ma": 1,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/products/FlipProductImage.png?v=1629678189",
      "source_url": "https://afterlateraudio.com/products/flip",
      "sources": {
       "hp": "https://afterlateraudio.com/products/flip",
+      "power_12v_ma": "https://afterlateraudio.com/products/flip",
       "power_neg12v_ma": "https://afterlateraudio.com/products/flip"
      },
      "tags": [],
@@ -3038,7 +2799,7 @@
      "brand": "After Later Audio",
      "name": "Bleep Bloop 2000",
      "hp": 16,
-     "power_12v_ma": null,
+     "power_12v_ma": 85,
      "power_neg12v_ma": 85,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -3046,6 +2807,7 @@
      "source_url": "https://afterlateraudio.com/products/bleep-bloop-2000",
      "sources": {
       "hp": "https://afterlateraudio.com/products/bleep-bloop-2000",
+      "power_12v_ma": "https://afterlateraudio.com/products/bleep-bloop-2000",
       "power_neg12v_ma": "https://afterlateraudio.com/products/bleep-bloop-2000"
      },
      "tags": [],
@@ -3379,25 +3141,6 @@
     },
     {
      "brand": "After Later Audio",
-     "name": "Beehive (uPlaits)",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://afterlateraudio.com/cdn/shop/products/Beehive-Black-Gold-Module.png?v=1630003103",
-     "source_url": "https://afterlateraudio.com/products/beehive-uplaits",
-     "sources": {
-      "hp": "https://afterlateraudio.com/products/beehive-uplaits"
-     },
-     "tags": [],
-     "content_sha256": "56578f1dc0090f26980176f539d19031b18e40aed48948ed984491c3bc93f9b3",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "After Later Audio",
      "name": "Morcom Expander for Alan and Benjolin V2",
      "hp": 4,
      "power_12v_ma": null,
@@ -3438,14 +3181,15 @@
      "brand": "After Later Audio",
      "name": "Pachinko",
      "hp": 12,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 80,
+     "power_12v_ma": 80,
+     "power_neg12v_ma": 20,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://afterlateraudio.com/cdn/shop/products/Pachinko-Black-Gold-Module.png?v=1628985826",
      "source_url": "https://afterlateraudio.com/products/pachinko",
      "sources": {
       "hp": "https://afterlateraudio.com/products/pachinko",
+      "power_12v_ma": "https://afterlateraudio.com/products/pachinko",
       "power_neg12v_ma": "https://afterlateraudio.com/products/pachinko"
      },
      "tags": [],
@@ -3458,7 +3202,7 @@
      "brand": "After Later Audio",
      "name": "3 to 1 Mixer",
      "hp": 2,
-     "power_12v_ma": null,
+     "power_12v_ma": 30,
      "power_neg12v_ma": 30,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -3466,6 +3210,7 @@
      "source_url": "https://afterlateraudio.com/products/31-mixer",
      "sources": {
       "hp": "https://afterlateraudio.com/products/31-mixer",
+      "power_12v_ma": "https://afterlateraudio.com/products/31-mixer",
       "power_neg12v_ma": "https://afterlateraudio.com/products/31-mixer"
      },
      "tags": [],
@@ -3723,10 +3468,10 @@
     }
    ],
    "unconfirmed": [],
-   "pages": 77,
+   "pages": 80,
    "status": "done",
    "methods": {
-    "cache": 77
+    "cache": 80
    },
    "ambiguous_hp": 0,
    "resolved_by": "adapter:shopify",
@@ -4098,21 +3843,315 @@
      "content_sha256": "2e4cdccf5e90761d927677a400bf6668d41eeac0af257f5ef8dedf2790737700",
      "provenance": "OBSERVED",
      "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "AJH Synth",
+     "name": "MiniMod VCA",
+     "hp": 10,
+     "power_12v_ma": 40,
+     "power_neg12v_ma": 22,
+     "power_5v_ma": null,
+     "depth_mm": 26,
+     "image_url": null,
+     "source_url": "https://ajhsynth.com/VCA.html",
+     "sources": {
+      "hp": "https://ajhsynth.com/VCA.html",
+      "power_12v_ma": "https://ajhsynth.com/VCA.html",
+      "power_neg12v_ma": "https://ajhsynth.com/VCA.html",
+      "depth_mm": "https://ajhsynth.com/VCA.html"
+     },
+     "tags": [
+      "VCA",
+      "discrete",
+      "overdrive",
+      "linear"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "f3871aaf13dc791b273e8d3442e3b2ed0606dff248f2d009057143dba4508252",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "AJH Synth",
+     "name": "MiniMod Contour",
+     "hp": 12,
+     "power_12v_ma": 38,
+     "power_neg12v_ma": 15,
+     "power_5v_ma": null,
+     "depth_mm": 26,
+     "image_url": null,
+     "source_url": "https://ajhsynth.com/Contour.html",
+     "sources": {
+      "hp": "https://ajhsynth.com/Contour.html",
+      "power_12v_ma": "https://ajhsynth.com/Contour.html",
+      "power_neg12v_ma": "https://ajhsynth.com/Contour.html",
+      "depth_mm": "https://ajhsynth.com/Contour.html"
+     },
+     "tags": [
+      "envelope",
+      "contour",
+      "ADSR",
+      "dual"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "9d61f8301f1ee0d304d70dc4c38fef7ac0fb7236916642e1f4a2eb21c79a0978",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "AJH Synth",
+     "name": "MiniMod Glide & Noise Mk2",
+     "hp": 6,
+     "power_12v_ma": 36,
+     "power_neg12v_ma": 38,
+     "power_5v_ma": null,
+     "depth_mm": 24,
+     "image_url": null,
+     "source_url": "https://ajhsynth.com/Glide.html",
+     "sources": {
+      "hp": "https://ajhsynth.com/Glide.html",
+      "power_12v_ma": "https://ajhsynth.com/Glide.html",
+      "power_neg12v_ma": "https://ajhsynth.com/Glide.html",
+      "depth_mm": "https://ajhsynth.com/Glide.html"
+     },
+     "tags": [
+      "glide",
+      "noise",
+      "hold"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "bdafc19ff1e755c8cc516c51cc86061510b6cb259caf4a65505f68c8f2a7290b",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "AJH Synth",
+     "name": "Chance Delay",
+     "hp": 8,
+     "power_12v_ma": 25,
+     "power_neg12v_ma": 6,
+     "power_5v_ma": null,
+     "depth_mm": 26,
+     "image_url": null,
+     "source_url": "https://ajhsynth.com/ChanceDelay.html",
+     "sources": {
+      "hp": "https://ajhsynth.com/ChanceDelay.html",
+      "power_12v_ma": "https://ajhsynth.com/ChanceDelay.html",
+      "power_neg12v_ma": "https://ajhsynth.com/ChanceDelay.html",
+      "depth_mm": "https://ajhsynth.com/ChanceDelay.html"
+     },
+     "tags": [
+      "chance",
+      "delay",
+      "gate",
+      "random"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "df79be22ea557b43204cf175b631ea7ad55664cae0f17e22ef15d1b35bc7fec2",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "AJH Synth",
+     "name": "Triple Cross Xfader",
+     "hp": 14,
+     "power_12v_ma": 80,
+     "power_neg12v_ma": 72,
+     "power_5v_ma": null,
+     "depth_mm": 26,
+     "image_url": null,
+     "source_url": "https://ajhsynth.com/TripleCross.html",
+     "sources": {
+      "hp": "https://ajhsynth.com/TripleCross.html",
+      "power_12v_ma": "https://ajhsynth.com/TripleCross.html",
+      "power_neg12v_ma": "https://ajhsynth.com/TripleCross.html",
+      "depth_mm": "https://ajhsynth.com/TripleCross.html"
+     },
+     "tags": [
+      "xfader",
+      "panning",
+      "stereo"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "8e7c2f7f8f4fd5b39ecd06310c5e57c78adccf18c58c30d2f38b04c68eb9fc72",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "AJH Synth",
+     "name": "Low Fat Filter",
+     "hp": 2,
+     "power_12v_ma": 9,
+     "power_neg12v_ma": 12,
+     "power_5v_ma": null,
+     "depth_mm": 26,
+     "image_url": null,
+     "source_url": "https://ajhsynth.com/LowFat.html",
+     "sources": {
+      "hp": "https://ajhsynth.com/LowFat.html",
+      "power_12v_ma": "https://ajhsynth.com/LowFat.html",
+      "power_neg12v_ma": "https://ajhsynth.com/LowFat.html",
+      "depth_mm": "https://ajhsynth.com/LowFat.html"
+     },
+     "tags": [
+      "VCF",
+      "High Pass",
+      "2HP"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "3749e41c22cf133580d9aeebaf917f5a499800d56ee815ed063ab4327d3f1657",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "AJH Synth",
+     "name": "Tap Tempo VC-LFO",
+     "hp": 12,
+     "power_12v_ma": 35,
+     "power_neg12v_ma": 25,
+     "power_5v_ma": null,
+     "depth_mm": 26,
+     "image_url": null,
+     "source_url": "https://ajhsynth.com/TapLFO.html",
+     "sources": {
+      "hp": "https://ajhsynth.com/TapLFO.html",
+      "power_12v_ma": "https://ajhsynth.com/TapLFO.html",
+      "power_neg12v_ma": "https://ajhsynth.com/TapLFO.html",
+      "depth_mm": "https://ajhsynth.com/TapLFO.html"
+     },
+     "tags": [
+      "LFO",
+      "Tap Tempo",
+      "VCA",
+      "CV"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "7f7ef58865b2d7dbaad55d968cd143b71e5a9df25d17e7cc7cb4b6d6ece25238",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "AJH Synth",
+     "name": "Dual RVG Module",
+     "hp": 14,
+     "power_12v_ma": 95,
+     "power_neg12v_ma": 70,
+     "power_5v_ma": null,
+     "depth_mm": 26,
+     "image_url": null,
+     "source_url": "https://ajhsynth.com/Dual_RVG.html",
+     "sources": {
+      "hp": "https://ajhsynth.com/Dual_RVG.html",
+      "power_12v_ma": "https://ajhsynth.com/Dual_RVG.html",
+      "power_neg12v_ma": "https://ajhsynth.com/Dual_RVG.html",
+      "depth_mm": "https://ajhsynth.com/Dual_RVG.html"
+     },
+     "tags": [
+      "LFO",
+      "gate",
+      "clock",
+      "random"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "c9d93961d843be620f167b6df2e272d1ce15a3ee0c5fb093b83886dbaedb68c4",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "AJH Synth",
+     "name": "Next Phase 12 stage phaser",
+     "hp": 18,
+     "power_12v_ma": 90,
+     "power_neg12v_ma": 85,
+     "power_5v_ma": null,
+     "depth_mm": 26,
+     "image_url": null,
+     "source_url": "https://ajhsynth.com/NextPhase.html",
+     "sources": {
+      "hp": "https://ajhsynth.com/NextPhase.html",
+      "power_12v_ma": "https://ajhsynth.com/NextPhase.html",
+      "power_neg12v_ma": "https://ajhsynth.com/NextPhase.html",
+      "depth_mm": "https://ajhsynth.com/NextPhase.html"
+     },
+     "tags": [
+      "phaser",
+      "LFO",
+      "CV",
+      "stereo"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "19a628c3c6b5879e22ad997a4c5e7ab7fcd05288f51251ab8fd77b1ed2ae0ffd",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "AJH Synth",
+     "name": "Muting Mixer Module",
+     "hp": 10,
+     "power_12v_ma": 55,
+     "power_neg12v_ma": 25,
+     "power_5v_ma": null,
+     "depth_mm": 26,
+     "image_url": null,
+     "source_url": "https://ajhsynth.com/MutingMixer.html",
+     "sources": {
+      "hp": "https://ajhsynth.com/MutingMixer.html",
+      "power_12v_ma": "https://ajhsynth.com/MutingMixer.html",
+      "power_neg12v_ma": "https://ajhsynth.com/MutingMixer.html",
+      "depth_mm": "https://ajhsynth.com/MutingMixer.html"
+     },
+     "tags": [
+      "mixer",
+      "mute",
+      "VCA",
+      "overdrive"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "c72a56b0b76259f23b10924c329fd8f854493dfb8690f88a4bcd07290bcddc63",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "AJH Synth",
+     "name": "Entropic Doom",
+     "hp": 14,
+     "power_12v_ma": 45,
+     "power_neg12v_ma": 28,
+     "power_5v_ma": null,
+     "depth_mm": 26,
+     "image_url": null,
+     "source_url": "https://ajhsynth.com/Entropic.html",
+     "sources": {
+      "hp": "https://ajhsynth.com/Entropic.html",
+      "power_12v_ma": "https://ajhsynth.com/Entropic.html",
+      "power_neg12v_ma": "https://ajhsynth.com/Entropic.html",
+      "depth_mm": "https://ajhsynth.com/Entropic.html"
+     },
+     "tags": [
+      "noise",
+      "oscillator",
+      "ring modulator",
+      "VCA"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "496ca8a465dad5eb709ec776b64e4b2646698378cc7076418cce4df260c779c5",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
     }
    ],
    "unconfirmed": [],
-   "pages": 40,
+   "pages": 48,
    "status": "done",
    "methods": {
     "cache": 16,
-    "robots_unavailable": 24
+    "robots_unavailable": 32
    },
    "ambiguous_hp": 0,
    "resolved_by": "v1_crawl",
    "homepage": "https://ajhsynth.com/",
    "path": "generic",
    "discovered": 81,
-   "picked": 40
+   "picked": 48
   },
   {
    "brand": "Alfa Delta",
@@ -4213,33 +4252,6 @@
     },
     {
      "brand": "ALM Busy Circuits",
-     "name": "QUAID GIGASLOPE",
-     "hp": 52,
-     "power_12v_ma": 380,
-     "power_neg12v_ma": 30,
-     "power_5v_ma": null,
-     "depth_mm": 32,
-     "image_url": "http://busycircuits.com/cdn/shop/files/ALM047-01.png?v=1759766529",
-     "source_url": "https://busycircuits.com/products/alm047",
-     "sources": {
-      "hp": "https://busycircuits.com/products/alm047",
-      "power_12v_ma": "https://busycircuits.com/products/alm047",
-      "power_neg12v_ma": "https://busycircuits.com/products/alm047",
-      "depth_mm": "https://busycircuits.com/products/alm047"
-     },
-     "tags": [
-      "envelope",
-      "sequencer",
-      "LFO",
-      "quad"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "643117d48d38422e224432d1e100d92fb0665adc63068fcc8646341704a81a6b",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "ALM Busy Circuits",
      "name": "FMco",
      "hp": 8,
      "power_12v_ma": null,
@@ -4278,82 +4290,6 @@
      "provenance": "OBSERVED",
      "extracted_by": "regex",
      "fetch_method": "cache"
-    },
-    {
-     "brand": "ALM Busy Circuits",
-     "name": "84HP 9U Decksaver",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://busycircuits.com/products/alm-cs005ds",
-     "sources": {
-      "hp": "https://busycircuits.com/products/alm-cs005ds"
-     },
-     "tags": [],
-     "content_sha256": "815efdd325e5e9e81cb14f1e2cebaa13d2944b0ebf85f28a74232c690128434f",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "feed"
-    },
-    {
-     "brand": "ALM Busy Circuits",
-     "name": "52HP 6U Decksaver",
-     "hp": 52,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://busycircuits.com/products/alm-cs004ds",
-     "sources": {
-      "hp": "https://busycircuits.com/products/alm-cs004ds"
-     },
-     "tags": [],
-     "content_sha256": "478df945dea421dcf24fb7090a0bf158c43f9b959aad07aeba51124af3c994d7",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "feed"
-    },
-    {
-     "brand": "ALM Busy Circuits",
-     "name": "84HP 6U Decksaver",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://busycircuits.com/products/alm-cs002ds",
-     "sources": {
-      "hp": "https://busycircuits.com/products/alm-cs002ds"
-     },
-     "tags": [],
-     "content_sha256": "5e6126e1786dffaf3477dfba22598c98505c7387c2c9e4de77550f8b3511a054",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "feed"
-    },
-    {
-     "brand": "ALM Busy Circuits",
-     "name": "84HP 3U Decksaver",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://busycircuits.com/products/alm-cs001ds",
-     "sources": {
-      "hp": "https://busycircuits.com/products/alm-cs001ds"
-     },
-     "tags": [],
-     "content_sha256": "9f76518b0984cb2bcc5068bf00cc84ec6d1e2f50f2d0060221da8b6a686f1159",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "feed"
     },
     {
      "brand": "ALM Busy Circuits",
@@ -5141,25 +5077,6 @@
     },
     {
      "brand": "ALM Busy Circuits",
-     "name": "Turismo",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://busycircuits.com/products/alm-sys003",
-     "sources": {
-      "hp": "https://busycircuits.com/products/alm-sys003"
-     },
-     "tags": [],
-     "content_sha256": "57fae1792280768938b28b193f8f3bb531e9ad7d377960d6183e3319852686b2",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "feed"
-    },
-    {
-     "brand": "ALM Busy Circuits",
      "name": "S.B.G-PRO",
      "hp": 10,
      "power_12v_ma": 60,
@@ -5204,12 +5121,12 @@
     }
    ],
    "unconfirmed": [],
-   "pages": 67,
+   "pages": 72,
    "status": "done",
    "methods": {
-    "cache": 67
+    "cache": 72
    },
-   "ambiguous_hp": 1,
+   "ambiguous_hp": 0,
    "resolved_by": "adapter:shopify",
    "homepage": "https://busycircuits.com/",
    "path": "adapter:shopify",
@@ -6648,30 +6565,6 @@
     },
     {
      "brand": "Analogue Systems",
-     "name": "RS-200",
-     "hp": 72,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs200",
-     "sources": {
-      "hp": "https://www.analoguesystems.co.uk/index.php/as-modules/rs200"
-     },
-     "tags": [
-      "sequencer",
-      "analog",
-      "step",
-      "cv"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "4b43199892e6fdacf62926eb9c9f42b2514d49a2148f37f04bde5fcef9309af2",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Analogue Systems",
      "name": "RS-215",
      "hp": 12,
      "power_12v_ma": null,
@@ -6879,29 +6772,6 @@
     },
     {
      "brand": "Analogue Systems",
-     "name": "RS-300 CV / MIDI Converter",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs300",
-     "sources": {
-      "hp": "https://www.analoguesystems.co.uk/index.php/as-modules/rs300"
-     },
-     "tags": [
-      "CV",
-      "MIDI",
-      "Converter"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "d2221253ef9c54adcfd111f5652fcbe0db26d50c7f7f6d8a649d93b7e2f1a1ac",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Analogue Systems",
      "name": "RS-310",
      "hp": 12,
      "power_12v_ma": null,
@@ -6991,30 +6861,6 @@
      ],
      "fetch_method": "cache",
      "content_sha256": "29678afb0870dc3d5b1f386814f69ea832ee1bc7c4aa44f71d4e05b6c705ac30",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Analogue Systems",
-     "name": "RS-375",
-     "hp": 48,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs375",
-     "sources": {
-      "hp": "https://www.analoguesystems.co.uk/index.php/as-modules/rs375"
-     },
-     "tags": [
-      "expander",
-      "harmonics",
-      "additive",
-      "controller"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "103706049052e7a432e1335709c6b4c497d8e3c513ed2394a905505540c58a26",
      "provenance": "OBSERVED",
      "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
     },
@@ -9511,30 +9357,6 @@
    "modules": [
     {
      "brand": "AtoVproject",
-     "name": "Faderpunk",
-     "hp": 56,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://atov.de/cdn/shop/files/Faderpunk_-_foggy_background_2.jpg?v=1781341280",
-     "source_url": "https://atov.de/products/faderpunk",
-     "sources": {
-      "hp": "https://atov.de/products/faderpunk"
-     },
-     "tags": [
-      "controller",
-      "modulation",
-      "CV",
-      "MIDI"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "ccaf5430d9f13e15252ff1b32f58c9c765744614d6e80215687d0fb4aaf0cf0a",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "AtoVproject",
      "name": "lx-euclid",
      "hp": 16,
      "power_12v_ma": 120,
@@ -11706,33 +11528,6 @@
     },
     {
      "brand": "Barcode Circuits",
-     "name": "QUAID GIGASLOPE",
-     "hp": 52,
-     "power_12v_ma": 380,
-     "power_neg12v_ma": 30,
-     "power_5v_ma": null,
-     "depth_mm": 32,
-     "image_url": "http://busycircuits.com/cdn/shop/files/ALM047-01.png?v=1759766529",
-     "source_url": "https://busycircuits.com/products/alm047",
-     "sources": {
-      "hp": "https://busycircuits.com/products/alm047",
-      "power_12v_ma": "https://busycircuits.com/products/alm047",
-      "power_neg12v_ma": "https://busycircuits.com/products/alm047",
-      "depth_mm": "https://busycircuits.com/products/alm047"
-     },
-     "tags": [
-      "envelope",
-      "sequencer",
-      "LFO",
-      "quad"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "643117d48d38422e224432d1e100d92fb0665adc63068fcc8646341704a81a6b",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Barcode Circuits",
      "name": "Beast's Chalkboard",
      "hp": 6,
      "power_12v_ma": 25,
@@ -12576,7 +12371,7 @@
      "hp": 16,
      "power_12v_ma": 18,
      "power_neg12v_ma": 18,
-     "power_5v_ma": 850,
+     "power_5v_ma": null,
      "depth_mm": 45,
      "image_url": null,
      "source_url": "https://bardsynthesizers.com/vacuform.html",
@@ -12584,7 +12379,6 @@
       "hp": "https://bardsynthesizers.com/vacuform.html",
       "power_12v_ma": "https://bardsynthesizers.com/vacuform.html",
       "power_neg12v_ma": "https://bardsynthesizers.com/vacuform.html",
-      "power_5v_ma": "https://bardsynthesizers.com/vacuform.html",
       "depth_mm": "https://bardsynthesizers.com/vacuform.html"
      },
      "tags": [
@@ -15555,8 +15349,8 @@
    "pages": 89,
    "status": "done",
    "methods": {
-    "cache": 41,
-    "robots_unavailable": 48
+    "cache": 40,
+    "robots_unavailable": 49
    },
    "ambiguous_hp": 0,
    "resolved_by": "adapter:listing",
@@ -15579,95 +15373,19 @@
    "modules": [
     {
      "brand": "Behringer",
-     "name": "EURORACK 104",
-     "hp": 104,
+     "name": "EURORACK RACK",
+     "hp": 4,
      "power_12v_ma": null,
      "power_neg12v_ma": null,
      "power_5v_ma": null,
      "depth_mm": null,
-     "image_url": "https://cdn-media.empowertribe.com/d06b253e505e4fc9905f4c7d88060cb0/Image_BE_0720-AAN_EURORACK-104_Top_XL.png",
-     "source_url": "https://www.behringer.com/en/products/0720-AAN",
+     "image_url": "https://cdn-media.empowertribe.com/1a8e5f061e9b4218a8644c54a7874030/Image_BE_0720-ABJ_EURORACK-RACK_Front_XL.png",
+     "source_url": "https://www.behringer.com/en/products/0720-ABJ",
      "sources": {
-      "hp": "https://www.behringer.com/en/products/0720-AAN"
+      "hp": "https://www.behringer.com/en/products/0720-ABJ"
      },
      "tags": [],
-     "content_sha256": "aa50bb19413277e4dcfa04f831ca5c8d555d6f4c21dff0e67324ec19f801fadd",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "Behringer",
-     "name": "EURORACK EARS (70 HP)",
-     "hp": 70,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "https://cdn-media.empowertribe.com/c23c6555f99a4b7383b3ae0a833f2a0a/Image_BE_0720-ABK_EURORACK-EARS-70-HP_Front_XL.png",
-     "source_url": "https://www.behringer.com/en/products/0720-ABK",
-     "sources": {
-      "hp": "https://www.behringer.com/en/products/0720-ABK"
-     },
-     "tags": [],
-     "content_sha256": "435e2a49c0e7585a93df7672fd4defceeb9ef9f51c3a7c71713763bc10507e52",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "Behringer",
-     "name": "EURORACK EARS (80 HP)",
-     "hp": 80,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "https://cdn-media.empowertribe.com/a876098c06f7407087ae9cf9c3165979/Image_BE_0720-ABL_EURORACK-EARS-(80-HP)_Front_XL.png",
-     "source_url": "https://www.behringer.com/en/products/0720-ABL",
-     "sources": {
-      "hp": "https://www.behringer.com/en/products/0720-ABL"
-     },
-     "tags": [],
-     "content_sha256": "ac4fdabee1b52d0411f36b5bb8bf4b858fc86b5a9f4016136408c0dd92d31d10",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "Behringer",
-     "name": "EURORACK STAND (3-TIER)",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "https://cdn-media.empowertribe.com/6290f4f910854eafa263159a8fc01bed/Image_BE_0720-ABI_EURORACK-STAND-3-TIER_Front_XL.png",
-     "source_url": "https://www.behringer.com/en/products/0720-ABI",
-     "sources": {
-      "hp": "https://www.behringer.com/en/products/0720-ABI"
-     },
-     "tags": [],
-     "content_sha256": "765198742ba103737e45433726a2c7fa494dbcd59533b0e4c950cf1e36e37a08",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "Behringer",
-     "name": "NEUTRON",
-     "hp": 80,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "https://cdn-media.empowertribe.com/450978f51f1c457fb2ce78b2bd330e52/Image_BE_0718-AAB_NEUTRON_Top_XL.png",
-     "source_url": "https://www.behringer.com/en/products/0718-AAB",
-     "sources": {
-      "hp": "https://www.behringer.com/en/products/0718-AAB"
-     },
-     "tags": [],
-     "content_sha256": "de214e033c1d5c176790b17bced6f1719cbad13a79533d34c9111f1f0ed02a7d",
+     "content_sha256": "fcf4e81c64a3ea0c2c53c17150be84d5d3916c065ee17abfb3117cdc879929aa",
      "provenance": "OBSERVED",
      "extracted_by": "regex",
      "fetch_method": "cache"
@@ -15679,7 +15397,7 @@
    "methods": {
     "cache": 650
    },
-   "ambiguous_hp": 1,
+   "ambiguous_hp": 0,
    "resolved_by": "adapter:listing",
    "homepage": "https://www.behringer.com/",
    "path": "adapter:listing",
@@ -21145,44 +20863,6 @@
      "provenance": "OBSERVED",
      "extracted_by": "regex",
      "fetch_method": "cache"
-    },
-    {
-     "brand": "Doepfer",
-     "name": "A-100 Kofferversionen",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://www.doepfer.de/a100p_d.htm",
-     "sources": {
-      "hp": "https://www.doepfer.de/a100p_d.htm"
-     },
-     "tags": [],
-     "content_sha256": "57f45a152dcb3b2a2a3b4632c26ae4609f31e818c5c8c094de62acd64b8b36bc",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "Doepfer",
-     "name": "A-100 Geplante Module",
-     "hp": 48,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://www.doepfer.de/a100n_d.htm",
-     "sources": {
-      "hp": "https://www.doepfer.de/a100n_d.htm"
-     },
-     "tags": [],
-     "content_sha256": "5955dd19d9ebb793c776d079816fcef1bd44a3c02dbc34e9041b7067b70a1587",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
     }
    ],
    "unconfirmed": [],
@@ -21568,29 +21248,6 @@
      ],
      "fetch_method": "cache",
      "content_sha256": "2c44bbe2267695b935e28bbd5dc4dd25b47440a820a8e9c676ffafae6d14441c",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "DPW Design",
-     "name": "DC1, DC Filter, DIY",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "https://dpw.se/wp-content/uploads/2025/02/dpw_social_2025.jpg",
-     "source_url": "https://dpw.se/product/dc1-dc-filter/",
-     "sources": {
-      "hp": "https://dpw.se/product/dc1-dc-filter/"
-     },
-     "tags": [
-      "DC filter",
-      "power",
-      "DIY"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "cfc5e919c624b7093cd75d4fbd5970af5736b33011a8edf1f0fbed1235c4475a",
      "provenance": "OBSERVED",
      "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
     },
@@ -22898,29 +22555,6 @@
     },
     {
      "brand": "Endorphin.es",
-     "name": "SHUTTLE SYSTEM",
-     "hp": 84,
-     "power_12v_ma": 710,
-     "power_neg12v_ma": 500,
-     "power_5v_ma": 0,
-     "depth_mm": 42,
-     "image_url": null,
-     "source_url": "https://www.endorphin.es/modules/p/shuttle-system",
-     "sources": {
-      "hp": "https://www.endorphin.es/modules/p/shuttle-system",
-      "power_12v_ma": "https://www.endorphin.es/modules/p/shuttle-system",
-      "power_neg12v_ma": "https://www.endorphin.es/modules/p/shuttle-system",
-      "power_5v_ma": "https://www.endorphin.es/modules/p/shuttle-system",
-      "depth_mm": "https://www.endorphin.es/modules/p/shuttle-system"
-     },
-     "tags": [],
-     "content_sha256": "22ca08f7cc284103e33c8579e48ce43219ee5730418f97ab1dafa9ec2a8a6cbf",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "feed"
-    },
-    {
-     "brand": "Endorphin.es",
      "name": "COCKPIT 2",
      "hp": 6,
      "power_12v_ma": 75,
@@ -23238,10 +22872,10 @@
     }
    ],
    "unconfirmed": [],
-   "pages": 13,
+   "pages": 14,
    "status": "done",
    "methods": {
-    "cache": 13
+    "cache": 14
    },
    "ambiguous_hp": 10,
    "resolved_by": "adapter:squarespace",
@@ -26338,8 +25972,7 @@
    "pages": 143,
    "status": "done",
    "methods": {
-    "cache": 128,
-    "free_http": 15
+    "cache": 143
    },
    "ambiguous_hp": 0,
    "resolved_by": "v1_crawl",
@@ -28945,33 +28578,6 @@
      ],
      "fetch_method": "cache",
      "content_sha256": "bbf57ced0921b068b2861282536f5bb42415123cb5d4850b35b2b446969923bf",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "FKMG Circuits",
-     "name": "QUAID GIGASLOPE",
-     "hp": 52,
-     "power_12v_ma": 380,
-     "power_neg12v_ma": 30,
-     "power_5v_ma": null,
-     "depth_mm": 32,
-     "image_url": "http://busycircuits.com/cdn/shop/files/ALM047-01.png?v=1759766529",
-     "source_url": "https://busycircuits.com/products/alm047",
-     "sources": {
-      "hp": "https://busycircuits.com/products/alm047",
-      "power_12v_ma": "https://busycircuits.com/products/alm047",
-      "power_neg12v_ma": "https://busycircuits.com/products/alm047",
-      "depth_mm": "https://busycircuits.com/products/alm047"
-     },
-     "tags": [
-      "envelope",
-      "sequencer",
-      "LFO",
-      "quad"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "643117d48d38422e224432d1e100d92fb0665adc63068fcc8646341704a81a6b",
      "provenance": "OBSERVED",
      "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
     },
@@ -33280,7 +32886,7 @@
      "brand": "Ginko Synthese",
      "name": "Sampleslicer MKII",
      "hp": 16,
-     "power_12v_ma": null,
+     "power_12v_ma": 94,
      "power_neg12v_ma": 17.5,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -33288,6 +32894,7 @@
      "source_url": "https://www.ginkosynthese.com/product/555340/sampleslicer-mkii-assembled",
      "sources": {
       "hp": "https://www.ginkosynthese.com/product/555340/sampleslicer-mkii-assembled",
+      "power_12v_ma": "https://www.ginkosynthese.com/product/555340/sampleslicer-mkii-assembled",
       "power_neg12v_ma": "https://www.ginkosynthese.com/product/555340/sampleslicer-mkii-assembled",
       "depth_mm": "https://www.ginkosynthese.com/product/555340/sampleslicer-mkii-assembled"
      },
@@ -35096,6 +34703,32 @@
     },
     {
      "brand": "Hexinverter \u00c9lectronique",
+     "name": "Jupiter Storm",
+     "hp": 14,
+     "power_12v_ma": 30,
+     "power_neg12v_ma": 30,
+     "power_5v_ma": null,
+     "depth_mm": null,
+     "image_url": null,
+     "source_url": "http://www.hexinverter.net/jupiter-storm",
+     "sources": {
+      "hp": "http://www.hexinverter.net/jupiter-storm",
+      "power_12v_ma": "http://www.hexinverter.net/jupiter-storm",
+      "power_neg12v_ma": "http://www.hexinverter.net/jupiter-storm"
+     },
+     "tags": [
+      "VCO",
+      "noise",
+      "experimental",
+      "oscillator"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "c4f262413c6de7d08869094847f37a104f2ca086859abd58ef300d118719e1b3",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "Hexinverter \u00c9lectronique",
      "name": "Mutant Bassdrum",
      "hp": 13,
      "power_12v_ma": 55,
@@ -35497,29 +35130,6 @@
   {
    "brand": "Hinton Instruments",
    "modules": [
-    {
-     "brand": "Hinton Instruments",
-     "name": "MatrixMix\u2122",
-     "hp": 56,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://www.hinton-instruments.co.uk/paprod/modular/matrixmix/index.htm",
-     "sources": {
-      "hp": "https://www.hinton-instruments.co.uk/paprod/modular/matrixmix/index.htm"
-     },
-     "tags": [
-      "routing",
-      "matrix",
-      "summing"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "3b8079a264ed685858944df4a000d4852a4b2dd958b883bc3e13147ddbde5ef1",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
     {
      "brand": "Hinton Instruments",
      "name": "ModMix\u2122 II",
@@ -36593,7 +36203,7 @@
      "brand": "Humble Audio",
      "name": "Algo expander",
      "hp": 4,
-     "power_12v_ma": 145,
+     "power_12v_ma": null,
      "power_neg12v_ma": 13,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -36601,7 +36211,6 @@
      "source_url": "https://humble.audio/products/algo",
      "sources": {
       "hp": "https://humble.audio/products/algo",
-      "power_12v_ma": "https://humble.audio/products/algo",
       "power_neg12v_ma": "https://humble.audio/products/algo",
       "depth_mm": "https://humble.audio/products/algo"
      },
@@ -38688,50 +38297,6 @@
     },
     {
      "brand": "Jake's Custom Shop",
-     "name": "Clock and Musical Divider",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://jakescustomshop.com/Modules/CLKandMusic-Listing.html",
-     "sources": {
-      "hp": "https://jakescustomshop.com/Modules/CLKandMusic-Listing.html"
-     },
-     "tags": [
-      "clock",
-      "divider"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "e8115468c698c8eff283d3d2427493f59b40c5e72a1a9a17f4d822e0e36c58be",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Jake's Custom Shop",
-     "name": "Snare Drum & High Hat Eurorack Module",
-     "hp": 104,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://jakescustomshop.com/Modules/SDHH-Listing.html",
-     "sources": {
-      "hp": "https://jakescustomshop.com/Modules/SDHH-Listing.html"
-     },
-     "tags": [
-      "drum",
-      "snare"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "f557818c7198bff12ac457233cd9ed1b608a768d899afae0289ff6201fd08775",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Jake's Custom Shop",
      "name": "Kick Drum Pro CV",
      "hp": 6,
      "power_12v_ma": null,
@@ -39620,7 +39185,7 @@
      "brand": "Joranalogue Audio Design",
      "name": "Dim 2",
      "hp": 4,
-     "power_12v_ma": 500,
+     "power_12v_ma": 150,
      "power_neg12v_ma": 5,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -40181,37 +39746,12 @@
   },
   {
    "brand": "Laboratorio Elettronico Popolare",
-   "modules": [
-    {
-     "brand": "Laboratorio Elettronico Popolare",
-     "name": "ArpoVoce",
-     "hp": 60,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "https://www.leploop.org/wp-content/uploads/2024/04/SAM3236.jpg",
-     "source_url": "https://www.leploop.org/2024/04/20/the-arpovoce-module-prototype/",
-     "sources": {
-      "hp": "https://www.leploop.org/2024/04/20/the-arpovoce-module-prototype/"
-     },
-     "tags": [
-      "oscillator",
-      "VCA",
-      "envelope",
-      "synth voice"
-     ],
-     "fetch_method": "free_http",
-     "content_sha256": "1cf000820306eb40ac275e87ab16db93cb57413ca2d2f6f415001398753497cc",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    }
-   ],
+   "modules": [],
    "unconfirmed": [],
    "pages": 8,
    "status": "done",
    "methods": {
-    "free_http": 8
+    "cache": 8
    },
    "ambiguous_hp": 0,
    "resolved_by": "model_pick_confirmed",
@@ -41965,30 +41505,6 @@
   {
    "brand": "Mad Rooster Lab",
    "modules": [
-    {
-     "brand": "Mad Rooster Lab",
-     "name": "Meng Qi",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "https://modularsynthlab.com/wp-content/uploads/2020/08/Mneg-Qi-please-Exists-2_modularsytnhlab_001.jpg",
-     "source_url": "https://modularsynthlab.com/product/meng-qi-please-exist-2-dual-transformer-i-o/",
-     "sources": {
-      "hp": "https://modularsynthlab.com/product/meng-qi-please-exist-2-dual-transformer-i-o/"
-     },
-     "tags": [
-      "interface",
-      "transformer",
-      "I/O",
-      "passive"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "9a757853da5b1ebab81aabd78e9130528f17c379843afce4341480d2844821bb",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
     {
      "brand": "Mad Rooster Lab",
      "name": "Meng Qi DPLPG Dual Passive Low Pass Gate",
@@ -47570,33 +47086,6 @@
     },
     {
      "brand": "Michigan Synth Works",
-     "name": "XVI Euro 16 Channel Fader Bank with CV, I2C, and MIDI",
-     "hp": 44,
-     "power_12v_ma": 90,
-     "power_neg12v_ma": 80,
-     "power_5v_ma": null,
-     "depth_mm": 20,
-     "image_url": "http://michigansynthworks.com/cdn/shop/products/2020-07-27005_1200x1200.jpg?v=1595889713",
-     "source_url": "https://michigansynthworks.com/products/xvi-16-channel-fader-bank-with-cv-i2c-and-midi",
-     "sources": {
-      "hp": "https://michigansynthworks.com/products/xvi-16-channel-fader-bank-with-cv-i2c-and-midi",
-      "power_12v_ma": "https://michigansynthworks.com/products/xvi-16-channel-fader-bank-with-cv-i2c-and-midi",
-      "power_neg12v_ma": "https://michigansynthworks.com/products/xvi-16-channel-fader-bank-with-cv-i2c-and-midi",
-      "depth_mm": "https://michigansynthworks.com/products/xvi-16-channel-fader-bank-with-cv-i2c-and-midi"
-     },
-     "tags": [
-      "fader bank",
-      "CV",
-      "MIDI",
-      "I2C"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "fa3383c0ff554a156dd6a2a9e1709c95a2354f1b14cdf7b8e7666950dfd450bb",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Michigan Synth Works",
      "name": "Typhoon",
      "hp": 16,
      "power_12v_ma": null,
@@ -47894,30 +47383,6 @@
      ],
      "fetch_method": "cache",
      "content_sha256": "39ff58c810b21545b90d7b62800f42636677d2a12d9fd9b14575f2352137a357",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Michigan Synth Works",
-     "name": "MSW-820",
-     "hp": 46,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://michigansynthworks.com/cdn/shop/files/PXL_20260811_175154944_1200x1200.jpg?v=1786555299",
-     "source_url": "https://michigansynthworks.com/products/msw-820-analogue-synthesizer",
-     "sources": {
-      "hp": "https://michigansynthworks.com/products/msw-820-analogue-synthesizer"
-     },
-     "tags": [
-      "oscillator",
-      "filter",
-      "envelope",
-      "LFO"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "4c3063176c31c103272d186c5eb23aff994a52ea6e43db0b910a402d5d2c03a7",
      "provenance": "OBSERVED",
      "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
     }
@@ -48797,7 +48262,7 @@
      "brand": "Modulaire Maritime",
      "name": "Klaviatura 2",
      "hp": 24,
-     "power_12v_ma": 46,
+     "power_12v_ma": null,
      "power_neg12v_ma": 11,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -48805,7 +48270,6 @@
      "source_url": "https://www.modulaire-maritime.com/product-page/klaviatura-2",
      "sources": {
       "hp": "https://www.modulaire-maritime.com/product-page/klaviatura-2",
-      "power_12v_ma": "https://www.modulaire-maritime.com/product-page/klaviatura-2",
       "power_neg12v_ma": "https://www.modulaire-maritime.com/product-page/klaviatura-2"
      },
      "tags": [
@@ -50971,14 +50435,15 @@
      "brand": "Mutable instruments",
      "name": "Beads",
      "hp": 14,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 100,
+     "power_12v_ma": 100,
+     "power_neg12v_ma": 10,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/beads/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/beads/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/beads/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/beads/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/beads/"
      },
@@ -50992,14 +50457,15 @@
      "brand": "Mutable instruments",
      "name": "Blades",
      "hp": 18,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 150,
+     "power_12v_ma": 150,
+     "power_neg12v_ma": 140,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/blades/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/blades/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/blades/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/blades/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/blades/"
      },
@@ -51013,7 +50479,7 @@
      "brand": "Mutable instruments",
      "name": "Blinds",
      "hp": 12,
-     "power_12v_ma": null,
+     "power_12v_ma": 70,
      "power_neg12v_ma": 70,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -51021,6 +50487,7 @@
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/blinds/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/blinds/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/blinds/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/blinds/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/blinds/"
      },
@@ -51034,14 +50501,15 @@
      "brand": "Mutable instruments",
      "name": "Braids",
      "hp": 16,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 100,
+     "power_12v_ma": 100,
+     "power_neg12v_ma": 15,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/braids/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/braids/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/braids/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/braids/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/braids/"
      },
@@ -51055,14 +50523,15 @@
      "brand": "Mutable instruments",
      "name": "Branches",
      "hp": 6,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 10,
+     "power_12v_ma": 10,
+     "power_neg12v_ma": 1,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/branches/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/branches/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/branches/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/branches/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/branches/"
      },
@@ -51076,14 +50545,15 @@
      "brand": "Mutable instruments",
      "name": "Clouds",
      "hp": 18,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 120,
+     "power_12v_ma": 120,
+     "power_neg12v_ma": 10,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/clouds/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/clouds/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/clouds/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/clouds/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/clouds/"
      },
@@ -51097,7 +50567,7 @@
      "brand": "Mutable instruments",
      "name": "Ears",
      "hp": 4,
-     "power_12v_ma": null,
+     "power_12v_ma": 5,
      "power_neg12v_ma": 5,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -51105,6 +50575,7 @@
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ears/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ears/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ears/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ears/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ears/"
      },
@@ -51118,14 +50589,15 @@
      "brand": "Mutable instruments",
      "name": "Edges",
      "hp": 20,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 70,
+     "power_12v_ma": 70,
+     "power_neg12v_ma": 20,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/edges/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/edges/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/edges/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/edges/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/edges/"
      },
@@ -51139,14 +50611,15 @@
      "brand": "Mutable instruments",
      "name": "Elements",
      "hp": 34,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 130,
+     "power_12v_ma": 130,
+     "power_neg12v_ma": 10,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/elements/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/elements/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/elements/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/elements/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/elements/"
      },
@@ -51160,14 +50633,15 @@
      "brand": "Mutable instruments",
      "name": "Frames",
      "hp": 18,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 90,
+     "power_12v_ma": 90,
+     "power_neg12v_ma": 30,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/frames/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/frames/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/frames/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/frames/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/frames/"
      },
@@ -51181,14 +50655,15 @@
      "brand": "Mutable instruments",
      "name": "Grids",
      "hp": 16,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 25,
+     "power_12v_ma": 25,
+     "power_neg12v_ma": 1,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/grids/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/grids/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/grids/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/grids/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/grids/"
      },
@@ -51202,7 +50677,7 @@
      "brand": "Mutable instruments",
      "name": "Kinks",
      "hp": 4,
-     "power_12v_ma": null,
+     "power_12v_ma": 25,
      "power_neg12v_ma": 25,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -51210,6 +50685,7 @@
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/kinks/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/kinks/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/kinks/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/kinks/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/kinks/"
      },
@@ -51223,7 +50699,7 @@
      "brand": "Mutable instruments",
      "name": "Links",
      "hp": 4,
-     "power_12v_ma": null,
+     "power_12v_ma": 15,
      "power_neg12v_ma": 15,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -51231,6 +50707,7 @@
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/links/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/links/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/links/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/links/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/links/"
      },
@@ -51244,14 +50721,15 @@
      "brand": "Mutable instruments",
      "name": "Marbles",
      "hp": 18,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 80,
+     "power_12v_ma": 80,
+     "power_neg12v_ma": 20,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/"
      },
@@ -51265,14 +50743,15 @@
      "brand": "Mutable instruments",
      "name": "Peaks",
      "hp": 8,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 60,
+     "power_12v_ma": 60,
+     "power_neg12v_ma": 2,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/peaks/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/peaks/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/peaks/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/peaks/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/peaks/"
      },
@@ -51286,14 +50765,15 @@
      "brand": "Mutable instruments",
      "name": "Plaits",
      "hp": 12,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 50,
+     "power_12v_ma": 50,
+     "power_neg12v_ma": 5,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/plaits/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/plaits/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/plaits/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/plaits/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/plaits/"
      },
@@ -51307,14 +50787,15 @@
      "brand": "Mutable instruments",
      "name": "Rings",
      "hp": 14,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 110,
+     "power_12v_ma": 110,
+     "power_neg12v_ma": 5,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/rings/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/rings/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/rings/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/rings/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/rings/"
      },
@@ -51328,7 +50809,7 @@
      "brand": "Mutable instruments",
      "name": "Ripples_2020",
      "hp": 8,
-     "power_12v_ma": null,
+     "power_12v_ma": 35,
      "power_neg12v_ma": 35,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -51336,6 +50817,7 @@
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_2020/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_2020/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_2020/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_2020/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_2020/"
      },
@@ -51349,7 +50831,7 @@
      "brand": "Mutable instruments",
      "name": "Ripples_Original",
      "hp": 8,
-     "power_12v_ma": null,
+     "power_12v_ma": 35,
      "power_neg12v_ma": 35,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -51357,6 +50839,7 @@
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_original/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_original/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_original/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_original/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_original/"
      },
@@ -51370,7 +50853,7 @@
      "brand": "Mutable instruments",
      "name": "Shades_2020",
      "hp": 6,
-     "power_12v_ma": null,
+     "power_12v_ma": 15,
      "power_neg12v_ma": 15,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -51378,6 +50861,7 @@
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shades_2020/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shades_2020/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shades_2020/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shades_2020/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shades_2020/"
      },
@@ -51391,7 +50875,7 @@
      "brand": "Mutable instruments",
      "name": "Shades_Original",
      "hp": 6,
-     "power_12v_ma": null,
+     "power_12v_ma": 15,
      "power_neg12v_ma": 15,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -51399,6 +50883,7 @@
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shades_original/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shades_original/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shades_original/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shades_original/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shades_original/"
      },
@@ -51412,7 +50897,7 @@
      "brand": "Mutable instruments",
      "name": "Shelves",
      "hp": 18,
-     "power_12v_ma": null,
+     "power_12v_ma": 75,
      "power_neg12v_ma": 75,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -51420,6 +50905,7 @@
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shelves/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shelves/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shelves/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shelves/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shelves/"
      },
@@ -51433,14 +50919,15 @@
      "brand": "Mutable instruments",
      "name": "Stages",
      "hp": 14,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 80,
+     "power_12v_ma": 80,
+     "power_neg12v_ma": 20,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/stages/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/stages/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/stages/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/stages/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/stages/"
      },
@@ -51454,14 +50941,15 @@
      "brand": "Mutable instruments",
      "name": "Streams",
      "hp": 12,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 100,
+     "power_12v_ma": 100,
+     "power_neg12v_ma": 30,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/streams/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/streams/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/streams/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/streams/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/streams/"
      },
@@ -51475,14 +50963,15 @@
      "brand": "Mutable instruments",
      "name": "Tides_2018",
      "hp": 14,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 50,
+     "power_12v_ma": 50,
+     "power_neg12v_ma": 20,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_2018/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_2018/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_2018/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_2018/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_2018/"
      },
@@ -51496,14 +50985,15 @@
      "brand": "Mutable instruments",
      "name": "Tides_Original",
      "hp": 14,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 55,
+     "power_12v_ma": 55,
+     "power_neg12v_ma": 5,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_original/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_original/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_original/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_original/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_original/"
      },
@@ -51517,7 +51007,7 @@
      "brand": "Mutable instruments",
      "name": "Veils_2020",
      "hp": 10,
-     "power_12v_ma": null,
+     "power_12v_ma": 50,
      "power_neg12v_ma": 50,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -51525,6 +51015,7 @@
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/veils_2020/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/veils_2020/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/veils_2020/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/veils_2020/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/veils_2020/"
      },
@@ -51538,7 +51029,7 @@
      "brand": "Mutable instruments",
      "name": "Veils_Original",
      "hp": 12,
-     "power_12v_ma": null,
+     "power_12v_ma": 50,
      "power_neg12v_ma": 50,
      "power_5v_ma": null,
      "depth_mm": 25,
@@ -51546,6 +51037,7 @@
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/veils_original/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/veils_original/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/veils_original/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/veils_original/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/veils_original/"
      },
@@ -51559,14 +51051,15 @@
      "brand": "Mutable instruments",
      "name": "Warps",
      "hp": 10,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 110,
+     "power_12v_ma": 110,
+     "power_neg12v_ma": 5,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/warps/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/warps/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/warps/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/warps/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/warps/"
      },
@@ -51580,14 +51073,15 @@
      "brand": "Mutable instruments",
      "name": "Yarns",
      "hp": 12,
-     "power_12v_ma": null,
-     "power_neg12v_ma": 60,
+     "power_12v_ma": 60,
+     "power_neg12v_ma": 2,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/yarns/",
      "sources": {
       "hp": "https://pichenettes.github.io/mutable-instruments-documentation/modules/yarns/",
+      "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/yarns/",
       "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/yarns/",
       "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/yarns/"
      },
@@ -55724,54 +55218,6 @@
     },
     {
      "brand": "Nonlinearcircuits",
-     "name": "CellF Voice",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://static1.squarespace.com/static/5e6e99e8bd2f8a6de8454feb/5e753b733558ab3e79ff1235/6704fafabe5a3f64716bcb7d/1787919560494/Voice_store.png?format=1500w",
-     "source_url": "https://www.nonlinearcircuits.com/modules/p/cellfvoice",
-     "sources": {
-      "hp": "https://www.nonlinearcircuits.com/modules/p/cellfvoice"
-     },
-     "tags": [
-      "VCO",
-      "LFO",
-      "LPG",
-      "VCA"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "1f88b8d38889769ebdb936491698b129711e3afebf715d81c1db673e86e62832",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Nonlinearcircuits",
-     "name": "CellF Action",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://static1.squarespace.com/static/5e6e99e8bd2f8a6de8454feb/5e753b733558ab3e79ff1235/670533771b174e1d0cc85d92/1787919594187/action_Store.png?format=1500w",
-     "source_url": "https://www.nonlinearcircuits.com/modules/p/cellfaction",
-     "sources": {
-      "hp": "https://www.nonlinearcircuits.com/modules/p/cellfaction"
-     },
-     "tags": [
-      "clock divider",
-      "logic",
-      "vco",
-      "chaos"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "284eb0825db1e20e5ad806202f64cc522ee4b1294a8aa8ddb1297c18f70267f0",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Nonlinearcircuits",
      "name": "George",
      "hp": 4,
      "power_12v_ma": null,
@@ -56327,30 +55773,6 @@
      ],
      "fetch_method": "cache",
      "content_sha256": "9de44aaf61833c990240b2de56820e1963162f246d19941cdafe1b8d2d5d97b9",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Nonlinearcircuits",
-     "name": "36 channel VC comb filter",
-     "hp": 80,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://static1.squarespace.com/static/5e6e99e8bd2f8a6de8454feb/5e753b733558ab3e79ff1235/6a6084a82bc8bb2399fb7350/1791577383399/spectrum+shaper_store.png?format=1500w",
-     "source_url": "https://www.nonlinearcircuits.com/modules/p/spectrumshaper",
-     "sources": {
-      "hp": "https://www.nonlinearcircuits.com/modules/p/spectrumshaper"
-     },
-     "tags": [
-      "comb filter",
-      "VCA",
-      "noise gate",
-      "DIY"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "e70bacf84681231de762096bea372bf661cce6b329885ef5916bbeeace93d65e",
      "provenance": "OBSERVED",
      "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
     },
@@ -57877,6 +57299,30 @@
     },
     {
      "brand": "Nonlinearcircuits",
+     "name": "I can\u2019t believe it\u2019s not a VCO",
+     "hp": 8,
+     "power_12v_ma": null,
+     "power_neg12v_ma": null,
+     "power_5v_ma": null,
+     "depth_mm": null,
+     "image_url": "http://static1.squarespace.com/static/5e6e99e8bd2f8a6de8454feb/5e753b733558ab3e79ff1235/5e753e12bf83cf2bf55469ec/1787689223854/icbinavco.jpg?format=1500w",
+     "source_url": "https://www.nonlinearcircuits.com/modules/p/i-cant-believe-its-not-a-vco",
+     "sources": {
+      "hp": "https://www.nonlinearcircuits.com/modules/p/i-cant-believe-its-not-a-vco"
+     },
+     "tags": [
+      "VCF",
+      "filter",
+      "exciter",
+      "VCA"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "2b6362e71f6a05ae2a70ff928402f5cb91f27ea63a52696a2810392db922cd06",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "Nonlinearcircuits",
      "name": "Hyperchaos Deluxe",
      "hp": 10,
      "power_12v_ma": null,
@@ -58618,14 +58064,60 @@
      "content_sha256": "a3328ff52684637d6d98f9fb14d24b133300a672d1cd8ae866d8e52454eddb65",
      "provenance": "OBSERVED",
      "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "Nonlinearcircuits",
+     "name": "32:1",
+     "hp": 14,
+     "power_12v_ma": null,
+     "power_neg12v_ma": null,
+     "power_5v_ma": null,
+     "depth_mm": null,
+     "image_url": "http://static1.squarespace.com/static/5e6e99e8bd2f8a6de8454feb/5e753b733558ab3e79ff1235/5e753e12bf83cf2bf55469c9/1787689223786/32to1.jpg?format=1500w",
+     "source_url": "https://www.nonlinearcircuits.com/modules/p/32to1",
+     "sources": {
+      "hp": "https://www.nonlinearcircuits.com/modules/p/32to1"
+     },
+     "tags": [
+      "mux",
+      "counter",
+      "switch"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "bc22b7fc6f47e4ee8f5f88abc2dd2eb2557890cc4a2056b20b7363be71b7a1ff",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
+    },
+    {
+     "brand": "Nonlinearcircuits",
+     "name": "1050Mixseq",
+     "hp": 16,
+     "power_12v_ma": null,
+     "power_neg12v_ma": null,
+     "power_5v_ma": null,
+     "depth_mm": null,
+     "image_url": "http://static1.squarespace.com/static/5e6e99e8bd2f8a6de8454feb/5e753b733558ab3e79ff1235/5e753e12bf83cf2bf55469c8/1787689223784/1050mixseq.jpg?format=1500w",
+     "source_url": "https://www.nonlinearcircuits.com/modules/p/1050mixseq",
+     "sources": {
+      "hp": "https://www.nonlinearcircuits.com/modules/p/1050mixseq"
+     },
+     "tags": [
+      "sequencer",
+      "mixer",
+      "switch",
+      "rectifier"
+     ],
+     "fetch_method": "cache",
+     "content_sha256": "469a5653e4c89155e7285aede8a3e3f3e0c6d3677ea8eb9538bdc65f6dd69c82",
+     "provenance": "OBSERVED",
+     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
     }
    ],
    "unconfirmed": [],
    "pages": 156,
    "status": "done",
    "methods": {
-    "cache": 154,
-    "robots_unavailable": 2
+    "cache": 156
    },
    "ambiguous_hp": 0,
    "resolved_by": "v1_crawl",
@@ -59244,30 +58736,6 @@
   {
    "brand": "Olitronik_lab",
    "modules": [
-    {
-     "brand": "Olitronik_lab",
-     "name": "Meng Qi",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "https://modularsynthlab.com/wp-content/uploads/2020/08/Mneg-Qi-please-Exists-2_modularsytnhlab_001.jpg",
-     "source_url": "https://modularsynthlab.com/product/meng-qi-please-exist-2-dual-transformer-i-o/",
-     "sources": {
-      "hp": "https://modularsynthlab.com/product/meng-qi-please-exist-2-dual-transformer-i-o/"
-     },
-     "tags": [
-      "interface",
-      "transformer",
-      "I/O",
-      "passive"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "9a757853da5b1ebab81aabd78e9130528f17c379843afce4341480d2844821bb",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
     {
      "brand": "Olitronik_lab",
      "name": "Meng Qi DPLPG Dual Passive Low Pass Gate",
@@ -65425,29 +64893,6 @@
     },
     {
      "brand": "Pusherman",
-     "name": "LANGE ANNA",
-     "hp": 82,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "http://pushermanproductions.com/cdn/shop/files/20220121_153129-scaled.jpg?v=1777398455",
-     "source_url": "https://pushermanproductions.com/products/st-modular-lange-anna-1u-intellijel",
-     "sources": {
-      "hp": "https://pushermanproductions.com/products/st-modular-lange-anna-1u-intellijel"
-     },
-     "tags": [
-      "oscillator",
-      "drum",
-      "synth"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "ba8f52d6350faacbaaa74968740ad588e0e744f737654a130aa235101d4219bf",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Pusherman",
      "name": "MULT / dual buffered multiple / 3 HP",
      "hp": 3,
      "power_12v_ma": null,
@@ -65614,8 +65059,7 @@
    "pages": 245,
    "status": "done",
    "methods": {
-    "cache": 209,
-    "free_http": 36
+    "cache": 245
    },
    "ambiguous_hp": 0,
    "resolved_by": "v1_crawl",
@@ -66419,34 +65863,6 @@
   {
    "brand": "Rat King Modular",
    "modules": [
-    {
-     "brand": "Rat King Modular",
-     "name": "Alchemical Audio Touch Controller",
-     "hp": 60,
-     "power_12v_ma": 35,
-     "power_neg12v_ma": 0,
-     "power_5v_ma": 0,
-     "depth_mm": 17,
-     "image_url": null,
-     "source_url": "https://ratkingmodular.com/alchemical-audio-touch-controller/",
-     "sources": {
-      "hp": "https://ratkingmodular.com/alchemical-audio-touch-controller/",
-      "power_12v_ma": "https://ratkingmodular.com/alchemical-audio-touch-controller/",
-      "power_neg12v_ma": "https://ratkingmodular.com/alchemical-audio-touch-controller/",
-      "power_5v_ma": "https://ratkingmodular.com/alchemical-audio-touch-controller/",
-      "depth_mm": "https://ratkingmodular.com/alchemical-audio-touch-controller/"
-     },
-     "tags": [
-      "touch controller",
-      "keyboard",
-      "MIDI",
-      "CV"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "83bdc62a2f426ada52bc57b9afcb0708700b13784ae208b7d674b491741a0944",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
     {
      "brand": "Rat King Modular",
      "name": "CELL",
@@ -68954,7 +68370,7 @@
      "name": "Boundary",
      "hp": 12,
      "power_12v_ma": 112,
-     "power_neg12v_ma": 112,
+     "power_neg12v_ma": 59,
      "power_5v_ma": null,
      "depth_mm": 25,
      "image_url": null,
@@ -72758,54 +72174,6 @@
      ],
      "fetch_method": "cache",
      "content_sha256": "76b5cf95b49ac1dc587d03bf2c2b0665bbd9c1e74b3df6c672794196ee46eb3f",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Soundmachines",
-     "name": "(arches)",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://www.sound-machines.it/product/arches/",
-     "sources": {
-      "hp": "https://www.sound-machines.it/product/arches/"
-     },
-     "tags": [
-      "tactile",
-      "controller",
-      "eurorack",
-      "midi"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "2629c52a80549db5a40b7d9c7e056e12ce6a4d74f27ebe3a4b193518865397f8",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Soundmachines",
-     "name": "Modul\u00f6r114 Black Edition",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://www.sound-machines.it/product/modulor114/",
-     "sources": {
-      "hp": "https://www.sound-machines.it/product/modulor114/"
-     },
-     "tags": [
-      "analog",
-      "modular",
-      "synthesizer",
-      "all-in-one"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "d46508fca65b334a0c30dcd5d12c5a5266e83dc5bbb9446cdb5be3e71ba503c3",
      "provenance": "OBSERVED",
      "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
     },
@@ -78914,33 +78282,6 @@
     },
     {
      "brand": "Swizzle Circuits",
-     "name": "QUAID GIGASLOPE",
-     "hp": 52,
-     "power_12v_ma": 380,
-     "power_neg12v_ma": 30,
-     "power_5v_ma": null,
-     "depth_mm": 32,
-     "image_url": "http://busycircuits.com/cdn/shop/files/ALM047-01.png?v=1759766529",
-     "source_url": "https://busycircuits.com/products/alm047",
-     "sources": {
-      "hp": "https://busycircuits.com/products/alm047",
-      "power_12v_ma": "https://busycircuits.com/products/alm047",
-      "power_neg12v_ma": "https://busycircuits.com/products/alm047",
-      "depth_mm": "https://busycircuits.com/products/alm047"
-     },
-     "tags": [
-      "envelope",
-      "sequencer",
-      "LFO",
-      "quad"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "643117d48d38422e224432d1e100d92fb0665adc63068fcc8646341704a81a6b",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Swizzle Circuits",
      "name": "Beast's Chalkboard",
      "hp": 6,
      "power_12v_ma": 25,
@@ -80629,33 +79970,6 @@
     },
     {
      "brand": "System80",
-     "name": "880",
-     "hp": 60,
-     "power_12v_ma": 110,
-     "power_neg12v_ma": 70,
-     "power_5v_ma": null,
-     "depth_mm": 28,
-     "image_url": null,
-     "source_url": "https://system80.net/product/880/",
-     "sources": {
-      "hp": "https://system80.net/product/880/",
-      "power_12v_ma": "https://system80.net/product/880/",
-      "power_neg12v_ma": "https://system80.net/product/880/",
-      "depth_mm": "https://system80.net/product/880/"
-     },
-     "tags": [
-      "drum",
-      "sequencer",
-      "analog",
-      "MIDI"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "fbf3cff2a358e9a42348d8ec2277bf91552b7e24a824f1dc02fc155359f8fc94",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "System80",
      "name": "810",
      "hp": 30,
      "power_12v_ma": 55,
@@ -80846,32 +80160,7 @@
   },
   {
    "brand": "T-Rex",
-   "modules": [
-    {
-     "brand": "T-Rex",
-     "name": "Tape Echo Replicator Module",
-     "hp": 44,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://www.t-rex-effects.com/replicator-module",
-     "sources": {
-      "hp": "https://www.t-rex-effects.com/replicator-module"
-     },
-     "tags": [
-      "delay",
-      "tape echo",
-      "CV control",
-      "analog"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "85acc8d4888cda93886707a2005ad7ff8a653e461c8b50422616ddb32a9d9b93",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    }
-   ],
+   "modules": [],
    "unconfirmed": [],
    "pages": 9,
    "status": "done",
@@ -81983,33 +81272,6 @@
      ],
      "fetch_method": "cache",
      "content_sha256": "e214225830e4f95321816b81e87c5503e96f15ff79b5ebc4a94bdda2a162d5e8",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "TLM Audio",
-     "name": "LANGE ANNA",
-     "hp": 84,
-     "power_12v_ma": 65,
-     "power_neg12v_ma": 50,
-     "power_5v_ma": null,
-     "depth_mm": 28,
-     "image_url": "https://static.wixstatic.com/media/3ab732_6d183b69ca22428eaae97af9b7d3cefd~mv2.png/v1/fit/w_500,h_500,q_90/file.png",
-     "source_url": "https://www.tlm-audio.com/product-page/st-modular-lange-anna-1u-buffered-multiple",
-     "sources": {
-      "hp": "https://www.tlm-audio.com/product-page/st-modular-lange-anna-1u-buffered-multiple",
-      "power_12v_ma": "https://www.tlm-audio.com/product-page/st-modular-lange-anna-1u-buffered-multiple",
-      "power_neg12v_ma": "https://www.tlm-audio.com/product-page/st-modular-lange-anna-1u-buffered-multiple",
-      "depth_mm": "https://www.tlm-audio.com/product-page/st-modular-lange-anna-1u-buffered-multiple"
-     },
-     "tags": [
-      "buffered multiple",
-      "attenuverter",
-      "voltage source",
-      "1U"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "135d1a01c86fb76ed8730b67a58c1fc24f223f7a686cc90b61d55a6a6898d45d",
      "provenance": "OBSERVED",
      "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
     },
@@ -84668,32 +83930,6 @@
      "content_sha256": "81c4845c18f118463f96d6487c204dd9c57741d57210978d385c418086a509df",
      "provenance": "OBSERVED",
      "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Tronix-Audio",
-     "name": "MFE 303",
-     "hp": 44,
-     "power_12v_ma": 58,
-     "power_neg12v_ma": 58,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "https://tronix-audio.de/wp-content/uploads/2023/05/IMG_4266_Legacy-scaled-webp-768x451.webp",
-     "source_url": "https://tronix-audio.de/mfe-303/",
-     "sources": {
-      "hp": "https://tronix-audio.de/mfe-303/",
-      "power_12v_ma": "https://tronix-audio.de/mfe-303/",
-      "power_neg12v_ma": "https://tronix-audio.de/mfe-303/"
-     },
-     "tags": [
-      "filter",
-      "eq",
-      "stereo",
-      "analog"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "107859e5e89c9e44f39d620c1cebc196814102b5f8d86e3a35b2044e8b4d3075",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
     }
    ],
    "unconfirmed": [],
@@ -85468,30 +84704,6 @@
     },
     {
      "brand": "VBrazil Systems",
-     "name": "Lizard 1 VCO",
-     "hp": 57,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "https://www.vbrazilsystems.com/uploads/4/9/1/4/49142971/2111785.jpg?398",
-     "source_url": "https://www.vbrazilsystems.com/-lizard-1-vco.html",
-     "sources": {
-      "hp": "https://www.vbrazilsystems.com/-lizard-1-vco.html"
-     },
-     "tags": [
-      "VCO",
-      "VCLFO",
-      "hybrid",
-      "oscillator"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "ec9550b35edd9a83c96156435194ed349e9c8cddf0416167c7449c462364b3fe",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "VBrazil Systems",
      "name": "Mixer",
      "hp": 8,
      "power_12v_ma": null,
@@ -85784,7 +84996,7 @@
      "brand": "Velectronic",
      "name": "A-Envelope",
      "hp": 22,
-     "power_12v_ma": 245,
+     "power_12v_ma": null,
      "power_neg12v_ma": null,
      "power_5v_ma": 170,
      "depth_mm": null,
@@ -85792,7 +85004,6 @@
      "source_url": "https://www.velectronic.net/products/associative-quadruple-envelope",
      "sources": {
       "hp": "https://www.velectronic.net/products/associative-quadruple-envelope",
-      "power_12v_ma": "https://www.velectronic.net/products/associative-quadruple-envelope",
       "power_5v_ma": "https://www.velectronic.net/products/associative-quadruple-envelope"
      },
      "tags": [
@@ -85844,7 +85055,7 @@
      "name": "Amp & Tone (2020 Version)",
      "hp": 10,
      "power_12v_ma": 85,
-     "power_neg12v_ma": 85,
+     "power_neg12v_ma": 83,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -85865,7 +85076,7 @@
      "name": "Bark Filter Processor",
      "hp": 34,
      "power_12v_ma": 210,
-     "power_neg12v_ma": 210,
+     "power_neg12v_ma": 185,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -85886,7 +85097,7 @@
      "name": "Complex Oscillator",
      "hp": 32,
      "power_12v_ma": 70,
-     "power_neg12v_ma": 70,
+     "power_neg12v_ma": 50,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -85907,7 +85118,7 @@
      "name": "Control Voltage Processor",
      "hp": 18,
      "power_12v_ma": 85,
-     "power_neg12v_ma": 85,
+     "power_neg12v_ma": 83,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -85928,7 +85139,7 @@
      "name": "Dual Four Pole",
      "hp": 21,
      "power_12v_ma": 40,
-     "power_neg12v_ma": 40,
+     "power_neg12v_ma": 10,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -85949,7 +85160,7 @@
      "name": "Foundation Oscillator",
      "hp": 12,
      "power_12v_ma": 70,
-     "power_neg12v_ma": 70,
+     "power_neg12v_ma": 63,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -85970,7 +85181,7 @@
      "name": "Haas Zone Processor",
      "hp": 28,
      "power_12v_ma": 110,
-     "power_neg12v_ma": 110,
+     "power_neg12v_ma": 55,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -85991,7 +85202,7 @@
      "name": "Harmonic Oscillator",
      "hp": 32,
      "power_12v_ma": 120,
-     "power_neg12v_ma": 120,
+     "power_neg12v_ma": 90,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -86012,7 +85223,7 @@
      "name": "Mini Horse",
      "hp": 42,
      "power_12v_ma": 140,
-     "power_neg12v_ma": 140,
+     "power_neg12v_ma": 115,
      "power_5v_ma": null,
      "depth_mm": 15,
      "image_url": null,
@@ -86034,7 +85245,7 @@
      "name": "Multi-Delay Processor",
      "hp": 28,
      "power_12v_ma": 290,
-     "power_neg12v_ma": 290,
+     "power_neg12v_ma": 90,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -86055,7 +85266,7 @@
      "name": "Multi-Envelope",
      "hp": 22,
      "power_12v_ma": 90,
-     "power_neg12v_ma": 90,
+     "power_neg12v_ma": 60,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -86076,7 +85287,7 @@
      "name": "Noise & Filter",
      "hp": 4,
      "power_12v_ma": 85,
-     "power_neg12v_ma": 85,
+     "power_neg12v_ma": 40,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -86097,7 +85308,7 @@
      "name": "Polyphonic Envelope",
      "hp": 22,
      "power_12v_ma": 75,
-     "power_neg12v_ma": 75,
+     "power_neg12v_ma": 30,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -86118,7 +85329,7 @@
      "name": "Random Sampling",
      "hp": 18,
      "power_12v_ma": 120,
-     "power_neg12v_ma": 120,
+     "power_neg12v_ma": 80,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -86139,7 +85350,7 @@
      "name": "Real World Interface",
      "hp": 18,
      "power_12v_ma": 75,
-     "power_neg12v_ma": 75,
+     "power_neg12v_ma": 45,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -86160,7 +85371,7 @@
      "name": "Sawtoooth Stack",
      "hp": 42,
      "power_12v_ma": 320,
-     "power_neg12v_ma": 320,
+     "power_neg12v_ma": 250,
      "power_5v_ma": null,
      "depth_mm": 16,
      "image_url": null,
@@ -86182,7 +85393,7 @@
      "name": "Scan & Pan",
      "hp": 14,
      "power_12v_ma": 50,
-     "power_neg12v_ma": 50,
+     "power_neg12v_ma": 20,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -86203,7 +85414,7 @@
      "name": "Sequence Selector",
      "hp": 16,
      "power_12v_ma": 50,
-     "power_neg12v_ma": 50,
+     "power_neg12v_ma": 30,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -86221,31 +85432,10 @@
     },
     {
      "brand": "Verbos Electronics",
-     "name": "Touchplate Keyboard",
-     "hp": 84,
-     "power_12v_ma": 120,
-     "power_neg12v_ma": 120,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://verboselectronics.com/touchplate-keyboard/",
-     "sources": {
-      "hp": "https://verboselectronics.com/touchplate-keyboard/",
-      "power_12v_ma": "https://verboselectronics.com/touchplate-keyboard/",
-      "power_neg12v_ma": "https://verboselectronics.com/touchplate-keyboard/"
-     },
-     "tags": [],
-     "content_sha256": "a3744cd1d9cfce35650e2a4adf83c0662fa0bccb9e820cf85c26b301edf10743",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "Verbos Electronics",
      "name": "Voltage Multistage 10",
      "hp": 30,
      "power_12v_ma": 68,
-     "power_neg12v_ma": 68,
+     "power_neg12v_ma": 28,
      "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
@@ -86266,7 +85456,7 @@
      "name": "Voltage Multistage 16",
      "hp": 42,
      "power_12v_ma": 68,
-     "power_neg12v_ma": 68,
+     "power_neg12v_ma": 28,
      "power_5v_ma": null,
      "depth_mm": 15,
      "image_url": null,
@@ -86396,30 +85586,6 @@
   {
    "brand": "Vintage Synth Lab",
    "modules": [
-    {
-     "brand": "Vintage Synth Lab",
-     "name": "Meng Qi",
-     "hp": 84,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": "https://modularsynthlab.com/wp-content/uploads/2020/08/Mneg-Qi-please-Exists-2_modularsytnhlab_001.jpg",
-     "source_url": "https://modularsynthlab.com/product/meng-qi-please-exist-2-dual-transformer-i-o/",
-     "sources": {
-      "hp": "https://modularsynthlab.com/product/meng-qi-please-exist-2-dual-transformer-i-o/"
-     },
-     "tags": [
-      "interface",
-      "transformer",
-      "I/O",
-      "passive"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "9a757853da5b1ebab81aabd78e9130528f17c379843afce4341480d2844821bb",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
     {
      "brand": "Vintage Synth Lab",
      "name": "Meng Qi DPLPG Dual Passive Low Pass Gate",
@@ -88286,33 +87452,6 @@
      ],
      "fetch_method": "cache",
      "content_sha256": "bbf57ced0921b068b2861282536f5bb42415123cb5d4850b35b2b446969923bf",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "Warped Circuits",
-     "name": "QUAID GIGASLOPE",
-     "hp": 52,
-     "power_12v_ma": 380,
-     "power_neg12v_ma": 30,
-     "power_5v_ma": null,
-     "depth_mm": 32,
-     "image_url": "http://busycircuits.com/cdn/shop/files/ALM047-01.png?v=1759766529",
-     "source_url": "https://busycircuits.com/products/alm047",
-     "sources": {
-      "hp": "https://busycircuits.com/products/alm047",
-      "power_12v_ma": "https://busycircuits.com/products/alm047",
-      "power_neg12v_ma": "https://busycircuits.com/products/alm047",
-      "depth_mm": "https://busycircuits.com/products/alm047"
-     },
-     "tags": [
-      "envelope",
-      "sequencer",
-      "LFO",
-      "quad"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "643117d48d38422e224432d1e100d92fb0665adc63068fcc8646341704a81a6b",
      "provenance": "OBSERVED",
      "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
     },
@@ -90350,31 +89489,6 @@
     },
     {
      "brand": "WGD Modular",
-     "name": "krustenbraten mit senf und krautsalat",
-     "hp": 48,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": 22,
-     "image_url": null,
-     "source_url": "https://wgdmodular.de/module/krustenbraten-mit-senf-und-krautsalat/",
-     "sources": {
-      "hp": "https://wgdmodular.de/module/krustenbraten-mit-senf-und-krautsalat/",
-      "depth_mm": "https://wgdmodular.de/module/krustenbraten-mit-senf-und-krautsalat/"
-     },
-     "tags": [
-      "multiple",
-      "buffered",
-      "utility",
-      "led"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "407f33221dcceea72e9c1b3377d069c5644d3b004767f128be4c17dbdb00a187",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
-    {
-     "brand": "WGD Modular",
      "name": "corn dog",
      "hp": 8,
      "power_12v_ma": null,
@@ -91580,25 +90694,6 @@
      },
      "tags": [],
      "content_sha256": "bcbfe224b634f2ea514891fcd0bb8a153bffa55ad843222eac738187f9de4d03",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex",
-     "fetch_method": "cache"
-    },
-    {
-     "brand": "WMD",
-     "name": "Performance Mixer MKII",
-     "hp": 52,
-     "power_12v_ma": null,
-     "power_neg12v_ma": null,
-     "power_5v_ma": null,
-     "depth_mm": null,
-     "image_url": null,
-     "source_url": "https://www.wmdevices.com/products/performance-mixer-mkii",
-     "sources": {
-      "hp": "https://www.wmdevices.com/products/performance-mixer-mkii"
-     },
-     "tags": [],
-     "content_sha256": "6004131aa1a5ed9352330c771bd150311c8a52c0af6a79ddc57c93255f760fdd",
      "provenance": "OBSERVED",
      "extracted_by": "regex",
      "fetch_method": "cache"
@@ -93838,32 +92933,6 @@
   {
    "brand": "Zorx",
    "modules": [
-    {
-     "brand": "Zorx",
-     "name": "1U CV Bus MK II",
-     "hp": 84,
-     "power_12v_ma": 90,
-     "power_neg12v_ma": 90,
-     "power_5v_ma": null,
-     "depth_mm": 27,
-     "image_url": "https://assets.bigcartel.com/product_images/403737690/CV+BUS+MK+II+FOR+SHOP+square.jpg?auto=format&amp;fit=max&amp;h=1200&amp;w=1200",
-     "source_url": "https://www.zorxelectronics.com/product/zorx-1u-cv-bus",
-     "sources": {
-      "hp": "https://www.zorxelectronics.com/product/zorx-1u-cv-bus",
-      "power_12v_ma": "https://www.zorxelectronics.com/product/zorx-1u-cv-bus",
-      "power_neg12v_ma": "https://www.zorxelectronics.com/product/zorx-1u-cv-bus",
-      "depth_mm": "https://www.zorxelectronics.com/product/zorx-1u-cv-bus"
-     },
-     "tags": [
-      "mult",
-      "LFO",
-      "CV"
-     ],
-     "fetch_method": "cache",
-     "content_sha256": "b87451a451694e5886eaf670a950d35f99f0568ecfd3283c111e1e71ca62c646",
-     "provenance": "OBSERVED",
-     "extracted_by": "regex+deepseek/deepseek-v4.1-flash"
-    },
     {
      "brand": "Zorx",
      "name": "1U CV Bus Expander MK II",
