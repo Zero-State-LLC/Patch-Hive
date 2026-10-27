@@ -1,8 +1,9 @@
 {
   // FastAPI backend on Cloudflare Containers (spec 006 T040a/T050a).
   // The Worker owns api.patch-hive.com and proxies every request to one container
-  // built from backend/Dockerfile. Secrets: DATABASE_URL (Neon pooled endpoint,
-  // sslmode=require) and SECRET_KEY, set with `npx wrangler secret put`.
+  // built from backend/Dockerfile. Secrets, set with `npx wrangler secret put`:
+  // DATABASE_URL (Neon pooled endpoint, sslmode=require), SECRET_KEY, and the R2
+  // S3 API values S3_ENDPOINT_URL, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY (T055).
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "patchhive-api",
   "main": "src/index.ts",
@@ -34,7 +35,13 @@
     "CORS_ORIGINS": "[\"https://patch-hive.com\"]",
     // Payments stay fail-closed on this host.
     "STRIPE_TEST_MODE": "true",
-    "ALLOW_PRODUCTION_PAYMENTS": "false"
+    "ALLOW_PRODUCTION_PAYMENTS": "false",
+    // The container disk is temporary; evidence, exports and design packs are mirrored
+    // to this R2 bucket and restored on read (backend/core/storage.py).
+    "STORAGE_BACKEND": "s3",
+    "S3_BUCKET": "patchhive-staging-files",
+    "S3_REGION": "auto",
+    "S3_KEY_PREFIX": "staging"
   },
   "observability": { "enabled": true }
 }

@@ -5,14 +5,27 @@ interface Env {
   API: DurableObjectNamespace<PatchHiveApi>;
   DATABASE_URL?: string;
   SECRET_KEY?: string;
+  S3_ENDPOINT_URL?: string;
+  S3_ACCESS_KEY_ID?: string;
+  S3_SECRET_ACCESS_KEY?: string;
   ENVIRONMENT: string;
   FRONTEND_BASE_URL: string;
   CORS_ORIGINS: string;
   STRIPE_TEST_MODE: string;
   ALLOW_PRODUCTION_PAYMENTS: string;
+  STORAGE_BACKEND: string;
+  S3_BUCKET: string;
+  S3_REGION: string;
+  S3_KEY_PREFIX: string;
 }
 
-const REQUIRED_SECRETS = ["DATABASE_URL", "SECRET_KEY"] as const;
+const REQUIRED_SECRETS = [
+  "DATABASE_URL",
+  "SECRET_KEY",
+  "S3_ENDPOINT_URL",
+  "S3_ACCESS_KEY_ID",
+  "S3_SECRET_ACCESS_KEY",
+] as const;
 
 export class PatchHiveApi extends Container<Env> {
   defaultPort = 8000;
@@ -31,6 +44,13 @@ export class PatchHiveApi extends Container<Env> {
       CORS_ORIGINS: env.CORS_ORIGINS,
       STRIPE_TEST_MODE: env.STRIPE_TEST_MODE,
       ALLOW_PRODUCTION_PAYMENTS: env.ALLOW_PRODUCTION_PAYMENTS,
+      STORAGE_BACKEND: env.STORAGE_BACKEND,
+      S3_ENDPOINT_URL: env.S3_ENDPOINT_URL ?? "",
+      S3_BUCKET: env.S3_BUCKET,
+      S3_ACCESS_KEY_ID: env.S3_ACCESS_KEY_ID ?? "",
+      S3_SECRET_ACCESS_KEY: env.S3_SECRET_ACCESS_KEY ?? "",
+      S3_REGION: env.S3_REGION,
+      S3_KEY_PREFIX: env.S3_KEY_PREFIX,
       RUN_MIGRATIONS: "true",
     };
   }

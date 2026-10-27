@@ -81,8 +81,9 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
 - [ ] T055 Keep evidence uploads, exports and design packs in durable object storage (R2), not on the container's disk. Container disks are wiped when the instance sleeps, restarts or redeploys, and `backend/evidence/routes.py`, `backend/export/`, `backend/publishing/routes.py` and `backend/canon/fulfillment.py` write under `export_dir` / `export_store_root` and record local paths in Postgres.
   - depends_on: [T001]
   - acceptance: an uploaded evidence image, an export and a design pack all survive a container restart; no database record points at a missing file.
-  - [ ] T055a Move the `export_dir` / `export_store_root` reads and writes onto R2 (code).
+  - [x] T055a Mirror durable files to R2 through its S3 API and restore them on read (`backend/core/storage.py`, `STORAGE_BACKEND=s3`); `edge/api` passes the R2 settings and fails closed without them (code).
     - depends_on: [T001]
+    - acceptance: `tests/unit/test_durable_storage.py`: evidence and a design pack are restored and served after the local copy is deleted; an unpersisted upload is rejected, not recorded.
   - [ ] T055b Create the R2 bucket and bucket-scoped credentials, and set them as `edge/api` secrets (operator).
     - depends_on: [T055a]
 

@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from canon.exports import compensate_failed_export
 from canon.models import CanonicalExportRecord
 from core.config import settings
+from core.storage import StorageError, get_file_store
 from export.patchbook.design.constraints import (
     StyleResolveError,
     professional_default_resolved,
@@ -54,6 +55,10 @@ def fulfill_export(session: Session, export_id: str) -> FulfillResult:
     # Succeeded short-circuit
     if export.status == "succeeded" and getattr(export, "pack_manifest_hash", None):
         pack = pack_dir_for_export(export_id)
+        try:
+            get_file_store().ensure_local_tree(pack)
+        except StorageError:
+            pass  # recompose below rather than report a pack that cannot be read
         if pack.exists() and (pack / "PatchBook.pdf").exists():
             return FulfillResult(
                 export_id=export_id,
@@ -103,6 +108,8 @@ def fulfill_export(session: Session, export_id: str) -> FulfillResult:
             out_dir=out,
             export_id=export_id,
         )
+        # A paid pack only counts as delivered once it is durable.
+        get_file_store().persist_tree(out)
 
         export.status = "succeeded"
         if hasattr(export, "library_content_hash"):
@@ -128,6 +135,8 @@ def fulfill_export(session: Session, export_id: str) -> FulfillResult:
     except (ContentSpineError, StyleResolveError, PreflightFailed) as exc:
         code = getattr(exc, "code", "EXPORT_FULFILL_FAILED")
         return _fail(session, export, code)
+    except StorageError as exc:
+        return _fail(session, export, exc.code)
     except Exception:
         return _fail(session, export, "EXPORT_FULFILL_FAILED")
 

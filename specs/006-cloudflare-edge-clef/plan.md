@@ -39,7 +39,7 @@ Re-run STAGING_HOST_PLAN. Update DOMAIN_CUTOVER_CHECKLIST with receipts. Only th
 
 - CORS origin mismatch blocks frontend.
 - Containers chosen (2026-10-26). One instance (`max_instances: 1`) so startup migrations never race; the container sleeps after 15 minutes idle, so the first request after that pays a cold start (image boot plus `alembic upgrade head`).
-- Container disks are ephemeral. Until T055 lands, anything written under `export_dir` would vanish on sleep or redeploy, so T040b (deploy) depends on T055b.
+- Container disks are ephemeral. `backend/core/storage.py` mirrors durable files to R2 and restores them on read (T055a); T040b (deploy) still depends on T055b, the bucket and its secrets.
 - Clef vision cost/latency; flag stays off until evaluation.
 - Frontend hosting moved from Pages to Workers in PR #55; FR-001 and T030 still name Pages and need an operator decision.
 
