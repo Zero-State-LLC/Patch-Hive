@@ -82,6 +82,24 @@ def test_catalog_api_returns_lead_tags(db_session: Session) -> None:
     assert by_slug["maker-vca"]["evidence_status"] is None
 
 
+def test_population_loader_inserts_lead_tags(db_session: Session) -> None:
+    # db-load.yml runs after migrations, so the loader itself must carry the tags.
+    import population
+
+    seed = REPO / "data" / "synth-catalog" / "seed-phase2-v1.json"
+    row = json.loads(seed.read_text(encoding="utf-8"))["catalog_modules"][0]
+    plan = population.Plan()
+    population._schedule_catalog(plan, {}, row, modulargrid_url=None)
+    (op,) = plan.ops
+    db_session.execute(text(op.sql), op.params)
+    db_session.commit()
+
+    slug = op.params["slug"]
+    stored = db_session.query(ModuleCatalog).filter_by(slug=slug).one()
+    assert stored.access_basis == "unknown"
+    assert stored.evidence_status == "CATALOG_OBSERVED"
+
+
 def test_lead_migration_reads_every_seed_slug() -> None:
     spec = importlib.util.spec_from_file_location(
         "lead_tags", REPO / "backend" / "alembic" / "versions" / "20261027_catalog_lead_tags.py"
