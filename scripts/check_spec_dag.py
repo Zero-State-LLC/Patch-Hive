@@ -129,14 +129,18 @@ def check(specs: Path):
 
 
 def ready(tasks):
-    """Open tasks whose dependencies and sub-tasks are all done, in file order."""
+    """Open tasks whose dependencies and sub-tasks are all done, in file order.
+
+    An undefined dependency counts as not done, so a task blocked by a missing ID is
+    never reported ready.
+    """
     open_children = {t["parent"] for t in tasks.values() if t["parent"] and not t["done"]}
     return [
         key
         for key, t in sorted(tasks.items(), key=lambda kv: (kv[0].split(":")[0], kv[1]["order"]))
         if not t["done"]
         and key not in open_children
-        and all(tasks[d]["done"] for d in t["deps"] if d in tasks)
+        and all(d in tasks and tasks[d]["done"] for d in t["deps"])
     ]
 
 

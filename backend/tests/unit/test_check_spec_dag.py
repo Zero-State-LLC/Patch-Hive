@@ -77,3 +77,10 @@ def test_ready_lists_open_tasks_with_done_dependencies_and_subtasks(tmp_path):
 def test_help_prints_usage_without_scanning(capsys):
     assert module.main(["--help"]) == 0
     assert "--ready" in capsys.readouterr().out
+
+
+def test_ready_excludes_tasks_with_undefined_dependencies(tmp_path):
+    _feature(tmp_path, "001-a", "- [ ] T010 Blocked\n  - depends_on: [T099]\n- [ ] T020 Free\n")
+    tasks, errors, _ = module.check(tmp_path)
+    assert [e.split(": ", 1)[1].split()[0] for e in errors] == ["UNDEFINED"]
+    assert module.ready(tasks) == ["001:T020"]
