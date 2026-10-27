@@ -656,6 +656,14 @@ export default function ModulesPage() {
                       ) : (
                         <span className="status-chip status-chip--warning">HP unknown</span>
                       )}
+                      {module.evidence_status === "CATALOG_OBSERVED" ? (
+                        <span
+                          className="status-chip status-chip--warning"
+                          title="Discovery lead from a community catalog. Not verified against the manufacturer."
+                        >
+                          Unverified lead
+                        </span>
+                      ) : null}
                       {module.source ? (
                         <span className="status-chip status-chip--neutral">{module.source}</span>
                       ) : null}

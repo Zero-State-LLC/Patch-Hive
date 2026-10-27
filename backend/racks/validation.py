@@ -6,12 +6,35 @@ from __future__ import annotations
 
 from typing import List, Tuple
 
+from sqlalchemy import inspect, text
 from sqlalchemy.orm import Session
 
 from cases.models import Case
 from modules.models import Module
 
 from .schemas import RackModuleSpec, RackValidationError
+
+
+def hp_needs_reverify(db: Session, module: Module) -> bool:
+    """True when the module's HP is a ModularGrid-derived value awaiting a maker-page check.
+
+    The 2026-10-17 remediation could not null ``modules.hp`` (NOT NULL), so it archived the
+    value and flagged the row. Placement must refuse such a module (spec 003 FR-035). A row
+    flagged only for other fields (for example nulled power) keeps a placeable, confirmed HP.
+    """
+    if not module.needs_reverify:
+        return False
+    bind = db.get_bind()
+    if not inspect(bind).has_table("catalog_value_archive"):
+        return False
+    row = db.execute(
+        text(
+            "SELECT 1 FROM catalog_value_archive WHERE table_name = 'modules' "
+            "AND row_key = :key AND field = 'hp' AND action = 'flag' LIMIT 1"
+        ),
+        {"key": f"{module.brand}::{module.name}"},
+    ).first()
+    return row is not None
 
 
 def validate_rack_configuration(
@@ -80,6 +103,23 @@ def validate_rack_configuration(
                 RackValidationError(
                     field=f"modules[{idx}].module_id",
                     message=f"Module with id {module_spec.module_id} not found",
+                )
+            )
+            continue
+
+        if hp_needs_reverify(db, module):
+            errors.append(
+                RackValidationError(
+                    field=f"modules[{idx}].module_id",
+                    message=(
+                        f"Module {module.name} has an unverified HP; it cannot be placed until "
+                        "a manufacturer page confirms its width"
+                    ),
+                    details={
+                        "code": "MODULE_HP_NEEDS_REVERIFY",
+                        "module_id": module.id,
+                        "module_name": module.name,
+                    },
                 )
             )
             continue
