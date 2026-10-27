@@ -1,18 +1,25 @@
 # Spec 006 Deploy Notes (Cloudflare Edge + Clef)
 
 Status: code for T010, T020, T060, T070, T080, T090 is implemented and tested in-repo.
-T030 is PARTIAL (frontend live, API base pending T040). T040 and T050 are DEFERRED operator
-actions. The only Cloudflare config in this repository is `frontend/wrangler.jsonc`, which
-names the operator-chosen frontend hostname; no account ids or secrets are recorded here.
+T030 is PARTIAL (frontend live; the `VITE_API_BASE_URL` build value is in `frontend/.env.production`
+and ships on the next frontend deploy). T040a and T050a (code) are done; T040b and T050b are the
+operator steps below. Cloudflare config in this repository: `frontend/wrangler.jsonc` and
+`edge/api/wrangler.jsonc`. They name the operator-chosen hostnames; no account ids or secrets are
+recorded here.
 
 ## Operator-locked decisions
 
-These are owned by the operator and are intentionally NOT set in code or config:
+Recorded 2026-10-26:
 
-- API hostname(s) for the edge frontend and the API origin.
-- Tunnel vs Containers for exposing the FastAPI origin behind Cloudflare.
+- Frontend origin: `https://patch-hive.com` (`www` redirects to it).
+- API hostname: `api.patch-hive.com`.
+- API origin: Cloudflare Containers (`edge/api`), not Tunnel.
+- Database: Neon staging branch, pooled endpoint, connected directly from the container (FR-003 amendment pending approval).
+
+Still owned by the operator and NOT set in code or config:
+
 - Cloudflare account id and the Workers AI API token used by Clef.
-- The exact frontend origin used for CORS.
+- The `edge/api` secrets `DATABASE_URL` and `SECRET_KEY`.
 
 Until the operator records them, `config_gate_checks(..., expected_frontend_origin=None)`
 reports `CORS_EXACT_ORIGIN` as failed with `OPERATOR_LOCKED`, so the readiness machine
@@ -23,11 +30,11 @@ cannot reach GATES_PASSED from config alone.
 | Task | Action | Status | Repo scaffolding |
 | --- | --- | --- | --- |
 | T030 | Cloudflare edge deploy for the Vite frontend | PARTIAL, API base pending T040 | `frontend/wrangler.jsonc` (Workers static assets); `VITE_API_BASE_URL` documented in `.env.example` (read by `frontend/src/lib/api.ts`) |
-| T040 | Publish API hostname and restrict CORS to the exact origin | DEFERRED, operator-locked | `CORS_ORIGINS` exact-origin gate in `backend/core/ops/edge_readiness.py` |
-| T050 | Bind Hyperdrive to the Neon staging branch | DEFERRED, operator | none; existing `DATABASE_URL` path is unchanged |
+| T040 | Publish API hostname and restrict CORS to the exact origin | T040a done; T040b operator | `edge/api/` (Containers Worker); `CORS_ORIGINS` exact-origin gate in `backend/core/ops/edge_readiness.py` |
+| T050 | Provision the Neon staging database for the API container | T050a done; T050b operator | `edge/api/src/index.ts` passes `DATABASE_URL`/`SECRET_KEY` and fails closed without them |
 
 T060 lists T050 as a dependency. The T060 code path is implemented and tested against the
-existing database layer; it does not require Hyperdrive and does not change persistence.
+existing database layer and does not change persistence.
 
 ### T030 checklist (operator)
 
@@ -36,7 +43,7 @@ static sites): `npx wrangler deploy` from `frontend/` uploads `dist` with SPA fa
 minimal `frontend/worker/index.ts` 301s `www` to the apex.
 
 1. Create the edge project from `frontend/` (build `npm run build`, output `dist`). DONE: Worker `patchhive-frontend`.
-2. Set `VITE_API_BASE_URL` to the operator-locked API hostname plus `/api`. PENDING: blocked on T040; builds currently fall back to `http://localhost:8000/api`.
+2. Set `VITE_API_BASE_URL` to the operator-locked API hostname plus `/api`. CODE DONE: `frontend/.env.production` sets `https://api.patch-hive.com/api` for `vite build`; redeploy the frontend to ship it.
 3. Attach the operator-locked custom domain. DONE: `patch-hive.com` (custom domain), `www.patch-hive.com` redirects to it; the shared `workers.dev` route is disabled.
 4. Record the build receipt (commit SHA, deployment id) as a checklist receipt.
 
@@ -44,20 +51,23 @@ Receipt, 2026-10-26: built from `7a7791f`, Worker version `23639333-97bc-490d-bf
 Production bundle verified free of demo credentials and seed-file hints. Redeploy after
 step 2 and append a new receipt line.
 
-### T040 checklist (operator)
+### T050b checklist (operator, before T040b)
 
-1. Choose Tunnel or Containers for the FastAPI origin (operator-locked).
-2. Publish the API hostname (operator-locked).
-3. Set `CORS_ORIGINS` to exactly the Pages origin (no wildcard, no path).
-4. Confirm `ALLOW_PRODUCTION_PAYMENTS=false` and `STRIPE_TEST_MODE=true`.
-5. Confirm `GET /health/ready` is OK through the edge and record the receipt.
+1. Create the Neon project and a `staging` branch. Copy the **pooled** connection string and make
+   sure it ends in `?sslmode=require`.
+2. From `edge/api/`, store it as a Worker secret (never in git): `npx wrangler secret put DATABASE_URL`.
+3. Store a fresh signing key the same way: `npx wrangler secret put SECRET_KEY`
+   (for example the output of `python3 -c "import secrets; print(secrets.token_urlsafe(48))"`).
+4. Migrations run on the container's first start (`alembic upgrade head`); no D1 and no new schema.
 
-### T050 checklist (operator)
+### T040b checklist (operator)
 
-1. Create a Hyperdrive config pointing at the Neon staging branch.
-2. Keep the connection string in the Cloudflare secret store only; never in git.
-3. Run existing Alembic migrations against staging; no D1 and no new schema.
-4. Record the binding receipt.
+1. Containers need the Workers Paid plan on the account; confirm it is active.
+2. From `edge/api/` with Docker running: `npm ci && npx wrangler deploy`. This builds
+   `backend/Dockerfile`, pushes the image, and attaches `api.patch-hive.com`.
+3. Confirm `ALLOW_PRODUCTION_PAYMENTS=false` and `STRIPE_TEST_MODE=true` (set in `edge/api/wrangler.jsonc`).
+4. `curl https://api.patch-hive.com/health/ready` returns OK (the first call pays a cold start).
+5. Redeploy the frontend so it picks up `frontend/.env.production`, then record both receipts here.
 
 ## Clef provider configuration
 

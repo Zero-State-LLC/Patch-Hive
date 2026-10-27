@@ -1,0 +1,19 @@
+{
+  "name": "patchhive-api-edge",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "dry-run": "wrangler deploy --dry-run",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@cloudflare/containers": "0.3.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261027.1",
+    "typescript": "5.9.3",
+    "wrangler": "4.153.0"
+  }
+}

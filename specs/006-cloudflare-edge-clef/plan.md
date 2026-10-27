@@ -2,8 +2,8 @@
 
 ## Architecture
 
-Pages (Vite) → API hostname (Tunnel or Containers) → FastAPI  
-Hyperdrive → Neon staging  
+Workers static assets (Vite, `patch-hive.com`) → `api.patch-hive.com` (Containers Worker `edge/api`) → FastAPI container  
+FastAPI container → Neon staging (pooled endpoint, TLS). Hyperdrive does not apply to container clients.  
 Workers AI Clef → ClefProvider adapter → Spec 005 DecisionPolicy → confirmation UI
 
 ## Phases
@@ -15,10 +15,10 @@ Create feature directory and index entry. No bulk moves.
 Cloudflare Pages project. Build: `cd frontend && npm ci && npm run build`. Output: `frontend/dist`. Attach custom domain. Set `VITE_API_BASE_URL`.
 
 ### WP-02 API surface
-Publish hostname. Restrict CORS to exact origin. Confirm `ALLOW_PRODUCTION_PAYMENTS=false`. Verify `/health/ready`.
+`edge/api` Worker on `api.patch-hive.com` proxies to one container built from `backend/Dockerfile`. CORS is exactly `https://patch-hive.com`. `ALLOW_PRODUCTION_PAYMENTS=false`, `STRIPE_TEST_MODE=true`. Verify `/health/ready` through the edge.
 
 ### WP-03 Data plane
-Hyperdrive binding to Neon staging connection string. No schema change.
+Neon staging branch, pooled connection string as the `edge/api` `DATABASE_URL` secret. Alembic runs on container start. No schema change.
 
 ### WP-04 Clef adapter
 Implement ClefProvider. Map System One response to DecisionPacket. Feature flag default off. Fail-closed. No type leakage.
@@ -35,7 +35,7 @@ Re-run STAGING_HOST_PLAN. Update DOMAIN_CUTOVER_CHECKLIST with receipts. Only th
 ## Risks
 
 - CORS origin mismatch blocks frontend.
-- Tunnel/Containers choice affects latency and ops surface; operator must lock.
+- Containers chosen (2026-10-26). One instance (`max_instances: 1`) so startup migrations never race; the container sleeps after 15 minutes idle, so the first request after that pays a cold start (image boot plus `alembic upgrade head`).
 - Clef vision cost/latency; flag stays off until evaluation.
 - Frontend hosting moved from Pages to Workers in PR #55; FR-001 and T030 still name Pages and need an operator decision.
 
