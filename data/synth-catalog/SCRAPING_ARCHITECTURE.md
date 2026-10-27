@@ -93,3 +93,22 @@ Paid run, after approval:
 ```bash
 python scripts/catalog_maker_crawl.py --max-paid-fetches 1200 --cap 10 --ctx-start <included context.dev credits left> --fc-start <included Firecrawl credits left>
 ```
+
+### Paid run (T024), 2026-10-27, context.dev only. OBSERVED
+
+Approved by Danny: `--max-paid-fetches 1200 --cap 10`, context.dev only (no Firecrawl key). It ran in three passes:
+
+1. **`--no-model`, before the OpenRouter key arrived.** 1,200 paid attempts, but only 147 succeeded: the router gave paid calls the free-fetch 25 s timeout, and rendered scrapes need longer. 286 context.dev credits, which includes the 145 searches. Fixed: paid calls now get 120 s.
+2. **With the model.** 1,200 paid attempts, 530 succeeded, 702 credits. Most of the failures are long-tail maker sites context.dev cannot reach either. Only about 9% of the 3,346 model calls returned usable JSON: `deepseek-v4.1-flash` now reasons by default, and the reasoning ran past `max_tokens` and cut off the answer. Fixed: model calls send `reasoning: {enabled: false}`.
+3. **Model pass on cached pages, `--max-paid-fetches 0`.** No context.dev calls. 3,641 model calls, $0.41.
+
+Result (`receipts/maker-crawl-v2.json`, rows in `hermes-research/maker-crawl-v2.json`):
+
+- **3,429 accepted modules from 315 brands.** v1 found 751 from 245.
+- With +12 V: 1,807. With −12 V: 1,800. With depth: 1,715.
+- By path: generic 2,821 (model-confirmed under v1's verbatim rule); Shopify 291; listing 202; Squarespace 65; WooCommerce 50.
+- **Spend:** context.dev 988 credits for the crawl, plus 6 for API checks; the balance went from 55,295 to 54,301. Firecrawl 0. OpenRouter $1.19. No overage, against a $10 cap.
+- **Still empty:**
+  - 4ms and Erica. The `render` flag was served the cached free shell; this is now fixed and needs a small paid render pass.
+  - Frap, Tiptop and Pittsburgh. Their adapter patterns need checking against the rendered pages.
+  - 79 brands with no search candidates and 40 with no model pick, plus 27 curated candidates still unconfirmed.

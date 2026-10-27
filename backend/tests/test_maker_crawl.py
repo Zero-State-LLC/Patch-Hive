@@ -117,7 +117,7 @@ def test_receipt_hook_and_paid_cap_hold_across_threads(
         ("https://www.qubitelectronix.com/shop", False),
         ("https://x.com/maker", True),
         ("https://www.thomann.de/x", True),
-        ("https://www.modulargrid.net/e/modules", True),
+        ("https://www.perfectcircuit.com/maths", True),
     ],
 )
 def test_reseller_exclusion_matches_host_labels(url: str, blocked: bool) -> None:
@@ -446,3 +446,24 @@ def test_render_skips_the_free_get_but_not_robots(
     assert "https://js.example/modules" not in site.calls  # no free GET of the shell
     assert not scraper.fetch("https://js.example/private/x", render=True).ok  # robots still applies
     assert scraper.paid_attempts == 1
+
+
+def test_render_ignores_a_cached_free_shell(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "ctx-test")
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    rendered = json.dumps({"html": "<a href='/p/x'>x</a>", "key_metadata": {"credits_consumed": 1}})
+    site = Site(
+        {
+            "https://js.example/modules": (200, "<html><div id=app></div></html>"),
+            catalog_scrape.CONTEXT_SCRAPE_URL: (200, rendered),
+        }
+    )
+    assert "/p/x" not in (
+        _scraper(tmp_path, site).fetch("https://js.example/modules").text or ""
+    )  # free shell, cached
+    res = _scraper(tmp_path, site, max_paid_fetches=1).fetch(
+        "https://js.example/modules", render=True
+    )
+    assert res.ok and "/p/x" in res.text

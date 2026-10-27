@@ -272,6 +272,9 @@ def llm(system: str, user: str, max_tokens: int = 300) -> dict | None:
         "max_tokens": max_tokens,
         "temperature": 0,
         "response_format": {"type": "json_object"},
+        # The model now reasons by default; reasoning ran past max_tokens and cut off the JSON
+        # answer on ~90% of calls in the second paid run. The task is a lookup, not a puzzle.
+        "reasoning": {"enabled": False},
     }
     status, data = _post("https://openrouter.ai/api/v1/chat/completions", payload, os.environ["OPENROUTER_API_KEY"], timeout=120)
     usage = data.get("usage") or {}
@@ -689,13 +692,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--cap", type=float, default=14.5)
     ap.add_argument("--ctx-start", type=float, default=0.0, help="included context.dev credits remaining at start")
     ap.add_argument("--fc-start", type=float, default=0.0, help="included Firecrawl credits remaining at start")
-    ap.add_argument("--max-paid-fetches", type=int, default=0, help="router paid-call cap (fetches and searches)")
+    ap.add_argument("--max-paid-fetches", type=int, default=None, help="router paid-call cap (fetches and searches); 0 = cached pages and model only")
     ap.add_argument("--max-pages", type=int, default=DEFAULT_MAX_PAGES, help="pages per maker")
     ap.add_argument("--brands", default="", help="comma-separated brand subset")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--workers", type=int, default=24)
     args = ap.parse_args(argv)
-    if not args.dry_run and args.max_paid_fetches <= 0:
+    if not args.dry_run and args.max_paid_fetches is None:
         print("paid run needs --max-paid-fetches (approved cap); use --dry-run to measure first", file=sys.stderr)
         return 2
     if not args.dry_run and not args.no_model and not os.environ.get("OPENROUTER_API_KEY"):
@@ -708,7 +711,7 @@ def main(argv: list[str] | None = None) -> int:
         cache_dir=CATALOG / ".cache" / "http",
         # A dry run keeps its call counts out of the committed spend ledger.
         ledger_path=(WORK / "ledger.dry-run.json") if DRY_RUN else (RECEIPTS / "scrape-ledger.json"),
-        max_paid_fetches=0 if DRY_RUN else args.max_paid_fetches,
+        max_paid_fetches=0 if DRY_RUN else max(0, args.max_paid_fetches),
         min_interval_s=2.0,
         max_age_s=7 * 86400,
         max_retries=2,

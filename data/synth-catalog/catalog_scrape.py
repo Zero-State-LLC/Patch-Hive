@@ -334,8 +334,8 @@ class CatalogScraper:
 
     def fetch(self, url: str, timeout: float = 25, *, check_robots: bool = True, render: bool = False) -> FetchResult:
         """Free first, then paid. `render=True` skips the free GET (robots still apply) for script-rendered
-        pages whose plain HTML is an empty shell."""
-        if url in self._memory:
+        pages whose plain HTML is an empty shell, and ignores a cached copy that came from a free GET."""
+        if url in self._memory and not (render and self._memory[url].receipt.get("method") == "free_http"):
             cached = self._memory[url]
             receipt = dict(cached.receipt)
             receipt["method"] = "cache"
@@ -348,7 +348,7 @@ class CatalogScraper:
         if blocked:
             return self._finish(url, blocked, None, b"", ok=False)
 
-        disk = self._read_cache(url)
+        disk = self._read_cache(url, skip_free=render)
         if disk is not None:
             self._memory[url] = disk
             self.receipts.append(disk.receipt)
@@ -685,7 +685,7 @@ class CatalogScraper:
         folder = self.cache_dir / digest[:2]
         return folder / f"{digest}.body", folder / f"{digest}.meta.json"
 
-    def _read_cache(self, url: str) -> FetchResult | None:
+    def _read_cache(self, url: str, skip_free: bool = False) -> FetchResult | None:
         body_path, meta_path = self._cache_paths(url)
         if not meta_path.is_file() or not body_path.is_file():
             return None
@@ -694,7 +694,7 @@ class CatalogScraper:
         except json.JSONDecodeError:
             return None
         age = self.wall_clock() - float(meta.get("fetched_at") or 0)
-        if age > self.max_age_s:
+        if age > self.max_age_s or (skip_free and meta.get("method") == "free_http"):
             return None
         body = body_path.read_bytes()
         receipt = {
