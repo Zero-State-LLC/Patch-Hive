@@ -43,6 +43,9 @@ FIRECRAWL_SEARCH_URL = "https://api.firecrawl.dev/v1/search"
 # from, never what may be fetched: robots, the deny list and the paid cap still apply first.
 # context.dev routes through its own managed network; its scrape API has no proxy field.
 FIRECRAWL_PROXY_TIERS = ("basic", "stealth", "auto")
+# Paid backends render the page (browser, proxies), which routinely takes longer than a plain GET.
+# A 25 s timeout made most context.dev calls fail in the first v2 run while still using the paid cap.
+PAID_TIMEOUT_S = 120.0
 DDG_LITE = "https://lite.duckduckgo.com/lite/"
 
 RETRY_STATUSES = {0, 429, 500, 502, 503, 504}
@@ -329,7 +332,9 @@ class CatalogScraper:
             **kwargs,  # type: ignore[arg-type]
         )
 
-    def fetch(self, url: str, timeout: float = 25, *, check_robots: bool = True) -> FetchResult:
+    def fetch(self, url: str, timeout: float = 25, *, check_robots: bool = True, render: bool = False) -> FetchResult:
+        """Free first, then paid. `render=True` skips the free GET (robots still apply) for script-rendered
+        pages whose plain HTML is an empty shell."""
         if url in self._memory:
             cached = self._memory[url]
             receipt = dict(cached.receipt)
@@ -360,6 +365,10 @@ class CatalogScraper:
                 return paid if paid is not None else skipped
             if not allowed:
                 return self._finish(url, reason or "robots_disallowed", None, b"", ok=False)
+
+        if render:
+            paid = self._paid_fetch(url, timeout)
+            return paid if paid is not None else self._finish(url, "render_unavailable", None, b"", ok=False, remember=False)
 
         status, body = self._free_get(url, timeout)
         if status == 200 and body and body.lstrip()[:1] == b"<" and CHALLENGE.search(body[:8000]):
@@ -409,7 +418,7 @@ class CatalogScraper:
             if not self._reserve_paid():
                 self._finish(url, "skipped_paid_cap", None, b"", ok=False, note=method, remember=False)
                 continue
-            status, body, credits = caller(url, key, timeout)
+            status, body, credits = caller(url, key, max(timeout, PAID_TIMEOUT_S))
             self._bump_ledger(method, credits)
             ok = status == 200 and bool(body)
             note = f"proxy={self.firecrawl_proxy}" if method == "firecrawl" else None
@@ -476,7 +485,7 @@ class CatalogScraper:
             if not self._reserve_paid():
                 receipts.append(self._receipt(target, "skipped_paid_cap", None, None, note=method))
                 continue
-            status, raw = self._post_json(endpoint, key, payload, timeout)
+            status, raw = self._post_json(endpoint, key, payload, max(timeout, PAID_TIMEOUT_S))
             body_hash = _sha256(raw) if raw else None
             credits = 0.0
             found: list[str] = []
@@ -780,6 +789,9 @@ def _trusted_fake_ip(ip: ipaddress._BaseAddress) -> bool:
 
 
 def _credits(data: dict, default: float) -> float:
+    meta = data.get("key_metadata")  # context.dev reports per-request usage here
+    if isinstance(meta, dict) and isinstance(meta.get("credits_consumed"), (int, float)):
+        return float(meta["credits_consumed"])
     for key in ("credits", "creditsUsed", "credits_used"):
         if isinstance(data.get(key), (int, float)):
             return float(data[key])

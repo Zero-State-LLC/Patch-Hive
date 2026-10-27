@@ -64,6 +64,10 @@ def _same_site(url: str, home: str) -> bool:
     return (urlparse(url).hostname or "").removeprefix("www.") == (urlparse(home).hostname or "").removeprefix("www.")
 
 
+def _fetch(scraper, url: str, cfg: dict):
+    return scraper.fetch(url, render=bool(cfg.get("render")))
+
+
 def _json(scraper, url: str):
     res = scraper.fetch(url)
     if not res.ok or not res.text:
@@ -152,7 +156,7 @@ def _listing(scraper, home: str, cfg: dict) -> list[Candidate]:
             if product.search(path) and not (exclude and exclude.search(path)):
                 found.setdefault(page, Candidate(page))
                 continue
-            res = scraper.fetch(page)
+            res = _fetch(scraper, page, cfg)
             for href in HREF.findall(res.text or "") if res.ok else []:
                 url = urljoin(page, html.unescape(href)).split("?")[0].split("#")[0]
                 path = urlparse(url).path

@@ -372,3 +372,77 @@ def test_listing_filters_sitemap_urls_without_fetching_them(tmp_path: Path) -> N
     cands = maker_adapters.enumerate_products(_scraper(tmp_path, site), cfg)
     assert [c.url for c in cands] == ["https://maker.example/en/products/A1"]
     assert "https://maker.example/fr/products/A1" not in site.calls
+
+
+def test_context_dev_credits_come_from_key_metadata() -> None:
+    assert (
+        catalog_scrape._credits(
+            {"key_metadata": {"credits_consumed": 2, "credits_remaining": 9}}, 1.0
+        )
+        == 2.0
+    )
+
+
+def test_no_model_paid_run_keeps_generic_rows_unconfirmed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    page = "<html><title>VCO | Maker</title><body>Specs: Width 10HP, 60mA @ +12V</body></html>"
+    site = Site(
+        {
+            "https://maker.example/": (200, '<a href="/products/vco">VCO</a>'),
+            "https://maker.example/products/vco": (200, page),
+        }
+    )
+    catalog = tmp_path / "catalog"
+    catalog.mkdir()
+    (catalog / "seed-phase2-v1.json").write_text(json.dumps({"brands": ["Maker"]}))
+    monkeypatch.setattr(catalog_scrape, "default_transport", site)
+    monkeypatch.setattr(catalog_scrape, "socket_getaddrinfo", lambda host: ["93.184.216.34"])
+    for name, value in (
+        ("CATALOG", catalog),
+        ("WORK", tmp_path / "work"),
+        ("RECEIPTS", tmp_path / "receipts"),
+        ("OUT", tmp_path / "out"),
+        ("PRIOR_CRAWL", tmp_path / "none.json"),
+    ):
+        monkeypatch.setattr(crawl, name, value)
+    (tmp_path / "receipts").mkdir()
+    (tmp_path / "out").mkdir()
+    monkeypatch.setattr(
+        crawl.maker_adapters,
+        "load_sources",
+        lambda: {
+            "homepages": {
+                "Maker": {"homepage": "https://maker.example/", "status": "verified_free"}
+            }
+        },
+    )
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    assert crawl.main(["--no-model", "--max-paid-fetches", "5", "--workers", "1"]) == 0
+    receipt = json.loads((tmp_path / "receipts" / "maker-crawl-v2.json").read_text())
+    assert receipt["modules_total"] == 0 and receipt["unconfirmed_generic"] == 1
+    rows = json.loads((tmp_path / "out" / "maker-crawl-v2.json").read_text())["brands"][0][
+        "unconfirmed"
+    ]
+    assert rows[0]["hp"] == 10 and rows[0]["confirmed"] is False
+    assert "openrouter.ai" not in " ".join(site.calls)
+
+
+def test_render_skips_the_free_get_but_not_robots(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "ctx-test")
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    rendered = json.dumps({"html": "<a href='/p/x'>x</a>", "key_metadata": {"credits_consumed": 1}})
+    site = Site(
+        {
+            catalog_scrape.CONTEXT_SCRAPE_URL: (200, rendered),
+            "https://js.example/robots.txt": (200, "User-agent: *\nDisallow: /private\n"),
+        }
+    )
+    scraper = _scraper(tmp_path, site, max_paid_fetches=2)
+    res = scraper.fetch("https://js.example/modules", render=True)
+    assert res.ok and "/p/x" in res.text and res.receipt["method"] == "context_dev"
+    assert "https://js.example/modules" not in site.calls  # no free GET of the shell
+    assert not scraper.fetch("https://js.example/private/x", render=True).ok  # robots still applies
+    assert scraper.paid_attempts == 1

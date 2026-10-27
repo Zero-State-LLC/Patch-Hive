@@ -437,7 +437,8 @@
    ],
    "product": "^/(p\\.php|[a-z0-9-]+)$",
    "exclude": "^/(index|modules|power|faceplates|modaccessories|eurorack|pods|kits|merch|stores|about|whoweare|contact|podcast|firmware|pedals|faqs|legacy)\\.php$|^/(metamodule|sampler|samplerkit|ldkit)$",
-   "note": "module index is script-rendered; links appear only through a paid render"
+   "note": "module index is script-rendered; links appear only through a paid render",
+   "render": true
   },
   "After Later Audio": {
    "homepage": "https://afterlateraudio.com/",
@@ -466,7 +467,8 @@
    "follow": "^/(modules|eurorack|products?)/?$",
    "product": "^/[a-z0-9-]+-?\\d?/?$",
    "exclude": "^/(shop|cart|contact|about|blog|news|faq|dealers|support|diy|kits?)/?$",
-   "note": "unreachable over free HTTP from the dev box; needs the paid tier"
+   "note": "unreachable over free HTTP from the dev box; needs the paid tier",
+   "render": true
   },
   "Behringer": {
    "homepage": "https://www.behringer.com/",
@@ -505,7 +507,8 @@
    "follow": "^/shop/eurorack-modules/[^/]+-series/?$",
    "product": "^/shop/eurorack-modules/[^/]+-series/[a-z0-9-]+/?$",
    "exclude": "^/shop/eurorack-modules/?$",
-   "note": "series pages list products with script (Alpine.js); links appear only through a paid render"
+   "note": "series pages list products with script (Alpine.js); links appear only through a paid render",
+   "render": true
   },
   "Expert Sleepers": {
    "homepage": "https://www.expert-sleepers.co.uk/",
@@ -597,7 +600,8 @@
    ],
    "sitemap": true,
    "product": "^/(product|products|modules?)/[^/]+/?$",
-   "note": "unreachable over free HTTP from the dev box; needs the paid tier"
+   "note": "unreachable over free HTTP from the dev box; needs the paid tier",
+   "render": true
   },
   "Verbos Electronics": {
    "homepage": "https://verboselectronics.com/",
@@ -616,12 +620,12 @@
    "homepage": "https://xaocdevices.com/",
    "kind": "listing",
    "entries": [
-    "/"
+    "/main/"
    ],
-   "depth": 2,
-   "follow": "^/(products?|modules?|eurorack)(/[^/]+)?/?$",
-   "product": "^/(products?|modules?)/[^/]+/?$",
-   "note": "site is script-rendered and has no sitemap; links appear only through a paid render"
+   "depth": 1,
+   "product": "^/main/[a-z0-9-]+/$",
+   "note": "product pages live under /main/<name>/ (found by context.dev search, 2026-10-27)",
+   "render": true
   }
  }
 }

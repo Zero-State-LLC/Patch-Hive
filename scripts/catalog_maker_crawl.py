@@ -158,6 +158,7 @@ class Budget:
 BUDGET: Budget | None = None
 SCRAPER: CatalogScraper | None = None
 DRY_RUN = False
+NO_MODEL = False  # paid fetches without OpenRouter: generic rows stay unconfirmed
 SOURCES: dict = {}
 PRIOR: dict[str, str] = {}
 ASSET = re.compile(r"\.(jpe?g|png|gif|webp|svg|pdf|zip|mp3|wav|mp4|mov|css|js|xml|txt|stl|syx|bin|hex|dmg|exe)(\?|$)", re.I)
@@ -205,12 +206,12 @@ def _account(rec: dict) -> None:
 class _Fetcher:
     """Thin view over the shared router that books each call's receipts."""
 
-    def fetch(self, url: str):
+    def fetch(self, url: str, render: bool = False):
         if excluded(url):
             return SCRAPER._finish(url, "excluded_reseller", None, b"", ok=False, remember=False)
         if not BUDGET.can_spend():
             return SCRAPER._finish(url, "budget_stop", None, b"", ok=False, remember=False)
-        return SCRAPER.fetch(url)
+        return SCRAPER.fetch(url, render=render and not DRY_RUN)
 
     def robots_info(self, url: str):
         return SCRAPER.robots_info(url)
@@ -219,8 +220,8 @@ class _Fetcher:
 FETCH = _Fetcher()
 
 
-def fetch_text(url: str) -> tuple[str, str]:
-    res = FETCH.fetch(url)
+def fetch_text(url: str, render: bool = False) -> tuple[str, str]:
+    res = FETCH.fetch(url, render=render)
     return (res.text or "", res.receipt.get("method") or "?") if res.ok else ("", res.receipt.get("method") or "failed")
 
 
@@ -260,7 +261,7 @@ def llm(system: str, user: str, max_tokens: int = 300) -> dict | None:
     hit = cached("llm", key)
     if hit is not None:
         return hit
-    if DRY_RUN:
+    if DRY_RUN or NO_MODEL:
         BUDGET.bump("llm_calls")
         return None
     if not BUDGET.can_spend():
@@ -494,8 +495,8 @@ def choose_links(brand: str, urls: list[str], cap: int) -> list[str]:
     pool = list(dict.fromkeys(pool))[: max(300, cap)]
     if len(pool) <= 12:
         return pool
-    if DRY_RUN:
-        BUDGET.bump("llm_calls")  # the real run asks the model to pick from this pool
+    if DRY_RUN or NO_MODEL:
+        BUDGET.bump("llm_calls")  # a model run picks from this pool
         return pool[:cap]
     listing = "\n".join(f"{i}. {urllib.parse.urlparse(u).path}" for i, u in enumerate(pool))
     res = llm(PICK_SYS.replace("at most 80", f"at most {cap}"), f"Manufacturer: {brand}\n{listing}", min(4000, 400 + 4 * cap)) or {}
@@ -547,7 +548,7 @@ def crawl_adapter(brand: str, cfg: dict, cap: int, rec: dict) -> None:
         row = deterministic(brand, cand.url, cand.text or "", cand.name) if cand.text else None
         method = "feed"
         if row is None or "ambiguous_hp" in row:
-            body, method = fetch_text(cand.url)
+            body, method = fetch_text(cand.url, render=bool(cfg.get("render")))
             rec["pages"] += 1
             rec["methods"][method] = rec["methods"].get(method, 0) + 1
             if not body:
@@ -557,7 +558,7 @@ def crawl_adapter(brand: str, cfg: dict, cap: int, rec: dict) -> None:
             if row and "ambiguous_hp" in row:
                 rec["ambiguous_hp"] += 1
                 # The model may settle it only when its value appears verbatim (same rule as v1).
-                row = None if DRY_RUN else extract(brand, cand.url, body, method)
+                row = None if DRY_RUN or NO_MODEL else extract(brand, cand.url, body, method)
         if row and "ambiguous_hp" not in row:
             row["fetch_method"] = method
             rec["modules"].append(row)
@@ -576,11 +577,15 @@ def crawl_generic(brand: str, home: str, cap: int, rec: dict) -> None:
         rec["pages"] += 1
         if not body:
             continue
-        if DRY_RUN:
+        if DRY_RUN or NO_MODEL:
             row = deterministic(brand, url, page_text(body), None, body)
             if row and "ambiguous_hp" not in row:
-                BUDGET.bump("llm_calls")  # the real run confirms each generic row with the model
-                rec["modules"].append(row)
+                BUDGET.bump("llm_calls")  # a model run confirms each generic row
+                if DRY_RUN:
+                    rec["modules"].append(row)
+                else:  # paid without a model: kept for a later confirmation pass, never loaded as-is
+                    row["confirmed"] = False
+                    rec["unconfirmed"].append(row)
             elif row:
                 rec["ambiguous_hp"] += 1
         else:
@@ -590,7 +595,7 @@ def crawl_generic(brand: str, home: str, cap: int, rec: dict) -> None:
 
 
 def crawl_brand(brand: str, cap: int) -> dict:
-    rec = {"brand": brand, "modules": [], "pages": 0, "status": None, "methods": {}, "ambiguous_hp": 0}
+    rec = {"brand": brand, "modules": [], "unconfirmed": [], "pages": 0, "status": None, "methods": {}, "ambiguous_hp": 0}
     if not BUDGET.can_spend():
         rec["status"] = "budget_stop"
         return rec
@@ -643,14 +648,18 @@ def summarize(results: list[dict], budget: dict, args) -> dict:
         "statuses": dict(sorted(statuses.items())),
         "yield_by_path": by_path,
         "modules_total": sum(len(r["modules"]) for r in results),
+        "unconfirmed_generic": sum(len(r.get("unconfirmed") or []) for r in results),
         "modules_with_power": sum(1 for r in results for m in r["modules"] if m.get("power_12v_ma") is not None),
         "fetch_methods": dict(sorted(methods.items(), key=lambda kv: -kv[1])),
         "budget": budget,
         "per_brand": [
-            {k: r.get(k) for k in ("brand", "status", "path", "resolved_by", "homepage", "discovered", "picked", "pages", "ambiguous_hp")} | {"modules": len(r["modules"])}
+            {k: r.get(k) for k in ("brand", "status", "path", "resolved_by", "homepage", "discovered", "picked", "pages", "ambiguous_hp")}
+            | {"modules": len(r["modules"]), "unconfirmed": len(r.get("unconfirmed") or [])}
             for r in results
         ],
     }
+    if NO_MODEL:
+        out["model_calls_skipped"] = BUDGET.would["llm_calls"]
     if DRY_RUN:
         out["projection"] = {
             "paid_fetch_urls": would["paid_fetch_urls"],
@@ -673,9 +682,10 @@ def render_receipt(summary: dict) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    global BUDGET, SCRAPER, DRY_RUN, SOURCES, PRIOR
+    global BUDGET, SCRAPER, DRY_RUN, NO_MODEL, SOURCES, PRIOR
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="no paid fetch, search or model call; write a yield/spend receipt")
+    ap.add_argument("--no-model", action="store_true", help="paid fetches without OpenRouter; generic-path rows are kept unconfirmed")
     ap.add_argument("--cap", type=float, default=14.5)
     ap.add_argument("--ctx-start", type=float, default=0.0, help="included context.dev credits remaining at start")
     ap.add_argument("--fc-start", type=float, default=0.0, help="included Firecrawl credits remaining at start")
@@ -688,10 +698,10 @@ def main(argv: list[str] | None = None) -> int:
     if not args.dry_run and args.max_paid_fetches <= 0:
         print("paid run needs --max-paid-fetches (approved cap); use --dry-run to measure first", file=sys.stderr)
         return 2
-    if not args.dry_run and not os.environ.get("OPENROUTER_API_KEY"):
-        print("paid run needs OPENROUTER_API_KEY for the generic path's model checks", file=sys.stderr)
+    if not args.dry_run and not args.no_model and not os.environ.get("OPENROUTER_API_KEY"):
+        print("paid run needs OPENROUTER_API_KEY for the generic path's model checks (or --no-model)", file=sys.stderr)
         return 2
-    DRY_RUN = args.dry_run
+    DRY_RUN, NO_MODEL = args.dry_run, args.no_model and not args.dry_run
     BUDGET = Budget(args.cap, args.ctx_start, args.fc_start)
     WORK.mkdir(parents=True, exist_ok=True)
     SCRAPER = CatalogScraper(
@@ -738,7 +748,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         (OUT / "maker-crawl-v2.json").write_text(json.dumps({"generated_at": summary["generated_at"], "budget": budget, "brands": results}, indent=1) + "\n")
         (RECEIPTS / "maker-crawl-v2.json").write_text(render_receipt(summary))
-    print(json.dumps({k: summary[k] for k in ("modules_total", "modules_with_power", "yield_by_path", "statuses")} | {"projection": summary.get("projection"), "budget": budget}, indent=1))
+    print(json.dumps({k: summary[k] for k in ("modules_total", "unconfirmed_generic", "modules_with_power", "yield_by_path", "statuses")} | {"projection": summary.get("projection"), "budget": budget}, indent=1))
     return 0
 
 
