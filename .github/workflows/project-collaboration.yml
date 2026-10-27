@@ -16,7 +16,7 @@ env:
   ORG_NAME: Zero-State-LLC
   PROJECT_NUMBER: '8'
   STATUS_FIELD: Status
-  STATUS_VALUE: Todo
+  STATUS_VALUE: Backlog
 
 jobs:
   add-to-project-and-notify:
