@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 
 from sqlalchemy.orm import Session
 
 from canon.models import ImageAssetRecord
+from core.storage import StorageError, get_file_store
 
 
 def expire_image_assets(db: Session, *, now: datetime | None = None) -> dict[str, int]:
@@ -40,11 +40,11 @@ def expire_image_assets(db: Session, *, now: datetime | None = None) -> dict[str
             )
             .count()
         )
-        if live_siblings == 0 and path.exists():
+        if live_siblings == 0:
             try:
-                os.remove(path)
-                purged_files += 1
-            except OSError:
+                if get_file_store().delete(path):
+                    purged_files += 1
+            except StorageError:
                 pass
     if soft_deleted:
         db.flush()

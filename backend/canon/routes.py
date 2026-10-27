@@ -1018,8 +1018,13 @@ def download_export_artifact(
     _require_download_grant(export=export, user=current_user, token=token)
 
     from canon.fulfillment import pack_dir_for_export
+    from core.storage import StorageError, get_file_store
 
     pack_dir = pack_dir_for_export(export.id)
+    try:
+        get_file_store().ensure_local_tree(pack_dir)
+    except StorageError as exc:
+        raise HTTPException(status_code=503, detail=exc.code) from exc
     if not pack_dir.exists():
         # Fall back to artifact_uri if set
         uri = getattr(export, "artifact_uri", None)

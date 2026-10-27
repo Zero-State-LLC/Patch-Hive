@@ -51,12 +51,29 @@ Receipt, 2026-10-26: built from `7a7791f`, Worker version `23639333-97bc-490d-bf
 Production bundle verified free of demo credentials and seed-file hints. Redeploy after
 step 2 and append a new receipt line.
 
-### Do not deploy `edge/api` before T055
+### Durable files (T055)
 
 The container's disk is wiped when it sleeps (15 minutes idle), restarts or redeploys. The
-backend currently writes evidence uploads, exports and design packs under `export_dir` and
-stores those local paths in Postgres, so a deploy before T055 would leave database records
-pointing at deleted files. T040b depends on T055b in `tasks.md`.
+backend writes evidence uploads, PatchBook exports and design packs under `export_dir` /
+`export_store_root` and stores those local paths in Postgres. With `STORAGE_BACKEND=s3`
+(set in `edge/api/wrangler.jsonc`), `backend/core/storage.py` copies each durable file to R2
+when it is written, restores a missing local copy from R2 before it is read, and deletes both
+copies together. Paths and schema are unchanged. A file that cannot be persisted is not
+recorded: an evidence upload is rejected for that file, a design pack fails and is
+compensated, and the legacy PatchBook run export returns 503 before any credit is spent.
+On-demand patch and rack PDFs are generated per request and stay on the scratch disk.
+Legacy publishing (`enable_legacy_publishing`, off by default) is not covered.
+
+T040b depends on T055b in `tasks.md`.
+
+### T055b checklist (operator, before T040b)
+
+1. Create the R2 bucket `patchhive-staging-files` (name set in `edge/api/wrangler.jsonc`).
+2. Create an R2 API token with **Object Read & Write** scoped to that bucket only.
+3. From `edge/api/`, store the S3 API values as Worker secrets (never in git):
+   `npx wrangler secret put S3_ENDPOINT_URL` (`https://<account-id>.r2.cloudflarestorage.com`),
+   `npx wrangler secret put S3_ACCESS_KEY_ID`, `npx wrangler secret put S3_SECRET_ACCESS_KEY`.
+   The Worker answers 503 without starting the container until all five secrets exist.
 
 ### T050b checklist (operator, before T040b)
 

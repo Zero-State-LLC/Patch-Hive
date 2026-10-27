@@ -35,6 +35,7 @@ from typing import Callable
 from sqlalchemy.orm import Session
 
 from canon.models import ClassificationEvidenceRecord, ImageAssetRecord
+from core.storage import StorageError, get_file_store
 from intelligence.contracts import DecisionRequest
 
 __all__ = [
@@ -181,6 +182,12 @@ class BoundEvidenceImageLoader:
             raise ImageLoadError("IMAGE_OUTSIDE_STORAGE_ROOT") from None
         if not resolved.is_relative_to(root):
             raise ImageLoadError("IMAGE_OUTSIDE_STORAGE_ROOT")
+
+        # Restore the bytes from durable storage if the local cache lost them.
+        try:
+            get_file_store().ensure_local(resolved)
+        except StorageError:
+            raise ImageLoadError("IMAGE_READ_FAILED") from None
 
         try:
             size = resolved.stat().st_size

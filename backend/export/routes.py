@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from community.auth import require_auth
 from community.models import User
 from core import get_db, settings
+from core.storage import StorageError, get_file_store
 from monetization.credits import get_credits_balance
 from monetization.models import CreditsLedger, Export
 from patches.models import Patch
@@ -183,6 +184,11 @@ def export_patchbook_pdf(
     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     pdf_path = export_dir / f"patchbook_run_{run.id}_{timestamp}.pdf"
     pdf_path.write_bytes(pdf_bytes)
+    # Persist before recording the export or spending credits on it.
+    try:
+        get_file_store().persist(pdf_path)
+    except StorageError as exc:
+        raise HTTPException(status_code=503, detail=exc.code) from exc
     digest = sha256(pdf_bytes).hexdigest()
 
     export = Export(
