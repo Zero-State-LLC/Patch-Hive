@@ -20,6 +20,7 @@ import RacksPage from "@/pages/Racks";
 import RigDetailPage from "@/pages/RigDetail";
 import PatchBookStyleStudioPage from "@/pages/PatchBookStyleStudio";
 import RegistryPage from "@/pages/Registry";
+import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 
 type Theme = "dark" | "light";
 
@@ -61,11 +62,11 @@ function App() {
               <button className="button button-secondary" type="button" onClick={logout}>
                 Sign out {user?.username}
               </button>
-            ) : (
+            ) : ACCOUNTS_OPEN ? (
               <NavLink className="button button-primary" to="/login">
                 Sign in
               </NavLink>
-            )}
+            ) : null}
           </div>
         </header>
 
