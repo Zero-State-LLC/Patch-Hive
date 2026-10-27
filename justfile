@@ -28,6 +28,9 @@ setup:
 	just index
 	@echo "setup complete"
 
+spec-dag:
+	python3 "{{root}}/scripts/check_spec_dag.py" --strict
+
 lint:
 	#!/usr/bin/env bash
 	set -euo pipefail

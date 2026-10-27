@@ -21,12 +21,14 @@
     - [x] T050c1 Add idempotent append-only proposal persistence service.
     - [x] T050c2 Add flag-gated evidence-resolution orchestration using exact evidence + bounded candidates.
     - [x] T050c3 Expose the bounded resolution command/API and test it end-to-end. Service tests cover flag-off, exact binding, provider failure, idempotency, advisory persistence, and zero canonical mutation; API test covers request → receipt → advisory projection.
-- [x] T060 Build evaluation harness and synthetic CI corpus contract.\n- [x] T060a Harden provider production boundary: pinned Jev model, idempotency propagation, stable transport errors, malformed-candidate rejection, immutable receipt collision guard.\n- [x] T060b Reject cross-partition image-hash leakage before pilot admission.
+- [x] T060 Build evaluation harness and synthetic CI corpus contract.
+- [x] T060a Harden provider production boundary: pinned Jev model, idempotency propagation, stable transport errors, malformed-candidate rejection, immutable receipt collision guard.
+- [x] T060b Reject cross-partition image-hash leakage before pilot admission.
 - [ ] T061 Define operator-approved thresholds from baseline results.
   - [x] T061a Add governed real-world pilot intake/schema/validator.
   - [x] T061b Add GrokBot/Firecrawl acquisition brief and coverage reporter.
   - [x] T061b2 Define evidence-to-case promotion workflow and harden admission checks.
-  - [ ] T061c Promote rights-cleared evidence into a representative reviewed pilot and freeze corpus SHA.
-  - [ ] T061d Run baseline vs Jev-assisted evaluation and propose thresholds for operator approval.
-- [ ] T062 Retain SHA-pinned evaluation receipt.
-- [ ] T070 Staging enablement only after gate passes.
+  - [ ] T061c Promote rights-cleared evidence into a representative reviewed pilot and freeze corpus SHA. Tracked as 007 T010b.
+  - [ ] T061d Run baseline vs Jev-assisted evaluation and propose thresholds for operator approval. Tracked as 007 T020b and T030b.
+- [ ] T062 Retain SHA-pinned evaluation receipt. Tracked as 007 T060b.
+- [ ] T070 Staging enablement only after gate passes. Tracked as 007 T050b.

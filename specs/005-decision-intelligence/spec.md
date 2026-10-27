@@ -1,7 +1,8 @@
 # 005 — Decision Intelligence & Evidence Resolution
 
-**Status:** SPECIFIED / implementation not authorized by this document alone  
+**Status:** IMPLEMENTED (T001–T060b) / evaluation gate open (T061, T062, T070; continued in Spec 007)  
 **Date:** 2026-09-25  
+**Acceptance:** [acceptance.md](acceptance.md) is the acceptance checklist for every FR below.  
 **Depends on:** VSI evidence contracts, canonical inventory, module registry, deterministic patch compiler
 
 ## Problem

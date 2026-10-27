@@ -21,33 +21,61 @@ No path reaches STAGING_ENABLED without OPERATOR_APPROVED. False-canonicalizatio
 
 ## Tasks (topological order)
 
-- [ ] T001 Create feature tree `specs/007-evaluation-staging-enablement/` and add index line to `specs/README.md`.
+Status reflects `main` at e0fb6a1 (see `OPERATOR_NOTES.md`). Each task that pairs repository code
+with an operator action is split: sub-task `a` is the code, sub-task `b` is the operator action. A
+parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
+
+- [x] T001 Create feature tree `specs/007-evaluation-staging-enablement/` and add index line to `specs/README.md`.
   - depends_on: []
 
 - [ ] T010 Promote rights-cleared evidence into a representative reviewed pilot set and freeze corpus SHA.
   - depends_on: [T001]
   - acceptance: admission validator rejects cross-partition leakage; corpus hash is immutable and recorded.
+  - [x] T010a Implement `freeze_corpus` (`CorpusFreeze`) over the governed pilot validator plus the leakage check (code).
+    - depends_on: [T001]
+  - [ ] T010b Promote reviewed cases into `fixtures/vision_eval/pilot-manifest.json` and freeze the corpus SHA (operator; manifest has 0 cases today).
+    - depends_on: [T010a, 005:T061b2]
 
 - [ ] T020 Run baseline vs Clef-assisted evaluation on the frozen corpus.
   - depends_on: [T010]
   - acceptance: top-1/top-k, calibration error, abstention rate, and zero false-canonicalization are reported.
+  - [x] T020a Implement `run_baseline_comparison` (`BaselineRun`) (code).
+    - depends_on: [T010a]
+  - [ ] T020b Run the live baseline vs provider-assisted evaluation (operator).
+    - depends_on: [T010b, T020a]
 
 - [ ] T030 Propose operator-approved thresholds from baseline results.
   - depends_on: [T020]
   - acceptance: thresholds cover ranking, calibration, abstention, and false-canonicalization; proposal is versioned.
+  - [x] T030a Implement `propose_thresholds` (`ThresholdProposal`, rule `non_regression_vs_baseline.v1`) (code).
+    - depends_on: [T020a]
+  - [ ] T030b Propose thresholds from the retained baseline run (operator).
+    - depends_on: [T020b, T030a]
 
 - [ ] T040 Obtain operator approval and freeze thresholds.
   - depends_on: [T030]
   - acceptance: approval is an explicit, timestamped, SHA-linked decision.
+  - [x] T040a Implement `approve_thresholds` (`OperatorApproval`) (code).
+    - depends_on: [T030a]
+  - [ ] T040b Approve or reject the exact proposal (operator).
+    - depends_on: [T030b, T040a]
 
 - [ ] T050 Enable Clef (and any other provider) in staging only after approval.
   - depends_on: [T040]
   - acceptance: feature flag remains default-off outside staging; no production traffic.
+  - [x] T050a Implement `enable_staging` (`StagingEnablement`) authorization record (code).
+    - depends_on: [T040a]
+  - [ ] T050b Authorize staging and set the provider flag in the staging environment only (operator).
+    - depends_on: [T040b, T050a]
 
 - [ ] T060 Retain SHA-pinned evaluation receipt covering corpus, harness, thresholds, and staging enablement.
   - depends_on: [T050]
   - acceptance: receipt is immutable and references the exact source SHAs.
+  - [x] T060a Implement `pin_receipt` (`EvaluationEnablementReceipt`) and the enablement state machine (code).
+    - depends_on: [T050a]
+  - [ ] T060b Pin and retain the receipt for the exact source commit (operator).
+    - depends_on: [T050b, T060a]
 
-- [ ] T070 Integration tests for the evaluation state machine and gate checks.
-  - depends_on: [T010, T060]
+- [x] T070 Integration tests for the evaluation state machine and gate checks.
+  - depends_on: [T010a, T060a]
   - acceptance: no path reaches STAGING_ENABLED without OPERATOR_APPROVED; fail-closed on missing corpus or unapproved thresholds.
