@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Check that specs/*/tasks.md task dependencies form a valid DAG.
 
-Usage: check_spec_dag.py [--strict] [SPECS_DIR]
+Usage: check_spec_dag.py [--strict] [--ready] [SPECS_DIR]
+
+--ready lists open tasks whose dependencies and sub-tasks are all done (READY lines).
 
 Task line:   - [ ] T010 Description          (sub-tasks are indented: T050a, T050c1)
 Dependency:    - depends_on: [T001, 005:T061]   (bare ID = same spec; NNN:ID = other spec)
@@ -60,7 +62,14 @@ def parse(specs: Path):
                 while stack and stack[-1][0] >= len(indent):
                     stack.pop()
                 parent = stack[-1][1] if stack else None
-                tasks[key] = {"done": mark != " ", "deps": [], "line": where, "parent": parent, "order": n}
+                tasks[key] = {
+                    "done": mark != " ",
+                    "deps": [],
+                    "line": where,
+                    "parent": parent,
+                    "order": n,
+                    "text": rest.strip(),
+                }
                 stack.append((len(indent), key))
                 last = key
                 continue
@@ -119,9 +128,25 @@ def check(specs: Path):
     return tasks, errors, warnings
 
 
+def ready(tasks):
+    """Open tasks whose dependencies and sub-tasks are all done, in file order."""
+    open_children = {t["parent"] for t in tasks.values() if t["parent"] and not t["done"]}
+    return [
+        key
+        for key, t in sorted(tasks.items(), key=lambda kv: (kv[0].split(":")[0], kv[1]["order"]))
+        if not t["done"]
+        and key not in open_children
+        and all(tasks[d]["done"] for d in t["deps"] if d in tasks)
+    ]
+
+
 def main(argv):
+    if "-h" in argv or "--help" in argv:
+        print(__doc__)
+        return 0
     strict = "--strict" in argv
-    args = [a for a in argv if a != "--strict"]
+    show_ready = "--ready" in argv
+    args = [a for a in argv if a not in ("--strict", "--ready")]
     specs = Path(args[0]) if args else Path(__file__).resolve().parent.parent / "specs"
     specs = Path(os.path.relpath(specs))
     tasks, errors, warnings = check(specs)
@@ -129,6 +154,9 @@ def main(argv):
         print(f"ERROR {msg}")
     for msg in warnings:
         print(f"WARN  {msg}")
+    if show_ready:
+        for key in ready(tasks):
+            print(f"READY {key} {tasks[key]['text']}")
     done = sum(t["done"] for t in tasks.values())
     print(f"{len(tasks)} tasks ({done} done), {len(errors)} errors, {len(warnings)} warnings")
     return 1 if errors or (strict and warnings) else 0
