@@ -7,6 +7,7 @@ They do not delete, drop, or overwrite a non-null spec or a settled verification
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import subprocess
@@ -868,12 +869,24 @@ def _schedule_module(plan: Plan, modules: dict[tuple[str, str], dict[str, Any]],
     )
 
 
+# modules.power_* are INTEGER columns: a published 3.5 mA is stored as 4.
+INTEGER_POWER_FIELDS = ("power_12v_ma", "power_neg12v_ma", "power_5v_ma")
+
+
+def _as_stored(field_name: str, value: Any) -> float:
+    """The value as the column keeps it (numeric to integer rounds half away from zero)."""
+    number = float(value)
+    if field_name in INTEGER_POWER_FIELDS:
+        return float(math.copysign(math.floor(abs(number) + 0.5), number))
+    return number
+
+
 def _schedule_fill(plan: Plan, existing: dict[str, Any], incoming: dict[str, Any], *, kind: str) -> None:
     fill: dict[str, Any] = {}
     if incoming.get("verification_status") == "verified" and any(
         existing.get(name) is not None
         and incoming.get(name) is not None
-        and float(existing[name]) != float(incoming[name])
+        and _as_stored(name, existing[name]) != _as_stored(name, incoming[name])
         for name in POWER_FIELDS
     ):
         # Stored values disagree with the verified source. Never overwrite them;
@@ -891,7 +904,9 @@ def _schedule_fill(plan: Plan, existing: dict[str, Any], incoming: dict[str, Any
         fill["verification_status"] = incoming_status
         existing["verification_status"] = incoming_status
     elif (
-        incoming_status
+        # Only a source that claims verification can disagree with one; an
+        # unverified seed row never conflicts with a verified module.
+        incoming_status in ENTRY_VERIFICATION
         and existing.get("verification_status") not in {None, "unverified", "flagged", incoming_status}
     ):
         plan.conflict(

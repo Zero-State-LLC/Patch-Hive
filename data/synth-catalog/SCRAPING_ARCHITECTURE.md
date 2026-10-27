@@ -160,3 +160,12 @@ The loader never overwrites a stored value, so `provenance/maker-crawl-v2-rail-f
 Simulated against main's load on Postgres 15: 49 values were cleared and refilled, 12 were left because the database held a value from an earlier source, and a second run was a no-op.
 
 The conflicts left are real disagreements for review. Some are two products under one name: ALM MCO legacy vs current, Atonal SEE V1 vs V2, Sovage CHICANE Eurorack vs 1U, Wackylab Lords of Chaos 4 HP vs 10 HP, and TLM "ST MODULAR". The others are older stored values that differ from the maker page.
+
+### False conflicts, 2026-10-27
+
+Of the 19 conflicts left on staging after the rail fix, 14 came from the loader, not the data:
+
+- **Decimals.** `modules.power_*` are INTEGER columns, so a published 3.5 mA is stored as 4, and every later load compared 3.5 with 4 and flagged the row (Ghost in Translation, Ginko, shkrjn, TubeOhm, Delptronics, Archaea, gregsbrain, Hexdevices, Rare Waves). Values are now compared as the column stores them, rounding half away from zero; depth keeps its decimals.
+- **Unverified sources.** An unverified seed row (Make Noise Maths) raised a conflict against the verified module on every rerun. Only a source that claims verification can conflict now.
+
+On a replica of staging this leaves 5 conflicts, each a real choice: ALM MCO (legacy vs current), Atonal SEE (V1 vs V2), Sovage CHICANE (Eurorack depth 12 mm vs the 1U page's 24), TLM "ST MODULAR" (a product-line prefix, not a product), and Wackylab Lords of Chaos (4 HP vs 10 HP).
