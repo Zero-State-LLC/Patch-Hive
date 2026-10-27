@@ -484,7 +484,7 @@ def discover(home: str, limit: int = 4000) -> list[str]:
         urls.append(cand.url)
     body, _ = fetch_text(home)
     for href in maker_adapters.HREF.findall(body):
-        urls.append(urllib.parse.urljoin(home, html.unescape(href)).split("?")[0].split("#")[0])
+        urls.append(maker_adapters.canonical_url(urllib.parse.urljoin(home, html.unescape(href))))
     urls = list(dict.fromkeys(u for u in urls if _host(u).replace("www.", "") == host and not excluded(u)))[:limit]
     if urls:  # an empty result is usually a failed fetch: retry it next run
         store("discover", home, urls)

@@ -19,7 +19,7 @@ import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from urllib.parse import urljoin, urlparse
+from urllib.parse import parse_qsl, urlencode, urljoin, urlparse, urlunparse
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ROOT / "data" / "synth-catalog" / "maker-sources.json"
@@ -52,6 +52,17 @@ def load_sources(path: Path = SOURCES) -> dict:
         if cfg["kind"] == "listing" and not cfg.get("product"):
             raise ValueError(f"{brand}: listing adapter needs a product pattern")
     return data
+
+
+# Query keys that only track a visit. Every other key may identify the product (4ms: p.php?p=813).
+TRACKING = re.compile(r"^(utm_[a-z]+|srsltid|fbclid|gclid|mc_[a-z]+|ref|_pos|_sid|_ss|variant)$", re.I)
+
+
+def canonical_url(url: str) -> str:
+    """Drop the fragment and tracking parameters; keep any query that may identify the product."""
+    parts = urlparse(url.split("#", 1)[0])
+    keep = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if not TRACKING.match(k)]
+    return urlunparse(parts._replace(query=urlencode(keep), fragment=""))
 
 
 def strip_html(markup: str) -> str:
@@ -158,7 +169,7 @@ def _listing(scraper, home: str, cfg: dict) -> list[Candidate]:
                 continue
             res = _fetch(scraper, page, cfg)
             for href in HREF.findall(res.text or "") if res.ok else []:
-                url = urljoin(page, html.unescape(href)).split("?")[0].split("#")[0]
+                url = canonical_url(urljoin(page, html.unescape(href)))
                 path = urlparse(url).path
                 if not _same_site(url, home) or (exclude and exclude.search(path)):
                     continue

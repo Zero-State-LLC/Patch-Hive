@@ -602,11 +602,14 @@ class CatalogScraper:
     def _wait(self, url: str) -> None:
         host = (urlparse(url).hostname or "").lower()
         interval = self.host_intervals.get(host, self.min_interval_s)
-        now = self.monotonic()
-        delay = self._next_ok.get(host, 0.0) - now
-        if delay > 0:
-            self.sleeper(delay)
-        self._next_ok[host] = self.monotonic() + interval
+        # Reserve the next slot for this host atomically, so threads sharing a host
+        # are spaced `interval` apart instead of waking at the same deadline.
+        with self._lock:
+            now = self.monotonic()
+            slot = max(now, self._next_ok.get(host, 0.0))
+            self._next_ok[host] = slot + interval
+        if slot > now:
+            self.sleeper(slot - now)
 
     def _block_reason(self, url: str) -> str | None:
         if denied_host(url):

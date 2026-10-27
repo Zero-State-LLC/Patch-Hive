@@ -467,3 +467,49 @@ def test_render_ignores_a_cached_free_shell(
         "https://js.example/modules", render=True
     )
     assert res.ok and "/p/x" in res.text
+
+
+def test_listing_keeps_product_query_and_drops_tracking(tmp_path: Path) -> None:
+    index = '<a href="/p.php?p=813">A</a><a href="/p.php?p=814&utm_source=x">B</a><a href="/p.php?p=813#top">A again</a>'
+    site = Site({"https://4ms.example/modules.php": (200, index)})
+    cfg = {
+        "homepage": "https://4ms.example/",
+        "kind": "listing",
+        "entries": ["/modules.php"],
+        "product": r"^/p\.php$",
+    }
+    urls = [c.url for c in maker_adapters.enumerate_products(_scraper(tmp_path, site), cfg)]
+    assert urls == ["https://4ms.example/p.php?p=813", "https://4ms.example/p.php?p=814"]
+
+
+def test_threads_sharing_a_host_keep_the_interval(tmp_path: Path) -> None:
+    import time
+
+    stamps: list[float] = []
+    lock = threading.Lock()
+
+    def transport(request: HttpRequest) -> HttpResponse:
+        if not request.url.endswith("/robots.txt"):
+            with lock:
+                stamps.append(time.monotonic())
+        return HttpResponse(404, b"", {})
+
+    scraper = CatalogScraper(
+        cache_dir=tmp_path / "cache",
+        ledger_path=tmp_path / "ledger.json",
+        transport=transport,
+        resolve_hosts=False,
+        min_interval_s=0.15,
+        max_retries=1,
+    )
+    threads = [
+        threading.Thread(target=scraper.fetch, args=(f"https://shared.example/p{i}",))
+        for i in range(3)
+    ]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    stamps.sort()
+    assert len(stamps) == 3
+    assert min(b - a for a, b in zip(stamps, stamps[1:])) >= 0.13
