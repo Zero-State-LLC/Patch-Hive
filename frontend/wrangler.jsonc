@@ -1,5 +1,5 @@
 {
-  // Static SPA on Cloudflare Workers (assets only, no Worker script).
+  // Static SPA on Cloudflare Workers; worker/index.ts only redirects www to the apex.
   // Build with VITE_API_BASE_URL set to the public API, then `npx wrangler deploy`.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "patchhive-frontend",
@@ -7,9 +7,16 @@
   // Served only from its own domain; the account's shared workers.dev subdomain is off.
   "workers_dev": false,
   "preview_urls": false,
-  "routes": [{ "pattern": "patch-hive.com", "custom_domain": true }],
+  "main": "worker/index.ts",
+  "routes": [
+    { "pattern": "patch-hive.com", "custom_domain": true },
+    { "pattern": "www.patch-hive.com", "custom_domain": true }
+  ],
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // Let the Worker see www requests before assets match them.
+    "run_worker_first": true
   }
 }
