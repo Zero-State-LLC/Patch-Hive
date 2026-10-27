@@ -20,6 +20,9 @@ Cloudflare Pages project. Build: `cd frontend && npm ci && npm run build`. Outpu
 ### WP-03 Data plane
 Neon staging branch, pooled connection string as the `edge/api` `DATABASE_URL` secret. Alembic runs on container start. No schema change.
 
+### WP-03b Durable files
+Evidence uploads, exports and design packs move from the container's local disk to R2 (T055) before the API is deployed. The container disk is temporary.
+
 ### WP-04 Clef adapter
 Implement ClefProvider. Map System One response to DecisionPacket. Feature flag default off. Fail-closed. No type leakage.
 
@@ -36,6 +39,7 @@ Re-run STAGING_HOST_PLAN. Update DOMAIN_CUTOVER_CHECKLIST with receipts. Only th
 
 - CORS origin mismatch blocks frontend.
 - Containers chosen (2026-10-26). One instance (`max_instances: 1`) so startup migrations never race; the container sleeps after 15 minutes idle, so the first request after that pays a cold start (image boot plus `alembic upgrade head`).
+- Container disks are ephemeral. Until T055 lands, anything written under `export_dir` would vanish on sleep or redeploy, so T040b (deploy) depends on T055b.
 - Clef vision cost/latency; flag stays off until evaluation.
 - Frontend hosting moved from Pages to Workers in PR #55; FR-001 and T030 still name Pages and need an operator decision.
 

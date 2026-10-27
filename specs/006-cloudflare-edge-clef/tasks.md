@@ -78,6 +78,14 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
   - [ ] T050b Create the Neon staging branch and set its pooled connection string (`sslmode=require`) as the `edge/api` `DATABASE_URL` secret; the container's first start runs `alembic upgrade head` (operator).
     - depends_on: [T050a]
 
+- [ ] T055 Keep evidence uploads, exports and design packs in durable object storage (R2), not on the container's disk. Container disks are wiped when the instance sleeps, restarts or redeploys, and `backend/evidence/routes.py`, `backend/export/`, `backend/publishing/routes.py` and `backend/canon/fulfillment.py` write under `export_dir` / `export_store_root` and record local paths in Postgres.
+  - depends_on: [T001]
+  - acceptance: an uploaded evidence image, an export and a design pack all survive a container restart; no database record points at a missing file.
+  - [ ] T055a Move the `export_dir` / `export_store_root` reads and writes onto R2 (code).
+    - depends_on: [T001]
+  - [ ] T055b Create the R2 bucket and bucket-scoped credentials, and set them as `edge/api` secrets (operator).
+    - depends_on: [T055a]
+
 - [ ] T040 Publish API hostname and restrict CORS. Operator chose Cloudflare Containers at `api.patch-hive.com` (2026-10-26).
   - depends_on: [T030]
   - acceptance: exact origin, ALLOW_PRODUCTION_PAYMENTS=false, /health/ready ok.
@@ -85,7 +93,7 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
     - depends_on: [T001]
     - acceptance: `wrangler deploy --dry-run` builds the image; locally the image serves `/health` 200 and CORS allows only `https://patch-hive.com`.
   - [ ] T040b Set the `edge/api` secrets, deploy it, and record `GET /health/ready` through the edge (operator).
-    - depends_on: [T040a, T050b]
+    - depends_on: [T040a, T050b, T055b]
 
 - [ ] T060 Wire ClefProvider into evidence-resolution path behind Spec 005 policy.
   - depends_on: [T020, T050]

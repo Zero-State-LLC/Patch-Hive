@@ -51,6 +51,13 @@ Receipt, 2026-10-26: built from `7a7791f`, Worker version `23639333-97bc-490d-bf
 Production bundle verified free of demo credentials and seed-file hints. Redeploy after
 step 2 and append a new receipt line.
 
+### Do not deploy `edge/api` before T055
+
+The container's disk is wiped when it sleeps (15 minutes idle), restarts or redeploys. The
+backend currently writes evidence uploads, exports and design packs under `export_dir` and
+stores those local paths in Postgres, so a deploy before T055 would leave database records
+pointing at deleted files. T040b depends on T055b in `tasks.md`.
+
 ### T050b checklist (operator, before T040b)
 
 1. Create the Neon project and a `staging` branch. Copy the **pooled** connection string and make
