@@ -106,21 +106,29 @@ NEXT_RAIL = r"\s*(?:@|at|on|from)?\s*\(?(?:[-+\u2212\u2013]\s*\d{1,2}(?!\d)|\d{1
 NOT_LABEL_FIRST = (
     r"(?!\s*(?:[:=]|@\s*\d))(?!\s*" + RAIL_WORDS + r"\s*\d{1,4}(?:\.\d+)?\s*mA(?!" + NEXT_RAIL + r"))"
 )
-# A positive rail may drop its "+" ("49mA @ 12V") but is never part of "-12V", "0-5V" or "±12V".
-RAIL = {
-    "power_12v_ma": r"(?<![-\u2212\u2013\d.\u00b1])\+?\s*12(?![\d.])",
+# A positive rail may drop its "+" ("49mA @ 12V"), but an unsigned one is never part
+# of "-12V", "- 12V" (a spaced minus), "0-5V" or "±12V". An explicit "+" always counts,
+# even after a list dash ("- +12 = 23ma").
+NOT_AFTER_SIGN = r"(?<![-\u2212\u2013\d.\u00b1])(?<![-\u2212\u2013\u00b1]\s)(?<![-\u2212\u2013\u00b1]\s\s)"
+SIGNED_RAIL = {
+    "power_12v_ma": r"(?<![\d.\u00b1])\+\s*12(?![\d.])",
     "power_neg12v_ma": r"[-\u2212\u2013]\s*12(?![\d.])",
-    "power_5v_ma": r"(?<![-\u2212\u2013\d.\u00b1])\+?\s*5(?![\d.])",
+    "power_5v_ma": r"(?<![\d.\u00b1])\+\s*5(?![\d.])",
+}
+RAIL = {
+    "power_12v_ma": r"(?:" + SIGNED_RAIL["power_12v_ma"] + "|" + NOT_AFTER_SIGN + r"12(?![\d.]))",
+    "power_neg12v_ma": SIGNED_RAIL["power_neg12v_ma"],
+    "power_5v_ma": r"(?:" + SIGNED_RAIL["power_5v_ma"] + "|" + NOT_AFTER_SIGN + r"5(?![\d.]))",
 }
 # Rail first: a signed rail may drop its "V" ("+12: 150 mA"); an unsigned one may not.
 RAIL_FIRST = {
-    k: r"(?:" + v.replace(r"\+?", r"\+") + r"\s*V?|" + v + r"\s*V)\s*" + RAIL_WORDS + r"\s*" + SEP + r"\s*"
+    k: r"(?:" + SIGNED_RAIL[k] + r"\s*V?|" + v + r"\s*V)\s*" + RAIL_WORDS + r"\s*" + SEP + r"\s*"
     + RAIL_WORDS + r"\s*(\d{1,4}(?:\.\d+)?)\s*mA"
     for k, v in RAIL.items()
 }
 VALUE_FIRST = {
     # "20ma-12 $525": a signed rail may drop its "V" when no word follows ("-12 dB" is not a rail).
-    k: r"(?<![\d.])(\d{1,4}(?:\.\d+)?)\s*mA\s*(?:@|at|on|from)?\s*\(?(?:" + v + r"\s*V\b|" + v.replace(r"\+?", r"\+")
+    k: r"(?<![\d.])(\d{1,4}(?:\.\d+)?)\s*mA\s*(?:@|at|on|from)?\s*\(?(?:" + v + r"\s*V\b|" + SIGNED_RAIL[k]
     + r"(?=\s+[^\sA-Za-z]|\s*$))\)?" + NOT_LABEL_FIRST
     for k, v in RAIL.items()
 }

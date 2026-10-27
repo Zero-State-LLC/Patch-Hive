@@ -145,6 +145,9 @@ def test_two_unlabelled_widths_are_ambiguous() -> None:
         ("+12V current 100mA -12V current 15mA", (100, 15, None)),  # Mutable docs
         ("42HP +12v 140mA -12v 115mA 425g", (140, 115, None)),  # Verbos
         ("-12V 15mA +12V 100mA", (100, 15, None)),
+        ("- 12V 15mA +12V 100mA", (100, 15, None)),  # a spaced minus is still -12V
+        ("+12 V: 60 mA, - 12 V: 20 mA, + 5 V: 0 mA", (60, 20, 0)),
+        ("- Volume control - Mono output - +12 = 23ma - -12v = 0 - 5v = 0 - 21HP", (23, None, None)),  # Folktek
         ("+12V: 70mA / -12V 30mA 6HP", (70, 30, None)),
         ("+12V : 27 mA -12V : 8 mA +5V : 0 mA", (27, 8, 0)),
         ("Power 170mA @ +12V 20mA @ -12V", (170, 20, None)),
