@@ -49,3 +49,33 @@ def test_stored_rounding_is_half_away_from_zero():
     assert P._as_stored("power_neg12v_ma", 2.5) == 3
     assert P._as_stored("power_neg12v_ma", 1.18) == 1
     assert P._as_stored("depth_mm", 24.5) == 24.5
+
+
+def test_review_renames_only_the_named_page():
+    review = {"renames": [{"brand": "W", "name": "L", "url_prefix": "https://w.example/l-4hp", "to": "L 4HP"}]}
+    assert P._reviewed({"brand": "W", "name": "L", "source_url": "https://w.example/l-4hp-x/"}, review)["name"] == "L 4HP"
+    assert P._reviewed({"brand": "W", "name": "L", "source_url": "https://w.example/l-10hp/"}, review)["name"] == "L"
+    assert P._reviewed({"brand": "W", "name": "L", "manufacturer_url": "https://w.example/l-4hp"}, review)["name"] == "L 4HP"
+
+
+def test_review_drops_a_page_that_is_not_a_module():
+    review = {"renames": [{"brand": "T", "name": "S", "url_prefix": "https://t.example/arm", "to": "ARM", "not_module": True}]}
+    assert P._reviewed({"brand": "T", "name": "S", "source_url": "https://t.example/arm-84hp"}, review) is None
+
+
+def test_every_review_rename_matches_exactly_one_overlay_entry():
+    import json
+
+    review = json.loads(P.MAKER_REVIEW.read_text(encoding="utf-8"))
+    entries = [
+        e
+        for path in sorted((P.CATALOG / "overlays").glob("module-power-depth-v*.json"))
+        for e in json.loads(path.read_text(encoding="utf-8")).get("entries") or []
+    ]
+    for rename in review["renames"]:
+        hits = [
+            e for e in entries
+            if e["brand"] == rename["brand"] and e["name"] == rename["name"]
+            and (e.get("source_url") or "").startswith(rename["url_prefix"])
+        ]
+        assert len(hits) == 1, rename["to"]

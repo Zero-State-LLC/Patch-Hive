@@ -169,3 +169,15 @@ Of the 19 conflicts left on staging after the rail fix, 14 came from the loader,
 - **Unverified sources.** An unverified seed row (Make Noise Maths) raised a conflict against the verified module on every rerun. Only a source that claims verification can conflict now.
 
 On a replica of staging this leaves 5 conflicts, each a real choice: ALM MCO (legacy vs current), Atonal SEE (V1 vs V2), Sovage CHICANE (Eurorack depth 12 mm vs the 1U page's 24), TLM "ST MODULAR" (a product-line prefix, not a product), and Wackylab Lords of Chaos (4 HP vs 10 HP).
+
+### Conflict review decisions, 2026-10-27
+
+The last 5 staging conflicts were pages for two different products filed under one name. `overlays/maker-review-v1.json` re-keys each overlay entry or catalog row by brand, name and source page (`url_prefix`), and adds catalog rows for the products it names. `provenance/maker-review-v1.json` clears the stored values that belong to the other product, using `only_if_value`, so the right page refills them in the same run.
+
+- **ALM MCO:** now the current MCO (alm046, 70/30 mA). The legacy page becomes "MCO (Legacy)" (40/15 mA).
+- **Atonal SEE:** now the current SEE (65/8/0 mA, 41 mm). The V1 page becomes "SEE (V1)" (27/8/0 mA, 26 mm).
+- **Sovage CHICANE:** depth 12 mm and catalog HP 4 from the Eurorack page. The 1U page becomes "CHICANE 1U" with no catalog row. `modules.hp` still holds the 1U tile's 14 and cannot be cleared, so it is flagged and placement waits for re-verification (FR-035).
+- **TLM "ST MODULAR":** this is TLM's product-line prefix, not a product. The CV PAN page becomes "CV PAN" (35/21 mA). The Langer Arm expansion (84 HP) is `not_module` and is dropped. The ST MODULAR row's values are cleared and the row is flagged.
+- **Wackylab Lords of Chaos:** the stored row is the 10 HP tube version (220/15 mA). The 4 HP diode page becomes "Lords Of Chaos 4HP" (10/10 mA).
+
+Simulated on a staging replica: 12 values archived (10 cleared, 2 HP flags), 5 catalog rows added, no conflicts left, and a second run was a no-op.

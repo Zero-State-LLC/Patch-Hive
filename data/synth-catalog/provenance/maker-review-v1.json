@@ -1,0 +1,145 @@
+{
+ "batch": "maker-review-v1",
+ "created": "2026-10-27",
+ "approved_by": "Danny 2026-10-27 (chat: review the conflicts and continue)",
+ "flag_reverify": false,
+ "policy": "Stored values that belong to another product of the same maker. Each listed field is archived and cleared only while the database still holds only_if_value; the maker's page for the named product then fills it in the same run (overlays/maker-review-v1.json re-keys the other product's entry). TLM 'ST MODULAR' is not a product: its values are cleared and the row flagged needs_reverify. Nothing is deleted. Sovage CHICANE carries the 1U tile's 14 HP: the catalog HP is cleared and refilled with the Eurorack page's 4 HP; modules.hp cannot be cleared, so it is flagged and placement waits for re-verification (FR-035).",
+ "rows": [
+  {
+   "table": "modules",
+   "brand": "ALM Busy Circuits",
+   "name": "MCO",
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "source_tag": "maker-review-v1 (owner conflict review 2026-10-27)",
+     "maker_check": "maker_page_reviewed",
+     "action": "null",
+     "only_if_value": 40
+    },
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-review-v1 (owner conflict review 2026-10-27)",
+     "maker_check": "maker_page_reviewed",
+     "action": "null",
+     "only_if_value": 15
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Atonal Circuits",
+   "name": "SEE",
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "source_tag": "maker-review-v1 (owner conflict review 2026-10-27)",
+     "maker_check": "maker_page_reviewed",
+     "action": "null",
+     "only_if_value": 27
+    },
+    {
+     "field": "depth_mm",
+     "source_tag": "maker-review-v1 (owner conflict review 2026-10-27)",
+     "maker_check": "maker_page_reviewed",
+     "action": "null",
+     "only_if_value": 26
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Sovage Engineering",
+   "name": "CHICANE",
+   "fields": [
+    {
+     "field": "depth_mm",
+     "source_tag": "maker-review-v1 (owner conflict review 2026-10-27)",
+     "maker_check": "maker_page_reviewed",
+     "action": "null",
+     "only_if_value": 24
+    },
+    {
+     "field": "hp",
+     "source_tag": "maker-review-v1 (owner conflict review 2026-10-27)",
+     "maker_check": "maker_page_reviewed",
+     "action": "flag",
+     "only_if_value": 14
+    }
+   ],
+   "flag_reverify": true
+  },
+  {
+   "table": "module_catalog",
+   "slug": "sovage-engineering-chicane",
+   "brand": "Sovage Engineering",
+   "name": "CHICANE",
+   "flag_reverify": false,
+   "fields": [
+    {
+     "field": "hp",
+     "source_tag": "maker-review-v1 (owner conflict review 2026-10-27)",
+     "maker_check": "maker_page_reviewed",
+     "action": "null",
+     "only_if_value": 14
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "TLM Audio",
+   "name": "ST MODULAR",
+   "flag_reverify": true,
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "source_tag": "maker-review-v1 (owner conflict review 2026-10-27)",
+     "maker_check": "maker_page_reviewed",
+     "action": "null",
+     "only_if_value": 65
+    },
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-review-v1 (owner conflict review 2026-10-27)",
+     "maker_check": "maker_page_reviewed",
+     "action": "null",
+     "only_if_value": 50
+    },
+    {
+     "field": "depth_mm",
+     "source_tag": "maker-review-v1 (owner conflict review 2026-10-27)",
+     "maker_check": "maker_page_reviewed",
+     "action": "null",
+     "only_if_value": 28
+    },
+    {
+     "field": "hp",
+     "source_tag": "maker-review-v1 (owner conflict review 2026-10-27)",
+     "maker_check": "maker_page_reviewed",
+     "action": "flag",
+     "only_if_value": 4
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "tlm-audio-st-modular",
+   "brand": "TLM Audio",
+   "name": "ST MODULAR",
+   "flag_reverify": true,
+   "fields": [
+    {
+     "field": "hp",
+     "source_tag": "maker-review-v1 (owner conflict review 2026-10-27)",
+     "maker_check": "maker_page_reviewed",
+     "action": "null",
+     "only_if_value": 4
+    }
+   ]
+  }
+ ],
+ "counts": {
+  "rows": 6,
+  "fields": 12
+ }
+}
