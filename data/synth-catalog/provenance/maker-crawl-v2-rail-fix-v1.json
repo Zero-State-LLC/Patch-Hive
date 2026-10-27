@@ -1,0 +1,867 @@
+{
+ "batch": "maker-crawl-v2-rail-fix-v1",
+ "created": "2026-10-27",
+ "approved_by": "Danny 2026-10-27 (chat: approval granted for the conflict review and its fixes)",
+ "flag_reverify": false,
+ "policy": "Values misread by the v2 crawl's rail parser. On load each listed field is copied into catalog_value_archive and set to NULL only while the database still holds only_if_value; the rebuilt module-power-depth-v11 then fills it from the maker's page. Rows are not flagged needs_reverify: the replacement value is maker-published. Nothing is deleted.",
+ "counts": {
+  "rows": 61,
+  "fields": 61
+ },
+ "rows": [
+  {
+   "table": "modules",
+   "brand": "2hp",
+   "name": "Swarm",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 82
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Merge",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 25
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Ornate Criminal",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 120
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Stairs",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 80
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Scenes",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 80
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Currents",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 50
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Pixie",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 50
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Razor",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 150
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Alan 1U (micro Turing Machine)",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 45
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Fuse",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 110
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Brooks",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 30
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Canyon",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 35
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Dice",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 80
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Cumulus",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 120
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Flip",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 10
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Pachinko",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 80
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Bard",
+   "name": "Vacuform Filter",
+   "fields": [
+    {
+     "field": "power_5v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 850
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Humble Audio",
+   "name": "Algo expander",
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 145
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Joranalogue Audio Design",
+   "name": "Dim 2",
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 500
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Modulaire Maritime",
+   "name": "Klaviatura 2",
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 46
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable instruments",
+   "name": "Beads",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 100
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable instruments",
+   "name": "Blades",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 150
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Braids",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 100
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable instruments",
+   "name": "Branches",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 10
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Clouds",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 120
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Edges",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 70
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable instruments",
+   "name": "Elements",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 130
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Frames",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 90
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Grids",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 25
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Marbles",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 80
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable instruments",
+   "name": "Peaks",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 60
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Plaits",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 50
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Rings",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 110
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Stages",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 80
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable instruments",
+   "name": "Streams",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 100
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable instruments",
+   "name": "Tides_2018",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 50
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable instruments",
+   "name": "Tides_Original",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 55
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable instruments",
+   "name": "Warps",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 110
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Yarns",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 60
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Schlappi Engineering",
+   "name": "Boundary",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 112
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Velectronic",
+   "name": "A-Envelope",
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 245
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Amp & Tone (2020 Version)",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 85
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Bark Filter Processor",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 210
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Complex Oscillator",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 70
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Control Voltage Processor",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 85
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Dual Four Pole",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 40
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Foundation Oscillator",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 70
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Haas Zone Processor",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 110
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Harmonic Oscillator",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 120
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Mini Horse",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 140
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Multi-Delay Processor",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 290
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Multi-Envelope",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 90
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Noise & Filter",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 85
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Polyphonic Envelope",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 75
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Random Sampling",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 120
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Real World Interface",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 75
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Sawtoooth Stack",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 320
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Scan & Pan",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 50
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Sequence Selector",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 50
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Voltage Multistage 10",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 68
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Verbos Electronics",
+   "name": "Voltage Multistage 16",
+   "fields": [
+    {
+     "field": "power_neg12v_ma",
+     "source_tag": "maker-crawl:module-power-depth-v11.json@0ad98a6",
+     "maker_check": "rail_parse_fix",
+     "action": "null",
+     "only_if_value": 68
+    }
+   ]
+  }
+ ]
+}

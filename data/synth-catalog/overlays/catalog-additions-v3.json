@@ -2,7 +2,7 @@
  "dataset_version": "catalog-additions-v3",
  "generated_from": "hermes-research/maker-crawl-v2.json",
  "policy": "maker's own pages only; values regex-parsed or verbatim; no ModularGrid; insert-if-absent / fill-null; disagreements are flagged by the loader",
- "count": 2721,
+ "count": 2737,
  "rows": [
   {
    "brand": "1010 Music",
@@ -1365,6 +1365,21 @@
   },
   {
    "brand": "After Later Audio",
+   "name": "Cloverleaf",
+   "hp": 14,
+   "category": null,
+   "manufacturer_url": "https://afterlateraudio.com/products/cloverleaf",
+   "image_url": "http://afterlateraudio.com/cdn/shop/products/CloverleafProductImage.png?v=1662910713",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://afterlateraudio.com/products/cloverleaf",
+   "tags": [],
+   "access_basis": "official_publication",
+   "content_sha256": "43a99c62504b6ee0258c621069453064dd2e3271c4c6ce9cb1d7141ed53c5d04",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "After Later Audio",
    "name": "3:1 Mixer 1U",
    "hp": 10,
    "category": "MIX",
@@ -2022,6 +2037,203 @@
    ],
    "access_basis": "official_publication",
    "content_sha256": "43b27f214a9fa9e094ed2cd51994701958915dbca6d692a66a9d654fd25cf838",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "AJH Synth",
+   "name": "MiniMod Contour",
+   "hp": 12,
+   "category": "ENV",
+   "manufacturer_url": "https://ajhsynth.com/Contour.html",
+   "image_url": null,
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://ajhsynth.com/Contour.html",
+   "tags": [
+    "envelope",
+    "contour",
+    "ADSR",
+    "dual"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "9d61f8301f1ee0d304d70dc4c38fef7ac0fb7236916642e1f4a2eb21c79a0978",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "AJH Synth",
+   "name": "MiniMod Glide & Noise Mk2",
+   "hp": 6,
+   "category": null,
+   "manufacturer_url": "https://ajhsynth.com/Glide.html",
+   "image_url": null,
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://ajhsynth.com/Glide.html",
+   "tags": [
+    "glide",
+    "noise",
+    "hold"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "bdafc19ff1e755c8cc516c51cc86061510b6cb259caf4a65505f68c8f2a7290b",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "AJH Synth",
+   "name": "Chance Delay",
+   "hp": 8,
+   "category": "FX",
+   "manufacturer_url": "https://ajhsynth.com/ChanceDelay.html",
+   "image_url": null,
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://ajhsynth.com/ChanceDelay.html",
+   "tags": [
+    "chance",
+    "delay",
+    "gate",
+    "random"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "df79be22ea557b43204cf175b631ea7ad55664cae0f17e22ef15d1b35bc7fec2",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "AJH Synth",
+   "name": "Triple Cross Xfader",
+   "hp": 14,
+   "category": null,
+   "manufacturer_url": "https://ajhsynth.com/TripleCross.html",
+   "image_url": null,
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://ajhsynth.com/TripleCross.html",
+   "tags": [
+    "xfader",
+    "panning",
+    "stereo"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "8e7c2f7f8f4fd5b39ecd06310c5e57c78adccf18c58c30d2f38b04c68eb9fc72",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "AJH Synth",
+   "name": "Low Fat Filter",
+   "hp": 2,
+   "category": "VCF",
+   "manufacturer_url": "https://ajhsynth.com/LowFat.html",
+   "image_url": null,
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://ajhsynth.com/LowFat.html",
+   "tags": [
+    "VCF",
+    "High Pass",
+    "2HP"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "3749e41c22cf133580d9aeebaf917f5a499800d56ee815ed063ab4327d3f1657",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "AJH Synth",
+   "name": "Tap Tempo VC-LFO",
+   "hp": 12,
+   "category": "VCA",
+   "manufacturer_url": "https://ajhsynth.com/TapLFO.html",
+   "image_url": null,
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://ajhsynth.com/TapLFO.html",
+   "tags": [
+    "LFO",
+    "Tap Tempo",
+    "VCA",
+    "CV"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "7f7ef58865b2d7dbaad55d968cd143b71e5a9df25d17e7cc7cb4b6d6ece25238",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "AJH Synth",
+   "name": "Dual RVG",
+   "hp": 14,
+   "category": "SEQ",
+   "manufacturer_url": "https://ajhsynth.com/Dual_RVG.html",
+   "image_url": null,
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://ajhsynth.com/Dual_RVG.html",
+   "tags": [
+    "LFO",
+    "gate",
+    "clock",
+    "random"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "c9d93961d843be620f167b6df2e272d1ce15a3ee0c5fb093b83886dbaedb68c4",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "AJH Synth",
+   "name": "Next Phase 12 stage phaser",
+   "hp": 18,
+   "category": "LFO",
+   "manufacturer_url": "https://ajhsynth.com/NextPhase.html",
+   "image_url": null,
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://ajhsynth.com/NextPhase.html",
+   "tags": [
+    "phaser",
+    "LFO",
+    "CV",
+    "stereo"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "19a628c3c6b5879e22ad997a4c5e7ab7fcd05288f51251ab8fd77b1ed2ae0ffd",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "AJH Synth",
+   "name": "Muting Mixer",
+   "hp": 10,
+   "category": "VCA",
+   "manufacturer_url": "https://ajhsynth.com/MutingMixer.html",
+   "image_url": null,
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://ajhsynth.com/MutingMixer.html",
+   "tags": [
+    "mixer",
+    "mute",
+    "VCA",
+    "overdrive"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "c72a56b0b76259f23b10924c329fd8f854493dfb8690f88a4bcd07290bcddc63",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "AJH Synth",
+   "name": "Entropic Doom",
+   "hp": 14,
+   "category": "VCO",
+   "manufacturer_url": "https://ajhsynth.com/Entropic.html",
+   "image_url": null,
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://ajhsynth.com/Entropic.html",
+   "tags": [
+    "noise",
+    "oscillator",
+    "ring modulator",
+    "VCA"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "496ca8a465dad5eb709ec776b64e4b2646698378cc7076418cce4df260c779c5",
    "fetch_method": "cache"
   },
   {
@@ -8150,6 +8362,21 @@
    "tags": [],
    "access_basis": "official_publication",
    "content_sha256": "9ab3d2ff86b14939e4e8bf9ee1b9f9d410f4f83fa20290d8f6ccb4f966b7377f",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Behringer",
+   "name": "EURORACK RACK",
+   "hp": 4,
+   "category": null,
+   "manufacturer_url": "https://www.behringer.com/en/products/0720-ABJ",
+   "image_url": "https://cdn-media.empowertribe.com/1a8e5f061e9b4218a8644c54a7874030/Image_BE_0720-ABJ_EURORACK-RACK_Front_XL.png",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://www.behringer.com/en/products/0720-ABJ",
+   "tags": [],
+   "access_basis": "official_publication",
+   "content_sha256": "fcf4e81c64a3ea0c2c53c17150be84d5d3916c065ee17abfb3117cdc879929aa",
    "fetch_method": "cache"
   },
   {
@@ -18650,6 +18877,26 @@
    ],
    "access_basis": "official_publication",
    "content_sha256": "bcc9c6d6f07b9c7ca65ba3812b0e78e91c77d45f58d8b7aac77bfb15671194c4",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Hexinverter \u00c9lectronique",
+   "name": "Jupiter Storm",
+   "hp": 14,
+   "category": "VCO",
+   "manufacturer_url": "http://www.hexinverter.net/jupiter-storm",
+   "image_url": null,
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "http://www.hexinverter.net/jupiter-storm",
+   "tags": [
+    "VCO",
+    "noise",
+    "experimental",
+    "oscillator"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "c4f262413c6de7d08869094847f37a104f2ca086859abd58ef300d118719e1b3",
    "fetch_method": "cache"
   },
   {
@@ -30836,6 +31083,26 @@
   },
   {
    "brand": "Nonlinearcircuits",
+   "name": "I can\u2019t believe it\u2019s not a VCO",
+   "hp": 8,
+   "category": "VCO",
+   "manufacturer_url": "https://www.nonlinearcircuits.com/modules/p/i-cant-believe-its-not-a-vco",
+   "image_url": "http://static1.squarespace.com/static/5e6e99e8bd2f8a6de8454feb/5e753b733558ab3e79ff1235/5e753e12bf83cf2bf55469ec/1787689223854/icbinavco.jpg?format=1500w",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://www.nonlinearcircuits.com/modules/p/i-cant-believe-its-not-a-vco",
+   "tags": [
+    "VCF",
+    "filter",
+    "exciter",
+    "VCA"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "2b6362e71f6a05ae2a70ff928402f5cb91f27ea63a52696a2810392db922cd06",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Nonlinearcircuits",
    "name": "Hyperchaos Deluxe",
    "hp": 10,
    "category": null,
@@ -31448,6 +31715,45 @@
    ],
    "access_basis": "official_publication",
    "content_sha256": "a3328ff52684637d6d98f9fb14d24b133300a672d1cd8ae866d8e52454eddb65",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Nonlinearcircuits",
+   "name": "32:1",
+   "hp": 14,
+   "category": "UTIL",
+   "manufacturer_url": "https://www.nonlinearcircuits.com/modules/p/32to1",
+   "image_url": "http://static1.squarespace.com/static/5e6e99e8bd2f8a6de8454feb/5e753b733558ab3e79ff1235/5e753e12bf83cf2bf55469c9/1787689223786/32to1.jpg?format=1500w",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://www.nonlinearcircuits.com/modules/p/32to1",
+   "tags": [
+    "mux",
+    "counter",
+    "switch"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "bc22b7fc6f47e4ee8f5f88abc2dd2eb2557890cc4a2056b20b7363be71b7a1ff",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Nonlinearcircuits",
+   "name": "1050Mixseq",
+   "hp": 16,
+   "category": "SEQ",
+   "manufacturer_url": "https://www.nonlinearcircuits.com/modules/p/1050mixseq",
+   "image_url": "http://static1.squarespace.com/static/5e6e99e8bd2f8a6de8454feb/5e753b733558ab3e79ff1235/5e753e12bf83cf2bf55469c8/1787689223784/1050mixseq.jpg?format=1500w",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://www.nonlinearcircuits.com/modules/p/1050mixseq",
+   "tags": [
+    "sequencer",
+    "mixer",
+    "switch",
+    "rectifier"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "469a5653e4c89155e7285aede8a3e3f3e0c6d3677ea8eb9538bdc65f6dd69c82",
    "fetch_method": "cache"
   },
   {

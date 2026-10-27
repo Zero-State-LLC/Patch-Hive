@@ -263,7 +263,10 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     return plan
 
 
-PROVENANCE_MANIFESTS = (CATALOG / "provenance" / "modulargrid-reverify-v1.json",)
+PROVENANCE_MANIFESTS = (
+    CATALOG / "provenance" / "modulargrid-reverify-v1.json",
+    CATALOG / "provenance" / "maker-crawl-v2-rail-fix-v1.json",
+)
 ARCHIVE_FIELDS = {
     "modules": {
         "hp",
@@ -325,6 +328,7 @@ def _schedule_provenance(
         },
     )
     stats.setdefault("rows_already_processed", 0)
+    stats.setdefault("value_not_matched", 0)
     markers: list[tuple[str, str, str, str]] = []
     for row in manifest.get("rows") or []:
         table = row.get("table")
@@ -370,6 +374,13 @@ def _schedule_provenance(
             if state.get(field_name) is None:
                 stats["null_in_db"] += 1
                 continue
+            # A correction names the wrong value it clears; any other value is left alone.
+            expected = item.get("only_if_value")
+            if expected is not None and str(state.get(field_name)) != str(expected) and not (
+                field_name in POWER_FIELDS and float(state[field_name]) == float(expected)
+            ):
+                stats["value_not_matched"] += 1
+                continue
             todo.append(item)
         if not todo:
             continue
@@ -381,7 +392,7 @@ def _schedule_provenance(
         relabel = any(item["action"] == "relabel" for item in todo)
         if not nulls and not relabel and all(item["action"] == "keep" for item in todo):
             continue
-        _reverify_row(plan, batch, table, row_key, brand, name, nulls, relabel)
+        _reverify_row(plan, batch, table, row_key, brand, name, nulls, relabel, manifest.get("flag_reverify", True))
         for field_name in nulls:
             state[field_name] = None
         stats["nulled_values"] += len(nulls)
@@ -389,7 +400,8 @@ def _schedule_provenance(
             state["verification_status"] = "unverified"
             state["verification_source_url"] = None
             stats["relabeled_rows"] += 1
-        stats["flagged_rows"] += 1
+        if manifest.get("flag_reverify", True):
+            stats["flagged_rows"] += 1
     if markers:
         _archive_markers(plan, batch, markers)
 
@@ -455,13 +467,20 @@ def _archive_row(
         params[f"t{index}"] = str(item.get("source_tag") or "unknown")[:200]
         params[f"m{index}"] = (item.get("maker_check") or None) and str(item["maker_check"])[:40]
         params[f"a{index}"] = item["action"]
+        expected = ""
+        if item.get("only_if_value") is not None:
+            params[f"e{index}"] = str(item["only_if_value"])
+            numeric = column in POWER_FIELDS or column == "hp"
+            current = f"CAST(t.{column} AS NUMERIC)" if numeric else f"CAST(t.{column} AS TEXT)"
+            wanted = f"CAST(:e{index} AS NUMERIC)" if numeric else f":e{index}"
+            expected = f"\n              AND {current} = {wanted}"
         selects.append(
             f"""
             SELECT :batch, :table_name, :row_key, :brand, :name, :f{index},
                    CAST(t.{column} AS TEXT), :t{index}, :m{index}, :a{index}, CURRENT_TIMESTAMP
             FROM {table} t
             WHERE {_row_where(table).replace("brand =", "t.brand =").replace("name =", "t.name =").replace("slug =", "t.slug =")}
-              AND t.{column} IS NOT NULL
+              AND t.{column} IS NOT NULL{expected}
               AND NOT EXISTS (
                 SELECT 1 FROM catalog_value_archive a
                 WHERE a.batch = :batch AND a.table_name = :table_name
@@ -492,6 +511,7 @@ def _reverify_row(
     name: str,
     nulls: list[str],
     relabel: bool,
+    flag_reverify: bool = True,
 ) -> None:
     def archived(field_name: str, action: str, column: str | None = None) -> str:
         match = f" AND a.old_value = CAST({table}.{column} AS TEXT)" if column else ""
@@ -517,7 +537,8 @@ def _reverify_row(
             f"{archived('verification_source_url', 'relabel', 'verification_source_url')} THEN NULL "
             "ELSE verification_source_url END"
         )
-    sets.append("needs_reverify = TRUE")
+    if flag_reverify:
+        sets.append("needs_reverify = TRUE")
     sets.append("updated_at = :updated_at" if table == "module_catalog" else "updated_at = CURRENT_TIMESTAMP")
     assignments = ",\n                ".join(sets)
     plan.add_update(

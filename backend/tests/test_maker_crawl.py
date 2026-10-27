@@ -139,6 +139,55 @@ def test_two_unlabelled_widths_are_ambiguous() -> None:
     ) == {"ambiguous_hp": [8, 10]}
 
 
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("+12V current 100mA -12V current 15mA", (100, 15, None)),  # Mutable docs
+        ("42HP +12v 140mA -12v 115mA 425g", (140, 115, None)),  # Verbos
+        ("-12V 15mA +12V 100mA", (100, 15, None)),
+        ("+12V: 70mA / -12V 30mA 6HP", (70, 30, None)),
+        ("+12V : 27 mA -12V : 8 mA +5V : 0 mA", (27, 8, 0)),
+        ("Power 170mA @ +12V 20mA @ -12V", (170, 20, None)),
+        ("170mA +12V, 20mA -12V, 5mA +5V", (170, 20, 5)),
+        ("power: 35 mA @ +12V / 21 mA @ -12V", (35, 21, None)),
+        ("+50mA (+12V), -20mA (-12V)", (50, 20, None)),
+        ("+12: 150 mA, -12: 5 mA. Delivers up to 6 W (500 mA at 12 V)", (150, 5, None)),
+        ("Current Draw 5V 0 mA +12V ca. 42mA -12V ca. 42mA", (42, 42, 0)),  # ACL
+        ("Power 4mA @ -12V 49mA @ 12V", (49, 4, None)),  # Intellijel
+        ("Power consumption: +5V: 180mA +12V: 14mA -12V: 18mA", (14, 18, 180)),  # Likaon
+        ("Current draw: +12V | 12mA -12V | 12mA +5V | 590mA", (12, 12, 590)),  # Bard
+        ("CV range 0-5V, 10mA max. +12V 30mA", (30, None, None)),
+        ("±12V 50mA", (None, None, None)),
+        ("+12v - 21mA -12v - 20mA +5v - N/A", (21, 20, None)),  # Fully Wired
+        ("8HP / 23mm depth +12V @ 50mA -12V @ 25mA Output is 0-5V", (50, 25, None)),  # Rain City
+        ("Width: 12HP Power: +120mA / -45mA @+12V / -12V", (120, 45, None)),  # God's Box
+        ("Current Draw: 20 mA +12V | 0 mA -12V | 0 mA 5V Width", (20, 0, 0)),
+        ("+12V current draw : 16mA -12V current draw : 15mA", (16, 15, None)),  # Skull & Circuits
+        ("Specs: - 8HP - 125mA +12V - 0mA -12V - 0mA +5V - 42mm deep", (125, 0, 0)),  # Syntonie
+        ("width: 26hp depth: 25mm 110ma +12v 20ma-12 $525", (110, 20, None)),  # NIIO
+        ("The DC power requirement is 120 mA (+12 V), 2.5 mA (-12 V).", (120, 2.5, None)),  # Rare Waves
+        ("Power: +12v/-12v Current: 90mA/30mA", (90, 30, None)),  # Erogenous Tones
+        ("Power Usage - 20mA, 10mA (+12V / -12V)", (20, 10, None)),  # Nakedboards
+        # A rail the page's style does not give stays empty, never borrowed from another style.
+        ("20 hp 50 mA +12V 20A -12V 0 mA 5V 28 mm deep", (50, None, 0)),
+    ],
+)
+def test_rails_read_each_page_in_its_own_style(text: str, expected: tuple) -> None:
+    got = crawl.rails(text)
+    assert (got["power_12v_ma"], got["power_neg12v_ma"], got["power_5v_ma"]) == expected
+
+
+def test_a_draw_the_parse_and_model_disagree_on_is_not_stored(monkeypatch: pytest.MonkeyPatch) -> None:
+    page = (
+        "<title>Dim 2</title><p>Dual BNC lamp and dimmer set. 4 HP | +12: 150 mA, -12: 5 mA. "
+        "Delivers up to 6 W (500 mA at 12 V) of power from each output. " + "Lamp dimmer. " * 20 + "</p>"
+    )
+    answer = {"is_module": True, "name": "Dim 2", "hp": 4, "power_12v_ma": 500, "power_neg12v_ma": 5}
+    monkeypatch.setattr(crawl, "llm", lambda *a, **k: answer)
+    row = crawl.extract("Joranalogue Audio Design", "https://joranalogue.com/products/dim-2", page, "free_http")
+    assert row["power_12v_ma"] is None and row["power_neg12v_ma"] == 5
+
+
 # --- adapters
 
 

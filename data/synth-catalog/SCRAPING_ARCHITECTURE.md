@@ -141,3 +141,22 @@ Loader dry run against a migrated Postgres 15, compared with main:
 | Unmatched power/depth | 67 | 41 |
 
 All 17 conflicts are `verification_conflict`: the v2 crawl disagrees with a value a v1 overlay marked verified, so the loader flags the row instead of overwriting it.
+
+Staging load, 2026-10-27: `db-load.yml` apply took staging from 1,336 to 4,019 catalog rows and from 1,302 to 3,988 modules, with 25 conflicts flagged.
+
+### Rail-parser fix, 2026-10-27
+
+Reviewing the 25 staging conflicts showed that the crawler misread some rail draws. Two causes:
+
+- **Rail order.** The -12V pattern read the number before "-12V" first, so "+12V 140mA -12V 115mA" (Verbos) gave -12V = 140, and "+12V current 100mA -12V current 15mA" (Mutable docs) gave -12V = 100 with no +12V.
+- **The model could overrule the parse.** A model value was kept when it appeared anywhere on the page, so Joranalogue Dim 2's "+12: 150 mA" lost to "delivers 500 mA at 12 V" from the lamp output.
+
+`rails()` in `catalog_maker_crawl.py` now picks the style each page writes first (rail first, value first, signed values, or both rails then both values) and reads every rail in that style, with no fallback to another style. It also handles decimals, "ca.", "@", "|" and " - " separators, and a dropped "+" or "V". When the parse and the model disagree on a draw, neither value is stored.
+
+The crawl was replayed from the cache with no paid fetches ($0.003 of model calls; `receipts/maker-crawl-v2-rail-fix-replay.json`), and `catalog-additions-v3` and `module-power-depth-v11` were rebuilt in place. Prod has never loaded them. 88 modules changed values, and 16 more modules gained a draw and a catalog row.
+
+The loader never overwrites a stored value, so `provenance/maker-crawl-v2-rail-fix-v1.json` (from `scripts/build_rail_fix_manifest.py`) lists the 61 values staging may hold from the first v11, each with its misread value (`only_if_value`). On load the loader archives and clears a field only while the database still holds that exact value, and the rebuilt v11 refills it in the same run. Rows are not flagged `needs_reverify` (`flag_reverify: false`). A database that never loaded the first v11 is left alone.
+
+Simulated against main's load on Postgres 15: 49 values were cleared and refilled, 12 were left because the database held a value from an earlier source, and a second run was a no-op.
+
+The conflicts left are real disagreements for review. Some are two products under one name: ALM MCO legacy vs current, Atonal SEE V1 vs V2, Sovage CHICANE Eurorack vs 1U, Wackylab Lords of Chaos 4 HP vs 10 HP, and TLM "ST MODULAR". The others are older stored values that differ from the maker page.
