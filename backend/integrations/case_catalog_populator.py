@@ -135,18 +135,52 @@ def validate_record(record: dict[str, Any], index: int) -> list[str]:
     return errors
 
 
+class _Changes:
+    """Track whether a record wrote anything real."""
+
+    def __init__(self) -> None:
+        self.count = 0
+
+
+def _fill(obj: Any, field: str, value: Any, changes: _Changes, *, new: bool) -> None:
+    """Set a field on a new object, or fill it only when the stored value is null.
+
+    Existing non-null values are never overwritten. Only real writes are counted.
+    """
+    if value is None:
+        return
+    current = getattr(obj, field, None)
+    if new:
+        if current != value:
+            setattr(obj, field, value)
+        return
+    if current is None:
+        setattr(obj, field, value)
+        changes.count += 1
+
+
+def _get_or_new(db: Session, query: Any, factory: Any, changes: _Changes) -> tuple[Any, bool]:
+    found = query.first()
+    if found is not None:
+        return found, False
+    obj = factory()
+    db.add(obj)
+    changes.count += 1
+    return obj, True
+
+
 def _upsert_policy_packet(
     db: Session,
     source: CaseSource,
     policy_data: dict[str, Any],
+    changes: _Changes,
 ) -> None:
-    packet = (
-        db.query(CaseSourcePolicyPacket)
-        .filter(CaseSourcePolicyPacket.source_id == source.id)
-        .first()
-    ) or CaseSourcePolicyPacket(source_id=source.id)
-    db.add(packet)
-    # Persist only columns that exist on CaseSourcePolicyPacket.
+    packet, new = _get_or_new(
+        db,
+        db.query(CaseSourcePolicyPacket).filter(CaseSourcePolicyPacket.source_id == source.id),
+        lambda: CaseSourcePolicyPacket(source_id=source.id),
+        changes,
+    )
     for field in (
         "external_record_id",
         "access_basis",
@@ -158,15 +192,13 @@ def _upsert_policy_packet(
         "reviewed_by",
     ):
         if field in policy_data:
-            setattr(packet, field, policy_data[field])
+            _fill(packet, field, policy_data[field], changes, new=new)
     # Accept either "notes" or legacy seed key "policy_notes".
-    if "notes" in policy_data:
-        packet.notes = policy_data["notes"]
-    elif "policy_notes" in policy_data:
-        packet.notes = policy_data["policy_notes"]
+    notes = policy_data.get("notes", policy_data.get("policy_notes"))
+    _fill(packet, "notes", notes, changes, new=new)
     for field in ("observed_at", "retrieved_at", "reviewed_at"):
         if policy_data.get(field) is not None:
-            setattr(packet, field, _parse_datetime(policy_data[field], field))
+            _fill(packet, field, _parse_datetime(policy_data[field], field), changes, new=new)
 
 
 def import_records(db: Session, records: list[dict[str, Any]], dry_run: bool = False) -> dict[str, Any]:
@@ -175,6 +207,7 @@ def import_records(db: Session, records: list[dict[str, Any]], dry_run: bool = F
         "input_records": len(records),
         "inserted": 0,
         "updated": 0,
+        "unchanged": 0,
         "rejected": 0,
         "warnings": [],
     }
@@ -189,6 +222,7 @@ def import_records(db: Session, records: list[dict[str, Any]], dry_run: bool = F
         manufacturer = record["manufacturer"].strip()
         model = record["model"].strip()
         slug = record.get("slug") or CaseCatalog.create_slug(manufacturer, model)
+        changes = _Changes()
         case = db.query(CaseCatalog).filter(CaseCatalog.slug == slug).first()
         created = case is None
         if created:
@@ -197,27 +231,34 @@ def import_records(db: Session, records: list[dict[str, Any]], dry_run: bool = F
                 manufacturer=manufacturer,
                 model=model,
                 format_family=record["format_family"],
+                production_status=record.get("production_status", "unknown"),
+                powered=record.get("powered"),
+                image_url=record.get("image_url"),
+                official_url=record.get("official_url"),
             )
             db.add(case)
             db.flush()
-        case.manufacturer = manufacturer
-        case.model = model
-        case.format_family = record["format_family"]
-        case.production_status = record.get("production_status", "unknown")
-        case.powered = record.get("powered")
-        case.image_url = record.get("image_url")
-        case.official_url = record.get("official_url")
+        else:
+            for field, value in (
+                ("format_family", record["format_family"]),
+                ("production_status", record.get("production_status")),
+                ("powered", record.get("powered")),
+                ("image_url", record.get("image_url")),
+                ("official_url", record.get("official_url")),
+            ):
+                _fill(case, field, value, changes, new=False)
 
         revision_data = record.get("revision") or {}
         revision_key = revision_data.get("revision_key", "default")
-        revision = (
-            db.query(CaseRevision)
-            .filter(CaseRevision.case_id == case.id, CaseRevision.revision_key == revision_key)
-            .first()
+        revision, new = _get_or_new(
+            db,
+            db.query(CaseRevision).filter(
+                CaseRevision.case_id == case.id, CaseRevision.revision_key == revision_key
+            ),
+            lambda: CaseRevision(case_id=case.id, revision_key=revision_key),
+            changes,
         )
-        if revision is None:
-            revision = CaseRevision(case_id=case.id, revision_key=revision_key)
-            db.add(revision)
+        if new:
             db.flush()
         for field in (
             "revision_label",
@@ -243,19 +284,21 @@ def import_records(db: Session, records: list[dict[str, Any]], dry_run: bool = F
             "confidence",
         ):
             if field in revision_data:
-                setattr(revision, field, revision_data[field])
+                _fill(revision, field, revision_data[field], changes, new=new)
 
         for row_data in record.get("rows") or []:
-            row = (
-                db.query(CaseRow)
-                .filter(CaseRow.revision_id == revision.id, CaseRow.row_index == row_data["row_index"])
-                .first()
-            ) or CaseRow(
-                revision_id=revision.id,
-                row_index=row_data["row_index"],
-                format_family=row_data.get("format_family", case.format_family),
+            row, new = _get_or_new(
+                db,
+                db.query(CaseRow).filter(
+                    CaseRow.revision_id == revision.id, CaseRow.row_index == row_data["row_index"]
+                ),
+                lambda: CaseRow(
+                    revision_id=revision.id,
+                    row_index=row_data["row_index"],
+                    format_family=row_data.get("format_family", case.format_family),
+                ),
+                changes,
             )
-            db.add(row)
             for field in (
                 "format_family",
                 "capacity_value",
@@ -266,16 +309,18 @@ def import_records(db: Session, records: list[dict[str, Any]], dry_run: bool = F
                 "notes",
             ):
                 if field in row_data:
-                    setattr(row, field, row_data[field])
+                    _fill(row, field, row_data[field], changes, new=new)
 
         for power_data in record.get("power_systems") or []:
             name = power_data.get("name", "primary")
-            power = (
-                db.query(CasePowerSystem)
-                .filter(CasePowerSystem.revision_id == revision.id, CasePowerSystem.name == name)
-                .first()
-            ) or CasePowerSystem(revision_id=revision.id, name=name)
-            db.add(power)
+            power, new = _get_or_new(
+                db,
+                db.query(CasePowerSystem).filter(
+                    CasePowerSystem.revision_id == revision.id, CasePowerSystem.name == name
+                ),
+                lambda: CasePowerSystem(revision_id=revision.id, name=name),
+                changes,
+            )
             for field in (
                 "supply_type",
                 "external_input",
@@ -290,37 +335,39 @@ def import_records(db: Session, records: list[dict[str, Any]], dry_run: bool = F
                 "notes",
             ):
                 if field in power_data:
-                    setattr(power, field, power_data[field])
+                    _fill(power, field, power_data[field], changes, new=new)
 
         for feature_data in record.get("features") or []:
             key = feature_data["feature_key"]
-            feature = (
-                db.query(CaseFeature)
-                .filter(CaseFeature.revision_id == revision.id, CaseFeature.feature_key == key)
-                .first()
-            ) or CaseFeature(revision_id=revision.id, feature_key=key)
-            db.add(feature)
-            feature.feature_value = feature_data.get("feature_value")
-            feature.verified = feature_data.get("verified", False)
+            feature, new = _get_or_new(
+                db,
+                db.query(CaseFeature).filter(
+                    CaseFeature.revision_id == revision.id, CaseFeature.feature_key == key
+                ),
+                lambda: CaseFeature(revision_id=revision.id, feature_key=key),
+                changes,
+            )
+            _fill(feature, "feature_value", feature_data.get("feature_value"), changes, new=new)
+            _fill(feature, "verified", feature_data.get("verified", False if new else None), changes, new=new)
 
         for source_data in record.get("sources") or []:
             field_path = source_data.get("field_path")
-            source = (
-                db.query(CaseSource)
-                .filter(
+            source, new = _get_or_new(
+                db,
+                db.query(CaseSource).filter(
                     CaseSource.case_id == case.id,
                     CaseSource.url == source_data["url"],
                     CaseSource.field_path == field_path,
-                )
-                .first()
-            ) or CaseSource(
-                case_id=case.id,
-                revision_id=revision.id,
-                url=source_data["url"],
-                field_path=field_path,
-                source_type=source_data["source_type"],
+                ),
+                lambda: CaseSource(
+                    case_id=case.id,
+                    revision_id=revision.id,
+                    url=source_data["url"],
+                    field_path=field_path,
+                    source_type=source_data["source_type"],
+                ),
+                changes,
             )
-            db.add(source)
             for field in (
                 "revision_id",
                 "source_type",
@@ -331,37 +378,42 @@ def import_records(db: Session, records: list[dict[str, Any]], dry_run: bool = F
                 "confidence",
             ):
                 if field in source_data:
-                    setattr(source, field, source_data[field])
+                    _fill(source, field, source_data[field], changes, new=new)
             db.flush()
-            _upsert_policy_packet(db, source, source_data.get("policy") or {})
+            _upsert_policy_packet(db, source, source_data.get("policy") or {}, changes)
 
         for price_data in record.get("prices") or []:
             captured_at = _parse_datetime(price_data["captured_at"], "captured_at")
-            price = (
-                db.query(CasePrice)
-                .filter(
+            price, new = _get_or_new(
+                db,
+                db.query(CasePrice).filter(
                     CasePrice.case_id == case.id,
                     CasePrice.source_name == price_data["source_name"],
                     CasePrice.source_url == price_data.get("source_url"),
                     CasePrice.currency == price_data["currency"],
                     CasePrice.amount == price_data["amount"],
                     CasePrice.captured_at == captured_at,
-                )
-                .first()
-            ) or CasePrice(
-                case_id=case.id,
-                source_name=price_data["source_name"],
-                source_url=price_data.get("source_url"),
-                amount=price_data["amount"],
-                currency=price_data["currency"],
-                captured_at=captured_at,
+                ),
+                lambda: CasePrice(
+                    case_id=case.id,
+                    source_name=price_data["source_name"],
+                    source_url=price_data.get("source_url"),
+                    amount=price_data["amount"],
+                    currency=price_data["currency"],
+                    captured_at=captured_at,
+                ),
+                changes,
             )
-            db.add(price)
             for field in ("region", "price_type", "in_stock"):
                 if field in price_data:
-                    setattr(price, field, price_data[field])
+                    _fill(price, field, price_data[field], changes, new=new)
 
-        receipt["inserted" if created else "updated"] += 1
+        if created:
+            receipt["inserted"] += 1
+        elif changes.count:
+            receipt["updated"] += 1
+        else:
+            receipt["unchanged"] += 1
 
     if dry_run:
         db.rollback()

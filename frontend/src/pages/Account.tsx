@@ -7,6 +7,17 @@ import { accountApi, authApi, canonApi } from "@/lib/api";
 import { useAuthStore } from "@/lib/store";
 import type { CreditsSummary, UserExportRecord, ReferralSummary, User } from "@/types/api";
 
+/** Only allow http(s) avatar URLs — blocks javascript:/data: DOM XSS vectors. */
+function safeHttpUrl(value: string): string | null {
+  try {
+    const parsed = new URL(value);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
 export default function AccountPage() {
   const navigate = useNavigate();
   const { isAuthenticated, setAuth } = useAuthStore();
@@ -20,6 +31,8 @@ export default function AccountPage() {
   const [copyStatus, setCopyStatus] = useState("");
   const [tokenBusy, setTokenBusy] = useState<string | null>(null);
   const [tokenMessage, setTokenMessage] = useState("");
+
+  const safeAvatarUrl = useMemo(() => safeHttpUrl(avatarUrl.trim()), [avatarUrl]);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -287,10 +300,11 @@ export default function AccountPage() {
                 placeholder="https://"
               />
             </label>
-            {avatarUrl ? (
+            {safeAvatarUrl ? (
               <img
-                src={avatarUrl}
+                src={safeAvatarUrl}
                 alt="Avatar preview"
+                referrerPolicy="no-referrer"
                 width={96}
                 height={96}
                 style={{

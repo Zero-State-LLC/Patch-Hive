@@ -4,7 +4,18 @@ SQLAlchemy models for Eurorack modules.
 
 from datetime import datetime
 
-from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    CheckConstraint,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
 from sqlalchemy.orm import relationship
 
 from core.database import Base
@@ -55,11 +66,24 @@ class Module(Base):
     # Data provenance (SEED principle)
     source = Column(String(50), nullable=False)  # "Manual", "CSV", "ModularGrid", etc.
     source_reference = Column(String(500), nullable=True)  # URL, filename, etc.
+
+    # Brand check for catalog candidates. Unverified until a source page confirms it.
+    verification_status = Column(String(20), nullable=False, default="unverified", server_default="unverified")
+    verification_source_url = Column(String(500), nullable=True)
+    # True when ModularGrid-derived values were removed and the row needs a maker-page check.
+    needs_reverify = Column(Boolean, nullable=False, default=False, server_default="false")
     imported_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        CheckConstraint(
+            "verification_status IN ('verified', 'corrected', 'flagged', 'unverified')",
+            name="ck_modules_verification_status",
+        ),
+    )
 
     # Relationships
     rack_modules = relationship("RackModule", back_populates="module", cascade="all, delete-orphan")

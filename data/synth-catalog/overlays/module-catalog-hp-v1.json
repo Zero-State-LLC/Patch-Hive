@@ -1,2835 +1,1775 @@
 {
   "dataset_version": "module-catalog-hp-overlay-v1",
-  "policy": "fill-null HP on module_catalog only; never invent",
-  "count": 404,
+  "policy": "fill-null HP on module_catalog only; never invent; 2026-10-17: ModularGrid-sourced entries removed (archived privately, provenance in DB catalog_value_archive)",
+  "count": 221,
   "entries": [
-    {
-      "slug": "acid-rain-technology-3u-to-1u-panel",
-      "brand": "Acid Rain Technology",
-      "name": "3U to 1U Panel",
-      "hp": 26,
-      "provenance": "OBSERVED"
-    },
     {
       "slug": "acid-rain-technology-chainsaw",
       "brand": "Acid Rain Technology",
       "name": "Chainsaw",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "acid-rain-technology-constellation",
       "brand": "Acid Rain Technology",
       "name": "Constellation",
       "hp": 28,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "acid-rain-technology-junction",
       "brand": "Acid Rain Technology",
       "name": "Junction",
       "hp": 6,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "acid-rain-technology-maestro",
       "brand": "Acid Rain Technology",
       "name": "Maestro",
       "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "acid-rain-technology-navigator",
       "brand": "Acid Rain Technology",
       "name": "Navigator",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "acid-rain-technology-ripsaw",
       "brand": "Acid Rain Technology",
       "name": "Ripsaw",
       "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "acid-rain-technology-splitwave",
-      "brand": "Acid Rain Technology",
-      "name": "Splitwave",
-      "hp": 6,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "acid-rain-technology-switchblade",
       "brand": "Acid Rain Technology",
       "name": "Switchblade",
       "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "acid-rain-technology-trellis",
-      "brand": "Acid Rain Technology",
-      "name": "Trellis",
-      "hp": 22,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "acid-rain-technology-ziggurat",
       "brand": "Acid Rain Technology",
       "name": "Ziggurat",
       "hp": 14,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac001-vcc-voltage-controlled-computer",
       "brand": "ADDAC System",
       "name": "ADDAC001 VCC (Voltage Controlled Computer)",
       "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac003-vcc-manual-inputs",
       "brand": "ADDAC System",
       "name": "ADDAC003 VCC Manual Inputs",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac005-vcc-gate-outputs",
       "brand": "ADDAC System",
       "name": "ADDAC005 VCC Gate Outputs",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac101-wav-player",
       "brand": "ADDAC System",
       "name": "ADDAC101 .WAV Player",
       "hp": 11,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac102-vc-fm-radio",
       "brand": "ADDAC System",
       "name": "ADDAC102 VC FM Radio",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac200-multiples",
       "brand": "ADDAC System",
       "name": "ADDAC200 Multiples",
       "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac200pi",
       "brand": "ADDAC System",
       "name": "ADDAC200PI",
       "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac200s-size-matter-black",
       "brand": "ADDAC System",
       "name": "ADDAC200S Size Matter black",
       "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac203-cv-mapping",
       "brand": "ADDAC System",
       "name": "ADDAC203 CV Mapping",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac204-vc-cv-mapping",
       "brand": "ADDAC System",
       "name": "ADDAC204 VC CV Mapping",
       "hp": 6,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac205-dual-oscilloscope-awg",
       "brand": "ADDAC System",
       "name": "ADDAC205 Dual Oscilloscope & AWG",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac207",
       "brand": "ADDAC System",
       "name": "ADDAC207",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac207-intuitive-quantizer-black",
       "brand": "ADDAC System",
       "name": "ADDAC207 Intuitive Quantizer (black)",
       "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "addac-system-addac213b",
-      "brand": "ADDAC System",
-      "name": "ADDAC213B",
-      "hp": 3,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac215",
       "brand": "ADDAC System",
       "name": "ADDAC215",
       "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "addac-system-addac216",
-      "brand": "ADDAC System",
-      "name": "ADDAC216",
-      "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac302-nchunk-control",
       "brand": "ADDAC System",
       "name": "ADDAC302 Nchunk Control",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac306",
       "brand": "ADDAC System",
       "name": "ADDAC306",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac501-complex-random",
       "brand": "ADDAC System",
       "name": "ADDAC501 Complex Random",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac501b-complex-random-expansion",
       "brand": "ADDAC System",
       "name": "ADDAC501B Complex Random Expansion",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac502-ultra-lissajous",
       "brand": "ADDAC System",
       "name": "ADDAC502 Ultra Lissajous",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac503-marble-physics",
       "brand": "ADDAC System",
       "name": "ADDAC503 Marble Physics",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac601-vc-fixed-filterbank",
       "brand": "ADDAC System",
       "name": "ADDAC601 VC Fixed Filterbank",
       "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac602-passive-ring-modulator",
       "brand": "ADDAC System",
       "name": "ADDAC602 Passive Ring Modulator",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac801-simple-mixer",
       "brand": "ADDAC System",
       "name": "ADDAC801 Simple Mixer",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac802-vc-mixer",
       "brand": "ADDAC System",
       "name": "ADDAC802 VC Mixer",
       "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac803",
       "brand": "ADDAC System",
       "name": "ADDAC803",
       "hp": 14,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "addac-system-addac804-audio-integrator",
       "brand": "ADDAC System",
       "name": "ADDAC804 AUDIO iNTEGRATOR",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "alm-busy-circuits-akemie-s-castle",
       "brand": "ALM Busy Circuits",
       "name": "Akemie's Castle",
       "hp": 18,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "alm-busy-circuits-pamela-s-new-workout",
       "brand": "ALM Busy Circuits",
       "name": "Pamela's NEW Workout",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "bastl-instruments-abc",
       "brand": "Bastl Instruments",
       "name": "ABC",
       "hp": 5,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "bastl-instruments-blind-panel",
-      "brand": "Bastl Instruments",
-      "name": "Blind Panel",
-      "hp": 1,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-ciao",
       "brand": "Bastl Instruments",
       "name": "Ciao!",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-cinnamon",
       "brand": "Bastl Instruments",
       "name": "Cinnamon",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-clutch",
       "brand": "Bastl Instruments",
       "name": "Clutch",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-cv-trinity",
       "brand": "Bastl Instruments",
       "name": "CV TRINITY",
       "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "bastl-instruments-cv-trinity-expander",
-      "brand": "Bastl Instruments",
-      "name": "CV Trinity Expander",
-      "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-dark-matter",
       "brand": "Bastl Instruments",
       "name": "Dark Matter",
       "hp": 13,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-dc-motor",
       "brand": "Bastl Instruments",
       "name": "DC MOTOR",
       "hp": 6,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-grandpa",
       "brand": "Bastl Instruments",
       "name": "GrandPa",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-ikarie",
       "brand": "Bastl Instruments",
       "name": "Ikarie",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-knit-rider",
       "brand": "Bastl Instruments",
       "name": "Knit Rider",
       "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-knit-rider-expander",
       "brand": "Bastl Instruments",
       "name": "Knit Rider Expander",
       "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-little-nerd",
       "brand": "Bastl Instruments",
       "name": "Little Nerd",
       "hp": 6,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-multiple",
       "brand": "Bastl Instruments",
       "name": "Multiple",
       "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-neo-trinity",
       "brand": "Bastl Instruments",
       "name": "Neo Trinity",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-noise-square",
       "brand": "Bastl Instruments",
       "name": "Noise Square",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-pizza",
       "brand": "Bastl Instruments",
       "name": "Pizza",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-propust",
       "brand": "Bastl Instruments",
       "name": "Propust",
       "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-quattro-figaro",
       "brand": "Bastl Instruments",
       "name": "Quattro Figaro",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-sense",
       "brand": "Bastl Instruments",
       "name": "Sense",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-servo",
       "brand": "Bastl Instruments",
       "name": "SERVO",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-skis",
       "brand": "Bastl Instruments",
       "name": "Skis",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-solenoid",
       "brand": "Bastl Instruments",
       "name": "SOLENOID",
       "hp": 5,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "bastl-instruments-solenoid-cv-velocity-expander",
-      "brand": "Bastl Instruments",
-      "name": "Solenoid CV Velocity Expander",
-      "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-spa",
       "brand": "Bastl Instruments",
       "name": "SPA",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-spaghetti",
       "brand": "Bastl Instruments",
       "name": "Spaghetti",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-tea-kick",
       "brand": "Bastl Instruments",
       "name": "Tea Kick",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-wackel-kontakt",
       "brand": "Bastl Instruments",
       "name": "Wackel Kontakt",
       "hp": 1,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "bastl-instruments-waver",
       "brand": "Bastl Instruments",
       "name": "Waver",
       "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-adsr",
-      "brand": "Befaco",
-      "name": "ADSR",
-      "hp": 11,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-bandit",
       "brand": "Befaco",
       "name": "Bandit",
       "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-befaco-slicer-v3",
-      "brand": "Befaco",
-      "name": "BEFACO SLICER V3",
-      "hp": 20,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-bf20-vcf",
-      "brand": "Befaco",
-      "name": "BF20 VCF",
-      "hp": 11,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-chopping-kinky",
       "brand": "Befaco",
       "name": "Chopping Kinky",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-crush-delay",
       "brand": "Befaco",
       "name": "Crush Delay",
       "hp": 11,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-dual-atenuverter",
       "brand": "Befaco",
       "name": "Dual Atenuverter",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-even-vco",
       "brand": "Befaco",
       "name": "Even VCO",
       "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-hexa-vca",
-      "brand": "Befaco",
-      "name": "Hexa VCA",
-      "hp": 17,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-hexmix-vca",
       "brand": "Befaco",
       "name": "Hexmix VCA",
       "hp": 12,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-input-output",
-      "brand": "Befaco",
-      "name": "Input/Output",
-      "hp": 11,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-instrument-interface",
-      "brand": "Befaco",
-      "name": "Instrument Interface",
-      "hp": 11,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-instrument-interface-v2",
-      "brand": "Befaco",
-      "name": "Instrument Interface v2",
-      "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "befaco-lich",
       "brand": "Befaco",
       "name": "Lich",
       "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-midi-thing-v2",
       "brand": "Befaco",
       "name": "MIDI Thing V2",
       "hp": 6,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-mixer",
       "brand": "Befaco",
       "name": "Mixer",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-muxlicer",
       "brand": "Befaco",
       "name": "Muxlicer",
       "hp": 16,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-noise-lag",
-      "brand": "Befaco",
-      "name": "Noise & Lag",
-      "hp": 11,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-noise-plethora",
       "brand": "Befaco",
       "name": "Noise Plethora",
       "hp": 14,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-octaves-vco",
       "brand": "Befaco",
       "name": "Octaves VCO",
       "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-out",
       "brand": "Befaco",
       "name": "Out",
       "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-output-module-with-headphones-out",
-      "brand": "Befaco",
-      "name": "Output module with headphones out.",
-      "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-pip-filter",
-      "brand": "Befaco",
-      "name": "Pip Filter",
-      "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-pip-lfo",
-      "brand": "Befaco",
-      "name": "Pip LFO",
-      "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-pip-slope",
-      "brand": "Befaco",
-      "name": "Pip Slope",
-      "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-quad-vca",
-      "brand": "Befaco",
-      "name": "QUAD VCA",
-      "hp": 11,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-quad-vca-v2",
-      "brand": "Befaco",
-      "name": "Quad VCA V2",
-      "hp": 11,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-rampage",
       "brand": "Befaco",
       "name": "Rampage",
       "hp": 18,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-ring-mod",
-      "brand": "Befaco",
-      "name": "RING MOD",
-      "hp": 11,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-s-h-lag",
-      "brand": "Befaco",
-      "name": "S&H + Lag",
-      "hp": 11,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-sallen-key-filter-bf-22",
-      "brand": "Befaco",
-      "name": "Sallen Key Filter BF-22",
-      "hp": 17,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "befaco-slew",
       "brand": "Befaco",
       "name": "Slew",
       "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-slicer-v3",
-      "brand": "Befaco",
-      "name": "Slicer V3",
-      "hp": 20,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-slope-gen-282",
-      "brand": "Befaco",
-      "name": "Slope Gen 282",
-      "hp": 11,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "befaco-stmix",
       "brand": "Befaco",
       "name": "STmix",
       "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-tube-distortion-vca",
-      "brand": "Befaco",
-      "name": "Tube Distortion VCA",
-      "hp": 11,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "befaco-vco-iii",
-      "brand": "Befaco",
-      "name": "VCO III",
-      "hp": 11,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-adsr-vc2",
-      "brand": "Cwejman",
-      "name": "ADSR-VC2",
-      "hp": 20,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-ai-2",
-      "brand": "Cwejman",
-      "name": "AI-2",
-      "hp": 12,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-ap-1",
-      "brand": "Cwejman",
-      "name": "AP-1",
-      "hp": 18,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-att-4",
-      "brand": "Cwejman",
-      "name": "ATT-4",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-bld",
-      "brand": "Cwejman",
-      "name": "BLD",
-      "hp": 24,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-crv-24",
-      "brand": "Cwejman",
-      "name": "CRV-24",
-      "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-ctg-vc",
-      "brand": "Cwejman",
-      "name": "CTG-VC",
-      "hp": 14,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "cwejman-d-lfo",
       "brand": "Cwejman",
       "name": "D-LFO",
       "hp": 12,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-dmf-2",
-      "brand": "Cwejman",
-      "name": "DMF-2",
-      "hp": 16,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-fsh-1",
-      "brand": "Cwejman",
-      "name": "FSH-1",
-      "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-ins-2mx",
-      "brand": "Cwejman",
-      "name": "INS-2MX",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-mmf-1",
-      "brand": "Cwejman",
-      "name": "MMF-1",
-      "hp": 14,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "cwejman-mmf-2",
       "brand": "Cwejman",
       "name": "MMF-2",
       "hp": 26,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-mmf-6",
-      "brand": "Cwejman",
-      "name": "MMF-6",
-      "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-mx-4s",
-      "brand": "Cwejman",
-      "name": "MX-4S",
-      "hp": 20,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-ns-4-noise-and-s-h",
-      "brand": "Cwejman",
-      "name": "NS-4 Noise and S&H",
-      "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "cwejman-ph-4",
       "brand": "Cwejman",
       "name": "PH-4",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "cwejman-res-4",
       "brand": "Cwejman",
       "name": "RES-4",
       "hp": 24,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-rg-6",
-      "brand": "Cwejman",
-      "name": "RG-6",
-      "hp": 16,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-rm-2s",
-      "brand": "Cwejman",
-      "name": "RM-2S",
-      "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "cwejman-sph-2",
       "brand": "Cwejman",
       "name": "SPH-2",
       "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-vc-fc-forward-compressor",
-      "brand": "Cwejman",
-      "name": "VC-FC Forward Compressor",
-      "hp": 18,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-vc-fcs-stereo-forward-compressor",
-      "brand": "Cwejman",
-      "name": "VC-FCS Stereo Forward Compressor",
-      "hp": 18,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-vca-2p",
-      "brand": "Cwejman",
-      "name": "VCA-2P",
-      "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "cwejman-vca-4mx",
       "brand": "Cwejman",
       "name": "VCA-4MX",
       "hp": 20,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-vceq-3",
-      "brand": "Cwejman",
-      "name": "VCEQ-3",
-      "hp": 16,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "cwejman-vco-2rm",
       "brand": "Cwejman",
       "name": "VCO-2RM",
       "hp": 20,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-vco-6",
-      "brand": "Cwejman",
-      "name": "VCO-6",
-      "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "cwejman-vm-1",
-      "brand": "Cwejman",
-      "name": "VM-1",
-      "hp": 26,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-101-1",
       "brand": "Doepfer",
       "name": "A-101-1",
       "hp": 16,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-101-2",
       "brand": "Doepfer",
       "name": "A-101-2",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-101-3",
       "brand": "Doepfer",
       "name": "A-101-3",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "doepfer-a-101-4",
       "brand": "Doepfer",
       "name": "A-101-4",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-101-6",
       "brand": "Doepfer",
       "name": "A-101-6",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-101-9",
       "brand": "Doepfer",
       "name": "A-101-9",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "doepfer-a-102",
       "brand": "Doepfer",
       "name": "A-102",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-103",
       "brand": "Doepfer",
       "name": "A-103",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-104",
       "brand": "Doepfer",
       "name": "A-104",
       "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-105",
       "brand": "Doepfer",
       "name": "A-105",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-106-1",
       "brand": "Doepfer",
       "name": "A-106-1",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-106-5",
       "brand": "Doepfer",
       "name": "A-106-5",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "doepfer-a-106-5-sem",
       "brand": "Doepfer",
       "name": "A-106-5 SEM",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-106-6",
       "brand": "Doepfer",
       "name": "A-106-6",
       "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-107",
       "brand": "Doepfer",
       "name": "A-107",
       "hp": 26,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-108",
       "brand": "Doepfer",
       "name": "A-108",
       "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-109-discontinued",
       "brand": "Doepfer",
       "name": "A-109 (Discontinued)",
       "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-110",
       "brand": "Doepfer",
       "name": "A-110",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-110-1",
       "brand": "Doepfer",
       "name": "A-110-1",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "doepfer-a-111-1",
       "brand": "Doepfer",
       "name": "A-111-1",
       "hp": 14,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-111-5",
       "brand": "Doepfer",
       "name": "A-111-5",
       "hp": 24,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-112",
       "brand": "Doepfer",
       "name": "A-112",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-113",
       "brand": "Doepfer",
       "name": "A-113",
       "hp": 26,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-114",
       "brand": "Doepfer",
       "name": "A-114",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-115",
       "brand": "Doepfer",
       "name": "A-115",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-116",
       "brand": "Doepfer",
       "name": "A-116",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-117",
       "brand": "Doepfer",
       "name": "A-117",
       "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "doepfer-a-118-1",
-      "brand": "Doepfer",
-      "name": "A-118-1",
-      "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-119",
       "brand": "Doepfer",
       "name": "A-119",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-124-se",
       "brand": "Doepfer",
       "name": "A-124 SE",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-137-2",
       "brand": "Doepfer",
       "name": "A-137-2",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "doepfer-a-138m",
       "brand": "Doepfer",
       "name": "A-138m",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-140",
       "brand": "Doepfer",
       "name": "A-140",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "doepfer-a-141-4",
       "brand": "Doepfer",
       "name": "A-141-4",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-151",
       "brand": "Doepfer",
       "name": "A-151",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-155",
       "brand": "Doepfer",
       "name": "A-155",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-156",
       "brand": "Doepfer",
       "name": "A-156",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-160-2",
       "brand": "Doepfer",
       "name": "A-160-2",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-161",
       "brand": "Doepfer",
       "name": "A-161",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-162",
       "brand": "Doepfer",
       "name": "A-162",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-163",
       "brand": "Doepfer",
       "name": "A-163",
       "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "doepfer-a-170-1",
-      "brand": "Doepfer",
-      "name": "A-170-1",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "doepfer-a-170-2",
-      "brand": "Doepfer",
-      "name": "A-170-2",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "doepfer-a-180-1",
-      "brand": "Doepfer",
-      "name": "A-180-1",
-      "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-180-2-multiples",
       "brand": "Doepfer",
       "name": "A-180-2 Multiples",
       "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-180-3",
       "brand": "Doepfer",
       "name": "A-180-3",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-181",
       "brand": "Doepfer",
       "name": "A-181",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-182-1",
       "brand": "Doepfer",
       "name": "A-182-1",
       "hp": 6,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-182-2",
       "brand": "Doepfer",
       "name": "A-182-2",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-183-1",
       "brand": "Doepfer",
       "name": "A-183-1",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-183-2",
       "brand": "Doepfer",
       "name": "A-183-2",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-184-1",
       "brand": "Doepfer",
       "name": "A-184-1",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-184-2",
       "brand": "Doepfer",
       "name": "A-184-2",
       "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "doepfer-a-185-1",
-      "brand": "Doepfer",
-      "name": "A-185-1",
-      "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "doepfer-a-185-2",
       "brand": "Doepfer",
       "name": "A-185-2",
       "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-alpha",
-      "brand": "Dreadbox",
-      "name": "Alpha",
-      "hp": 22,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-ataxia",
-      "brand": "Dreadbox",
-      "name": "Ataxia",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-delta",
-      "brand": "Dreadbox",
-      "name": "Delta",
-      "hp": 16,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-drips",
-      "brand": "Dreadbox",
-      "name": "Drips",
-      "hp": 21,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-eudemonia",
-      "brand": "Dreadbox",
-      "name": "Eudemonia",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-gamma",
-      "brand": "Dreadbox",
-      "name": "Gamma",
-      "hp": 22,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-hades",
-      "brand": "Dreadbox",
-      "name": "Hades",
-      "hp": 42,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-hysteria-1-0",
-      "brand": "Dreadbox",
-      "name": "Hysteria 1.0",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-lamda",
-      "brand": "Dreadbox",
-      "name": "Lamda",
-      "hp": 20,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-milky-way-1u-silver",
-      "brand": "Dreadbox",
-      "name": "Milky Way 1U (silver)",
-      "hp": 22,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-nostalgia-1-0",
-      "brand": "Dreadbox",
-      "name": "Nostalgia 1.0",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-omikron",
-      "brand": "Dreadbox",
-      "name": "Omikron",
-      "hp": 22,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-splash",
-      "brand": "Dreadbox",
-      "name": "Splash",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-theta",
-      "brand": "Dreadbox",
-      "name": "Theta",
-      "hp": 20,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-two-of-cups-black",
-      "brand": "Dreadbox",
-      "name": "Two Of Cups (black)",
-      "hp": 6,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "dreadbox-utopia",
       "brand": "Dreadbox",
       "name": "Utopia",
       "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-attenuator",
-      "brand": "Dreadbox",
-      "name": "WL Attenuator",
-      "hp": 2,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-divider",
-      "brand": "Dreadbox",
-      "name": "WL Divider",
-      "hp": 2,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-drive",
-      "brand": "Dreadbox",
-      "name": "WL Drive",
-      "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-dual-vca",
-      "brand": "Dreadbox",
-      "name": "WL Dual VCA",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-echo",
-      "brand": "Dreadbox",
-      "name": "WL Echo",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-envelope",
-      "brand": "Dreadbox",
-      "name": "WL Envelope",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-filter",
-      "brand": "Dreadbox",
-      "name": "WL Filter",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-lfo",
-      "brand": "Dreadbox",
-      "name": "WL LFO",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-mixer",
-      "brand": "Dreadbox",
-      "name": "WL Mixer",
-      "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-modulator",
-      "brand": "Dreadbox",
-      "name": "WL Modulator",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-multiple",
-      "brand": "Dreadbox",
-      "name": "WL Multiple",
-      "hp": 2,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-murmux-filter",
-      "brand": "Dreadbox",
-      "name": "WL Murmux Filter",
-      "hp": 12,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-oscillator",
-      "brand": "Dreadbox",
-      "name": "WL Oscillator",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-phaser",
-      "brand": "Dreadbox",
-      "name": "WL Phaser",
-      "hp": 12,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-random",
-      "brand": "Dreadbox",
-      "name": "WL Random",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-wl-reflector",
-      "brand": "Dreadbox",
-      "name": "WL Reflector",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "dreadbox-ypsilon",
-      "brand": "Dreadbox",
-      "name": "Ypsilon",
-      "hp": 22,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-autopilot-golden",
-      "brand": "Endorphin.es",
-      "name": "Autopilot (golden)",
-      "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-blck-noir-black",
-      "brand": "Endorphin.es",
-      "name": "Blck_Noir (black)",
-      "hp": 30,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "endorphin-es-cockpit-black",
       "brand": "Endorphin.es",
       "name": "Cockpit (black)",
       "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-cockpit-golden",
-      "brand": "Endorphin.es",
-      "name": "Cockpit (golden)",
-      "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-furthrrrr-generator-black",
-      "brand": "Endorphin.es",
-      "name": "Furthrrrr Generator (black)",
-      "hp": 30,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-furthrrrr-generator-golden",
-      "brand": "Endorphin.es",
-      "name": "Furthrrrr Generator (golden)",
-      "hp": 30,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-gateway-terminal-expansion-black",
-      "brand": "Endorphin.es",
-      "name": "Gateway Terminal Expansion (black)",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-gateway-terminal-expansion-golden",
-      "brand": "Endorphin.es",
-      "name": "Gateway Terminal Expansion (golden)",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-grand-terminal-black",
-      "brand": "Endorphin.es",
-      "name": "Grand Terminal (black)",
-      "hp": 26,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-grand-terminal-golden",
-      "brand": "Endorphin.es",
-      "name": "Grand Terminal (golden)",
-      "hp": 26,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-milky-way-1u-silver",
-      "brand": "Endorphin.es",
-      "name": "Milky Way 1U (silver)",
-      "hp": 22,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-shuttle-control-black",
-      "brand": "Endorphin.es",
-      "name": "Shuttle Control (black)",
-      "hp": 12,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-shuttle-control-golden",
-      "brand": "Endorphin.es",
-      "name": "Shuttle Control (golden)",
-      "hp": 12,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-shuttle-mate-black",
-      "brand": "Endorphin.es",
-      "name": "Shuttle Mate (black)",
-      "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-shuttle-mate-golden",
-      "brand": "Endorphin.es",
-      "name": "Shuttle Mate (golden)",
-      "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-shuttle-system-black",
-      "brand": "Endorphin.es",
-      "name": "Shuttle System (black)",
-      "hp": 84,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-shuttle-system-golden",
-      "brand": "Endorphin.es",
-      "name": "Shuttle System (golden)",
-      "hp": 84,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-terminal",
-      "brand": "Endorphin.es",
-      "name": "Terminal",
-      "hp": 26,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "endorphin-es-two-of-cups-black",
-      "brand": "Endorphin.es",
-      "name": "Two Of Cups (black)",
-      "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-black-input",
-      "brand": "Erica Synths",
-      "name": "Black Input",
-      "hp": 12,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-black-varishape-vco-1",
-      "brand": "Erica Synths",
-      "name": "Black Varishape VCO 1",
-      "hp": 18,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-black-varishape-vco-2",
-      "brand": "Erica Synths",
-      "name": "Black Varishape VCO 2",
-      "hp": 18,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "erica-synths-black-vc-eg-expander",
       "brand": "Erica Synths",
       "name": "Black VC EG Expander",
       "hp": 5,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "erica-synths-black-xfade",
       "brand": "Erica Synths",
       "name": "Black XFade",
       "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-dtech-vcf",
-      "brand": "Erica Synths",
-      "name": "Dtech VCF",
-      "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-erica-fusion-analogue-chorus-delay",
-      "brand": "Erica Synths",
-      "name": "Erica Fusion analogue Chorus/Delay",
-      "hp": 17,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-erica-fusion-vcf",
-      "brand": "Erica Synths",
-      "name": "Erica Fusion VCF",
-      "hp": 16,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-fusion-ring-modulator",
-      "brand": "Erica Synths",
-      "name": "Fusion Ring modulator",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-fusion-vca",
-      "brand": "Erica Synths",
-      "name": "Fusion VCA",
-      "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "erica-synths-fusion-vco",
       "brand": "Erica Synths",
       "name": "Fusion VCO",
       "hp": 16,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "erica-synths-graphic-vco",
       "brand": "Erica Synths",
       "name": "Graphic VCO",
       "hp": 16,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-matrix-mixer",
-      "brand": "Erica Synths",
-      "name": "Matrix Mixer",
-      "hp": 29,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "erica-synths-midi-to-clock-v2",
       "brand": "Erica Synths",
       "name": "Midi to Clock V2",
       "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-mixer-splitter",
-      "brand": "Erica Synths",
-      "name": "Mixer/Splitter",
-      "hp": 6,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "erica-synths-modulator",
       "brand": "Erica Synths",
       "name": "Modulator",
       "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-moog-parametric-equalizer",
-      "brand": "Erica Synths",
-      "name": "Moog Parametric Equalizer",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-mutant-brain",
-      "brand": "Erica Synths",
-      "name": "Mutant Brain",
-      "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "erica-synths-pico-drums",
       "brand": "Erica Synths",
       "name": "Pico DRUMS",
       "hp": 3,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "erica-synths-pico-dsp",
       "brand": "Erica Synths",
       "name": "Pico DSP",
       "hp": 3,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "erica-synths-pico-out",
       "brand": "Erica Synths",
       "name": "Pico OUT",
       "hp": 3,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-pico-vc-eg",
-      "brand": "Erica Synths",
-      "name": "Pico VC EG",
-      "hp": 3,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-polivoks-ish-adsr-eg-diy-kit",
-      "brand": "Erica Synths",
-      "name": "Polivoks(ish) ADSR EG DIY kit",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-polivoks-mixer",
-      "brand": "Erica Synths",
-      "name": "Polivoks Mixer",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-polivoks-modulator",
-      "brand": "Erica Synths",
-      "name": "Polivoks Modulator",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-polivoks-modulator-custom-panel",
-      "brand": "Erica Synths",
-      "name": "Polivoks Modulator (Custom Panel)",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-polivoks-vca",
-      "brand": "Erica Synths",
-      "name": "Polivoks VCA",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-polivoks-vcf",
-      "brand": "Erica Synths",
-      "name": "Polivoks VCF",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-polivoks-vcf-custom-panel",
-      "brand": "Erica Synths",
-      "name": "Polivoks VCF (Custom Panel)",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-polivoks-vco1",
-      "brand": "Erica Synths",
-      "name": "Polivoks VCO1",
-      "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-polivoks-vco2",
-      "brand": "Erica Synths",
-      "name": "Polivoks VCO2",
-      "hp": 14,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "erica-synths-sample-drum",
       "brand": "Erica Synths",
       "name": "Sample Drum",
       "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-sequential-switch",
-      "brand": "Erica Synths",
-      "name": "Sequential Switch",
-      "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-synth-voice",
-      "brand": "Erica Synths",
-      "name": "Synth Voice",
-      "hp": 30,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "erica-synths-toms",
       "brand": "Erica Synths",
       "name": "TOMS",
       "hp": 16,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-vco-signal-mixer",
-      "brand": "Erica Synths",
-      "name": "VCO signal Mixer",
-      "hp": 17,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-wogglebug",
-      "brand": "Erica Synths",
-      "name": "Wogglebug",
-      "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "erica-synths-wogglebug-diy",
-      "brand": "Erica Synths",
-      "name": "wogglebug DIY",
-      "hp": 14,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "expert-sleepers-disting-ex",
       "brand": "Expert Sleepers",
       "name": "disting EX",
       "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-disting-mk1",
-      "brand": "Expert Sleepers",
-      "name": "Disting mk1",
-      "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-disting-mk3",
-      "brand": "Expert Sleepers",
-      "name": "Disting mk3",
-      "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "expert-sleepers-disting-mk4",
       "brand": "Expert Sleepers",
       "name": "Disting mk4",
       "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-1",
-      "brand": "Expert Sleepers",
-      "name": "ES-1",
-      "hp": 12,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-1-db25-version",
-      "brand": "Expert Sleepers",
-      "name": "ES-1 (DB25 version)",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-2-2",
-      "brand": "Expert Sleepers",
-      "name": "ES-2-2",
-      "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-3",
-      "brand": "Expert Sleepers",
-      "name": "ES-3",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-3-mk2",
-      "brand": "Expert Sleepers",
-      "name": "ES-3 mk2",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-3-mk3",
-      "brand": "Expert Sleepers",
-      "name": "ES-3 MK3",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-3-mk4",
-      "brand": "Expert Sleepers",
-      "name": "ES-3 mk4",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-4-spdif-cv-interface",
-      "brand": "Expert Sleepers",
-      "name": "ES-4 SPDIF/CV Interface",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-40-spdif-interface",
-      "brand": "Expert Sleepers",
-      "name": "ES-40 SPDIF Interface",
-      "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-5-mk2",
-      "brand": "Expert Sleepers",
-      "name": "ES-5 mk2",
-      "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-6",
-      "brand": "Expert Sleepers",
-      "name": "ES-6",
-      "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-6-mk2",
-      "brand": "Expert Sleepers",
-      "name": "ES-6 mk2",
-      "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-es-7-cv-input-expander",
-      "brand": "Expert Sleepers",
-      "name": "ES-7 CV Input Expander",
-      "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "expert-sleepers-es-8",
       "brand": "Expert Sleepers",
       "name": "ES-8",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "expert-sleepers-es-9",
       "brand": "Expert Sleepers",
       "name": "ES-9",
       "hp": 16,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-esx-4cv",
-      "brand": "Expert Sleepers",
-      "name": "ESX-4CV",
-      "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-esx-8cv-cv-expander",
-      "brand": "Expert Sleepers",
-      "name": "ESX-8CV CV Expander",
-      "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-esx-8gt-gate-expander",
-      "brand": "Expert Sleepers",
-      "name": "ESX-8GT Gate Expander",
-      "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-esx-8gt-mk2-gate-expander",
-      "brand": "Expert Sleepers",
-      "name": "ESX-8GT mk2 Gate Expander",
-      "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "expert-sleepers-esx-8gt-mk3",
       "brand": "Expert Sleepers",
       "name": "ESX-8GT mk3",
       "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-esx-8md-mk1",
-      "brand": "Expert Sleepers",
-      "name": "ESX-8MD (mk1)",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-esx-8md-mk2",
-      "brand": "Expert Sleepers",
-      "name": "ESX-8MD mk2",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-fh-1-faderhost",
-      "brand": "Expert Sleepers",
-      "name": "FH-1 'faderHost'",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-fh-2-factotum",
-      "brand": "Expert Sleepers",
-      "name": "FH-2 'factotum'",
-      "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "expert-sleepers-fhx-1-output-expander-for-fh-1",
-      "brand": "Expert Sleepers",
-      "name": "FHX-1 Output Expander for FH-1",
-      "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "instruo-arbhar",
       "brand": "Instruo",
       "name": "arbhar",
       "hp": 18,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "instruo-c-is-2",
-      "brand": "Instruo",
-      "name": "c\u00e8is[2]",
-      "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "instruo-chd",
       "brand": "Instruo",
-      "name": "\u00f8chd",
+      "name": "øchd",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "instruo-d-il",
       "brand": "Instruo",
-      "name": "d\u00e0il",
+      "name": "dàil",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "instruo-dh",
       "brand": "Instruo",
-      "name": "dh\u00e0",
+      "name": "dhà",
       "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "instruo-glo-c",
-      "brand": "Instruo",
-      "name": "glo\u0304c",
-      "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "instruo-l-badh",
       "brand": "Instruo",
-      "name": "L\u00fabadh",
+      "name": "Lúbadh",
       "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "instruo-re",
       "brand": "Instruo",
-      "name": "\u00edre",
+      "name": "íre",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-att",
       "brand": "Intellijel",
-      "name": "\u03bcAtt",
+      "name": "μAtt",
       "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-audio-interface",
-      "brand": "Intellijel",
-      "name": "Audio Interface",
-      "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-aux-mix",
-      "brand": "Intellijel",
-      "name": "Aux Mix",
-      "hp": 32,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-azimuth",
-      "brand": "Intellijel",
-      "name": "Azimuth",
-      "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-buff-mult",
       "brand": "Intellijel",
       "name": "Buff Mult",
       "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-buff-mult-1u",
       "brand": "Intellijel",
       "name": "Buff Mult 1U",
       "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-corgasmatron",
-      "brand": "Intellijel",
-      "name": "Corgasmatron",
-      "hp": 16,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-cylonix-cyclebox-ii",
-      "brand": "Intellijel",
-      "name": "Cylonix - Cyclebox II",
-      "hp": 16,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-dixie",
-      "brand": "Intellijel",
-      "name": "Dixie",
-      "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-dixie-ii",
       "brand": "Intellijel",
       "name": "Dixie II",
       "hp": 8,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-dr-octature",
-      "brand": "Intellijel",
-      "name": "Dr. Octature",
-      "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-hex-vca",
-      "brand": "Intellijel",
-      "name": "Hex VCA",
-      "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-mems-mic",
       "brand": "Intellijel",
       "name": "MEMS Mic",
       "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-mems-mic-1u",
       "brand": "Intellijel",
       "name": "MEMS Mic 1U",
       "hp": 2,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-metropolis",
       "brand": "Intellijel",
       "name": "Metropolis",
       "hp": 34,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-multigrain",
       "brand": "Intellijel",
       "name": "Multigrain",
       "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-mutamix",
       "brand": "Intellijel",
       "name": "Mutamix",
       "hp": 18,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-planar",
-      "brand": "Intellijel",
-      "name": "Planar",
-      "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-pulse-tornado",
-      "brand": "Intellijel",
-      "name": "Pulse Tornado",
-      "hp": 18,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-quad-vca",
       "brand": "Intellijel",
       "name": "Quad VCA",
       "hp": 12,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-quadra",
-      "brand": "Intellijel",
-      "name": "Quadra",
-      "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "intellijel-quadra-expander",
       "brand": "Intellijel",
       "name": "Quadra Expander",
       "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-quadratt-1u",
       "brand": "Intellijel",
       "name": "Quadratt 1U",
       "hp": 28,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-quadrax",
       "brand": "Intellijel",
       "name": "Quadrax",
       "hp": 12,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-rubicon",
-      "brand": "Intellijel",
-      "name": "Rubicon",
-      "hp": 18,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "intellijel-rubicon-2",
       "brand": "Intellijel",
       "name": "Rubicon 2",
       "hp": 14,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-spock",
-      "brand": "Intellijel",
-      "name": "Spock",
-      "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "intellijel-stereo-i-o-1u",
       "brand": "Intellijel",
       "name": "Stereo I/O 1U",
       "hp": 20,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-stereo-line-out-1u",
-      "brand": "Intellijel",
-      "name": "Stereo Line Out 1U",
-      "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-swells",
       "brand": "Intellijel",
       "name": "Swells",
       "hp": 20,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "intellijel-vcf",
-      "brand": "Intellijel",
-      "name": "\u00b5VCF",
-      "hp": 6,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "intellijel-xfade-1u",
       "brand": "Intellijel",
       "name": "Xfade 1U",
       "hp": 26,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "joranalogue-filter-8",
       "brand": "Joranalogue",
       "name": "Filter 8",
       "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "joranalogue-generate-3",
       "brand": "Joranalogue",
       "name": "Generate 3",
       "hp": 16,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "make-noise-1hp-blank",
       "brand": "Make Noise",
       "name": "1hp Blank",
       "hp": 1,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-6hp-blank",
       "brand": "Make Noise",
       "name": "6hp Blank",
       "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "make-noise-analogue-memory",
-      "brand": "Make Noise",
-      "name": "Analogue Memory",
-      "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-blank-4hp",
       "brand": "Make Noise",
       "name": "Blank 4hp",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-brains",
       "brand": "Make Noise",
       "name": "Brains",
       "hp": 4,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "make-noise-din-power",
-      "brand": "Make Noise",
-      "name": "Din Power",
-      "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-dpo",
       "brand": "Make Noise",
       "name": "DPO",
       "hp": 30,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "make-noise-echophon",
       "brand": "Make Noise",
       "name": "Echophon",
       "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-erbe-verb",
       "brand": "Make Noise",
       "name": "Erbe-Verb",
       "hp": 20,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "make-noise-format-jumbler",
-      "brand": "Make Noise",
-      "name": "Format Jumbler",
-      "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-function",
       "brand": "Make Noise",
       "name": "Function",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-fxdf",
       "brand": "Make Noise",
       "name": "FXDf",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-maths",
       "brand": "Make Noise",
       "name": "Maths",
       "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "make-noise-mimeophon",
       "brand": "Make Noise",
       "name": "Mimeophon",
       "hp": 16,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-moddemix",
       "brand": "Make Noise",
       "name": "modDemix",
       "hp": 6,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "make-noise-moddemod",
-      "brand": "Make Noise",
-      "name": "modDemod",
-      "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-morphagene",
       "brand": "Make Noise",
       "name": "Morphagene",
       "hp": 18,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "make-noise-mysteron",
       "brand": "Make Noise",
       "name": "Mysteron",
       "hp": 14,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-optomix",
       "brand": "Make Noise",
       "name": "Optomix",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-phonogene",
       "brand": "Make Noise",
       "name": "Phonogene",
       "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-pressure-points",
       "brand": "Make Noise",
       "name": "Pressure Points",
       "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-qmmg",
       "brand": "Make Noise",
       "name": "QMMG",
       "hp": 24,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-rene",
       "brand": "Make Noise",
       "name": "Rene",
       "hp": 34,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-rene-2",
       "brand": "Make Noise",
       "name": "Rene 2",
       "hp": 34,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "make-noise-rene-limited-edition-white",
-      "brand": "Make Noise",
-      "name": "Rene (Limited Edition White)",
-      "hp": 34,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "make-noise-richter-wogglebug-2014",
-      "brand": "Make Noise",
-      "name": "Richter Wogglebug 2014",
-      "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "make-noise-rxmx",
       "brand": "Make Noise",
       "name": "RxMx",
       "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-strega",
       "brand": "Make Noise",
       "name": "Strega",
       "hp": 45,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "make-noise-wogglebug",
       "brand": "Make Noise",
       "name": "Wogglebug",
       "hp": 10,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "mutable-instruments-anushri-eurorack",
-      "brand": "Mutable Instruments",
-      "name": "Anushri (Eurorack)",
-      "hp": 42,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "mutable-instruments-anushri-exp",
-      "brand": "Mutable Instruments",
-      "name": "anushri exp",
-      "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "mutable-instruments-braids",
       "brand": "Mutable Instruments",
       "name": "Braids",
       "hp": 16,
-      "provenance": "OBSERVED"
-    },
-    {
-      "slug": "mutable-instruments-braids-old-version",
-      "brand": "Mutable Instruments",
-      "name": "Braids (old version)",
-      "hp": 16,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "mutable-instruments-clouds",
       "brand": "Mutable Instruments",
       "name": "Clouds",
       "hp": 18,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "mutable-instruments-edges",
       "brand": "Mutable Instruments",
       "name": "Edges",
       "hp": 20,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "mutable-instruments-frames",
       "brand": "Mutable Instruments",
       "name": "Frames",
       "hp": 18,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "mutable-instruments-grids",
       "brand": "Mutable Instruments",
       "name": "Grids",
       "hp": 16,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "mutable-instruments-links",
       "brand": "Mutable Instruments",
       "name": "Links",
       "hp": 4,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "mutable-instruments-marbles",
       "brand": "Mutable Instruments",
       "name": "Marbles",
       "hp": 18,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "mutable-instruments-plaits",
       "brand": "Mutable Instruments",
       "name": "Plaits",
       "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "mutable-instruments-rings",
       "brand": "Mutable Instruments",
       "name": "Rings",
       "hp": 14,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "mutable-instruments-ripples",
       "brand": "Mutable Instruments",
       "name": "Ripples",
       "hp": 8,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "mutable-instruments-stages",
       "brand": "Mutable Instruments",
       "name": "Stages",
       "hp": 14,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "mutable-instruments-tides-2014-version",
       "brand": "Mutable Instruments",
       "name": "Tides (2014 version)",
       "hp": 14,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "mutable-instruments-yarns",
       "brand": "Mutable Instruments",
       "name": "Yarns",
       "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "maker_or_retail"
     },
     {
       "slug": "noise-engineering-basimilus-iteritas-alter",
       "brand": "Noise Engineering",
       "name": "Basimilus Iteritas Alter",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "noise-engineering-desmodus-versio",
       "brand": "Noise Engineering",
       "name": "Desmodus Versio",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "qu-bit-electronix-chord-v2",
       "brand": "Qu-Bit Electronix",
       "name": "Chord v2",
       "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "qu-bit-electronix-data-bender",
       "brand": "Qu-Bit Electronix",
       "name": "Data Bender",
       "hp": 12,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "xaoc-devices-batumi",
       "brand": "Xaoc Devices",
       "name": "Batumi",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     },
     {
       "slug": "xaoc-devices-zadar",
       "brand": "Xaoc Devices",
       "name": "Zadar",
       "hp": 10,
-      "provenance": "OBSERVED"
+      "provenance": "OBSERVED",
+      "source_class": "unknown_non_modulargrid"
     }
   ]
 }

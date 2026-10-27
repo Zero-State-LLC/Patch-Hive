@@ -1,0 +1,36 @@
+{
+ "batch": "maker-reverify-v1",
+ "source_batch": "modulargrid-provenance-v1",
+ "generated_at": "2026-10-17T12:20:22-0700",
+ "method": "maker pages only: brand homepages from maker-crawl-v1, sitemap/URL match, context.dev search for missing URLs; free fetch via scrape-router (http, crawl4ai); robots.txt honoured; ModularGrid never fetched; regex + deepseek/deepseek-v4.1-flash with verbatim check",
+ "modules": 542,
+ "module_status": {
+  "page_found": 208,
+  "page_no_specs_or_name_mismatch": 168,
+  "brand_unresolved": 82,
+  "no_url_search_cap": 51,
+  "no_maker_page": 26,
+  "robots_unreachable_or_disallowed": 7
+ },
+ "values_to_reverify": 2221,
+ "resolved": 418,
+ "resolved_same_as_archived": 324,
+ "resolved_maker_differs": 94,
+ "unresolved": 1803,
+ "unresolved_maker_page_silent": 421,
+ "modules_hp_flag": {
+  "maker_confirmed": 46,
+  "maker_differs": 12,
+  "note": "modules.hp is NOT NULL and fill-null only: differing hp not changed, row verification_status flagged"
+ },
+ "overlays": {
+  "module-power-depth-v10.json": 134,
+  "module-catalog-hp-v2.json": 93
+ },
+ "spend": {
+  "model_usd": 0.1516,
+  "context_dev_credits": 235,
+  "firecrawl_credits": 6,
+  "note": "context.dev cap was 200: 35 credits from an interrupted first trial were not carried into the run guard (overrun 35). Firecrawl 6 credits via router search fallback before it was disabled."
+ }
+}

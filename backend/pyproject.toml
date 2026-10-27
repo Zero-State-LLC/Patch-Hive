@@ -1,6 +1,6 @@
 [project]
 name = "patchhive-backend"
-version = "0.1.0"
+version = "0.3.0a2"
 description = "PatchHive Backend - Eurorack system design and patch exploration API"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -13,7 +13,7 @@ dependencies = [
     "psycopg2-binary==2.9.12",
     "pydantic==2.13.4",
     "pydantic-settings==2.14.2",
-    "PyJWT==2.13.0",
+    "PyJWT==2.15.0",
     "passlib[bcrypt]==1.7.4",
     "python-multipart==0.0.32",
     "email-validator==2.3.0",

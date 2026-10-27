@@ -1,0 +1,18 @@
+{
+  "paid_fetches": 159,
+  "credits_by_backend": {
+    "context_dev": 118.0,
+    "firecrawl": 33.0
+  },
+  "calls_by_method": {
+    "free_http": 561,
+    "skipped_no_key": 42,
+    "robots_unavailable": 95,
+    "cache": 12,
+    "context_dev": 123,
+    "robots_disallowed": 2,
+    "firecrawl": 36,
+    "skipped_paid_cap": 10
+  },
+  "updated_at": "2026-10-17T06:33:25Z"
+}

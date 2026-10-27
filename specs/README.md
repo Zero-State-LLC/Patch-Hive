@@ -10,7 +10,14 @@ Every feature follows:
 
 ## Active specifications
 
+- [001 — Rig intelligence (draft)](001-rig-intelligence/spec.md)
+- [002 — Patch-book publishing (draft)](002-patch-book-publishing/spec.md)
+- [003 — Catalog dataset pipeline (draft)](003-catalog-dataset-pipeline/spec.md)
+- [004 — Commerce (draft)](004-commerce/spec.md)
 - [005 — Decision Intelligence & Evidence Resolution](005-decision-intelligence/spec.md)
+- [006 — Cloudflare Edge Deploy with Clef Classifier](006-cloudflare-edge-clef/spec.md)
+- [007 — Evaluation Corpus Freeze & Controlled Staging Enablement (tasks)](007-evaluation-staging-enablement/tasks.md)
+- [008 — Dual-Path F5 Cutover & Design Engine Staging Receipts (tasks)](008-dual-path-f5-design-receipts/tasks.md)
 
 ## Authority map
 

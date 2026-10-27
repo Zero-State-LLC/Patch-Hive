@@ -8,7 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Iterable
@@ -33,16 +33,28 @@ from monetization.models import CreditsLedger  # noqa: E402, F401
 
 FIXTURE_PATH = Path(__file__).resolve().parents[1] / "fixtures" / "golden_demo_seed.json"
 
+# Demo/test-only seeded accounts (Spec 008 T030). These are fixture credentials for
+# local and staging demo hosts, not secrets. The seeder is the single source of
+# truth: staging walkthroughs log in with exactly these and never patch hashes.
+DEMO_USER_USERNAME = "golden_demo"
+DEMO_USER_PASSWORD = "demo-pass"
+DEMO_USER_ROLE = "User"
+DEMO_ADMIN_USERNAME = "admin_demo"
+DEMO_ADMIN_PASSWORD = "admin-pass"
+DEMO_ADMIN_ROLE = "Admin"
+
 
 @dataclass(frozen=True)
 class SeedResult:
     user_id: int
     username: str
-    password: str
+    password: str = field(repr=False)
     rig_id: int
     run_id: int
     patch_count: int
     run_fingerprint: str
+    admin_username: str = DEMO_ADMIN_USERNAME
+    admin_password: str = field(default=DEMO_ADMIN_PASSWORD, repr=False)
 
 
 MODULE_FIXTURES: dict[int, dict[str, Any]] = {
@@ -310,9 +322,9 @@ def seed_golden_demo(db: Session, fixture_path: Path = FIXTURE_PATH) -> SeedResu
     _ensure_case(db, fixture)
     _ensure_modules(db, fixture["rig"]["modules"])
 
-    user = _ensure_user(db, "golden_demo", "demo-pass", "User")
+    user = _ensure_user(db, DEMO_USER_USERNAME, DEMO_USER_PASSWORD, DEMO_USER_ROLE)
     # Canonical staging admin (avoid username "admin" — acceptance fixtures use that).
-    _ensure_user(db, "admin_demo", "admin-pass", "Admin")
+    _ensure_user(db, DEMO_ADMIN_USERNAME, DEMO_ADMIN_PASSWORD, DEMO_ADMIN_ROLE)
 
     existing_rack = db.query(Rack).filter(Rack.user_id == user.id).first()
     if existing_rack:
@@ -401,7 +413,7 @@ def seed_golden_demo(db: Session, fixture_path: Path = FIXTURE_PATH) -> SeedResu
     return SeedResult(
         user_id=user.id,
         username=user.username,
-        password="demo-pass",
+        password=DEMO_USER_PASSWORD,
         rig_id=rack.id,
         run_id=run.id,
         patch_count=len(patches),

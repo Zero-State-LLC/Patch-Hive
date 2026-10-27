@@ -1,0 +1,384 @@
+{
+  "dataset_version": "module-power-depth-overlay-v8",
+  "policy": "fill-null only; manufacturer-verified 2026-10-17; newest overlay wins for these modules (older overlays are skipped for them).",
+  "count": 21,
+  "entries": [
+    {
+      "brand": "ALM Busy Circuits",
+      "name": "Pamela's NEW Workout",
+      "power_12v_ma": 50,
+      "power_neg12v_ma": 5,
+      "power_5v_ma": null,
+      "depth_mm": 32.0,
+      "source_url": "https://busycircuits.com/alm017/",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://busycircuits.com/alm017/",
+      "sources": {
+        "power_12v_ma": "https://busycircuits.com/alm017/",
+        "power_neg12v_ma": "https://busycircuits.com/alm017/",
+        "depth_mm": "https://busycircuits.com/alm017/"
+      }
+    },
+    {
+      "brand": "Befaco",
+      "name": "Hexmix VCA",
+      "power_12v_ma": 50,
+      "power_neg12v_ma": 50,
+      "power_5v_ma": null,
+      "depth_mm": 20.0,
+      "source_url": "https://www.befaco.org/hexmix-vca/",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://www.befaco.org/hexmix-vca/",
+      "sources": {
+        "power_12v_ma": "https://www.befaco.org/hexmix-vca/",
+        "power_neg12v_ma": "https://www.befaco.org/hexmix-vca/",
+        "depth_mm": "https://www.befaco.org/hexmix-vca/"
+      }
+    },
+    {
+      "brand": "Doepfer",
+      "name": "A-106-5",
+      "power_12v_ma": 30,
+      "power_neg12v_ma": 20,
+      "power_5v_ma": null,
+      "depth_mm": 55.0,
+      "source_url": "https://doepfer.de/a1065.htm",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://doepfer.de/a1065.htm",
+      "sources": {
+        "power_12v_ma": "https://doepfer.de/a1065.htm",
+        "power_neg12v_ma": "https://doepfer.de/a1065.htm",
+        "depth_mm": "https://doepfer.de/a1065.htm"
+      }
+    },
+    {
+      "brand": "Doepfer",
+      "name": "A-110-1",
+      "power_12v_ma": 90,
+      "power_neg12v_ma": 20,
+      "power_5v_ma": null,
+      "depth_mm": 55.0,
+      "source_url": "https://doepfer.de/a110.htm",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://doepfer.de/a110.htm",
+      "sources": {
+        "power_12v_ma": "https://doepfer.de/a110.htm",
+        "power_neg12v_ma": "https://doepfer.de/a110.htm",
+        "depth_mm": "https://doepfer.de/a110.htm"
+      }
+    },
+    {
+      "brand": "Erica Synths",
+      "name": "Fusion VCO",
+      "power_12v_ma": 215,
+      "power_neg12v_ma": 185,
+      "power_5v_ma": null,
+      "depth_mm": 35.0,
+      "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/by-series/fusion-series/fusion-vco/",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://www.ericasynths.lv/shop/eurorack-modules/by-series/fusion-series/fusion-vco/",
+      "sources": {
+        "power_12v_ma": "https://www.ericasynths.lv/shop/eurorack-modules/by-series/fusion-series/fusion-vco/",
+        "power_neg12v_ma": "https://www.ericasynths.lv/shop/eurorack-modules/by-series/fusion-series/fusion-vco/",
+        "depth_mm": "https://www.ericasynths.lv/shop/eurorack-modules/by-series/fusion-series/fusion-vco/"
+      }
+    },
+    {
+      "brand": "Intellijel",
+      "name": "Quadrax",
+      "power_12v_ma": 106,
+      "power_neg12v_ma": 9,
+      "power_5v_ma": null,
+      "depth_mm": 38.0,
+      "source_url": "https://intellijel.com/shop/eurorack/quadrax/",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://intellijel.com/shop/eurorack/quadrax/",
+      "sources": {
+        "power_12v_ma": "https://intellijel.com/shop/eurorack/quadrax/",
+        "power_neg12v_ma": "https://intellijel.com/shop/eurorack/quadrax/",
+        "depth_mm": "https://intellijel.com/shop/eurorack/quadrax/"
+      }
+    },
+    {
+      "brand": "Intellijel",
+      "name": "Rubicon 2",
+      "power_12v_ma": 142,
+      "power_neg12v_ma": 150,
+      "power_5v_ma": null,
+      "depth_mm": 38.0,
+      "source_url": "https://intellijel.com/downloads/manuals/rubicon-2_manual_2021.08.16.pdf",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://intellijel.com/downloads/manuals/rubicon-2_manual_2021.08.16.pdf",
+      "sources": {
+        "power_12v_ma": "https://intellijel.com/downloads/manuals/rubicon-2_manual_2021.08.16.pdf",
+        "power_neg12v_ma": "https://intellijel.com/downloads/manuals/rubicon-2_manual_2021.08.16.pdf",
+        "depth_mm": "https://intellijel.com/downloads/manuals/rubicon-2_manual_2021.08.16.pdf"
+      }
+    },
+    {
+      "brand": "Joranalogue",
+      "name": "Filter 8",
+      "power_12v_ma": 75,
+      "power_neg12v_ma": 75,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "source_url": "https://joranalogue.com/products/filter-8",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://joranalogue.com/products/filter-8",
+      "sources": {
+        "power_12v_ma": "https://joranalogue.com/products/filter-8",
+        "power_neg12v_ma": "https://joranalogue.com/products/filter-8"
+      }
+    },
+    {
+      "brand": "Joranalogue",
+      "name": "Generate 3",
+      "power_12v_ma": 130,
+      "power_neg12v_ma": 115,
+      "power_5v_ma": null,
+      "depth_mm": null,
+      "source_url": "https://joranalogue.com/products/generate-3",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://joranalogue.com/products/generate-3",
+      "sources": {
+        "power_12v_ma": "https://joranalogue.com/products/generate-3",
+        "power_neg12v_ma": "https://joranalogue.com/products/generate-3"
+      }
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Rene 2",
+      "power_12v_ma": 235,
+      "power_neg12v_ma": 0,
+      "power_5v_ma": null,
+      "depth_mm": 32.0,
+      "source_url": "https://www.makenoisemusic.com/modules/rene",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://www.makenoisemusic.com/modules/rene",
+      "sources": {
+        "power_12v_ma": "https://www.makenoisemusic.com/modules/rene",
+        "power_neg12v_ma": "https://www.makenoisemusic.com/modules/rene",
+        "depth_mm": "https://www.makenoisemusic.com/modules/rene"
+      }
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Braids",
+      "power_12v_ma": 100,
+      "power_neg12v_ma": 15,
+      "power_5v_ma": null,
+      "depth_mm": 25.0,
+      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/braids/",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/braids/",
+      "sources": {
+        "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/braids/",
+        "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/braids/",
+        "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/braids/"
+      }
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Clouds",
+      "power_12v_ma": 120,
+      "power_neg12v_ma": 10,
+      "power_5v_ma": null,
+      "depth_mm": 25.0,
+      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/clouds/",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/clouds/",
+      "sources": {
+        "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/clouds/",
+        "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/clouds/",
+        "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/clouds/"
+      }
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Marbles",
+      "power_12v_ma": 80,
+      "power_neg12v_ma": 20,
+      "power_5v_ma": null,
+      "depth_mm": 25.0,
+      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/",
+      "sources": {
+        "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/",
+        "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/",
+        "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/"
+      }
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Plaits",
+      "power_12v_ma": 50,
+      "power_neg12v_ma": 5,
+      "power_5v_ma": null,
+      "depth_mm": 25.0,
+      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/plaits/",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/plaits/",
+      "sources": {
+        "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/plaits/",
+        "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/plaits/",
+        "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/plaits/"
+      }
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Rings",
+      "power_12v_ma": 110,
+      "power_neg12v_ma": 5,
+      "power_5v_ma": null,
+      "depth_mm": 25.0,
+      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/rings/",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/rings/",
+      "sources": {
+        "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/rings/",
+        "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/rings/",
+        "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/rings/"
+      }
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Stages",
+      "power_12v_ma": 80,
+      "power_neg12v_ma": 20,
+      "power_5v_ma": null,
+      "depth_mm": 25.0,
+      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/stages/",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/stages/",
+      "sources": {
+        "power_12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/stages/",
+        "power_neg12v_ma": "https://pichenettes.github.io/mutable-instruments-documentation/modules/stages/",
+        "depth_mm": "https://pichenettes.github.io/mutable-instruments-documentation/modules/stages/"
+      }
+    },
+    {
+      "brand": "Noise Engineering",
+      "name": "Basimilus Iteritas Alter",
+      "power_12v_ma": 150,
+      "power_neg12v_ma": 5,
+      "power_5v_ma": 0,
+      "depth_mm": 38.0,
+      "source_url": "https://www.manualslib.com/manual/1316602/Noise-Engineering-Basimilus-Iteritas-Alter.html",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://www.manualslib.com/manual/1316602/Noise-Engineering-Basimilus-Iteritas-Alter.html",
+      "sources": {
+        "power_12v_ma": "https://www.manualslib.com/manual/1316602/Noise-Engineering-Basimilus-Iteritas-Alter.html",
+        "power_neg12v_ma": "https://www.manualslib.com/manual/1316602/Noise-Engineering-Basimilus-Iteritas-Alter.html",
+        "power_5v_ma": "https://www.manualslib.com/manual/1316602/Noise-Engineering-Basimilus-Iteritas-Alter.html",
+        "depth_mm": "https://www.manualslib.com/manual/1316602/Noise-Engineering-Basimilus-Iteritas-Alter.html"
+      }
+    },
+    {
+      "brand": "Noise Engineering",
+      "name": "Desmodus Versio",
+      "power_12v_ma": null,
+      "power_neg12v_ma": null,
+      "power_5v_ma": null,
+      "depth_mm": 38.0,
+      "source_url": "https://noiseengineering.us/manuals/desmodus-versio/",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://noiseengineering.us/manuals/desmodus-versio/",
+      "sources": {
+        "depth_mm": "https://noiseengineering.us/manuals/desmodus-versio/"
+      }
+    },
+    {
+      "brand": "Qu-Bit Electronix",
+      "name": "Chord v2",
+      "power_12v_ma": 122,
+      "power_neg12v_ma": 25,
+      "power_5v_ma": 0,
+      "depth_mm": 23.0,
+      "source_url": "https://www.qubitelectronix.com/shop/p/chord-v2",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://www.qubitelectronix.com/shop/p/chord-v2",
+      "sources": {
+        "power_12v_ma": "https://www.qubitelectronix.com/shop/p/chord-v2",
+        "power_neg12v_ma": "https://www.qubitelectronix.com/shop/p/chord-v2",
+        "power_5v_ma": "https://www.qubitelectronix.com/shop/p/chord-v2",
+        "depth_mm": "https://www.qubitelectronix.com/shop/p/chord-v2"
+      }
+    },
+    {
+      "brand": "Qu-Bit Electronix",
+      "name": "Data Bender",
+      "power_12v_ma": 58,
+      "power_neg12v_ma": 60,
+      "power_5v_ma": 0,
+      "depth_mm": 28.0,
+      "source_url": "https://www.qubitelectronix.com/shop/data-bender",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "https://www.qubitelectronix.com/shop/data-bender",
+      "sources": {
+        "power_12v_ma": "https://www.qubitelectronix.com/shop/data-bender",
+        "power_neg12v_ma": "https://www.qubitelectronix.com/shop/data-bender",
+        "power_5v_ma": "https://www.qubitelectronix.com/shop/data-bender",
+        "depth_mm": "https://www.qubitelectronix.com/shop/data-bender"
+      }
+    },
+    {
+      "brand": "Xaoc Devices",
+      "name": "Batumi",
+      "power_12v_ma": 45,
+      "power_neg12v_ma": 15,
+      "power_5v_ma": null,
+      "depth_mm": 45.0,
+      "source_url": "http://xaocdevices.com/main/batumi/",
+      "provenance": "OBSERVED",
+      "status": "found",
+      "verification_status": "verified",
+      "verification_source_url": "http://xaocdevices.com/main/batumi/",
+      "sources": {
+        "power_12v_ma": "http://xaocdevices.com/main/batumi/",
+        "power_neg12v_ma": "http://xaocdevices.com/main/batumi/",
+        "depth_mm": "http://xaocdevices.com/main/batumi/"
+      }
+    }
+  ]
+}

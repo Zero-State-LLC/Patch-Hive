@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 from cases.models import Case  # noqa: F401
 from community.models import Comment, User, Vote  # noqa: F401
 from core.database import SessionLocal
-from integrations.modulargrid_data import MODULES_DATABASE
+from integrations.seed_data import MODULES_DATABASE
 from modules.catalog import ModuleCatalog
 
 # Import all models to register them with SQLAlchemy before querying

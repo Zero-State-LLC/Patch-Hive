@@ -12,13 +12,8 @@ import json
 import os
 import re
 import time
-import urllib.error
-import urllib.parse
-import urllib.request
 from pathlib import Path
 from typing import Any
-
-API_SCRAPE = "https://api.firecrawl.dev/v1/scrape"
 
 SOURCE_AUTHORITY_BY_CLASS = {
     "official": "MANUFACTURER_PRIMARY",
@@ -33,34 +28,30 @@ HP_PATTERNS = [
 ]
 
 
-def _key() -> str:
-    key = os.environ.get("FIRECRAWL_API_KEY", "").strip()
-    if not key:
-        raise SystemExit("FIRECRAWL_API_KEY required (source ~/.hermes/.env)")
-    return key
+def _scraper(max_paid_fetches: int | None = None):
+    """Shared in-repo router. Paid backends run only when a key is set and the cap allows."""
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    catalog = str(root / "data" / "synth-catalog")
+    if catalog not in sys.path:
+        sys.path.insert(0, catalog)
+    from catalog_scrape import CatalogScraper
+
+    scraper = getattr(_scraper, "instance", None)
+    if scraper is None or (max_paid_fetches is not None and scraper.max_paid_fetches != max_paid_fetches):
+        cap = max_paid_fetches
+        if cap is None:
+            cap = int(os.environ.get("PATCHHIVE_MAX_PAID_FETCHES", "0"))
+        scraper = CatalogScraper.for_repo(max_paid_fetches=cap)
+        _scraper.instance = scraper
+    return scraper
 
 
 def scrape_markdown(url: str, timeout: int = 60) -> str:
-    body = json.dumps(
-        {"url": url, "formats": ["markdown"], "onlyMainContent": True}
-    ).encode()
-    req = urllib.request.Request(
-        API_SCRAPE,
-        data=body,
-        headers={
-            "Authorization": f"Bearer {_key()}",
-            "Content-Type": "application/json",
-        },
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode())
-    except Exception as e:
-        print(f"  scrape fail {url}: {e}")
-        return ""
-    payload = data.get("data") or {}
-    return payload.get("markdown") or payload.get("content") or ""
+    result = _scraper().fetch(url, timeout=timeout)
+    return result.text or ""
 
 
 def extract_hp(text: str) -> int | None:
@@ -309,7 +300,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--sleep", type=float, default=0.35)
     parser.add_argument("--resume", action="store_true", help="Skip slugs already in out file")
+    parser.add_argument(
+        "--max-paid-fetches",
+        type=int,
+        default=0,
+        help="Hard cap on context.dev and Firecrawl requests. 0 skips paid backends.",
+    )
     args = parser.parse_args(argv)
+    _scraper(args.max_paid_fetches)
 
     payload = json.loads(args.targets.read_text(encoding="utf-8"))
     targets = list(payload.get("targets") or [])

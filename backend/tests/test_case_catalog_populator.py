@@ -105,7 +105,8 @@ def test_import_is_idempotent_and_preserves_policy(db_session: Session) -> None:
 
     assert first["inserted"] == 1
     assert first["rejected"] == 0
-    assert second["updated"] == 1
+    assert second["updated"] == 0
+    assert second["unchanged"] == 1
     assert second["rejected"] == 0
     assert db_session.query(CaseCatalog).count() == 1
     assert db_session.query(CaseRevision).count() == 1
@@ -129,3 +130,40 @@ def test_dry_run_rolls_back_all_catalog_writes(db_session: Session) -> None:
     assert db_session.query(CaseCatalog).count() == 0
     assert db_session.query(CaseSourcePolicyPacket).count() == 0
     assert db_session.query(CasePrice).count() == 0
+
+
+def test_reload_never_overwrites_non_null_fields(db_session: Session) -> None:
+    import_records(db_session, [_record()])
+    db_session.commit()
+    revision = db_session.query(CaseRevision).one()
+    case = db_session.query(CaseCatalog).one()
+    revision.depth_max_mm = 77
+    case.official_url = "https://example.com/hand-edited"
+    db_session.commit()
+
+    changed = _record()
+    changed["revision"]["depth_max_mm"] = 99
+    changed["official_url"] = "https://example.com/from-seed"
+    receipt = import_records(db_session, [changed])
+
+    assert receipt["updated"] == 0
+    assert receipt["unchanged"] == 1
+    db_session.refresh(revision)
+    db_session.refresh(case)
+    assert revision.depth_max_mm == 77
+    assert case.official_url == "https://example.com/hand-edited"
+
+
+def test_reload_fills_null_fields_and_counts_real_change(db_session: Session) -> None:
+    import_records(db_session, [_record()])
+    db_session.commit()
+    revision = db_session.query(CaseRevision).one()
+    revision.depth_max_mm = None
+    db_session.commit()
+
+    receipt = import_records(db_session, [_record()])
+
+    assert receipt["updated"] == 1
+    assert receipt["unchanged"] == 0
+    db_session.refresh(revision)
+    assert revision.depth_max_mm == 55

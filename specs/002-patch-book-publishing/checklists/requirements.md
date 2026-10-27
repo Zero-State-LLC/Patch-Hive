@@ -1,0 +1,4 @@
+- [ ] Workflows section present
+- [ ] State machine complete (states, events, guards, initial and final states, illegal transitions)
+- [ ] No stack in spec.md
+- [ ] User stories have acceptance criteria

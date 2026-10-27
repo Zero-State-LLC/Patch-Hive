@@ -2,7 +2,7 @@
   "fixture_version": "1.0",
   "name": "Synth Catalog Research — Phase 2 major-brand module catalog seed",
   "generated_at": "2026-07-21T00:00:00Z",
-  "source_note": "Derived from Abraxas modular-synth-catalog-research Phase 2 tables. HP and power left null when research did not record them; never invented. Provenance OBSERVED via multi-source rotation (official / retailer / community).",
+  "source_note": "ModularGrid-derived: the module identities, categories and descriptions in catalog_modules were taken from a browser scrape of ModularGrid manufacturer pages (Abraxas Phase 2), and the brand list from the ModularGrid manufacturer index. Spec values from ModularGrid were removed on 2026-10-17 and archived privately; re-verify against manufacturer pages before use. full_spec_modules are hand-curated.",
   "abraxas_skill": "skills/modular-synth-catalog-research",
   "abraxas_pr": "https://github.com/scrimshawlife-ctrl/Abraxas-v2.0/pull/984",
   "content_hashes": {
@@ -791,7 +791,7 @@
     {
       "brand": "Acid Rain Technology",
       "name": "Junction",
-      "hp": 6,
+      "hp": null,
       "category": "MIX",
       "category_raw": "Attenuator / Mixer / Multiple / Polarizer / Quad",
       "is_available": "available",
@@ -799,7 +799,9 @@
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "needs_reverify": true,
+      "spec_source": "modulargrid_unverified (hp removed 2026-10-17)"
     },
     {
       "brand": "Acid Rain Technology",
@@ -2520,7 +2522,7 @@
     {
       "brand": "Doepfer",
       "name": "A-101-3",
-      "hp": 10,
+      "hp": null,
       "category": "FX",
       "category_raw": "Effect / Phase Shifter",
       "is_available": "discontinued",
@@ -2528,7 +2530,9 @@
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "needs_reverify": true,
+      "spec_source": "modulargrid_unverified (hp removed 2026-10-17)"
     },
     {
       "brand": "Doepfer",
@@ -2572,7 +2576,7 @@
     {
       "brand": "Doepfer",
       "name": "A-101-9",
-      "hp": 8,
+      "hp": null,
       "category": "UTIL",
       "category_raw": "CV Modulation / Dual-Stereo",
       "is_available": "discontinued",
@@ -2580,7 +2584,9 @@
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "needs_reverify": true,
+      "spec_source": "modulargrid_unverified (hp removed 2026-10-17)"
     },
     {
       "brand": "Doepfer",
@@ -2871,7 +2877,7 @@
     {
       "brand": "Doepfer",
       "name": "A-137-2",
-      "hp": 10,
+      "hp": null,
       "category": "UTIL",
       "category_raw": "CV Modulation / Dual/Stereo",
       "is_available": "available",
@@ -2879,7 +2885,9 @@
       "source": "SynthCatalogResearch",
       "source_reference": "data/synth-catalog/seed-phase2-v1.json",
       "provenance": "OBSERVED",
-      "research_phase": "phase2"
+      "research_phase": "phase2",
+      "needs_reverify": true,
+      "spec_source": "modulargrid_unverified (hp removed 2026-10-17)"
     },
     {
       "brand": "Doepfer",
@@ -5723,5 +5731,6 @@
       "source_reference": "phase2-major-brands.md",
       "depth_mm": null
     }
-  ]
+  ],
+  "modulargrid_derived": true
 }

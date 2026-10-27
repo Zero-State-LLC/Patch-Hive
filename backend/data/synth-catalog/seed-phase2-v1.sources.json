@@ -1,12 +1,12 @@
 {
   "packet_version": "1.0",
   "source_id": "synth-catalog-research-phase2-v1",
-  "access_basis": "manual_research",
-  "license_status": "research compilation for internal catalog bootstrap; not a ModularGrid dump",
-  "evidence_status": "CATALOG_OBSERVED",
-  "review_state": "accepted",
+  "access_basis": "browser_scrape_of_modulargrid_manufacturer_pages",
+  "license_status": "ModularGrid-derived: identities, categories, descriptions and the 703-name brand list come from ModularGrid pages (phase2-major-br.md, brand-index-modulargrid.txt). Corrected 2026-10-17; the earlier 'not a ModularGrid dump' label was wrong.",
+  "evidence_status": "MODULARGRID_UNVERIFIED",
+  "review_state": "needs_reverify",
   "normalizer_version": "synth-catalog-v1",
-  "notes": "Multi-source rotation research sealed via Abraxas PR #984; HP/power null when unknown.",
+  "notes": "Spec values from ModularGrid were removed from the repo on 2026-10-17 and archived privately; per-value provenance is in the database table catalog_value_archive (batch modulargrid-provenance-v1). The source files are no longer in the repo; the hashes below identify the archived copies.",
   "content_hashes": {
     "phase2_major_br_sha256": "2bfd03d2b3e697d35aaf21c60744df66c984f96944124e901a5d85eb5689c332",
     "brand_index_sha256": "9d7f7e88d62772cf9f8763f1978a2fbfef380b5fd633893a3b211d070785a04f"

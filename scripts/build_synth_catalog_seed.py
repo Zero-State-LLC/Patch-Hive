@@ -208,6 +208,9 @@ MAJOR_BRANDS = [
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Retired 2026-10-17: the ModularGrid-derived inputs (phase2-major-br.md,
+    # brand-index-modulargrid.txt) are no longer in the repo. The committed seed is
+    # the frozen output; do not regenerate it from ModularGrid material.
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-dir", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT)
@@ -242,7 +245,7 @@ def main(argv: list[str] | None = None) -> int:
         "source_note": (
             "Derived from Abraxas modular-synth-catalog-research Phase 2 tables. "
             "HP and power left null when research did not record them; never invented. "
-            "Provenance OBSERVED via multi-source rotation (official / retailer / community)."
+            "ModularGrid-derived (browser scrape of ModularGrid manufacturer pages); re-verify on maker pages."
         ),
         "abraxas_skill": "skills/modular-synth-catalog-research",
         "abraxas_pr": "https://github.com/scrimshawlife-ctrl/Abraxas-v2.0/pull/984",
@@ -265,10 +268,10 @@ def main(argv: list[str] | None = None) -> int:
     sources = {
         "packet_version": "1.0",
         "source_id": "synth-catalog-research-phase2-v1",
-        "access_basis": "manual_research",
-        "license_status": "research compilation for internal catalog bootstrap; not a ModularGrid dump",
-        "evidence_status": "CATALOG_OBSERVED",
-        "review_state": "accepted",
+        "access_basis": "browser_scrape_of_modulargrid_manufacturer_pages",
+        "license_status": "ModularGrid-derived (browser scrape of ModularGrid manufacturer pages + manufacturer index); see DATA_SOURCES.md",
+        "evidence_status": "MODULARGRID_UNVERIFIED",
+        "review_state": "needs_reverify",
         "normalizer_version": "synth-catalog-v1",
         "notes": "Multi-source rotation research sealed via Abraxas PR #984; HP/power null when unknown.",
         "content_hashes": payload["content_hashes"],

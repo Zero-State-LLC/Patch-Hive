@@ -87,6 +87,28 @@ class ModuleDecisionService:
         candidates: Iterable[CatalogCandidate],
         idempotency_key: str,
     ) -> DecisionProposal:
+        request = self.build_identity_request(
+            request_id=request_id,
+            evidence_hash=evidence_hash,
+            evidence_refs=evidence_refs,
+            normalized_evidence=normalized_evidence,
+            candidates=candidates,
+            idempotency_key=idempotency_key,
+        )
+        packet = self._provider.choose(request)
+        return DecisionProposal(request=request, packet=packet, policy=self._policy.evaluate(packet))
+
+    @staticmethod
+    def build_identity_request(
+        *,
+        request_id: str,
+        evidence_hash: str,
+        evidence_refs: tuple[str, ...],
+        normalized_evidence: dict,
+        candidates: Iterable[CatalogCandidate],
+        idempotency_key: str,
+    ) -> ChoiceRequest:
+        """Build the bounded identity question without calling any provider."""
         ordered = sorted(candidates, key=lambda item: item.candidate_id)
         if not ordered:
             raise ValueError("module identity ranking requires server-supplied catalog candidates")
@@ -94,7 +116,7 @@ class ModuleDecisionService:
             ChoiceOption(choice_id=item.candidate_id, description=item.description())
             for item in ordered
         ) + (ChoiceOption(choice_id="none_of_above", description="No supplied catalog candidate matches"),)
-        request = ChoiceRequest(
+        return ChoiceRequest(
             request_id=request_id,
             purpose=DecisionPurpose.module_identity,
             evidence_hash=evidence_hash,
@@ -107,8 +129,6 @@ class ModuleDecisionService:
             ),
             choices=choices,
         )
-        packet = self._provider.choose(request)
-        return DecisionProposal(request=request, packet=packet, policy=self._policy.evaluate(packet))
 
     def classify_family(
         self,
