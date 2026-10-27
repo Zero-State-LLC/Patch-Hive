@@ -112,3 +112,32 @@ Result (`receipts/maker-crawl-v2.json`, rows in `hermes-research/maker-crawl-v2.
   - 4ms and Erica. The `render` flag was served the cached free shell; this is now fixed and needs a small paid render pass.
   - Frap, Tiptop and Pittsburgh. Their adapter patterns need checking against the rendered pages.
   - 79 brands with no search candidates and 40 with no model pick, plus 27 curated candidates still unconfirmed.
+
+### Overlays from the v2 crawl (T025), 2026-10-27
+
+Built with:
+
+```bash
+python scripts/build_maker_overlays.py --crawl maker-crawl-v2.json --additions-version 3 --power-version 11
+```
+
+The loader reads up to `catalog-additions-v3` and `module-power-depth-v11`.
+
+The builder:
+
+- **Drops non-modules.** It discards HP outside 1 to 42 (FR-007; the crawler now enforces the same bound) and store items named as pedals, upgrades, bare panels, PSUs or cases.
+- **Cleans store-title boilerplate.** "Bastl CRUST Eurorack Module" becomes "CRUST".
+- **Matches identities case-insensitively.** It reuses the stored spelling of catalog rows, HP overlays and the provenance manifest, so an addition never claims a slug under a different name.
+
+Result: 2,721 new catalog rows from 290 brands (`access_basis = official_publication`) and 3,576 power/depth entries. 620 crawled modules matched existing rows.
+
+Loader dry run against a migrated Postgres 15, compared with main:
+
+| | main | this build |
+|---|---|---|
+| Catalog rows | 1,157 | 3,878 |
+| Power targets | 848 | 3,601 |
+| Unmatched HP | 60 | 34 |
+| Unmatched power/depth | 67 | 41 |
+
+All 17 conflicts are `verification_conflict`: the v2 crawl disagrees with a value a v1 overlay marked verified, so the loader flags the row instead of overwriting it.

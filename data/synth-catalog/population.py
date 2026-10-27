@@ -158,8 +158,8 @@ def _stamp() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-POWER_OVERLAY_LATEST = 10
-CATALOG_ADDITIONS_LATEST = 2
+POWER_OVERLAY_LATEST = 11
+CATALOG_ADDITIONS_LATEST = 3
 ENTRY_VERIFICATION = {"verified", "corrected", "flagged"}
 
 

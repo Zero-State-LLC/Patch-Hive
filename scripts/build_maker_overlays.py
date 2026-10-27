@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-"""Turn maker-crawl-v1.json into loader overlays.
+"""Turn a maker-crawl run into loader overlays.
 
-- catalog-additions-v2.json: modules not already in the catalog (insert-if-absent).
-- module-power-depth-v9.json: verified specs for crawled modules, keyed to the
+Defaults rebuild the v1 overlays; T025 uses
+`--crawl maker-crawl-v2.json --additions-version 3 --power-version 11`.
+
+- catalog-additions-vN.json: modules not already in the catalog (insert-if-absent),
+  tagged `access_basis = official_publication`.
+- module-power-depth-vM.json: verified specs for crawled modules, keyed to the
   existing catalog name when one matches. The loader fills nulls only and flags
   rows whose stored values disagree.
 Every value was parsed deterministically or found verbatim on the maker's page.
@@ -10,6 +14,7 @@ Every value was parsed deterministically or found verbatim on the maker's page.
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import sys
@@ -34,11 +39,36 @@ def norm(brand: str, name: str) -> str:
     return re.sub(r"[^a-z0-9]+", "", n)
 
 
-def existing_index() -> dict[str, dict[str, str]]:
-    """Catalog and module identities the loader would hold, from an offline plan."""
+HP_MIN, HP_MAX = 1, 42  # FR-007: HP outside 1..42 is discarded
+# Products that share a maker's store with modules: pedals, upgrades, bare panels, power, MCUs.
+NOT_MODULE_NAME = re.compile(
+    r"(\bpedal\b|\bupgrade\b|(aluminum|alu|replacement|front|blank)\s+panel|\bpanel only\b|\bteensy\b|"
+    r"power supply|\bpsu\b|\(\d+(\.\d+)?\s*a\)|\bcase\b|\bskiff\b|\bcable|\bt-shirt|\bgift card)",
+    re.I,
+)
+
+
+def clean_name(brand: str, name: str) -> str:
+    """Maker store titles carry boilerplate: "Bastl CRUST Eurorack Module", "Eurorack: Coma Reactor 2"."""
+    n = re.sub(r"^\s*new\s+", "", name, flags=re.I)
+    n = re.sub(rf"^\s*{re.escape(brand)}\s*[:\-]?\s+", "", n, flags=re.I)
+    first = brand.split()[0] if brand.split() else ""
+    if len(first) >= 4 and first.lower() not in {"the", "audio", "music"}:  # "Bastl CRUST" under "Bastl Instruments"
+        n = re.sub(rf"^\s*{re.escape(first)}\s+(?=\S)", "", n, flags=re.I)
+    n = re.sub(r"^\s*eurorack\s*:\s*", "", n, flags=re.I)
+    n = re.sub(r"\s+eurorack(\s+modules?)?\s*$|\s+modules?\s*$", "", n, flags=re.I)
+    return re.sub(r"\s{2,}", " ", n).strip(" -:|") or name.strip()
+
+
+def existing_index(outputs: tuple[str, ...]) -> dict[str, dict[str, tuple[str, str, bool]]]:
+    """Catalog and module identities the loader would hold without this build's outputs.
+
+    Keyed by lower-cased brand, so "Mutable instruments" (seed) finds "Mutable Instruments"
+    (curated); values keep the stored spelling, which the overlays must reuse.
+    """
     import population as P
 
-    for stale in ("catalog-additions-v2.json", "module-power-depth-v9.json"):
+    for stale in outputs:
         (CATALOG / "overlays" / stale).unlink(missing_ok=True)
     catalog: dict = {}
     modules: dict = {}
@@ -46,11 +76,23 @@ def existing_index() -> dict[str, dict[str, str]]:
     P._module_state = lambda conn: modules
     P._manufacturer_state = lambda conn: set()
     P.build_plan(None)
-    idx: dict[str, dict[str, str]] = {}
+    idx: dict[str, dict[str, tuple[str, str, bool]]] = {}
+
+    def add(brand: str, name: str, exists: bool = True) -> None:
+        idx.setdefault(brand.lower(), {}).setdefault(norm(brand, name), (brand, name, exists))
+
     for row in catalog.values():
-        idx.setdefault(row["brand"], {})[norm(row["brand"], row["name"])] = row["name"]
+        add(row["brand"], row["name"])
     for (brand, name) in modules:
-        idx.setdefault(brand, {}).setdefault(norm(brand, name), name)
+        add(brand, name)
+    # HP overlays name rows they expect to find. A crawled module they describe is still added,
+    # but under the overlay's spelling, so the overlay's identity check matches the new row.
+    # The provenance manifests check identity the same way before archiving a row.
+    named = [e for path in sorted((CATALOG / "overlays").glob("module-catalog-hp-v*.json")) for e in json.loads(path.read_text()).get("entries") or []]
+    named += [r for path in sorted((CATALOG / "provenance").glob("*.json")) for r in json.loads(path.read_text()).get("rows") or []]
+    for e in named:
+        if e.get("brand") and e.get("name"):
+            add(e["brand"], e["name"], exists=False)
     return idx
 
 
@@ -62,22 +104,39 @@ def category(tags: list[str], name: str) -> str | None:
     return None
 
 
-def main() -> int:
-    crawl = json.loads((CATALOG / "hermes-research" / "maker-crawl-v1.json").read_text())
-    idx = existing_index()
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--crawl", default="maker-crawl-v1.json", help="file under hermes-research/")
+    ap.add_argument("--additions-version", type=int, default=2)
+    ap.add_argument("--power-version", type=int, default=9)
+    args = ap.parse_args(argv)
+    additions_name = f"catalog-additions-v{args.additions_version}.json"
+    power_name = f"module-power-depth-v{args.power_version}.json"
+    crawl = json.loads((CATALOG / "hermes-research" / args.crawl).read_text())
+    idx = existing_index((additions_name, power_name))
     additions, entries = [], []
-    stats = {"crawled_modules": 0, "matched_existing": 0, "new": 0, "skipped_dupe_in_crawl": 0}
+    stats = {"crawled_modules": 0, "matched_existing": 0, "new": 0, "skipped_dupe_in_crawl": 0, "skipped_hp_range": 0, "skipped_not_module": 0}
     for b in crawl["brands"]:
         seen = set()
         for m in b.get("modules") or []:
             stats["crawled_modules"] += 1
+            if not (HP_MIN <= (m.get("hp") or 0) <= HP_MAX):
+                stats["skipped_hp_range"] += 1
+                continue
+            if NOT_MODULE_NAME.search(m["name"]):
+                stats["skipped_not_module"] += 1
+                continue
+            m = {**m, "name": clean_name(m["brand"], m["name"])}
             key = norm(m["brand"], m["name"])
             if not key or key in seen:
                 stats["skipped_dupe_in_crawl"] += 1
                 continue
             seen.add(key)
-            existing = idx.get(m["brand"], {}).get(key)
-            name = existing or m["name"]
+            hit = idx.get(m["brand"].lower(), {}).get(key)
+            if hit:
+                m = {**m, "brand": hit[0], "name": hit[1]}
+            existing = hit[1] if hit and hit[2] else None
+            name = m["name"]
             if existing:
                 stats["matched_existing"] += 1
             else:
@@ -86,6 +145,7 @@ def main() -> int:
                     "brand": m["brand"], "name": name, "hp": m["hp"], "category": category(m.get("tags") or [], name),
                     "manufacturer_url": m["source_url"], "image_url": m.get("image_url"), "is_available": "available",
                     "source": "ManufacturerCrawl", "source_reference": m["source_url"], "tags": m.get("tags") or [],
+                    "access_basis": "official_publication",
                     "content_sha256": m["content_sha256"], "fetch_method": m["fetch_method"],
                 })
             entry = {
@@ -99,9 +159,9 @@ def main() -> int:
             if any(entry[f] is not None for f in ("power_12v_ma", "power_neg12v_ma", "power_5v_ma", "depth_mm")) or not existing:
                 entries.append(entry)
     D = CATALOG / "overlays"
-    meta = {"generated_from": "hermes-research/maker-crawl-v1.json", "policy": "maker's own pages only; values regex-parsed or verbatim; no ModularGrid; insert-if-absent / fill-null; disagreements are flagged by the loader"}
-    (D / "catalog-additions-v2.json").write_text(json.dumps({"dataset_version": "catalog-additions-v2", **meta, "count": len(additions), "rows": additions}, indent=1) + "\n")
-    (D / "module-power-depth-v9.json").write_text(json.dumps({"dataset_version": "module-power-depth-overlay-v9", **meta, "count": len(entries), "entries": entries}, indent=1) + "\n")
+    meta = {"generated_from": f"hermes-research/{args.crawl}", "policy": "maker's own pages only; values regex-parsed or verbatim; no ModularGrid; insert-if-absent / fill-null; disagreements are flagged by the loader"}
+    (D / additions_name).write_text(json.dumps({"dataset_version": f"catalog-additions-v{args.additions_version}", **meta, "count": len(additions), "rows": additions}, indent=1) + "\n")
+    (D / power_name).write_text(json.dumps({"dataset_version": f"module-power-depth-overlay-v{args.power_version}", **meta, "count": len(entries), "entries": entries}, indent=1) + "\n")
     print(json.dumps(stats))
     return 0
 
