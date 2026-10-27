@@ -2,11 +2,9 @@
 
 All notable changes to PatchHive are documented here.
 
-This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
+This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
-## Unreleased
-
-## 0.3.0-alpha.2 — Proposed (untagged until the release PR merges)
+## 0.3.0-alpha.2 — 2026-10-16
 
 ### Changed
 
@@ -17,8 +15,7 @@ This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with th
 
 - `scripts/check_version_consistency.py` and `.github/workflows/release.yml`. The workflow checks versions on PRs, verifies tag/version match on tag push, and creates the GitHub release.
 
-
-### Added
+### Added (before the release policy; not split by tag)
 
 - Cases C1–C3: `format_family` / `capacity_unit` / `powered` columns + migration; list filters on columns; power validation (POWER_UNSPECIFIED advisory, hard fail when rails known or unpowered+draw); non-Eurorack placement blocked; staging bootstrap doc; rack `validation_warnings` on create/update.
 - Cases C0 product loop: list filters (`format_family`, `powered`, `q`, `min_hp`); Cases page filters + “Use on new rig”; RackBuilder Step 0 Eurorack case picker + create empty rig; rack validation errors JSON-serializable.

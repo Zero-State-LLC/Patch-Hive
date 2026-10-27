@@ -16,8 +16,12 @@ Every feature follows:
 - [004 — Commerce (draft)](004-commerce/spec.md)
 - [005 — Decision Intelligence & Evidence Resolution](005-decision-intelligence/spec.md)
 - [006 — Cloudflare Edge Deploy with Clef Classifier](006-cloudflare-edge-clef/spec.md)
-- [007 — Evaluation Corpus Freeze & Controlled Staging Enablement (tasks)](007-evaluation-staging-enablement/tasks.md)
-- [008 — Dual-Path F5 Cutover & Design Engine Staging Receipts (tasks)](008-dual-path-f5-design-receipts/tasks.md)
+- [007 — Evaluation Corpus Freeze & Controlled Staging Enablement (draft spec)](007-evaluation-staging-enablement/spec.md)
+- [008 — Dual-Path F5 Cutover & Design Engine Staging Receipts (draft spec)](008-dual-path-f5-design-receipts/spec.md)
+
+## Task dependencies
+
+Tasks may declare `- depends_on: [T010, 005:T061]` (bare ID = same spec, `NNN:ID` = another spec). A task that pairs repository code with an operator action is split into sub-tasks `a` (code) and `b` (operator). Check the graph with `just spec-dag` (`scripts/check_spec_dag.py`): no cycles, no undefined IDs, and no task done while a dependency or sub-task is open.
 
 ## Authority map
 
