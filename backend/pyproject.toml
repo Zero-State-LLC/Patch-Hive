@@ -22,6 +22,7 @@ dependencies = [
     "reportlab==5.0.0",
     "svglib==2.0.2",
     "pillow==12.3.0",
+    "boto3==1.43.119",
 ]
 
 [project.optional-dependencies]
