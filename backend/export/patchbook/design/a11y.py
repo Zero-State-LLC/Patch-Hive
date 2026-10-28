@@ -8,7 +8,19 @@ from export.patchbook.design.layout_ir import PageKind, PatchPageLayoutIR
 from export.patchbook.design.recipe import ResolvedStyleRecipe
 
 MIN_BODY_PT_PRINT = 9.5
+# 14 px at 96 dpi, the digital body-text floor (spec 002 FR-004).
+MIN_BODY_PT_DIGITAL = 10.5
 MIN_CONTRAST = 4.5
+
+
+def body_floor_pt(output_profile: str) -> float:
+    """The smallest body text a profile allows: print profiles 9.5 pt, digital 14 px."""
+    return MIN_BODY_PT_PRINT if output_profile.startswith("print") else MIN_BODY_PT_DIGITAL
+
+
+def body_size_pt(recipe: ResolvedStyleRecipe) -> float:
+    """The size body text is drawn at: the recipe's minimum, never below the floor."""
+    return max(recipe.constraints.minimum_body_size_pt, body_floor_pt(recipe.output_profile.value))
 
 
 @dataclass(frozen=True)
@@ -31,12 +43,19 @@ def validate_composition_a11y(
 ) -> A11yReport:
     issues: list[A11yIssue] = []
     min_body = recipe.constraints.minimum_body_size_pt
-    if min_body < MIN_BODY_PT_PRINT and recipe.output_profile.value.startswith("print"):
+    floor = body_floor_pt(recipe.output_profile.value)
+    if min_body < floor:
+        # The renderer draws body text at body_size_pt(), never below the floor, so a
+        # recipe asking for less is raised, not rejected. Text runs below the floor are
+        # still errors (TEXT_RUN_BELOW_MINIMUM, below).
         issues.append(
             A11yIssue(
-                code="FONT_BELOW_MINIMUM",
-                severity="error",
-                message=f"minimum_body_size_pt {min_body} < {MIN_BODY_PT_PRINT}",
+                code="BODY_SIZE_RAISED_TO_FLOOR",
+                severity="warning",
+                message=(
+                    f"minimum_body_size_pt {min_body} is below {floor} for "
+                    f"{recipe.output_profile.value}; body text is drawn at {floor}"
+                ),
             )
         )
 
@@ -90,12 +109,12 @@ def validate_composition_a11y(
                     )
                 )
         for run in page.text_runs:
-            if run.style_role in {"body", "warning"} and run.font_size_pt < min_body:
+            if run.style_role in {"body", "warning"} and run.font_size_pt < max(min_body, floor):
                 issues.append(
                     A11yIssue(
                         code="TEXT_RUN_BELOW_MINIMUM",
                         severity="error",
-                        message=f"run {run.run_id} font_size_pt {run.font_size_pt} < {min_body}",
+                        message=f"run {run.run_id} font_size_pt {run.font_size_pt} < {max(min_body, floor)}",
                         page_id=page.page_id,
                     )
                 )

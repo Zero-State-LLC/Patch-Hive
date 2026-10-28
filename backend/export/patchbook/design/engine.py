@@ -18,6 +18,7 @@ from export.patchbook.design.brand_policy import (
     scan_forbidden_strings,
 )
 from export.patchbook.design.content_spine import LoadedLibrary
+from export.patchbook.design.a11y import body_size_pt
 from export.patchbook.design.diagram_svg import render_patch_diagram_svg
 from export.patchbook.design.families.registry import (
     PATENT_FUTURE_DISCLAIMER,
@@ -584,6 +585,8 @@ def _render_execution_pdf(
         else "Helvetica"
     )
     mono = family.mono_font if family.mono_font in {"Courier", "Helvetica"} else "Courier"
+    # Body text, steps and cables never go below the profile's floor (spec 002 FR-004).
+    body_size = body_size_pt(recipe)
 
     # Cover
     c.setFont("Helvetica-Bold", 22)
@@ -597,7 +600,7 @@ def _render_execution_pdf(
         for i, chunk in enumerate(_wrap_to_width(PATENT_FUTURE_DISCLAIMER, "Helvetica", 8, width - 2 * inch)):
             c.drawString(inch, height - 1.55 * inch - i * 10, chunk)
     c.setFillColorRGB(0, 0, 0)
-    c.setFont(body_font, 9)
+    c.setFont(body_font, body_size)
     y_meta = height - 1.9 * inch if family.patent_disclaimer else height - 1.7 * inch
     c.drawString(inch, y_meta, f"Export: {export_id}")
     c.drawString(inch, y_meta - 0.25 * inch, f"Run: {library.source_run_id}")
@@ -617,7 +620,14 @@ def _render_execution_pdf(
         # cannot hold its required content fails instead of dropping it (spec 002
         # FR-001, FR-003, FR-010, FR-021).
         page = layout_patch_page(
-            plan, graph, family, body_font=body_font, mono=mono, width=width, height=height
+            plan,
+            graph,
+            family,
+            body_font=body_font,
+            mono=mono,
+            width=width,
+            height=height,
+            body_size=body_size,
         )
         for line in page:
             if line.rule:
@@ -641,7 +651,7 @@ def _render_execution_pdf(
     # Colophon
     c.setFont("Helvetica-Bold", 14)
     c.drawString(inch, height - inch, "Colophon")
-    c.setFont(body_font, 9)
+    c.setFont(body_font, body_size)
     c.drawString(inch, height - 1.4 * inch, "Designed and Engineered by Zero State")
     c.drawString(inch, height - 1.65 * inch, "PatchHive — a Zero State product")
     c.drawString(inch, height - 1.9 * inch, f"Template family: {family.display_name}")
@@ -734,12 +744,15 @@ def layout_patch_page(
     mono: str,
     width: float,
     height: float,
+    body_size: float = 9.5,
 ) -> list[PageLine]:
     """Every line of one patch page, fully wrapped. Optional decoration (the title
     block) goes first if the page is full; if required content still does not fit,
     PATCH_PAGE_TEXT_OVERFLOW, never a truncated or dropped line."""
     for with_title_block in ((True, False) if family.show_title_block else (False,)):
-        page = _lay_out(plan, graph, family, body_font, mono, width, height, with_title_block)
+        page = _lay_out(
+            plan, graph, family, body_font, mono, width, height, with_title_block, body_size
+        )
         if all(line.y >= CONTENT_FLOOR for line in page):
             return page
     raise PreflightFailed(
@@ -759,8 +772,10 @@ def _lay_out(
     width: float,
     height: float,
     with_title_block: bool,
+    body_size: float,
 ) -> list[PageLine]:
     usable = width - 2 * inch
+    leading = round(body_size * 1.3, 2)
     lines: list[PageLine] = []
     y = height - inch
 
@@ -771,7 +786,7 @@ def _lay_out(
             y -= step
 
     add(plan.title, "Helvetica-Bold", 16, 18)
-    add(f"Intent: {plan.intent}", body_font, 9, 12)
+    add(f"Intent: {plan.intent}", body_font, body_size, leading)
     y -= 4
     lines.append(PageLine("", body_font, 9, y, rule=True))
     y -= 20
@@ -780,14 +795,15 @@ def _lay_out(
     add("Checklist" if family.show_checklist else "Construction", "Helvetica-Bold", 11, 14)
     for step in plan.steps:
         prefix = "[ ] " if family.show_checklist else f"{step.position}. "
-        add(f"{prefix}[{step.phase}] {step.instruction}", body_font, 9, 12)
+        add(f"{prefix}[{step.phase}] {step.instruction}", body_font, body_size, leading)
     y -= 8
     add("Cables", "Helvetica-Bold", 11, 14)
     for edge in graph.edges:
         text = f"{edge.edge_id}: {edge.source_port_id} -> {edge.target_port_id} [{edge.signal_type}]"
-        # One pass over the original text; continuation lines indent (and are
-        # narrower) so one cable never reads as two.
-        for i, chunk in enumerate(_wrap_to_width(text, mono, 8, usable, usable - 12)):
-            lines.append(PageLine(chunk, mono, 8, y, indent=12 if i else 0))
-            y -= 10
+        # Cables are required content: body size, not a smaller caption size. One pass
+        # over the original text; continuation lines indent (and are narrower) so one
+        # cable never reads as two.
+        for i, chunk in enumerate(_wrap_to_width(text, mono, body_size, usable, usable - 12)):
+            lines.append(PageLine(chunk, mono, body_size, y, indent=12 if i else 0))
+            y -= leading
     return lines
