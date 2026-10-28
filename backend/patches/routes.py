@@ -211,7 +211,11 @@ def generate_patches(
     # Matrix slice A: ensure canon FK targets + export bridge as soon as the run exists
     # (do not rely solely on GET /api/runs side-effect).
     bridge = ensure_legacy_run_export_bridge(
-        db, run, generation_seed=seed, generator_version=settings.patch_engine_version
+        db,
+        run,
+        generation_seed=seed,
+        generator_version=settings.patch_engine_version,
+        create_library=False,
     )
     # F3 dual-write audit: generate must never mint legacy-* bridge ids when rack exists.
     if bridge.export_bridge_ready and (
@@ -233,6 +237,24 @@ def generate_patches(
         run.status = "failed"
         db.commit()
         raise
+
+    provenance_metrics = provenance.to_dict().get("metrics") or {}
+    if provenance_metrics.get("generation_status") == "VALIDATION_FAILED":
+        # A blocking finding (an invented or impossible jack) fails the run closed:
+        # nothing is saved or added to the library (FR-016/FR-019).
+        run.status = "validation_failed"
+        run.validation_report = provenance_metrics.get("validation")
+        db.commit()
+        return GeneratePatchesResponse(
+            generated_count=0,
+            patches=[],
+            run_id=run.id,
+            export_bridge_ready=False,
+            source_run_id=bridge.source_run_id,
+            rig_revision_id=bridge.rig_revision_id,
+            generation_status="VALIDATION_FAILED",
+            validation=provenance_metrics.get("validation"),
+        )
 
     # Save patches to database with full IR/provenance for deterministic replay.
     saved_patches = []
@@ -269,6 +291,11 @@ def generate_patches(
         saved_patches.append(db_patch)
 
     run.status = "succeeded"
+    run.validation_report = metrics.get("validation")
+    # Validation passed: now the run gets its library and becomes export-ready.
+    bridge = ensure_legacy_run_export_bridge(
+        db, run, generation_seed=seed, generator_version=settings.patch_engine_version
+    )
     db.flush()
     # Path A (KD-20): dual-write sealed GeneratedPatchRecord for Design Engine spine
     from export.patchbook.design.dual_write import dual_write_generated_patches
@@ -290,6 +317,7 @@ def generate_patches(
         inventory_revision_id=inventory_revision_id,
         inventory_gate_code=inventory_gate_code,
         generation_status=generation_status,
+        validation=metrics.get("validation"),
     )
 
 

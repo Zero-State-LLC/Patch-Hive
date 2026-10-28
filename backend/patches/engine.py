@@ -796,16 +796,44 @@ def generate_patches_with_ir(
         )
         patch_graphs.append(graph)
 
+    # Resolve generic roles to declared jacks and validate (spec 001 FR-016/017/019).
+    from patches.validation import resolve_and_validate
+
+    modules_by_id = {
+        int(m.id): m  # type: ignore[arg-type]
+        for m in db.query(Module)
+        .join(RackModule, RackModule.module_id == Module.id)
+        .filter(RackModule.rack_id == rack.id)
+        .all()
+    }
+    patch_graphs, validation = resolve_and_validate(
+        patch_graphs, modules_by_id, allowed_module_ids=set(gate_report.allowed_catalog_module_ids)
+    )
+    if dropped:
+        # The inventory filter removed patches that wired modules outside the confirmed
+        # inventory. That is a contradiction, so it fails the run (OQ-08), not just a filter.
+        from patches.validation import Finding
+
+        validation.add(
+            Finding(
+                "block",
+                "MODULE_NOT_IN_INVENTORY",
+                f"{dropped} generated patch(es) wired modules outside the confirmed inventory.",
+            )
+        )
+    provenance.add_metric("validation", validation.to_dict())
+
     # Complete provenance
     end_time = time.time()
     provenance.mark_completed()
     provenance.add_metric("duration_ms", (end_time - start_time) * 1000)
     provenance.add_metric("patch_count", len(patch_graphs))
     provenance.add_metric("connection_count", sum(len(p.connections) for p in patch_graphs))
-    provenance.add_metric(
-        "generation_status",
-        "FILTERED" if gate_report.code == "FILTERED" else "OK",
-    )
+    if validation.blocking:
+        status = "VALIDATION_FAILED"
+    else:
+        status = "FILTERED" if gate_report.code == "FILTERED" else "OK"
+    provenance.add_metric("generation_status", status)
     provenance.add_metric("inventory_revision_id", gate_report.inventory.inventory_revision_id)
 
     return generation_ir, patch_graphs, provenance

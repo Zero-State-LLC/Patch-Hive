@@ -174,3 +174,67 @@ def test_generate_twice_does_not_invent_new_rig_rev_for_same_layout(
     # Inventory id stable for same placement set
     assert first["inventory_revision_id"] == second["inventory_revision_id"]
     app.dependency_overrides.clear()
+
+
+def test_a_blocking_finding_fails_the_run_and_saves_nothing(
+    db_session: Session, sample_rack_basic: Rack, owner_headers: dict, monkeypatch
+) -> None:
+    """FR-016/FR-019: a contradiction ends the run validation_failed with no patches."""
+    import patches.validation as validation
+
+    def blocked(patch_graphs, modules_by_id, allowed_module_ids=None):
+        report = validation.ValidationReport()
+        report.add(validation.Finding("block", "PORT_DIRECTION_MISMATCH", "test", 0))
+        return list(patch_graphs), report
+
+    monkeypatch.setattr(validation, "resolve_and_validate", blocked)
+    client = _client(db_session, owner_headers)
+    resp = client.post(f"/api/patches/generate/{sample_rack_basic.id}", json={})
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["generation_status"] == "VALIDATION_FAILED"
+    assert body["generated_count"] == 0
+    assert body["validation"]["blocking"] is True
+    run = db_session.get(Run, body["run_id"])
+    assert run.status == "validation_failed"
+    assert db_session.query(Patch).filter(Patch.run_id == body["run_id"]).count() == 0
+    # The reason survives the response, and the failed run has no export-ready library.
+    assert run.validation_report["blocking"] is True
+    assert db_session.get(PatchLibraryRecord, f"library-{body['source_run_id']}") is None
+    again = client.get(f"/api/runs/{body['run_id']}").json()
+    assert again["export_bridge_ready"] is False
+    assert again["validation"]["findings"][0]["code"] == "PORT_DIRECTION_MISMATCH"
+    app.dependency_overrides.clear()
+
+
+def test_patches_outside_the_inventory_fail_the_run(
+    db_session: Session, sample_rack_basic: Rack, owner_headers: dict, monkeypatch
+) -> None:
+    """A patch the inventory filter has to drop is a contradiction (OQ-08)."""
+    import patches.inventory_gate as gate
+
+    real = gate.filter_patches_to_confirmed_modules
+
+    def drop_one(patches, allowed):
+        kept, dropped, messages = real(patches, allowed)
+        return kept[1:], dropped + 1, messages
+
+    monkeypatch.setattr(gate, "filter_patches_to_confirmed_modules", drop_one)
+    client = _client(db_session, owner_headers)
+    body = client.post(f"/api/patches/generate/{sample_rack_basic.id}", json={}).json()
+    assert body["generation_status"] == "VALIDATION_FAILED"
+    codes = [f["code"] for f in body["validation"]["findings"] if f["severity"] == "block"]
+    assert codes == ["MODULE_NOT_IN_INVENTORY"]
+    app.dependency_overrides.clear()
+
+
+def test_a_passing_run_keeps_its_report_and_is_export_ready(
+    db_session: Session, sample_rack_basic: Rack, owner_headers: dict
+) -> None:
+    client = _client(db_session, owner_headers)
+    body = client.post(f"/api/patches/generate/{sample_rack_basic.id}", json={}).json()
+    assert body["export_bridge_ready"] is True
+    run = client.get(f"/api/runs/{body['run_id']}").json()
+    assert run["export_bridge_ready"] is True
+    assert run["validation"]["blocking"] is False
+    app.dependency_overrides.clear()
