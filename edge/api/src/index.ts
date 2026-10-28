@@ -89,7 +89,9 @@ export class PatchHiveApi extends DurableObject<Env> {
     });
     try {
       await this.starting;
-    } catch {
+    } catch (error) {
+      // Logged so a start failure shows in `wrangler tail` instead of only as a 503.
+      console.error("api container start failed", describe(error));
       return Response.json({ status: "unavailable", reason: "api container not ready" }, { status: 503 });
     }
     // Keep the public host so absolute URLs the API builds (trailing-slash redirects,
@@ -152,7 +154,13 @@ export class PatchHiveApi extends DurableObject<Env> {
   }
 }
 
-const ENV_LABEL = "patchhive-env-sha256";
+// Cloudflare caps container label names at 16 bytes.
+const ENV_LABEL = "ph-env-sha256";
+
+function describe(error: unknown): string {
+  if (!(error instanceof Error)) return String(error);
+  return error.cause ? `${error.name}: ${error.message} (cause: ${String(error.cause)})` : `${error.name}: ${error.message}`;
+}
 
 async function sha256(text: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
