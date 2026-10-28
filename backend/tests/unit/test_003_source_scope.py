@@ -134,8 +134,11 @@ def _archive(db: Session, module: Module, *, field: str, action: str) -> None:
 
 
 def _place(db: Session, case: Case, module: Module):
+    from tests.conftest import bearer_headers, make_user
+
     resp = _client(db).post(
         "/api/racks",
+        headers=bearer_headers(make_user(db)),
         json={
             "case_id": case.id,
             "modules": [{"module_id": module.id, "row_index": 0, "start_hp": 0}],

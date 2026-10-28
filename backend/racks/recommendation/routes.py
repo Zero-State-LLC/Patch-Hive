@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from typing import Optional
+
 from cases.models import Case
+from community.auth import get_current_user
+from community.models import User
 from core import get_db
 from modules.models import Module
-from racks.models import Rack, RackModule
+from racks.access import readable_rack
+from racks.models import RackModule
 
 from .models import (
     ModuleSpec,
@@ -35,10 +40,9 @@ def recommend_rack_layout_for_rack(
     rack_id: int,
     payload: RackRecommendationFromRackRequest,
     db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
 ) -> RackRecommendationResponse:
-    rack = db.query(Rack).filter(Rack.id == rack_id).first()
-    if not rack:
-        raise HTTPException(status_code=404, detail="Rack not found")
+    rack = readable_rack(db, rack_id, current_user)
 
     case = db.query(Case).filter(Case.id == rack.case_id).first()
     rack_modules = db.query(RackModule).filter(RackModule.rack_id == rack.id).all()

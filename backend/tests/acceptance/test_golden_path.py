@@ -33,8 +33,9 @@ def _build_modules_payload(modules, row_hp: int) -> list[dict]:
     return payload
 
 
-def test_create_rig_multi_rig(api_client, create_user, seed_minimal_modules):
+def test_create_rig_multi_rig(api_client, login, create_user, seed_minimal_modules):
     create_user("user1", "pass123")
+    api_client.headers["Authorization"] = f"Bearer {login('user1', 'pass123')}"
     modules_payload = _build_modules_payload(
         seed_minimal_modules["modules"][:8],
         seed_minimal_modules["case"].hp_per_row[0],
@@ -65,7 +66,9 @@ def test_create_rig_multi_rig(api_client, create_user, seed_minimal_modules):
     assert list_resp.json()["total"] == 2
 
 
-def test_golden_demo_fingerprint(api_client, golden_demo_seed):
+def test_golden_demo_fingerprint(api_client, login, golden_demo_seed):
+    # The seeded demo user owns the golden rig.
+    api_client.headers["Authorization"] = f"Bearer {login(golden_demo_seed.username, golden_demo_seed.password)}"
     fixture_path = Path(__file__).resolve().parents[3] / "fixtures" / "golden_demo_seed.json"
     fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
 
@@ -83,9 +86,10 @@ def test_golden_demo_fingerprint(api_client, golden_demo_seed):
 
 
 def test_generate_patch_library_deterministic(
-    api_client, db_session: Session, create_user, seed_minimal_modules
+    api_client, login, db_session: Session, create_user, seed_minimal_modules
 ):
     create_user("user2", "pass123")
+    api_client.headers["Authorization"] = f"Bearer {login('user2', 'pass123')}"
 
     modules_payload = _build_modules_payload(
         seed_minimal_modules["modules"][:8],
@@ -159,8 +163,9 @@ def test_generate_patch_library_deterministic(
     assert any(h not in hashes_1 for h in hashes_3)
 
 
-def test_patch_naming_humor_gating(api_client, seed_minimal_modules, create_user):
+def test_patch_naming_humor_gating(api_client, login, seed_minimal_modules, create_user):
     create_user("user3", "pass123")
+    api_client.headers["Authorization"] = f"Bearer {login('user3', 'pass123')}"
 
     rack_resp = api_client.post(
         "/api/racks",
@@ -219,8 +224,9 @@ def test_patch_naming_humor_gating(api_client, seed_minimal_modules, create_user
     assert "humor" not in patch2["tags"]
 
 
-def test_run_history(api_client, create_user, seed_minimal_modules):
+def test_run_history(api_client, login, create_user, seed_minimal_modules):
     create_user("user4", "pass123")
+    api_client.headers["Authorization"] = f"Bearer {login('user4', 'pass123')}"
 
     modules_payload = _build_modules_payload(
         seed_minimal_modules["modules"][:6],

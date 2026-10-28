@@ -2,6 +2,7 @@
 FastAPI routes for export functionality (PDF, SVG).
 """
 
+from typing import Optional
 import os
 from datetime import datetime
 from hashlib import sha256
@@ -11,13 +12,14 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import FileResponse, Response
 from sqlalchemy.orm import Session
 
-from community.auth import require_auth
+from community.auth import get_current_user, require_auth
 from community.models import User
 from core import get_db, settings
 from core.storage import StorageError, get_file_store
 from monetization.credits import get_credits_balance
 from monetization.models import CreditsLedger, Export
 from patches.models import Patch
+from racks.access import readable_patch, readable_rack
 from racks.models import Rack
 from runs.models import Run
 
@@ -30,11 +32,13 @@ router = APIRouter()
 
 
 @router.get("/patches/{patch_id}/pdf")
-def export_patch_pdf(patch_id: int, db: Session = Depends(get_db)):
+def export_patch_pdf(
+    patch_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+):
     """Export a patch as PDF."""
-    patch = db.query(Patch).filter(Patch.id == patch_id).first()
-    if not patch:
-        raise HTTPException(status_code=404, detail="Patch not found")
+    patch = readable_patch(db, patch_id, current_user)
 
     try:
         pdf_path = generate_patch_pdf(db, patch)
@@ -48,11 +52,13 @@ def export_patch_pdf(patch_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/racks/{rack_id}/pdf")
-def export_rack_pdf(rack_id: int, db: Session = Depends(get_db)):
+def export_rack_pdf(
+    rack_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+):
     """Export a rack as PDF."""
-    rack = db.query(Rack).filter(Rack.id == rack_id).first()
-    if not rack:
-        raise HTTPException(status_code=404, detail="Rack not found")
+    rack = readable_rack(db, rack_id, current_user)
 
     try:
         pdf_path = generate_rack_pdf(db, rack)
@@ -66,11 +72,13 @@ def export_rack_pdf(rack_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/racks/{rack_id}/layout.svg")
-def export_rack_layout_svg(rack_id: int, db: Session = Depends(get_db)):
+def export_rack_layout_svg(
+    rack_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+):
     """Export rack layout as SVG."""
-    rack = db.query(Rack).filter(Rack.id == rack_id).first()
-    if not rack:
-        raise HTTPException(status_code=404, detail="Rack not found")
+    rack = readable_rack(db, rack_id, current_user)
 
     try:
         svg = generate_rack_layout_svg(db, rack)
@@ -80,11 +88,13 @@ def export_rack_layout_svg(rack_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/patches/{patch_id}/diagram.svg")
-def export_patch_diagram_svg(patch_id: int, db: Session = Depends(get_db)):
+def export_patch_diagram_svg(
+    patch_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+):
     """Export patch diagram as SVG."""
-    patch = db.query(Patch).filter(Patch.id == patch_id).first()
-    if not patch:
-        raise HTTPException(status_code=404, detail="Patch not found")
+    patch = readable_patch(db, patch_id, current_user)
 
     rack = db.query(Rack).filter(Rack.id == patch.rack_id).first()
     if not rack:
@@ -124,6 +134,7 @@ def export_patchbook_pdf(
     run = db.query(Run).filter(Run.id == run_id).first()
     if not run:
         raise HTTPException(status_code=404, detail="Run not found")
+    readable_rack(db, run.rack_id, current_user, label="Run")
 
     cached = (
         db.query(Export)
@@ -234,7 +245,11 @@ def export_patchbook_pdf(
 
 
 @router.post("/patchbook")
-def export_patchbook_document(payload: PatchBookExportRequest, db: Session = Depends(get_db)):
+def export_patchbook_document(
+    payload: PatchBookExportRequest,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+):
     """Export PatchBook PDF bytes for a rack/patch selection."""
     if not payload.rack_id and not payload.patch_ids:
         raise HTTPException(status_code=400, detail="rack_id or patch_ids required")
@@ -254,6 +269,10 @@ def export_patchbook_document(payload: PatchBookExportRequest, db: Session = Dep
 
     if not rack:
         raise HTTPException(status_code=404, detail="Rack not found")
+    readable_rack(db, rack.id, current_user)
+    # Every selected patch must be readable too (they may sit on other racks).
+    for patch in patches:
+        readable_patch(db, patch.id, current_user)
     if not patches:
         raise HTTPException(status_code=404, detail="No patches available for rack")
 

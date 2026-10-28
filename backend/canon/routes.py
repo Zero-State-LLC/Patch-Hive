@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import datetime, timezone
-from typing import Any, Literal
+from typing import Any, Literal, Optional
 
 from pathlib import Path
 
@@ -36,7 +36,7 @@ from canon.models import (
     StripeEventRecordModel,
     UserStyleRecipeRecord,
 )
-from community.auth import require_auth
+from community.auth import get_current_user, require_auth
 from community.models import User
 from core import get_db, settings
 from runs.listing import list_runs_for_rack
@@ -307,8 +307,12 @@ def list_canonical_runs(
         description="Legacy rack id (rig). Alias of GET /api/runs?rack_id= with same bridge DTO.",
     ),
     db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
 ) -> RunListResponse:
     """Matrix slice B: canon-prefixed run list for FE migration off /api/runs."""
+    from racks.access import readable_rack
+
+    readable_rack(db, rig_id, current_user, label="Rig")
 
     payload = list_runs_for_rack(db, rig_id)
     db.commit()
@@ -376,15 +380,17 @@ def list_canon_rigs(
     is_public: bool | None = None,
     user_id: int | None = Query(default=None, ge=1),
     db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
 ) -> CanonRigListResponse:
     """F2 thin read adapter: list inventory rigs over the racks table.
 
     Does not replace POST/PATCH ``/api/racks``; new clients should prefer this
     list path. ``rig_id`` and ``rack_id`` are always equal (MVP honesty).
     """
+    from racks.access import readable_racks
     from racks.models import Rack
 
-    query = db.query(Rack)
+    query = readable_racks(db.query(Rack), current_user)
     if is_public is not None:
         query = query.filter(Rack.is_public == is_public)
     if user_id is not None:
@@ -399,14 +405,16 @@ def list_canon_rigs(
 
 
 @router.get("/rigs/{rig_id}", response_model=CanonRigDetail)
-def get_canon_rig(rig_id: int, db: Session = Depends(get_db)) -> CanonRigDetail:
+def get_canon_rig(
+    rig_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+) -> CanonRigDetail:
     """F2 thin read adapter: single inventory rig (≡ GET /api/racks/{rig_id})."""
-    from racks.models import Rack
+    from racks.access import readable_rack
     from racks.routes import build_rack_response
 
-    rack = db.query(Rack).filter(Rack.id == rig_id).first()
-    if not rack:
-        raise HTTPException(status_code=404, detail="Rig not found")
+    rack = readable_rack(db, rig_id, current_user, label="Rig")
 
     summary = _canon_rig_summary_from_rack(db, rack)
     full = build_rack_response(db, rack)
@@ -456,11 +464,18 @@ def legacy_patch_ref(patch_id: int) -> str:
 
 
 @router.get("/rigs/{rig_id}/revisions", response_model=RigRevisionListResponse)
-def list_rig_revisions(rig_id: int, db: Session = Depends(get_db)) -> RigRevisionListResponse:
+def list_rig_revisions(
+    rig_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+) -> RigRevisionListResponse:
     """Distinct server-authored rig revision ids observed for this rig's runs.
 
     Grouping is derived from the export bridge (immutable revision per content).
     """
+    from racks.access import readable_rack
+
+    readable_rack(db, rig_id, current_user, label="Rig")
 
     payload = list_runs_for_rack(db, rig_id)
     db.commit()

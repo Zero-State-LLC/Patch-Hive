@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { canonApi, exportApi, patchApi, rackApi, runApi } from "@/lib/api";
+import { useAuthStore } from "@/lib/store";
 import type { CompatibilityResponse, Patch, Rack, Run } from "@/types/api";
 import { rigDetailToRack, rigSummaryToRack } from "@/lib/canonRigAdapter";
 import {
@@ -30,6 +31,8 @@ function gateTone(status?: string | null): "success" | "warning" | "danger" | "n
 
 export default function RacksPage() {
   const [racks, setRacks] = useState<Rack[]>([]);
+  // Users own their racks: only the owner can generate patches for one.
+  const currentUserId = useAuthStore((st) => st.user?.id ?? null);
   const [selectedRackId, setSelectedRackId] = useState<number | null>(null);
   const [rackDetail, setRackDetail] = useState<Rack | null>(null);
   const [detailError, setDetailError] = useState<string | null>(null);
@@ -522,11 +525,17 @@ export default function RacksPage() {
                       type="button"
                       className="button button-primary"
                       onClick={() => void handleGenerate()}
-                      disabled={loading || selectedRack.modules.length === 0}
+                      disabled={
+                        loading ||
+                        selectedRack.modules.length === 0 ||
+                        currentUserId !== selectedRack.user_id
+                      }
                       title={
-                        selectedRack.modules.length === 0
-                          ? "Place at least one module before generating"
-                          : undefined
+                        currentUserId !== selectedRack.user_id
+                          ? "Only the rig's owner can generate patches"
+                          : selectedRack.modules.length === 0
+                            ? "Place at least one module before generating"
+                            : undefined
                       }
                     >
                       {loading ? "Generating…" : "Generate patch library"}

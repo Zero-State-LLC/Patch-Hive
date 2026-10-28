@@ -8,8 +8,10 @@ from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
+from community.auth import get_current_user, require_auth
+from community.models import User
 from core import get_db, settings
-from racks.models import Rack
+from racks.access import owned_patch, owned_rack, readable_patch, readable_patches
 from runs.bridge import ensure_legacy_run_export_bridge
 from runs.models import Run
 
@@ -28,12 +30,13 @@ router = APIRouter()
 
 
 @router.post("/", response_model=PatchResponse, status_code=201)
-def create_patch(patch: PatchCreate, db: Session = Depends(get_db)):
-    """Create a new patch."""
-    # Verify rack exists
-    rack = db.query(Rack).filter(Rack.id == patch.rack_id).first()
-    if not rack:
-        raise HTTPException(status_code=404, detail="Rack not found")
+def create_patch(
+    patch: PatchCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+):
+    """Create a new patch on a rack the caller owns."""
+    owned_rack(db, patch.rack_id, current_user)
 
     tags = patch.tags or _derive_tags(patch.connections)
     db_patch = Patch(
@@ -67,9 +70,10 @@ def list_patches(
     category: Optional[str] = None,
     is_public: Optional[bool] = None,
     db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
 ):
-    """List patches with optional filters."""
-    query = db.query(Patch)
+    """List the patches the caller may read, with optional filters."""
+    query = readable_patches(db.query(Patch), current_user)
 
     # Apply filters
     if rack_id is not None:
@@ -90,21 +94,26 @@ def list_patches(
 
 
 @router.get("/{patch_id}", response_model=PatchResponse)
-def get_patch(patch_id: int, db: Session = Depends(get_db)):
+def get_patch(
+    patch_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+):
     """Get a specific patch by ID."""
-    patch = db.query(Patch).filter(Patch.id == patch_id).first()
-    if not patch:
-        raise HTTPException(status_code=404, detail="Patch not found")
+    patch = readable_patch(db, patch_id, current_user)
 
     return build_patch_response(db, patch)
 
 
 @router.patch("/{patch_id}", response_model=PatchResponse)
-def update_patch(patch_id: int, patch_update: PatchUpdate, db: Session = Depends(get_db)):
-    """Update a patch."""
-    db_patch = db.query(Patch).filter(Patch.id == patch_id).first()
-    if not db_patch:
-        raise HTTPException(status_code=404, detail="Patch not found")
+def update_patch(
+    patch_id: int,
+    patch_update: PatchUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+):
+    """Update a patch (rack owner only)."""
+    db_patch = owned_patch(db, patch_id, current_user)
 
     # Update fields if provided
     update_data = patch_update.model_dump(exclude_unset=True)
@@ -124,11 +133,13 @@ def update_patch(patch_id: int, patch_update: PatchUpdate, db: Session = Depends
 
 
 @router.delete("/{patch_id}", status_code=204)
-def delete_patch(patch_id: int, db: Session = Depends(get_db)):
-    """Delete a patch."""
-    db_patch = db.query(Patch).filter(Patch.id == patch_id).first()
-    if not db_patch:
-        raise HTTPException(status_code=404, detail="Patch not found")
+def delete_patch(
+    patch_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+):
+    """Delete a patch (rack owner only)."""
+    db_patch = owned_patch(db, patch_id, current_user)
 
     db.delete(db_patch)
     db.commit()
@@ -136,12 +147,14 @@ def delete_patch(patch_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/generate/{rack_id}", response_model=GeneratePatchesResponse)
-def generate_patches(rack_id: int, request: GeneratePatchesRequest, db: Session = Depends(get_db)):
-    """Generate patches for a rack using the patch engine."""
-    # Verify rack exists
-    rack = db.query(Rack).filter(Rack.id == rack_id).first()
-    if not rack:
-        raise HTTPException(status_code=404, detail="Rack not found")
+def generate_patches(
+    rack_id: int,
+    request: GeneratePatchesRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+):
+    """Generate patches for a rack the caller owns, using the patch engine."""
+    rack = owned_rack(db, rack_id, current_user)
 
     # Build engine config
     config = PatchEngineConfig(

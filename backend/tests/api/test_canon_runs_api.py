@@ -24,7 +24,10 @@ def _client(db_session: Session) -> TestClient:
             pass
 
     app.dependency_overrides[get_db] = override_get_db
-    return TestClient(app)
+    from tests.conftest import bearer_headers, make_user
+
+    # Read-only checks over racks owned by other users: sign in as a read-all admin role.
+    return TestClient(app, headers=bearer_headers(make_user(db_session, "auditor", "ReadOnly")))
 
 
 def test_canon_runs_alias_matches_legacy_list(db_session: Session) -> None:

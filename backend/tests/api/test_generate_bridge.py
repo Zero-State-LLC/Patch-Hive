@@ -17,7 +17,7 @@ from racks.models import Rack
 from runs.bridge import native_source_run_id, rack_content_hash, build_rack_content_snapshot
 
 
-def _client(db_session: Session) -> TestClient:
+def _client(db_session: Session, headers: dict | None = None) -> TestClient:
     from core import get_db
 
     def override_get_db():
@@ -27,7 +27,7 @@ def _client(db_session: Session) -> TestClient:
             pass
 
     app.dependency_overrides[get_db] = override_get_db
-    return TestClient(app)
+    return TestClient(app, headers=headers or {})
 
 
 def _assert_no_legacy_ids(body: dict) -> None:
@@ -39,9 +39,9 @@ def _assert_no_legacy_ids(body: dict) -> None:
 
 
 def test_generate_patches_ensures_export_bridge(
-    db_session: Session, sample_rack_basic: Rack
+    db_session: Session, sample_rack_basic: Rack, owner_headers: dict
 ) -> None:
-    client = _client(db_session)
+    client = _client(db_session, owner_headers)
     resp = client.post(f"/api/patches/generate/{sample_rack_basic.id}", json={})
     assert resp.status_code == 200, resp.text
     body = resp.json()
@@ -97,10 +97,10 @@ def test_generate_patches_ensures_export_bridge(
 
 
 def test_generate_empty_rack_not_computable_still_dual_writes(
-    db_session: Session, sample_rack_empty: Rack
+    db_session: Session, sample_rack_empty: Rack, owner_headers: dict
 ) -> None:
     """Empty inventory fails closed for patches but still mints native bridge + inventory row."""
-    client = _client(db_session)
+    client = _client(db_session, owner_headers)
     resp = client.post(f"/api/patches/generate/{sample_rack_empty.id}", json={})
     assert resp.status_code == 200, resp.text
     body = resp.json()
@@ -117,10 +117,10 @@ def test_generate_empty_rack_not_computable_still_dual_writes(
 
 
 def test_generate_twice_does_not_invent_new_rig_rev_for_same_layout(
-    db_session: Session, sample_rack_basic: Rack
+    db_session: Session, sample_rack_basic: Rack, owner_headers: dict
 ) -> None:
     """Same layout snapshot → same rig-rev-* id across runs (append-only revisions)."""
-    client = _client(db_session)
+    client = _client(db_session, owner_headers)
     first = client.post(f"/api/patches/generate/{sample_rack_basic.id}", json={}).json()
     second = client.post(f"/api/patches/generate/{sample_rack_basic.id}", json={}).json()
     assert first["rig_revision_id"] == second["rig_revision_id"]
