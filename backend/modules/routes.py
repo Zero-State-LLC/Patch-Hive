@@ -6,8 +6,12 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
+from admin.dependencies import require_admin_mutate
+from admin.utils import log_admin_action
+from community.models import User
 from core import get_db
 
 from .models import Module
@@ -16,8 +20,13 @@ from .schemas import ModuleCreate, ModuleListResponse, ModuleResponse, ModuleUpd
 router = APIRouter()
 
 
+# Writes change the shared catalog every user's racks read, so they are admin-only and audited.
 @router.post("/", response_model=ModuleResponse, status_code=201)
-def create_module(module: ModuleCreate, db: Session = Depends(get_db)):
+def create_module(
+    module: ModuleCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_mutate),
+):
     """Create a new module."""
     db_module = Module(
         brand=module.brand,
@@ -40,6 +49,15 @@ def create_module(module: ModuleCreate, db: Session = Depends(get_db)):
         source_reference=module.source_reference,
     )
     db.add(db_module)
+    db.flush()
+    log_admin_action(
+        db,
+        actor=current_user,
+        action_type="module.create",
+        target_type="module",
+        target_id=str(db_module.id),
+        delta_json=jsonable_encoder(module.model_dump()),
+    )
     db.commit()
     db.refresh(db_module)
     return db_module
@@ -87,7 +105,12 @@ def get_module(module_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/{module_id}", response_model=ModuleResponse)
-def update_module(module_id: int, module_update: ModuleUpdate, db: Session = Depends(get_db)):
+def update_module(
+    module_id: int,
+    module_update: ModuleUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_mutate),
+):
     """Update a module."""
     db_module = db.query(Module).filter(Module.id == module_id).first()
     if not db_module:
@@ -98,16 +121,29 @@ def update_module(module_id: int, module_update: ModuleUpdate, db: Session = Dep
     if "io_ports" in update_data and update_data["io_ports"] is not None:
         update_data["io_ports"] = [port.model_dump() for port in module_update.io_ports]
 
+    before = {field: getattr(db_module, field) for field in update_data}
     for field, value in update_data.items():
         setattr(db_module, field, value)
 
+    log_admin_action(
+        db,
+        actor=current_user,
+        action_type="module.update",
+        target_type="module",
+        target_id=str(module_id),
+        delta_json=jsonable_encoder({"before": before, "after": update_data}),
+    )
     db.commit()
     db.refresh(db_module)
     return db_module
 
 
 @router.delete("/{module_id}", status_code=204)
-def delete_module(module_id: int, db: Session = Depends(get_db)):
+def delete_module(
+    module_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_mutate),
+):
     """Tombstone a module (no hard delete)."""
     db_module = db.query(Module).filter(Module.id == module_id).first()
     if not db_module:
@@ -115,5 +151,12 @@ def delete_module(module_id: int, db: Session = Depends(get_db)):
 
     db_module.status = "tombstoned"
     db_module.tombstoned_at = datetime.utcnow()
+    log_admin_action(
+        db,
+        actor=current_user,
+        action_type="module.tombstone",
+        target_type="module",
+        target_id=str(module_id),
+    )
     db.commit()
     return None

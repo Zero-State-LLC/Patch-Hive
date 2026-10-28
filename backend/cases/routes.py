@@ -5,8 +5,12 @@ FastAPI routes for Case management.
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
+from admin.dependencies import require_admin_mutate
+from admin.utils import log_admin_action
+from community.models import User
 from core import get_db
 
 from .models import Case
@@ -34,8 +38,13 @@ def _defaults_from_payload(case: CaseCreate) -> dict:
     }
 
 
+# Cases are shared reference data that racks point at: writes are admin-only and audited.
 @router.post("/", response_model=CaseResponse, status_code=201)
-def create_case(case: CaseCreate, db: Session = Depends(get_db)):
+def create_case(
+    case: CaseCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_mutate),
+):
     """Create a new case."""
     if len(case.hp_per_row) != case.rows:
         raise HTTPException(
@@ -68,6 +77,15 @@ def create_case(case: CaseCreate, db: Session = Depends(get_db)):
         source_reference=case.source_reference,
     )
     db.add(db_case)
+    db.flush()
+    log_admin_action(
+        db,
+        actor=current_user,
+        action_type="case.create",
+        target_type="case",
+        target_id=str(db_case.id),
+        delta_json=jsonable_encoder(case.model_dump()),
+    )
     db.commit()
     db.refresh(db_case)
     return db_case
@@ -136,28 +154,54 @@ def get_case(case_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/{case_id}", response_model=CaseResponse)
-def update_case(case_id: int, case_update: CaseUpdate, db: Session = Depends(get_db)):
+def update_case(
+    case_id: int,
+    case_update: CaseUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_mutate),
+):
     """Update a case."""
     db_case = db.query(Case).filter(Case.id == case_id).first()
     if not db_case:
         raise HTTPException(status_code=404, detail="Case not found")
 
     update_data = case_update.model_dump(exclude_unset=True)
+    before = {field: getattr(db_case, field) for field in update_data}
     for field, value in update_data.items():
         setattr(db_case, field, value)
 
+    log_admin_action(
+        db,
+        actor=current_user,
+        action_type="case.update",
+        target_type="case",
+        target_id=str(case_id),
+        delta_json=jsonable_encoder({"before": before, "after": update_data}),
+    )
     db.commit()
     db.refresh(db_case)
     return db_case
 
 
 @router.delete("/{case_id}", status_code=204)
-def delete_case(case_id: int, db: Session = Depends(get_db)):
+def delete_case(
+    case_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_mutate),
+):
     """Delete a case."""
     db_case = db.query(Case).filter(Case.id == case_id).first()
     if not db_case:
         raise HTTPException(status_code=404, detail="Case not found")
 
+    log_admin_action(
+        db,
+        actor=current_user,
+        action_type="case.delete",
+        target_type="case",
+        target_id=str(case_id),
+        delta_json=jsonable_encoder({"brand": db_case.brand, "name": db_case.name}),
+    )
     db.delete(db_case)
     db.commit()
     return None
