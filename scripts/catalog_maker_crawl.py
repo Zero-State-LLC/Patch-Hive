@@ -380,6 +380,15 @@ def first_num(patterns: list[str], text: str) -> float | None:
     return None
 
 
+def depth_mm(text: str) -> float | None:
+    """Depth in mm from one piece of text, converting inches found in that same text."""
+    value = first_num(DEPTH, text)
+    m = re.search(DEPTH[2], text)
+    if m and value is not None and float(m.group(1)) == value:
+        return round(value * 25.4)
+    return value
+
+
 def draw_window(text: str, size: int = 1400) -> str:
     """The text around the first mA value: where a page states its rail draws."""
     m = re.search(r"\d\s*mA\b", text, re.I)
@@ -598,16 +607,13 @@ def deterministic(brand: str, url: str, text: str, name: str | None, body: str =
         hps = {int(m) for pat in HP for m in re.findall(pat, draw_window(text), re.I) if HP_MIN <= int(m) <= HP_MAX}
     if len(hps) != 1:
         return {"ambiguous_hp": sorted(hps)} if hps else None
-    det = {"hp": hps.pop(), **rails(window), "depth_mm": first_num(DEPTH, window)}
+    det = {"hp": hps.pop(), **rails(window), "depth_mm": depth_mm(window)}
     if all(det[f] is None for f in RAIL):
         # The spec window starts at the first keyword, which can be a nav menu ("Power")
         # far above the specs; read the draws around the page's first mA value instead.
         det.update(rails(draw_window(text)))
     if det["depth_mm"] is None:
-        det["depth_mm"] = first_num(DEPTH, draw_window(text))
-    m = re.search(DEPTH[2], window)
-    if m and det["depth_mm"] is not None and float(m.group(1)) == det["depth_mm"]:
-        det["depth_mm"] = round(det["depth_mm"] * 25.4)
+        det["depth_mm"] = depth_mm(draw_window(text))
     if det["depth_mm"] is not None and not (5 <= det["depth_mm"] <= 200):
         det["depth_mm"] = None
     if not name:

@@ -140,6 +140,13 @@ def test_draws_far_below_a_nav_keyword_are_still_read() -> None:
     assert (row["hp"], row["power_12v_ma"], row["power_neg12v_ma"]) == (14, 120, 10)
 
 
+def test_an_inch_depth_below_a_nav_keyword_is_converted() -> None:
+    nav = "Eurorack Modules Power Faceplates Accessories Pods Kits Merch Stores About " * 40
+    text = nav + "Width 14HP Depth 5.5 inches Power Consumption +12V: 120mA"
+    row = crawl.deterministic("X", "https://x.example/p", text, "Y")
+    assert (row["hp"], row["depth_mm"], row["power_12v_ma"]) == (14, 140, 120)
+
+
 def test_two_unlabelled_widths_are_ambiguous() -> None:
     assert crawl.deterministic(
         "X", "https://x.example/p", "Fits 8HP or 10HP versions. " * 3, "Y"
