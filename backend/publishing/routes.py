@@ -187,12 +187,15 @@ def create_export(
         if not patch:
             raise HTTPException(status_code=404, detail="Patch not found")
         rack = db.query(Rack).filter(Rack.id == patch.rack_id).first()
+        if rack is not None and rack.deleted_at is not None:
+            # A deleted rack is gone, patches included (spec 001 OQ-02).
+            raise HTTPException(status_code=404, detail="Patch not found")
         if not rack or rack.user_id != current_user.id:
             raise HTTPException(status_code=403, detail="Export ownership mismatch")
         return _create_export_from_patch(db, patch, current_user)
 
     rack = db.query(Rack).filter(Rack.id == payload.source_id).first()
-    if not rack:
+    if not rack or rack.deleted_at is not None:
         raise HTTPException(status_code=404, detail="Rack not found")
     if rack.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Export ownership mismatch")

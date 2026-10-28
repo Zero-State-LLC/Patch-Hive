@@ -50,7 +50,12 @@ def private_rack(db: Session, rack_id: int, user: Optional[User], *, label: str 
     """Evidence (photos, candidates, inventory) is private even on a public rack: only
     the owner and admin read roles may see it."""
     rack = db.query(Rack).filter(Rack.id == rack_id).first()
-    if rack is None or user is None or not (user.id == rack.user_id or user.role in READ_ROLES):
+    if (
+        rack is None
+        or rack.deleted_at is not None
+        or user is None
+        or not (user.id == rack.user_id or user.role in READ_ROLES)
+    ):
         raise HTTPException(status_code=404, detail=f"{label} not found")
     return rack
 
