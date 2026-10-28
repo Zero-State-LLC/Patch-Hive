@@ -446,6 +446,10 @@ export const exportApi = {
 
   rackPdf: (rackId: number) => `${API_BASE_URL}/export/racks/${rackId}/pdf`,
 
+  /** Rack PDF bytes through the authenticated client: racks are owner-scoped, so a bare link 404s. */
+  downloadRackPdf: (rackId: number) =>
+    api.get<Blob>(`/export/racks/${rackId}/pdf`, { responseType: "blob" }),
+
   rackLayoutSvg: (rackId: number) => `${API_BASE_URL}/export/racks/${rackId}/layout.svg`,
 
   patchDiagramSvg: (patchId: number) => `${API_BASE_URL}/export/patches/${patchId}/diagram.svg`,

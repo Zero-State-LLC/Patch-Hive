@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { canonApi, exportApi, patchApi, rackApi, runApi } from "@/lib/api";
+import { filenameFromDisposition, saveBlob } from "@/lib/download";
 import { useAuthStore } from "@/lib/store";
 import type { CompatibilityResponse, Patch, Rack, Run } from "@/types/api";
 import { rigDetailToRack, rigSummaryToRack } from "@/lib/canonRigAdapter";
@@ -33,6 +34,8 @@ export default function RacksPage() {
   const [racks, setRacks] = useState<Rack[]>([]);
   // Users own their racks: only the owner can generate patches for one.
   const currentUserId = useAuthStore((st) => st.user?.id ?? null);
+  const [pdfDownloading, setPdfDownloading] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
   const [selectedRackId, setSelectedRackId] = useState<number | null>(null);
   const [rackDetail, setRackDetail] = useState<Rack | null>(null);
   const [detailError, setDetailError] = useState<string | null>(null);
@@ -162,6 +165,24 @@ export default function RacksPage() {
       setPatches(response.data.patches);
     } catch {
       setPatches([]);
+    }
+  };
+
+  const handleRackPdf = async (rackId: number) => {
+    setPdfDownloading(true);
+    setPdfError(null);
+    try {
+      const res = await exportApi.downloadRackPdf(rackId);
+      saveBlob(
+        res.data,
+        filenameFromDisposition(res.headers["content-disposition"], `rack_${rackId}.pdf`),
+      );
+    } catch {
+      setPdfError(
+        "Could not download the PDF. Only the rig's owner (or a public rig) can export it.",
+      );
+    } finally {
+      setPdfDownloading(false);
     }
   };
 
@@ -652,9 +673,14 @@ export default function RacksPage() {
                   canonical boundary.
                 </p>
                 <div className="page-hero-actions">
-                  <a className="button button-primary" href={exportApi.rackPdf(selectedRack.id)}>
-                    Export Patch Book PDF
-                  </a>
+                  <button
+                    type="button"
+                    className="button button-primary"
+                    onClick={() => void handleRackPdf(selectedRack.id)}
+                    disabled={pdfDownloading}
+                  >
+                    {pdfDownloading ? "Preparing PDF…" : "Export Patch Book PDF"}
+                  </button>
                   <button type="button" className="button button-quiet" disabled>
                     Export selected patches
                   </button>
@@ -662,6 +688,11 @@ export default function RacksPage() {
                     Export SVG zip
                   </button>
                 </div>
+                {pdfError ? (
+                  <p className="status status-danger" role="alert">
+                    {pdfError}
+                  </p>
+                ) : null}
               </div>
             ) : null}
 

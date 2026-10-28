@@ -130,3 +130,18 @@ def test_patches_follow_their_rack(
     assert client.get("/api/runs/", params={"rack_id": rack.id}, headers=other).status_code == 404
     owner = bearer_headers(people["owner"])
     assert client.delete(f"/api/patches/{hidden.id}", headers=owner).status_code == 204
+
+
+def test_the_owner_downloads_a_private_rack_pdf_with_its_filename(
+    client: TestClient, db_session: Session, people: dict, sample_case: Case
+) -> None:
+    from core import settings
+
+    rack = _rack(db_session, people["owner"].id, sample_case)
+    url = f"/api/export/racks/{rack.id}/pdf"
+    assert client.get(url).status_code == 404  # a bare browser link carries no token
+    origin = settings.cors_origins[0] if settings.cors_origins else "http://localhost:5173"
+    resp = client.get(url, headers={**bearer_headers(people["owner"]), "Origin": origin})
+    assert resp.status_code == 200
+    assert "filename=" in resp.headers["content-disposition"]
+    assert "content-disposition" in resp.headers.get("access-control-expose-headers", "").lower()
