@@ -22,7 +22,9 @@ def _client(db_session: Session) -> TestClient:
             pass
 
     app.dependency_overrides[get_db] = override_get_db
-    return TestClient(app)
+    from tests.conftest import sample_owner_headers
+
+    return TestClient(app, headers=sample_owner_headers(db_session))
 
 
 def _jpeg(n: int = 0) -> bytes:

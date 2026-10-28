@@ -25,12 +25,14 @@ def _client(db_session: Session) -> TestClient:
             pass
 
     app.dependency_overrides[get_db] = override_get_db
-    return TestClient(app)
+    from tests.conftest import sample_owner_headers
+
+    return TestClient(app, headers=sample_owner_headers(db_session))
 
 
 @pytest.fixture
-def client(db_session: Session):
-    """Bind the app to the in-memory session, matching the other API suites."""
+def client(db_session: Session, sample_user):
+    """Bind the app to the in-memory session, signed in as the sample rack's owner."""
     test_client = _client(db_session)
     yield test_client
     app.dependency_overrides.clear()

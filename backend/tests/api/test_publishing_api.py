@@ -251,3 +251,43 @@ class TestPublishingAPI:
         )
         assert audit is not None
         assert audit.action_type == "hide_publication"
+
+    def test_owner_cannot_lift_moderation(
+        self, client: TestClient, db_session: Session, sample_user: User, sample_case
+    ):
+        rack = Rack(user_id=sample_user.id, name="Rack", case_id=sample_case.id)
+        db_session.add(rack)
+        db_session.commit()
+        patch = _create_patch(db_session, rack)
+        owner = _auth_headers(sample_user)
+
+        # The owner's own hide can be undone.
+        own = _create_publication(db_session, _create_export(db_session, sample_user, patch, None), sample_user)
+        url = f"/api/me/publications/{own.id}"
+        assert client.patch(url, json={"status": "hidden"}, headers=owner).status_code == 200
+        assert client.patch(url, json={"status": "published"}, headers=owner).status_code == 200
+
+        # A removed publication, or one an admin hid, stays where moderation put it.
+        removed = _create_publication(
+            db_session, _create_export(db_session, sample_user, patch, None), sample_user,
+            slug="removed-pub", status="removed",
+        )
+        hidden = _create_publication(
+            db_session, _create_export(db_session, sample_user, patch, None), sample_user,
+            slug="hidden-pub", status="hidden",
+        )
+        audit = AdminAuditLog(
+            actor_user_id=sample_user.id, actor_role="Admin", action_type="hide_publication",
+            target_type="publication", target_id=str(hidden.id),
+        )
+        db_session.add(audit)
+        db_session.flush()
+        hidden.moderation_audit_id = audit.id
+        db_session.commit()
+        for pub in (removed, hidden):
+            resp = client.patch(
+                f"/api/me/publications/{pub.id}", json={"status": "published"}, headers=owner
+            )
+            assert resp.status_code == 409
+            db_session.refresh(pub)
+            assert pub.status in {"removed", "hidden"}

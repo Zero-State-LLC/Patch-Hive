@@ -272,6 +272,12 @@ def update_publication(
         status_value = update_data["status"]
         if status_value not in {"published", "hidden"}:
             raise HTTPException(status_code=400, detail="Invalid status transition")
+        # An owner toggles only their own hide. A removed publication, or one an
+        # admin hid (it carries a moderation audit), stays as moderation left it.
+        if publication.status == "removed" or publication.moderation_audit_id is not None:
+            raise HTTPException(status_code=409, detail="PUBLICATION_UNDER_MODERATION")
+        if publication.status not in {"published", "hidden"}:
+            raise HTTPException(status_code=400, detail="Invalid status transition")
         publication.status = status_value
         if status_value == "published" and publication.published_at is None:
             publication.published_at = datetime.utcnow()

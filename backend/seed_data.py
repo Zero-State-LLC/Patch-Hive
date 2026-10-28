@@ -15,6 +15,15 @@ from monetization.referrals import generate_referral_code
 
 def load_seed_data(db: Session) -> None:
     """Load seed data into the database."""
+    # The seed creates an Admin with a published password; never on a hosted database.
+    from core import settings
+    from core.security import is_dev_environment
+
+    if not is_dev_environment(settings.environment):
+        raise RuntimeError(
+            f"seed_data.py creates a demo Admin and runs only in development "
+            f"(ENVIRONMENT={settings.environment})"
+        )
     print("Loading seed data...")
 
     # Check if data already exists
@@ -29,7 +38,7 @@ def load_seed_data(db: Session) -> None:
         password_hash=get_password_hash("testpass123"),
         display_name="Test User",
         role="Admin",
-        referral_code=generate_referral_code(db, username="testuser", email="test@patchhive.io"),
+        referral_code=generate_referral_code(db),
         bio="Test user for development",
     )
     db.add(test_user)

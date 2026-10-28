@@ -53,7 +53,8 @@ class CanonicalExportCreate(BaseModel):
     artifact_manifest_hash: str = Field(..., min_length=64, max_length=64)
     formats: list[ExportFormat] = Field(default_factory=lambda: ["pdf", "json"])
     license: str = Field(default="personal", min_length=1, max_length=100)
-    # When Design Engine is on, client credit_cost is ignored (KD-14).
+    # Ignored: the server sets the price (KD-14, spec 004 FR-005). Kept so older
+    # clients that still send it are not rejected.
     credit_cost: int | None = Field(default=None, ge=0)
     idempotency_key: str = Field(..., min_length=8, max_length=128)
     # Optional inline request recipe (no client tier). Prefer one of recipe sources.
@@ -171,7 +172,12 @@ class StripeWebhookResponse(BaseModel):
 
 
 def _download_secret() -> str:
-    secret = (settings.download_token_secret or settings.secret_key or "").strip()
+    from core.security import derived_key
+
+    # Never the login-token key itself: a dedicated secret, or one derived for downloads.
+    secret = (settings.download_token_secret or "").strip()
+    if not secret:
+        return derived_key("download-token")
     if len(secret.encode("utf-8")) < 32:
         # Deterministic pad for local/dev only; production policy rejects weak secrets.
         secret = (secret + ("0" * 32))[:32]
@@ -824,11 +830,9 @@ def create_canonical_export(
     if not body.formats:
         raise HTTPException(status_code=400, detail="At least one export format is required")
 
-    # KD-14: when Design Engine is on, ignore client credit_cost (prevent under-report)
-    if settings.enable_patchbook_design_engine:
-        cost = settings.patchbook_export_cost
-    else:
-        cost = settings.patchbook_export_cost if body.credit_cost is None else body.credit_cost
+    # KD-14 / spec 004 FR-005: the server sets the price; a client credit_cost is
+    # never trusted, whatever the Design Engine flag says.
+    cost = settings.patchbook_export_cost
 
     resolved_recipe = None
     request_recipe_dump = None
@@ -1095,10 +1099,13 @@ async def stripe_webhook(
 
     secret = (settings.stripe_webhook_secret or "").strip()
     if not secret:
-        # Development convenience: derive a stable local secret only outside production.
-        if settings.environment.lower() == "production":
+        # Only a local development stack may sign its own test webhooks; any hosted
+        # environment, staging included, must use the Stripe-issued whsec_ secret.
+        from core.security import derived_key, is_dev_environment
+
+        if not is_dev_environment(settings.environment):
             raise HTTPException(status_code=503, detail="STRIPE_WEBHOOK_SECRET is not configured")
-        secret = (settings.secret_key + "stripe-dev").ljust(32, "0")[:64]
+        secret = derived_key("stripe-webhook-dev")
 
     if not stripe_signature:
         raise HTTPException(status_code=400, detail="Missing Stripe-Signature header")

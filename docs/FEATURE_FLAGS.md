@@ -12,7 +12,7 @@ All flags are environment variables parsed case-insensitively by backend setting
 | `STRIPE_TEST_MODE` | `true` | Reject livemode webhook events in the canonical Stripe adapter and `/api/canon/webhooks/stripe` |
 | `ALLOW_PRODUCTION_PAYMENTS` | `false` | Kill switch. When false, production webhook intake returns 403. Startup fails closed if production sets this false while `STRIPE_TEST_MODE=false`, or sets this true without reviewed secrets. |
 | `STRIPE_WEBHOOK_SECRET` | empty | Stripe signing secret for `/api/canon/webhooks/stripe` |
-| `DOWNLOAD_TOKEN_SECRET` | empty | HMAC secret for scoped export download tokens (falls back to `SECRET_KEY` when long enough) |
+| `DOWNLOAD_TOKEN_SECRET` | empty | HMAC secret for scoped export download tokens (when empty, a key derived from `SECRET_KEY` for downloads only, never `SECRET_KEY` itself) |
 | `ENABLE_PATCHBOOK_DESIGN_ENGINE` | `false` | Style recipes, resolve-before-debit seal, Studio surface |
 | `ENABLE_CANON_EXPORT_FULFILLMENT` | `false` | Worker/path that composes PDF pack after debit (closes queued-forever gap) |
 | `ENABLE_INLINE_EXPORT_FULFILLMENT` | `false` | After debit commit, fulfill synchronously on request thread (tests/dev) |

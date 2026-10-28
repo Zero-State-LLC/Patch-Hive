@@ -35,13 +35,19 @@ def create_patch(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_auth),
 ):
-    """Create a new patch on a rack the caller owns."""
+    """Create a hand-made patch on a rack the caller owns.
+
+    A run's patches come only from generation; runs are append-only (spec 001
+    FR-020), so a hand-made patch cannot join one, not even the caller's own.
+    """
     owned_rack(db, patch.rack_id, current_user)
+    if patch.run_id is not None:
+        raise HTTPException(status_code=400, detail="RUN_IS_APPEND_ONLY")
 
     tags = patch.tags or _derive_tags(patch.connections)
     db_patch = Patch(
         rack_id=patch.rack_id,
-        run_id=patch.run_id,
+        run_id=None,
         name=patch.name,
         suggested_name=patch.suggested_name,
         name_override=patch.name_override,
