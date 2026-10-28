@@ -105,3 +105,6 @@ class GeneratePatchesResponse(BaseModel):
     inventory_revision_id: Optional[str] = None
     inventory_gate_code: Optional[str] = None
     generation_status: Optional[str] = None
+    # Port resolution and validation (spec 001 FR-016/017/019): blocking findings fail
+    # the run; "unresolved" marks jacks whose names are not on file.
+    validation: Optional[dict] = None

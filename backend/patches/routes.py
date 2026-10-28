@@ -234,6 +234,23 @@ def generate_patches(
         db.commit()
         raise
 
+    provenance_metrics = provenance.to_dict().get("metrics") or {}
+    if provenance_metrics.get("generation_status") == "VALIDATION_FAILED":
+        # A blocking finding (an invented or impossible jack) fails the run closed:
+        # nothing is saved or added to the library (FR-016/FR-019).
+        run.status = "validation_failed"
+        db.commit()
+        return GeneratePatchesResponse(
+            generated_count=0,
+            patches=[],
+            run_id=run.id,
+            export_bridge_ready=False,
+            source_run_id=bridge.source_run_id,
+            rig_revision_id=bridge.rig_revision_id,
+            generation_status="VALIDATION_FAILED",
+            validation=provenance_metrics.get("validation"),
+        )
+
     # Save patches to database with full IR/provenance for deterministic replay.
     saved_patches = []
     ir_dict = generation_ir.to_dict()
@@ -290,6 +307,7 @@ def generate_patches(
         inventory_revision_id=inventory_revision_id,
         inventory_gate_code=inventory_gate_code,
         generation_status=generation_status,
+        validation=metrics.get("validation"),
     )
 
 
