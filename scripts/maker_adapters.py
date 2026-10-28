@@ -76,7 +76,9 @@ def _same_site(url: str, home: str) -> bool:
 
 
 def _fetch(scraper, url: str, cfg: dict):
-    return scraper.fetch(url, render=bool(cfg.get("render")))
+    # render_index: only index pages need a paid render (script-built listings);
+    # product pages are still fetched free by the crawler.
+    return scraper.fetch(url, render=bool(cfg.get("render") or cfg.get("render_index")))
 
 
 def _json(scraper, url: str):

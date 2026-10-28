@@ -181,3 +181,19 @@ The last 5 staging conflicts were pages for two different products filed under o
 - **Wackylab Lords of Chaos:** the stored row is the 10 HP tube version (220/15 mA). The 4 HP diode page becomes "Lords Of Chaos 4HP" (10/10 mA).
 
 Simulated on a fresh database and on a staging replica. Fresh: the current SEE and MCO and the legacy rows are all present, and nothing named CHICANE 1U, ST MODULAR or Langer Arm. Replica: 12 values archived (10 cleared, 2 HP flags), 4 catalog rows added, no conflicts left, and a second run was a no-op.
+
+### T026 adapter fixes, 2026-10-27
+
+All five T026 makers yielded no modules in the paid run. Free probes found:
+
+- **4ms:** `modules.php` lists all 41 products as relative `p.php?p=N` links over free HTTP. The forced paid render was unnecessary, so it is removed.
+- **Pittsburgh:** the Squarespace store feed holds only merch, cases and pages without specs. Each module has a root info page with Size, Depth and Power Usage. The adapter is now a sitemap-filtered listing that excludes systems, cases and keyboards.
+- **Erica:** products live at the root as `/<name>-<id>/` and their pages carry full specs over free HTTP. The series pages build their product grid with script, so only those index pages need a paid render (`render_index`). robots.txt disallows `/graphql/` and `/rest/`, and neither is used.
+- **Tiptop:** every path, robots.txt included, answers `202` with a SiteGround CAPTCHA (`sg-captcha: challenge`). The new `challenged` status marks it as never fetched and never routed through a paid proxy to get past the challenge.
+- **Frap:** the host resolves, but connections time out from the crawl host.
+
+The parser also misread pages where the spec window began at a nav-menu "Power" far above the specs (4ms). When that window gives no draws, HP or depth, `deterministic()` now reads them around the page's first mA value. This only adds values where there were none.
+
+A `--brands` run now writes its own receipt (`--tag`) and, when real, replaces only those brands in `maker-crawl-v2.json` instead of overwriting it.
+
+Free dry run (`receipts/maker-crawl-v2-t026.dry-run.json`): 4ms 44 modules (36 with +12V), Pittsburgh 56 (38), Erica 9 from the site-wide product widget, Frap 0, Tiptop not fetched.

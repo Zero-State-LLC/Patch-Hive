@@ -380,6 +380,21 @@ def first_num(patterns: list[str], text: str) -> float | None:
     return None
 
 
+def depth_mm(text: str) -> float | None:
+    """Depth in mm from one piece of text, converting inches found in that same text."""
+    value = first_num(DEPTH, text)
+    m = re.search(DEPTH[2], text)
+    if m and value is not None and float(m.group(1)) == value:
+        return round(value * 25.4)
+    return value
+
+
+def draw_window(text: str, size: int = 1400) -> str:
+    """The text around the first mA value: where a page states its rail draws."""
+    m = re.search(r"\d\s*mA\b", text, re.I)
+    return text[max(0, m.start() - 600) : m.start() + size] if m else ""
+
+
 def spec_window(text: str, size: int = 1400) -> str:
     keys = [m.start() for m in re.finditer(r"(\bmA\b|\bHP\b|[Dd]epth|[Ww]idth|[Ss]pecification|[Pp]ower|[Cc]urrent)", text)]
     if not keys:
@@ -507,7 +522,7 @@ def resolve_brand(brand: str) -> dict:
         return {"brand": brand, "homepage": adapter["homepage"], "status": "resolved", "how": f"adapter:{adapter['kind']}"}
     curated = (SOURCES.get("homepages") or {}).get(brand)
     if curated:
-        if curated["status"] in ("rejected", "robots_disallowed"):
+        if curated["status"] in ("rejected", "robots_disallowed", "challenged"):
             return {"brand": brand, "homepage": None, "status": f"curated_{curated['status']}"}
         if curated["status"] == "verified_free":
             return {"brand": brand, "homepage": curated["homepage"], "status": "resolved", "how": "curated"}
@@ -588,12 +603,17 @@ def deterministic(brand: str, url: str, text: str, name: str | None, body: str =
     hps = {int(m) for pat in HP_LABELLED for m in re.findall(pat, text, re.I) if HP_MIN <= int(m) <= HP_MAX}
     if not hps:
         hps = {int(m) for pat in HP for m in re.findall(pat, window, re.I) if HP_MIN <= int(m) <= HP_MAX}
+    if not hps:
+        hps = {int(m) for pat in HP for m in re.findall(pat, draw_window(text), re.I) if HP_MIN <= int(m) <= HP_MAX}
     if len(hps) != 1:
         return {"ambiguous_hp": sorted(hps)} if hps else None
-    det = {"hp": hps.pop(), **rails(window), "depth_mm": first_num(DEPTH, window)}
-    m = re.search(DEPTH[2], window)
-    if m and det["depth_mm"] is not None and float(m.group(1)) == det["depth_mm"]:
-        det["depth_mm"] = round(det["depth_mm"] * 25.4)
+    det = {"hp": hps.pop(), **rails(window), "depth_mm": depth_mm(window)}
+    if all(det[f] is None for f in RAIL):
+        # The spec window starts at the first keyword, which can be a nav menu ("Power")
+        # far above the specs; read the draws around the page's first mA value instead.
+        det.update(rails(draw_window(text)))
+    if det["depth_mm"] is None:
+        det["depth_mm"] = depth_mm(draw_window(text))
     if det["depth_mm"] is not None and not (5 <= det["depth_mm"] <= 200):
         det["depth_mm"] = None
     if not name:
@@ -768,6 +788,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--brands", default="", help="comma-separated brand subset")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--workers", type=int, default=24)
+    ap.add_argument("--tag", default="subset", help="receipt suffix for a --brands pass (e.g. t026)")
     args = ap.parse_args(argv)
     if not args.dry_run and args.max_paid_fetches is None:
         print("paid run needs --max-paid-fetches (approved cap); use --dry-run to measure first", file=sys.stderr)
@@ -816,12 +837,28 @@ def main(argv: list[str] | None = None) -> int:
     results.sort(key=lambda r: r["brand"].lower())
     budget = BUDGET.snapshot()
     summary = summarize(results, budget, args)
+    # A --brands run is a partial pass: it gets its own receipt (--tag) and, when real,
+    # replaces only those brands in the full crawl instead of overwriting it.
+    tag = f"-{args.tag}" if args.brands else ""
     if DRY_RUN:
-        (WORK / "maker-crawl-v2.dry-run.rows.json").write_text(json.dumps(results, indent=1) + "\n")
-        (RECEIPTS / "maker-crawl-v2.dry-run.json").write_text(render_receipt(summary))
+        (WORK / f"maker-crawl-v2{tag}.dry-run.rows.json").write_text(json.dumps(results, indent=1) + "\n")
+        (RECEIPTS / f"maker-crawl-v2{tag}.dry-run.json").write_text(render_receipt(summary))
     else:
-        (OUT / "maker-crawl-v2.json").write_text(json.dumps({"generated_at": summary["generated_at"], "budget": budget, "brands": results}, indent=1) + "\n")
-        (RECEIPTS / "maker-crawl-v2.json").write_text(render_receipt(summary))
+        out = OUT / "maker-crawl-v2.json"
+        merged = results
+        if args.brands and out.is_file():
+            redone = {r["brand"] for r in results}
+            kept = [b for b in json.loads(out.read_text())["brands"] if b["brand"] not in redone]
+            merged = sorted(kept + results, key=lambda r: r["brand"].lower())
+        crawl = json.loads(out.read_text()) if args.brands and out.is_file() else {}
+        out.write_text(
+            json.dumps(
+                {"generated_at": summary["generated_at"], "budget": crawl.get("budget", budget) if args.brands else budget, "brands": merged},
+                indent=1,
+            )
+            + "\n"
+        )
+        (RECEIPTS / f"maker-crawl-v2{tag}.json").write_text(render_receipt(summary))
     print(json.dumps({k: summary[k] for k in ("modules_total", "unconfirmed_generic", "modules_with_power", "yield_by_path", "statuses")} | {"projection": summary.get("projection"), "budget": budget}, indent=1))
     return 0
 

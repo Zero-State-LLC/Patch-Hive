@@ -21,7 +21,7 @@
   - depends_on: [T022]
 - [x] T024 Paid crawl run under an owner-approved cap, sized from the T023 dry-run receipt (`--max-paid-fetches`, `--cap`). Done 2026-10-27 via context.dev: 3,429 modules from 315 brands (`receipts/maker-crawl-v2.json`).
   - depends_on: [T023]
-- [ ] T026 Render pass for script-rendered makers (4ms, Erica) and adapter fixes for Frap, Tiptop and Pittsburgh, under a small approved paid cap.
+- [ ] T026 Render pass for script-rendered makers (4ms, Erica) and adapter fixes for Frap, Tiptop and Pittsburgh, under a small approved paid cap. Free part done 2026-10-27: 4ms and Pittsburgh need no render (dry run: 44 and 56 modules); Tiptop answers with a CAPTCHA and is excluded; Erica index pages need a paid render (`render_index`); Frap drops connections from the crawl host. Paid pass pending an approved cap (`receipts/maker-crawl-v2-t026.dry-run.json`).
   - depends_on: [T024]
 - [ ] T025 Build loader overlays from `maker-crawl-v2.json` (insert-if-absent, fill-null, flag disagreements) and load them to staging. Overlays built 2026-10-27 (`catalog-additions-v3`, `module-power-depth-v11`; loader dry run: 3,878 catalog rows). Loaded to staging 2026-10-27 (4,019 catalog rows). Rail-parser fix 2026-10-27: overlays rebuilt in place, and `provenance/maker-crawl-v2-rail-fix-v1.json` corrects the misread draws already loaded on staging. Prod load pending.
   - depends_on: [T024]

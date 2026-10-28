@@ -1,0 +1,72 @@
+{
+ "generated_at": "2026-10-27T16:55:18-0700",
+ "mode": "dry-run",
+ "max_pages_per_brand": 250,
+ "brands": 5,
+ "statuses": {
+  "curated_challenged": 1,
+  "done": 4
+ },
+ "yield_by_path": {
+  "adapter:listing": {
+   "brands": 3,
+   "brands_with_modules": 3,
+   "modules": 109,
+   "with_power": 79
+  },
+  "adapter:squarespace": {
+   "brands": 1,
+   "brands_with_modules": 0,
+   "modules": 0,
+   "with_power": 0
+  },
+  "unresolved": {
+   "brands": 1,
+   "brands_with_modules": 0,
+   "modules": 0,
+   "with_power": 0
+  }
+ },
+ "modules_total": 109,
+ "unconfirmed_generic": 0,
+ "modules_with_power": 79,
+ "fetch_methods": {
+  "cache": 142
+ },
+ "budget": {
+  "context_dev_credits": 0.0,
+  "firecrawl_credits": 0.0,
+  "context_dev_included_at_start": 0.0,
+  "firecrawl_included_at_start": 0.0,
+  "paid_overage_usd": 0.0,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "model_tokens_in": 0,
+  "model_tokens_out": 0,
+  "model_cost_usd": 0.0,
+  "projected_total_usd": 0.0,
+  "cap_usd": 14.5,
+  "calls": {
+   "search": 0,
+   "ctx_scrape": 0,
+   "fc_scrape": 0,
+   "llm": 0
+  }
+ },
+ "projection": {
+  "paid_fetch_urls": 1,
+  "paid_searches": 0,
+  "llm_calls": 0,
+  "llm_usd": 0.0,
+  "credits_low": 1,
+  "credits_worst_case": 2,
+  "overage_usd_if_no_included_credits": 0.01,
+  "basis": "would-pay URLs are free fetches the router would hand to context.dev (then Firecrawl); model cost uses the v1 run's measured $/call"
+ },
+ "per_brand": [
+  {"brand": "4ms Company", "status": "done", "path": "adapter:listing", "resolved_by": "adapter:listing", "homepage": "https://4mscompany.com/", "discovered": 73, "picked": null, "pages": 73, "ambiguous_hp": 0, "modules": 44, "unconfirmed": 0},
+  {"brand": "Erica Synths", "status": "done", "path": "adapter:listing", "resolved_by": "adapter:listing", "homepage": "https://www.ericasynths.lv/", "discovered": 13, "picked": null, "pages": 13, "ambiguous_hp": 0, "modules": 9, "unconfirmed": 0},
+  {"brand": "Frap Tools", "status": "done", "path": "adapter:squarespace", "resolved_by": "adapter:squarespace", "homepage": "https://frap.tools/", "discovered": 0, "picked": null, "pages": 0, "ambiguous_hp": 0, "modules": 0, "unconfirmed": 0},
+  {"brand": "Pittsburgh Modular", "status": "done", "path": "adapter:listing", "resolved_by": "adapter:listing", "homepage": "https://pittsburghmodular.com/", "discovered": 56, "picked": null, "pages": 56, "ambiguous_hp": 0, "modules": 56, "unconfirmed": 0},
+  {"brand": "Tiptop Audio", "status": "curated_challenged", "path": null, "resolved_by": null, "homepage": null, "discovered": null, "picked": null, "pages": 0, "ambiguous_hp": 0, "modules": 0, "unconfirmed": 0}
+ ]
+}

@@ -133,6 +133,20 @@ def test_labelled_width_beats_menu_mentions() -> None:
     assert row["extracted_by"] == "regex" and row["sources"]["hp"].endswith("/plonk/")
 
 
+def test_draws_far_below_a_nav_keyword_are_still_read() -> None:
+    nav = "Eurorack Modules Power Faceplates Accessories Pods Kits Merch Stores About " * 40
+    text = nav + "Leveling EQ 14HP 25mm maximum depth. Power Consumption +12V: 120mA max -12V: 10mA max"
+    row = crawl.deterministic("4ms Company", "https://4mscompany.com/p.php?p=1", text, "Leveling EQ Amplifier")
+    assert (row["hp"], row["power_12v_ma"], row["power_neg12v_ma"]) == (14, 120, 10)
+
+
+def test_an_inch_depth_below_a_nav_keyword_is_converted() -> None:
+    nav = "Eurorack Modules Power Faceplates Accessories Pods Kits Merch Stores About " * 40
+    text = nav + "Width 14HP Depth 5.5 inches Power Consumption +12V: 120mA"
+    row = crawl.deterministic("X", "https://x.example/p", text, "Y")
+    assert (row["hp"], row["depth_mm"], row["power_12v_ma"]) == (14, 140, 120)
+
+
 def test_two_unlabelled_widths_are_ambiguous() -> None:
     assert crawl.deterministic(
         "X", "https://x.example/p", "Fits 8HP or 10HP versions. " * 3, "Y"
@@ -317,7 +331,9 @@ def test_listing_adapter_requires_product_pattern(tmp_path: Path) -> None:
 
 def test_curated_sources_are_maker_sites_only() -> None:
     data = maker_adapters.load_sources()
-    assert len(data["adapters"]) >= 25
+    # 25 top makers: 24 adapters, and Tiptop, whose site answers with a CAPTCHA (never fetched).
+    assert len(data["adapters"]) >= 24
+    assert data["homepages"]["Tiptop Audio"]["status"] == "challenged"
     homes = [c["homepage"] for c in data["adapters"].values()] + [
         h["homepage"] for h in data["homepages"].values()
     ]
@@ -565,3 +581,25 @@ def test_threads_sharing_a_host_keep_the_interval(tmp_path: Path) -> None:
     stamps.sort()
     assert len(stamps) == 3
     assert min(b - a for a, b in zip(stamps, stamps[1:])) >= 0.13
+
+
+def test_render_index_renders_listing_pages_only() -> None:
+    calls = []
+
+    class Scraper:
+        def fetch(self, url, render=False):
+            calls.append((url, render))
+            body = '<a href="/black-vco2-1069/">VCO</a>' if url.endswith("/shop/eurorack-modules/") else ""
+            return type("R", (), {"ok": True, "text": body})()
+
+    cfg = {
+        "homepage": "https://erica.example/",
+        "kind": "listing",
+        "entries": ["/shop/eurorack-modules/"],
+        "product": r"^/[a-z0-9]+(?:-[a-z0-9]+)*-\d+/?$",
+        "render_index": True,
+    }
+    cands = maker_adapters.enumerate_products(Scraper(), cfg)
+    assert [c.url for c in cands] == ["https://erica.example/black-vco2-1069/"]
+    assert calls == [("https://erica.example/shop/eurorack-modules/", True)]
+    assert not cfg.get("render")  # the crawler fetches product pages free
