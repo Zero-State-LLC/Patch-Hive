@@ -17,7 +17,7 @@ class Run(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     rack_id = Column(
-        Integer, ForeignKey("racks.id", ondelete="CASCADE"), nullable=False, index=True
+        Integer, ForeignKey("racks.id", ondelete="RESTRICT"), nullable=False, index=True
     )
     status = Column(String(20), nullable=False, default="queued")
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

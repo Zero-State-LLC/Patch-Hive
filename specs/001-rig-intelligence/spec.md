@@ -364,7 +364,7 @@ These criteria are pass or fail. They contain no invented thresholds.
 - **A module matches several classes**, for example both VCO and LFO: it may be used in more than one role. Whether one module can fill two roles in the same patch is undefined. [OBSERVED: docs/PATCH_ENGINE.md] [INFERRED]
 - **Port names are generic**: the engine uses generic port names, such as "Audio Out" and "CV In", while real modules have specific names. This can conflict with the rule against inventing jacks. See OQ-04. [OBSERVED: docs/PATCH_ENGINE.md] [OBSERVED: constitution]
 - **No electrical validation exists**: the engine assumes connections are electrically valid. Under fail-closed rules, unknown voltage compatibility must be marked unresolved. [OBSERVED: docs/PATCH_ENGINE.md] [OBSERVED: constitution]
-- **A rack is deleted**: runs cascade-delete with their rack, which conflicts with the append-only rule. See OQ-02. [OBSERVED: backend/runs/models.py]
+- **A rack is deleted**: the rack is soft-deleted and hidden; its runs and patches are kept (OQ-02, resolved 2026-10-28).
 - **A provider is unavailable during detection**: evidence moves to `UNRESOLVED` and is never an implicit pass. [OBSERVED: constitution]
 - **A patch has no seal phase**: the failure is flagged and not blocked, per the bridge canon. See OQ-08. [OBSERVED: docs/CANON.md]
 
@@ -372,6 +372,7 @@ These criteria are pass or fail. They contain no invented thresholds.
 
 - **OQ-01** (NOT_COMPUTABLE): How does the persisted `Rack` and `rack_id` relate to `Rig` and `RigRevision` in the ADR hierarchy? Runs currently reference a rack, not a rig revision. `docs/DATA_MODEL.md` and `backend/racks/` were not available to resolve this.
 - **OQ-02** (NOT_COMPUTABLE): `runs.rack_id` uses `ondelete="CASCADE"`, but ADR 0001 makes runs append-only. Which rule wins, and what is the deletion and retention policy?
+  - Resolved 2026-10-28: append-only wins. Deleting a rack soft-deletes it (`racks.deleted_at`): it disappears from every list and read and can no longer generate or export, while its runs, patches and canonical records stay. `runs.rack_id` and `patches.rack_id` are RESTRICT (migration `20261028_rack_soft_delete`). Erasing a user's data on request is a separate admin operation, not yet built.
 - **OQ-03** (NOT_COMPUTABLE): The canonical category set lists five categories. The `PatchSpec` comment lists nine: Voice, Modulation, Clock-Rhythm, Generative, Utility, Performance Macro, Texture-FX, Study, and Experimental-Feedback. Subtype labels such as Pad, Lead, Bass, and Drone also appear. Which set is canonical, and are subtypes a separate field?
 - **OQ-04** (NOT_COMPUTABLE): Until a port-name database exists, can generic port names be used in canonical patches? Or must patches with unmapped ports be marked unresolved?
 - **OQ-05** (NOT_COMPUTABLE): How is the seed chosen when the caller omits it, and how is that seed recorded for reproducibility?

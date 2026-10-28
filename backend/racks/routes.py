@@ -2,6 +2,7 @@
 FastAPI routes for Rack management.
 """
 
+from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -214,10 +215,14 @@ def delete_rack(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_auth),
 ):
-    """Delete a rack (owner only)."""
+    """Delete a rack (owner only).
+
+    Soft delete (spec 001 OQ-02): the rack disappears from every list and read, and can
+    no longer generate or export, but its runs, patches and canonical history stay.
+    """
     db_rack = owned_rack(db, rack_id, current_user)
 
-    db.delete(db_rack)
+    db_rack.deleted_at = datetime.utcnow()
     db.commit()
     return None
 

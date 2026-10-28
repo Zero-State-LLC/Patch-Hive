@@ -4,7 +4,8 @@ Who may see or change a rack, and everything that hangs off it (patches, runs, e
 Users own their racks. A rack is readable by its owner, by admin read roles, or by
 anyone when it is public; only the owner may change it. A rack the caller cannot read
 answers 404 so its existence is not revealed; a readable rack the caller does not own
-answers 403 on a write.
+answers 403 on a write. A deleted rack (``deleted_at`` set) is gone for everyone: its
+runs and patches are kept as history but no longer served.
 """
 
 from typing import Optional
@@ -20,13 +21,15 @@ from .models import Rack
 
 
 def can_read(rack: Rack, user: Optional[User]) -> bool:
+    if rack.deleted_at is not None:
+        return False
     if rack.is_public:
         return True
     return user is not None and (user.id == rack.user_id or user.role in READ_ROLES)
 
 
 def can_write(rack: Rack, user: Optional[User]) -> bool:
-    return user is not None and user.id == rack.user_id
+    return rack.deleted_at is None and user is not None and user.id == rack.user_id
 
 
 def readable_rack(db: Session, rack_id: int, user: Optional[User], *, label: str = "Rack") -> Rack:
@@ -62,6 +65,7 @@ def owned_private_rack(db: Session, rack_id: int, user: Optional[User], *, label
 
 def readable_racks(query: Query, user: Optional[User]) -> Query:
     """Restrict a query over Rack to the racks the caller may read."""
+    query = query.filter(Rack.deleted_at.is_(None))
     if user is not None and user.role in READ_ROLES:
         return query
     if user is None:
@@ -75,7 +79,12 @@ def readable_patch(db: Session, patch_id: int, user: Optional[User]):
 
     patch = db.query(Patch).filter(Patch.id == patch_id).first()
     rack = db.query(Rack).filter(Rack.id == patch.rack_id).first() if patch else None
-    if patch is None or rack is None or not (patch.is_public or can_read(rack, user)):
+    if (
+        patch is None
+        or rack is None
+        or rack.deleted_at is not None
+        or not (patch.is_public or can_read(rack, user))
+    ):
         raise HTTPException(status_code=404, detail="Patch not found")
     return patch
 
@@ -93,6 +102,8 @@ def readable_patches(query: Query, user: Optional[User]) -> Query:
     """Restrict a query over Patch to public patches and patches on readable racks."""
     from patches.models import Patch
 
+    live_racks = Query(Rack.id).filter(Rack.deleted_at.is_(None)).subquery()
+    query = query.filter(Patch.rack_id.in_(live_racks.select()))
     if user is not None and user.role in READ_ROLES:
         return query
     visible_racks = readable_racks(Query(Rack.id), user).subquery()
