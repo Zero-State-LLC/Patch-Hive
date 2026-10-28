@@ -5142,7 +5142,7 @@
    "brand": "Avalon Harmonics",
    "name": "KickAid",
    "hp": 8,
-   "category": "VCO",
+   "category": null,
    "manufacturer_url": "https://shop.avalon-harmonics.com/products/avalon-harmonics-kickaid",
    "image_url": "http://shop.avalon-harmonics.com/cdn/shop/files/KickAid_Front-Sqr.png?v=1779685932",
    "is_available": "available",

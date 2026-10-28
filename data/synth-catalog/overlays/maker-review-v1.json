@@ -1,7 +1,7 @@
 {
  "dataset_version": "maker-review-v1",
  "created": "2026-10-27",
- "policy": "Owner-review decisions for crawl identities. A rename re-keys every power/depth overlay entry with that brand, name and source page (url_prefix) to the product the page actually describes. A rename marked not_module drops that page's entries and catalog rows: it is not a Eurorack module. catalog_rows are insert-if-absent, sourced from the maker's own page. Values are never written here; they stay in the overlays.",
+ "policy": "Owner-review decisions for crawl identities. A rename re-keys every power/depth overlay entry with that brand, name and source page (url_prefix) to the product the page actually describes. A rename marked not_module drops that page's entries and catalog rows: it is not a Eurorack module. catalog_rows are insert-if-absent, sourced from the maker's own page. Values are never written here; they stay in the overlays. A catalog_rows entry for a row that already exists only fills an empty field (HP or category), from the maker page named in its why.",
  "renames": [
   {
    "brand": "ALM Busy Circuits",
@@ -96,6 +96,36 @@
    "manufacturer_url": "https://www.sovageengineering.com/product-page/chicane",
    "source": "ManufacturerCrawl",
    "access_basis": "official_publication"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Black Octasource",
+   "hp": 12,
+   "category": "LFO",
+   "manufacturer_url": "https://www.ericasynths.lv/black-octasource-47/",
+   "source": "ManufacturerCrawl",
+   "access_basis": "official_publication",
+   "why": "maker page: an LFO with 8 phase-shifted outputs"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Hexinverter Mindphaser",
+   "hp": 30,
+   "category": "VCO",
+   "manufacturer_url": "https://www.ericasynths.lv/hexinverter-mindphaser-2716/",
+   "source": "ManufacturerCrawl",
+   "access_basis": "official_publication",
+   "why": "maker page: dual VCO cores (complex oscillator)"
+  },
+  {
+   "brand": "Avalon Harmonics",
+   "name": "KickAid",
+   "hp": 8,
+   "category": "FX",
+   "manufacturer_url": "https://shop.avalon-harmonics.com/products/avalon-harmonics-kickaid",
+   "source": "ManufacturerCrawl",
+   "access_basis": "official_publication",
+   "why": "maker page: processes an external kick (amplify, detect, duck, EQ)"
   }
  ]
 }

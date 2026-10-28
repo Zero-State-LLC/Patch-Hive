@@ -35,9 +35,9 @@ CATEGORY = [
 # Applied second so it never changes a category the rules above assign.
 NAME_CATEGORY = [
     ("SEQ", r"\bseq\b|controller|joystick|catalyst|\bqcd\b"), ("SAMP", r"recorder"),
-    ("VCO", r"\bvcno\b|clap|hi-?hats?|snare|cymbal|bass ?line|kick|cowbell|octasource"), ("ENV", r"\bpeg\b"),
+    ("VCO", r"\bvcno\b|clap|hi-?hats?|snare|cymbal|bass ?line|\bkick\b|cowbell"), ("ENV", r"\bpeg\b"),
     ("LFO", r"qplfo|\brnd\b|random"),
-    ("FX", r"(?<!motor )\bdrive\b|phaser|flang|\bdsp\b|resonat|replicator|fold"),
+    ("FX", r"(?<!motor )\bdrive\b|\bphaser\b|flang|\bdsp\b|resonat|replicator|fold"),
     ("UTIL", r"\bquant\b|expander|breakout"),
 ]
 
