@@ -511,7 +511,7 @@
    "depth": 2,
    "follow": "^/shop/eurorack-modules/[a-z0-9-]+/?$",
    "product": "^/[a-z0-9]+(?:-[a-z0-9]+)*-\\d+/?$",
-   "exclude": "^/(shop|support|checkout|customer|blog|about|contact)(/|$)",
+   "exclude": "^/(support|checkout|customer|blog|about|contact)(/|$)",
    "note": "Magento: series pages under /shop/eurorack-modules/ build their product grid with script, so only those index pages need a paid render (render_index); products sit at the root as /<name>-<id>/ and are fetched free. robots.txt disallows /graphql/ and /rest/: never used",
    "render_index": true
   },

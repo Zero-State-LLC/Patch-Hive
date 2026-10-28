@@ -135,7 +135,8 @@ VALUE_FIRST = {
 # Signed values with the rails after them: "Power: +120mA / -45mA @+12V / -12V".
 SIGNED = {
     "power_12v_ma": r"(?<![\w.])\+\s?(\d{1,4}(?:\.\d+)?)\s*mA\b",
-    "power_neg12v_ma": r"(?<![\w.])[-\u2212\u2013]\s?(\d{1,4}(?:\.\d+)?)\s*mA\b(?=[^.]{0,40}[-\u2212\u2013]\s*12\s*V)",
+    # "... @+12V / -12V" or "+49mA, -39mA @ 12V": a rail label follows the signed pair.
+    "power_neg12v_ma": r"(?<![\w.])[-\u2212\u2013]\s?(\d{1,4}(?:\.\d+)?)\s*mA\b(?=[^.]{0,40}(?:[-\u2212\u2013]\s*12|@\s*\+?\s*12)\s*V)",
 }
 STYLES = {"rail": RAIL_FIRST, "value": VALUE_FIRST, "signed": SIGNED}
 # Both rails named once, then both values: "+12v/-12v Current: 90mA/30mA", "20mA, 10mA (+12V / -12V)".

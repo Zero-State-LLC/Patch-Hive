@@ -178,6 +178,7 @@ def test_two_unlabelled_widths_are_ambiguous() -> None:
         ("+12v - 21mA -12v - 20mA +5v - N/A", (21, 20, None)),  # Fully Wired
         ("8HP / 23mm depth +12V @ 50mA -12V @ 25mA Output is 0-5V", (50, 25, None)),  # Rain City
         ("Width: 12HP Power: +120mA / -45mA @+12V / -12V", (120, 45, None)),  # God's Box
+        ("Width 6HP Depth 30mm Current draw +49mA, -39mA @ 12V", (49, 39, None)),  # Hexinverter
         ("Current Draw: 20 mA +12V | 0 mA -12V | 0 mA 5V Width", (20, 0, 0)),
         ("+12V current draw : 16mA -12V current draw : 15mA", (16, 15, None)),  # Skull & Circuits
         ("Specs: - 8HP - 125mA +12V - 0mA -12V - 0mA +5V - 42mm deep", (125, 0, 0)),  # Syntonie
