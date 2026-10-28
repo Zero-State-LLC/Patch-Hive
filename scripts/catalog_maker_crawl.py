@@ -491,6 +491,11 @@ def extract(brand: str, url: str, body: str, method: str) -> dict | None:
     # A 5V-select jumper makes +12V and +5V configuration-dependent: the model may not
     # supply them either (Dave Jones O'Tool: "80ma +12v ... -or- 12ma +12v 70ma +5v").
     jumpered = JUMPER.search(text) is not None
+    windowed = rails(spec_window(text, 2400))
+    if all(windowed[f] is None for f in RAIL):
+        windowed = rails(draw_window(text))
+    if jumpered:
+        windowed["power_12v_ma"] = windowed["power_5v_ma"] = None
     for field, unit in units.items():
         mv, dv = res.get(field), det.get(field)
         val = None
@@ -507,6 +512,10 @@ def extract(brand: str, url: str, body: str, method: str) -> dict | None:
                 val = float(mv)
         elif dv is not None and mv is None and field in ("hp",):
             val = dv
+        elif mv is None and unit == r"mA" and windowed.get(field) is not None:
+            # The model left a draw empty that the rail-labelled parse of the spec text
+            # reads; keep the parse, the same value the adapter path stores unconfirmed.
+            val = windowed[field]
         out[field] = val
         if val is not None:
             sources[field] = url
@@ -678,6 +687,16 @@ def crawl_adapter(brand: str, cfg: dict, cap: int, rec: dict) -> None:
                 rec["ambiguous_hp"] += 1
                 # The model may settle it only when its value appears verbatim (same rule as v1).
                 row = None if DRY_RUN or NO_MODEL else extract(brand, cand.url, body, method)
+        if row and "ambiguous_hp" not in row and method == "feed" and all(row.get(f) is None for f in RAIL):
+            # Store feeds often omit the specs block; the product page states the draws.
+            body, page_method = fetch_text(cand.url, render=bool(cfg.get("render")))
+            page = deterministic(brand, cand.url, page_text(body), cand.name, body) if body else None
+            if page and "ambiguous_hp" not in page and page["hp"] == row["hp"]:
+                for f in (*RAIL, "depth_mm"):
+                    if row.get(f) is None and page.get(f) is not None:
+                        row[f] = page[f]
+                        row["sources"][f] = cand.url
+                method = page_method if any(row.get(f) is not None for f in RAIL) else method
         if row and "ambiguous_hp" not in row:
             row["fetch_method"] = method
             rec["modules"].append(row)

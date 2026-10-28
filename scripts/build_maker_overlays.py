@@ -111,8 +111,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--additions-version", type=int, default=2)
     ap.add_argument("--power-version", type=int, default=9)
     ap.add_argument("--brands", default="", help="comma-separated: build only these brands (a partial crawl pass)")
+    ap.add_argument("--skip-brands", default="", help="comma-separated: leave these brands out (built in a later version)")
     args = ap.parse_args(argv)
     only = {b.strip() for b in args.brands.split(",") if b.strip()}
+    skip = {b.strip() for b in args.skip_brands.split(",") if b.strip()}
     additions_name = f"catalog-additions-v{args.additions_version}.json"
     power_name = f"module-power-depth-v{args.power_version}.json"
     crawl = json.loads((CATALOG / "hermes-research" / args.crawl).read_text())
@@ -120,7 +122,7 @@ def main(argv: list[str] | None = None) -> int:
     additions, entries = [], []
     stats = {"crawled_modules": 0, "matched_existing": 0, "new": 0, "skipped_dupe_in_crawl": 0, "skipped_hp_range": 0, "skipped_not_module": 0}
     for b in crawl["brands"]:
-        if only and b["brand"] not in only:
+        if (only and b["brand"] not in only) or b["brand"] in skip:
             continue
         seen = set()
         for m in b.get("modules") or []:

@@ -614,3 +614,14 @@ def test_render_index_renders_listing_pages_only() -> None:
     assert [c.url for c in cands] == ["https://erica.example/black-vco2-1069/"]
     assert calls == [("https://erica.example/shop/eurorack-modules/", True)]
     assert not cfg.get("render")  # the crawler fetches product pages free
+
+
+def test_a_draw_the_model_leaves_empty_is_kept_from_the_parse(monkeypatch: pytest.MonkeyPatch) -> None:
+    page = (
+        "<title>Octo</title><p>Specs & downloads width: 16 HP depth: 30 mm "
+        "power: 75 mA @ +12V / 65 mA @ -12V. " + "Eight voices. " * 20 + "</p>"
+    )
+    answer = {"is_module": True, "name": "Octo", "hp": 16, "power_12v_ma": None, "power_neg12v_ma": None}
+    monkeypatch.setattr(crawl, "llm", lambda *a, **k: answer)
+    row = crawl.extract("Pusherman", "https://pusherman.example/octo", page, "free_http")
+    assert (row["hp"], row["power_12v_ma"], row["power_neg12v_ma"]) == (16, 75, 65)
