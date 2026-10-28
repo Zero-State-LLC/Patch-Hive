@@ -115,3 +115,13 @@ def test_the_1u_chicane_tile_never_becomes_a_eurorack_row():
     _, catalog = _catalog_after_review()
     assert ("Sovage Engineering", "CHICANE 1U") not in catalog
     assert catalog[("Sovage Engineering", "CHICANE")]["hp"] == 4
+
+
+def test_catalog_category_fills_only_an_empty_category():
+    catalog = {"b-n": {"brand": "B", "name": "N", "hp": 8, "category": None, "_planned": False}}
+    plan = P.Plan()
+    P._schedule_catalog(plan, catalog, {"brand": "B", "name": "N", "slug": "b-n", "hp": 8, "category": "SEQ"}, None)
+    assert catalog["b-n"]["category"] == "SEQ" and plan.updates.get("module_catalog_category") == 1
+    plan = P.Plan()
+    P._schedule_catalog(plan, catalog, {"brand": "B", "name": "N", "slug": "b-n", "hp": 8, "category": "VCO"}, None)
+    assert catalog["b-n"]["category"] == "SEQ" and not plan.updates.get("module_catalog_category")

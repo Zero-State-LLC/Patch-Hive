@@ -250,3 +250,7 @@ An audit of the crawl rows without +12V found 616 whose page states a draw in mA
 The full crawl was replayed from cache: no paid fetches, $0.0009 of model calls (`receipts/maker-crawl-v2-keep-parsed-replay.json`). It only fills: 1,059 empty values gain a value and no existing value changes. +12V coverage goes from 1,971 to 2,404 crawl rows. `module-power-depth-v11` keeps every entry and fills 865 values; it also gains 86 entries for catalog rows that had no draws before. Rows new to the crawl stay out (7, one of them a Doepfer case listing). v12 and the catalog additions are unchanged. A random sample of 14 fills matched the maker pages.
 
 Staging replica (main's data, then this build): 457 modules filled, 10 new power targets, 0 conflicts, rerun a no-op.
+
+### Categories for untagged rows, 2026-10-27
+
+Adapter rows carry no tags, so 66 of the T026 additions (and 900+ older rows) had no category. `NAME_CATEGORY` in `build_maker_overlays.py` is a fallback, applied only when the tag and name rules find nothing, so it never changes an assigned category. It covers names such as "Pico SEQ", "Mutant Clap", "PEG", "QPLFO", "Expander" and "Phaser". Running it over the additions files filled 74 rows (v2 7, v3 36, v4 31) and touched no other field. The loader now fills an empty `module_catalog.category` the same way it fills an empty HP, so rows already loaded get the category too. Staging replica: 74 categories filled, nothing else changed, rerun a no-op.

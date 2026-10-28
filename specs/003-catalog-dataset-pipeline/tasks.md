@@ -23,8 +23,10 @@
   - depends_on: [T023]
 - [ ] T026 Render pass for script-rendered makers (4ms, Erica) and adapter fixes for Frap, Tiptop and Pittsburgh, under a small approved paid cap. Paid pass 2026-10-27 (context.dev, 10 credits): 4ms 44, Pittsburgh 56 and Erica 46 modules merged into `maker-crawl-v2.json`. Tiptop is excluded (CAPTCHA). Frap is still at 0 and needs a listing adapter over rendered HTML. Overlays built 2026-10-27 (`catalog-additions-v4`: 136 rows; `module-power-depth-v12`: 141 entries; jumper-dependent draws left unknown; staging replica: 0 conflicts). Staging load still to run.
   - depends_on: [T024]
-- [ ] T025 Build loader overlays from `maker-crawl-v2.json` (insert-if-absent, fill-null, flag disagreements) and load them to staging. Overlays built 2026-10-27 (`catalog-additions-v3`, `module-power-depth-v11`; loader dry run: 3,878 catalog rows). Loaded to staging 2026-10-27 (4,019 catalog rows). Rail-parser fix 2026-10-27: overlays rebuilt in place, and `provenance/maker-crawl-v2-rail-fix-v1.json` corrects the misread draws already loaded on staging. Prod load pending.
+- [x] T025 Build loader overlays from `maker-crawl-v2.json` (insert-if-absent, fill-null, flag disagreements) and load them to staging. Done 2026-10-27: overlays through `catalog-additions-v4` and `module-power-depth-v12`, with the rail, jumper, review and signed-pair fixes; staging holds 4,172 catalog rows and 4,142 modules with 0 conflicts. The prod load is T027.
   - depends_on: [T024]
+- [ ] T027 Load the maker-crawl overlays to prod: `db-migrate.yml` (prod), then `db-load.yml` dry run, then apply after the receipt matches staging's (0 conflicts, no destructive SQL). Operator-run.
+  - depends_on: [T025]
 
 ## Foundational
 

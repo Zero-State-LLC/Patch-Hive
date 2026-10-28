@@ -72,3 +72,19 @@ def test_t026_overlays_hold_only_the_partial_pass_and_repeat_nothing() -> None:
     v11 = {(e["brand"], e["name"]) for e in load("module-power-depth-v11.json", "entries")}
     assert not v3 & {(r["brand"].lower(), r["name"].lower()) for r in v4}
     assert not v11 & {(e["brand"], e["name"]) for e in v12}
+
+
+@pytest.mark.parametrize(
+    "name,tags,expected",
+    [
+        ("Pico SEQ", [], "SEQ"),
+        ("4ms PEG", [], "ENV"),
+        ("Hexinverter Mutant Clap", [], "VCO"),
+        ("12V Motor Drive", [], None),
+        ("WF2 Wavefolder and E2 Expander", [], "FX"),
+        # The name fallback never overrides what the tag and name rules assign.
+        ("Gesture Recorder", ["lfo", "envelope"], "ENV"),
+    ],
+)
+def test_name_fallback_only_fills_a_missing_category(name: str, tags: list[str], expected: str | None) -> None:
+    assert b.category(tags, name) == expected

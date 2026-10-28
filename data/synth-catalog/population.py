@@ -692,6 +692,9 @@ def _schedule_catalog(plan: Plan, catalog: dict[str, dict[str, Any]], row: dict[
         if existing["hp"] is None and row.get("hp") is not None:
             existing["hp"] = row["hp"]
             plan.add_update("module_catalog_hp", _hp_update(slug, brand, name, int(row["hp"])))
+        if existing.get("category") is None and row.get("category"):
+            existing["category"] = row["category"]
+            plan.add_update("module_catalog_category", _category_update(slug, brand, name, str(row["category"])))
         return
     catalog[slug] = {
         "brand": brand,
@@ -757,6 +760,18 @@ def _schedule_hp(plan: Plan, catalog: dict[str, dict[str, Any]], entry: dict[str
         return
     row["hp"] = hp
     plan.add_update("hp_overlay", _hp_update(slug, brand, name, int(hp)))
+
+
+def _category_update(slug: str, brand: str, name: str, category: str) -> Op:
+    return Op(
+        "update_category",
+        """
+        UPDATE module_catalog
+        SET category = :category, updated_at = :updated_at
+        WHERE slug = :slug AND brand = :brand AND name = :name AND category IS NULL
+        """,
+        {"slug": slug, "brand": brand, "name": name, "category": category[:50], "updated_at": _stamp()},
+    )
 
 
 def _hp_update(slug: str, brand: str, name: str, hp: int) -> Op:
