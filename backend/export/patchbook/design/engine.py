@@ -600,12 +600,20 @@ def _render_execution_pdf(
         for i, chunk in enumerate(_wrap_to_width(PATENT_FUTURE_DISCLAIMER, "Helvetica", 8, width - 2 * inch)):
             c.drawString(inch, height - 1.55 * inch - i * 10, chunk)
     c.setFillColorRGB(0, 0, 0)
-    c.setFont(body_font, body_size)
     y_meta = height - 1.9 * inch if family.patent_disclaimer else height - 1.7 * inch
-    c.drawString(inch, y_meta, f"Export: {export_id}")
-    c.drawString(inch, y_meta - 0.25 * inch, f"Run: {library.source_run_id}")
-    c.drawString(inch, y_meta - 0.5 * inch, f"Composition: {composition_hash[:16]}…")
-    c.drawString(inch, y_meta - 0.75 * inch, f"Algorithm: {family.layout_algorithm_id}")
+    _draw_wrapped(
+        c,
+        [
+            f"Export: {export_id}",
+            f"Run: {library.source_run_id}",
+            f"Composition: {composition_hash[:16]}…",
+            f"Algorithm: {family.layout_algorithm_id}",
+        ],
+        body_font,
+        body_size,
+        y_meta,
+        width - 2 * inch,
+    )
     c.setFont("Helvetica", 8)
     c.setFillColorRGB(0.4, 0.4, 0.4)
     c.drawString(inch, 0.75 * inch, "A Zero State Product")
@@ -651,16 +659,22 @@ def _render_execution_pdf(
     # Colophon
     c.setFont("Helvetica-Bold", 14)
     c.drawString(inch, height - inch, "Colophon")
-    c.setFont(body_font, body_size)
-    c.drawString(inch, height - 1.4 * inch, "Designed and Engineered by Zero State")
-    c.drawString(inch, height - 1.65 * inch, "PatchHive — a Zero State product")
-    c.drawString(inch, height - 1.9 * inch, f"Template family: {family.display_name}")
-    c.drawString(inch, height - 2.15 * inch, f"Mode: {recipe.mode.value}")
-    c.drawString(inch, height - 2.4 * inch, f"Layout algorithm: {family.layout_algorithm_id}")
+    y_after = _draw_wrapped(
+        c,
+        [
+            "Designed and Engineered by Zero State",
+            "PatchHive — a Zero State product",
+            f"Template family: {family.display_name}",
+            f"Mode: {recipe.mode.value}",
+            f"Layout algorithm: {family.layout_algorithm_id}",
+        ],
+        body_font,
+        body_size,
+        height - 1.4 * inch,
+        width - 2 * inch,
+    )
     if family.patent_disclaimer:
-        c.setFont("Helvetica", 8)
-        for i, chunk in enumerate(_wrap(PATENT_FUTURE_DISCLAIMER, 90)):
-            c.drawString(inch, height - 2.75 * inch - i * 12, chunk)
+        _draw_wrapped(c, [PATENT_FUTURE_DISCLAIMER], "Helvetica", 8, y_after - 10, width - 2 * inch)
     c.showPage()
 
     c.setAuthor("PatchHive")
@@ -669,22 +683,6 @@ def _render_execution_pdf(
     c.setSubject(f"PatchHive PatchBook eng={DESIGN_ENGINE_VERSION} {composition_hash[:16]}")
     c.save()
     path.write_bytes(normalize_pdf_metadata(buf.getvalue()))
-
-
-def _wrap(text: str, width: int) -> list[str]:
-    words = text.split()
-    lines: list[str] = []
-    cur: list[str] = []
-    for w in words:
-        trial = " ".join(cur + [w])
-        if len(trial) > width and cur:
-            lines.append(" ".join(cur))
-            cur = [w]
-        else:
-            cur.append(w)
-    if cur:
-        lines.append(" ".join(cur))
-    return lines or [""]
 
 
 # --- Page layout (spec 002 FR-001/003/010/021) -------------------------------------
@@ -701,6 +699,21 @@ class PageLine:
     y: float
     indent: float = 0.0
     rule: bool = False
+
+
+def _draw_wrapped(
+    c: Any, lines: list[str], font: str, size: float, y: float, max_width: float
+) -> float:
+    """Draw front or back matter: each line wraps to the page width and the spacing
+    grows with the font size, so a large body size never runs off the page or
+    overlaps. Returns the baseline below the last line."""
+    leading = max(18.0, size * 1.5) if size >= 9 else size * 1.5
+    c.setFont(font, size)
+    for line in lines:
+        for chunk in _wrap_to_width(line, font, size, max_width):
+            c.drawString(inch, y, chunk)
+            y -= leading
+    return y
 
 
 def _wrap_to_width(
