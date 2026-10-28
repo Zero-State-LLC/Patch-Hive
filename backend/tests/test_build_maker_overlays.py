@@ -49,10 +49,25 @@ def test_real_module_names_pass() -> None:
         assert not b.NOT_MODULE_NAME.search(name), name
 
 
-def test_committed_overlays_respect_fr007_and_tag_official_rows() -> None:
+@pytest.mark.parametrize("version", [3, 4])
+def test_committed_overlays_respect_fr007_and_tag_official_rows(version: int) -> None:
     overlays = ROOT / "data" / "synth-catalog" / "overlays"
-    rows = json.loads((overlays / "catalog-additions-v3.json").read_text())["rows"]
+    rows = json.loads((overlays / f"catalog-additions-v{version}.json").read_text())["rows"]
     assert rows and all(b.HP_MIN <= r["hp"] <= b.HP_MAX for r in rows)
     assert {r["access_basis"] for r in rows} == {"official_publication"}
     assert {r["source"] for r in rows} == {"ManufacturerCrawl"}
     assert not any("modulargrid" in (r["manufacturer_url"] or "") for r in rows)
+
+
+T026_BRANDS = {"4ms Company", "Erica Synths", "Pittsburgh Modular"}
+
+
+def test_t026_overlays_hold_only_the_partial_pass_and_repeat_nothing() -> None:
+    overlays = ROOT / "data" / "synth-catalog" / "overlays"
+    load = lambda name, key: json.loads((overlays / name).read_text())[key]  # noqa: E731
+    v4, v12 = load("catalog-additions-v4.json", "rows"), load("module-power-depth-v12.json", "entries")
+    assert {r["brand"] for r in v4} == T026_BRANDS and {e["brand"] for e in v12} == T026_BRANDS
+    v3 = {(r["brand"].lower(), r["name"].lower()) for r in load("catalog-additions-v3.json", "rows")}
+    v11 = {(e["brand"], e["name"]) for e in load("module-power-depth-v11.json", "entries")}
+    assert not v3 & {(r["brand"].lower(), r["name"].lower()) for r in v4}
+    assert not v11 & {(e["brand"], e["name"]) for e in v12}

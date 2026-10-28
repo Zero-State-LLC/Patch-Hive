@@ -215,3 +215,15 @@ Approved cap: 30 paid fetches and $3. Firecrawl was disabled by leaving its key 
 | Tiptop | not fetched | | CAPTCHA (`challenged`) |
 
 Spend: 10 context.dev credits (ledger 1,106 to 1,116), Firecrawl 0, OpenRouter $0.0003, no overage. A rescan of all 3,322 cached crawl pages found that the signed-pair fix changes only the two Erica Hexinverter pages.
+
+### T026 overlays, 2026-10-27
+
+Built with:
+
+```bash
+python scripts/build_maker_overlays.py --crawl maker-crawl-v2.json --additions-version 4 --power-version 12 --brands "4ms Company,Erica Synths,Pittsburgh Modular"
+```
+
+`--brands` keeps a partial pass out of the earlier versions: v4 and v12 hold only these makers and repeat no v3 or v11 row. The result is 141 new catalog rows (Pittsburgh 56, Erica 43, 4ms 42) and 146 power and depth entries; 5 crawled modules matched existing rows. The loader now reads up to `catalog-additions-v4` and `module-power-depth-v12`.
+
+Simulated on a staging replica (main's data, then this build) on Postgres 15: 141 catalog rows and 141 power targets added, 5 empty values filled on existing rows, 0 conflicts, and a second run was a no-op.
