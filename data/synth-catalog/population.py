@@ -165,8 +165,8 @@ def _stamp() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-POWER_OVERLAY_LATEST = 12
-CATALOG_ADDITIONS_LATEST = 4
+POWER_OVERLAY_LATEST = 13
+CATALOG_ADDITIONS_LATEST = 5
 ENTRY_VERIFICATION = {"verified", "corrected", "flagged"}
 
 
@@ -274,6 +274,12 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
             if key in verified_keys and entry.get("verification_status") != "verified":
                 continue
             _schedule_power(plan, catalog, modules, entry)
+
+    # Retirements run last, so a row this plan inserts (a fresh database) is
+    # tombstoned in the same transaction.
+    for retirement_path in sorted((CATALOG / "overlays").glob("catalog-retirements-v*.json")):
+        for entry in _load_optional(retirement_path).get("rows") or []:
+            _schedule_retirement(plan, catalog, modules, entry)
 
     for row in modules.values():
         if row.get("_planned"):
@@ -612,13 +618,16 @@ def _verification_index(path: Path | None) -> dict[str, dict[str, Any]]:
 
 
 def _catalog_state(conn: Connection) -> dict[str, dict[str, Any]]:
-    rows = conn.execute(text("SELECT slug, brand, name, hp, category FROM module_catalog")).mappings()
+    rows = conn.execute(
+        text("SELECT slug, brand, name, hp, category, tombstoned_at FROM module_catalog")
+    ).mappings()
     return {
         row["slug"]: {
             "brand": row["brand"],
             "name": row["name"],
             "hp": row["hp"],
             "category": row["category"],
+            "tombstoned": row["tombstoned_at"] is not None,
             "_planned": False,
         }
         for row in rows
@@ -629,7 +638,7 @@ def _module_state(conn: Connection) -> dict[tuple[str, str], dict[str, Any]]:
     rows = conn.execute(
         text(
             "SELECT brand, name, hp, power_12v_ma, power_neg12v_ma, power_5v_ma, depth_mm, "
-            "verification_status, verification_source_url FROM modules"
+            "verification_status, verification_source_url, status FROM modules"
         )
     ).mappings()
     state: dict[tuple[str, str], dict[str, Any]] = {}
@@ -791,6 +800,65 @@ def _schedule_category(plan: Plan, catalog: dict[str, dict[str, Any]], entry: di
         return
     row["category"] = category
     plan.add_update("category_overlay", _category_update(slug, brand, name, str(category)))
+
+
+def _schedule_retirement(
+    plan: Plan,
+    catalog: dict[str, dict[str, Any]],
+    modules: dict[tuple[str, str], dict[str, Any]],
+    entry: dict[str, Any],
+) -> None:
+    """Tombstone a catalog row and its module row named by a retirement manifest.
+
+    Never deletes: module_catalog gets tombstoned_at and a reason, modules gets
+    status 'tombstoned' (the admin convention). Rows already tombstoned are left alone.
+    """
+    brand = (entry.get("brand") or "").strip()
+    name = (entry.get("name") or "").strip()
+    reason = (entry.get("reason") or "").strip()
+    if not (brand and name and reason):
+        plan.conflict(table="module_catalog", reason="retirement_missing_identity_or_reason")
+        return
+    slug = (entry.get("slug") or create_slug(brand, name))[:200]
+    row = catalog.get(slug)
+    if row is None:
+        _bump(plan.unmatched, "retire_catalog")
+    elif row["brand"] != brand or row["name"] != name:
+        plan.conflict(table="module_catalog", slug=slug, reason="retirement_identity_mismatch")
+        return
+    elif not row.get("tombstoned"):
+        row["tombstoned"] = True
+        plan.add_update(
+            "catalog_retire",
+            Op(
+                "retire_catalog",
+                """
+                UPDATE module_catalog
+                SET tombstoned_at = CAST(:tombstoned_at AS TIMESTAMP), tombstone_reason = :reason,
+                    updated_at = :updated_at
+                WHERE slug = :slug AND brand = :brand AND name = :name AND tombstoned_at IS NULL
+                """,
+                {"slug": slug, "brand": brand, "name": name, "reason": reason[:200],
+                 "tombstoned_at": _stamp(), "updated_at": _stamp()},
+            ),
+        )
+    module = modules.get((brand, name))
+    if module is None:
+        _bump(plan.unmatched, "retire_module")
+    elif module.get("status") != "tombstoned":
+        module["status"] = "tombstoned"
+        plan.add_update(
+            "module_retire",
+            Op(
+                "retire_module",
+                """
+                UPDATE modules
+                SET status = 'tombstoned', tombstoned_at = CAST(:tombstoned_at AS TIMESTAMP)
+                WHERE brand = :brand AND name = :name AND status IS DISTINCT FROM 'tombstoned'
+                """,
+                {"brand": brand, "name": name, "tombstoned_at": _stamp()},
+            ),
+        )
 
 
 def _category_update(slug: str, brand: str, name: str, category: str) -> Op:
@@ -1202,7 +1270,7 @@ def provenance_counts(conn: Connection) -> dict[str, int]:
 
 
 # Parameters that hold the time of planning, not what is written.
-_CLOCK_PARAMS = frozenset({"created_at", "updated_at"})
+_CLOCK_PARAMS = frozenset({"created_at", "updated_at", "tombstoned_at"})
 
 
 def plan_hash(plan: Plan, case_plan: dict[str, Any] | None = None) -> str:

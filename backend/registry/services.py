@@ -16,7 +16,7 @@ import json
 from pathlib import Path
 from typing import Optional
 
-from sqlalchemy import func, or_
+from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session
 
 from modules.catalog import ModuleCatalog
@@ -55,10 +55,16 @@ def _manufacturer_names(manufacturer: Manufacturer) -> set[str]:
     return names
 
 
+_LIVE = ModuleCatalog.tombstoned_at.is_(None)
+
+
 def _catalog_rows_for(manufacturer: Manufacturer):
-    return or_(
-        func.lower(ModuleCatalog.brand).in_(_manufacturer_names(manufacturer)),
-        ModuleCatalog.registry_manufacturer_slug == manufacturer.slug,
+    return and_(
+        _LIVE,
+        or_(
+            func.lower(ModuleCatalog.brand).in_(_manufacturer_names(manufacturer)),
+            ModuleCatalog.registry_manufacturer_slug == manufacturer.slug,
+        ),
     )
 
 
@@ -84,6 +90,7 @@ def _catalog_counts(db: Session) -> list[tuple[str, str | None, int]]:
             ModuleCatalog.registry_manufacturer_slug,
             func.count(ModuleCatalog.id),
         )
+        .filter(_LIVE)
         .group_by(func.lower(ModuleCatalog.brand), ModuleCatalog.registry_manufacturer_slug)
         .all()
     ]
@@ -230,7 +237,7 @@ def _search_models_db(db: Session, *, q: str, brand: Optional[str], limit: int) 
     remaining = limit - len(results)
     if remaining <= 0:
         return results
-    catalog = db.query(ModuleCatalog)
+    catalog = db.query(ModuleCatalog).filter(_LIVE)
     if brand:
         catalog = catalog.filter(
             _catalog_rows_for(manufacturer)
@@ -251,10 +258,10 @@ def _search_models_db(db: Session, *, q: str, brand: Optional[str], limit: int) 
 def get_coverage_report(db: Session | None = None) -> dict:
     if db is not None:
         total_manufacturers = db.query(Manufacturer).count()
-        total_models = db.query(DeviceModel).count() + db.query(ModuleCatalog).count()
+        total_models = db.query(DeviceModel).count() + db.query(ModuleCatalog).filter(_LIVE).count()
         models_with_hp = (
             db.query(DeviceModel).filter(DeviceModel.hp.is_not(None)).count()
-            + db.query(ModuleCatalog).filter(ModuleCatalog.hp.is_not(None)).count()
+            + db.query(ModuleCatalog).filter(_LIVE, ModuleCatalog.hp.is_not(None)).count()
         )
     else:
         manufacturers = _snapshot_manufacturers()
