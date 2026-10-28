@@ -106,7 +106,7 @@ def login(request: LoginRequest, http_request: Request, db: Session = Depends(ge
         raise invalid
     valid, new_hash = verify_and_update_password(request.password, user.password_hash)
     if not valid:
-        login_guard.record_failure(user)
+        login_guard.record_failure(db, user)
         db.commit()
         raise invalid
     login_guard.record_success(user)

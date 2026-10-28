@@ -195,3 +195,18 @@ def test_legacy_purchases_stay_off_by_default(
     buyer = bearer_headers(make_user(db_session, "buyer"))
     resp = client.post("/api/monetization/purchases", json={"credits_delta": 1000}, headers=buyer)
     assert resp.status_code == 404
+
+
+def test_racing_failures_each_count(db_session: Session) -> None:
+    """Requests that loaded the same counter must each count (atomic update)."""
+    user = _user_with_password(db_session, "racer", get_password_hash("correct horse"))
+    sessions = [Session(bind=db_session.get_bind()) for _ in range(login_guard.MAX_FAILURES)]
+    loaded = [s.get(User, user.id) for s in sessions]  # every one reads 0 failures
+    for session, row in zip(sessions, loaded):
+        login_guard.record_failure(session, row)
+        session.commit()
+    for session in sessions:
+        session.close()
+    db_session.expire_all()
+    locked = db_session.get(User, user.id)
+    assert locked.locked_until is not None and locked.failed_login_count == 0

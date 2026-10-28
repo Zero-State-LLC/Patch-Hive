@@ -2,7 +2,8 @@
 Brute-force protection for sign-in.
 
 - Per account: after ``MAX_FAILURES`` wrong passwords the account is locked for
-  ``LOCK_MINUTES``. While locked, sign-in answers exactly like a wrong password, so a
+  ``LOCK_MINUTES``. The count is an atomic database update, so concurrent attempts
+  cannot overwrite each other. While locked, sign-in answers exactly like a wrong password, so a
   lock reveals nothing about whether the account exists.
 - Per client address: at most ``IP_ATTEMPTS_PER_MINUTE`` sign-in attempts a minute,
   answered with 429. Counted in this process, which is enough while the API runs as a
@@ -56,12 +57,27 @@ def is_locked(user, *, now: datetime | None = None) -> bool:
     return user.locked_until is not None and user.locked_until > now
 
 
-def record_failure(user, *, now: datetime | None = None) -> None:
+def record_failure(db, user, *, now: datetime | None = None) -> None:
+    """Count one failed password, atomically in the database, so concurrent wrong
+    passwords each count; lock the account at ``MAX_FAILURES``."""
+    from sqlalchemy import update
+
+    from community.models import User
+
     now = now or datetime.utcnow()
-    user.failed_login_count = (user.failed_login_count or 0) + 1
-    if user.failed_login_count >= MAX_FAILURES:
-        user.locked_until = now + timedelta(minutes=LOCK_MINUTES)
-        user.failed_login_count = 0
+    count = db.execute(
+        update(User)
+        .where(User.id == user.id)
+        .values(failed_login_count=User.failed_login_count + 1)
+        .returning(User.failed_login_count)
+    ).scalar_one()
+    if count >= MAX_FAILURES:
+        # Only the request that crosses the threshold resets the counter and sets the lock.
+        db.execute(
+            update(User)
+            .where(User.id == user.id, User.failed_login_count >= MAX_FAILURES)
+            .values(locked_until=now + timedelta(minutes=LOCK_MINUTES), failed_login_count=0)
+        )
 
 
 def record_success(user) -> None:
