@@ -158,6 +158,37 @@ def bridge_for_run(run: Run, content_hash: str | None = None) -> LegacyRunExport
     )
 
 
+def recorded_run_bridge(db: Session, run: Run) -> LegacyRunExportBridge:
+    """The canonical ids recorded for a run when it was generated. Read-only.
+
+    Runs are append-only (spec 001 FR-020): reading one never mints rows, and a
+    later layout change never re-binds an old run to a new rig revision. A run with
+    no recorded generation (from before generate wrote the bridge) reports
+    ``export_bridge_ready=False``.
+    """
+    record = (
+        db.query(GenerationRunRecord)
+        .filter(GenerationRunRecord.id.like(f"gen-run-{int(run.id)}-%"))  # type: ignore[arg-type]
+        .order_by(GenerationRunRecord.created_at.asc())
+        .first()
+    )
+    library = (
+        db.query(PatchLibraryRecord).filter(PatchLibraryRecord.run_id == record.id).first()
+        if record is not None
+        else None
+    )
+    if record is None or library is None:
+        return bridge_for_run(run)
+    return LegacyRunExportBridge(
+        run_id=int(run.id),  # type: ignore[arg-type]
+        rack_id=int(run.rack_id),  # type: ignore[arg-type]
+        rig_revision_id=str(record.rig_revision_id),
+        source_run_id=str(record.id),
+        artifact_manifest_hash=str(library.artifact_manifest_hash),
+        export_bridge_ready=True,
+    )
+
+
 def ensure_legacy_run_export_bridge(
     db: Session,
     run: Run,

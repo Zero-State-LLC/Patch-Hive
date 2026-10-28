@@ -46,8 +46,14 @@ def test_list_rig_revisions_groups_runs(db_session: Session) -> None:
     rack = Rack(user_id=user.id, case_id=case.id, name="Rig")
     db_session.add(rack)
     db_session.flush()
-    db_session.add(Run(rack_id=rack.id, status="completed", created_at=datetime.utcnow()))
-    db_session.add(Run(rack_id=rack.id, status="completed", created_at=datetime.utcnow()))
+    runs = [Run(rack_id=rack.id, status="succeeded", created_at=datetime.utcnow()) for _ in range(2)]
+    db_session.add_all(runs)
+    db_session.commit()
+    # As generation does: record the canonical bridge when each run is made.
+    from runs.bridge import ensure_legacy_run_export_bridge
+
+    for run in runs:
+        ensure_legacy_run_export_bridge(db_session, run)
     db_session.commit()
 
     client = _client(db_session)

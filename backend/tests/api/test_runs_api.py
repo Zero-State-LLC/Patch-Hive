@@ -14,6 +14,7 @@ from main import app
 from racks.models import Rack
 from runs.bridge import (
     build_rack_content_snapshot,
+    ensure_legacy_run_export_bridge,
     native_artifact_manifest_hash,
     native_rig_revision_id,
     native_source_run_id,
@@ -38,7 +39,8 @@ def _client(db_session: Session) -> TestClient:
     return TestClient(app, headers=bearer_headers(make_user(db_session, "auditor", "ReadOnly")))
 
 
-def _seed_run(db_session: Session) -> Run:
+def _seed_run(db_session: Session, *, bridged: bool = True) -> Run:
+    """A run as generation leaves it: with its canonical bridge recorded."""
     user = User(username="run-user", email="run@example.com", password_hash="hash")
     case = Case(
         brand="PatchHive",
@@ -53,14 +55,17 @@ def _seed_run(db_session: Session) -> Run:
     rack = Rack(user_id=user.id, case_id=case.id, name="Rig")
     db_session.add(rack)
     db_session.flush()
-    run = Run(rack_id=rack.id, status="completed", created_at=datetime.utcnow())
+    run = Run(rack_id=rack.id, status="succeeded", created_at=datetime.utcnow())
     db_session.add(run)
     db_session.commit()
     db_session.refresh(run)
+    if bridged:
+        ensure_legacy_run_export_bridge(db_session, run)
+        db_session.commit()
     return run
 
 
-def test_list_runs_includes_export_bridge_and_ensures_canon_rows(db_session: Session) -> None:
+def test_list_runs_returns_the_recorded_export_bridge(db_session: Session) -> None:
     client = _client(db_session)
     run = _seed_run(db_session)
     rack = db_session.get(Rack, run.rack_id)
@@ -111,4 +116,39 @@ def test_get_run_bridge_matches_list(db_session: Session) -> None:
     assert body["source_run_id"] == listed["source_run_id"]
     assert body["rig_revision_id"] == listed["rig_revision_id"]
     assert body["artifact_manifest_hash"] == listed["artifact_manifest_hash"]
+    app.dependency_overrides.clear()
+
+
+def test_reading_runs_writes_nothing(db_session: Session) -> None:
+    """Spec 001 FR-020: reads never mint canon rows, and a later layout change
+    never re-binds an old run to a new rig revision."""
+    from racks.models import RackModule
+
+    client = _client(db_session)
+    unbridged = _seed_run(db_session, bridged=False)
+
+    def counts() -> tuple[int, int, int]:
+        return (
+            db_session.query(RigRevisionRecord).count(),
+            db_session.query(GenerationRunRecord).count(),
+            db_session.query(PatchLibraryRecord).count(),
+        )
+
+    before = counts()
+    row = client.get(f"/api/runs/{unbridged.id}").json()
+    assert row["export_bridge_ready"] is False
+    assert client.get(f"/api/runs?rack_id={unbridged.rack_id}").status_code == 200
+    assert counts() == before
+
+    # A bridged run keeps its recorded revision after the layout changes.
+    ensure_legacy_run_export_bridge(db_session, unbridged)
+    db_session.commit()
+    recorded = client.get(f"/api/runs/{unbridged.id}").json()
+    db_session.add(RackModule(rack_id=unbridged.rack_id, module_id=999, row_index=0, start_hp=0))
+    db_session.commit()
+    after = counts()
+    again = client.get(f"/api/runs/{unbridged.id}").json()
+    assert again["rig_revision_id"] == recorded["rig_revision_id"]
+    assert again["source_run_id"] == recorded["source_run_id"]
+    assert counts() == after
     app.dependency_overrides.clear()

@@ -26,9 +26,7 @@ def list_runs(
     current_user: Optional[User] = Depends(get_current_user),
 ):
     readable_rack(db, rack_id, current_user)
-    payload = list_runs_for_rack(db, rack_id)
-    db.commit()
-    return payload
+    return list_runs_for_rack(db, rack_id)
 
 
 @router.get("/{run_id}", response_model=RunResponse)
@@ -41,9 +39,7 @@ def get_run(
     if not run:
         raise HTTPException(status_code=404, detail="Run not found")
     readable_rack(db, run.rack_id, current_user, label="Run")
-    response = build_run_response(db, run)
-    db.commit()
-    return response
+    return build_run_response(db, run)
 
 
 @router.get("/{run_id}/patches", response_model=RunPatchesResponse)
