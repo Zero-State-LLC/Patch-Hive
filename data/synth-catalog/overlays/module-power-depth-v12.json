@@ -693,12 +693,14 @@
   {
    "brand": "Erica Synths",
    "name": "Perkons Voice",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 59,
+   "power_neg12v_ma": 30,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/perkons-voice-3246",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/perkons-voice-3246",
+    "power_neg12v_ma": "https://www.ericasynths.lv/perkons-voice-3246",
     "depth_mm": "https://www.ericasynths.lv/perkons-voice-3246"
    },
    "provenance": "OBSERVED",
@@ -763,12 +765,14 @@
   {
    "brand": "Erica Synths",
    "name": "Hexinverter Mindphaser",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 188,
+   "power_neg12v_ma": 107,
    "power_5v_ma": null,
    "depth_mm": 24,
    "source_url": "https://www.ericasynths.lv/hexinverter-mindphaser-2716/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/hexinverter-mindphaser-2716/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/hexinverter-mindphaser-2716/",
     "depth_mm": "https://www.ericasynths.lv/hexinverter-mindphaser-2716/"
    },
    "provenance": "OBSERVED",
@@ -799,12 +803,14 @@
   {
    "brand": "Erica Synths",
    "name": "Bass Drum2",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 40,
+   "power_neg12v_ma": 30,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/bass-drum2-1768/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/bass-drum2-1768/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/bass-drum2-1768/",
     "depth_mm": "https://www.ericasynths.lv/bass-drum2-1768/"
    },
    "provenance": "OBSERVED",
@@ -854,12 +860,14 @@
   {
    "brand": "Erica Synths",
    "name": "Black Sequencer",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 145,
+   "power_neg12v_ma": 25,
    "power_5v_ma": null,
    "depth_mm": 25,
    "source_url": "https://www.ericasynths.lv/black-sequencer-546/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/black-sequencer-546/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/black-sequencer-546/",
     "depth_mm": "https://www.ericasynths.lv/black-sequencer-546/"
    },
    "provenance": "OBSERVED",
@@ -890,12 +898,14 @@
   {
    "brand": "Erica Synths",
    "name": "Black Spring Reverb",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 43,
+   "power_neg12v_ma": 71,
    "power_5v_ma": null,
    "depth_mm": 30,
    "source_url": "https://www.ericasynths.lv/black-spring-reverb-545/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/black-spring-reverb-545/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/black-spring-reverb-545/",
     "depth_mm": "https://www.ericasynths.lv/black-spring-reverb-545/"
    },
    "provenance": "OBSERVED",
@@ -907,12 +917,14 @@
   {
    "brand": "Erica Synths",
    "name": "Black Hole DSP 2",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 170,
+   "power_neg12v_ma": 56,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/black-hole-dsp2-334/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/black-hole-dsp2-334/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/black-hole-dsp2-334/",
     "depth_mm": "https://www.ericasynths.lv/black-hole-dsp2-334/"
    },
    "provenance": "OBSERVED",
@@ -924,12 +936,14 @@
   {
    "brand": "Erica Synths",
    "name": "Black Output V2",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 52,
+   "power_neg12v_ma": 43,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/black-output-v2-71/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/black-output-v2-71/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/black-output-v2-71/",
     "depth_mm": "https://www.ericasynths.lv/black-output-v2-71/"
    },
    "provenance": "OBSERVED",
@@ -941,12 +955,14 @@
   {
    "brand": "Erica Synths",
    "name": "Black Octasource",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 82,
+   "power_neg12v_ma": 44,
    "power_5v_ma": null,
    "depth_mm": 25,
    "source_url": "https://www.ericasynths.lv/black-octasource-47/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/black-octasource-47/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/black-octasource-47/",
     "depth_mm": "https://www.ericasynths.lv/black-octasource-47/"
    },
    "provenance": "OBSERVED",
@@ -996,12 +1012,14 @@
   {
    "brand": "Erica Synths",
    "name": "Black Quad VCA2",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 64,
+   "power_neg12v_ma": 62,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/black-quad-vca2-1070/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/black-quad-vca2-1070/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/black-quad-vca2-1070/",
     "depth_mm": "https://www.ericasynths.lv/black-quad-vca2-1070/"
    },
    "provenance": "OBSERVED",
@@ -1013,12 +1031,14 @@
   {
    "brand": "Erica Synths",
    "name": "Pico VCA2",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 20,
+   "power_neg12v_ma": 19,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/pico-vca2-1678/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/pico-vca2-1678/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/pico-vca2-1678/",
     "depth_mm": "https://www.ericasynths.lv/pico-vca2-1678/"
    },
    "provenance": "OBSERVED",
@@ -1030,12 +1050,14 @@
   {
    "brand": "Erica Synths",
    "name": "Pico Drum2",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 28,
+   "power_neg12v_ma": 5,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/pico-drum2-933/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/pico-drum2-933/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/pico-drum2-933/",
     "depth_mm": "https://www.ericasynths.lv/pico-drum2-933/"
    },
    "provenance": "OBSERVED",
@@ -1066,12 +1088,14 @@
   {
    "brand": "Erica Synths",
    "name": "Pico Mixer",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 4,
+   "power_neg12v_ma": 4,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/pico-mixer-501/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/pico-mixer-501/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/pico-mixer-501/",
     "depth_mm": "https://www.ericasynths.lv/pico-mixer-501/"
    },
    "provenance": "OBSERVED",
@@ -1083,12 +1107,14 @@
   {
    "brand": "Erica Synths",
    "name": "Pico DSP",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 83,
+   "power_neg12v_ma": 20,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/pico-dsp-21/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/pico-dsp-21/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/pico-dsp-21/",
     "depth_mm": "https://www.ericasynths.lv/pico-dsp-21/"
    },
    "provenance": "OBSERVED",
@@ -1100,12 +1126,14 @@
   {
    "brand": "Erica Synths",
    "name": "Pico Quant",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 25,
+   "power_neg12v_ma": 6,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/pico-quant-3/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/pico-quant-3/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/pico-quant-3/",
     "depth_mm": "https://www.ericasynths.lv/pico-quant-3/"
    },
    "provenance": "OBSERVED",
@@ -1117,12 +1145,14 @@
   {
    "brand": "Erica Synths",
    "name": "Pico VCO2",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 21,
+   "power_neg12v_ma": 19,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/pico-vco2-455/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/pico-vco2-455/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/pico-vco2-455/",
     "depth_mm": "https://www.ericasynths.lv/pico-vco2-455/"
    },
    "provenance": "OBSERVED",
@@ -1134,12 +1164,14 @@
   {
    "brand": "Erica Synths",
    "name": "Pico SEQ",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 55,
+   "power_neg12v_ma": 4,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/pico-seq-14/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/pico-seq-14/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/pico-seq-14/",
     "depth_mm": "https://www.ericasynths.lv/pico-seq-14/"
    },
    "provenance": "OBSERVED",
@@ -1151,12 +1183,14 @@
   {
    "brand": "Erica Synths",
    "name": "Pico RND",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 28,
+   "power_neg12v_ma": 15,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/pico-rnd-29/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/pico-rnd-29/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/pico-rnd-29/",
     "depth_mm": "https://www.ericasynths.lv/pico-rnd-29/"
    },
    "provenance": "OBSERVED",
@@ -1168,12 +1202,14 @@
   {
    "brand": "Erica Synths",
    "name": "Pico Voice",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 28,
+   "power_neg12v_ma": 5,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/pico-voice-9/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/pico-voice-9/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/pico-voice-9/",
     "depth_mm": "https://www.ericasynths.lv/pico-voice-9/"
    },
    "provenance": "OBSERVED",
@@ -1185,12 +1221,14 @@
   {
    "brand": "Erica Synths",
    "name": "Pico VCO",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 26,
+   "power_neg12v_ma": 4,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/pico-vco-7/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/pico-vco-7/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/pico-vco-7/",
     "depth_mm": "https://www.ericasynths.lv/pico-vco-7/"
    },
    "provenance": "OBSERVED",
@@ -1202,12 +1240,14 @@
   {
    "brand": "Erica Synths",
    "name": "Pico Multi2",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 20,
+   "power_neg12v_ma": 14,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/pico-multi2-462/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/pico-multi2-462/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/pico-multi2-462/",
     "depth_mm": "https://www.ericasynths.lv/pico-multi2-462/"
    },
    "provenance": "OBSERVED",
@@ -1219,12 +1259,14 @@
   {
    "brand": "Erica Synths",
    "name": "Hexinverter Mutant Bassdrum",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 21,
+   "power_neg12v_ma": 16,
    "power_5v_ma": null,
    "depth_mm": 20,
    "source_url": "https://www.ericasynths.lv/hexinverter-mutant-bass-drum-3280/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/hexinverter-mutant-bass-drum-3280/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/hexinverter-mutant-bass-drum-3280/",
     "depth_mm": "https://www.ericasynths.lv/hexinverter-mutant-bass-drum-3280/"
    },
    "provenance": "OBSERVED",
@@ -1236,12 +1278,14 @@
   {
    "brand": "Erica Synths",
    "name": "Hexinverter Mutant Clap",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 29,
+   "power_neg12v_ma": 25,
    "power_5v_ma": null,
    "depth_mm": 20,
    "source_url": "https://www.ericasynths.lv/hexinverter-mutant-clap-3278/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/hexinverter-mutant-clap-3278/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/hexinverter-mutant-clap-3278/",
     "depth_mm": "https://www.ericasynths.lv/hexinverter-mutant-clap-3278/"
    },
    "provenance": "OBSERVED",
@@ -1253,12 +1297,14 @@
   {
    "brand": "Erica Synths",
    "name": "Hexinverter Mutant Hi-Hats",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 23,
+   "power_neg12v_ma": 17,
    "power_5v_ma": null,
    "depth_mm": 20,
    "source_url": "https://www.ericasynths.lv/hexinverter-mutant-hihats-3279/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/hexinverter-mutant-hihats-3279/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/hexinverter-mutant-hihats-3279/",
     "depth_mm": "https://www.ericasynths.lv/hexinverter-mutant-hihats-3279/"
    },
    "provenance": "OBSERVED",
@@ -1270,12 +1316,14 @@
   {
    "brand": "Erica Synths",
    "name": "Hexinverter Mutant Snare",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 62,
+   "power_neg12v_ma": 57,
    "power_5v_ma": null,
    "depth_mm": 20,
    "source_url": "https://www.ericasynths.lv/hexinverter-mutant-snare-3277/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/hexinverter-mutant-snare-3277/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/hexinverter-mutant-snare-3277/",
     "depth_mm": "https://www.ericasynths.lv/hexinverter-mutant-snare-3277/"
    },
    "provenance": "OBSERVED",
@@ -1325,12 +1373,14 @@
   {
    "brand": "Erica Synths",
    "name": "Bassline",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
+   "power_12v_ma": 110,
+   "power_neg12v_ma": 70,
    "power_5v_ma": null,
    "depth_mm": 35,
    "source_url": "https://www.ericasynths.lv/bassline-347/",
    "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/bassline-347/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/bassline-347/",
     "depth_mm": "https://www.ericasynths.lv/bassline-347/"
    },
    "provenance": "OBSERVED",

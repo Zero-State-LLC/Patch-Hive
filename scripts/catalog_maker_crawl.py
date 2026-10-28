@@ -150,6 +150,9 @@ JUMPER = re.compile(
 )
 # Both rails named once, then both values: "+12v/-12v Current: 90mA/30mA", "20mA, 10mA (+12V / -12V)".
 PAIRED = [
+    # Unlabelled signed pair after a power heading (Erica: "Power consumption +59mA, -30mA");
+    # in Eurorack the positive draw is +12V and the negative one -12V.
+    (r"\b(?:power\s+consumption|current\s+draw)\s*:?\s*\+?\s*(\d{1,4}(?:\.\d+)?)\s*mA\s*[,/]\s*[-\u2212\u2013]\s*(\d{1,4}(?:\.\d+)?)\s*mA\b(?!\s*(?:@|at|on|from)?\s*\(?\s*[-+\u2212\u2013]?\s*\d{1,2}\s*V)", 1, 2),
     (r"\+\s*12\s*V?\s*/\s*[-\u2212\u2013]\s*12\s*V?\D{0,25}?(\d{1,4}(?:\.\d+)?)\s*mA\s*/\s*(\d{1,4}(?:\.\d+)?)\s*mA", 1, 2),
     (r"(?<![\d.])(\d{1,4}(?:\.\d+)?)\s*mA\s*[,/]\s*(\d{1,4}(?:\.\d+)?)\s*mA\s*\(\s*\+\s*12\s*V?\s*/\s*[-\u2212\u2013]\s*12\s*V?\s*\)", 1, 2),
 ]

@@ -179,6 +179,8 @@ def test_two_unlabelled_widths_are_ambiguous() -> None:
         ("8HP / 23mm depth +12V @ 50mA -12V @ 25mA Output is 0-5V", (50, 25, None)),  # Rain City
         ("Width: 12HP Power: +120mA / -45mA @+12V / -12V", (120, 45, None)),  # God's Box
         ("Width 6HP Depth 30mm Current draw +49mA, -39mA @ 12V", (49, 39, None)),  # Hexinverter
+        ("Power consumption +59mA, -30mA Module width 14HP", (59, 30, None)),  # Erica
+        ("Power consumption 43mA, -71mA Module width 12HP", (43, 71, None)),  # Erica, no plus
         # A jumper moves load between +12V and +5V: no single pair is the draw, keep -12V only.
         ("+12V rail: 48mA with jumper selecting external 5V 88mA with jumper selecting internal 5V "
          "+5V rail: 41mA with jumper selecting external 5V -12V rail: 40mA", (None, 40, None)),  # 4ms QCD
