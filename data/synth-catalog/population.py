@@ -244,6 +244,10 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
         for entry in hp_overlay.get("entries") or []:
             _schedule_hp(plan, catalog, entry)
 
+    for category_path in sorted((CATALOG / "overlays").glob("module-catalog-category-v*.json")):
+        for entry in _load_optional(category_path).get("entries") or []:
+            _schedule_category(plan, catalog, entry)
+
     for row in candidates.get("rows") or []:
         _schedule_candidate(plan, catalog, modules, row, verification)
 
@@ -766,6 +770,27 @@ def _schedule_hp(plan: Plan, catalog: dict[str, dict[str, Any]], entry: dict[str
         return
     row["hp"] = hp
     plan.add_update("hp_overlay", _hp_update(slug, brand, name, int(hp)))
+
+
+def _schedule_category(plan: Plan, catalog: dict[str, dict[str, Any]], entry: dict[str, Any]) -> None:
+    """Fill a catalog row's missing category from a category overlay (never overwrite)."""
+    slug = entry.get("slug")
+    brand = (entry.get("brand") or "").strip()
+    name = (entry.get("name") or "").strip()
+    category = entry.get("category")
+    if not category:
+        return
+    row = catalog.get(slug) if slug else None
+    if row is None:
+        _bump(plan.unmatched, "category")
+        return
+    if row["brand"] != brand or row["name"] != name:
+        plan.conflict(table="module_catalog", slug=slug, reason="category_overlay_identity_mismatch")
+        return
+    if row.get("category"):
+        return
+    row["category"] = category
+    plan.add_update("category_overlay", _category_update(slug, brand, name, str(category)))
 
 
 def _category_update(slug: str, brand: str, name: str, category: str) -> Op:
