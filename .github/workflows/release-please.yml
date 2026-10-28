@@ -7,6 +7,7 @@ on:
     branches: [main]
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -17,14 +18,30 @@ concurrency:
 jobs:
   release-please:
     runs-on: ubuntu-24.04
+    env:
+      HAS_RELEASE_PAT: ${{ secrets.RELEASE_PLEASE_TOKEN != '' }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - id: rp
+        uses: googleapis/release-please-action@v4
         with:
-          # The repo does not let GitHub Actions open pull requests, so the
-          # default GITHUB_TOKEN cannot create the release PR. Set
-          # RELEASE_PLEASE_TOKEN (fine-grained PAT on this repo: Contents,
-          # Pull requests and Issues read/write). A PAT-opened release PR also
-          # triggers CI, which GITHUB_TOKEN-opened PRs do not.
+          # GITHUB_TOKEN can open the release PR (org and repo allow Actions to
+          # create pull requests). Optional: set RELEASE_PLEASE_TOKEN (fine-
+          # grained PAT on this repo: Contents, Pull requests and Issues
+          # read/write); a PAT-opened PR triggers CI on its own.
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+      # A release PR opened or updated with GITHUB_TOKEN gets no pull_request
+      # runs, so its required checks never report. workflow_dispatch is the
+      # one event GITHUB_TOKEN may start, and its check runs land on the
+      # branch head, which satisfies the required checks by name.
+      - name: Run required checks on the release PR branch
+        if: ${{ steps.rp.outputs.pr != '' && env.HAS_RELEASE_PAT != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ fromJSON(steps.rp.outputs.pr).headBranchName }}
+        run: |
+          for wf in ci.yml codeql.yml release.yml; do
+            gh workflow run "$wf" --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
+          done

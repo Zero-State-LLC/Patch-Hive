@@ -1,6 +1,9 @@
 name: CodeQL
 
 on:
+  # Release Please opens its PR with GITHUB_TOKEN, which does not trigger
+  # pull_request runs. release-please.yml dispatches this workflow instead.
+  workflow_dispatch:
   push:
     branches: [main]
   pull_request:
