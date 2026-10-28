@@ -32,7 +32,7 @@ class Patch(Base):
     name_override = Column(String(200), nullable=True)
     category = Column(
         String(50), nullable=False, index=True
-    )  # "Voice", "Modulation", "Clock-Rhythm", "Generative", "Utility", "Performance Macro", "Texture-FX", "Study", "Experimental-Feedback"
+    )  # one of core.ir.PatchCategory; older rows may hold retired values such as "Study"
     description = Column(Text, nullable=True)
 
     # Connection graph

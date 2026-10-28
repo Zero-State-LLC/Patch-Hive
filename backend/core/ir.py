@@ -14,16 +14,15 @@ import json
 from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Literal, Optional
 
+# The canonical category set (spec 001 FR-012, OQ-03 resolved 2026-10-28). Subtypes
+# such as Pad, Lead, Bass and Drone are not categories; they belong in a separate
+# optional field once a generator produces them.
 PatchCategory = Literal[
     "Voice",
-    "Modulation",
     "Clock-Rhythm",
     "Generative",
-    "Utility",
-    "Performance Macro",
     "Texture-FX",
-    "Study",
-    "Experimental-Feedback",
+    "Utility",
 ]
 
 

@@ -186,17 +186,8 @@ class TestPatchGenerator:
         # Check patch structure
         assert isinstance(patch.name, str)
         assert len(patch.name) > 0
-        assert patch.category in [
-            "Voice",
-            "Modulation",
-            "Clock-Rhythm",
-            "Generative",
-            "Utility",
-            "Performance Macro",
-            "Texture-FX",
-            "Study",
-            "Experimental-Feedback",
-        ]
+        # The canonical set (spec 001 FR-012).
+        assert patch.category in ["Voice", "Clock-Rhythm", "Generative", "Texture-FX", "Utility"]
         assert isinstance(patch.connections, list)
         assert isinstance(patch.description, str)
         assert isinstance(patch.generation_seed, int)
@@ -497,3 +488,37 @@ class TestConfiguration:
         assert config.max_patches == 50
         assert config.allow_feedback is True
         assert config.prefer_simple is True
+
+
+class TestNoInventedPatches:
+    """Spec 001 FR-017: generation never pads its output with patches it cannot justify."""
+
+    def test_full_rack_emits_only_canonical_categories(
+        self, db_session: Session, sample_rack_full: Rack
+    ):
+        patches = generate_patches_for_rack(
+            db_session, sample_rack_full, seed=7, config=PatchEngineConfig(max_patches=50)
+        )
+        assert patches
+        assert {p.category for p in patches} <= {
+            "Voice", "Clock-Rhythm", "Generative", "Texture-FX", "Utility"
+        }
+        assert not any(p.description.startswith("Study patch") for p in patches)
+
+    def test_a_rack_with_no_patch_rule_gets_no_patches(
+        self, db_session: Session, sample_user, sample_case, sample_mixer: Module, sample_noise: Module
+    ):
+        """A mixer and a noise source match no rule; the old padding wired them
+        "Audio Out" to "Audio In" without knowing those jacks exist."""
+        from racks.models import RackModule
+
+        rack = Rack(user_id=sample_user.id, name="Odd rack", case_id=sample_case.id)
+        db_session.add(rack)
+        db_session.flush()
+        db_session.add_all([
+            RackModule(rack_id=rack.id, module_id=sample_mixer.id, row_index=0, start_hp=0),
+            RackModule(rack_id=rack.id, module_id=sample_noise.id, row_index=0, start_hp=10),
+        ])
+        db_session.commit()
+
+        assert generate_patches_for_rack(db_session, rack, seed=1) == []
