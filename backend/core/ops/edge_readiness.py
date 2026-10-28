@@ -1,7 +1,11 @@
 """Edge deployment readiness state machine (Spec 006, T070).
 
-T030/T040/T050 (Pages project, API hostname + CORS, Hyperdrive to Neon staging)
-are operator-driven Cloudflare console actions. This module only evaluates
+The machine tracks the staging pair chosen 2026-10-27 (docs/evidence/STAGING_HOST_PLAN.md):
+the staging frontend Worker on staging.patch-hive.com and the staging API Worker on
+api-staging.patch-hive.com, whose container reaches the Neon staging branch through its
+pooled endpoint (FR-003 as amended 2026-10-26: Hyperdrive cannot serve a container, and
+the SPA ships on Workers rather than Pages). T030/T040/T050 are operator-driven
+Cloudflare actions. This module only evaluates
 receipted evidence: it performs no network, database, or Cloudflare calls.
 The public API hostname and the Tunnel-vs-Containers choice are operator-locked.
 
@@ -30,9 +34,9 @@ class ReadinessState(str, Enum):
     """Edge deployment readiness states, in linear order."""
 
     UNCONFIGURED = "UNCONFIGURED"
-    PAGES_ATTACHED = "PAGES_ATTACHED"
+    FRONTEND_ATTACHED = "FRONTEND_ATTACHED"
     API_HOSTNAME_LIVE = "API_HOSTNAME_LIVE"
-    HYPERDRIVE_BOUND = "HYPERDRIVE_BOUND"
+    DATABASE_BOUND = "DATABASE_BOUND"
     CLEF_FLAGGED = "CLEF_FLAGGED"
     GATES_PASSED = "GATES_PASSED"
     BETA_READY = "BETA_READY"
@@ -40,9 +44,9 @@ class ReadinessState(str, Enum):
 
 READINESS_ORDER: tuple[ReadinessState, ...] = (
     ReadinessState.UNCONFIGURED,
-    ReadinessState.PAGES_ATTACHED,
+    ReadinessState.FRONTEND_ATTACHED,
     ReadinessState.API_HOSTNAME_LIVE,
-    ReadinessState.HYPERDRIVE_BOUND,
+    ReadinessState.DATABASE_BOUND,
     ReadinessState.CLEF_FLAGGED,
     ReadinessState.GATES_PASSED,
     ReadinessState.BETA_READY,
@@ -52,9 +56,9 @@ READINESS_ORDER: tuple[ReadinessState, ...] = (
 class ReadinessEvent(str, Enum):
     """Events driving the readiness machine."""
 
-    PAGES_DEPLOYED = "pages_deployed"
+    FRONTEND_DEPLOYED = "frontend_deployed"
     API_PUBLISHED = "api_published"
-    HYPERDRIVE_BOUND = "hyperdrive_bound"
+    DATABASE_BOUND = "database_bound"
     CLEF_ADAPTER_WIRED = "clef_adapter_wired"
     GATES_PASS = "gates_pass"
     OPERATOR_APPROVE = "operator_approve"
@@ -67,12 +71,13 @@ class ReadinessEvidence:
     Every field is a caller assertion; nothing here is probed live.
     """
 
-    pages_build_output_present: bool = False
-    pages_custom_domain_attached: bool = False
+    frontend_build_output_present: bool = False
+    frontend_custom_domain_attached: bool = False
     api_cors_exact_origin: bool = False
+    api_environment_staging: bool = False
     api_health_ok: bool = False
     payments_live_disabled: bool = False
-    hyperdrive_neon_staging: bool = False
+    database_neon_staging_pooled: bool = False
     d1_absent: bool = False
     clef_flag_default_off: bool = False
     staging_host_plan_passed: bool = False
@@ -84,12 +89,12 @@ class ReadinessEvidence:
 Guard = Callable[[ReadinessEvidence], tuple[str, ...]]
 
 
-def _guard_pages_deployed(ev: ReadinessEvidence) -> tuple[str, ...]:
+def _guard_frontend_deployed(ev: ReadinessEvidence) -> tuple[str, ...]:
     failed: list[str] = []
-    if not ev.pages_build_output_present:
-        failed.append("PAGES_BUILD_OUTPUT_MISSING")
-    if not ev.pages_custom_domain_attached:
-        failed.append("PAGES_CUSTOM_DOMAIN_MISSING")
+    if not ev.frontend_build_output_present:
+        failed.append("FRONTEND_BUILD_OUTPUT_MISSING")
+    if not ev.frontend_custom_domain_attached:
+        failed.append("FRONTEND_CUSTOM_DOMAIN_MISSING")
     return tuple(failed)
 
 
@@ -97,6 +102,9 @@ def _guard_api_published(ev: ReadinessEvidence) -> tuple[str, ...]:
     failed: list[str] = []
     if not ev.api_cors_exact_origin:
         failed.append("API_CORS_ORIGIN_NOT_EXACT")
+    if not ev.api_environment_staging:
+        # Drills (007 enablement, 008 walkthrough) run here, never on production.
+        failed.append("API_ENVIRONMENT_NOT_STAGING")
     if not ev.api_health_ok:
         failed.append("API_HEALTH_NOT_OK")
     if not ev.payments_live_disabled:
@@ -104,10 +112,10 @@ def _guard_api_published(ev: ReadinessEvidence) -> tuple[str, ...]:
     return tuple(failed)
 
 
-def _guard_hyperdrive_bound(ev: ReadinessEvidence) -> tuple[str, ...]:
+def _guard_database_bound(ev: ReadinessEvidence) -> tuple[str, ...]:
     failed: list[str] = []
-    if not ev.hyperdrive_neon_staging:
-        failed.append("HYPERDRIVE_NOT_NEON_STAGING")
+    if not ev.database_neon_staging_pooled:
+        failed.append("DATABASE_NOT_NEON_STAGING_POOLED")
     if not ev.d1_absent:
         failed.append("D1_BINDING_PRESENT")
     return tuple(failed)
@@ -153,19 +161,19 @@ def _guard_operator_approve(ev: ReadinessEvidence) -> tuple[str, ...]:
 GUARDS: Mapping[
     tuple[ReadinessState, ReadinessEvent], tuple[ReadinessState, Guard]
 ] = MappingProxyType({
-    (ReadinessState.UNCONFIGURED, ReadinessEvent.PAGES_DEPLOYED): (
-        ReadinessState.PAGES_ATTACHED,
-        _guard_pages_deployed,
+    (ReadinessState.UNCONFIGURED, ReadinessEvent.FRONTEND_DEPLOYED): (
+        ReadinessState.FRONTEND_ATTACHED,
+        _guard_frontend_deployed,
     ),
-    (ReadinessState.PAGES_ATTACHED, ReadinessEvent.API_PUBLISHED): (
+    (ReadinessState.FRONTEND_ATTACHED, ReadinessEvent.API_PUBLISHED): (
         ReadinessState.API_HOSTNAME_LIVE,
         _guard_api_published,
     ),
-    (ReadinessState.API_HOSTNAME_LIVE, ReadinessEvent.HYPERDRIVE_BOUND): (
-        ReadinessState.HYPERDRIVE_BOUND,
-        _guard_hyperdrive_bound,
+    (ReadinessState.API_HOSTNAME_LIVE, ReadinessEvent.DATABASE_BOUND): (
+        ReadinessState.DATABASE_BOUND,
+        _guard_database_bound,
     ),
-    (ReadinessState.HYPERDRIVE_BOUND, ReadinessEvent.CLEF_ADAPTER_WIRED): (
+    (ReadinessState.DATABASE_BOUND, ReadinessEvent.CLEF_ADAPTER_WIRED): (
         ReadinessState.CLEF_FLAGGED,
         _guard_clef_adapter_wired,
     ),

@@ -684,9 +684,9 @@ def test_settings_clef_flag_defaults_off() -> None:
 
 
 READINESS_STEPS: tuple[ReadinessEvent, ...] = (
-    ReadinessEvent.PAGES_DEPLOYED,
+    ReadinessEvent.FRONTEND_DEPLOYED,
     ReadinessEvent.API_PUBLISHED,
-    ReadinessEvent.HYPERDRIVE_BOUND,
+    ReadinessEvent.DATABASE_BOUND,
     ReadinessEvent.CLEF_ADAPTER_WIRED,
     ReadinessEvent.GATES_PASS,
     ReadinessEvent.OPERATOR_APPROVE,
@@ -695,12 +695,13 @@ READINESS_STEPS: tuple[ReadinessEvent, ...] = (
 
 def _complete_evidence(**overrides) -> ReadinessEvidence:
     base = dict(
-        pages_build_output_present=True,
-        pages_custom_domain_attached=True,
+        frontend_build_output_present=True,
+        frontend_custom_domain_attached=True,
+        api_environment_staging=True,
         api_cors_exact_origin=True,
         api_health_ok=True,
         payments_live_disabled=True,
-        hyperdrive_neon_staging=True,
+        database_neon_staging_pooled=True,
         d1_absent=True,
         clef_flag_default_off=True,
         staging_host_plan_passed=True,
@@ -748,8 +749,8 @@ def test_config_gates_report_operator_locked_origin() -> None:
 
 @pytest.mark.skip(
     reason=(
-        "T030/T040/T050 operator Cloudflare actions (Pages, API hostname + CORS, "
-        "Hyperdrive to Neon staging) are deferred and operator-locked; live edge "
+        "T030/T040/T050 operator Cloudflare actions (frontend Worker, API hostname + CORS, "
+        "Neon staging pooled endpoint) are deferred and operator-locked; live edge "
         "readiness cannot be probed from CI"
     )
 )

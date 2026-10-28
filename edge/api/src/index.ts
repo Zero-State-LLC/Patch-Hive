@@ -1,7 +1,8 @@
-// Edge entry for api.patch-hive.com: forwards every request to the FastAPI container.
+// Edge entry for api.patch-hive.com (production) and api-staging.patch-hive.com
+// (staging): forwards every request to the FastAPI container.
 import { Container, getContainer } from "@cloudflare/containers";
 
-interface Env {
+interface Env extends Partial<Record<OptionalName, string>> {
   API: DurableObjectNamespace<PatchHiveApi>;
   DATABASE_URL?: string;
   SECRET_KEY?: string;
@@ -17,6 +18,40 @@ interface Env {
   S3_BUCKET: string;
   S3_REGION: string;
   S3_KEY_PREFIX: string;
+}
+
+// Feature flags and decision-provider settings, forwarded only when the Worker sets
+// them. Production sets none, and the container never receives them there, so every
+// flag stays at its backend default (off); staging sets them for the 007/008 drills.
+const FLAG_VARS = [
+  "ENABLE_DECISION_INTELLIGENCE",
+  "DECISION_PROVIDER",
+  "ENABLE_CLEF_PROVIDER",
+  "CLEF_MODEL",
+  "ENABLE_PATCHBOOK_DESIGN_ENGINE",
+  "ENABLE_CANON_EXPORT_FULFILLMENT",
+  "ENABLE_INLINE_EXPORT_FULFILLMENT",
+  "ENABLE_PATCHBOOK_PUBLICATION_PROFILE",
+] as const;
+
+// OptionalName secrets: forwarded in every environment when set.
+const OPTIONAL_SECRETS = ["STRIPE_WEBHOOK_SECRET", "DOWNLOAD_TOKEN_SECRET"] as const;
+
+// Provider credentials, which only staging may hold.
+const STAGING_SECRETS = ["TYPESAFE_API_KEY", "CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_AI_API_TOKEN"] as const;
+
+type OptionalName = (typeof FLAG_VARS)[number] | (typeof OPTIONAL_SECRETS)[number] | (typeof STAGING_SECRETS)[number];
+
+// The names the container receives beyond its fixed set. Exported for tests.
+export function optionalEnv(env: Partial<Record<OptionalName, string>> & { ENVIRONMENT: string }): Record<string, string> {
+  const names: OptionalName[] = [...OPTIONAL_SECRETS];
+  if (env.ENVIRONMENT !== "production") names.push(...FLAG_VARS, ...STAGING_SECRETS);
+  const out: Record<string, string> = {};
+  for (const name of names) {
+    const value = env[name];
+    if (value) out[name] = value;
+  }
+  return out;
 }
 
 const REQUIRED_SECRETS = [
@@ -52,6 +87,7 @@ export class PatchHiveApi extends Container<Env> {
       S3_REGION: env.S3_REGION,
       S3_KEY_PREFIX: env.S3_KEY_PREFIX,
       RUN_MIGRATIONS: "true",
+      ...optionalEnv(env),
     };
   }
 }

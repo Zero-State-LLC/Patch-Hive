@@ -22,10 +22,10 @@ from core.ops.edge_readiness import (
 _FIXED_RECEIPT_SHA = "a" * 64
 
 _VALID_PAIRS = {
-    (ReadinessState.UNCONFIGURED, ReadinessEvent.PAGES_DEPLOYED),
-    (ReadinessState.PAGES_ATTACHED, ReadinessEvent.API_PUBLISHED),
-    (ReadinessState.API_HOSTNAME_LIVE, ReadinessEvent.HYPERDRIVE_BOUND),
-    (ReadinessState.HYPERDRIVE_BOUND, ReadinessEvent.CLEF_ADAPTER_WIRED),
+    (ReadinessState.UNCONFIGURED, ReadinessEvent.FRONTEND_DEPLOYED),
+    (ReadinessState.FRONTEND_ATTACHED, ReadinessEvent.API_PUBLISHED),
+    (ReadinessState.API_HOSTNAME_LIVE, ReadinessEvent.DATABASE_BOUND),
+    (ReadinessState.DATABASE_BOUND, ReadinessEvent.CLEF_ADAPTER_WIRED),
     (ReadinessState.CLEF_FLAGGED, ReadinessEvent.GATES_PASS),
     (ReadinessState.GATES_PASSED, ReadinessEvent.OPERATOR_APPROVE),
 }
@@ -40,12 +40,13 @@ def clean_env(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def _valid_evidence(**overrides: object) -> ReadinessEvidence:
     fields: dict[str, object] = {
-        "pages_build_output_present": True,
-        "pages_custom_domain_attached": True,
+        "frontend_build_output_present": True,
+        "frontend_custom_domain_attached": True,
+        "api_environment_staging": True,
         "api_cors_exact_origin": True,
         "api_health_ok": True,
         "payments_live_disabled": True,
-        "hyperdrive_neon_staging": True,
+        "database_neon_staging_pooled": True,
         "d1_absent": True,
         "clef_flag_default_off": True,
         "staging_host_plan_passed": True,
@@ -59,9 +60,9 @@ def _valid_evidence(**overrides: object) -> ReadinessEvidence:
 
 def _happy_path_events() -> list[tuple[ReadinessEvent, ReadinessEvidence]]:
     return [
-        (ReadinessEvent.PAGES_DEPLOYED, _valid_evidence()),
+        (ReadinessEvent.FRONTEND_DEPLOYED, _valid_evidence()),
         (ReadinessEvent.API_PUBLISHED, _valid_evidence()),
-        (ReadinessEvent.HYPERDRIVE_BOUND, _valid_evidence()),
+        (ReadinessEvent.DATABASE_BOUND, _valid_evidence()),
         (ReadinessEvent.CLEF_ADAPTER_WIRED, _valid_evidence()),
         (ReadinessEvent.GATES_PASS, _valid_evidence()),
         (ReadinessEvent.OPERATOR_APPROVE, _valid_evidence()),
@@ -74,9 +75,9 @@ def test_full_happy_path_reaches_beta_ready() -> None:
     assert len(results) == 6
     assert all(result.accepted for result in results)
     assert [result.to_state for result in results] == [
-        ReadinessState.PAGES_ATTACHED,
+        ReadinessState.FRONTEND_ATTACHED,
         ReadinessState.API_HOSTNAME_LIVE,
-        ReadinessState.HYPERDRIVE_BOUND,
+        ReadinessState.DATABASE_BOUND,
         ReadinessState.CLEF_FLAGGED,
         ReadinessState.GATES_PASSED,
         ReadinessState.BETA_READY,
@@ -251,3 +252,15 @@ def test_clef_with_credentials_passes_and_no_secret_leak(clean_env: None) -> Non
     by_code = {check.code: check for check in checks}
     assert by_code["CLEF_FAIL_CLOSED_CONFIG"].passed is True
     assert "secret-token-value" not in str(summarize(checks))
+
+
+def test_the_api_must_be_the_staging_environment() -> None:
+    # The readiness drills run on the staging pair, never on production (2026-10-27).
+    result = readiness_transition(
+        ReadinessState.FRONTEND_ATTACHED,
+        ReadinessEvent.API_PUBLISHED,
+        _valid_evidence(api_environment_staging=False),
+    )
+    assert result.accepted is False
+    assert result.to_state is ReadinessState.FRONTEND_ATTACHED
+    assert result.failed_checks == ("API_ENVIRONMENT_NOT_STAGING",)
