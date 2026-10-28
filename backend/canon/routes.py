@@ -321,7 +321,6 @@ def list_canonical_runs(
     readable_rack(db, rig_id, current_user, label="Rig")
 
     payload = list_runs_for_rack(db, rig_id)
-    db.commit()
     return payload
 
 
@@ -484,7 +483,6 @@ def list_rig_revisions(
     readable_rack(db, rig_id, current_user, label="Rig")
 
     payload = list_runs_for_rack(db, rig_id)
-    db.commit()
     by_rev: dict[str, RigRevisionSummary] = {}
     for run in payload.runs:
         rev_id = run.rig_revision_id

@@ -28,6 +28,9 @@ from .schemas import (
 
 router = APIRouter()
 
+# What an owner may change on a generated patch: a display label and visibility.
+GENERATED_PATCH_EDITABLE = {"name_override", "is_public"}
+
 
 @router.post("/", response_model=PatchResponse, status_code=201)
 def create_patch(
@@ -118,15 +121,22 @@ def update_patch(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_auth),
 ):
-    """Update a patch (rack owner only)."""
+    """Update a patch (rack owner only).
+
+    A generated patch (one with a run) is append-only (spec 001 FR-020): its name and
+    description are what the engine produced. The owner may still set a display
+    label (``name_override``) and visibility; the label never replaces ``name``.
+    """
     db_patch = owned_patch(db, patch_id, current_user)
 
-    # Update fields if provided
     update_data = patch_update.model_dump(exclude_unset=True)
+    generated = db_patch.run_id is not None
+    if generated and set(update_data) - GENERATED_PATCH_EDITABLE:
+        raise HTTPException(status_code=409, detail="GENERATED_PATCH_IS_APPEND_ONLY")
     for field, value in update_data.items():
         setattr(db_patch, field, value)
 
-    if "name_override" in update_data:
+    if "name_override" in update_data and not generated:
         if patch_update.name_override:
             db_patch.name = patch_update.name_override
         else:
@@ -144,8 +154,10 @@ def delete_patch(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_auth),
 ):
-    """Delete a patch (rack owner only)."""
+    """Delete a hand-made patch (rack owner only). Generated patches stay (FR-020)."""
     db_patch = owned_patch(db, patch_id, current_user)
+    if db_patch.run_id is not None:
+        raise HTTPException(status_code=409, detail="GENERATED_PATCH_IS_APPEND_ONLY")
 
     db.delete(db_patch)
     db.commit()

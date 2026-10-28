@@ -145,3 +145,34 @@ def test_the_owner_downloads_a_private_rack_pdf_with_its_filename(
     assert resp.status_code == 200
     assert "filename=" in resp.headers["content-disposition"]
     assert "content-disposition" in resp.headers.get("access-control-expose-headers", "").lower()
+
+
+def test_generated_patches_are_append_only(
+    client: TestClient, db_session: Session, people: dict, sample_case: Case
+) -> None:
+    """Spec 001 FR-020: the owner may label or publish a generated patch, never
+    rewrite or delete it. Hand-made patches stay fully editable."""
+    from runs.models import Run
+
+    rack = _rack(db_session, people["owner"].id, sample_case)
+    run = Run(rack_id=rack.id, status="succeeded")
+    db_session.add(run)
+    db_session.commit()
+    generated = _patch(db_session, rack)
+    generated.run_id = run.id
+    db_session.commit()
+    owner = bearer_headers(people["owner"])
+    url = f"/api/patches/{generated.id}"
+
+    assert client.patch(url, json={"name": "Mine"}, headers=owner).status_code == 409
+    assert client.patch(url, json={"description": "x"}, headers=owner).status_code == 409
+    assert client.delete(url, headers=owner).status_code == 409
+    labelled = client.patch(url, json={"name_override": "Big pad", "is_public": True}, headers=owner)
+    assert labelled.status_code == 200
+    assert labelled.json()["name_override"] == "Big pad"
+    assert labelled.json()["name"] == "P"  # the generated name is untouched
+
+    handmade = _patch(db_session, rack)
+    other_url = f"/api/patches/{handmade.id}"
+    assert client.patch(other_url, json={"name": "Renamed"}, headers=owner).json()["name"] == "Renamed"
+    assert client.delete(other_url, headers=owner).status_code == 204

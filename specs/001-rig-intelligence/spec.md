@@ -177,7 +177,7 @@ Acceptance criteria:
 
 - **FR-018**: Each generation attempt must create a run record bound to a rack. Its initial status is `queued`. [OBSERVED: backend/runs/models.py] Implemented 2026-10-27: `queued`, then `running`, then `succeeded`, or `failed` when generation raises; each step is committed. `validation_failed` is not produced yet, because generation has no blocking ValidationReport (FR-016, FR-019 remain open).
 - **FR-019**: Run state transitions must follow the [transitions table](#transitions). Implementers treat that table as the contract. [INFERRED]
-- **FR-020**: Regeneration and retry must create a new run. Existing runs, libraries, patches, stage receipts, manifests, and ledger entries are append-only. [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md]
+- **FR-020**: Regeneration and retry must create a new run. Existing runs, libraries, patches, stage receipts, manifests, and ledger entries are append-only. [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md] Implemented 2026-10-27 for runs and generated patches: run reads return the ids recorded at generation and write nothing; a generated patch's name and description cannot be changed and it cannot be deleted (409 `GENERATED_PATCH_IS_APPEND_ONLY`), though the owner may set a display label (`name_override`) and visibility. Deleting a rack still cascades to its runs (OQ-02).
 - **FR-021**: A run must own exactly one patch library. [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md]
 - **FR-022**: When readiness fails, the system must emit a `NOT_COMPUTABLE` receipt instead of creating a queued run. [INFERRED]
 - **FR-023**: The system must let callers list runs by rack, read a run by ID, and read a run's patches. It must return "Run not found" for an unknown run ID. [OBSERVED: backend/runs/routes.py]
@@ -385,4 +385,5 @@ These criteria are pass or fail. They contain no invented thresholds.
 - **OQ-10** (NOT_COMPUTABLE): What are the privacy, retention, and access rules for evidence such as rig photos and OCR output, and for the user overlay?
 - **OQ-11** (NOT_COMPUTABLE): What are the computation rules for `modulation_budget`, `routing_flex_score`, `clock_coherence_score`, `chaos_headroom`, `learning_gradient_index`, and `performance_density_index`? None are defined in the sources.
 - **OQ-12** (NOT_COMPUTABLE): The read handlers in `backend/runs/routes.py` commit the database session. Can reading a run or listing runs mutate state? If yes, how does that comply with the append-only rule?
+  - Resolved 2026-10-27: no. Run reads no longer commit or mint canon rows; a run with no recorded generation reports `export_bridge_ready=false` (`runs.bridge.recorded_run_bridge`).
 - **OQ-13** (NOT_COMPUTABLE): Does this spec need an ADVERSARY threat model for the provider evidence boundary? The Workflows section currently lists none, and this draft does not add one.
