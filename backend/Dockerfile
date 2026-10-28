@@ -54,6 +54,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 
 USER patchhive
 
-# Migrate then run uvicorn (RUN_MIGRATIONS defaults true in entrypoint)
+# Wait for the DB then run uvicorn. Startup migrations are opt-in (RUN_MIGRATIONS=true);
+# deployed databases are migrated by the db-migrate workflow.
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

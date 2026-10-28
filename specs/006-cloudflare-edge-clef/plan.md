@@ -38,7 +38,7 @@ Re-run STAGING_HOST_PLAN. Update DOMAIN_CUTOVER_CHECKLIST with receipts. Only th
 ## Risks
 
 - CORS origin mismatch blocks frontend.
-- Containers chosen (2026-10-26). One instance (`max_instances: 1`) so startup migrations never race; the container sleeps after 15 minutes idle, so the first request after that pays a cold start (image boot plus `alembic upgrade head`).
+- Containers chosen (2026-10-26). One instance (`max_instances: 1`); the container sleeps after 15 minutes idle, so the first request after that pays a cold start (image boot). Startup migrations are off on both Workers (2026-10-28); databases are migrated by the `db-migrate.yml` workflow.
 - 2026-10-27: the account creates only `durable_object` scheduling-policy container applications, so `edge/api/src/index.ts` is its own Durable Object (no `@cloudflare/containers` helper). It starts the `api` image on `standard-1`, waits for `/health`, and proxies; one Durable Object (`primary`) still means one container, and the 15-minute idle stop is `setInactivityTimeout`.
 - Container disks are ephemeral. `backend/core/storage.py` mirrors durable files to R2 and restores them on read (T055a); T040b (deploy) still depends on T055b, the bucket and its secrets.
 - Clef vision cost/latency; flag stays off until evaluation.

@@ -77,7 +77,7 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
   - depends_on: [T001]
   - [x] T050a Pass `DATABASE_URL` and `SECRET_KEY` from Worker secrets into the container, and answer 503 without starting it when either is unset (code).
     - depends_on: [T001]
-  - [ ] T050b Create the Neon staging branch and set its pooled connection string (`sslmode=require`) as the `edge/api` `DATABASE_URL` secret; the container's first start runs `alembic upgrade head` (operator).
+  - [ ] T050b Create the Neon staging branch and set its pooled connection string (`sslmode=require`) as the `edge/api` `DATABASE_URL` secret; migrate it with the `db-migrate.yml` workflow (target `staging`); container starts do not migrate (operator).
     - depends_on: [T050a]
 
 - [ ] T055 Keep evidence uploads, exports and design packs in durable object storage (R2), not on the container's disk. Container disks are wiped when the instance sleeps, restarts or redeploys, and `backend/evidence/routes.py`, `backend/export/`, `backend/publishing/routes.py` and `backend/canon/fulfillment.py` write under `export_dir` / `export_store_root` and record local paths in Postgres.

@@ -103,7 +103,7 @@ T040b depends on T055b in `tasks.md`.
 2. From `edge/api/`, store it as a Worker secret (never in git): `npx wrangler secret put DATABASE_URL`.
 3. Store a fresh signing key the same way: `npx wrangler secret put SECRET_KEY`
    (for example the output of `python3 -c "import secrets; print(secrets.token_urlsafe(48))"`).
-4. Migrations run on the container's first start (`alembic upgrade head`); no D1 and no new schema.
+4. Migrations do not run on container start (startup migrations are opt-in and off on both Workers). Run the `db-migrate.yml` workflow for the target (`staging` or `prod`) before deploying code that adds a migration; no D1 and no new schema.
 
 ### T040b checklist (operator)
 
