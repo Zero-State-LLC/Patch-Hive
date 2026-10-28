@@ -154,9 +154,15 @@ class ConnectionIR:
     to_module_id: int
     to_port: str
     cable_type: str  # "audio", "cv", "gate", "clock"
+    # "declared": both ends are jacks the modules declare; "generic": a role name used
+    # because a module's jacks are not on file (spec 001 OQ-04). None before resolution.
+    port_status: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        return asdict(self)
+        data = asdict(self)
+        if data["port_status"] is None:
+            del data["port_status"]
+        return data
 
 
 @dataclass

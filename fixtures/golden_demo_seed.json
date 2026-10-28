@@ -62,7 +62,7 @@
     "allow_humor": true
   },
   "expected_hashes": {
-    "run_fingerprint": "a64a2f44d28edef9db21676ecc6203ad6dfbc0db86f29d9214c5a809ac68f2cb",
+    "run_fingerprint": "8a9d64fb7a8f8eac3ccc97b797379255d3348cc7b3b3f01b5f7da748fb27ece7",
     "patch_count": 14
   }
 }
