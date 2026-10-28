@@ -16,6 +16,22 @@ Recorded 2026-10-26:
 - API origin: Cloudflare Containers (`edge/api`), not Tunnel.
 - Database: Neon staging branch, pooled endpoint, connected directly from the container (FR-003 amendment approved 2026-10-26).
 
+Superseded 2026-10-27 (owner delegated the staging decision; see
+`docs/evidence/STAGING_HOST_PLAN.md`): the public pair is production and a second pair is staging.
+
+| | Production | Staging |
+| --- | --- | --- |
+| Frontend | `patch-hive.com` (`patchhive-frontend`) | `staging.patch-hive.com` (`patchhive-frontend-staging`) |
+| API | `api.patch-hive.com` (`patchhive-api`) | `api-staging.patch-hive.com` (`patchhive-api-staging`) |
+| `ENVIRONMENT` | `production` | `staging` |
+| Database | Neon `main` (pooled) | Neon `staging` (pooled) |
+| R2 | `patchhive-prod-files`, prefix `prod` | `patchhive-staging-files`, prefix `staging` |
+| Feature flags | none forwarded; all default off | set in `env.staging.vars` for 007/008 drills |
+| Deploy | `npx wrangler deploy` | `npx wrangler deploy --env staging` |
+
+Secrets are per Worker: repeat each `wrangler secret put` with `--env staging` for staging.
+The readiness machine and FR-003 describe the staging pair.
+
 Still owned by the operator and NOT set in code or config:
 
 - Cloudflare account id and the Workers AI API token used by Clef.

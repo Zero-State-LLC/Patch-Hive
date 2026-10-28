@@ -24,11 +24,17 @@ Deploy the Vite frontend to Cloudflare Pages, expose a public API hostname (Tunn
 ### FR-001 Edge frontend
 The Vite build MUST deploy to Cloudflare Pages. Custom domain MUST be attached. `VITE_API_BASE_URL` MUST point at the public API hostname.
 
+Amended 2026-10-27: the SPA ships on Workers static assets (PR #55), not Pages. Two frontend Workers exist: `patch-hive.com` (production) and `staging.patch-hive.com` (staging, `noindex`). Each build points `VITE_API_BASE_URL` at its own API.
+
 ### FR-002 Public API surface
 A hostname (`api.patch-hive.com` or operator-chosen) MUST serve the existing FastAPI surface. CORS MUST be restricted to the exact frontend origin. `ALLOW_PRODUCTION_PAYMENTS` MUST remain false.
 
+Amended 2026-10-27: `api.patch-hive.com` is production (`ENVIRONMENT=production`, no feature flags). `api-staging.patch-hive.com` is staging (`ENVIRONMENT=staging`), where the 007 enablement and 008 walkthrough run. Each allows only its own frontend origin.
+
 ### FR-003 Database continuity
 The API MUST use the Neon staging branch through its pooled connection string. No D1 schema migration.
+
+Amended 2026-10-27: this requirement applies to the staging API (`api-staging.patch-hive.com`). The production API uses Neon `main` through its pooled endpoint.
 
 Amended 2026-10-26, approved by the operator 2026-10-26: this previously required Hyperdrive. Hyperdrive's connection string is only reachable from the Workers runtime, and the FastAPI container's Postgres driver connects over TCP from inside the container, so Hyperdrive cannot serve it. Hyperdrive stays available for any future Worker-side database client.
 

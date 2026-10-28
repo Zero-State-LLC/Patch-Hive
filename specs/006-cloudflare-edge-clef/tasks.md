@@ -37,14 +37,16 @@ States: IDLE → INVOKING → {SUCCESS | TIMEOUT | MALFORMED | UNAVAILABLE} → 
 Only SUCCESS emits a DecisionPacket. Fail states produce none. No Clef types escape the adapter.
 
 ## Edge deployment readiness state machine
-States: UNCONFIGURED → PAGES_ATTACHED → API_HOSTNAME_LIVE → HYPERDRIVE_BOUND → CLEF_FLAGGED → GATES_PASSED → BETA_READY
+Renamed 2026-10-27 from PAGES_ATTACHED / HYPERDRIVE_BOUND to match FR-001 (Workers) and the FR-003 amendment. The machine tracks the staging pair (`staging.patch-hive.com`, `api-staging.patch-hive.com`); see docs/evidence/STAGING_HOST_PLAN.md.
+
+States: UNCONFIGURED → FRONTEND_ATTACHED → API_HOSTNAME_LIVE → DATABASE_BOUND → CLEF_FLAGGED → GATES_PASSED → BETA_READY
 
 | From | Event | Guard | To |
 |------|-------|-------|----|
-| UNCONFIGURED | pages_deployed | build output + custom domain | PAGES_ATTACHED |
-| PAGES_ATTACHED | api_published | CORS exact origin + health ok | API_HOSTNAME_LIVE |
-| API_HOSTNAME_LIVE | hyperdrive_bound | Neon staging string | HYPERDRIVE_BOUND |
-| HYPERDRIVE_BOUND | clef_adapter_wired | flag default off | CLEF_FLAGGED |
+| UNCONFIGURED | frontend_deployed | build output + custom domain | FRONTEND_ATTACHED |
+| FRONTEND_ATTACHED | api_published | CORS exact origin + ENVIRONMENT=staging + health ok | API_HOSTNAME_LIVE |
+| API_HOSTNAME_LIVE | database_bound | Neon staging pooled endpoint | DATABASE_BOUND |
+| DATABASE_BOUND | clef_adapter_wired | flag default off | CLEF_FLAGGED |
 | CLEF_FLAGGED | gates_pass | STAGING_HOST_PLAN + evaluation receipt | GATES_PASSED |
 | GATES_PASSED | operator_approve | checklist receipts | BETA_READY |
 

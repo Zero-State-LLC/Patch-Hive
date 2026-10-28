@@ -46,7 +46,9 @@ artifact is rejected and the state does not change.
 4. Approve (T040) with `approve_thresholds(proposal, approved_by=..., approved_at=<tz-aware>, explicit_sign_off=True)`.
 5. Authorize staging (T050) with `enable_staging(approval=..., run=..., settings_obj=<staging Settings>, target_environment="staging")`.
    Then set `ENABLE_CLEF_PROVIDER=true` (and `DECISION_PROVIDER=clef`) in the staging
-   environment only. This repository never sets the flag.
+   environment only: `env.staging.vars` in `edge/api/wrangler.jsonc` (the staging API on
+   `api-staging.patch-hive.com`), with the Clef credentials as `--env staging` secrets.
+   The production Worker never forwards these. This repository never sets the flag.
 6. Pin the receipt (T060) with `pin_receipt(..., source_commit_sha=<git SHA>)` and
    retain it. Its `receipt_sha256` is accepted by the Spec 006 edge readiness
    `gates_pass` guard as the evaluation receipt SHA.

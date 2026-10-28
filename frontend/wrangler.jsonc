@@ -1,7 +1,9 @@
 {
   // Static SPA on Cloudflare Workers; worker/index.ts only redirects www to the apex.
-  // Build with VITE_API_BASE_URL set to the public API, then `npx wrangler deploy`.
-  // Set VITE_ACCOUNTS_OPEN=true (.env.production) only once that API is live.
+  // Production: `npm run build && npx wrangler deploy` (.env.production, api.patch-hive.com).
+  // Staging: `npm run build:staging && npx wrangler deploy --env staging`
+  // (.env.staging, api-staging.patch-hive.com). Set VITE_ACCOUNTS_OPEN=true in the
+  // matching .env file only once that API is live.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "patchhive-frontend",
   "compatibility_date": "2026-10-01",
@@ -19,5 +21,18 @@
     "not_found_handling": "single-page-application",
     // Let the Worker see www requests before assets match them.
     "run_worker_first": true
+  },
+  "env": {
+    "staging": {
+      // Asks search engines not to index it (worker/index.ts adds X-Robots-Tag).
+      "name": "patchhive-frontend-staging",
+      "routes": [{ "pattern": "staging.patch-hive.com", "custom_domain": true }],
+      "assets": {
+        "directory": "./dist",
+        "binding": "ASSETS",
+        "not_found_handling": "single-page-application",
+        "run_worker_first": true
+      }
+    }
   }
 }

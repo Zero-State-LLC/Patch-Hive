@@ -1,5 +1,48 @@
 # Named staging host plan
 
+## Decision, 2026-10-27
+
+The owner delegated this choice ("you can handle"). Chosen: **E. Cloudflare Workers, a
+second pair beside production**, superseding the A to D options below and the 2026-10-26
+note that put the public API on the Neon staging branch.
+
+| | Production | Staging |
+| --- | --- | --- |
+| Frontend | `https://patch-hive.com` | `https://staging.patch-hive.com` (`noindex`) |
+| API | `https://api.patch-hive.com` | `https://api-staging.patch-hive.com` |
+| `ENVIRONMENT` | `production` | `staging` |
+| Database | Neon `main` (`PATCHHIVE_DATABASE_URL_PROD`) | Neon `staging` (`PATCHHIVE_DATABASE_URL_STAGING`) |
+| R2 | `patchhive-prod-files` / `prod` | `patchhive-staging-files` / `staging` |
+| Feature flags | none; every flag at its default (off) | set in `edge/api/wrangler.jsonc` `env.staging.vars` |
+
+Why:
+
+- Spec 007 enablement refuses unless the target is `staging` with no production traffic,
+  and the 008 walkthrough seeds demo accounts into its target database. Neither can hold on
+  the public host, so the public host has to be production.
+- The prod catalog load (003 T027) only matters if a host reads Neon `main`.
+- With `ENVIRONMENT=staging` on the public host, hosted-only safeguards (the Stripe webhook
+  secret, placeholder `SECRET_KEY`) were weaker there than they should be.
+- Same platform as production, so a staging pass says something about production.
+
+Config: `edge/api/wrangler.jsonc` (`env.staging`), `edge/api/src/index.ts` (forwards
+feature flags and provider credentials only outside production),
+`frontend/wrangler.jsonc` (`env.staging`), `frontend/.env.staging`
+(`npm run build:staging`).
+
+Operator steps (none of them done yet):
+
+1. Create the R2 bucket `patchhive-prod-files` (staging already has `patchhive-staging-files`).
+2. Production API secrets: `DATABASE_URL` = Neon `main` pooled endpoint, `SECRET_KEY` (32+
+   random bytes), the R2 S3 values; `STRIPE_WEBHOOK_SECRET` when Stripe is wired.
+3. Staging API secrets: the same names with `--env staging`, `DATABASE_URL` = Neon
+   `staging` pooled endpoint, and a different `SECRET_KEY`.
+4. Deploy `edge/api` twice (`npx wrangler deploy`, then `--env staging`) and the frontend
+   twice (`npm run build && npx wrangler deploy`; `npm run build:staging && npx wrangler deploy --env staging`).
+5. Run `db-migrate.yml` for each target before its API serves traffic.
+
+The rest of this file is the earlier plan, kept for the record.
+
 **Date:** 2026-07-21  
 **Baseline main:** `7727908` (post PR #82 legacy_pipeline unit migration)  
 **Authority:** ops design + local Compose OBSERVED; **no cloud host provisioned in this pass**  
@@ -71,9 +114,9 @@ Class: **local OBSERVED** when run on a laptop — still **not** a named multi-t
 | `docker-compose.staging.yml` checked in | **DONE** |
 | Local Docker staging stack (db+backend+FE) | **PASS** — smoke scripts + prior receipts |
 | Backup/restore local drill | **PASS** when `scripts/staging/smoke.*` completes |
-| Operator-chosen public/private hostname | **NOT_PERFORMED** — see [DOMAIN_CUTOVER_CHECKLIST.md](DOMAIN_CUTOVER_CHECKLIST.md) |
+| Operator-chosen public/private hostname | **DECIDED 2026-10-27**: `staging.patch-hive.com` / `api-staging.patch-hive.com` (see Decision above); not deployed |
 | Production deploy | **NOT_PERFORMED** |
 
 ## Operator action required
 
-Reply with **A/B/C/D** (or hostname). Until then agents must not invent cloud credentials or claim staging is live.
+Decided 2026-10-27 (see the top of this file). Agents still must not invent cloud credentials or claim staging is live until the operator steps there are done and receipted.
