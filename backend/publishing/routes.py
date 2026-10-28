@@ -240,13 +240,13 @@ def create_publication(
         publisher_user_id=current_user.id,
         slug=slug,
         visibility=payload.visibility,
-        status="published",
+        # Spec 002 lifecycle: a new publication starts as a draft; the owner publishes it.
+        status="draft",
         allow_download=payload.allow_download,
         allow_remix=payload.allow_remix,
         title=payload.title,
         description=payload.description,
         cover_image_url=payload.cover_image_url,
-        published_at=datetime.utcnow(),
     )
     db.add(publication)
     db.commit()
@@ -279,8 +279,8 @@ def update_publication(
         # admin hid (it carries a moderation audit), stays as moderation left it.
         if publication.status == "removed" or publication.moderation_audit_id is not None:
             raise HTTPException(status_code=409, detail="PUBLICATION_UNDER_MODERATION")
-        if publication.status not in {"published", "hidden"}:
-            raise HTTPException(status_code=400, detail="Invalid status transition")
+        if (publication.status, status_value) not in OWNER_TRANSITIONS:
+            raise HTTPException(status_code=409, detail="INVALID_TRANSITION")
         publication.status = status_value
         if status_value == "published" and publication.published_at is None:
             publication.published_at = datetime.utcnow()
@@ -292,6 +292,17 @@ def update_publication(
     db.commit()
     db.refresh(publication)
     return publication
+
+
+# Owner status changes allowed by the spec 002 publication lifecycle (from, to). Any
+# other pair is rejected and changes nothing. Setting the current status again is a no-op.
+OWNER_TRANSITIONS = {
+    ("draft", "published"),
+    ("published", "hidden"),
+    ("hidden", "published"),
+    ("published", "published"),
+    ("hidden", "hidden"),
+}
 
 
 @router.get("/me/publications", response_model=PublicationListResponse)
@@ -442,7 +453,8 @@ def report_publication(
 ):
     """Report a publication."""
     publication = db.query(Publication).filter(Publication.slug == slug).first()
-    if not publication or publication.status == "removed":
+    # Only a published publication is publicly readable, so only it can be reported.
+    if not publication or publication.status != "published":
         raise HTTPException(status_code=404, detail="Publication not found")
 
     report = PublicationReport(
@@ -501,6 +513,8 @@ def hide_publication(
     publication = db.query(Publication).filter(Publication.id == publication_id).first()
     if not publication:
         raise HTTPException(status_code=404, detail="Publication not found")
+    if publication.status not in ("published",):
+        raise HTTPException(status_code=409, detail="INVALID_TRANSITION")
 
     audit = _audit_moderation(
         db,
@@ -528,6 +542,8 @@ def remove_publication(
     publication = db.query(Publication).filter(Publication.id == publication_id).first()
     if not publication:
         raise HTTPException(status_code=404, detail="Publication not found")
+    if publication.status not in ("published", "hidden"):
+        raise HTTPException(status_code=409, detail="INVALID_TRANSITION")
 
     audit = _audit_moderation(
         db,
