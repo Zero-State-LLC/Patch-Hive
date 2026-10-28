@@ -5,7 +5,7 @@ Tracks exports, credits ledger entries, licenses, and referrals.
 
 from datetime import datetime
 
-from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, JSON, String, Text, UniqueConstraint, text
 from sqlalchemy.orm import relationship
 
 from core.database import Base
@@ -86,6 +86,17 @@ class Referral(Base):
         "User", foreign_keys=[referred_user_id], backref="monetization_referrals_received"
     )
     first_purchase = relationship("CreditsLedger", foreign_keys=[first_purchase_id])
+
+    # At most one reward per referred user, even under concurrent purchases.
+    __table_args__ = (
+        Index(
+            "uq_referrals_one_reward",
+            "referred_user_id",
+            unique=True,
+            postgresql_where=text("status = 'Rewarded'"),
+            sqlite_where=text("status = 'Rewarded'"),
+        ),
+    )
 
 
 class CreditsLedger(Base):

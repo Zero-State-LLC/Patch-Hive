@@ -229,7 +229,8 @@ class CanonicalExportRecord(Base):
     license = Column(String(100), nullable=False)
     credit_cost = Column(Integer, nullable=False)
     ledger_entry_id = Column(String(64), nullable=True, unique=True)
-    idempotency_key = Column(String(128), nullable=False, unique=True)
+    # Unique per user (UniqueConstraint below): one user's key never finds another's export.
+    idempotency_key = Column(String(128), nullable=False)
     status = Column(String(20), nullable=False, default="queued")
     created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
     # Design Engine seal + fulfillment (nullable for legacy rows; KD-13)
@@ -253,7 +254,10 @@ class CanonicalExportRecord(Base):
         nullable=True,
         index=True,
     )
-    __table_args__ = (CheckConstraint("credit_cost >= 0", name="ck_canonical_exports_cost"),)
+    __table_args__ = (
+        CheckConstraint("credit_cost >= 0", name="ck_canonical_exports_cost"),
+        UniqueConstraint("user_id", "idempotency_key", name="uq_canonical_exports_user_idempotency"),
+    )
 
 
 class CanonicalCreditLedgerEntryRecord(Base):

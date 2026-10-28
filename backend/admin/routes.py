@@ -122,6 +122,9 @@ def update_user_role(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     previous = user.role
+    # Ops may manage roles, but only an Admin may grant Admin or take it away.
+    if "Admin" in (previous, payload.role) and current_user.role != "Admin":
+        raise HTTPException(status_code=403, detail="Only an Admin can grant or remove Admin")
     user.role = payload.role
     log_admin_action(
         db,

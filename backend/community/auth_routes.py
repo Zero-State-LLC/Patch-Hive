@@ -4,14 +4,16 @@ Legacy social surfaces (votes, comments, feed) stay behind ENABLE_LEGACY_SOCIAL.
 Login, registration, and profile remain available in the default MVP surface.
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from account.models import Referral
 from account.services import ensure_referral_code
-from core import create_access_token, get_db, get_password_hash, settings, verify_password
+from core import create_access_token, get_db, get_password_hash, settings
+from core.security import burn_password_check, verify_and_update_password
 from monetization.referrals import create_referral, generate_referral_code
 
+from . import login_guard
 from .auth import require_auth
 from .models import User
 from .schemas import (
@@ -86,11 +88,31 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/auth/login", response_model=TokenResponse)
-def login(request: LoginRequest, db: Session = Depends(get_db)):
-    """Login and get access token."""
+def login(request: LoginRequest, http_request: Request, db: Session = Depends(get_db)):
+    """Login and get access token.
+
+    Every failure, whether an unknown name, a wrong password or a locked account,
+    answers the same 401 after the same work, so none reveals that an account exists.
+    """
+    if not login_guard.allow_attempt(login_guard.client_address(http_request)):
+        raise HTTPException(status_code=429, detail="Too many sign-in attempts; try again shortly")
+    invalid = HTTPException(status_code=401, detail="Invalid credentials")
     user = db.query(User).filter(User.username == request.username).first()
-    if not user or not verify_password(request.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if user is None:
+        burn_password_check(request.password)
+        raise invalid
+    if login_guard.is_locked(user):
+        burn_password_check(request.password)
+        raise invalid
+    valid, new_hash = verify_and_update_password(request.password, user.password_hash)
+    if not valid:
+        login_guard.record_failure(db, user)
+        db.commit()
+        raise invalid
+    login_guard.record_success(user)
+    if new_hash:
+        user.password_hash = new_hash  # upgrade a bcrypt or pbkdf2 hash to Argon2id
+    db.commit()
 
     token = create_access_token({"user_id": user.id, "username": user.username})
     return TokenResponse(access_token=token, user=user)

@@ -68,7 +68,8 @@ def request_export(
 
     existing = session.scalar(
         select(CanonicalExportRecord).where(
-            CanonicalExportRecord.idempotency_key == request.idempotency_key
+            CanonicalExportRecord.idempotency_key == request.idempotency_key,
+            CanonicalExportRecord.user_id == request.user_id,
         )
     )
     if existing is not None:
@@ -79,7 +80,8 @@ def request_export(
     # Re-check after acquiring the user lock in case a concurrent writer won.
     existing = session.scalar(
         select(CanonicalExportRecord).where(
-            CanonicalExportRecord.idempotency_key == request.idempotency_key
+            CanonicalExportRecord.idempotency_key == request.idempotency_key,
+            CanonicalExportRecord.user_id == request.user_id,
         )
     )
     if existing is not None:
@@ -87,8 +89,10 @@ def request_export(
     if credit_balance(session, request.user_id) < request.credit_cost:
         raise ExportBoundaryError("INSUFFICIENT_CREDITS")
 
-    export_id = _stable_id("export", request.idempotency_key)
-    ledger_id = _stable_id("ledger", f"export:{request.idempotency_key}")
+    # Ids and the debit key are scoped to the user, as the idempotency key is.
+    scoped_key = f"{request.user_id}:{request.idempotency_key}"
+    export_id = _stable_id("export", scoped_key)
+    ledger_id = _stable_id("ledger", f"export:{scoped_key}")
     export = CanonicalExportRecord(
         id=export_id,
         user_id=request.user_id,
@@ -108,7 +112,7 @@ def request_export(
         user_id=request.user_id,
         delta=-request.credit_cost,
         entry_type="debit",
-        idempotency_key=f"export:{request.idempotency_key}",
+        idempotency_key=f"export:{_stable_id('debit', scoped_key)}",
         export_id=export_id,
         created_at=request.requested_at,
     )
@@ -122,7 +126,8 @@ def request_export(
     except IntegrityError:
         winner = session.scalar(
             select(CanonicalExportRecord).where(
-                CanonicalExportRecord.idempotency_key == request.idempotency_key
+                CanonicalExportRecord.idempotency_key == request.idempotency_key,
+                CanonicalExportRecord.user_id == request.user_id,
             )
         )
         if winner is not None:
