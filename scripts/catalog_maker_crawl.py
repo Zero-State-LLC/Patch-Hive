@@ -139,6 +139,15 @@ SIGNED = {
     "power_neg12v_ma": r"(?<![\w.])[-\u2212\u2013]\s?(\d{1,4}(?:\.\d+)?)\s*mA\b(?=[^.]{0,40}(?:[-\u2212\u2013]\s*12|@\s*\+?\s*12)\s*V)",
 }
 STYLES = {"rail": RAIL_FIRST, "value": VALUE_FIRST, "signed": SIGNED}
+# Draws that depend on a board jumper (+5V from the supply or made on board from +12V).
+JUMPER = re.compile(
+    r"\b5\s*V\s*SEL\b"  # 4ms: "5VSEL Jumper set to INT"
+    r"|\bjumpers?\b[^.)]{0,60}?\b(?:internal|external|int|ext)\b[^.)]{0,20}?\b5\s*(?:V|volt)"  # "selecting external 5V"
+    r"|\bjumpers?\s+(?:is\s+)?set\s+to\s+\+?\s*(?:5|12)\s*V\b"  # "jumper set to +12V"
+    r"|\bjumpers?\s+selects?\s+using\s+\+?\s*5\s*V"  # "A jumper selects using +5V"
+    r"|\+\s*(?:5|12)\s*V\s+jumper",  # Velectronic: "The +5V jumper selected"
+    re.I,
+)
 # Both rails named once, then both values: "+12v/-12v Current: 90mA/30mA", "20mA, 10mA (+12V / -12V)".
 PAIRED = [
     (r"\+\s*12\s*V?\s*/\s*[-\u2212\u2013]\s*12\s*V?\D{0,25}?(\d{1,4}(?:\.\d+)?)\s*mA\s*/\s*(\d{1,4}(?:\.\d+)?)\s*mA", 1, 2),
@@ -165,9 +174,16 @@ def rails(text: str) -> dict[str, float | None]:
     out: dict[str, float | None] = dict.fromkeys(RAIL)
     if first:
         pats = STYLES[min(first, key=first.get)]
+        near_jumper = False
         for field, pat in pats.items():
             m = re.search(pat, text, re.I)
             out[field] = float(m.group(1)) if m else None
+            if m and field != "power_neg12v_ma":
+                near_jumper |= bool(JUMPER.search(text[max(0, m.start() - 250) : m.end() + 250]))
+        if near_jumper:
+            # A jumper moves load between +12V and +5V (4ms: "88mA with jumper selecting
+            # internal 5V"); no single pair is the module's draw, so neither is kept.
+            out["power_12v_ma"] = out["power_5v_ma"] = None
     return out
 
 
@@ -469,9 +485,14 @@ def extract(brand: str, url: str, body: str, method: str) -> dict | None:
     units = {"hp": r"(?:HP|TE)\b", "power_12v_ma": r"mA", "power_neg12v_ma": r"mA", "power_5v_ma": r"mA", "depth_mm": r"(?:mm|in|inch)"}
     out: dict = {}
     sources: dict = {}
+    # A 5V-select jumper makes +12V and +5V configuration-dependent: the model may not
+    # supply them either (Dave Jones O'Tool: "80ma +12v ... -or- 12ma +12v 70ma +5v").
+    jumpered = JUMPER.search(text) is not None
     for field, unit in units.items():
         mv, dv = res.get(field), det.get(field)
         val = None
+        if jumpered and field in ("power_12v_ma", "power_5v_ma"):
+            mv = dv = None
         if isinstance(mv, (int, float)) and mv >= 0:
             if dv is not None and float(mv) == float(dv):
                 val = float(mv)

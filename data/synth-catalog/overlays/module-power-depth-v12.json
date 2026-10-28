@@ -1,0 +1,2537 @@
+{
+ "dataset_version": "module-power-depth-overlay-v12",
+ "generated_from": "hermes-research/maker-crawl-v2.json (brands: 4ms Company, Erica Synths, Pittsburgh Modular)",
+ "policy": "maker's own pages only; values regex-parsed or verbatim; no ModularGrid; insert-if-absent / fill-null; disagreements are flagged by the loader",
+ "count": 141,
+ "entries": [
+  {
+   "brand": "4ms Company",
+   "name": "Mesa",
+   "power_12v_ma": 180,
+   "power_neg12v_ma": 36,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=1112&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1112&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=1112&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1112&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Leveling EQ Amplifier",
+   "power_12v_ma": 120,
+   "power_neg12v_ma": 10,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=1109&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1109&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=1109&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1109&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "MetaModule",
+   "power_12v_ma": 290,
+   "power_neg12v_ma": 40,
+   "power_5v_ma": null,
+   "depth_mm": 25,
+   "source_url": "https://4mscompany.com/p.php?p=990&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=990&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=990&c=5",
+    "depth_mm": "https://4mscompany.com/p.php?p=990&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=990&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "MetaModule Audio Expander",
+   "power_12v_ma": 140,
+   "power_neg12v_ma": 25,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=1079&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1079&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=1079&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1079&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "MetaModule Wi-Fi Expander",
+   "power_12v_ma": 50,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 25,
+   "source_url": "https://4mscompany.com/p.php?p=1070&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1070&c=5",
+    "depth_mm": "https://4mscompany.com/p.php?p=1070&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1070&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "MetaModule Button Expander",
+   "power_12v_ma": 10,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=1089&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1089&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1089&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Catalyst Sequencer",
+   "power_12v_ma": 60,
+   "power_neg12v_ma": 25,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://4mscompany.com/p.php?p=1068&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1068&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=1068&c=5",
+    "depth_mm": "https://4mscompany.com/p.php?p=1068&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1068&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Catalyst Controller",
+   "power_12v_ma": 60,
+   "power_neg12v_ma": 25,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://4mscompany.com/p.php?p=1069&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1069&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=1069&c=5",
+    "depth_mm": "https://4mscompany.com/p.php?p=1069&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1069&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Sampler",
+   "power_12v_ma": 145,
+   "power_neg12v_ma": 41,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=1062&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1062&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=1062&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1062&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Looping Delay",
+   "power_12v_ma": 125,
+   "power_neg12v_ma": 45,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=1063&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1063&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=1063&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1063&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Shaped Dual EnvVCA",
+   "power_12v_ma": 255,
+   "power_neg12v_ma": 230,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=1040&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1040&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=1040&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1040&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "EnvVCA",
+   "power_12v_ma": 83,
+   "power_neg12v_ma": 81,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=1038&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1038&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=1038&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1038&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Dual EnvVCA",
+   "power_12v_ma": 156,
+   "power_neg12v_ma": 131,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=1043&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1043&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=1043&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1043&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Mini PEG",
+   "power_12v_ma": 55,
+   "power_neg12v_ma": 30,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=1049&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1049&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=1049&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1049&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "SCM Plus",
+   "power_12v_ma": 52,
+   "power_neg12v_ma": 15,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=1050&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=1050&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=1050&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=1050&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Ensemble Oscillator",
+   "power_12v_ma": 114,
+   "power_neg12v_ma": 45,
+   "power_5v_ma": 0,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=984&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=984&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=984&c=5",
+    "power_5v_ma": "https://4mscompany.com/p.php?p=984&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=984&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Percussion Interface + Expander",
+   "power_12v_ma": 104,
+   "power_neg12v_ma": 65,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=992&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=992&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=992&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=992&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Spherical Wavetable Navigator",
+   "power_12v_ma": null,
+   "power_neg12v_ma": 30,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=820&c=5",
+   "sources": {
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=820&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=820&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Listen Four",
+   "power_12v_ma": 70,
+   "power_neg12v_ma": 62,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=813&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=813&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=813&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=813&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Listen Four Quarters",
+   "power_12v_ma": 107,
+   "power_neg12v_ma": 101,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=818&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=818&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=818&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=818&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Listen IO",
+   "power_12v_ma": 62,
+   "power_neg12v_ma": 55,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=889&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=889&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=889&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=889&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Dual Looping Delay",
+   "power_12v_ma": null,
+   "power_neg12v_ma": 48,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=709&c=5",
+   "sources": {
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=709&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=709&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Spectral Multiband Resonator",
+   "power_12v_ma": null,
+   "power_neg12v_ma": 28,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://4mscompany.com/p.php?p=707&c=5",
+   "sources": {
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=707&c=5",
+    "depth_mm": "https://4mscompany.com/p.php?p=707&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=707&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Tapographic Delay",
+   "power_12v_ma": 125,
+   "power_neg12v_ma": 32,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=790&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=790&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=790&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=790&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Stereo Triggered Sampler",
+   "power_12v_ma": 145,
+   "power_neg12v_ma": 39,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=783&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=783&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=783&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=783&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "WAV Recorder",
+   "power_12v_ma": 112,
+   "power_neg12v_ma": 12,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=811&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=811&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=811&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=811&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms QCD",
+   "power_12v_ma": null,
+   "power_neg12v_ma": 40,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=620&c=5",
+   "sources": {
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=620&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=620&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms QCD Expander",
+   "power_12v_ma": 44,
+   "power_neg12v_ma": 30,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=621&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=621&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=621&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=621&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms QPLFO",
+   "power_12v_ma": null,
+   "power_neg12v_ma": 73,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=600&c=5",
+   "sources": {
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=600&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=600&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms PEG",
+   "power_12v_ma": null,
+   "power_neg12v_ma": 35,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=541&c=5",
+   "sources": {
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=541&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=541&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms VCA Matrix",
+   "power_12v_ma": null,
+   "power_neg12v_ma": 110,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=543&c=5",
+   "sources": {
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=543&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=543&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms Rotating Clock Divider",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=567&c=5",
+   "sources": {},
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=567&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms RCD Breakout",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=514&c=5",
+   "sources": {},
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=514&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms Shuffling Clock Multiplier",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=568&c=5",
+   "sources": {},
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=568&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Listen Up",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=933&c=5",
+   "sources": {},
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=933&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms SCM Breakout",
+   "power_12v_ma": 14,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 25,
+   "source_url": "https://4mscompany.com/p.php?p=576&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=576&c=5",
+    "depth_mm": "https://4mscompany.com/p.php?p=576&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=576&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms BUFF MULT",
+   "power_12v_ma": 13,
+   "power_neg12v_ma": 13,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=597&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=597&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=597&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=597&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Shifting Inverting Signal Mingler",
+   "power_12v_ma": 51,
+   "power_neg12v_ma": 51,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://4mscompany.com/p.php?p=679&c=5",
+   "sources": {
+    "power_12v_ma": "https://4mscompany.com/p.php?p=679&c=5",
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=679&c=5"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=679&c=5"
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms Eurorack Swash",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 34,
+   "source_url": "https://4mscompany.com/p.php?p=562&c=21",
+   "sources": {
+    "depth_mm": "https://4mscompany.com/p.php?p=562&c=21"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://4mscompany.com/p.php?p=562&c=21"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Perkons Voice",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/perkons-voice-3246",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/perkons-voice-3246"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/perkons-voice-3246"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Plasma Drive",
+   "power_12v_ma": 135,
+   "power_neg12v_ma": 87,
+   "power_5v_ma": null,
+   "depth_mm": 50,
+   "source_url": "https://www.ericasynths.lv/plasma-drive-426/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/plasma-drive-426/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/plasma-drive-426/",
+    "depth_mm": "https://www.ericasynths.lv/plasma-drive-426/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/plasma-drive-426/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Sample Drum",
+   "power_12v_ma": 65,
+   "power_neg12v_ma": 2,
+   "power_5v_ma": null,
+   "depth_mm": 30,
+   "source_url": "https://www.ericasynths.lv/sample-drum-427/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/sample-drum-427/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/sample-drum-427/",
+    "depth_mm": "https://www.ericasynths.lv/sample-drum-427/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/sample-drum-427/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Link",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://www.ericasynths.lv/link-369/",
+   "sources": {},
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/link-369/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Hexinverter Mindphaser",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://www.ericasynths.lv/hexinverter-mindphaser-2716/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/hexinverter-mindphaser-2716/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/hexinverter-mindphaser-2716/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Black Stereo Delay 2",
+   "power_12v_ma": 120,
+   "power_neg12v_ma": 39,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/black-stereo-delay2-2707/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/black-stereo-delay2-2707/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/black-stereo-delay2-2707/",
+    "depth_mm": "https://www.ericasynths.lv/black-stereo-delay2-2707/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/black-stereo-delay2-2707/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Bass Drum2",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/bass-drum2-1768/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/bass-drum2-1768/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/bass-drum2-1768/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Fusion Delay/Flanger/Vintage Ensemble",
+   "power_12v_ma": 35,
+   "power_neg12v_ma": 170,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/fusion-delay-flanger-vintage-ensemble-36/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/fusion-delay-flanger-vintage-ensemble-36/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/fusion-delay-flanger-vintage-ensemble-36/",
+    "depth_mm": "https://www.ericasynths.lv/fusion-delay-flanger-vintage-ensemble-36/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/fusion-delay-flanger-vintage-ensemble-36/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Fusion Modulator",
+   "power_12v_ma": 125,
+   "power_neg12v_ma": 74,
+   "power_5v_ma": null,
+   "depth_mm": 36,
+   "source_url": "https://www.ericasynths.lv/fusion-modulator-909/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/fusion-modulator-909/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/fusion-modulator-909/",
+    "depth_mm": "https://www.ericasynths.lv/fusion-modulator-909/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/fusion-modulator-909/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Black Sequencer",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 25,
+   "source_url": "https://www.ericasynths.lv/black-sequencer-546/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/black-sequencer-546/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/black-sequencer-546/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Black Stereo Reverb",
+   "power_12v_ma": 120,
+   "power_neg12v_ma": 39,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/black-stereo-reverb-2710/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/black-stereo-reverb-2710/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/black-stereo-reverb-2710/",
+    "depth_mm": "https://www.ericasynths.lv/black-stereo-reverb-2710/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/black-stereo-reverb-2710/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Black Spring Reverb",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 30,
+   "source_url": "https://www.ericasynths.lv/black-spring-reverb-545/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/black-spring-reverb-545/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/black-spring-reverb-545/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Black Hole DSP 2",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/black-hole-dsp2-334/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/black-hole-dsp2-334/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/black-hole-dsp2-334/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Black Output V2",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/black-output-v2-71/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/black-output-v2-71/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/black-output-v2-71/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Black Octasource",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 25,
+   "source_url": "https://www.ericasynths.lv/black-octasource-47/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/black-octasource-47/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/black-octasource-47/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Black VCO2",
+   "power_12v_ma": 71,
+   "power_neg12v_ma": 62,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/black-vco2-1069/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/black-vco2-1069/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/black-vco2-1069/",
+    "depth_mm": "https://www.ericasynths.lv/black-vco2-1069/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/black-vco2-1069/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Black Joystick 2",
+   "power_12v_ma": 71,
+   "power_neg12v_ma": 20,
+   "power_5v_ma": null,
+   "depth_mm": 30,
+   "source_url": "https://www.ericasynths.lv/black-joystick2-1221/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/black-joystick2-1221/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/black-joystick2-1221/",
+    "depth_mm": "https://www.ericasynths.lv/black-joystick2-1221/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/black-joystick2-1221/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Black Quad VCA2",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/black-quad-vca2-1070/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/black-quad-vca2-1070/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/black-quad-vca2-1070/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Pico VCA2",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/pico-vca2-1678/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/pico-vca2-1678/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/pico-vca2-1678/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Pico Drum2",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/pico-drum2-933/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/pico-drum2-933/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/pico-drum2-933/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Pico Drive",
+   "power_12v_ma": 29,
+   "power_neg12v_ma": 29,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/pico-drive-908/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/pico-drive-908/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/pico-drive-908/",
+    "depth_mm": "https://www.ericasynths.lv/pico-drive-908/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/pico-drive-908/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Pico Mixer",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/pico-mixer-501/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/pico-mixer-501/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/pico-mixer-501/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Pico DSP",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/pico-dsp-21/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/pico-dsp-21/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/pico-dsp-21/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Pico Quant",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/pico-quant-3/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/pico-quant-3/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/pico-quant-3/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Pico VCO2",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/pico-vco2-455/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/pico-vco2-455/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/pico-vco2-455/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Pico SEQ",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/pico-seq-14/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/pico-seq-14/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/pico-seq-14/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Pico RND",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/pico-rnd-29/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/pico-rnd-29/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/pico-rnd-29/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Pico Voice",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/pico-voice-9/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/pico-voice-9/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/pico-voice-9/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Pico VCO",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/pico-vco-7/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/pico-vco-7/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/pico-vco-7/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Pico Multi2",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/pico-multi2-462/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/pico-multi2-462/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/pico-multi2-462/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Hexinverter Mutant Bassdrum",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 20,
+   "source_url": "https://www.ericasynths.lv/hexinverter-mutant-bass-drum-3280/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/hexinverter-mutant-bass-drum-3280/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/hexinverter-mutant-bass-drum-3280/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Hexinverter Mutant Clap",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 20,
+   "source_url": "https://www.ericasynths.lv/hexinverter-mutant-clap-3278/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/hexinverter-mutant-clap-3278/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/hexinverter-mutant-clap-3278/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Hexinverter Mutant Hi-Hats",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 20,
+   "source_url": "https://www.ericasynths.lv/hexinverter-mutant-hihats-3279/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/hexinverter-mutant-hihats-3279/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/hexinverter-mutant-hihats-3279/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Hexinverter Mutant Snare",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 20,
+   "source_url": "https://www.ericasynths.lv/hexinverter-mutant-snare-3277/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/hexinverter-mutant-snare-3277/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/hexinverter-mutant-snare-3277/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Hexinverter Mutant Machine",
+   "power_12v_ma": 139,
+   "power_neg12v_ma": 115,
+   "power_5v_ma": null,
+   "depth_mm": 30,
+   "source_url": "https://www.ericasynths.lv/hexinverter-mutant-machine-2926/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/hexinverter-mutant-machine-2926/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/hexinverter-mutant-machine-2926/",
+    "depth_mm": "https://www.ericasynths.lv/hexinverter-mutant-machine-2926/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/hexinverter-mutant-machine-2926/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Hexinverter VCNO",
+   "power_12v_ma": 49,
+   "power_neg12v_ma": 39,
+   "power_5v_ma": null,
+   "depth_mm": 30,
+   "source_url": "https://www.ericasynths.lv/hexinverter-vcno-2718/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/hexinverter-vcno-2718/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/hexinverter-vcno-2718/",
+    "depth_mm": "https://www.ericasynths.lv/hexinverter-vcno-2718/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/hexinverter-vcno-2718/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Bassline",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/bassline-347/",
+   "sources": {
+    "depth_mm": "https://www.ericasynths.lv/bassline-347/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/bassline-347/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Drum Sequencer",
+   "power_12v_ma": 152,
+   "power_neg12v_ma": 56,
+   "power_5v_ma": null,
+   "depth_mm": 30,
+   "source_url": "https://www.ericasynths.lv/drum-sequencer-85/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/drum-sequencer-85/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/drum-sequencer-85/",
+    "depth_mm": "https://www.ericasynths.lv/drum-sequencer-85/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex+deepseek/deepseek-v4.1-flash",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/drum-sequencer-85/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Dual FX",
+   "power_12v_ma": 118,
+   "power_neg12v_ma": 61,
+   "power_5v_ma": null,
+   "depth_mm": 45,
+   "source_url": "https://www.ericasynths.lv/dual-fx-353/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/dual-fx-353/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/dual-fx-353/",
+    "depth_mm": "https://www.ericasynths.lv/dual-fx-353/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/dual-fx-353/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Hi-Hats D (pins)",
+   "power_12v_ma": 56,
+   "power_neg12v_ma": 35,
+   "power_5v_ma": null,
+   "depth_mm": 45,
+   "source_url": "https://www.ericasynths.lv/hi-hats-d-pins-362/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/hi-hats-d-pins-362/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/hi-hats-d-pins-362/",
+    "depth_mm": "https://www.ericasynths.lv/hi-hats-d-pins-362/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/hi-hats-d-pins-362/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Dual Drive",
+   "power_12v_ma": 58,
+   "power_neg12v_ma": 58,
+   "power_5v_ma": null,
+   "depth_mm": 50,
+   "source_url": "https://www.ericasynths.lv/dual-drive-343/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/dual-drive-343/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/dual-drive-343/",
+    "depth_mm": "https://www.ericasynths.lv/dual-drive-343/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex+deepseek/deepseek-v4.1-flash",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/dual-drive-343/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Drum Modulator",
+   "power_12v_ma": 86,
+   "power_neg12v_ma": 7,
+   "power_5v_ma": null,
+   "depth_mm": 45,
+   "source_url": "https://www.ericasynths.lv/drum-modulator-368/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/drum-modulator-368/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/drum-modulator-368/",
+    "depth_mm": "https://www.ericasynths.lv/drum-modulator-368/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex+deepseek/deepseek-v4.1-flash",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/drum-modulator-368/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Snare Drum",
+   "power_12v_ma": 37,
+   "power_neg12v_ma": 35,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://www.ericasynths.lv/snare-drum-320/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/snare-drum-320/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/snare-drum-320/",
+    "depth_mm": "https://www.ericasynths.lv/snare-drum-320/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/snare-drum-320/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Cymbals",
+   "power_12v_ma": 95,
+   "power_neg12v_ma": 36,
+   "power_5v_ma": null,
+   "depth_mm": 45,
+   "source_url": "https://www.ericasynths.lv/cymbals-364/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/cymbals-364/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/cymbals-364/",
+    "depth_mm": "https://www.ericasynths.lv/cymbals-364/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/cymbals-364/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Graphic Resonant FB",
+   "power_12v_ma": null,
+   "power_neg12v_ma": 50,
+   "power_5v_ma": null,
+   "depth_mm": 30,
+   "source_url": "https://www.ericasynths.lv/graphic-resonant-fb-3158/",
+   "sources": {
+    "power_neg12v_ma": "https://www.ericasynths.lv/graphic-resonant-fb-3158/",
+    "depth_mm": "https://www.ericasynths.lv/graphic-resonant-fb-3158/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/graphic-resonant-fb-3158/"
+  },
+  {
+   "brand": "Erica Synths",
+   "name": "Graphic VCO",
+   "power_12v_ma": 152,
+   "power_neg12v_ma": 20,
+   "power_5v_ma": null,
+   "depth_mm": 30,
+   "source_url": "https://www.ericasynths.lv/graphic-vco-2/",
+   "sources": {
+    "power_12v_ma": "https://www.ericasynths.lv/graphic-vco-2/",
+    "power_neg12v_ma": "https://www.ericasynths.lv/graphic-vco-2/",
+    "depth_mm": "https://www.ericasynths.lv/graphic-vco-2/"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.ericasynths.lv/graphic-vco-2/"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Analog Replicator",
+   "power_12v_ma": 80,
+   "power_neg12v_ma": 50,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/analog-replicator",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/analog-replicator",
+    "power_neg12v_ma": "https://pittsburghmodular.com/analog-replicator",
+    "depth_mm": "https://pittsburghmodular.com/analog-replicator"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/analog-replicator"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Mixer",
+   "power_12v_ma": 10,
+   "power_neg12v_ma": 10,
+   "power_5v_ma": null,
+   "depth_mm": 20,
+   "source_url": "https://pittsburghmodular.com/mixer",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/mixer",
+    "power_neg12v_ma": "https://pittsburghmodular.com/mixer",
+    "depth_mm": "https://pittsburghmodular.com/mixer"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/mixer"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Midi 3",
+   "power_12v_ma": 60,
+   "power_neg12v_ma": 15,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/midi3",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/midi3",
+    "power_neg12v_ma": "https://pittsburghmodular.com/midi3",
+    "depth_mm": "https://pittsburghmodular.com/midi3"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/midi3"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Collapse",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 36.5,
+   "source_url": "https://pittsburghmodular.com/collapse",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/collapse"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/collapse"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Analog Delay",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/analog-delay",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/analog-delay"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/analog-delay"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "ADSR",
+   "power_12v_ma": 20,
+   "power_neg12v_ma": 10,
+   "power_5v_ma": null,
+   "depth_mm": 36.5,
+   "source_url": "https://pittsburghmodular.com/adsr",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/adsr",
+    "power_neg12v_ma": "https://pittsburghmodular.com/adsr",
+    "depth_mm": "https://pittsburghmodular.com/adsr"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/adsr"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Bender",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/bender",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/bender"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/bender"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Mix Mult",
+   "power_12v_ma": 10,
+   "power_neg12v_ma": 10,
+   "power_5v_ma": null,
+   "depth_mm": 25,
+   "source_url": "https://pittsburghmodular.com/mix-mult",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/mix-mult",
+    "power_neg12v_ma": "https://pittsburghmodular.com/mix-mult",
+    "depth_mm": "https://pittsburghmodular.com/mix-mult"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/mix-mult"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Dual Ring",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/dual-ring",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/dual-ring"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/dual-ring"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Crush",
+   "power_12v_ma": 40,
+   "power_neg12v_ma": 40,
+   "power_5v_ma": null,
+   "depth_mm": 36.5,
+   "source_url": "https://pittsburghmodular.com/crush",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/crush",
+    "power_neg12v_ma": "https://pittsburghmodular.com/crush",
+    "depth_mm": "https://pittsburghmodular.com/crush"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/crush"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Outs",
+   "power_12v_ma": 20,
+   "power_neg12v_ma": 20,
+   "power_5v_ma": null,
+   "depth_mm": 39,
+   "source_url": "https://pittsburghmodular.com/outs",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/outs",
+    "power_neg12v_ma": "https://pittsburghmodular.com/outs",
+    "depth_mm": "https://pittsburghmodular.com/outs"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/outs"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "DNA Symbiotic Waves",
+   "power_12v_ma": 75,
+   "power_neg12v_ma": 15,
+   "power_5v_ma": null,
+   "depth_mm": 36.5,
+   "source_url": "https://pittsburghmodular.com/dna-symbiotic-waves",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/dna-symbiotic-waves",
+    "power_neg12v_ma": "https://pittsburghmodular.com/dna-symbiotic-waves",
+    "depth_mm": "https://pittsburghmodular.com/dna-symbiotic-waves"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/dna-symbiotic-waves"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Logic Banks",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 36.5,
+   "source_url": "https://pittsburghmodular.com/logic-banks",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/logic-banks"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/logic-banks"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Verbtronic",
+   "power_12v_ma": 100,
+   "power_neg12v_ma": 30,
+   "power_5v_ma": null,
+   "depth_mm": 36.5,
+   "source_url": "https://pittsburghmodular.com/verbtronic",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/verbtronic",
+    "power_neg12v_ma": "https://pittsburghmodular.com/verbtronic",
+    "depth_mm": "https://pittsburghmodular.com/verbtronic"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/verbtronic"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Multiple",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 20,
+   "source_url": "https://pittsburghmodular.com/multiple",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/multiple"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/multiple"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Fltr",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 36.5,
+   "source_url": "https://pittsburghmodular.com/fltr",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/fltr"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/fltr"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Chain Reactor",
+   "power_12v_ma": 50,
+   "power_neg12v_ma": 45,
+   "power_5v_ma": null,
+   "depth_mm": 36.5,
+   "source_url": "https://pittsburghmodular.com/chain-reactor",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/chain-reactor",
+    "power_neg12v_ma": "https://pittsburghmodular.com/chain-reactor",
+    "depth_mm": "https://pittsburghmodular.com/chain-reactor"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/chain-reactor"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "LFO2",
+   "power_12v_ma": 25,
+   "power_neg12v_ma": 25,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/lfo2",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lfo2",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lfo2",
+    "depth_mm": "https://pittsburghmodular.com/lfo2"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lfo2"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Dual VCA",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/dual-index",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/dual-index"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/dual-index"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Detect",
+   "power_12v_ma": 10,
+   "power_neg12v_ma": 10,
+   "power_5v_ma": null,
+   "depth_mm": 36.5,
+   "source_url": "https://pittsburghmodular.com/detect",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/detect",
+    "power_neg12v_ma": "https://pittsburghmodular.com/detect",
+    "depth_mm": "https://pittsburghmodular.com/detect"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/detect"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Oscillator v2",
+   "power_12v_ma": 30,
+   "power_neg12v_ma": 30,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/osc",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/osc",
+    "power_neg12v_ma": "https://pittsburghmodular.com/osc",
+    "depth_mm": "https://pittsburghmodular.com/osc"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/osc"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Time Runner",
+   "power_12v_ma": 100,
+   "power_neg12v_ma": 50,
+   "power_5v_ma": null,
+   "depth_mm": 36.5,
+   "source_url": "https://pittsburghmodular.com/timerunner",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/timerunner",
+    "power_neg12v_ma": "https://pittsburghmodular.com/timerunner",
+    "depth_mm": "https://pittsburghmodular.com/timerunner"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/timerunner"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "VILFO",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://pittsburghmodular.com/vilfo",
+   "sources": {},
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/vilfo"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Timetable",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 50,
+   "source_url": "https://pittsburghmodular.com/timetable",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/timetable"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/timetable"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Sequencer",
+   "power_12v_ma": 25,
+   "power_neg12v_ma": 20,
+   "power_5v_ma": null,
+   "depth_mm": 25,
+   "source_url": "https://pittsburghmodular.com/sequencer",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/sequencer",
+    "power_neg12v_ma": "https://pittsburghmodular.com/sequencer",
+    "depth_mm": "https://pittsburghmodular.com/sequencer"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/sequencer"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "M3",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 20,
+   "source_url": "https://pittsburghmodular.com/m3",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/m3"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/m3"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Envelope",
+   "power_12v_ma": 30,
+   "power_neg12v_ma": 15,
+   "power_5v_ma": null,
+   "depth_mm": 36.5,
+   "source_url": "https://pittsburghmodular.com/envelope",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/envelope",
+    "power_neg12v_ma": "https://pittsburghmodular.com/envelope",
+    "depth_mm": "https://pittsburghmodular.com/envelope"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/envelope"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "InOut",
+   "power_12v_ma": 20,
+   "power_neg12v_ma": 20,
+   "power_5v_ma": null,
+   "depth_mm": 43,
+   "source_url": "https://pittsburghmodular.com/inout",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/inout",
+    "power_neg12v_ma": "https://pittsburghmodular.com/inout",
+    "depth_mm": "https://pittsburghmodular.com/inout"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/inout"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Genxpander",
+   "power_12v_ma": 75,
+   "power_neg12v_ma": 70,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/genxpander",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/genxpander",
+    "power_neg12v_ma": "https://pittsburghmodular.com/genxpander",
+    "depth_mm": "https://pittsburghmodular.com/genxpander"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/genxpander"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Filter",
+   "power_12v_ma": 30,
+   "power_neg12v_ma": 30,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/filter",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/filter",
+    "power_neg12v_ma": "https://pittsburghmodular.com/filter",
+    "depth_mm": "https://pittsburghmodular.com/filter"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/filter"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Generator",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/generator",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/generator"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/generator"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Phase Shifter",
+   "power_12v_ma": 175,
+   "power_neg12v_ma": 155,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/phase-shifter",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/phase-shifter",
+    "power_neg12v_ma": "https://pittsburghmodular.com/phase-shifter",
+    "depth_mm": "https://pittsburghmodular.com/phase-shifter"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/phase-shifter"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Modulator",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/mod",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/mod"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/mod"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "MIDI2",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/midi2",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/midi2"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/midi2"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "VC Bend",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/vc-bend",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/vc-bend"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/vc-bend"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Toolbox",
+   "power_12v_ma": 25,
+   "power_neg12v_ma": 20,
+   "power_5v_ma": null,
+   "depth_mm": 25,
+   "source_url": "https://pittsburghmodular.com/toolbox",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/toolbox",
+    "power_neg12v_ma": "https://pittsburghmodular.com/toolbox",
+    "depth_mm": "https://pittsburghmodular.com/toolbox"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/toolbox"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Switch",
+   "power_12v_ma": 45,
+   "power_neg12v_ma": 45,
+   "power_5v_ma": null,
+   "depth_mm": 36.5,
+   "source_url": "https://pittsburghmodular.com/switch",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/switch",
+    "power_neg12v_ma": "https://pittsburghmodular.com/switch",
+    "depth_mm": "https://pittsburghmodular.com/switch"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/switch"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Oscillator",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/oscillator",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/oscillator"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/oscillator"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Dynamic Impulse Filter",
+   "power_12v_ma": 35,
+   "power_neg12v_ma": 35,
+   "power_5v_ma": null,
+   "depth_mm": 20,
+   "source_url": "https://pittsburghmodular.com/lifeforms-dynamic-impulse-filter",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-dynamic-impulse-filter",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-dynamic-impulse-filter",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-dynamic-impulse-filter"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-dynamic-impulse-filter"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Multiple",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 20,
+   "source_url": "https://pittsburghmodular.com/lifeforms-multiple",
+   "sources": {
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-multiple"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-multiple"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms HP-6",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://pittsburghmodular.com/lifeforms-hp6",
+   "sources": {},
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-hp6"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms 2+2 Mixer",
+   "power_12v_ma": 7,
+   "power_neg12v_ma": 7,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://pittsburghmodular.com/lifeforms-22-mixer",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-22-mixer",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-22-mixer",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-22-mixer"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-22-mixer"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms ADSR",
+   "power_12v_ma": 23,
+   "power_neg12v_ma": 12,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://pittsburghmodular.com/lifeforms-adsr",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-adsr",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-adsr",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-adsr"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-adsr"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Dual VCA",
+   "power_12v_ma": 34,
+   "power_neg12v_ma": 26,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://pittsburghmodular.com/lifeforms-dual-vca",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-dual-vca",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-dual-vca",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-dual-vca"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-dual-vca"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms System Interface",
+   "power_12v_ma": 157,
+   "power_neg12v_ma": 83,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://pittsburghmodular.com/lifeforms-system-interface",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-system-interface",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-system-interface",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-system-interface"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-system-interface"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Double Helix Oscillator",
+   "power_12v_ma": 223,
+   "power_neg12v_ma": 205,
+   "power_5v_ma": null,
+   "depth_mm": 37,
+   "source_url": "https://pittsburghmodular.com/lifeforms-double-helix-oscillator",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-double-helix-oscillator",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-double-helix-oscillator",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-double-helix-oscillator"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-double-helix-oscillator"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Mod Tools",
+   "power_12v_ma": 53,
+   "power_neg12v_ma": 46,
+   "power_5v_ma": null,
+   "depth_mm": 37,
+   "source_url": "https://pittsburghmodular.com/lifeforms-mod-tools",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-mod-tools",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-mod-tools",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-mod-tools"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-mod-tools"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Binary Filter",
+   "power_12v_ma": 22,
+   "power_neg12v_ma": 22,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://pittsburghmodular.com/lifeforms-binary-filter",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-binary-filter",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-binary-filter",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-binary-filter"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-binary-filter"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Outs",
+   "power_12v_ma": 20,
+   "power_neg12v_ma": 20,
+   "power_5v_ma": null,
+   "depth_mm": 39,
+   "source_url": "https://pittsburghmodular.com/lifeforms-outs",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-outs",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-outs",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-outs"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-outs"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Midi 3",
+   "power_12v_ma": 60,
+   "power_neg12v_ma": 15,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/lifeforms-midi-3",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-midi-3",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-midi-3",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-midi-3"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-midi-3"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Analog Replicator",
+   "power_12v_ma": 80,
+   "power_neg12v_ma": 50,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/lifeforms-analog-replicator",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-analog-replicator",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-analog-replicator",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-analog-replicator"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-analog-replicator"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Micro Sequence",
+   "power_12v_ma": 56,
+   "power_neg12v_ma": 8,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://pittsburghmodular.com/lifeforms-micro-sequence",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-micro-sequence",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-micro-sequence",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-micro-sequence"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-micro-sequence"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Primary Oscillator",
+   "power_12v_ma": 112,
+   "power_neg12v_ma": 104,
+   "power_5v_ma": null,
+   "depth_mm": 25,
+   "source_url": "https://pittsburghmodular.com/lifeforms-primary-oscillator",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-primary-oscillator",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-primary-oscillator",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-primary-oscillator"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-primary-oscillator"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Touch Controller",
+   "power_12v_ma": 165,
+   "power_neg12v_ma": 95,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/lifeforms-touch-controller",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-touch-controller",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-touch-controller",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-touch-controller"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-touch-controller"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Analog Delay Unit",
+   "power_12v_ma": 44,
+   "power_neg12v_ma": 19,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/lifeforms-analog-delay-unit",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-analog-delay-unit",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-analog-delay-unit",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-analog-delay-unit"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-analog-delay-unit"
+  },
+  {
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms Cascading Delay Network",
+   "power_12v_ma": 390,
+   "power_neg12v_ma": 350,
+   "power_5v_ma": null,
+   "depth_mm": 35,
+   "source_url": "https://pittsburghmodular.com/lifeforms-cascading-delay-network",
+   "sources": {
+    "power_12v_ma": "https://pittsburghmodular.com/lifeforms-cascading-delay-network",
+    "power_neg12v_ma": "https://pittsburghmodular.com/lifeforms-cascading-delay-network",
+    "depth_mm": "https://pittsburghmodular.com/lifeforms-cascading-delay-network"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://pittsburghmodular.com/lifeforms-cascading-delay-network"
+  }
+ ]
+}

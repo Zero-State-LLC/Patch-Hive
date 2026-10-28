@@ -1,0 +1,41 @@
+{
+ "batch": "maker-crawl-v2-jumper-fix-v1",
+ "created": "2026-10-27",
+ "approved_by": "Danny 2026-10-27 (chat: fix the 4ms jumper-dependent draws on #74, then load)",
+ "flag_reverify": false,
+ "policy": "Draws that depend on a +5V-source jumper: the page lists one +12V/+5V pair per jumper setting, and the crawl mixed them. The listed field is archived and cleared only while the database still holds only_if_value; it stays unknown (no single value is the module's draw). Nothing is deleted.",
+ "rows": [
+  {
+   "table": "modules",
+   "brand": "Dave Jones Design",
+   "name": "Otool Scope and Audio Tools",
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "source_tag": "maker-crawl-v2 jumper fix (2026-10-27)",
+     "maker_check": "jumper_dependent",
+     "action": "null",
+     "only_if_value": 80
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Velectronic",
+   "name": "A-Envelope",
+   "fields": [
+    {
+     "field": "power_5v_ma",
+     "source_tag": "maker-crawl-v2 jumper fix (2026-10-27)",
+     "maker_check": "jumper_dependent",
+     "action": "null",
+     "only_if_value": 170
+    }
+   ]
+  }
+ ],
+ "counts": {
+  "rows": 2,
+  "fields": 2
+ }
+}

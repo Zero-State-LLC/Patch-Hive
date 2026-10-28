@@ -179,6 +179,14 @@ def test_two_unlabelled_widths_are_ambiguous() -> None:
         ("8HP / 23mm depth +12V @ 50mA -12V @ 25mA Output is 0-5V", (50, 25, None)),  # Rain City
         ("Width: 12HP Power: +120mA / -45mA @+12V / -12V", (120, 45, None)),  # God's Box
         ("Width 6HP Depth 30mm Current draw +49mA, -39mA @ 12V", (49, 39, None)),  # Hexinverter
+        # A jumper moves load between +12V and +5V: no single pair is the draw, keep -12V only.
+        ("+12V rail: 48mA with jumper selecting external 5V 88mA with jumper selecting internal 5V "
+         "+5V rail: 41mA with jumper selecting external 5V -12V rail: 40mA", (None, 40, None)),  # 4ms QCD
+        ("Power consumption: 5VSEL Jumper set to INT: 33mA maximum power draw from +12V rail", (None, None, None)),
+        ("It has a jumper for internal or external 5 volt source. Power requirements: 80ma +12v 22ma -12v "
+         "-or- 12ma +12v 70ma +5v 22ma -12v", (None, 22, None)),  # Dave Jones O'Tool
+        # An unrelated jumper does not count.
+        ("Choice of hard sync or soft sync (set via jumper on back) Power: +12V 15mA -12V 15mA", (15, 15, None)),
         ("Current Draw: 20 mA +12V | 0 mA -12V | 0 mA 5V Width", (20, 0, 0)),
         ("+12V current draw : 16mA -12V current draw : 15mA", (16, 15, None)),  # Skull & Circuits
         ("Specs: - 8HP - 125mA +12V - 0mA -12V - 0mA +5V - 42mm deep", (125, 0, 0)),  # Syntonie

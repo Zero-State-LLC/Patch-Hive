@@ -159,8 +159,8 @@ def _stamp() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-POWER_OVERLAY_LATEST = 11
-CATALOG_ADDITIONS_LATEST = 3
+POWER_OVERLAY_LATEST = 12
+CATALOG_ADDITIONS_LATEST = 4
 ENTRY_VERIFICATION = {"verified", "corrected", "flagged"}
 
 
@@ -296,6 +296,7 @@ PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "modulargrid-reverify-v1.json",
     CATALOG / "provenance" / "maker-crawl-v2-rail-fix-v1.json",
     CATALOG / "provenance" / "maker-review-v1.json",
+    CATALOG / "provenance" / "maker-crawl-v2-jumper-fix-v1.json",
 )
 ARCHIVE_FIELDS = {
     "modules": {

@@ -2,7 +2,8 @@
 """Turn a maker-crawl run into loader overlays.
 
 Defaults rebuild the v1 overlays; T025 uses
-`--crawl maker-crawl-v2.json --additions-version 3 --power-version 11`.
+`--crawl maker-crawl-v2.json --additions-version 3 --power-version 11`; T026 adds
+`--additions-version 4 --power-version 12 --brands "4ms Company,Erica Synths,Pittsburgh Modular"`.
 
 - catalog-additions-vN.json: modules not already in the catalog (insert-if-absent),
   tagged `access_basis = official_publication`.
@@ -43,7 +44,7 @@ HP_MIN, HP_MAX = 1, 42  # FR-007: HP outside 1..42 is discarded
 # Products that share a maker's store with modules: pedals, upgrades, bare panels, power, MCUs.
 NOT_MODULE_NAME = re.compile(
     r"(\bpedal\b|\bupgrade\b|(aluminum|alu|replacement|front|blank)\s+panel|\bpanel only\b|\bteensy\b|"
-    r"power supply|\bpsu\b|\(\d+(\.\d+)?\s*a\)|\bcase\b|\bskiff\b|\bcable|\bt-shirt|\bgift card)",
+    r"power supply|\bpsu\b|\brow power\b|\(\d+(\.\d+)?\s*a\)|\bcase\b|\bskiff\b|\bcable|\bt-shirt|\bgift card)",
     re.I,
 )
 
@@ -109,7 +110,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--crawl", default="maker-crawl-v1.json", help="file under hermes-research/")
     ap.add_argument("--additions-version", type=int, default=2)
     ap.add_argument("--power-version", type=int, default=9)
+    ap.add_argument("--brands", default="", help="comma-separated: build only these brands (a partial crawl pass)")
     args = ap.parse_args(argv)
+    only = {b.strip() for b in args.brands.split(",") if b.strip()}
     additions_name = f"catalog-additions-v{args.additions_version}.json"
     power_name = f"module-power-depth-v{args.power_version}.json"
     crawl = json.loads((CATALOG / "hermes-research" / args.crawl).read_text())
@@ -117,6 +120,8 @@ def main(argv: list[str] | None = None) -> int:
     additions, entries = [], []
     stats = {"crawled_modules": 0, "matched_existing": 0, "new": 0, "skipped_dupe_in_crawl": 0, "skipped_hp_range": 0, "skipped_not_module": 0}
     for b in crawl["brands"]:
+        if only and b["brand"] not in only:
+            continue
         seen = set()
         for m in b.get("modules") or []:
             stats["crawled_modules"] += 1
@@ -159,7 +164,7 @@ def main(argv: list[str] | None = None) -> int:
             if any(entry[f] is not None for f in ("power_12v_ma", "power_neg12v_ma", "power_5v_ma", "depth_mm")) or not existing:
                 entries.append(entry)
     D = CATALOG / "overlays"
-    meta = {"generated_from": f"hermes-research/{args.crawl}", "policy": "maker's own pages only; values regex-parsed or verbatim; no ModularGrid; insert-if-absent / fill-null; disagreements are flagged by the loader"}
+    meta = {"generated_from": f"hermes-research/{args.crawl}" + (f" (brands: {', '.join(sorted(only))})" if only else ""), "policy": "maker's own pages only; values regex-parsed or verbatim; no ModularGrid; insert-if-absent / fill-null; disagreements are flagged by the loader"}
     (D / additions_name).write_text(json.dumps({"dataset_version": f"catalog-additions-v{args.additions_version}", **meta, "count": len(additions), "rows": additions}, indent=1) + "\n")
     (D / power_name).write_text(json.dumps({"dataset_version": f"module-power-depth-overlay-v{args.power_version}", **meta, "count": len(entries), "entries": entries}, indent=1) + "\n")
     print(json.dumps(stats))

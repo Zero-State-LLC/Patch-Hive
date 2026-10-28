@@ -11593,13 +11593,12 @@
   {
    "brand": "Dave Jones Design",
    "name": "Otool Scope and Audio Tools",
-   "power_12v_ma": 80,
+   "power_12v_ma": null,
    "power_neg12v_ma": 22,
    "power_5v_ma": null,
    "depth_mm": 40,
    "source_url": "https://www.jonesvideo.com/prod_otool.html",
    "sources": {
-    "power_12v_ma": "https://www.jonesvideo.com/prod_otool.html",
     "power_neg12v_ma": "https://www.jonesvideo.com/prod_otool.html",
     "depth_mm": "https://www.jonesvideo.com/prod_otool.html"
    },
@@ -50397,12 +50396,10 @@
    "name": "A-Envelope",
    "power_12v_ma": null,
    "power_neg12v_ma": null,
-   "power_5v_ma": 170,
+   "power_5v_ma": null,
    "depth_mm": null,
    "source_url": "https://www.velectronic.net/products/associative-quadruple-envelope",
-   "sources": {
-    "power_5v_ma": "https://www.velectronic.net/products/associative-quadruple-envelope"
-   },
+   "sources": {},
    "provenance": "OBSERVED",
    "status": "found",
    "extracted_by": "regex+deepseek/deepseek-v4.1-flash",
