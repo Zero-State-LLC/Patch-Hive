@@ -1,6 +1,6 @@
 // Edge entry for api.patch-hive.com (production) and api-staging.patch-hive.com
 // (staging): forwards every request to the FastAPI container.
-import { Container, getContainer } from "@cloudflare/containers";
+import { DurableObject } from "cloudflare:workers";
 
 interface Env extends Partial<Record<OptionalName, string>> {
   API: DurableObjectNamespace<PatchHiveApi>;
@@ -62,34 +62,93 @@ const REQUIRED_SECRETS = [
   "S3_SECRET_ACCESS_KEY",
 ] as const;
 
-export class PatchHiveApi extends Container<Env> {
-  defaultPort = 8000;
-  sleepAfter = "15m";
-  // The container reaches Neon directly over TLS. Hyperdrive serves only Worker
-  // runtime clients, not a Postgres driver inside a container.
-  enableInternet = true;
+// Stop the container after this long without a request (it restores durable files
+// from R2 on the next start).
+const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000;
+// The entrypoint runs `alembic upgrade head` before uvicorn listens, so a cold start
+// can take a while.
+const READY_ATTEMPTS = 300;
+const PORT = 8000;
 
-  constructor(ctx: DurableObjectState<{}>, env: Env) {
+export class PatchHiveApi extends DurableObject<Env> {
+  private starting: Promise<void> | undefined;
+
+  constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
-    this.envVars = {
-      DATABASE_URL: env.DATABASE_URL ?? "",
-      SECRET_KEY: env.SECRET_KEY ?? "",
-      ENVIRONMENT: env.ENVIRONMENT,
-      FRONTEND_BASE_URL: env.FRONTEND_BASE_URL,
-      CORS_ORIGINS: env.CORS_ORIGINS,
-      STRIPE_TEST_MODE: env.STRIPE_TEST_MODE,
-      ALLOW_PRODUCTION_PAYMENTS: env.ALLOW_PRODUCTION_PAYMENTS,
-      STORAGE_BACKEND: env.STORAGE_BACKEND,
-      S3_ENDPOINT_URL: env.S3_ENDPOINT_URL ?? "",
-      S3_BUCKET: env.S3_BUCKET,
-      S3_ACCESS_KEY_ID: env.S3_ACCESS_KEY_ID ?? "",
-      S3_SECRET_ACCESS_KEY: env.S3_SECRET_ACCESS_KEY ?? "",
-      S3_REGION: env.S3_REGION,
-      S3_KEY_PREFIX: env.S3_KEY_PREFIX,
-      RUN_MIGRATIONS: "true",
-      ...optionalEnv(env),
-    };
+    const container = ctx.container!;
+    if (container.running) {
+      void ctx.blockConcurrencyWhile(() => container.setInactivityTimeout(INACTIVITY_TIMEOUT_MS));
+    }
   }
+
+  async fetch(request: Request): Promise<Response> {
+    // Concurrent requests share one start and readiness check.
+    this.starting ??= this.startAndWaitUntilHealthy().finally(() => {
+      this.starting = undefined;
+    });
+    try {
+      await this.starting;
+    } catch {
+      return Response.json({ status: "unavailable", reason: "api container not ready" }, { status: 503 });
+    }
+    const url = new URL(request.url);
+    url.protocol = "http:";
+    url.host = "container";
+    const forwarded = new Request(url, request);
+    forwarded.headers.delete("host");
+    return this.ctx.container!.getTcpPort(PORT).fetch(forwarded);
+  }
+
+  private async startAndWaitUntilHealthy(): Promise<void> {
+    const container = this.ctx.container!;
+    if (!container.running) {
+      container.start({
+        image: container.images.api,
+        instance: "standard-1",
+        // The container reaches Neon directly over TLS. Hyperdrive serves only Worker
+        // runtime clients, not a Postgres driver inside a container.
+        enableInternet: true,
+        env: containerEnv(this.env),
+      });
+    }
+    await container.setInactivityTimeout(INACTIVITY_TIMEOUT_MS);
+
+    const port = container.getTcpPort(PORT);
+    let lastError: unknown;
+    for (let attempt = 0; attempt < READY_ATTEMPTS; attempt++) {
+      try {
+        const response = await port.fetch("http://container/health", { signal: AbortSignal.timeout(1000) });
+        await response.body?.cancel();
+        if (response.ok) return;
+        lastError = new Error(`health returned ${response.status}`);
+      } catch (error) {
+        lastError = error;
+      }
+      await scheduler.wait(500);
+    }
+    throw new Error("api container did not become healthy", { cause: lastError });
+  }
+}
+
+function containerEnv(env: Env): Record<string, string> {
+  return {
+    DATABASE_URL: env.DATABASE_URL ?? "",
+    SECRET_KEY: env.SECRET_KEY ?? "",
+    ENVIRONMENT: env.ENVIRONMENT,
+    FRONTEND_BASE_URL: env.FRONTEND_BASE_URL,
+    CORS_ORIGINS: env.CORS_ORIGINS,
+    STRIPE_TEST_MODE: env.STRIPE_TEST_MODE,
+    ALLOW_PRODUCTION_PAYMENTS: env.ALLOW_PRODUCTION_PAYMENTS,
+    STORAGE_BACKEND: env.STORAGE_BACKEND,
+    S3_ENDPOINT_URL: env.S3_ENDPOINT_URL ?? "",
+    S3_BUCKET: env.S3_BUCKET,
+    S3_ACCESS_KEY_ID: env.S3_ACCESS_KEY_ID ?? "",
+    S3_SECRET_ACCESS_KEY: env.S3_SECRET_ACCESS_KEY ?? "",
+    S3_REGION: env.S3_REGION,
+    S3_KEY_PREFIX: env.S3_KEY_PREFIX,
+    RUN_MIGRATIONS: "true",
+    ...optionalEnv(env),
+  };
 }
 
 export default {
@@ -102,6 +161,6 @@ export default {
         { status: 503 },
       );
     }
-    return getContainer(env.API, "primary").fetch(request);
+    return env.API.getByName("primary").fetch(request);
   },
 };
