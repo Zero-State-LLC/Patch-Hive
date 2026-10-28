@@ -60,7 +60,7 @@ jobs:
           PATCHHIVE_LOAD_MODE: ${{ inputs.mode }}
           PATCHHIVE_PLAN_HASH: ${{ inputs.plan_hash }}
         run: |
-          if [ -z "$DATABASE_URL" ]; then echo "::error::database secret for $PATCHHIVE_DB_ENV is not set"; exit 1; fi
+          if [ -z "$DATABASE_URL" ]; then printf "::error::database secret for %s is not set\n" "$PATCHHIVE_DB_ENV"; exit 1; fi
           python scripts/catalog_actions_load.py --allow-nonlocal
       - name: Record pre-apply dump checksum
         if: inputs.mode == 'apply'
