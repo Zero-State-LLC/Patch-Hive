@@ -49,7 +49,6 @@ Snapshot: 2026-10-28 PT, 94 items.
 - [decision] seed_catalog_from_synth.py: delete, port registry slug fill
 - [decision] Maker permission metadata and stealth proxy sign-off
 - [decision] Model jumper-dependent power (power_configs)
-- [beta] Open accounts (VITE_ACCOUNTS_OPEN=true) once the API is live
 
 ## Ready
 
@@ -79,6 +78,8 @@ _None._
 
 ## Done
 
+- [beta] Open accounts (VITE_ACCOUNTS_OPEN=true) once the API is live (2026-10-28)
+- [security] Enforce the frontend CSP after a clean report-only run (2026-10-28)
 - [data] Next catalog enrichment batch (needs budget approval)
 - [006 T030] Edge frontend on Cloudflare (Pages in spec; Workers in #55)
 - [#4](https://github.com/Zero-State-LLC/Patch-Hive/pull/4) ci: free security scanning to replace CodeQL
