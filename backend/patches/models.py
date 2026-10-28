@@ -22,7 +22,7 @@ class Patch(Base):
 
     # Association with rack/run
     rack_id = Column(
-        Integer, ForeignKey("racks.id", ondelete="CASCADE"), nullable=False, index=True
+        Integer, ForeignKey("racks.id", ondelete="RESTRICT"), nullable=False, index=True
     )
     run_id = Column(Integer, ForeignKey("runs.id", ondelete="SET NULL"), nullable=True, index=True)
 

@@ -254,3 +254,15 @@ def test_the_demo_seed_runs_only_in_development(
     with pytest.raises(RuntimeError, match="development"):
         load_seed_data(db_session)
     assert db_session.query(User).filter(User.username == "testuser").count() == 0
+
+
+def test_a_deleted_racks_evidence_is_gone(
+    client: TestClient, db_session: Session, people: dict, sample_case: Case
+) -> None:
+    rack = _rack(db_session, people["owner"], sample_case)
+    owner = bearer_headers(people["owner"])
+    url = f"/api/racks/{rack.id}/evidence/inventory"
+    assert client.get(url, headers=owner).status_code == 200
+    assert client.delete(f"/api/racks/{rack.id}", headers=owner).status_code == 204
+    for who in ("owner", "support"):
+        assert client.get(url, headers=bearer_headers(people[who])).status_code == 404

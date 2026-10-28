@@ -291,3 +291,17 @@ class TestPublishingAPI:
             assert resp.status_code == 409
             db_session.refresh(pub)
             assert pub.status in {"removed", "hidden"}
+
+    def test_a_deleted_rack_cannot_be_exported(
+        self, client: TestClient, db_session: Session, sample_user: User, sample_case
+    ):
+        rack = Rack(user_id=sample_user.id, name="Rack", case_id=sample_case.id)
+        db_session.add(rack)
+        db_session.commit()
+        patch = _create_patch(db_session, rack)
+        rack.deleted_at = datetime.utcnow()
+        db_session.commit()
+        owner = _auth_headers(sample_user)
+        for source in ({"source_type": "rack", "source_id": rack.id}, {"source_type": "patch", "source_id": patch.id}):
+            resp = client.post("/api/me/exports", json=source, headers=owner)
+            assert resp.status_code == 404, resp.text

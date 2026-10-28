@@ -198,7 +198,12 @@ def get_feed(
 ):
     """Get public feed of shared racks and patches."""
     # Get public racks
-    racks = db.query(Rack).filter(Rack.is_public.is_(True)).order_by(desc(Rack.created_at)).all()
+    racks = (
+        db.query(Rack)
+        .filter(Rack.is_public.is_(True), Rack.deleted_at.is_(None))
+        .order_by(desc(Rack.created_at))
+        .all()
+    )
 
     # Get public patches
     patches = (
@@ -226,7 +231,7 @@ def get_feed(
 
     for patch in patches:
         rack = db.query(Rack).filter(Rack.id == patch.rack_id).first()
-        if not rack:
+        if not rack or rack.deleted_at is not None:
             continue
 
         user = db.query(User).filter(User.id == rack.user_id).first()
