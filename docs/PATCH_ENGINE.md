@@ -242,6 +242,21 @@ MIXER → FX → OUT
 
 **Category**: Always "Texture-FX"
 
+#### Further rules (issue #95)
+
+These run after the four rules above. Each draws from its own generator (`seed + offset`), so adding them left the earlier patches unchanged. A rule fires only when the rack holds every module it wires; nothing pads a run to `max_patches` (spec 001 FR-017).
+
+| Rule | Needs | Category | Seed |
+|---|---|---|---|
+| Sequenced voice, one per VCO (up to 3): sequencer CV to V/Oct, gate to an envelope on the VCA, through a filter when present | sequencer, VCO, VCA, envelope | Voice | `seed + 5000 + i` |
+| Plucked voice: one envelope on both filter cutoff and VCA | VCO, VCF, VCA, envelope | Voice | `seed + 6000` |
+| Drone: an LFO sweeps the filter, no envelope | VCO, VCF, VCA, LFO | Voice | `seed + 7000` |
+| Sequenced hats: the sequencer gate fires an envelope on (filtered) noise | sequencer, envelope, noise, VCA | Clock-Rhythm | `seed + 8000` |
+| Voice through an effect | VCO, VCA, effect | Texture-FX | `seed + 9000` |
+| Two oscillators into a mixer | 2 VCOs, mixer | Utility | `seed + 9500` |
+
+Port names are still generic ("Audio Out", "Gate In"): most modules have no jack data on file (spec 001 OQ-04).
+
 ## Deterministic Naming
 
 Each patch gets a deterministic name using the `generate_patch_name()` function:

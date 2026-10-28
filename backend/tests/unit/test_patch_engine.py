@@ -522,3 +522,45 @@ class TestNoInventedPatches:
         db_session.commit()
 
         assert generate_patches_for_rack(db_session, rack, seed=1) == []
+
+
+class TestFurtherRules:
+    """Issue #95: rules that each wire only modules the rack has."""
+
+    def test_full_rack_gets_the_new_voices(self, db_session: Session, sample_rack_full: Rack):
+        patches = generate_patches_for_rack(db_session, sample_rack_full, seed=11)
+        descriptions = [p.description for p in patches]
+        # VCO, VCF, VCA, envelope, LFO and sequencer: sequenced, plucked and drone voices.
+        assert any(d.endswith("sequences Test VCO") for d in descriptions)
+        assert any(d.startswith("Plucked voice") for d in descriptions)
+        assert any(d.startswith("Drone") for d in descriptions)
+        # No noise, effect or second VCO: those rules stay silent.
+        assert not any("clocks noise" in d or " through " in d or " mixed" in d for d in descriptions)
+
+    def test_every_cable_joins_modules_in_the_rack(self, db_session: Session, sample_rack_full: Rack):
+        from racks.models import RackModule
+
+        placed = {rm.module_id for rm in db_session.query(RackModule).filter_by(rack_id=sample_rack_full.id)}
+        for patch in generate_patches_for_rack(db_session, sample_rack_full, seed=3):
+            for cable in patch.connections:
+                assert {cable.from_module_id, cable.to_module_id} <= placed
+
+    def test_new_rules_leave_the_original_patches_unchanged(
+        self, db_session: Session, sample_rack_full: Rack, monkeypatch
+    ):
+        """The new rules draw from their own generators, so the four original rules
+        produce exactly what they produced before."""
+        with_new = generate_patches_for_rack(db_session, sample_rack_full, seed=5)
+        for name in (
+            "_generate_sequenced_voices", "_generate_plucked_voice", "_generate_filter_drone",
+            "_generate_sequenced_hats", "_generate_voice_through_fx", "_generate_oscillator_mix",
+        ):
+            monkeypatch.setattr(PatchGenerator, name, lambda self: [])
+        original = generate_patches_for_rack(db_session, sample_rack_full, seed=5)
+        assert [p.to_dict() for p in with_new[: len(original)]] == [p.to_dict() for p in original]
+        assert len(with_new) > len(original)
+
+    def test_generation_is_deterministic(self, db_session: Session, sample_rack_full: Rack):
+        first = [p.to_dict() for p in generate_patches_for_rack(db_session, sample_rack_full, seed=9)]
+        second = [p.to_dict() for p in generate_patches_for_rack(db_session, sample_rack_full, seed=9)]
+        assert first == second
