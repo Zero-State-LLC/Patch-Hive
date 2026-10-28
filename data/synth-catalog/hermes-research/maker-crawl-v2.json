@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-27T17:15:15-0700",
+ "generated_at": "2026-10-27T18:52:45-0700",
  "budget": {
   "context_dev_credits": 0.0,
   "firecrawl_credits": 0.0,
@@ -1237,7 +1237,7 @@
      "brand": "4ms Company",
      "name": "Spherical Wavetable Navigator",
      "hp": 26,
-     "power_12v_ma": 185,
+     "power_12v_ma": null,
      "power_neg12v_ma": 30,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -1245,7 +1245,6 @@
      "source_url": "https://4mscompany.com/p.php?p=820&c=5",
      "sources": {
       "hp": "https://4mscompany.com/p.php?p=820&c=5",
-      "power_12v_ma": "https://4mscompany.com/p.php?p=820&c=5",
       "power_neg12v_ma": "https://4mscompany.com/p.php?p=820&c=5"
      },
      "tags": [],
@@ -1321,7 +1320,7 @@
      "brand": "4ms Company",
      "name": "Dual Looping Delay",
      "hp": 20,
-     "power_12v_ma": 188,
+     "power_12v_ma": null,
      "power_neg12v_ma": 48,
      "power_5v_ma": null,
      "depth_mm": null,
@@ -1329,7 +1328,6 @@
      "source_url": "https://4mscompany.com/p.php?p=709&c=5",
      "sources": {
       "hp": "https://4mscompany.com/p.php?p=709&c=5",
-      "power_12v_ma": "https://4mscompany.com/p.php?p=709&c=5",
       "power_neg12v_ma": "https://4mscompany.com/p.php?p=709&c=5"
      },
      "tags": [],
@@ -1342,17 +1340,15 @@
      "brand": "4ms Company",
      "name": "Spectral Multiband Resonator",
      "hp": 26,
-     "power_12v_ma": 86,
+     "power_12v_ma": null,
      "power_neg12v_ma": 28,
-     "power_5v_ma": 25,
+     "power_5v_ma": null,
      "depth_mm": 24,
      "image_url": null,
      "source_url": "https://4mscompany.com/p.php?p=707&c=5",
      "sources": {
       "hp": "https://4mscompany.com/p.php?p=707&c=5",
-      "power_12v_ma": "https://4mscompany.com/p.php?p=707&c=5",
       "power_neg12v_ma": "https://4mscompany.com/p.php?p=707&c=5",
-      "power_5v_ma": "https://4mscompany.com/p.php?p=707&c=5",
       "depth_mm": "https://4mscompany.com/p.php?p=707&c=5"
      },
      "tags": [],
@@ -1428,16 +1424,15 @@
      "brand": "4ms Company",
      "name": "4ms QCD",
      "hp": 10,
-     "power_12v_ma": 48,
-     "power_neg12v_ma": null,
-     "power_5v_ma": 88,
+     "power_12v_ma": null,
+     "power_neg12v_ma": 40,
+     "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
      "source_url": "https://4mscompany.com/p.php?p=620&c=5",
      "sources": {
       "hp": "https://4mscompany.com/p.php?p=620&c=5",
-      "power_12v_ma": "https://4mscompany.com/p.php?p=620&c=5",
-      "power_5v_ma": "https://4mscompany.com/p.php?p=620&c=5"
+      "power_neg12v_ma": "https://4mscompany.com/p.php?p=620&c=5"
      },
      "tags": [],
      "content_sha256": "a8f17b90914c159c1ef2c9ae18d1ff342b9125bc11ef3f78673911538a0ba6d4",
@@ -1470,17 +1465,15 @@
      "brand": "4ms Company",
      "name": "4ms QPLFO",
      "hp": 12,
-     "power_12v_ma": 89,
+     "power_12v_ma": null,
      "power_neg12v_ma": 73,
-     "power_5v_ma": 154,
+     "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
      "source_url": "https://4mscompany.com/p.php?p=600&c=5",
      "sources": {
       "hp": "https://4mscompany.com/p.php?p=600&c=5",
-      "power_12v_ma": "https://4mscompany.com/p.php?p=600&c=5",
-      "power_neg12v_ma": "https://4mscompany.com/p.php?p=600&c=5",
-      "power_5v_ma": "https://4mscompany.com/p.php?p=600&c=5"
+      "power_neg12v_ma": "https://4mscompany.com/p.php?p=600&c=5"
      },
      "tags": [],
      "content_sha256": "f7cd06c95cf226f12987704cfba416ee4bad4f6cbac38b3a1742d5b0e95bdb61",
@@ -1492,17 +1485,15 @@
      "brand": "4ms Company",
      "name": "4ms PEG",
      "hp": 20,
-     "power_12v_ma": 60,
+     "power_12v_ma": null,
      "power_neg12v_ma": 35,
-     "power_5v_ma": 105,
+     "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
      "source_url": "https://4mscompany.com/p.php?p=541&c=5",
      "sources": {
       "hp": "https://4mscompany.com/p.php?p=541&c=5",
-      "power_12v_ma": "https://4mscompany.com/p.php?p=541&c=5",
-      "power_neg12v_ma": "https://4mscompany.com/p.php?p=541&c=5",
-      "power_5v_ma": "https://4mscompany.com/p.php?p=541&c=5"
+      "power_neg12v_ma": "https://4mscompany.com/p.php?p=541&c=5"
      },
      "tags": [],
      "content_sha256": "65cb8c095bd379c5d544e08630691cd4d984b99cb6197b5bb0274da45fa96e52",
@@ -1514,17 +1505,15 @@
      "brand": "4ms Company",
      "name": "4ms VCA Matrix",
      "hp": 26,
-     "power_12v_ma": 80,
+     "power_12v_ma": null,
      "power_neg12v_ma": 110,
-     "power_5v_ma": 110,
+     "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
      "source_url": "https://4mscompany.com/p.php?p=543&c=5",
      "sources": {
       "hp": "https://4mscompany.com/p.php?p=543&c=5",
-      "power_12v_ma": "https://4mscompany.com/p.php?p=543&c=5",
-      "power_neg12v_ma": "https://4mscompany.com/p.php?p=543&c=5",
-      "power_5v_ma": "https://4mscompany.com/p.php?p=543&c=5"
+      "power_neg12v_ma": "https://4mscompany.com/p.php?p=543&c=5"
      },
      "tags": [],
      "content_sha256": "22760da4f294185eb9702ac9552236804da49937542de075b9d63dcec09f4a32",
@@ -1536,16 +1525,14 @@
      "brand": "4ms Company",
      "name": "4ms Rotating Clock Divider",
      "hp": 4,
-     "power_12v_ma": 0,
+     "power_12v_ma": null,
      "power_neg12v_ma": null,
-     "power_5v_ma": 4,
+     "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
      "source_url": "https://4mscompany.com/p.php?p=567&c=5",
      "sources": {
-      "hp": "https://4mscompany.com/p.php?p=567&c=5",
-      "power_12v_ma": "https://4mscompany.com/p.php?p=567&c=5",
-      "power_5v_ma": "https://4mscompany.com/p.php?p=567&c=5"
+      "hp": "https://4mscompany.com/p.php?p=567&c=5"
      },
      "tags": [],
      "content_sha256": "dc318e29450cfefa6da09f2f3a5f37745c87e179835368415d31f18554fd12e6",
@@ -1576,16 +1563,14 @@
      "brand": "4ms Company",
      "name": "4ms Shuffling Clock Multiplier",
      "hp": 4,
-     "power_12v_ma": 0,
+     "power_12v_ma": null,
      "power_neg12v_ma": null,
-     "power_5v_ma": 4,
+     "power_5v_ma": null,
      "depth_mm": null,
      "image_url": null,
      "source_url": "https://4mscompany.com/p.php?p=568&c=5",
      "sources": {
-      "hp": "https://4mscompany.com/p.php?p=568&c=5",
-      "power_12v_ma": "https://4mscompany.com/p.php?p=568&c=5",
-      "power_5v_ma": "https://4mscompany.com/p.php?p=568&c=5"
+      "hp": "https://4mscompany.com/p.php?p=568&c=5"
      },
      "tags": [],
      "content_sha256": "4c45ed8d92924c9ad2715a345db3e0d880d0c27a5bf647d7097b9d5961b90439",
@@ -20124,7 +20109,7 @@
      "brand": "Dave Jones Design",
      "name": "Otool Scope and Audio Tools",
      "hp": 8,
-     "power_12v_ma": 80,
+     "power_12v_ma": null,
      "power_neg12v_ma": 22,
      "power_5v_ma": null,
      "depth_mm": 40,
@@ -20132,7 +20117,6 @@
      "source_url": "https://www.jonesvideo.com/prod_otool.html",
      "sources": {
       "hp": "https://www.jonesvideo.com/prod_otool.html",
-      "power_12v_ma": "https://www.jonesvideo.com/prod_otool.html",
       "power_neg12v_ma": "https://www.jonesvideo.com/prod_otool.html",
       "depth_mm": "https://www.jonesvideo.com/prod_otool.html"
      },
@@ -88091,13 +88075,12 @@
      "hp": 22,
      "power_12v_ma": null,
      "power_neg12v_ma": null,
-     "power_5v_ma": 170,
+     "power_5v_ma": null,
      "depth_mm": null,
      "image_url": "http://www.velectronic.net/cdn/shop/files/a-envelope-front.webp?v=1772801356",
      "source_url": "https://www.velectronic.net/products/associative-quadruple-envelope",
      "sources": {
-      "hp": "https://www.velectronic.net/products/associative-quadruple-envelope",
-      "power_5v_ma": "https://www.velectronic.net/products/associative-quadruple-envelope"
+      "hp": "https://www.velectronic.net/products/associative-quadruple-envelope"
      },
      "tags": [
       "envelope",

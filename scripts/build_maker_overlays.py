@@ -44,7 +44,7 @@ HP_MIN, HP_MAX = 1, 42  # FR-007: HP outside 1..42 is discarded
 # Products that share a maker's store with modules: pedals, upgrades, bare panels, power, MCUs.
 NOT_MODULE_NAME = re.compile(
     r"(\bpedal\b|\bupgrade\b|(aluminum|alu|replacement|front|blank)\s+panel|\bpanel only\b|\bteensy\b|"
-    r"power supply|\bpsu\b|\(\d+(\.\d+)?\s*a\)|\bcase\b|\bskiff\b|\bcable|\bt-shirt|\bgift card)",
+    r"power supply|\bpsu\b|\brow power\b|\(\d+(\.\d+)?\s*a\)|\bcase\b|\bskiff\b|\bcable|\bt-shirt|\bgift card)",
     re.I,
 )
 

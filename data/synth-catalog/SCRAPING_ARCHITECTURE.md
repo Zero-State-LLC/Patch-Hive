@@ -224,6 +224,14 @@ Built with:
 python scripts/build_maker_overlays.py --crawl maker-crawl-v2.json --additions-version 4 --power-version 12 --brands "4ms Company,Erica Synths,Pittsburgh Modular"
 ```
 
-`--brands` keeps a partial pass out of the earlier versions: v4 and v12 hold only these makers and repeat no v3 or v11 row. The result is 141 new catalog rows (Pittsburgh 56, Erica 43, 4ms 42) and 146 power and depth entries; 5 crawled modules matched existing rows. The loader now reads up to `catalog-additions-v4` and `module-power-depth-v12`.
+`--brands` keeps a partial pass out of the earlier versions: v4 and v12 hold only these makers and repeat no v3 or v11 row. The result is 136 new catalog rows (Pittsburgh 56, Erica 43, 4ms 37) and 141 power and depth entries; 5 crawled modules matched existing rows, and the five 4ms Row Power supplies are excluded as non-modules. The loader now reads up to `catalog-additions-v4` and `module-power-depth-v12`.
 
-Simulated on a staging replica (main's data, then this build) on Postgres 15: 141 catalog rows and 141 power targets added, 5 empty values filled on existing rows, 0 conflicts, and a second run was a no-op.
+Simulated on a staging replica (main's data, then this build) on Postgres 15: 136 catalog rows and 136 power targets added, 5 empty values filled on existing rows, 2 jumper-mixed values cleared, 0 conflicts, and a second run was a no-op.
+
+**Jumper-dependent draws** (Codex review on #74). Several makers list one +12V/+5V pair for each setting of a jumper that selects the +5V source:
+
+- 4ms: "+12V rail: 48mA with jumper selecting external 5V 88mA with jumper selecting internal 5V" and "5VSEL Jumper set to INT".
+- Dave Jones O'Tool: "80ma +12v 22ma -12v -or- 12ma +12v 70ma +5v".
+- Velectronic A-Envelope: "The +5V jumper selected".
+
+The crawl mixed values from different settings (QCD +5V = 88, RCD +12V = 0). No single pair is the module's draw, so when a power-source jumper is mentioned near the +12V or +5V value, `rails()` and the model path leave both unknown and keep -12V, which these pages state once. The pattern only matches jumpers that choose the supply (internal or external 5V, "jumper set to +12V", 5VSEL); jumpers for CV range or sync do not count. A rescan of every cached crawl page found 11 such pages: 9 from 4ms, plus Dave Jones and Velectronic. The 4ms rows are rebuilt in v12. The two others were already in v11, so their v11 entries are corrected and `provenance/maker-crawl-v2-jumper-fix-v1.json` clears the loaded values on staging (O'Tool +12V 80, A-Envelope +5V 170) with `only_if_value`.

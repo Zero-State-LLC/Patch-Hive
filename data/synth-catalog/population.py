@@ -296,6 +296,7 @@ PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "modulargrid-reverify-v1.json",
     CATALOG / "provenance" / "maker-crawl-v2-rail-fix-v1.json",
     CATALOG / "provenance" / "maker-review-v1.json",
+    CATALOG / "provenance" / "maker-crawl-v2-jumper-fix-v1.json",
 )
 ARCHIVE_FIELDS = {
     "modules": {

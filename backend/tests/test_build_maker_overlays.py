@@ -32,6 +32,7 @@ def test_clean_name(brand: str, raw: str, clean: str) -> None:
 @pytest.mark.parametrize(
     "name",
     [
+        "4ms Row Power 30",
         "Boulder Folder (Pedal)",
         "Bartender V1 Upgrade",
         "Pixie Aluminum Panel",

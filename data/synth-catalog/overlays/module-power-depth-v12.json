@@ -2,7 +2,7 @@
  "dataset_version": "module-power-depth-overlay-v12",
  "generated_from": "hermes-research/maker-crawl-v2.json (brands: 4ms Company, Erica Synths, Pittsburgh Modular)",
  "policy": "maker's own pages only; values regex-parsed or verbatim; no ModularGrid; insert-if-absent / fill-null; disagreements are flagged by the loader",
- "count": 146,
+ "count": 141,
  "entries": [
   {
    "brand": "4ms Company",
@@ -316,13 +316,12 @@
   {
    "brand": "4ms Company",
    "name": "Spherical Wavetable Navigator",
-   "power_12v_ma": 185,
+   "power_12v_ma": null,
    "power_neg12v_ma": 30,
    "power_5v_ma": null,
    "depth_mm": null,
    "source_url": "https://4mscompany.com/p.php?p=820&c=5",
    "sources": {
-    "power_12v_ma": "https://4mscompany.com/p.php?p=820&c=5",
     "power_neg12v_ma": "https://4mscompany.com/p.php?p=820&c=5"
    },
    "provenance": "OBSERVED",
@@ -388,13 +387,12 @@
   {
    "brand": "4ms Company",
    "name": "Dual Looping Delay",
-   "power_12v_ma": 188,
+   "power_12v_ma": null,
    "power_neg12v_ma": 48,
    "power_5v_ma": null,
    "depth_mm": null,
    "source_url": "https://4mscompany.com/p.php?p=709&c=5",
    "sources": {
-    "power_12v_ma": "https://4mscompany.com/p.php?p=709&c=5",
     "power_neg12v_ma": "https://4mscompany.com/p.php?p=709&c=5"
    },
    "provenance": "OBSERVED",
@@ -406,15 +404,13 @@
   {
    "brand": "4ms Company",
    "name": "Spectral Multiband Resonator",
-   "power_12v_ma": 86,
+   "power_12v_ma": null,
    "power_neg12v_ma": 28,
-   "power_5v_ma": 25,
+   "power_5v_ma": null,
    "depth_mm": 24,
    "source_url": "https://4mscompany.com/p.php?p=707&c=5",
    "sources": {
-    "power_12v_ma": "https://4mscompany.com/p.php?p=707&c=5",
     "power_neg12v_ma": "https://4mscompany.com/p.php?p=707&c=5",
-    "power_5v_ma": "https://4mscompany.com/p.php?p=707&c=5",
     "depth_mm": "https://4mscompany.com/p.php?p=707&c=5"
    },
    "provenance": "OBSERVED",
@@ -480,14 +476,13 @@
   {
    "brand": "4ms Company",
    "name": "4ms QCD",
-   "power_12v_ma": 48,
-   "power_neg12v_ma": null,
-   "power_5v_ma": 88,
+   "power_12v_ma": null,
+   "power_neg12v_ma": 40,
+   "power_5v_ma": null,
    "depth_mm": null,
    "source_url": "https://4mscompany.com/p.php?p=620&c=5",
    "sources": {
-    "power_12v_ma": "https://4mscompany.com/p.php?p=620&c=5",
-    "power_5v_ma": "https://4mscompany.com/p.php?p=620&c=5"
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=620&c=5"
    },
    "provenance": "OBSERVED",
    "status": "found",
@@ -516,15 +511,13 @@
   {
    "brand": "4ms Company",
    "name": "4ms QPLFO",
-   "power_12v_ma": 89,
+   "power_12v_ma": null,
    "power_neg12v_ma": 73,
-   "power_5v_ma": 154,
+   "power_5v_ma": null,
    "depth_mm": null,
    "source_url": "https://4mscompany.com/p.php?p=600&c=5",
    "sources": {
-    "power_12v_ma": "https://4mscompany.com/p.php?p=600&c=5",
-    "power_neg12v_ma": "https://4mscompany.com/p.php?p=600&c=5",
-    "power_5v_ma": "https://4mscompany.com/p.php?p=600&c=5"
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=600&c=5"
    },
    "provenance": "OBSERVED",
    "status": "found",
@@ -535,15 +528,13 @@
   {
    "brand": "4ms Company",
    "name": "4ms PEG",
-   "power_12v_ma": 60,
+   "power_12v_ma": null,
    "power_neg12v_ma": 35,
-   "power_5v_ma": 105,
+   "power_5v_ma": null,
    "depth_mm": null,
    "source_url": "https://4mscompany.com/p.php?p=541&c=5",
    "sources": {
-    "power_12v_ma": "https://4mscompany.com/p.php?p=541&c=5",
-    "power_neg12v_ma": "https://4mscompany.com/p.php?p=541&c=5",
-    "power_5v_ma": "https://4mscompany.com/p.php?p=541&c=5"
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=541&c=5"
    },
    "provenance": "OBSERVED",
    "status": "found",
@@ -554,15 +545,13 @@
   {
    "brand": "4ms Company",
    "name": "4ms VCA Matrix",
-   "power_12v_ma": 80,
+   "power_12v_ma": null,
    "power_neg12v_ma": 110,
-   "power_5v_ma": 110,
+   "power_5v_ma": null,
    "depth_mm": null,
    "source_url": "https://4mscompany.com/p.php?p=543&c=5",
    "sources": {
-    "power_12v_ma": "https://4mscompany.com/p.php?p=543&c=5",
-    "power_neg12v_ma": "https://4mscompany.com/p.php?p=543&c=5",
-    "power_5v_ma": "https://4mscompany.com/p.php?p=543&c=5"
+    "power_neg12v_ma": "https://4mscompany.com/p.php?p=543&c=5"
    },
    "provenance": "OBSERVED",
    "status": "found",
@@ -573,15 +562,12 @@
   {
    "brand": "4ms Company",
    "name": "4ms Rotating Clock Divider",
-   "power_12v_ma": 0,
+   "power_12v_ma": null,
    "power_neg12v_ma": null,
-   "power_5v_ma": 4,
+   "power_5v_ma": null,
    "depth_mm": null,
    "source_url": "https://4mscompany.com/p.php?p=567&c=5",
-   "sources": {
-    "power_12v_ma": "https://4mscompany.com/p.php?p=567&c=5",
-    "power_5v_ma": "https://4mscompany.com/p.php?p=567&c=5"
-   },
+   "sources": {},
    "provenance": "OBSERVED",
    "status": "found",
    "extracted_by": "regex",
@@ -606,15 +592,12 @@
   {
    "brand": "4ms Company",
    "name": "4ms Shuffling Clock Multiplier",
-   "power_12v_ma": 0,
+   "power_12v_ma": null,
    "power_neg12v_ma": null,
-   "power_5v_ma": 4,
+   "power_5v_ma": null,
    "depth_mm": null,
    "source_url": "https://4mscompany.com/p.php?p=568&c=5",
-   "sources": {
-    "power_12v_ma": "https://4mscompany.com/p.php?p=568&c=5",
-    "power_5v_ma": "https://4mscompany.com/p.php?p=568&c=5"
-   },
+   "sources": {},
    "provenance": "OBSERVED",
    "status": "found",
    "extracted_by": "regex",
@@ -692,51 +675,6 @@
   },
   {
    "brand": "4ms Company",
-   "name": "Row Power 45",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
-   "power_5v_ma": null,
-   "depth_mm": null,
-   "source_url": "https://4mscompany.com/p.php?p=989&c=5",
-   "sources": {},
-   "provenance": "OBSERVED",
-   "status": "found",
-   "extracted_by": "regex",
-   "verification_status": "verified",
-   "verification_source_url": "https://4mscompany.com/p.php?p=989&c=5"
-  },
-  {
-   "brand": "4ms Company",
-   "name": "4ms Row Power 35",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
-   "power_5v_ma": null,
-   "depth_mm": null,
-   "source_url": "https://4mscompany.com/p.php?p=887&c=5",
-   "sources": {},
-   "provenance": "OBSERVED",
-   "status": "found",
-   "extracted_by": "regex",
-   "verification_status": "verified",
-   "verification_source_url": "https://4mscompany.com/p.php?p=887&c=5"
-  },
-  {
-   "brand": "4ms Company",
-   "name": "4ms Row Power 25",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
-   "power_5v_ma": null,
-   "depth_mm": null,
-   "source_url": "https://4mscompany.com/p.php?p=968&c=5",
-   "sources": {},
-   "provenance": "OBSERVED",
-   "status": "found",
-   "extracted_by": "regex",
-   "verification_status": "verified",
-   "verification_source_url": "https://4mscompany.com/p.php?p=968&c=5"
-  },
-  {
-   "brand": "4ms Company",
    "name": "4ms Eurorack Swash",
    "power_12v_ma": null,
    "power_neg12v_ma": null,
@@ -751,39 +689,6 @@
    "extracted_by": "regex",
    "verification_status": "verified",
    "verification_source_url": "https://4mscompany.com/p.php?p=562&c=21"
-  },
-  {
-   "brand": "4ms Company",
-   "name": "4ms Row Power 30",
-   "power_12v_ma": null,
-   "power_neg12v_ma": 750,
-   "power_5v_ma": 500,
-   "depth_mm": null,
-   "source_url": "https://4mscompany.com/p.php?p=628&c=21",
-   "sources": {
-    "power_neg12v_ma": "https://4mscompany.com/p.php?p=628&c=21",
-    "power_5v_ma": "https://4mscompany.com/p.php?p=628&c=21"
-   },
-   "provenance": "OBSERVED",
-   "status": "found",
-   "extracted_by": "regex",
-   "verification_status": "verified",
-   "verification_source_url": "https://4mscompany.com/p.php?p=628&c=21"
-  },
-  {
-   "brand": "4ms Company",
-   "name": "4ms Row Power",
-   "power_12v_ma": null,
-   "power_neg12v_ma": null,
-   "power_5v_ma": null,
-   "depth_mm": null,
-   "source_url": "https://4mscompany.com/p.php?p=624&c=21",
-   "sources": {},
-   "provenance": "OBSERVED",
-   "status": "found",
-   "extracted_by": "regex",
-   "verification_status": "verified",
-   "verification_source_url": "https://4mscompany.com/p.php?p=624&c=21"
   },
   {
    "brand": "Erica Synths",
