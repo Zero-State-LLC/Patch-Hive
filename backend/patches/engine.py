@@ -809,6 +809,18 @@ def generate_patches_with_ir(
     patch_graphs, validation = resolve_and_validate(
         patch_graphs, modules_by_id, allowed_module_ids=set(gate_report.allowed_catalog_module_ids)
     )
+    if dropped:
+        # The inventory filter removed patches that wired modules outside the confirmed
+        # inventory. That is a contradiction, so it fails the run (OQ-08), not just a filter.
+        from patches.validation import Finding
+
+        validation.add(
+            Finding(
+                "block",
+                "MODULE_NOT_IN_INVENTORY",
+                f"{dropped} generated patch(es) wired modules outside the confirmed inventory.",
+            )
+        )
     provenance.add_metric("validation", validation.to_dict())
 
     # Complete provenance

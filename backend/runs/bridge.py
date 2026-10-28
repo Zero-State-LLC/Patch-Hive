@@ -195,6 +195,7 @@ def ensure_legacy_run_export_bridge(
     *,
     generation_seed: int | None = None,
     generator_version: str | None = None,
+    create_library: bool = True,
 ) -> LegacyRunExportBridge:
     """Idempotently create canon hierarchy rows required for /api/canon/exports.
 
@@ -249,7 +250,9 @@ def ensure_legacy_run_export_bridge(
         )
         db.flush()
 
-    if db.get(PatchLibraryRecord, library_id) is None:
+    # Generation defers the library until validation passes, so a run that ends
+    # validation_failed never holds an export-ready library (spec 001 FR-019).
+    if create_library and db.get(PatchLibraryRecord, library_id) is None:
         db.add(
             PatchLibraryRecord(
                 id=library_id,
@@ -266,6 +269,6 @@ def ensure_legacy_run_export_bridge(
         rig_revision_id=revision_id,
         source_run_id=source_run_id,
         artifact_manifest_hash=manifest_hash,
-        export_bridge_ready=True,
+        export_bridge_ready=db.get(PatchLibraryRecord, library_id) is not None,
         content_hash=content_hash,
     )

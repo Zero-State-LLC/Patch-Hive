@@ -20,6 +20,7 @@ def build_run_response(db: Session, run: Run) -> RunResponse:
         source_run_id=bridge.source_run_id,
         artifact_manifest_hash=bridge.artifact_manifest_hash,
         export_bridge_ready=bridge.export_bridge_ready,
+        validation=run.validation_report,
     )
 
 
