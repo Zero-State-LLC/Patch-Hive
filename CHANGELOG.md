@@ -4,6 +4,99 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.3](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.2...v0.3.0-alpha.3) (2026-10-28)
+
+
+### Added
+
+* **001:** resolve generic jacks to declared ones, and fail runs on contradictions ([#97](https://github.com/Zero-State-LLC/Patch-Hive/issues/97)) ([4a303d5](https://github.com/Zero-State-LLC/Patch-Hive/commit/4a303d5e120d4af233a89125df7d60ea1741b32b))
+* 003 T020–T022 source scope + Firecrawl proxy tier ([#65](https://github.com/Zero-State-LLC/Patch-Hive/issues/65)) ([a0a5d5d](https://github.com/Zero-State-LLC/Patch-Hive/commit/a0a5d5d4857df92a70252fdd0fe0e288f0fcca9e))
+* 003 T023 manufacturer crawl v2 (shared router, curated homepages, adapters, dry run) ([#66](https://github.com/Zero-State-LLC/Patch-Hive/issues/66)) ([af00449](https://github.com/Zero-State-LLC/Patch-Hive/commit/af00449f4de5cdc95eb1a3527658a8f3a146168c))
+* 003 T025 loader overlays from the v2 maker crawl (+2,721 catalog rows) ([#67](https://github.com/Zero-State-LLC/Patch-Hive/issues/67)) ([0ad98a6](https://github.com/Zero-State-LLC/Patch-Hive/commit/0ad98a67e1df23bc5d58f86bf899e2b609d3dae7))
+* 003 T026 free adapter fixes for 4ms, Pittsburgh, Erica; Tiptop excluded ([#72](https://github.com/Zero-State-LLC/Patch-Hive/issues/72)) ([270140c](https://github.com/Zero-State-LLC/Patch-Hive/commit/270140c5d33a3803605c8e9d9f9907346cb995db))
+* 003 T026 overlays: catalog-additions-v4 and module-power-depth-v12 ([#74](https://github.com/Zero-State-LLC/Patch-Hive/issues/74)) ([7db1f75](https://github.com/Zero-State-LLC/Patch-Hive/commit/7db1f75a645139318e11ed7bdd2cb3fef846763f))
+* 003 T026 paid pass: 4ms, Pittsburgh and Erica merged into the v2 crawl ([#73](https://github.com/Zero-State-LLC/Patch-Hive/issues/73)) ([35b679c](https://github.com/Zero-State-LLC/Patch-Hive/commit/35b679cef469af3491d48cabbf1a0c9802757496))
+* 006 implement Cloudflare Edge + Clef (state machines + ClefProvider adapter) ([#50](https://github.com/Zero-State-LLC/Patch-Hive/issues/50)) ([f64c9dc](https://github.com/Zero-State-LLC/Patch-Hive/commit/f64c9dc175b0e415d55806883448edf1c8e01b6f))
+* 007 implement Evaluation Corpus Freeze + Controlled Staging Enablement ([#51](https://github.com/Zero-State-LLC/Patch-Hive/issues/51)) ([0b7b911](https://github.com/Zero-State-LLC/Patch-Hive/commit/0b7b911abccd2b51bd4cecdb3ef326fbcd41d94b))
+* 008 implement Dual-Path F5 Cutover + Design Engine Staging Receipts ([#53](https://github.com/Zero-State-LLC/Patch-Hive/issues/53)) ([e0fb6a1](https://github.com/Zero-State-LLC/Patch-Hive/commit/e0fb6a1ddbcd4d2a86531eb4e6c695f3bfeba0e8))
+* **api:** users own their racks ([#80](https://github.com/Zero-State-LLC/Patch-Hive/issues/80)) ([433bb76](https://github.com/Zero-State-LLC/Patch-Hive/commit/433bb76ec0c03bd6c7133ada82b550996fab9afd))
+* **auth:** short in-memory access tokens, rotating refresh cookie, report-only CSP ([#99](https://github.com/Zero-State-LLC/Patch-Hive/issues/99)) ([789ec15](https://github.com/Zero-State-LLC/Patch-Hive/commit/789ec1507e4dd97c6efee52942e2fec2375e69b8))
+* **engine:** six more patch rules, and a demo rig that shows real patches ([#96](https://github.com/Zero-State-LLC/Patch-Hive/issues/96)) ([1c4735d](https://github.com/Zero-State-LLC/Patch-Hive/commit/1c4735dbf89f9b7c44f7a64f6275807f2838f349))
+* **storage:** mirror evidence, exports and design packs to R2 (006 T055a) ([#63](https://github.com/Zero-State-LLC/Patch-Hive/issues/63)) ([0741437](https://github.com/Zero-State-LLC/Patch-Hive/commit/07414374e2b3de8b99dda436f99c5eb3a60821a6))
+
+
+### Fixed
+
+* **001:** five canonical categories, and no invented study patches ([#94](https://github.com/Zero-State-LLC/Patch-Hive/issues/94)) ([9dd88cf](https://github.com/Zero-State-LLC/Patch-Hive/commit/9dd88cfaff6ee9df23c055c40f2793809274656e))
+* **001:** gate readiness before writing, record the run lifecycle and real provenance ([#88](https://github.com/Zero-State-LLC/Patch-Hive/issues/88)) ([b7cd497](https://github.com/Zero-State-LLC/Patch-Hive/commit/b7cd497b1fe0da6b5353172c963f748074f62537))
+* **001:** keep runs and generated patches append-only ([#92](https://github.com/Zero-State-LLC/Patch-Hive/issues/92)) ([33dbecb](https://github.com/Zero-State-LLC/Patch-Hive/commit/33dbecbec54a1c72d4c035fb69b713865f754d0d))
+* **001:** soft-delete racks so deletion keeps run and patch history ([#93](https://github.com/Zero-State-LLC/Patch-Hive/issues/93)) ([08ae313](https://github.com/Zero-State-LLC/Patch-Hive/commit/08ae3130a0c931ce95a600828a70b32ec2a64890))
+* **002:** draw body text, steps and cables at the profile's font floor ([#102](https://github.com/Zero-State-LLC/Patch-Hive/issues/102)) ([82435ed](https://github.com/Zero-State-LLC/Patch-Hive/commit/82435ed3335a6cf383ca330dcf92fdb86492c987))
+* **002:** patch pages wrap instead of cutting, overflow fails with a code; guard publication lifecycle ([#101](https://github.com/Zero-State-LLC/Patch-Hive/issues/101)) ([5bd303b](https://github.com/Zero-State-LLC/Patch-Hive/commit/5bd303b18711034f0a8920231e2fb545ccbbf81f))
+* 003 keep parsed draws the model left empty; fill feed rows from pages ([#76](https://github.com/Zero-State-LLC/Patch-Hive/issues/76)) ([d12791e](https://github.com/Zero-State-LLC/Patch-Hive/commit/d12791e482223b2c145bedef32bae7f75ad7d621))
+* 003 loader false conflicts from integer columns and unverified sources ([#70](https://github.com/Zero-State-LLC/Patch-Hive/issues/70)) ([77080d6](https://github.com/Zero-State-LLC/Patch-Hive/commit/77080d6cd1b9de88a925585e8db9ad6b1b08cf8c))
+* 003 rail parser misread -12V draws; correct the v2 overlays and staging ([#68](https://github.com/Zero-State-LLC/Patch-Hive/issues/68)) ([09d5645](https://github.com/Zero-State-LLC/Patch-Hive/commit/09d56456e61cbfcdb6246e3d97b7c7852e723474))
+* 003 read Erica's unlabelled signed draws (+59mA, -30mA) ([#75](https://github.com/Zero-State-LLC/Patch-Hive/issues/75)) ([b235b97](https://github.com/Zero-State-LLC/Patch-Hive/commit/b235b979e540c50da75f5439162aaf221d43c184))
+* 003 resolve the five staging conflicts by product identity ([#71](https://github.com/Zero-State-LLC/Patch-Hive/issues/71)) ([0fe76e7](https://github.com/Zero-State-LLC/Patch-Hive/commit/0fe76e78eddf1673a8cff6ae6b5f5be97f357e1a))
+* **003:** bounded downloads, identified receipts, and apply bound to the reviewed plan ([#103](https://github.com/Zero-State-LLC/Patch-Hive/issues/103)) ([7e730e9](https://github.com/Zero-State-LLC/Patch-Hive/commit/7e730e98283977dd9ba885e608f20b32dee554dd))
+* **api:** close the P0 security gaps from the 2026-10-27 gap analysis ([#82](https://github.com/Zero-State-LLC/Patch-Hive/issues/82)) ([9cd11aa](https://github.com/Zero-State-LLC/Patch-Hive/commit/9cd11aa852cd9418e600bf88ed8992e9e3b07076))
+* **api:** require an admin for module and case writes, and audit them ([#79](https://github.com/Zero-State-LLC/Patch-Hive/issues/79)) ([f5c7ff6](https://github.com/Zero-State-LLC/Patch-Hive/commit/f5c7ff6691368a6316e48d8f1d8d7fe14f42c9ca))
+* **cases:** reload fills nulls only, never overwrites; count real changes ([#35](https://github.com/Zero-State-LLC/Patch-Hive/issues/35)) ([6b65156](https://github.com/Zero-State-LLC/Patch-Hive/commit/6b65156344d25f9dc9ffe07155f5dff4c7c46014))
+* **edge:** forward the https scheme to the API and restart on config changes ([#86](https://github.com/Zero-State-LLC/Patch-Hive/issues/86)) ([677a204](https://github.com/Zero-State-LLC/Patch-Hive/commit/677a20432632fa651626367618abdb862e1566a0))
+* **edge:** keep the container label name under Cloudflare's 16-byte limit ([#87](https://github.com/Zero-State-LLC/Patch-Hive/issues/87)) ([25ce33f](https://github.com/Zero-State-LLC/Patch-Hive/commit/25ce33f7d487d0b4a7f980e1e88f953ccbc92d58))
+* **frontend:** allow Cloudflare's analytics beacon in the report-only CSP ([#100](https://github.com/Zero-State-LLC/Patch-Hive/issues/100)) ([fd444e0](https://github.com/Zero-State-LLC/Patch-Hive/commit/fd444e09cb7117b441236a6302e77df1fca20e84))
+* **frontend:** drop seed-v1 operator hint from production Cases error ([7a7791f](https://github.com/Zero-State-LLC/Patch-Hive/commit/7a7791f1806182973540e8892e31179c285c4ef4))
+* **frontend:** keep demo credentials and seed hints out of production ([79d985b](https://github.com/Zero-State-LLC/Patch-Hive/commit/79d985be2002454aa0ca529e5ed7e583c232640e))
+* **frontend:** remove phishing-scanner triggers from patch-hive.com ([#69](https://github.com/Zero-State-LLC/Patch-Hive/issues/69)) ([fbabe1b](https://github.com/Zero-State-LLC/Patch-Hive/commit/fbabe1bb2ac5e7c15472131f840d87249c14d52f))
+* **github:** drop case-colliding PULL_REQUEST_TEMPLATE.md ([#59](https://github.com/Zero-State-LLC/Patch-Hive/issues/59)) ([bba9180](https://github.com/Zero-State-LLC/Patch-Hive/commit/bba9180e7485e5f2e179d3ae91c506cb9571c930))
+* **intelligence:** a failed provider resolves UNRESOLVED or ESCALATE, never REJECT ([#105](https://github.com/Zero-State-LLC/Patch-Hive/issues/105)) ([278878e](https://github.com/Zero-State-LLC/Patch-Hive/commit/278878e562ff32630fb2e3f1728cf44c5abadb4e))
+* **intelligence:** bound choice answers to the request's candidates (spec 005 FR-003) ([#104](https://github.com/Zero-State-LLC/Patch-Hive/issues/104)) ([16e5499](https://github.com/Zero-State-LLC/Patch-Hive/commit/16e5499626fb7c20b45998775d357b805e155b0c))
+* **population:** flag, don't verify, when verified overlay disagrees with stored values ([#38](https://github.com/Zero-State-LLC/Patch-Hive/issues/38)) ([1b2bc6e](https://github.com/Zero-State-LLC/Patch-Hive/commit/1b2bc6e07c2b90b9fc2d38aea7465323d43ee751))
+* **population:** flagged rows stay flagged without a spurious conflict ([#39](https://github.com/Zero-State-LLC/Patch-Hive/issues/39)) ([8b0bc33](https://github.com/Zero-State-LLC/Patch-Hive/commit/8b0bc33f126771cd9504408ba0fddb62b1718b4d))
+* **security:** P1 hardening from the gap analysis ([#98](https://github.com/Zero-State-LLC/Patch-Hive/issues/98)) ([43241be](https://github.com/Zero-State-LLC/Patch-Hive/commit/43241bec1ddca71aca142155807e656e12795ac5))
+
+
+### Specifications
+
+* **003:** record owner decisions on ModularGrid leads and source scope ([#64](https://github.com/Zero-State-LLC/Patch-Hive/issues/64)) ([0125c0a](https://github.com/Zero-State-LLC/Patch-Hive/commit/0125c0a96f49730793f2df72eb46bd042b370b9c))
+* add 006 Cloudflare Edge + Clef (DAG + state machines) ([#48](https://github.com/Zero-State-LLC/Patch-Hive/issues/48)) ([0b4ca02](https://github.com/Zero-State-LLC/Patch-Hive/commit/0b4ca02e6f13ab8e395ddca30d0db62c725e9c0c))
+* add 007 evaluation/staging enablement + 008 dual-path F5 cutover (tasks + state machines) ([#49](https://github.com/Zero-State-LLC/Patch-Hive/issues/49)) ([3f6d19c](https://github.com/Zero-State-LLC/Patch-Hive/commit/3f6d19c5358fc0cde1c9937c8a0ef65c5a2f492c))
+* add missing depends_on edges and a --ready view to the spec DAG checker ([#61](https://github.com/Zero-State-LLC/Patch-Hive/issues/61)) ([a66baf0](https://github.com/Zero-State-LLC/Patch-Hive/commit/a66baf0df31621c59bf0b76fc27e3062866ef4e1))
+* audit 001-008 for Spec Kit + DAG compliance; add spec DAG checker ([#57](https://github.com/Zero-State-LLC/Patch-Hive/issues/57)) ([230c0a5](https://github.com/Zero-State-LLC/Patch-Hive/commit/230c0a5d03a89588c846f46a5957024a0e2be825))
+
+
+### Data
+
+* batch 8 paid run, power/depth overlay v7, fake-IP opt-in for sandbox egress ([#34](https://github.com/Zero-State-LLC/Patch-Hive/issues/34)) ([6d13ceb](https://github.com/Zero-State-LLC/Patch-Hive/commit/6d13ceb7b1971786b65d3faa3cc90b005b6e100f))
+* catalog batch 7 via shared scrape-router (overlay v5, 179 new-brand candidates, dry-run receipt, architecture audit) ([#30](https://github.com/Zero-State-LLC/Patch-Hive/issues/30)) ([fdfbe93](https://github.com/Zero-State-LLC/Patch-Hive/commit/fdfbe93c6a446b82bcd9b311c8e409f683922fbf))
+* in-repo scrape router + importer + batch 8 prep ([#33](https://github.com/Zero-State-LLC/Patch-Hive/issues/33)) ([6a2035b](https://github.com/Zero-State-LLC/Patch-Hive/commit/6a2035b2f96891e7a079f7ce5c5cd0ec065a70fc))
+* maker re-verify v1 of ModularGrid-derived values (power/depth v10, catalog hp v2; maker pages only, fill-null) ([#42](https://github.com/Zero-State-LLC/Patch-Hive/issues/42)) ([2376481](https://github.com/Zero-State-LLC/Patch-Hive/commit/2376481bdd00380f8efbcbb5d3cd43f1d56f48cc))
+* manufacturer-crawl catalog additions v2 + power/depth v9 (maker pages only) ([#40](https://github.com/Zero-State-LLC/Patch-Hive/issues/40)) ([3a8310c](https://github.com/Zero-State-LLC/Patch-Hive/commit/3a8310c7468dcb7800dc98b01fab4b9afa82a73b))
+* manufacturer-verified catalog additions v1 + power/depth v8 for unmatched rows ([#37](https://github.com/Zero-State-LLC/Patch-Hive/issues/37)) ([9e22422](https://github.com/Zero-State-LLC/Patch-Hive/commit/9e2242244b8cfd854bad94bc61f5a6298c7f7257))
+* ModularGrid provenance archive, null unconfirmed MG values, remove MG extracts from HEAD ([#41](https://github.com/Zero-State-LLC/Patch-Hive/issues/41)) ([c7b4777](https://github.com/Zero-State-LLC/Patch-Hive/commit/c7b4777cee5ba2ada778ab6135e6334464fa50fe))
+* verified power/depth overlay v7, loader reads v1-v7 ([#36](https://github.com/Zero-State-LLC/Patch-Hive/issues/36)) ([3f1ab6e](https://github.com/Zero-State-LLC/Patch-Hive/commit/3f1ab6eb442a3b40c870e737d831d5d6dbc832a1))
+
+
+### Operations
+
+* add a workflow that writes edge API secrets without exposing them ([#85](https://github.com/Zero-State-LLC/Patch-Hive/issues/85)) ([d30711e](https://github.com/Zero-State-LLC/Patch-Hive/commit/d30711e4d28329f4cc30c0ddec802f9bb4894dd1))
+* **api:** serve FastAPI on Cloudflare Containers at api.patch-hive.com (006 T040a, T050a) ([#62](https://github.com/Zero-State-LLC/Patch-Hive/issues/62)) ([46c23c6](https://github.com/Zero-State-LLC/Patch-Hive/commit/46c23c67808a00d69a81a1f80db04e23e382a154))
+* **db-load:** stop uploading raw pre-apply dumps and row-level SQL as public artifacts ([#43](https://github.com/Zero-State-LLC/Patch-Hive/issues/43)) ([84a1b32](https://github.com/Zero-State-LLC/Patch-Hive/commit/84a1b3254d58a4f5eff19c9cf3a6b7a5718f9ecd))
+* **edge:** run the API container under the durable_object scheduling policy ([#84](https://github.com/Zero-State-LLC/Patch-Hive/issues/84)) ([34b0a58](https://github.com/Zero-State-LLC/Patch-Hive/commit/34b0a589b209c62290bf3fb92754a7ad4d7d3920))
+* **frontend:** deploy SPA to Cloudflare Workers static assets ([9a2e499](https://github.com/Zero-State-LLC/Patch-Hive/commit/9a2e499d20ab617889417ac9de6a20950e67b07c))
+* **frontend:** redirect www.patch-hive.com to the apex ([f190a43](https://github.com/Zero-State-LLC/Patch-Hive/commit/f190a43b1a771169f6a3dbed87ec8b77f93ecb10))
+* **frontend:** serve from patch-hive.com, disable shared workers.dev ([b511285](https://github.com/Zero-State-LLC/Patch-Hive/commit/b51128593d8f3064ab3dd50d2712fb58e9dbce5b))
+* make the public pair production and add a separate staging pair ([#83](https://github.com/Zero-State-LLC/Patch-Hive/issues/83)) ([cc1b21a](https://github.com/Zero-State-LLC/Patch-Hive/commit/cc1b21a4a4e9e4e27fedcc7e4195a770546234ef))
+* record Neon patchhive DB (staging/prod, quota) and add manual db-migrate workflow ([#32](https://github.com/Zero-State-LLC/Patch-Hive/issues/32)) ([6e557eb](https://github.com/Zero-State-LLC/Patch-Hive/commit/6e557ebd374f507342ae4a558ac92639089f3ff8))
+* release-please + Conventional Commit PR titles; board Status Backlog ([#58](https://github.com/Zero-State-LLC/Patch-Hive/issues/58)) ([c4f83ba](https://github.com/Zero-State-LLC/Patch-Hive/commit/c4f83ba314ad874c29a3b6deae82d9d9078e7e56))
+* **release:** pass RELEASE_PLEASE_TOKEN to release-please ([#60](https://github.com/Zero-State-LLC/Patch-Hive/issues/60)) ([a2014f5](https://github.com/Zero-State-LLC/Patch-Hive/commit/a2014f50c34c62659e29a0319ac023cfd5296799))
+
+
+### Documentation
+
+* refresh state, board mirror and open decisions after [#80](https://github.com/Zero-State-LLC/Patch-Hive/issues/80) ([#81](https://github.com/Zero-State-LLC/Patch-Hive/issues/81)) ([bbc68ad](https://github.com/Zero-State-LLC/Patch-Hive/commit/bbc68ad2054d523e069f109849e84393c60f42d4))
+* **spec-006:** record T030 frontend edge deploy receipt ([f66077e](https://github.com/Zero-State-LLC/Patch-Hive/commit/f66077e38158eacd8978d9d12f2bb63f1756771d))
+
 ## 0.3.0-alpha.2 — 2026-10-16
 
 ### Changed
