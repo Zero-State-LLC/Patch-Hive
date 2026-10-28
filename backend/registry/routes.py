@@ -23,7 +23,7 @@ def list_manufacturers(
     db: Session = Depends(get_db),
 ):
     return {
-        "total": len(services.list_manufacturers(limit=10000, db=db)),
+        "total": services.count_manufacturers(db=db),
         "items": services.list_manufacturers(limit=limit, offset=offset, db=db),
     }
 
@@ -44,8 +44,9 @@ def search(
     q: str = Query("", description="Search term"),
     brand: Optional[str] = None,
     limit: int = Query(50, le=200),
+    db: Session = Depends(get_db),
 ):
-    return {"results": services.search_models(q=q, brand=brand, limit=limit)}
+    return {"results": services.search_models(q=q, brand=brand, limit=limit, db=db)}
 
 
 @router.get("/coverage")
