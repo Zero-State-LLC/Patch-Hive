@@ -24,7 +24,10 @@ def _client(db_session: Session) -> TestClient:
             pass
 
     app.dependency_overrides[get_db] = override_get_db
-    return TestClient(app)
+    from tests.conftest import bearer_headers, make_user
+
+    # Read-only checks over racks owned by other users: sign in as a read-all admin role.
+    return TestClient(app, headers=bearer_headers(make_user(db_session, "auditor", "ReadOnly")))
 
 
 def test_canon_runs_alias_matches_legacy_list(db_session: Session) -> None:
@@ -42,8 +45,13 @@ def test_canon_runs_alias_matches_legacy_list(db_session: Session) -> None:
     rack = Rack(user_id=user.id, case_id=case.id, name="Rig")
     db_session.add(rack)
     db_session.flush()
-    run = Run(rack_id=rack.id, status="completed", created_at=datetime.utcnow())
+    run = Run(rack_id=rack.id, status="succeeded", created_at=datetime.utcnow())
     db_session.add(run)
+    db_session.commit()
+    # As generation does: record the canonical bridge when the run is made.
+    from runs.bridge import ensure_legacy_run_export_bridge
+
+    ensure_legacy_run_export_bridge(db_session, run)
     db_session.commit()
 
     client = _client(db_session)

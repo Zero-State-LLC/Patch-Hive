@@ -37,6 +37,10 @@ class Rack(Base):
     # Generation metadata (for deterministic naming)
     generation_seed = Column(Integer, nullable=True)
 
+    # Soft delete (spec 001 OQ-02): a deleted rack disappears from the API, but its
+    # runs, patches and canonical history stay, because they are append-only.
+    deleted_at = Column(DateTime, nullable=True, index=True)
+
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
@@ -45,7 +49,8 @@ class Rack(Base):
     user = relationship("User", back_populates="racks")
     case = relationship("Case", back_populates="racks")
     modules = relationship("RackModule", back_populates="rack", cascade="all, delete-orphan")
-    patches = relationship("Patch", back_populates="rack", cascade="all, delete-orphan")
+    # No delete cascade: runs and patches outlive their rack (append-only).
+    patches = relationship("Patch", back_populates="rack")
     votes = relationship("Vote", back_populates="rack", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="rack", cascade="all, delete-orphan")
 

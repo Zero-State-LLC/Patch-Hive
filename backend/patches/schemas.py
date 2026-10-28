@@ -24,7 +24,7 @@ class PatchBase(BaseModel):
     name: str
     suggested_name: Optional[str] = None
     name_override: Optional[str] = None
-    category: str  # "Voice", "Modulation", "Clock-Rhythm", "Generative", "Utility", "Performance Macro", "Texture-FX", "Study", "Experimental-Feedback"
+    category: str  # one of core.ir.PatchCategory; older rows may hold retired values such as "Study"
     description: Optional[str] = None
     is_public: bool = False
     tags: list[str] = Field(default_factory=list)
@@ -105,3 +105,6 @@ class GeneratePatchesResponse(BaseModel):
     inventory_revision_id: Optional[str] = None
     inventory_gate_code: Optional[str] = None
     generation_status: Optional[str] = None
+    # Port resolution and validation (spec 001 FR-016/017/019): blocking findings fail
+    # the run; "unresolved" marks jacks whose names are not on file.
+    validation: Optional[dict] = None

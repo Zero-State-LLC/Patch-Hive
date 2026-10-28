@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
+import { refreshSession, signOut } from "@/lib/session";
 import { useAuthStore } from "@/lib/store";
 import AccountPage from "@/pages/Account";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
@@ -25,7 +26,11 @@ import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 type Theme = "dark" | "light";
 
 function App() {
-  const { user, logout, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
+  // Restore the session from the API's refresh cookie after a reload.
+  useEffect(() => {
+    if (ACCOUNTS_OPEN) void refreshSession();
+  }, []);
   const [theme, setTheme] = useState<Theme>("dark");
   const canSeeAdmin = user && ["Admin", "Ops", "Support", "ReadOnly"].includes(user.role);
 
@@ -59,7 +64,7 @@ function App() {
               {theme === "dark" ? "Light" : "Dark"}
             </button>
             {isAuthenticated() ? (
-              <button className="button button-secondary" type="button" onClick={logout}>
+              <button className="button button-secondary" type="button" onClick={() => void signOut()}>
                 Sign out {user?.username}
               </button>
             ) : ACCOUNTS_OPEN ? (

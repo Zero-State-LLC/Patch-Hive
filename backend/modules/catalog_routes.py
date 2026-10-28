@@ -11,6 +11,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 
+from admin.dependencies import require_admin_mutate
+from admin.utils import log_admin_action
+from community.models import User
 from core.database import get_db
 from modules.catalog import ModuleCatalog
 from modules.models import Module
@@ -372,8 +375,17 @@ def materialize_module_catalog_batch(
     ),
     limit: int = Query(500, ge=1, le=2000),
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_mutate),
 ) -> Dict[str, Any]:
-    """Bulk materialize catalog rows into placeable ``modules`` (idempotent)."""
+    """Bulk materialize catalog rows into placeable ``modules`` (idempotent). Admin only."""
+    log_admin_action(
+        db,
+        actor=current_user,
+        action_type="module_catalog.materialize_batch",
+        target_type="module_catalog",
+        delta_json={"brand": brand, "hp_known_only": hp_known_only, "limit": limit},
+    )
+    db.commit()
     return materialize_catalog_batch(
         db, brand=brand, hp_known_only=hp_known_only, limit=limit
     )

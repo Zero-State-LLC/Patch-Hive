@@ -21,6 +21,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from canon.models import GenerationRunRecord, PatchLibraryRecord, RigRevisionRecord
+from core.config import settings
 from racks.models import Rack, RackModule
 from runs.models import Run
 
@@ -157,11 +158,53 @@ def bridge_for_run(run: Run, content_hash: str | None = None) -> LegacyRunExport
     )
 
 
-def ensure_legacy_run_export_bridge(db: Session, run: Run) -> LegacyRunExportBridge:
+def recorded_run_bridge(db: Session, run: Run) -> LegacyRunExportBridge:
+    """The canonical ids recorded for a run when it was generated. Read-only.
+
+    Runs are append-only (spec 001 FR-020): reading one never mints rows, and a
+    later layout change never re-binds an old run to a new rig revision. A run with
+    no recorded generation (from before generate wrote the bridge) reports
+    ``export_bridge_ready=False``.
+    """
+    record = (
+        db.query(GenerationRunRecord)
+        .filter(GenerationRunRecord.id.like(f"gen-run-{int(run.id)}-%"))  # type: ignore[arg-type]
+        .order_by(GenerationRunRecord.created_at.asc())
+        .first()
+    )
+    library = (
+        db.query(PatchLibraryRecord).filter(PatchLibraryRecord.run_id == record.id).first()
+        if record is not None
+        else None
+    )
+    if record is None or library is None:
+        return bridge_for_run(run)
+    return LegacyRunExportBridge(
+        run_id=int(run.id),  # type: ignore[arg-type]
+        rack_id=int(run.rack_id),  # type: ignore[arg-type]
+        rig_revision_id=str(record.rig_revision_id),
+        source_run_id=str(record.id),
+        artifact_manifest_hash=str(library.artifact_manifest_hash),
+        export_bridge_ready=True,
+    )
+
+
+def ensure_legacy_run_export_bridge(
+    db: Session,
+    run: Run,
+    *,
+    generation_seed: int | None = None,
+    generator_version: str | None = None,
+    create_library: bool = True,
+) -> LegacyRunExportBridge:
     """Idempotently create canon hierarchy rows required for /api/canon/exports.
 
     Function name retained for call-site stability; identifiers are native.
     Rig revisions are append-only: layout changes mint a new ``rig-rev-*`` id.
+
+    Generation passes the request's seed and the engine version so the canonical
+    run records the real provenance (spec 001 FR-024/FR-026). Runs bridged later
+    from a read never recorded their seed; for those the run id stands in, as before.
     """
     rack = db.get(Rack, run.rack_id)
     if rack is None:
@@ -198,8 +241,8 @@ def ensure_legacy_run_export_bridge(db: Session, run: Run) -> LegacyRunExportBri
                 user_id=user_id,
                 rig_revision_id=revision_id,
                 schema_version="patchhive.canon.v1",
-                generator_version="1.0.0",
-                generation_seed=bridge.run_id,
+                generator_version=generator_version or settings.patch_engine_version,
+                generation_seed=bridge.run_id if generation_seed is None else int(generation_seed),
                 normalized_input_hash=_stable_hash(
                     f"generation-run:{source_run_id}:content:{content_hash}"
                 ),
@@ -207,7 +250,9 @@ def ensure_legacy_run_export_bridge(db: Session, run: Run) -> LegacyRunExportBri
         )
         db.flush()
 
-    if db.get(PatchLibraryRecord, library_id) is None:
+    # Generation defers the library until validation passes, so a run that ends
+    # validation_failed never holds an export-ready library (spec 001 FR-019).
+    if create_library and db.get(PatchLibraryRecord, library_id) is None:
         db.add(
             PatchLibraryRecord(
                 id=library_id,
@@ -224,6 +269,6 @@ def ensure_legacy_run_export_bridge(db: Session, run: Run) -> LegacyRunExportBri
         rig_revision_id=revision_id,
         source_run_id=source_run_id,
         artifact_manifest_hash=manifest_hash,
-        export_bridge_ready=True,
+        export_bridge_ready=db.get(PatchLibraryRecord, library_id) is not None,
         content_hash=content_hash,
     )

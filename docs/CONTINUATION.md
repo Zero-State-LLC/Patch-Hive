@@ -1,5 +1,7 @@
 # PatchHive continuation plan
 
+> **Superseded for current work (2026-10-28).** This plan is dated 2026-07-21. Current state is in [CURRENT_STATE.md](../CURRENT_STATE.md); open work is on [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8) (mirror: [KANBAN.md](KANBAN.md)); open owner decisions are in [evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md](evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md).
+
 **Status date:** 2026-07-21  
 **main HEAD:** `de1fbcf` (Login #95; Design Engine #90–#94 on main)  
 **Open:** [#96](https://github.com/scrimshawlife-ctrl/Patch-Hive/pull/96) Cyber Hive pages  

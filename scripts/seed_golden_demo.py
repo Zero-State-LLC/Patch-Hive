@@ -224,6 +224,34 @@ MODULE_FIXTURES: dict[int, dict[str, Any]] = {
         "source": "Manual",
         "source_reference": "Seed data",
     },
+    # Added for issue #95 so the demo shows ten or more patches the engine can justify.
+    # HP and power from the catalog (SynthCatalogResearch); jack names are not on file.
+    1010: {
+        "brand": "Doepfer",
+        "name": "A-110-1",
+        "hp": 10,
+        "module_type": "VCO",
+        "power_12v_ma": 90,
+        "power_neg12v_ma": 20,
+        "io_ports": [],
+        "tags": ["analog", "oscillator"],
+        "description": "Standard analog VCO",
+        "source": "SynthCatalogResearch",
+        "source_reference": "module catalog",
+    },
+    1011: {
+        "brand": "Befaco",
+        "name": "Even VCO",
+        "hp": 8,
+        "module_type": "VCO",
+        "power_12v_ma": 36,
+        "power_neg12v_ma": 26,
+        "io_ports": [],
+        "tags": ["analog", "oscillator"],
+        "description": "Analog VCO",
+        "source": "SynthCatalogResearch",
+        "source_reference": "module catalog",
+    },
 }
 
 CASE_FIXTURE = {
@@ -369,7 +397,7 @@ def seed_golden_demo(db: Session, fixture_path: Path = FIXTURE_PATH) -> SeedResu
         hp_cursor += module_obj.hp
     db.commit()
 
-    run = Run(rack_id=rack.id, status="completed")
+    run = Run(rack_id=rack.id, status="succeeded")
     db.add(run)
     db.commit()
     db.refresh(run)

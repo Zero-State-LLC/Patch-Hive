@@ -8,8 +8,10 @@ from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
+from community.auth import get_current_user, require_auth
+from community.models import User
 from core import get_db, settings
-from racks.models import Rack
+from racks.access import owned_patch, owned_rack, readable_patch, readable_patches
 from runs.bridge import ensure_legacy_run_export_bridge
 from runs.models import Run
 
@@ -26,19 +28,29 @@ from .schemas import (
 
 router = APIRouter()
 
+# What an owner may change on a generated patch: a display label and visibility.
+GENERATED_PATCH_EDITABLE = {"name_override", "is_public"}
+
 
 @router.post("/", response_model=PatchResponse, status_code=201)
-def create_patch(patch: PatchCreate, db: Session = Depends(get_db)):
-    """Create a new patch."""
-    # Verify rack exists
-    rack = db.query(Rack).filter(Rack.id == patch.rack_id).first()
-    if not rack:
-        raise HTTPException(status_code=404, detail="Rack not found")
+def create_patch(
+    patch: PatchCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+):
+    """Create a hand-made patch on a rack the caller owns.
+
+    A run's patches come only from generation; runs are append-only (spec 001
+    FR-020), so a hand-made patch cannot join one, not even the caller's own.
+    """
+    owned_rack(db, patch.rack_id, current_user)
+    if patch.run_id is not None:
+        raise HTTPException(status_code=400, detail="RUN_IS_APPEND_ONLY")
 
     tags = patch.tags or _derive_tags(patch.connections)
     db_patch = Patch(
         rack_id=patch.rack_id,
-        run_id=patch.run_id,
+        run_id=None,
         name=patch.name,
         suggested_name=patch.suggested_name,
         name_override=patch.name_override,
@@ -67,9 +79,10 @@ def list_patches(
     category: Optional[str] = None,
     is_public: Optional[bool] = None,
     db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
 ):
-    """List patches with optional filters."""
-    query = db.query(Patch)
+    """List the patches the caller may read, with optional filters."""
+    query = readable_patches(db.query(Patch), current_user)
 
     # Apply filters
     if rack_id is not None:
@@ -90,28 +103,40 @@ def list_patches(
 
 
 @router.get("/{patch_id}", response_model=PatchResponse)
-def get_patch(patch_id: int, db: Session = Depends(get_db)):
+def get_patch(
+    patch_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+):
     """Get a specific patch by ID."""
-    patch = db.query(Patch).filter(Patch.id == patch_id).first()
-    if not patch:
-        raise HTTPException(status_code=404, detail="Patch not found")
+    patch = readable_patch(db, patch_id, current_user)
 
     return build_patch_response(db, patch)
 
 
 @router.patch("/{patch_id}", response_model=PatchResponse)
-def update_patch(patch_id: int, patch_update: PatchUpdate, db: Session = Depends(get_db)):
-    """Update a patch."""
-    db_patch = db.query(Patch).filter(Patch.id == patch_id).first()
-    if not db_patch:
-        raise HTTPException(status_code=404, detail="Patch not found")
+def update_patch(
+    patch_id: int,
+    patch_update: PatchUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+):
+    """Update a patch (rack owner only).
 
-    # Update fields if provided
+    A generated patch (one with a run) is append-only (spec 001 FR-020): its name and
+    description are what the engine produced. The owner may still set a display
+    label (``name_override``) and visibility; the label never replaces ``name``.
+    """
+    db_patch = owned_patch(db, patch_id, current_user)
+
     update_data = patch_update.model_dump(exclude_unset=True)
+    generated = db_patch.run_id is not None
+    if generated and set(update_data) - GENERATED_PATCH_EDITABLE:
+        raise HTTPException(status_code=409, detail="GENERATED_PATCH_IS_APPEND_ONLY")
     for field, value in update_data.items():
         setattr(db_patch, field, value)
 
-    if "name_override" in update_data:
+    if "name_override" in update_data and not generated:
         if patch_update.name_override:
             db_patch.name = patch_update.name_override
         else:
@@ -124,11 +149,15 @@ def update_patch(patch_id: int, patch_update: PatchUpdate, db: Session = Depends
 
 
 @router.delete("/{patch_id}", status_code=204)
-def delete_patch(patch_id: int, db: Session = Depends(get_db)):
-    """Delete a patch."""
-    db_patch = db.query(Patch).filter(Patch.id == patch_id).first()
-    if not db_patch:
-        raise HTTPException(status_code=404, detail="Patch not found")
+def delete_patch(
+    patch_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+):
+    """Delete a hand-made patch (rack owner only). Generated patches stay (FR-020)."""
+    db_patch = owned_patch(db, patch_id, current_user)
+    if db_patch.run_id is not None:
+        raise HTTPException(status_code=409, detail="GENERATED_PATCH_IS_APPEND_ONLY")
 
     db.delete(db_patch)
     db.commit()
@@ -136,12 +165,14 @@ def delete_patch(patch_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/generate/{rack_id}", response_model=GeneratePatchesResponse)
-def generate_patches(rack_id: int, request: GeneratePatchesRequest, db: Session = Depends(get_db)):
-    """Generate patches for a rack using the patch engine."""
-    # Verify rack exists
-    rack = db.query(Rack).filter(Rack.id == rack_id).first()
-    if not rack:
-        raise HTTPException(status_code=404, detail="Rack not found")
+def generate_patches(
+    rack_id: int,
+    request: GeneratePatchesRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+):
+    """Generate patches for a rack the caller owns, using the patch engine."""
+    rack = owned_rack(db, rack_id, current_user)
 
     # Build engine config
     config = PatchEngineConfig(
@@ -150,14 +181,42 @@ def generate_patches(rack_id: int, request: GeneratePatchesRequest, db: Session 
         prefer_simple=request.prefer_simple,
     )
 
-    # Create run
-    run = Run(rack_id=rack_id, status="completed")
+    seed = settings.default_generation_seed if request.seed is None else request.seed
+
+    # Readiness first (spec 001 FR-022): a rack that cannot be computed gets a
+    # NOT_COMPUTABLE answer and no run, generation record or library. The inventory
+    # revision is kept: it is the evidence of what was checked.
+    from canon.inventory_persist import persist_system_inventory_revision
+    from patches.inventory_gate import evaluate_rack_inventory_gate
+
+    gate_report, _ = evaluate_rack_inventory_gate(db, rack)
+    if not gate_report.ready:
+        persist_system_inventory_revision(db, gate_report.inventory, rack_id=int(rack.id))
+        db.commit()
+        return GeneratePatchesResponse(
+            generated_count=0,
+            patches=[],
+            run_id=None,
+            inventory_revision_id=gate_report.inventory.inventory_revision_id,
+            inventory_gate_code=gate_report.code,
+            generation_status="NOT_COMPUTABLE",
+        )
+
+    # Run lifecycle (FR-018): queued, then running, then succeeded or failed. Each
+    # step is committed, so the record shows how far a run got.
+    run = Run(rack_id=rack_id, status="queued")
     db.add(run)
     db.commit()
     db.refresh(run)
     # Matrix slice A: ensure canon FK targets + export bridge as soon as the run exists
     # (do not rely solely on GET /api/runs side-effect).
-    bridge = ensure_legacy_run_export_bridge(db, run)
+    bridge = ensure_legacy_run_export_bridge(
+        db,
+        run,
+        generation_seed=seed,
+        generator_version=settings.patch_engine_version,
+        create_library=False,
+    )
     # F3 dual-write audit: generate must never mint legacy-* bridge ids when rack exists.
     if bridge.export_bridge_ready and (
         bridge.rig_revision_id.startswith("legacy-") or bridge.source_run_id.startswith("legacy-")
@@ -166,10 +225,36 @@ def generate_patches(rack_id: int, request: GeneratePatchesRequest, db: Session 
             status_code=500,
             detail="EXPORT_BRIDGE_LEGACY_ID_FORBIDDEN",
         )
+    run.status = "running"
     db.commit()
-    generation_ir, patch_graphs, provenance = generate_patches_with_ir(
-        db, rack, seed=request.seed, config=config
-    )
+
+    try:
+        generation_ir, patch_graphs, provenance = generate_patches_with_ir(
+            db, rack, seed=seed, config=config
+        )
+    except Exception:
+        db.rollback()
+        run.status = "failed"
+        db.commit()
+        raise
+
+    provenance_metrics = provenance.to_dict().get("metrics") or {}
+    if provenance_metrics.get("generation_status") == "VALIDATION_FAILED":
+        # A blocking finding (an invented or impossible jack) fails the run closed:
+        # nothing is saved or added to the library (FR-016/FR-019).
+        run.status = "validation_failed"
+        run.validation_report = provenance_metrics.get("validation")
+        db.commit()
+        return GeneratePatchesResponse(
+            generated_count=0,
+            patches=[],
+            run_id=run.id,
+            export_bridge_ready=False,
+            source_run_id=bridge.source_run_id,
+            rig_revision_id=bridge.rig_revision_id,
+            generation_status="VALIDATION_FAILED",
+            validation=provenance_metrics.get("validation"),
+        )
 
     # Save patches to database with full IR/provenance for deterministic replay.
     saved_patches = []
@@ -205,7 +290,12 @@ def generate_patches(rack_id: int, request: GeneratePatchesRequest, db: Session 
         db.add(db_patch)
         saved_patches.append(db_patch)
 
-    run.status = "completed"
+    run.status = "succeeded"
+    run.validation_report = metrics.get("validation")
+    # Validation passed: now the run gets its library and becomes export-ready.
+    bridge = ensure_legacy_run_export_bridge(
+        db, run, generation_seed=seed, generator_version=settings.patch_engine_version
+    )
     db.flush()
     # Path A (KD-20): dual-write sealed GeneratedPatchRecord for Design Engine spine
     from export.patchbook.design.dual_write import dual_write_generated_patches
@@ -227,6 +317,7 @@ def generate_patches(rack_id: int, request: GeneratePatchesRequest, db: Session 
         inventory_revision_id=inventory_revision_id,
         inventory_gate_code=inventory_gate_code,
         generation_status=generation_status,
+        validation=metrics.get("validation"),
     )
 
 

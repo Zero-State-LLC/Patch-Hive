@@ -33,8 +33,10 @@ its SHA-256).
 
 ## Operator procedure (staging)
 
-1. Bring up the staging compose stack with the design-engine overlay
-   (`docker-compose.staging.design-engine.yml`). It must keep
+1. Bring up a staging stack: the hosted staging pair (`api-staging.patch-hive.com`, with
+   the design-engine flags in `env.staging.vars` of `edge/api/wrangler.jsonc`), or locally
+   the staging compose stack with the design-engine overlay
+   (`docker-compose.staging.design-engine.yml`). Never the production API. It must keep
    `STRIPE_TEST_MODE=true` and `ALLOW_PRODUCTION_PAYMENTS=false`.
 2. Check out the exact commit to be pinned. Set `DATABASE_URL`,
    `STAGING_API_URL`, and `PYTHONPATH=backend` in the shell (do not paste the DB

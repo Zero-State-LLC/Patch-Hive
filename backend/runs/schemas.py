@@ -21,6 +21,8 @@ class RunResponse(BaseModel):
     source_run_id: str = Field(..., min_length=1, max_length=64)
     artifact_manifest_hash: str = Field(..., min_length=64, max_length=64)
     export_bridge_ready: bool = False
+    # Port resolution and validation report (spec 001 FR-016/FR-019).
+    validation: dict | None = None
 
 
 class RunListResponse(BaseModel):

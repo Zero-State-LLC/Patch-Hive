@@ -30,7 +30,9 @@ from evidence.vision_provider import (
     VisionProviderContext,
     collect_evidence_packet,
 )
-from racks.models import Rack
+from community.auth import require_auth
+from community.models import User
+from racks.access import owned_private_rack, private_rack
 
 router = APIRouter()
 
@@ -113,15 +115,14 @@ async def upload_rack_evidence_images(
     consent_provider_processing: bool = Form(False),
     run_vision_mock: bool = Form(True),
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
 ) -> MultiImageUploadResponse:
     """Upload one or more images as untrusted evidence for a rack.
 
     Images are re-encoded and metadata-stripped. Provider processing consent is
     recorded; live cloud providers are not invoked — mock evidence only.
     """
-    rack = db.get(Rack, rack_id)
-    if rack is None:
-        raise HTTPException(status_code=404, detail="Rack not found")
+    rack = owned_private_rack(db, rack_id, current_user)
     if not files:
         raise HTTPException(status_code=400, detail="NO_FILES")
     if len(files) > MAX_FILES_PER_REQUEST:
@@ -245,10 +246,9 @@ def list_rack_evidence_images(
     rack_id: int,
     include_deleted: bool = False,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
 ) -> ImageAssetListResponse:
-    rack = db.get(Rack, rack_id)
-    if rack is None:
-        raise HTTPException(status_code=404, detail="Rack not found")
+    private_rack(db, rack_id, current_user)
     query = db.query(ImageAssetRecord).filter(ImageAssetRecord.rack_id == rack_id)
     if not include_deleted:
         query = query.filter(ImageAssetRecord.deleted_at.is_(None))
@@ -270,6 +270,7 @@ def delete_rack_evidence_image(
     asset_id: str,
     purge_bytes: bool = False,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
 ) -> dict[str, str]:
     """Soft-delete image evidence. Optionally purge storage bytes.
 
@@ -277,6 +278,7 @@ def delete_rack_evidence_image(
     ``purge_bytes`` is false; storage files are removed when true and no other
     non-deleted asset shares the same content hash.
     """
+    owned_private_rack(db, rack_id, current_user)
     record = (
         db.query(ImageAssetRecord)
         .filter(ImageAssetRecord.id == asset_id, ImageAssetRecord.rack_id == rack_id)
@@ -412,12 +414,12 @@ def _load_candidates_for_rack(db: Session, rack_id: int) -> list[dict]:
     name="list_canon_rig_evidence_candidates",
 )
 def list_rack_evidence_candidates(
-    rack_id: int, db: Session = Depends(get_db)
+    rack_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
 ) -> CandidateListResponse:
     """Ranked classification candidates for human confirmation (untrusted)."""
-    rack = db.get(Rack, rack_id)
-    if rack is None:
-        raise HTTPException(status_code=404, detail="Rack not found")
+    private_rack(db, rack_id, current_user)
     items = _load_candidates_for_rack(db, rack_id)
     # Decision Intelligence is deliberately read-only here. We project the newest
     # retained receipt for a candidate when one exists; no provider call occurs on GET,
@@ -484,16 +486,18 @@ class ReconciliationResponse(BaseModel):
     response_model=ReconciliationResponse,
     name="reconcile_canon_rig_evidence",
 )
-def reconcile_rack_evidence(rack_id: int, db: Session = Depends(get_db)) -> ReconciliationResponse:
+def reconcile_rack_evidence(
+    rack_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+) -> ReconciliationResponse:
     """Multi-photo fusion of untrusted candidates for one rack.
 
     Does not confirm inventory. Conflicts remain explicit for user resolution.
     """
     from evidence.reconciliation import reconcile_candidate_observations
 
-    rack = db.get(Rack, rack_id)
-    if rack is None:
-        raise HTTPException(status_code=404, detail="Rack not found")
+    private_rack(db, rack_id, current_user)
     items = _load_candidates_for_rack(db, rack_id)
     report = reconcile_candidate_observations(items)
     return ReconciliationResponse(**report.to_dict())
@@ -527,15 +531,15 @@ class InventoryRevisionListResponse(BaseModel):
     name="list_canon_rig_evidence_inventory",
 )
 def list_rack_inventory_revisions(
-    rack_id: int, db: Session = Depends(get_db)
+    rack_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
 ) -> InventoryRevisionListResponse:
     """List sealed inventory revisions for a rack (newest first). Read-only."""
     from canon.inventory import inventory_ready_for_generation
     from canon.inventory_persist import load_system_inventory_revision
 
-    rack = db.get(Rack, rack_id)
-    if rack is None:
-        raise HTTPException(status_code=404, detail="Rack not found")
+    private_rack(db, rack_id, current_user)
 
     rows = (
         db.query(SystemInventoryRevisionRecord)
@@ -591,6 +595,7 @@ def confirm_rack_evidence_candidates(
     rack_id: int,
     body: ConfirmationBatchRequest,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
 ) -> ConfirmationBatchResponse:
     """Apply human confirmation decisions and mint an immutable inventory revision.
 
@@ -609,9 +614,7 @@ def confirm_rack_evidence_candidates(
         ResolutionStatus,
     )
 
-    rack = db.get(Rack, rack_id)
-    if rack is None:
-        raise HTTPException(status_code=404, detail="Rack not found")
+    owned_private_rack(db, rack_id, current_user)
     if not body.decisions:
         raise HTTPException(status_code=400, detail="NO_DECISIONS")
 
@@ -765,6 +768,7 @@ def resolve_rack_evidence_decision(
     rack_id: int,
     body: DecisionResolutionRequest,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
 ) -> DecisionResolutionResponse:
     """Produce and retain one non-canonical identity advisory."""
     from intelligence.evidence_resolution import (
@@ -775,9 +779,7 @@ def resolve_rack_evidence_decision(
     from intelligence.policy import DecisionPolicy, PolicyThresholds
     from intelligence.jev_provider import JevProviderError
 
-    rack = db.get(Rack, rack_id)
-    if rack is None:
-        raise HTTPException(status_code=404, detail="Rack not found")
+    owned_private_rack(db, rack_id, current_user)
 
     evidence = db.get(ClassificationEvidenceRecord, body.evidence_id)
     if evidence is None:

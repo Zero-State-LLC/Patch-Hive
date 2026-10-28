@@ -1,16 +1,16 @@
-"""Shared run listing with export bridge enrichment."""
+"""Shared run listing with export bridge enrichment. Read-only (spec 001 FR-020)."""
 
 from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
-from runs.bridge import ensure_legacy_run_export_bridge
+from runs.bridge import recorded_run_bridge
 from runs.models import Run
 from runs.schemas import RunListResponse, RunResponse
 
 
 def build_run_response(db: Session, run: Run) -> RunResponse:
-    bridge = ensure_legacy_run_export_bridge(db, run)
+    bridge = recorded_run_bridge(db, run)
     return RunResponse(
         id=int(run.id),  # type: ignore[arg-type]
         rack_id=int(run.rack_id),  # type: ignore[arg-type]
@@ -20,6 +20,7 @@ def build_run_response(db: Session, run: Run) -> RunResponse:
         source_run_id=bridge.source_run_id,
         artifact_manifest_hash=bridge.artifact_manifest_hash,
         export_bridge_ready=bridge.export_bridge_ready,
+        validation=run.validation_report,
     )
 
 

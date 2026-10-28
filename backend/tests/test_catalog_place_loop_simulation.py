@@ -94,7 +94,10 @@ def client(db_session: Session):
             pass
 
     app.dependency_overrides[get_db] = override_get_db
-    yield TestClient(app)
+    from tests.conftest import bearer_headers, make_user
+
+    # Racks are owner-scoped: these tests create racks as a signed-in user.
+    yield TestClient(app, headers=bearer_headers(make_user(db_session)))
     app.dependency_overrides.clear()
 
 
@@ -148,9 +151,13 @@ def test_simulate_materialize_place_power_and_overflow(
     assert rebatch["exists"] == 3
 
     # API parity
+    # Bulk materialize is an admin action.
+    from tests.conftest import bearer_headers, make_user
+
     api_batch = client.post(
         "/api/modules/catalog/materialize-batch",
         params={"brand": "SimBrand", "hp_known_only": True, "limit": 50},
+        headers=bearer_headers(make_user(db_session, "catalog-ops", "Ops")),
     )
     assert api_batch.status_code == 200
     assert api_batch.json()["exists"] == 3

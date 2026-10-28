@@ -26,7 +26,10 @@ def client(db_session: Session):
             pass
 
     app.dependency_overrides[get_db] = override_get_db
-    yield TestClient(app)
+    from tests.conftest import bearer_headers, make_user
+
+    # These tests read rigs owned by several users: sign in as a read-all admin role.
+    yield TestClient(app, headers=bearer_headers(make_user(db_session, "auditor", "ReadOnly")))
     app.dependency_overrides.clear()
 
 

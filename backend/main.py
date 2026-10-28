@@ -60,7 +60,9 @@ async def lifespan(app: FastAPI):
     """Application lifespan manager."""
     # Startup
     from canon.routes import validate_payment_startup_policy
+    from core.security import validate_secret_policy
 
+    validate_secret_policy(settings)
     validate_payment_startup_policy(settings)
     print(f"Starting {settings.app_name} v{settings.app_version}")
     print(f"ABX-Core version: {settings.abx_core_version}")
@@ -88,6 +90,9 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    # Owner-scoped downloads are fetched by the API client (not a bare link), so the
+    # browser must expose the filename header to the cross-origin page.
+    expose_headers=["Content-Disposition"],
 )
 
 

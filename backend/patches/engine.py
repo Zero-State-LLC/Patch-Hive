@@ -10,7 +10,7 @@ import random
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Literal, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy.orm import Session
 
@@ -20,6 +20,7 @@ from core import (
     ModuleIR,
     PatchGenerationIR,
     PatchGenerationParams,
+    PatchCategory,
     PatchGraphIR,
     Provenance,
     RackStateIR,
@@ -30,17 +31,6 @@ from core import (
 from modules.models import Module
 from racks.models import Rack, RackModule
 
-PatchCategory = Literal[
-    "Voice",
-    "Modulation",
-    "Clock-Rhythm",
-    "Generative",
-    "Utility",
-    "Performance Macro",
-    "Texture-FX",
-    "Study",
-    "Experimental-Feedback",
-]
 
 
 @dataclass
@@ -174,9 +164,18 @@ class PatchGenerator:
         if self._can_generate_fx_chain():
             patches.extend(self._generate_fx_chains())
 
-        if len(patches) < self.config.max_patches:
-            patches.extend(self._generate_study_variations(patches))
+        # Further rules (issue #95). Each needs every module it wires, draws from its
+        # own seeded generator, and runs after the rules above, so their output is
+        # unchanged for any rack.
+        patches.extend(self._generate_sequenced_voices())
+        patches.extend(self._generate_plucked_voice())
+        patches.extend(self._generate_filter_drone())
+        patches.extend(self._generate_sequenced_hats())
+        patches.extend(self._generate_voice_through_fx())
+        patches.extend(self._generate_oscillator_mix())
 
+        # No padding to reach max_patches: a patch the rules above cannot justify would
+        # have to invent its jacks (spec 001 FR-017). Fewer patches, or none, is honest.
         # Limit to max patches
         return patches[: self.config.max_patches]
 
@@ -451,41 +450,143 @@ class PatchGenerator:
 
         return patches
 
-    def _generate_study_variations(self, existing: List[PatchSpec]) -> List[PatchSpec]:
-        """Generate additional deterministic study patches to reach target count."""
+
+    # --- Further rules (issue #95) -------------------------------------------------
+
+    def _rule_rng(self, offset: int) -> random.Random:
+        return random.Random(self.seed + offset)
+
+    def _audio(self, src: Module, dst: Module, from_port: str = "Audio Out") -> Connection:
+        return Connection(
+            from_module_id=src.id, from_port=from_port, to_module_id=dst.id,
+            to_port="Audio In", cable_type="audio",
+        )
+
+    def _cv(self, src: Module, from_port: str, dst: Module, to_port: str) -> Connection:
+        return Connection(
+            from_module_id=src.id, from_port=from_port, to_module_id=dst.id,
+            to_port=to_port, cable_type="cv",
+        )
+
+    def _gate(self, src: Module, dst: Module) -> Connection:
+        return Connection(
+            from_module_id=src.id, from_port="Gate Out", to_module_id=dst.id,
+            to_port="Gate In", cable_type="gate",
+        )
+
+    def _spec(
+        self, patch_seed: int, category: PatchCategory, connections: List[Connection], description: str
+    ) -> PatchSpec:
+        return PatchSpec(
+            name=name_patch_v2(patch_seed, self.modules_by_id, connections),
+            category=category,
+            connections=connections,
+            description=description,
+            generation_seed=patch_seed,
+        )
+
+    def _generate_sequenced_voices(self) -> List[PatchSpec]:
+        """A sequencer plays each VCO (up to three): pitch to V/Oct, gate to an
+        envelope that opens the VCA, through a filter when there is one."""
+        a = self.analyzer
+        if not (a.sequencers and a.vcos and a.vcas and a.envelopes):
+            return []
+        rng = self._rule_rng(5000)
         patches: List[PatchSpec] = []
-        if len(self.analyzer.all_modules) < 2:
-            return patches
-
-        study_rng = random.Random(self.seed + 4000)
-        index = 0
-        target = self.config.max_patches
-        module_ids = list(self.modules_by_id.keys())
-
-        while len(existing) + len(patches) < target and index < 20:
-            from_id = study_rng.choice(module_ids)
-            to_id = study_rng.choice([mid for mid in module_ids if mid != from_id])
-            connections = [
-                Connection(
-                    from_module_id=from_id,
-                    from_port="Audio Out",
-                    to_module_id=to_id,
-                    to_port="Audio In",
-                    cable_type="audio",
-                )
-            ]
-            patch_seed = self.seed + 4000 + index
-            patch = PatchSpec(
-                name=name_patch_v2(patch_seed, self.modules_by_id, connections),
-                category="Study",
-                connections=connections,
-                description="Study patch for deterministic coverage",
-                generation_seed=patch_seed,
+        for i, vco in enumerate(a.vcos[:3]):
+            seq, vca, env = rng.choice(a.sequencers), rng.choice(a.vcas), rng.choice(a.envelopes)
+            connections = [self._cv(seq, "CV Out", vco, "V/Oct"), self._gate(seq, env)]
+            if a.vcfs:
+                vcf = rng.choice(a.vcfs)
+                connections += [self._audio(vco, vcf), self._audio(vcf, vca)]
+            else:
+                connections.append(self._audio(vco, vca))
+            connections.append(self._cv(env, "Envelope Out", vca, "CV In"))
+            patches.append(
+                self._spec(self.seed + 5000 + i, "Voice", connections, f"{seq.name} sequences {vco.name}")
             )
-            patches.append(patch)
-            index += 1
-
         return patches
+
+    def _generate_plucked_voice(self) -> List[PatchSpec]:
+        """One envelope shapes both the filter cutoff and the VCA: a plucked voice."""
+        a = self.analyzer
+        if not (a.vcos and a.vcfs and a.vcas and a.envelopes):
+            return []
+        rng = self._rule_rng(6000)
+        vco, vcf, vca, env = (rng.choice(a.vcos), rng.choice(a.vcfs), rng.choice(a.vcas), rng.choice(a.envelopes))
+        connections = [
+            self._audio(vco, vcf),
+            self._audio(vcf, vca),
+            self._cv(env, "Envelope Out", vcf, "Cutoff CV"),
+            self._cv(env, "Envelope Out", vca, "CV In"),
+        ]
+        return [self._spec(self.seed + 6000, "Voice", connections, f"Plucked voice: {env.name} shapes filter and level")]
+
+    def _generate_filter_drone(self) -> List[PatchSpec]:
+        """No envelope: an LFO slowly sweeps the filter over a sustained oscillator."""
+        a = self.analyzer
+        if not (a.vcos and a.vcfs and a.vcas and a.lfos):
+            return []
+        rng = self._rule_rng(7000)
+        vco, vcf, vca, lfo = (rng.choice(a.vcos), rng.choice(a.vcfs), rng.choice(a.vcas), rng.choice(a.lfos))
+        connections = [
+            self._audio(vco, vcf),
+            self._audio(vcf, vca),
+            self._cv(lfo, "LFO Out", vcf, "Cutoff CV"),
+        ]
+        return [self._spec(self.seed + 7000, "Voice", connections, f"Drone: {lfo.name} sweeps {vcf.name}")]
+
+    def _generate_sequenced_hats(self) -> List[PatchSpec]:
+        """The sequencer's gate fires a short envelope on noise: a clocked hat."""
+        a = self.analyzer
+        if not (a.sequencers and a.envelopes and a.noise_sources and a.vcas):
+            return []
+        rng = self._rule_rng(8000)
+        seq, env, noise, vca = (
+            rng.choice(a.sequencers), rng.choice(a.envelopes), a.noise_sources[0], rng.choice(a.vcas),
+        )
+        connections = [self._gate(seq, env)]
+        if a.vcfs:
+            vcf = rng.choice(a.vcfs)
+            connections += [self._audio(noise, vcf, "Noise Out"), self._audio(vcf, vca)]
+        else:
+            connections.append(self._audio(noise, vca, "Noise Out"))
+        connections.append(self._cv(env, "Envelope Out", vca, "CV In"))
+        return [self._spec(self.seed + 8000, "Clock-Rhythm", connections, f"{seq.name} clocks noise hits")]
+
+    def _generate_voice_through_fx(self) -> List[PatchSpec]:
+        """An oscillator through a VCA into the effect, with no mixer needed."""
+        a = self.analyzer
+        if not (a.vcos and a.vcas and a.effects):
+            return []
+        rng = self._rule_rng(9000)
+        vco, vca, fx = rng.choice(a.vcos), rng.choice(a.vcas), a.effects[0]
+        connections = [
+            self._audio(vco, vca),
+            Connection(
+                from_module_id=vca.id, from_port="Audio Out", to_module_id=fx.id,
+                to_port="FX In", cable_type="audio",
+            ),
+        ]
+        return [self._spec(self.seed + 9000, "Texture-FX", connections, f"{vco.name} through {fx.name}")]
+
+    def _generate_oscillator_mix(self) -> List[PatchSpec]:
+        """Two oscillators blended in a mixer."""
+        a = self.analyzer
+        if not (len(a.vcos) >= 2 and a.mixers):
+            return []
+        first, second, mixer = a.vcos[0], a.vcos[1], a.mixers[0]
+        connections = [
+            Connection(
+                from_module_id=first.id, from_port="Audio Out", to_module_id=mixer.id,
+                to_port="In 1", cable_type="audio",
+            ),
+            Connection(
+                from_module_id=second.id, from_port="Audio Out", to_module_id=mixer.id,
+                to_port="In 2", cable_type="audio",
+            ),
+        ]
+        return [self._spec(self.seed + 9500, "Utility", connections, f"{first.name} and {second.name} mixed")]
 
 
 def generate_patches_for_rack(
@@ -695,16 +796,44 @@ def generate_patches_with_ir(
         )
         patch_graphs.append(graph)
 
+    # Resolve generic roles to declared jacks and validate (spec 001 FR-016/017/019).
+    from patches.validation import resolve_and_validate
+
+    modules_by_id = {
+        int(m.id): m  # type: ignore[arg-type]
+        for m in db.query(Module)
+        .join(RackModule, RackModule.module_id == Module.id)
+        .filter(RackModule.rack_id == rack.id)
+        .all()
+    }
+    patch_graphs, validation = resolve_and_validate(
+        patch_graphs, modules_by_id, allowed_module_ids=set(gate_report.allowed_catalog_module_ids)
+    )
+    if dropped:
+        # The inventory filter removed patches that wired modules outside the confirmed
+        # inventory. That is a contradiction, so it fails the run (OQ-08), not just a filter.
+        from patches.validation import Finding
+
+        validation.add(
+            Finding(
+                "block",
+                "MODULE_NOT_IN_INVENTORY",
+                f"{dropped} generated patch(es) wired modules outside the confirmed inventory.",
+            )
+        )
+    provenance.add_metric("validation", validation.to_dict())
+
     # Complete provenance
     end_time = time.time()
     provenance.mark_completed()
     provenance.add_metric("duration_ms", (end_time - start_time) * 1000)
     provenance.add_metric("patch_count", len(patch_graphs))
     provenance.add_metric("connection_count", sum(len(p.connections) for p in patch_graphs))
-    provenance.add_metric(
-        "generation_status",
-        "FILTERED" if gate_report.code == "FILTERED" else "OK",
-    )
+    if validation.blocking:
+        status = "VALIDATION_FAILED"
+    else:
+        status = "FILTERED" if gate_report.code == "FILTERED" else "OK"
+    provenance.add_metric("generation_status", status)
     provenance.add_metric("inventory_revision_id", gate_report.inventory.inventory_revision_id)
 
     return generation_ir, patch_graphs, provenance

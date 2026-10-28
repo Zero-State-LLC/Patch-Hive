@@ -149,14 +149,24 @@ def test_canon_write_permitted_only_at_confirmed() -> None:
         assert canon_write_permitted(_machine(state)) is (state is ResolutionState.CONFIRMED)
 
 
-def test_provider_fail_and_timeout_go_to_reject() -> None:
+def test_provider_fail_and_timeout_go_unresolved_or_escalate() -> None:
+    """Spec 005: a provider that did not answer says nothing about the evidence, so it
+    is never a rejection. It escalates when there is a review route, else stays open."""
     for event_type in (
         ResolutionEventType.PROVIDER_FAIL,
         ResolutionEventType.PROVIDER_TIMEOUT,
     ):
         after = transition(_machine(ResolutionState.CLASSIFYING), _event(event_type))
-        assert after.state is ResolutionState.REJECT
+        assert after.state is ResolutionState.UNRESOLVED
         assert after.history[-1].accepted
+        assert after.history[-1].reason == event_type.name
+
+        routed = transition(
+            _machine(ResolutionState.CLASSIFYING),
+            _event(event_type, ResolutionGuard(routing_target_exists=True)),
+        )
+        assert routed.state is ResolutionState.ESCALATE
+        assert canon_write_permitted(after) is canon_write_permitted(routed) is False
 
 
 def test_provider_success_with_invalid_packet_fails_closed() -> None:

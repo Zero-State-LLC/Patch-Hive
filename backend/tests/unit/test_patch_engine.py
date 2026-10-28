@@ -186,17 +186,8 @@ class TestPatchGenerator:
         # Check patch structure
         assert isinstance(patch.name, str)
         assert len(patch.name) > 0
-        assert patch.category in [
-            "Voice",
-            "Modulation",
-            "Clock-Rhythm",
-            "Generative",
-            "Utility",
-            "Performance Macro",
-            "Texture-FX",
-            "Study",
-            "Experimental-Feedback",
-        ]
+        # The canonical set (spec 001 FR-012).
+        assert patch.category in ["Voice", "Clock-Rhythm", "Generative", "Texture-FX", "Utility"]
         assert isinstance(patch.connections, list)
         assert isinstance(patch.description, str)
         assert isinstance(patch.generation_seed, int)
@@ -497,3 +488,79 @@ class TestConfiguration:
         assert config.max_patches == 50
         assert config.allow_feedback is True
         assert config.prefer_simple is True
+
+
+class TestNoInventedPatches:
+    """Spec 001 FR-017: generation never pads its output with patches it cannot justify."""
+
+    def test_full_rack_emits_only_canonical_categories(
+        self, db_session: Session, sample_rack_full: Rack
+    ):
+        patches = generate_patches_for_rack(
+            db_session, sample_rack_full, seed=7, config=PatchEngineConfig(max_patches=50)
+        )
+        assert patches
+        assert {p.category for p in patches} <= {
+            "Voice", "Clock-Rhythm", "Generative", "Texture-FX", "Utility"
+        }
+        assert not any(p.description.startswith("Study patch") for p in patches)
+
+    def test_a_rack_with_no_patch_rule_gets_no_patches(
+        self, db_session: Session, sample_user, sample_case, sample_mixer: Module, sample_noise: Module
+    ):
+        """A mixer and a noise source match no rule; the old padding wired them
+        "Audio Out" to "Audio In" without knowing those jacks exist."""
+        from racks.models import RackModule
+
+        rack = Rack(user_id=sample_user.id, name="Odd rack", case_id=sample_case.id)
+        db_session.add(rack)
+        db_session.flush()
+        db_session.add_all([
+            RackModule(rack_id=rack.id, module_id=sample_mixer.id, row_index=0, start_hp=0),
+            RackModule(rack_id=rack.id, module_id=sample_noise.id, row_index=0, start_hp=10),
+        ])
+        db_session.commit()
+
+        assert generate_patches_for_rack(db_session, rack, seed=1) == []
+
+
+class TestFurtherRules:
+    """Issue #95: rules that each wire only modules the rack has."""
+
+    def test_full_rack_gets_the_new_voices(self, db_session: Session, sample_rack_full: Rack):
+        patches = generate_patches_for_rack(db_session, sample_rack_full, seed=11)
+        descriptions = [p.description for p in patches]
+        # VCO, VCF, VCA, envelope, LFO and sequencer: sequenced, plucked and drone voices.
+        assert any(d.endswith("sequences Test VCO") for d in descriptions)
+        assert any(d.startswith("Plucked voice") for d in descriptions)
+        assert any(d.startswith("Drone") for d in descriptions)
+        # No noise, effect or second VCO: those rules stay silent.
+        assert not any("clocks noise" in d or " through " in d or " mixed" in d for d in descriptions)
+
+    def test_every_cable_joins_modules_in_the_rack(self, db_session: Session, sample_rack_full: Rack):
+        from racks.models import RackModule
+
+        placed = {rm.module_id for rm in db_session.query(RackModule).filter_by(rack_id=sample_rack_full.id)}
+        for patch in generate_patches_for_rack(db_session, sample_rack_full, seed=3):
+            for cable in patch.connections:
+                assert {cable.from_module_id, cable.to_module_id} <= placed
+
+    def test_new_rules_leave_the_original_patches_unchanged(
+        self, db_session: Session, sample_rack_full: Rack, monkeypatch
+    ):
+        """The new rules draw from their own generators, so the four original rules
+        produce exactly what they produced before."""
+        with_new = generate_patches_for_rack(db_session, sample_rack_full, seed=5)
+        for name in (
+            "_generate_sequenced_voices", "_generate_plucked_voice", "_generate_filter_drone",
+            "_generate_sequenced_hats", "_generate_voice_through_fx", "_generate_oscillator_mix",
+        ):
+            monkeypatch.setattr(PatchGenerator, name, lambda self: [])
+        original = generate_patches_for_rack(db_session, sample_rack_full, seed=5)
+        assert [p.to_dict() for p in with_new[: len(original)]] == [p.to_dict() for p in original]
+        assert len(with_new) > len(original)
+
+    def test_generation_is_deterministic(self, db_session: Session, sample_rack_full: Rack):
+        first = [p.to_dict() for p in generate_patches_for_rack(db_session, sample_rack_full, seed=9)]
+        second = [p.to_dict() for p in generate_patches_for_rack(db_session, sample_rack_full, seed=9)]
+        assert first == second

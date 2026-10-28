@@ -8,7 +8,9 @@ import {
   rackApi,
   type EvidenceCandidate,
 } from "@/lib/api";
+import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 import { firstFreeStartHp, packModulesOntoRows } from "@/lib/placementPack";
+import { useAuthStore } from "@/lib/store";
 import type {
   Case,
   CatalogCaseListItem,
@@ -166,6 +168,10 @@ export default function RackBuilderPage() {
   const [fileLabel, setFileLabel] = useState("");
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [error, setError] = useState("");
+  // Rigs belong to the signed-in user, so creating one needs an account.
+  const signedIn = useAuthStore((st) => st.isAuthenticated());
+  // Bulk materialize rewrites shared catalog data; the API allows only Admin and Ops.
+  const canBulkMaterialize = useAuthStore((st) => st.user?.role === "Admin" || st.user?.role === "Ops");
   const [candidates, setCandidates] = useState<ReviewCandidate[]>(DEMO_CANDIDATES);
   const [inventoryRevisionId, setInventoryRevisionId] = useState<string | null>(null);
   const [readyForGeneration, setReadyForGeneration] = useState(false);
@@ -1075,11 +1081,24 @@ export default function RackBuilderPage() {
               type="button"
               className="button button-primary"
               onClick={() => void createRigFromCase()}
-              disabled={creating || (selectedCatalogSlug == null && selectedCaseId == null)}
+              disabled={
+                !signedIn || creating || (selectedCatalogSlug == null && selectedCaseId == null)
+              }
             >
               {creating ? "Creating…" : "Create empty rig"}
             </button>
           </div>
+          {!signedIn ? (
+            <p className="muted" role="note">
+              {ACCOUNTS_OPEN ? (
+                <>
+                  Rigs are saved to your account. <Link to="/login">Sign in</Link> to create one.
+                </>
+              ) : (
+                "Rigs are saved to your account. Accounts open when the PatchHive service goes live."
+              )}
+            </p>
+          ) : null}
           {selectedCatalogCase ? (
             <div className="stat-row" style={{ marginTop: "var(--space-4)" }}>
               <div className="stat-block">
@@ -1155,24 +1174,26 @@ export default function RackBuilderPage() {
             </p>
           ) : null}
 
-          <div style={{ marginTop: "var(--space-4)" }}>
-            <button
-              type="button"
-              className="button button-secondary"
-              onClick={() => void materializeAllEurorack()}
-            >
-              Materialize all Eurorack catalog cases
-            </button>
-            {batchNote ? (
-              <p className="muted" style={{ marginTop: "var(--space-2)" }} role="status">
-                {batchNote}
-              </p>
-            ) : (
-              <p className="muted" style={{ marginTop: "var(--space-2)" }}>
-                Syncs normalized catalog rows into legacy placement cases (idempotent).
-              </p>
-            )}
-          </div>
+          {canBulkMaterialize ? (
+            <div style={{ marginTop: "var(--space-4)" }}>
+              <button
+                type="button"
+                className="button button-secondary"
+                onClick={() => void materializeAllEurorack()}
+              >
+                Materialize all Eurorack catalog cases
+              </button>
+              {batchNote ? (
+                <p className="muted" style={{ marginTop: "var(--space-2)" }} role="status">
+                  {batchNote}
+                </p>
+              ) : (
+                <p className="muted" style={{ marginTop: "var(--space-2)" }}>
+                  Syncs normalized catalog rows into legacy placement cases (idempotent).
+                </p>
+              )}
+            </div>
+          ) : null}
 
           <hr
             style={{ border: 0, borderTop: "1px solid var(--border)", margin: "var(--space-5) 0" }}
@@ -1400,13 +1421,15 @@ export default function RackBuilderPage() {
           ) : null}
 
           <div className="toolbar" style={{ marginTop: "var(--space-3)" }}>
-            <button
-              type="button"
-              className="button button-secondary"
-              onClick={() => void materializeHpKnownModules()}
-            >
-              Materialize HP-known modules
-            </button>
+            {canBulkMaterialize ? (
+              <button
+                type="button"
+                className="button button-secondary"
+                onClick={() => void materializeHpKnownModules()}
+              >
+                Materialize HP-known modules
+              </button>
+            ) : null}
             <Link className="button button-quiet" to="/modules?hp=known">
               Browse placeable catalog
             </Link>

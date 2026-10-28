@@ -221,6 +221,8 @@ def resolve_module_identity_guarded(
         idempotency_key=idempotency_key,
     )
 
+    # A failed provider escalates when there is a review route, else stays unresolved.
+    failure_guard = ResolutionGuard(routing_target_exists=bool(routing_targets))
     started = clock()
     try:
         packet = provider.choose(request)
@@ -232,7 +234,9 @@ def resolve_module_identity_guarded(
             if "TIMEOUT" in code
             else ResolutionEventType.PROVIDER_FAIL
         )
-        machine = _transition(machine, request_id=request_id, event_type=event_type)
+        machine = _transition(
+            machine, request_id=request_id, event_type=event_type, guard=failure_guard
+        )
         return _provider_failure_result(
             machine,
             code=code,
@@ -246,7 +250,10 @@ def resolve_module_identity_guarded(
 
     if not isinstance(packet, DecisionPacket):
         machine = _transition(
-            machine, request_id=request_id, event_type=ResolutionEventType.PROVIDER_FAIL
+            machine,
+            request_id=request_id,
+            event_type=ResolutionEventType.PROVIDER_FAIL,
+            guard=failure_guard,
         )
         return _provider_failure_result(
             machine,
@@ -267,7 +274,9 @@ def resolve_module_identity_guarded(
             if timed_out
             else ResolutionEventType.PROVIDER_FAIL
         )
-        machine = _transition(machine, request_id=request_id, event_type=event_type)
+        machine = _transition(
+            machine, request_id=request_id, event_type=event_type, guard=failure_guard
+        )
         return _provider_failure_result(
             machine,
             code=code,
@@ -303,7 +312,7 @@ def resolve_module_identity_guarded(
     if machine.state is not ResolutionState.POLICY_APPLIED:
         raise EvidenceResolutionError("policy application guard rejected")
 
-    result = policy.evaluate(packet)
+    result = policy.evaluate(packet, request)
     proposal = DecisionProposal(request=request, packet=packet, policy=result)
 
     machine = _transition(

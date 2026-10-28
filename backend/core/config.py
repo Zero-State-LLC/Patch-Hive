@@ -36,7 +36,10 @@ class Settings(BaseSettings):
     # Security
     secret_key: str = "dev-secret-key-change-in-production"
     algorithm: str = "HS256"
-    access_token_expire_minutes: int = 60 * 24 * 7  # 7 days
+    # Access tokens are short-lived and held in memory by the SPA; a rotating refresh
+    # token in an HttpOnly cookie restores and renews sessions (community/sessions.py).
+    access_token_expire_minutes: int = 15
+    refresh_token_days: int = 30
 
     # CORS — accepts JSON list or comma-separated env (docker-compose style).
     # NoDecode: pydantic-settings otherwise JSON-parses list env before validators.

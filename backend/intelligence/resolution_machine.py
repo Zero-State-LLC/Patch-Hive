@@ -156,8 +156,9 @@ TRANSITIONS: Mapping[
     {
         (ResolutionState.PENDING, ResolutionEventType.SUBMIT_EVIDENCE): ResolutionState.CLASSIFYING,
         (ResolutionState.CLASSIFYING, ResolutionEventType.PROVIDER_SUCCESS): ResolutionState.PACKET_EMITTED,
-        (ResolutionState.CLASSIFYING, ResolutionEventType.PROVIDER_FAIL): ResolutionState.REJECT,
-        (ResolutionState.CLASSIFYING, ResolutionEventType.PROVIDER_TIMEOUT): ResolutionState.REJECT,
+        # Nominal target only; with a routing target a provider failure escalates instead.
+        (ResolutionState.CLASSIFYING, ResolutionEventType.PROVIDER_FAIL): ResolutionState.UNRESOLVED,
+        (ResolutionState.CLASSIFYING, ResolutionEventType.PROVIDER_TIMEOUT): ResolutionState.UNRESOLVED,
         (ResolutionState.PACKET_EMITTED, ResolutionEventType.APPLY_POLICY): ResolutionState.POLICY_APPLIED,
         # Nominal target only; DISPOSITION resolves to a state determined by guard.disposition.
         (ResolutionState.POLICY_APPLIED, ResolutionEventType.DISPOSITION): ResolutionState.AUTO_PROPOSE,
@@ -259,10 +260,15 @@ def transition(machine: ResolutionMachine, event: ResolutionEvent) -> Resolution
             if not event.guard.packet_schema_valid:
                 return _accept(machine, event, ResolutionState.REJECT, "PACKET_SCHEMA_INVALID")
             return _accept(machine, event, ResolutionState.PACKET_EMITTED, "PROVIDER_SUCCESS")
-        if event.type is ResolutionEventType.PROVIDER_FAIL:
-            return _accept(machine, event, ResolutionState.REJECT, "PROVIDER_FAIL")
-        if event.type is ResolutionEventType.PROVIDER_TIMEOUT:
-            return _accept(machine, event, ResolutionState.REJECT, "PROVIDER_TIMEOUT")
+        if event.type in {ResolutionEventType.PROVIDER_FAIL, ResolutionEventType.PROVIDER_TIMEOUT}:
+            # A provider that did not answer says nothing about the evidence (spec 005):
+            # route it for review when there is somewhere to send it, else leave it open.
+            target = (
+                ResolutionState.ESCALATE
+                if event.guard.routing_target_exists
+                else ResolutionState.UNRESOLVED
+            )
+            return _accept(machine, event, target, event.type.name)
 
     if state is ResolutionState.PACKET_EMITTED and event.type is ResolutionEventType.APPLY_POLICY:
         if not event.guard.policy_version_pinned:

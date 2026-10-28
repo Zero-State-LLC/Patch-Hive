@@ -166,7 +166,7 @@ Acceptance criteria:
   - Generative requires a sequencer or two or more LFOs.
   - Clock-Rhythm (percussion) requires a noise source or an envelope.
   - Texture-FX requires an FX module.
-- **FR-012**: Generated patches must use the canonical category set: Voice, Clock-Rhythm, Generative, Texture-FX, and Utility. [OBSERVED: docs/PATCH_ENGINE.md] For the conflicting category list, see open question OQ-03.
+- **FR-012**: Generated patches must use the canonical category set: Voice, Clock-Rhythm, Generative, Texture-FX, and Utility. [OBSERVED: docs/PATCH_ENGINE.md] Implemented 2026-10-28 (OQ-03).
 - **FR-013**: The engine must honor `max_patches` (default 20), `allow_feedback` (default false), and `prefer_simple` (default false). [OBSERVED: docs/PATCH_ENGINE.md]
 - **FR-014**: Each connection must declare a source module and port, a destination module and port, and a cable type of `audio`, `cv`, `gate`, or `clock`. [OBSERVED: docs/PATCH_ENGINE.md]
 - **FR-015**: Each `PatchPlan` must segment time into Prep, Threshold, Peak, Release, and Seal. [OBSERVED: docs/CANON.md]
@@ -175,9 +175,9 @@ Acceptance criteria:
 
 ### Runs and lifecycle
 
-- **FR-018**: Each generation attempt must create a run record bound to a rack. Its initial status is `queued`. [OBSERVED: backend/runs/models.py]
+- **FR-018**: Each generation attempt must create a run record bound to a rack. Its initial status is `queued`. [OBSERVED: backend/runs/models.py] Implemented 2026-10-27: `queued`, then `running`, then `succeeded`, or `failed` when generation raises; each step is committed. `validation_failed` is not produced yet, because generation has no blocking ValidationReport (FR-016, FR-019 remain open).
 - **FR-019**: Run state transitions must follow the [transitions table](#transitions). Implementers treat that table as the contract. [INFERRED]
-- **FR-020**: Regeneration and retry must create a new run. Existing runs, libraries, patches, stage receipts, manifests, and ledger entries are append-only. [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md]
+- **FR-020**: Regeneration and retry must create a new run. Existing runs, libraries, patches, stage receipts, manifests, and ledger entries are append-only. [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md] Implemented 2026-10-27 for runs and generated patches: run reads return the ids recorded at generation and write nothing; a generated patch's name and description cannot be changed and it cannot be deleted (409 `GENERATED_PATCH_IS_APPEND_ONLY`), though the owner may set a display label (`name_override`) and visibility. Deleting a rack still cascades to its runs (OQ-02).
 - **FR-021**: A run must own exactly one patch library. [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md]
 - **FR-022**: When readiness fails, the system must emit a `NOT_COMPUTABLE` receipt instead of creating a queued run. [INFERRED]
 - **FR-023**: The system must let callers list runs by rack, read a run by ID, and read a run's patches. It must return "Run not found" for an unknown run ID. [OBSERVED: backend/runs/routes.py]
@@ -265,7 +265,7 @@ Initial state: `IDLE`. Final states: `SUCCEEDED`, `NOT_COMPUTABLE`.
 |---|---|---|---|---|
 | IDLE | rig_selected | rig has a case and a rig revision is explicitly selected [INFERRED] | RIG_LOADED | load confirmed inventory of that revision only [OBSERVED: constitution] |
 | RIG_LOADED | generate_requested | readiness passes [INFERRED] | QUEUED | create a run row with status `queued` bound to the rig revision and seed [OBSERVED: backend/runs/models.py] [INFERRED] |
-| RIG_LOADED | generate_requested | readiness fails, for example unconfirmed or missing required facts [INFERRED] | NOT_COMPUTABLE | emit a `NOT_COMPUTABLE` receipt that names the failed condition and dual-write it (CHANGELOG F3; see OQ-06) [INFERRED] |
+| RIG_LOADED | generate_requested | readiness fails, for example unconfirmed or missing required facts [INFERRED] | NOT_COMPUTABLE | emit a `NOT_COMPUTABLE` receipt that names the failed condition; create no run, generation record or library (FR-022; OQ-06 resolved 2026-10-27) |
 | QUEUED | worker_started | - | RUNNING | record a start `StageReceipt` [INFERRED] |
 | RUNNING | run_succeeded | `ValidationReport` shows patches validated [OBSERVED: docs/PATCH_ENGINE.md] | SUCCEEDED | seal the generation receipt and `ArtifactManifest` and write the run's single library [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md] |
 | RUNNING | validation_failed | `ValidationReport` has blocking errors [INFERRED] | FAILED | keep the stage receipts and the `ValidationReport` [INFERRED] |
@@ -364,7 +364,7 @@ These criteria are pass or fail. They contain no invented thresholds.
 - **A module matches several classes**, for example both VCO and LFO: it may be used in more than one role. Whether one module can fill two roles in the same patch is undefined. [OBSERVED: docs/PATCH_ENGINE.md] [INFERRED]
 - **Port names are generic**: the engine uses generic port names, such as "Audio Out" and "CV In", while real modules have specific names. This can conflict with the rule against inventing jacks. See OQ-04. [OBSERVED: docs/PATCH_ENGINE.md] [OBSERVED: constitution]
 - **No electrical validation exists**: the engine assumes connections are electrically valid. Under fail-closed rules, unknown voltage compatibility must be marked unresolved. [OBSERVED: docs/PATCH_ENGINE.md] [OBSERVED: constitution]
-- **A rack is deleted**: runs cascade-delete with their rack, which conflicts with the append-only rule. See OQ-02. [OBSERVED: backend/runs/models.py]
+- **A rack is deleted**: the rack is soft-deleted and hidden; its runs and patches are kept (OQ-02, resolved 2026-10-28).
 - **A provider is unavailable during detection**: evidence moves to `UNRESOLVED` and is never an implicit pass. [OBSERVED: constitution]
 - **A patch has no seal phase**: the failure is flagged and not blocked, per the bridge canon. See OQ-08. [OBSERVED: docs/CANON.md]
 
@@ -372,14 +372,22 @@ These criteria are pass or fail. They contain no invented thresholds.
 
 - **OQ-01** (NOT_COMPUTABLE): How does the persisted `Rack` and `rack_id` relate to `Rig` and `RigRevision` in the ADR hierarchy? Runs currently reference a rack, not a rig revision. `docs/DATA_MODEL.md` and `backend/racks/` were not available to resolve this.
 - **OQ-02** (NOT_COMPUTABLE): `runs.rack_id` uses `ondelete="CASCADE"`, but ADR 0001 makes runs append-only. Which rule wins, and what is the deletion and retention policy?
+  - Resolved 2026-10-28: append-only wins. Deleting a rack soft-deletes it (`racks.deleted_at`): it disappears from every list and read and can no longer generate or export, while its runs, patches and canonical records stay. `runs.rack_id` and `patches.rack_id` are RESTRICT (migration `20261028_rack_soft_delete`). Erasing a user's data on request is a separate admin operation, not yet built.
 - **OQ-03** (NOT_COMPUTABLE): The canonical category set lists five categories. The `PatchSpec` comment lists nine: Voice, Modulation, Clock-Rhythm, Generative, Utility, Performance Macro, Texture-FX, Study, and Experimental-Feedback. Subtype labels such as Pad, Lead, Bass, and Drone also appear. Which set is canonical, and are subtypes a separate field?
+  - Resolved 2026-10-28: the five in FR-012 are canonical (`core.ir.PatchCategory`, now the engine's only category type). Subtypes such as Pad, Lead, Bass and Drone are not categories; they go in a separate optional field once a generator produces them (none does yet). The `Study` padding that filled a run up to `max_patches` with invented "Audio Out" to "Audio In" cables is removed (FR-017): a rack that no rule fits gets fewer patches, or none. Older rows that already say `Study` are history and stay as they are.
 - **OQ-04** (NOT_COMPUTABLE): Until a port-name database exists, can generic port names be used in canonical patches? Or must patches with unmapped ports be marked unresolved?
+  - Resolved 2026-10-28: generic names may appear, but marked. Generated cables resolve each generic role to a declared jack of the right type (`patches/validation.py`). Where a module's jacks are not on file, the generic name stays and the cable carries `port_status: "generic"` with an `unresolved` finding; `declared` cables name real jacks.
 - **OQ-05** (NOT_COMPUTABLE): How is the seed chosen when the caller omits it, and how is that seed recorded for reproducibility?
+  - Resolved 2026-10-27: an omitted seed becomes `settings.default_generation_seed`. The generate route records the seed it used, and the engine version, on the canonical generation run (`GenerationRunRecord.generation_seed`, `.generator_version`).
 - **OQ-06** (NOT_COMPUTABLE): What is "CHANGELOG F3", and what are the two targets of the `NOT_COMPUTABLE` receipt dual-write? No retained source defines it.
+  - Resolved 2026-10-27: "F3" is the legacy-to-canon generate dual-write (docs/evidence/F3_GENERATE_DUAL_WRITE_AUDIT.md). It applies only to runs that generate. A `NOT_COMPUTABLE` attempt writes no run and no canonical generation record or library; it keeps only the inventory revision that records what was checked (`backend/patches/routes.py`).
 - **OQ-07** (NOT_COMPUTABLE): What is the full set of run status values? Only the default `queued` is observed in `backend/runs/models.py`. Also, what state results when generation yields zero patches?
+  - Partly resolved 2026-10-27: generation now records `queued`, `running`, `succeeded` and `failed`. Zero patches from a computable rack still ends `succeeded`; a blocking validation finding ends `validation_failed` (OQ-08, resolved 2026-10-28).
 - **OQ-08** (NOT_COMPUTABLE): The bridge canon says failures are flagged and not blocked. The constitution requires fail-closed behavior at trust boundaries. Which validation findings block `SUCCEEDED`, and which are only flagged?
+  - Resolved 2026-10-28: only contradictions with what is on file block `succeeded`: a module outside the confirmed inventory, or a declared jack used against its direction. The run ends `validation_failed` and nothing is saved. Jacks not on file (including a missing type in a partial list) are `unresolved`; feedback loops and empty runs are flagged. The report is returned as `validation` and kept in provenance.
 - **OQ-09** (NOT_COMPUTABLE): What are the readiness conditions, for example "rig has a case" and minimum confirmed inventory? No retained source lists them.
 - **OQ-10** (NOT_COMPUTABLE): What are the privacy, retention, and access rules for evidence such as rig photos and OCR output, and for the user overlay?
 - **OQ-11** (NOT_COMPUTABLE): What are the computation rules for `modulation_budget`, `routing_flex_score`, `clock_coherence_score`, `chaos_headroom`, `learning_gradient_index`, and `performance_density_index`? None are defined in the sources.
 - **OQ-12** (NOT_COMPUTABLE): The read handlers in `backend/runs/routes.py` commit the database session. Can reading a run or listing runs mutate state? If yes, how does that comply with the append-only rule?
+  - Resolved 2026-10-27: no. Run reads no longer commit or mint canon rows; a run with no recorded generation reports `export_bridge_ready=false` (`runs.bridge.recorded_run_bridge`).
 - **OQ-13** (NOT_COMPUTABLE): Does this spec need an ADVERSARY threat model for the provider evidence boundary? The Workflows section currently lists none, and this draft does not add one.

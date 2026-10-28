@@ -27,7 +27,12 @@ def get_current_user(
     if not user_id:
         return None
 
-    return db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
+    # A token minted before the user's token_version was bumped (sign out everywhere,
+    # role change) no longer counts. Tokens from before versions existed read as 0.
+    if user is None or int(payload.get("tv", 0)) != int(user.token_version or 0):
+        return None
+    return user
 
 
 def require_auth(current_user: Optional[User] = Depends(get_current_user)) -> User:

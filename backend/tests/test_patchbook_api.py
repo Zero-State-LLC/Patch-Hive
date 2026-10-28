@@ -16,7 +16,7 @@ from racks.models import Rack
 
 
 @pytest.fixture
-def client(db_session: Session):
+def client(db_session: Session, owner_headers: dict):
     from core import get_db
 
     def override_get_db():
@@ -26,7 +26,7 @@ def client(db_session: Session):
             pass
 
     app.dependency_overrides[get_db] = override_get_db
-    yield TestClient(app)
+    yield TestClient(app, headers=owner_headers)
     app.dependency_overrides.clear()
 
 

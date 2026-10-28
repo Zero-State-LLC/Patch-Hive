@@ -14,16 +14,15 @@ import json
 from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Literal, Optional
 
+# The canonical category set (spec 001 FR-012, OQ-03 resolved 2026-10-28). Subtypes
+# such as Pad, Lead, Bass and Drone are not categories; they belong in a separate
+# optional field once a generator produces them.
 PatchCategory = Literal[
     "Voice",
-    "Modulation",
     "Clock-Rhythm",
     "Generative",
-    "Utility",
-    "Performance Macro",
     "Texture-FX",
-    "Study",
-    "Experimental-Feedback",
+    "Utility",
 ]
 
 
@@ -155,9 +154,15 @@ class ConnectionIR:
     to_module_id: int
     to_port: str
     cable_type: str  # "audio", "cv", "gate", "clock"
+    # "declared": both ends are jacks the modules declare; "generic": a role name used
+    # because a module's jacks are not on file (spec 001 OQ-04). None before resolution.
+    port_status: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        return asdict(self)
+        data = asdict(self)
+        if data["port_status"] is None:
+            del data["port_status"]
+        return data
 
 
 @dataclass

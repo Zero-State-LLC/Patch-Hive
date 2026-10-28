@@ -210,6 +210,7 @@ def import_records(db: Session, records: list[dict[str, Any]], dry_run: bool = F
         "unchanged": 0,
         "rejected": 0,
         "warnings": [],
+        "actions": [],
     }
 
     for index, record in enumerate(records):
@@ -409,11 +410,13 @@ def import_records(db: Session, records: list[dict[str, Any]], dry_run: bool = F
                     _fill(price, field, price_data[field], changes, new=new)
 
         if created:
-            receipt["inserted"] += 1
+            action = "inserted"
         elif changes.count:
-            receipt["updated"] += 1
+            action = "updated"
         else:
-            receipt["unchanged"] += 1
+            action = "unchanged"
+        receipt[action] += 1
+        receipt["actions"].append({"slug": slug, "action": action, "writes": changes.count})
 
     if dry_run:
         db.rollback()

@@ -397,7 +397,7 @@ def test_flag_off_never_invokes_loader_or_network(tmp_path) -> None:
 
     resolution = _resolve_with(db, provider)
 
-    assert resolution.state is ResolutionState.REJECT
+    assert resolution.state is ResolutionState.UNRESOLVED
     assert resolution.error_code == "CLEF_DISABLED"
     assert loader.calls == 0
     assert loader.load_count == 0
@@ -478,7 +478,7 @@ def test_loader_failure_fails_closed(tmp_path, case) -> None:
 
     assert calls == []
     assert loader.load_count == 0
-    assert resolution.state is ResolutionState.REJECT
+    assert resolution.state is ResolutionState.UNRESOLVED
     assert resolution.error_code == "CLEF_UNAVAILABLE"
     assert resolution.proposal is None
     assert db.query(DecisionReceiptRecord).count() == 0
@@ -523,7 +523,7 @@ def test_loader_exception_is_fail_closed_without_a_cause(tmp_path) -> None:
 
     resolution = _resolve_with(db, _Recorder())
     assert resolution.error_code == "CLEF_UNAVAILABLE"
-    assert resolution.state is ResolutionState.REJECT
+    assert resolution.state is ResolutionState.UNRESOLVED
 
     request = captured["request"]
 
@@ -647,9 +647,12 @@ def _post_resolution(db_session, rack_id: int, evidence_id: str, idempotency_key
 
     app.dependency_overrides[get_db] = override_db
     try:
+        from tests.conftest import rack_owner_headers
+
         return TestClient(app).post(
             f"/api/racks/{rack_id}/evidence/decision-resolution",
             json={"evidence_id": evidence_id, "idempotency_key": idempotency_key},
+            headers=rack_owner_headers(db_session, rack_id),
         )
     finally:
         app.dependency_overrides.clear()

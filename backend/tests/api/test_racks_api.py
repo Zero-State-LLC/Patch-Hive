@@ -18,8 +18,8 @@ from racks.models import Rack, RackModule
 
 
 @pytest.fixture
-def client(db_session: Session):
-    """Create a test client with database override."""
+def client(db_session: Session, owner_headers: dict):
+    """Test client signed in as the owner of the sample racks."""
     from core import get_db
 
     def override_get_db():
@@ -29,7 +29,7 @@ def client(db_session: Session):
             pass
 
     app.dependency_overrides[get_db] = override_get_db
-    yield TestClient(app)
+    yield TestClient(app, headers=owner_headers)
     app.dependency_overrides.clear()
 
 
@@ -290,20 +290,37 @@ class TestRacksAPI:
         assert response.status_code == 404
 
     def test_delete_rack(self, client: TestClient, db_session: Session, sample_rack_basic: Rack):
-        """Test deleting a rack."""
+        """Deleting a rack soft-deletes it (spec 001 OQ-02): it is gone from the API,
+        but the row, its modules and any runs or patches stay as history."""
+        from patches.models import Patch
+        from runs.models import Run
+
         rack_id = sample_rack_basic.id
+        run = Run(rack_id=rack_id, status="succeeded")
+        db_session.add(run)
+        db_session.commit()
+        patch = Patch(
+            rack_id=rack_id, run_id=run.id, name="P", category="Voice", connections=[],
+            generation_seed=1, generation_version="1.0.0", engine_config={},
+        )
+        db_session.add(patch)
+        db_session.commit()
 
         response = client.delete(f"/api/racks/{rack_id}")
-
         assert response.status_code == 204
 
-        # Verify rack is deleted
-        deleted_rack = db_session.query(Rack).filter(Rack.id == rack_id).first()
-        assert deleted_rack is None
+        assert client.get(f"/api/racks/{rack_id}").status_code == 404
+        assert rack_id not in {r["id"] for r in client.get("/api/racks/").json()["racks"]}
+        assert client.get(f"/api/patches/{patch.id}").status_code == 404
+        assert client.post(f"/api/patches/generate/{rack_id}", json={}).status_code == 404
+        assert client.delete(f"/api/racks/{rack_id}").status_code == 404
 
-        # Verify associated modules are also deleted (cascade)
-        remaining_modules = db_session.query(RackModule).filter(RackModule.rack_id == rack_id).all()
-        assert len(remaining_modules) == 0
+        db_session.expire_all()
+        kept = db_session.get(Rack, rack_id)
+        assert kept is not None and kept.deleted_at is not None
+        assert db_session.query(RackModule).filter(RackModule.rack_id == rack_id).count() > 0
+        assert db_session.get(Run, run.id) is not None
+        assert db_session.get(Patch, patch.id) is not None
 
     def test_delete_rack_not_found(self, client: TestClient):
         """Test deleting non-existent rack returns 404."""

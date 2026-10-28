@@ -1,10 +1,12 @@
 # CURRENT_STATE
 
-**Authoritative as of:** 2026-07-26  
-**Branch pin:** `origin/main`  
-**HEAD:** re-pin after merge of this campaign (see recent merges)  
-**Recent work:** beta staging ops train #141–#148; Design Engine staging walkthrough; unified test runner + CI acceptance; dual-path F2 canon rigs list.  
-**Open issues:** #68 P0 Product Database residual; #58 P1 residual + P2 hygiene; #96 UI pages (**open**).
+**Authoritative as of:** 2026-10-28  
+**Branch pin:** `main` on `Zero-State-LLC/Patch-Hive`  
+**HEAD:** `433bb76` (#80, users own their racks)  
+**Recent work:** maker-crawl catalog pipeline (spec 003 T020–T027, #64–#77) loaded to staging; API write auth (#79) and rack ownership (#80); phishing-scanner fixes for patch-hive.com (#69).  
+**Open PRs:** [#78](https://github.com/Zero-State-LLC/Patch-Hive/pull/78) acceptance-suite env isolation.  
+**Board:** [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8), mirrored in [docs/KANBAN.md](docs/KANBAN.md).  
+**Open owner decisions:** [docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md](docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md).  
 
 **Alpha tag lineage:** `v0.3.0-alpha` (late alpha — **not** production)
 
@@ -12,17 +14,15 @@
 
 | PR | Result |
 |----|--------|
-| [#141](https://github.com/scrimshawlife-ctrl/Patch-Hive/pull/141) | FE/seed type-safety + registry slug Alembic + CI green-path |
-| [#142](https://github.com/scrimshawlife-ctrl/Patch-Hive/pull/142) | Alembic-on-deploy + `/health/ready` + evidence re-pin |
-| [#143](https://github.com/scrimshawlife-ctrl/Patch-Hive/pull/143) | Local staging compose smoke receipt |
-| [#144](https://github.com/scrimshawlife-ctrl/Patch-Hive/pull/144) | Entrypoint wait on DATABASE_URL before alembic |
-| [#145](https://github.com/scrimshawlife-ctrl/Patch-Hive/pull/145) | Smoke scripts + backup/restore drill + FE API env fix |
-| [#146](https://github.com/scrimshawlife-ctrl/Patch-Hive/pull/146) | Acceptance suite against compose Postgres |
-| [#147](https://github.com/scrimshawlife-ctrl/Patch-Hive/pull/147) | Design Engine staging enablement + walkthrough |
-| [#148](https://github.com/scrimshawlife-ctrl/Patch-Hive/pull/148) | Unified test runner + CI acceptance gate |
-| [#96](https://github.com/scrimshawlife-ctrl/Patch-Hive/pull/96) | Full product pages visual upgrade (**open**) |
-
-**Campaign issue lineage:** [#46](https://github.com/scrimshawlife-ctrl/Patch-Hive/issues/46) — closed
+| [#62](https://github.com/Zero-State-LLC/Patch-Hive/pull/62) | FastAPI on Cloudflare Containers for `api.patch-hive.com` (merged; not deployed) |
+| [#63](https://github.com/Zero-State-LLC/Patch-Hive/pull/63) | Evidence, exports and design packs mirrored to R2 |
+| [#64](https://github.com/Zero-State-LLC/Patch-Hive/pull/64)–[#65](https://github.com/Zero-State-LLC/Patch-Hive/pull/65) | Spec 003 owner decisions D1/D2; ModularGrid rows tagged as leads; maker-only source scope |
+| [#66](https://github.com/Zero-State-LLC/Patch-Hive/pull/66)–[#67](https://github.com/Zero-State-LLC/Patch-Hive/pull/67) | Maker crawl v2 (shared router, adapters, paid run) and loader overlays |
+| [#68](https://github.com/Zero-State-LLC/Patch-Hive/pull/68), [#70](https://github.com/Zero-State-LLC/Patch-Hive/pull/70), [#71](https://github.com/Zero-State-LLC/Patch-Hive/pull/71) | Rail-parser fix, false-conflict fix, product-identity review: staging at 0 conflicts |
+| [#72](https://github.com/Zero-State-LLC/Patch-Hive/pull/72)–[#77](https://github.com/Zero-State-LLC/Patch-Hive/pull/77) | T026 pass (4ms, Pittsburgh, Erica), coverage fixes, categories; T025 done, T027 (prod) added |
+| [#69](https://github.com/Zero-State-LLC/Patch-Hive/pull/69) | patch-hive.com: no sign-in until the API is live, real 404s, favicon, robots/sitemap |
+| [#79](https://github.com/Zero-State-LLC/Patch-Hive/pull/79) | Module and case writes admin-only and audited |
+| [#80](https://github.com/Zero-State-LLC/Patch-Hive/pull/80) | Users own their racks; patches, runs and exports follow the rack |
 
 ## OBSERVED product posture
 
@@ -31,14 +31,17 @@
 | Product identity | Deterministic Eurorack **rig + patch documentation** |
 | Canonical domain | `backend/canon/` (+ design recipes, export fulfillment) |
 | Design Engine flags | **Default off** — staging overlay + walkthrough PASS (#147) |
-| Alembic | Single head through `20260726_module_registry_slugs`; entrypoint waits for DB then upgrades |
+| Alembic | Single head through `20261027_catalog_lead_tags`; staging migrated 2026-10-27, prod not yet |
 | Health | `/health` liveness; `/health/ready` includes DB |
 | Local Compose staging | `docker-compose.staging.yml` + `scripts/staging/*` + `scripts/test/run.*` |
 | Test automation | `scripts/test/run.sh\|ps1` · CI `acceptance-tests.yml` · 11 acceptance PASS |
 | Dual-path inventory | F0/F1/F3/F2 done; F4/F5 residual; Z deferred |
 | Named staging host | Plan only — **NOT_PERFORMED** |
 | Payments | Test-mode only |
-| Production deploy | **Not performed** |
+| Module catalog (staging) | 4,172 catalog rows, 4,142 modules, 0 conflicts; sources: Phase 2 seed (ModularGrid leads, tagged `unknown`/`CATALOG_OBSERVED`) plus maker pages (`official_publication`). Prod not loaded (T027) |
+| API access | Module and case writes admin-only (#79). Racks owner-scoped (#80): owner reads/writes, admin read roles read all, public racks readable by anyone, others 404. Catalog materialize and stateless layout recommendation stay public |
+| Accounts | Sign-in hidden in production builds until `VITE_ACCOUNTS_OPEN=true` (after the API is live) |
+| Production deploy | Frontend live on Cloudflare Workers (`patch-hive.com`) from a build before #69/#80; API (`api.patch-hive.com`) **not deployed** |
 | Production readiness | **Not ready** (beta-staging engineering) — [assessment](docs/evidence/PRODUCTION_READINESS_ASSESSMENT_2026-07-21.md) · [matrix](docs/evidence/PRODUCTION_READINESS_MATRIX.md) · [delta](docs/evidence/PRODUCTION_READINESS_DELTA_2026-07-26.md) |
 
 ## Decision Intelligence specification campaign (2026-09-25)
@@ -49,12 +52,14 @@
 
 ## Immediate continuation priorities
 
-1. Operator: pick named staging host; optional domain cutover ([DOMAIN_CUTOVER_CHECKLIST.md](docs/evidence/DOMAIN_CUTOVER_CHECKLIST.md)).
-2. Dual-path F4 (evidence alias) / F5 (FE inventory reads prefer canon DTO).
-3. P1/P2 hygiene per CONTINUATION; #96 UI polish when ready.
+1. Operator: deploy the frontend (#69, #80) and request a VirusTotal reanalysis; rotate the context.dev and OpenRouter keys; add `RELEASE_PLEASE_TOKEN` and `PROJECT_TOKEN`.
+2. Operator: deploy the API (`api.patch-hive.com`), then open accounts (`VITE_ACCOUNTS_OPEN=true`).
+3. Operator: load the catalog to prod (T027: `db-migrate.yml` prod, `db-load.yml` dry run, then apply).
+4. Engineering, no decision needed: count unknown module power per rail in rack budgets; seven new crawl rows as overlays v5/v13; verify the registry snapshot ships in the API image.
+5. Owner decisions: see [OPEN_DESIGN_DECISIONS_2026-10-28.md](docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md).
 
-**Local staging automation:**  
-`scripts/test/run.ps1 ci` · `staging` · smoke · acceptance (11 PASS) · design-engine (export succeeded)
+**Local test automation:**
+`cd backend && pytest tests --ignore=tests/acceptance -q` (CI form; 871 passed on #80) · acceptance suite separately (11 passed; #78 lets it run in the same invocation)
 
 ## Authority boundary
 
@@ -65,7 +70,9 @@
 | Doc | Use |
 |-----|-----|
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Capability roadmap |
-| [docs/CONTINUATION.md](docs/CONTINUATION.md) | Engineering backlog |
+| [docs/KANBAN.md](docs/KANBAN.md) | Board mirror (Project #8 is the source of truth) |
+| [docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md](docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md) | Open owner decisions with research |
+| [docs/CONTINUATION.md](docs/CONTINUATION.md) | Engineering backlog (dated 2026-07-21; see the board for current work) |
 | [docs/PRODUCTION_READINESS.md](docs/PRODUCTION_READINESS.md) | Gate framework |
 | [docs/evidence/PRODUCTION_READINESS_ASSESSMENT_2026-07-21.md](docs/evidence/PRODUCTION_READINESS_ASSESSMENT_2026-07-21.md) | Latest readiness narrative |
 | [docs/FEATURE_FLAGS.md](docs/FEATURE_FLAGS.md) | Flags |

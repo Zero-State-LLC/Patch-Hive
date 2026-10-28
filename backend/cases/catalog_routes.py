@@ -36,6 +36,9 @@ from cases.catalog_schemas import (
     ManufacturerListResponse,
 )
 from cases.models import CaseCatalog, CaseRevision
+from admin.dependencies import require_admin_mutate
+from admin.utils import log_admin_action
+from community.models import User
 from core.database import get_db
 
 router = APIRouter(tags=["case-catalog"])
@@ -183,8 +186,17 @@ def materialize_catalog_batch_route(
     ),
     limit: int = Query(500, ge=1, le=2000),
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_mutate),
 ):
-    """Bulk bridge for Rack Builder. Idempotent per catalog slug."""
+    """Bulk bridge for Rack Builder. Idempotent per catalog slug. Admin only."""
+    log_admin_action(
+        db,
+        actor=current_user,
+        action_type="case_catalog.materialize_batch",
+        target_type="case_catalog",
+        delta_json={"format_family": format_family, "limit": limit},
+    )
+    db.commit()
     return materialize_catalog_batch(db, format_family=format_family, limit=limit)
 
 

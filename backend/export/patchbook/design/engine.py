@@ -9,6 +9,7 @@ from typing import Any
 
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
+from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
 
 from canon.contracts import canonical_json, canonical_sha256
@@ -17,6 +18,7 @@ from export.patchbook.design.brand_policy import (
     scan_forbidden_strings,
 )
 from export.patchbook.design.content_spine import LoadedLibrary
+from export.patchbook.design.a11y import body_size_pt
 from export.patchbook.design.diagram_svg import render_patch_diagram_svg
 from export.patchbook.design.families.registry import (
     PATENT_FUTURE_DISCLAIMER,
@@ -583,6 +585,8 @@ def _render_execution_pdf(
         else "Helvetica"
     )
     mono = family.mono_font if family.mono_font in {"Courier", "Helvetica"} else "Courier"
+    # Body text, steps and cables never go below the profile's floor (spec 002 FR-004).
+    body_size = body_size_pt(recipe)
 
     # Cover
     c.setFont("Helvetica-Bold", 22)
@@ -593,14 +597,23 @@ def _render_execution_pdf(
     if family.patent_disclaimer:
         c.setFillColorRGB(0, 0, 0)
         c.setFont("Helvetica", 8)
-        c.drawString(inch, height - 1.55 * inch, PATENT_FUTURE_DISCLAIMER[:95])
+        for i, chunk in enumerate(_wrap_to_width(PATENT_FUTURE_DISCLAIMER, "Helvetica", 8, width - 2 * inch)):
+            c.drawString(inch, height - 1.55 * inch - i * 10, chunk)
     c.setFillColorRGB(0, 0, 0)
-    c.setFont(body_font, 9)
     y_meta = height - 1.9 * inch if family.patent_disclaimer else height - 1.7 * inch
-    c.drawString(inch, y_meta, f"Export: {export_id}")
-    c.drawString(inch, y_meta - 0.25 * inch, f"Run: {library.source_run_id}")
-    c.drawString(inch, y_meta - 0.5 * inch, f"Composition: {composition_hash[:16]}…")
-    c.drawString(inch, y_meta - 0.75 * inch, f"Algorithm: {family.layout_algorithm_id}")
+    _draw_wrapped(
+        c,
+        [
+            f"Export: {export_id}",
+            f"Run: {library.source_run_id}",
+            f"Composition: {composition_hash[:16]}…",
+            f"Algorithm: {family.layout_algorithm_id}",
+        ],
+        body_font,
+        body_size,
+        y_meta,
+        width - 2 * inch,
+    )
     c.setFont("Helvetica", 8)
     c.setFillColorRGB(0.4, 0.4, 0.4)
     c.drawString(inch, 0.75 * inch, "A Zero State Product")
@@ -611,47 +624,27 @@ def _render_execution_pdf(
     for item in library.items:
         plan = item.compilation.patch_plan
         graph = item.compilation.patch_graph
-        y = height - inch
-        c.setFont("Helvetica-Bold", 16)
-        c.drawString(inch, y, plan.title[:80])
-        y -= 18
-        c.setFont(body_font, 9)
-        c.drawString(inch, y, f"Intent: {plan.intent[:120]}")
-        y -= 16
-        c.setStrokeColorRGB(*accent)
-        c.line(inch, y, width - inch, y)
-        c.setStrokeColorRGB(0, 0, 0)
-        y -= 20
-        section = "Checklist" if family.show_checklist else "Construction"
-        if family.show_title_block:
-            c.setFont("Helvetica", 7)
-            c.drawString(
-                inch, y, f"TITLE BLOCK · {family.display_name} · rev eng={DESIGN_ENGINE_VERSION}"
-            )
-            y -= 14
-        c.setFont("Helvetica-Bold", 11)
-        c.drawString(inch, y, section)
-        y -= 14
-        c.setFont(body_font, 9)
-        for step in plan.steps:
-            prefix = "[ ] " if family.show_checklist else f"{step.position}. "
-            line = f"{prefix}[{step.phase}] {step.instruction}"
-            for chunk in _wrap(line, 95):
-                if y < inch + 40:
-                    break
-                c.drawString(inch, y, chunk)
-                y -= 12
-        y -= 8
-        c.setFont("Helvetica-Bold", 11)
-        c.drawString(inch, y, "Cables")
-        y -= 14
-        c.setFont(mono, 8)
-        for edge in graph.edges:
-            line = f"{edge.edge_id}: {edge.source_port_id} -> {edge.target_port_id} [{edge.signal_type}]"
-            if y < inch + 30:
-                break
-            c.drawString(inch, y, line[:110])
-            y -= 10
+        # Lay the page out first: everything wraps, nothing is cut, and a page that
+        # cannot hold its required content fails instead of dropping it (spec 002
+        # FR-001, FR-003, FR-010, FR-021).
+        page = layout_patch_page(
+            plan,
+            graph,
+            family,
+            body_font=body_font,
+            mono=mono,
+            width=width,
+            height=height,
+            body_size=body_size,
+        )
+        for line in page:
+            if line.rule:
+                c.setStrokeColorRGB(*accent)
+                c.line(inch, line.y, width - inch, line.y)
+                c.setStrokeColorRGB(0, 0, 0)
+                continue
+            c.setFont(line.font, line.size)
+            c.drawString(inch + line.indent, line.y, line.text)
         # Execution footer
         c.setFont("Helvetica", 7)
         c.drawString(
@@ -666,16 +659,22 @@ def _render_execution_pdf(
     # Colophon
     c.setFont("Helvetica-Bold", 14)
     c.drawString(inch, height - inch, "Colophon")
-    c.setFont(body_font, 9)
-    c.drawString(inch, height - 1.4 * inch, "Designed and Engineered by Zero State")
-    c.drawString(inch, height - 1.65 * inch, "PatchHive — a Zero State product")
-    c.drawString(inch, height - 1.9 * inch, f"Template family: {family.display_name}")
-    c.drawString(inch, height - 2.15 * inch, f"Mode: {recipe.mode.value}")
-    c.drawString(inch, height - 2.4 * inch, f"Layout algorithm: {family.layout_algorithm_id}")
+    y_after = _draw_wrapped(
+        c,
+        [
+            "Designed and Engineered by Zero State",
+            "PatchHive — a Zero State product",
+            f"Template family: {family.display_name}",
+            f"Mode: {recipe.mode.value}",
+            f"Layout algorithm: {family.layout_algorithm_id}",
+        ],
+        body_font,
+        body_size,
+        height - 1.4 * inch,
+        width - 2 * inch,
+    )
     if family.patent_disclaimer:
-        c.setFont("Helvetica", 8)
-        for i, chunk in enumerate(_wrap(PATENT_FUTURE_DISCLAIMER, 90)):
-            c.drawString(inch, height - 2.75 * inch - i * 12, chunk)
+        _draw_wrapped(c, [PATENT_FUTURE_DISCLAIMER], "Helvetica", 8, y_after - 10, width - 2 * inch)
     c.showPage()
 
     c.setAuthor("PatchHive")
@@ -686,17 +685,138 @@ def _render_execution_pdf(
     path.write_bytes(normalize_pdf_metadata(buf.getvalue()))
 
 
-def _wrap(text: str, width: int) -> list[str]:
-    words = text.split()
+# --- Page layout (spec 002 FR-001/003/010/021) -------------------------------------
+
+# Lowest baseline for page content: the execution footer sits at 0.55 in.
+CONTENT_FLOOR = inch + 12
+
+
+@dataclass(frozen=True)
+class PageLine:
+    text: str
+    font: str
+    size: float
+    y: float
+    indent: float = 0.0
+    rule: bool = False
+
+
+def _draw_wrapped(
+    c: Any, lines: list[str], font: str, size: float, y: float, max_width: float
+) -> float:
+    """Draw front or back matter: each line wraps to the page width and the spacing
+    grows with the font size, so a large body size never runs off the page or
+    overlaps. Returns the baseline below the last line."""
+    leading = max(18.0, size * 1.5) if size >= 9 else size * 1.5
+    c.setFont(font, size)
+    for line in lines:
+        for chunk in _wrap_to_width(line, font, size, max_width):
+            c.drawString(inch, y, chunk)
+            y -= leading
+    return y
+
+
+def _wrap_to_width(
+    text: str, font: str, size: float, max_width: float, rest_width: float | None = None
+) -> list[str]:
+    """Wrap by measured width; continuation lines may be narrower (``rest_width``). A
+    single word wider than its line is split across lines, never cut and never given
+    extra spaces."""
     lines: list[str] = []
-    cur: list[str] = []
-    for w in words:
-        trial = " ".join(cur + [w])
-        if len(trial) > width and cur:
-            lines.append(" ".join(cur))
-            cur = [w]
-        else:
-            cur.append(w)
+    cur = ""
+
+    def limit() -> float:
+        return max_width if not lines or rest_width is None else rest_width
+
+    for word in text.split():
+        trial = f"{cur} {word}" if cur else word
+        if stringWidth(trial, font, size) <= limit():
+            cur = trial
+            continue
+        if cur:
+            lines.append(cur)
+            cur = ""
+        while stringWidth(word, font, size) > limit():
+            cut = len(word)
+            while cut > 1 and stringWidth(word[:cut], font, size) > limit():
+                cut -= 1
+            lines.append(word[:cut])
+            word = word[cut:]
+        cur = word
     if cur:
-        lines.append(" ".join(cur))
+        lines.append(cur)
     return lines or [""]
+
+
+def layout_patch_page(
+    plan: Any,
+    graph: Any,
+    family: FamilySpec,
+    *,
+    body_font: str,
+    mono: str,
+    width: float,
+    height: float,
+    body_size: float = 9.5,
+) -> list[PageLine]:
+    """Every line of one patch page, fully wrapped. Optional decoration (the title
+    block) goes first if the page is full; if required content still does not fit,
+    PATCH_PAGE_TEXT_OVERFLOW, never a truncated or dropped line."""
+    for with_title_block in ((True, False) if family.show_title_block else (False,)):
+        page = _lay_out(
+            plan, graph, family, body_font, mono, width, height, with_title_block, body_size
+        )
+        if all(line.y >= CONTENT_FLOOR for line in page):
+            return page
+    raise PreflightFailed(
+        "PATCH_PAGE_TEXT_OVERFLOW",
+        f"Patch {graph.artifact_id} needs more than one page for its required content "
+        f"({len(plan.steps)} steps, {len(graph.edges)} cables). Remediation: split the "
+        "patch into smaller patches, or choose a book profile with a denser layout.",
+    )
+
+
+def _lay_out(
+    plan: Any,
+    graph: Any,
+    family: FamilySpec,
+    body_font: str,
+    mono: str,
+    width: float,
+    height: float,
+    with_title_block: bool,
+    body_size: float,
+) -> list[PageLine]:
+    usable = width - 2 * inch
+    leading = round(body_size * 1.3, 2)
+    lines: list[PageLine] = []
+    y = height - inch
+
+    def add(text: str, font: str, size: float, step: float, indent: float = 0.0) -> None:
+        nonlocal y
+        for chunk in _wrap_to_width(text, font, size, usable - indent):
+            lines.append(PageLine(chunk, font, size, y, indent))
+            y -= step
+
+    add(plan.title, "Helvetica-Bold", 16, 18)
+    add(f"Intent: {plan.intent}", body_font, body_size, leading)
+    y -= 4
+    lines.append(PageLine("", body_font, 9, y, rule=True))
+    y -= 20
+    if with_title_block:
+        add(f"TITLE BLOCK · {family.display_name} · rev eng={DESIGN_ENGINE_VERSION}", "Helvetica", 7, 14)
+    add("Checklist" if family.show_checklist else "Construction", "Helvetica-Bold", 11, 14)
+    for step in plan.steps:
+        prefix = "[ ] " if family.show_checklist else f"{step.position}. "
+        add(f"{prefix}[{step.phase}] {step.instruction}", body_font, body_size, leading)
+    y -= 8
+    add("Cables", "Helvetica-Bold", 11, 14)
+    for edge in graph.edges:
+        text = f"{edge.edge_id}: {edge.source_port_id} -> {edge.target_port_id} [{edge.signal_type}]"
+        # Cables are required content: body size, not a smaller caption size. One pass
+        # over the original text; continuation lines indent (and are narrower) so one
+        # cable never reads as two.
+        for i, chunk in enumerate(_wrap_to_width(text, mono, body_size, usable, usable - 12)):
+            lines.append(PageLine(chunk, mono, body_size, y, indent=12 if i else 0))
+            y -= leading
+    return lines

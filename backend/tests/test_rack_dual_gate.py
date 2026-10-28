@@ -63,7 +63,10 @@ def client(db_session: Session):
             pass
 
     app.dependency_overrides[get_db] = override_get_db
-    yield TestClient(app)
+    from tests.conftest import bearer_headers, make_user
+
+    # Racks are owner-scoped: these tests create racks as a signed-in user.
+    yield TestClient(app, headers=bearer_headers(make_user(db_session)))
     app.dependency_overrides.clear()
 
 

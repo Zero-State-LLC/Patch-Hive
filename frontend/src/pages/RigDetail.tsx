@@ -8,6 +8,7 @@ import {
   runApi,
   type InventoryRevisionSummary,
 } from "@/lib/api";
+import { useAuthStore } from "@/lib/store";
 import type { Patch, Run } from "@/types/api";
 
 type WorkspaceTab = "overview" | "patches" | "exports" | "gallery";
@@ -58,6 +59,8 @@ export default function RigDetailPage() {
   const [latestInventory, setLatestInventory] = useState<InventoryRevisionSummary | null>(null);
   const [inventoryError, setInventoryError] = useState("");
   const [generating, setGenerating] = useState(false);
+  // Generating writes to the rig, which belongs to its owner (the server enforces it).
+  const signedIn = useAuthStore((st) => st.isAuthenticated());
   const [generateStatus, setGenerateStatus] = useState("");
   const [lastGenerateRunId, setLastGenerateRunId] = useState<number | null>(null);
 
@@ -506,7 +509,8 @@ export default function RigDetailPage() {
                 className="button button-primary"
                 type="button"
                 onClick={() => void handleGenerate()}
-                disabled={!rigIdNum || generating}
+                disabled={!rigIdNum || generating || !signedIn}
+                title={signedIn ? undefined : "Sign in to generate patches for your rig"}
                 aria-describedby="generate-help"
               >
                 {generating

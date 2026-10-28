@@ -180,12 +180,20 @@ def execute_walkthrough(
     return finish(health)
 
 
-def fetch_all_ids(http: Any, path: str, *, items_key: str, id_field: str, page: int = 1000) -> list[int]:
+def fetch_all_ids(
+    http: Any,
+    path: str,
+    *,
+    items_key: str,
+    id_field: str,
+    page: int = 1000,
+    headers: Mapping[str, str] | None = None,
+) -> list[int]:
     """Every id from a paginated ``skip``/``limit`` list endpoint (read-only)."""
     ids: list[int] = []
     skip = 0
     while True:
-        resp = http.get(path, params={"skip": skip, "limit": page})
+        resp = http.get(path, params={"skip": skip, "limit": page}, headers=dict(headers or {}))
         if resp.status_code != 200:
             raise RuntimeError(f"LIST_FAILED:{path}:{resp.status_code}")
         rows = _json(resp).get(items_key) or []
@@ -195,8 +203,25 @@ def fetch_all_ids(http: Any, path: str, *, items_key: str, id_field: str, page: 
         skip += page
 
 
-def collect_live_alias_evidence(http: Any) -> AliasParityEvidence:
-    """T010 evidence from a running API: OpenAPI route table plus full id sets."""
+def login_headers(http: Any, account: SeedAccount, *, error_code: str) -> dict[str, str]:
+    """Bearer header for a seeded account. The token never leaves the returned header."""
+    resp = http.post(
+        "/api/community/auth/login",
+        json={"username": account.username, "password": account.password},
+    )
+    token = _json(resp).get("access_token") if resp.status_code == 200 else None
+    if not token:
+        raise CutoverError(error_code, f"login http {resp.status_code}")
+    return {"Authorization": f"Bearer {token}"}
+
+
+def collect_live_alias_evidence(
+    http: Any, *, headers: Mapping[str, str] | None = None
+) -> AliasParityEvidence:
+    """T010 evidence from a running API: OpenAPI route table plus full id sets.
+
+    Racks are owner-scoped, so the full id sets need an admin (read-all) header.
+    """
     from core.ops.f5_cutover import collect_alias_evidence
 
     spec = http.get("/openapi.json")
@@ -204,8 +229,8 @@ def collect_live_alias_evidence(http: Any) -> AliasParityEvidence:
         raise RuntimeError(f"OPENAPI_UNAVAILABLE:{spec.status_code}")
     return collect_alias_evidence(
         route_table(_json(spec)),
-        legacy_ids=fetch_all_ids(http, "/api/racks/", items_key="racks", id_field="id"),
-        canon_ids=fetch_all_ids(http, "/api/canon/rigs", items_key="rigs", id_field="rig_id"),
+        legacy_ids=fetch_all_ids(http, "/api/racks/", items_key="racks", id_field="id", headers=headers),
+        canon_ids=fetch_all_ids(http, "/api/canon/rigs", items_key="rigs", id_field="rig_id", headers=headers),
     )
 
 
@@ -291,7 +316,8 @@ def run_staging_walkthrough(
     is produced.
     """
     log("=== F5 alias evidence ===")
-    alias = collect_live_alias_evidence(http)
+    admin_headers = login_headers(http, admin, error_code="ALIAS_EVIDENCE_UNVERIFIABLE")
+    alias = collect_live_alias_evidence(http, headers=admin_headers)
     log(f"  same_set={alias.same_set} new_write_surface={list(alias.new_write_surface)}")
     alias_failed = alias_evidence_failures(alias)
     if alias_failed:
@@ -305,7 +331,9 @@ def run_staging_walkthrough(
     )
 
     log("=== FE cutover evidence (generate dual-write audit) ===")
-    gen = http.post(f"/api/patches/generate/{rig_id}", json={})
+    # The seeded user owns the rig, so generation runs as that user.
+    user_headers = login_headers(http, user, error_code="SEED_USER_LOGIN_FAILED")
+    gen = http.post(f"/api/patches/generate/{rig_id}", json={}, headers=user_headers)
     spec = http.get("/openapi.json")
     if spec.status_code != 200:
         raise CutoverError("OPENAPI_UNAVAILABLE", str(spec.status_code))

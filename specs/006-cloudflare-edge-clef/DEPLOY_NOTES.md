@@ -16,6 +16,27 @@ Recorded 2026-10-26:
 - API origin: Cloudflare Containers (`edge/api`), not Tunnel.
 - Database: Neon staging branch, pooled endpoint, connected directly from the container (FR-003 amendment approved 2026-10-26).
 
+Superseded 2026-10-27 (owner delegated the staging decision; see
+`docs/evidence/STAGING_HOST_PLAN.md`): the public pair is production and a second pair is staging.
+
+| | Production | Staging |
+| --- | --- | --- |
+| Frontend | `patch-hive.com` (`patchhive-frontend`) | `staging.patch-hive.com` (`patchhive-frontend-staging`) |
+| API | `api.patch-hive.com` (`patchhive-api`) | `api-staging.patch-hive.com` (`patchhive-api-staging`) |
+| `ENVIRONMENT` | `production` | `staging` |
+| Database | Neon `main` (pooled) | Neon `staging` (pooled) |
+| R2 | `patchhive-prod-files`, prefix `prod` | `patchhive-staging-files`, prefix `staging` |
+| Feature flags | none forwarded; all default off | set in `env.staging.vars` for 007/008 drills |
+| Deploy | `npx wrangler deploy` | `npx wrangler deploy --env staging` |
+
+Secrets are per Worker: repeat each `wrangler secret put` with `--env staging` for staging.
+The manual workflow `.github/workflows/edge-secrets.yml` (input `staging` or `production`)
+writes `DATABASE_URL` (Neon pooled, from the repo secret), the R2 S3 keys (from a
+bucket-scoped token it creates, revoking the previous one) and, if missing, `SECRET_KEY`,
+without printing any of them. It needs the repo secret `CLOUDFLARE_API_TOKEN` (Account API
+Tokens: Edit, Workers Scripts: Edit) and the repo variable `CLOUDFLARE_ACCOUNT_ID`.
+The readiness machine and FR-003 describe the staging pair.
+
 Still owned by the operator and NOT set in code or config:
 
 - Cloudflare account id and the Workers AI API token used by Clef.
@@ -112,15 +133,16 @@ Fail-closed behavior:
   inert. Every call fails with `CLEF_DISABLED` (HTTP 409) before any network call or image load.
 - Timeouts map to `CLEF_TIMEOUT` (HTTP 504). Transport and HTTP errors map to
   `CLEF_UNAVAILABLE` (HTTP 502). Schema or candidate violations map to `CLEF_MALFORMED` (502).
-- In the Spec 006 guarded flow, a provider failure moves the resolution machine to REJECT and
-  writes NO decision receipt. The Spec 005 `resolve_module_identity` path is unchanged.
+- In the Spec 006 guarded flow, a provider failure moves the resolution machine to ESCALATE when
+  a routing target exists, else UNRESOLVED, and writes NO decision receipt. It is never REJECT:
+  a provider that did not answer says nothing about the evidence. The Spec 005 `resolve_module_identity` path is unchanged.
 - Vision input: when the flag is on, the route passes a `BoundEvidenceImageLoader`
   (`intelligence/evidence_images.py`) for the image asset bound to the evidence record. It
   reuses the existing gates: `consent_provider_processing` must be true, and the asset must not
   be soft-deleted or past `retention_expires_at` (same predicate as `evidence/retention.py`).
   A denied or missing asset degrades to a text-only request without reading the file. A cleared
   asset is read only from inside the evidence storage root and must match `content_sha256`;
-  any load failure fails closed as `CLEF_UNAVAILABLE` (REJECT, no receipt, no network call).
+  any load failure fails closed as `CLEF_UNAVAILABLE` (UNRESOLVED or ESCALATE, no receipt, no network call).
   The loader is not constructed with the flag off. Image bytes never enter packets, receipts,
   or telemetry.
 - Disposition is always computed by the Spec 005 `DecisionPolicy`; Clef only supplies a

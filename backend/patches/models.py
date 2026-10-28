@@ -22,7 +22,7 @@ class Patch(Base):
 
     # Association with rack/run
     rack_id = Column(
-        Integer, ForeignKey("racks.id", ondelete="CASCADE"), nullable=False, index=True
+        Integer, ForeignKey("racks.id", ondelete="RESTRICT"), nullable=False, index=True
     )
     run_id = Column(Integer, ForeignKey("runs.id", ondelete="SET NULL"), nullable=True, index=True)
 
@@ -32,7 +32,7 @@ class Patch(Base):
     name_override = Column(String(200), nullable=True)
     category = Column(
         String(50), nullable=False, index=True
-    )  # "Voice", "Modulation", "Clock-Rhythm", "Generative", "Utility", "Performance Macro", "Texture-FX", "Study", "Experimental-Feedback"
+    )  # one of core.ir.PatchCategory; older rows may hold retired values such as "Study"
     description = Column(Text, nullable=True)
 
     # Connection graph

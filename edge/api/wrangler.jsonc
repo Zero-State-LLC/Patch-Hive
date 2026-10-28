@@ -1,9 +1,15 @@
 {
   // FastAPI backend on Cloudflare Containers (spec 006 T040a/T050a).
-  // The Worker owns api.patch-hive.com and proxies every request to one container
-  // built from backend/Dockerfile. Secrets, set with `npx wrangler secret put`:
-  // DATABASE_URL (Neon pooled endpoint, sslmode=require), SECRET_KEY, and the R2
-  // S3 API values S3_ENDPOINT_URL, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY (T055).
+  // Two Workers, each proxying every request to its own container built from
+  // backend/Dockerfile (decision 2026-10-27, docs/evidence/STAGING_HOST_PLAN.md):
+  //   production  `npx wrangler deploy`                 api.patch-hive.com          Neon main
+  //   staging     `npx wrangler deploy --env staging`   api-staging.patch-hive.com  Neon staging
+  // Secrets are per environment (add `--env staging` for staging), set with
+  // `npx wrangler secret put`: DATABASE_URL (Neon pooled endpoint, sslmode=require),
+  // SECRET_KEY (32+ random bytes), and the R2 S3 API values S3_ENDPOINT_URL,
+  // S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY (T055). Optional: STRIPE_WEBHOOK_SECRET,
+  // and on staging only, the decision-provider credentials TYPESAFE_API_KEY,
+  // CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_AI_API_TOKEN.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "patchhive-api",
   "main": "src/index.ts",
@@ -11,15 +17,17 @@
   "workers_dev": false,
   "preview_urls": false,
   "routes": [{ "pattern": "api.patch-hive.com", "custom_domain": true }],
+  // The account creates only `durable_object` scheduling-policy applications: the
+  // Durable Object in src/index.ts picks the image and instance size when it starts
+  // the container. One Durable Object ("primary") means one container, so the
+  // entrypoint's `alembic upgrade head` never races itself.
   "containers": [
     {
       "class_name": "PatchHiveApi",
-      "image": "../../backend/Dockerfile",
-      "image_build_context": "../../backend",
-      // One instance: the entrypoint runs `alembic upgrade head` on start, and
-      // concurrent migrations against the same database must not race.
-      "max_instances": 1,
-      "instance_type": "standard-1"
+      "scheduling_policy": "durable_object",
+      "images": {
+        "api": { "dockerfile": "../../backend/Dockerfile", "build_context": "../../backend" }
+      }
     }
   ],
   "durable_objects": {
@@ -29,19 +37,53 @@
     "PatchHiveApi": { "type": "durable-object", "storage": "sqlite" }
   },
   "vars": {
-    "ENVIRONMENT": "staging",
+    "ENVIRONMENT": "production",
     "FRONTEND_BASE_URL": "https://patch-hive.com",
     // Exact frontend origin, as the edge readiness gate requires (no wildcard, no path).
     "CORS_ORIGINS": "[\"https://patch-hive.com\"]",
-    // Payments stay fail-closed on this host.
+    // Payments stay fail-closed until the operator turns them on deliberately.
     "STRIPE_TEST_MODE": "true",
     "ALLOW_PRODUCTION_PAYMENTS": "false",
     // The container disk is temporary; evidence, exports and design packs are mirrored
     // to this R2 bucket and restored on read (backend/core/storage.py).
     "STORAGE_BACKEND": "s3",
-    "S3_BUCKET": "patchhive-staging-files",
+    "S3_BUCKET": "patchhive-prod-files",
     "S3_REGION": "auto",
-    "S3_KEY_PREFIX": "staging"
+    "S3_KEY_PREFIX": "prod"
+    // No ENABLE_* flags: every feature flag stays at its default (off) in production.
   },
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  "env": {
+    "staging": {
+      // Vars, Durable Object bindings and containers are not inherited by environments.
+      "name": "patchhive-api-staging",
+      "routes": [{ "pattern": "api-staging.patch-hive.com", "custom_domain": true }],
+      "containers": [
+        {
+          "class_name": "PatchHiveApi",
+          "scheduling_policy": "durable_object",
+          "images": {
+            "api": { "dockerfile": "../../backend/Dockerfile", "build_context": "../../backend" }
+          }
+        }
+      ],
+      "durable_objects": {
+        "bindings": [{ "name": "API", "class_name": "PatchHiveApi" }]
+      },
+      "vars": {
+        "ENVIRONMENT": "staging",
+        "FRONTEND_BASE_URL": "https://staging.patch-hive.com",
+        "CORS_ORIGINS": "[\"https://staging.patch-hive.com\"]",
+        "STRIPE_TEST_MODE": "true",
+        "ALLOW_PRODUCTION_PAYMENTS": "false",
+        "STORAGE_BACKEND": "s3",
+        "S3_BUCKET": "patchhive-staging-files",
+        "S3_REGION": "auto",
+        "S3_KEY_PREFIX": "staging"
+        // Feature flags for 007/008 drills go here, staging only, for example
+        // "ENABLE_CLEF_PROVIDER": "true" or "ENABLE_PATCHBOOK_DESIGN_ENGINE": "true".
+        // src/index.ts forwards only the names in its FLAG_VARS list.
+      }
+    }
+  }
 }

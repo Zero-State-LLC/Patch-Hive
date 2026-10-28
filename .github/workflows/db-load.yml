@@ -6,6 +6,8 @@ name: DB load
 # SQL never leave the runner: only the dump's size and sha256 go to the job
 # summary, and the uploaded receipt holds counts only.
 # DATABASE_URL is taken from Actions secrets and is never echoed.
+# Apply writes only the plan an operator reviewed: run dry-run first, then apply with
+# the plan_hash it printed. If the plan has changed in between, apply writes nothing.
 
 on:
   workflow_dispatch:
@@ -21,6 +23,11 @@ on:
         type: choice
         default: dry-run
         options: [dry-run, apply]
+      plan_hash:
+        description: "apply only: the plan_hash from the reviewed dry run's summary"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -51,6 +58,7 @@ jobs:
           DATABASE_URL: ${{ inputs.env == 'prod' && secrets.PATCHHIVE_DATABASE_URL_PROD || secrets.PATCHHIVE_DATABASE_URL_STAGING }}
           PATCHHIVE_DB_ENV: ${{ inputs.env }}
           PATCHHIVE_LOAD_MODE: ${{ inputs.mode }}
+          PATCHHIVE_PLAN_HASH: ${{ inputs.plan_hash }}
         run: python scripts/catalog_actions_load.py --allow-nonlocal
       - name: Record pre-apply dump checksum
         if: inputs.mode == 'apply'

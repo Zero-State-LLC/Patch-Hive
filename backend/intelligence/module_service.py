@@ -96,7 +96,7 @@ class ModuleDecisionService:
             idempotency_key=idempotency_key,
         )
         packet = self._provider.choose(request)
-        return DecisionProposal(request=request, packet=packet, policy=self._policy.evaluate(packet))
+        return DecisionProposal(request=request, packet=packet, policy=self._policy.evaluate(packet, request))
 
     @staticmethod
     def build_identity_request(
@@ -151,7 +151,7 @@ class ModuleDecisionService:
             ),
         )
         packet = self._provider.choose(request)
-        return DecisionProposal(request=request, packet=packet, policy=self._policy.evaluate(packet))
+        return DecisionProposal(request=request, packet=packet, policy=self._policy.evaluate(packet, request))
 
     def classify_capability(
         self,
@@ -175,7 +175,7 @@ class ModuleDecisionService:
             choices=tuple(ChoiceOption(choice_id=value) for value in values),
         )
         packet = self._provider.choose(request)
-        return DecisionProposal(request=request, packet=packet, policy=self._policy.evaluate(packet))
+        return DecisionProposal(request=request, packet=packet, policy=self._policy.evaluate(packet, request))
 
     def classify_port(
         self,
@@ -198,7 +198,7 @@ class ModuleDecisionService:
             choices=tuple(ChoiceOption(choice_id=value) for value in PORT_SEMANTICS),
         )
         packet = self._provider.choose(request)
-        return DecisionProposal(request=request, packet=packet, policy=self._policy.evaluate(packet))
+        return DecisionProposal(request=request, packet=packet, policy=self._policy.evaluate(packet, request))
 
     def detect_conflict(
         self,
@@ -219,4 +219,4 @@ class ModuleDecisionService:
             false_criteria="Claims are compatible, complementary, or differ only in non-material detail.",
         )
         packet = self._provider.probability(request)
-        return DecisionProposal(request=request, packet=packet, policy=self._policy.evaluate(packet))
+        return DecisionProposal(request=request, packet=packet, policy=self._policy.evaluate(packet, request))

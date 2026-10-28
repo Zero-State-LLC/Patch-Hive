@@ -45,6 +45,14 @@
       {
         "module_id": 1009,
         "qty": 1
+      },
+      {
+        "module_id": 1010,
+        "qty": 1
+      },
+      {
+        "module_id": 1011,
+        "qty": 1
       }
     ]
   },
@@ -54,7 +62,7 @@
     "allow_humor": true
   },
   "expected_hashes": {
-    "run_fingerprint": "ba9c163605ecd30c503a2993e5b309288d06d96e2d139f304f6f3b5b5cc5d0ad",
-    "patch_count": 20
+    "run_fingerprint": "8a9d64fb7a8f8eac3ccc97b797379255d3348cc7b3b3f01b5f7da748fb27ece7",
+    "patch_count": 14
   }
 }

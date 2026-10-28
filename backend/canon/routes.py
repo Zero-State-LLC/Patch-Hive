@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import datetime, timezone
-from typing import Any, Literal
+from typing import Any, Literal, Optional
 
 from pathlib import Path
 
@@ -36,7 +36,7 @@ from canon.models import (
     StripeEventRecordModel,
     UserStyleRecipeRecord,
 )
-from community.auth import require_auth
+from community.auth import get_current_user, require_auth
 from community.models import User
 from core import get_db, settings
 from runs.listing import list_runs_for_rack
@@ -53,7 +53,8 @@ class CanonicalExportCreate(BaseModel):
     artifact_manifest_hash: str = Field(..., min_length=64, max_length=64)
     formats: list[ExportFormat] = Field(default_factory=lambda: ["pdf", "json"])
     license: str = Field(default="personal", min_length=1, max_length=100)
-    # When Design Engine is on, client credit_cost is ignored (KD-14).
+    # Ignored: the server sets the price (KD-14, spec 004 FR-005). Kept so older
+    # clients that still send it are not rejected.
     credit_cost: int | None = Field(default=None, ge=0)
     idempotency_key: str = Field(..., min_length=8, max_length=128)
     # Optional inline request recipe (no client tier). Prefer one of recipe sources.
@@ -171,7 +172,12 @@ class StripeWebhookResponse(BaseModel):
 
 
 def _download_secret() -> str:
-    secret = (settings.download_token_secret or settings.secret_key or "").strip()
+    from core.security import derived_key
+
+    # Never the login-token key itself: a dedicated secret, or one derived for downloads.
+    secret = (settings.download_token_secret or "").strip()
+    if not secret:
+        return derived_key("download-token")
     if len(secret.encode("utf-8")) < 32:
         # Deterministic pad for local/dev only; production policy rejects weak secrets.
         secret = (secret + ("0" * 32))[:32]
@@ -307,11 +313,14 @@ def list_canonical_runs(
         description="Legacy rack id (rig). Alias of GET /api/runs?rack_id= with same bridge DTO.",
     ),
     db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
 ) -> RunListResponse:
     """Matrix slice B: canon-prefixed run list for FE migration off /api/runs."""
+    from racks.access import readable_rack
+
+    readable_rack(db, rig_id, current_user, label="Rig")
 
     payload = list_runs_for_rack(db, rig_id)
-    db.commit()
     return payload
 
 
@@ -376,15 +385,17 @@ def list_canon_rigs(
     is_public: bool | None = None,
     user_id: int | None = Query(default=None, ge=1),
     db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
 ) -> CanonRigListResponse:
     """F2 thin read adapter: list inventory rigs over the racks table.
 
     Does not replace POST/PATCH ``/api/racks``; new clients should prefer this
     list path. ``rig_id`` and ``rack_id`` are always equal (MVP honesty).
     """
+    from racks.access import readable_racks
     from racks.models import Rack
 
-    query = db.query(Rack)
+    query = readable_racks(db.query(Rack), current_user)
     if is_public is not None:
         query = query.filter(Rack.is_public == is_public)
     if user_id is not None:
@@ -399,14 +410,16 @@ def list_canon_rigs(
 
 
 @router.get("/rigs/{rig_id}", response_model=CanonRigDetail)
-def get_canon_rig(rig_id: int, db: Session = Depends(get_db)) -> CanonRigDetail:
+def get_canon_rig(
+    rig_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+) -> CanonRigDetail:
     """F2 thin read adapter: single inventory rig (≡ GET /api/racks/{rig_id})."""
-    from racks.models import Rack
+    from racks.access import readable_rack
     from racks.routes import build_rack_response
 
-    rack = db.query(Rack).filter(Rack.id == rig_id).first()
-    if not rack:
-        raise HTTPException(status_code=404, detail="Rig not found")
+    rack = readable_rack(db, rig_id, current_user, label="Rig")
 
     summary = _canon_rig_summary_from_rack(db, rack)
     full = build_rack_response(db, rack)
@@ -456,14 +469,20 @@ def legacy_patch_ref(patch_id: int) -> str:
 
 
 @router.get("/rigs/{rig_id}/revisions", response_model=RigRevisionListResponse)
-def list_rig_revisions(rig_id: int, db: Session = Depends(get_db)) -> RigRevisionListResponse:
+def list_rig_revisions(
+    rig_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+) -> RigRevisionListResponse:
     """Distinct server-authored rig revision ids observed for this rig's runs.
 
     Grouping is derived from the export bridge (immutable revision per content).
     """
+    from racks.access import readable_rack
+
+    readable_rack(db, rig_id, current_user, label="Rig")
 
     payload = list_runs_for_rack(db, rig_id)
-    db.commit()
     by_rev: dict[str, RigRevisionSummary] = {}
     for run in payload.runs:
         rev_id = run.rig_revision_id
@@ -809,11 +828,9 @@ def create_canonical_export(
     if not body.formats:
         raise HTTPException(status_code=400, detail="At least one export format is required")
 
-    # KD-14: when Design Engine is on, ignore client credit_cost (prevent under-report)
-    if settings.enable_patchbook_design_engine:
-        cost = settings.patchbook_export_cost
-    else:
-        cost = settings.patchbook_export_cost if body.credit_cost is None else body.credit_cost
+    # KD-14 / spec 004 FR-005: the server sets the price; a client credit_cost is
+    # never trusted, whatever the Design Engine flag says.
+    cost = settings.patchbook_export_cost
 
     resolved_recipe = None
     request_recipe_dump = None
@@ -1080,10 +1097,13 @@ async def stripe_webhook(
 
     secret = (settings.stripe_webhook_secret or "").strip()
     if not secret:
-        # Development convenience: derive a stable local secret only outside production.
-        if settings.environment.lower() == "production":
+        # Only a local development stack may sign its own test webhooks; any hosted
+        # environment, staging included, must use the Stripe-issued whsec_ secret.
+        from core.security import derived_key, is_dev_environment
+
+        if not is_dev_environment(settings.environment):
             raise HTTPException(status_code=503, detail="STRIPE_WEBHOOK_SECRET is not configured")
-        secret = (settings.secret_key + "stripe-dev").ljust(32, "0")[:64]
+        secret = derived_key("stripe-webhook-dev")
 
     if not stripe_signature:
         raise HTTPException(status_code=400, detail="Missing Stripe-Signature header")
