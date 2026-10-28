@@ -1,4 +1,5 @@
-"""F3 / slice A: generate dual-writes native bridge + inventory (no legacy-* invent)."""
+"""F3 / slice A: generate dual-writes native bridge + inventory (no legacy-* invent),
+and follows the spec 001 run lifecycle."""
 
 from __future__ import annotations
 
@@ -13,8 +14,10 @@ from canon.models import (
     SystemInventoryRevisionRecord,
 )
 from main import app
+from patches.models import Patch
 from racks.models import Rack
 from runs.bridge import native_source_run_id, rack_content_hash, build_rack_content_snapshot
+from runs.models import Run
 
 
 def _client(db_session: Session, headers: dict | None = None) -> TestClient:
@@ -96,23 +99,64 @@ def test_generate_patches_ensures_export_bridge(
     app.dependency_overrides.clear()
 
 
-def test_generate_empty_rack_not_computable_still_dual_writes(
+def test_generate_empty_rack_not_computable_writes_no_run(
     db_session: Session, sample_rack_empty: Rack, owner_headers: dict
 ) -> None:
-    """Empty inventory fails closed for patches but still mints native bridge + inventory row."""
+    """Spec 001 FR-022: an empty inventory answers NOT_COMPUTABLE and writes no run.
+
+    Only the inventory revision is kept, as the record of what was checked.
+    """
     client = _client(db_session, owner_headers)
+    runs_before = db_session.query(Run).count()
+    canon_runs_before = db_session.query(GenerationRunRecord).count()
     resp = client.post(f"/api/patches/generate/{sample_rack_empty.id}", json={})
     assert resp.status_code == 200, resp.text
     body = resp.json()
     assert body["generated_count"] == 0
     assert body.get("generation_status") == "NOT_COMPUTABLE"
     assert body.get("inventory_gate_code") == "NOT_COMPUTABLE"
-    assert body.get("inventory_revision_id")
-    assert body["export_bridge_ready"] is True
-    _assert_no_legacy_ids(body)
-    assert db_session.get(RigRevisionRecord, body["rig_revision_id"]) is not None
-    assert db_session.get(GenerationRunRecord, body["source_run_id"]) is not None
+    assert body["run_id"] is None
+    assert body["export_bridge_ready"] is False
+    assert db_session.query(Run).count() == runs_before
+    assert db_session.query(GenerationRunRecord).count() == canon_runs_before
     assert db_session.get(SystemInventoryRevisionRecord, body["inventory_revision_id"]) is not None
+    app.dependency_overrides.clear()
+
+
+def test_generate_records_the_run_lifecycle_and_real_provenance(
+    db_session: Session, sample_rack_basic: Rack, owner_headers: dict
+) -> None:
+    """FR-018: a run ends succeeded; FR-024/FR-026: the canonical run keeps the
+    request seed and the engine version, not the run id and a fixed version."""
+    from core import settings
+
+    client = _client(db_session, owner_headers)
+    resp = client.post(f"/api/patches/generate/{sample_rack_basic.id}", json={"seed": 4242})
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert db_session.get(Run, body["run_id"]).status == "succeeded"
+    record = db_session.get(GenerationRunRecord, body["source_run_id"])
+    assert record.generation_seed == 4242
+    assert record.generator_version == settings.patch_engine_version
+    app.dependency_overrides.clear()
+
+
+def test_a_generation_error_leaves_the_run_failed(
+    db_session: Session, sample_rack_basic: Rack, owner_headers: dict, monkeypatch
+) -> None:
+    import patches.routes as routes
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("engine exploded")
+
+    monkeypatch.setattr(routes, "generate_patches_with_ir", boom)
+    _client(db_session, owner_headers)  # binds the session
+    client_no_raise = TestClient(app, raise_server_exceptions=False, headers=owner_headers)
+    resp = client_no_raise.post(f"/api/patches/generate/{sample_rack_basic.id}", json={})
+    assert resp.status_code == 500
+    run = db_session.query(Run).order_by(Run.id.desc()).first()
+    assert run is not None and run.status == "failed"
+    assert db_session.query(Patch).filter(Patch.run_id == run.id).count() == 0
     app.dependency_overrides.clear()
 
 

@@ -21,6 +21,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from canon.models import GenerationRunRecord, PatchLibraryRecord, RigRevisionRecord
+from core.config import settings
 from racks.models import Rack, RackModule
 from runs.models import Run
 
@@ -157,11 +158,21 @@ def bridge_for_run(run: Run, content_hash: str | None = None) -> LegacyRunExport
     )
 
 
-def ensure_legacy_run_export_bridge(db: Session, run: Run) -> LegacyRunExportBridge:
+def ensure_legacy_run_export_bridge(
+    db: Session,
+    run: Run,
+    *,
+    generation_seed: int | None = None,
+    generator_version: str | None = None,
+) -> LegacyRunExportBridge:
     """Idempotently create canon hierarchy rows required for /api/canon/exports.
 
     Function name retained for call-site stability; identifiers are native.
     Rig revisions are append-only: layout changes mint a new ``rig-rev-*`` id.
+
+    Generation passes the request's seed and the engine version so the canonical
+    run records the real provenance (spec 001 FR-024/FR-026). Runs bridged later
+    from a read never recorded their seed; for those the run id stands in, as before.
     """
     rack = db.get(Rack, run.rack_id)
     if rack is None:
@@ -198,8 +209,8 @@ def ensure_legacy_run_export_bridge(db: Session, run: Run) -> LegacyRunExportBri
                 user_id=user_id,
                 rig_revision_id=revision_id,
                 schema_version="patchhive.canon.v1",
-                generator_version="1.0.0",
-                generation_seed=bridge.run_id,
+                generator_version=generator_version or settings.patch_engine_version,
+                generation_seed=bridge.run_id if generation_seed is None else int(generation_seed),
                 normalized_input_hash=_stable_hash(
                     f"generation-run:{source_run_id}:content:{content_hash}"
                 ),
