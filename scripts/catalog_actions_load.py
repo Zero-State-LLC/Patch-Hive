@@ -5,6 +5,7 @@ Environment:
   DATABASE_URL          connection string (required, not logged)
   PATCHHIVE_DB_ENV      staging or prod, stored in the receipt instead of the URL
   PATCHHIVE_LOAD_MODE   dry-run (default) or apply
+  PATCHHIVE_PLAN_HASH   apply only: the plan_hash of the reviewed dry run (required)
   GITHUB_STEP_SUMMARY   optional path for the job summary
 """
 
@@ -28,10 +29,23 @@ from population import (  # noqa: E402
 ARTIFACTS = ROOT / "load-artifacts"
 
 
-def _summary(before: dict[str, int], after: dict[str, int] | None, mode: str, env_name: str) -> str:
-    lines = [
-        f"## Catalog load ({env_name}, {mode})",
-        "",
+def _summary(
+    before: dict[str, int],
+    after: dict[str, int] | None,
+    mode: str,
+    env_name: str,
+    receipt: dict | None = None,
+) -> str:
+    lines = [f"## Catalog load ({env_name}, {mode})", ""]
+    if receipt:
+        lines += [
+            f"- plan_hash: `{receipt['plan_hash']}`"
+            + (" (apply with this to write exactly this plan)" if mode == "dry-run" else ""),
+            f"- conflicts: {receipt['conflicts_total']}",
+            f"- run_id: {receipt['run_id']}",
+            "",
+        ]
+    lines += [
         "| table | before | after | delta |",
         "|---|---:|---:|---:|",
     ]
@@ -70,6 +84,7 @@ def main() -> int:
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
     (ARTIFACTS / "counts-before.json").write_text(json.dumps(before, indent=2) + "\n", encoding="utf-8")
     after: dict[str, int] | None = None
+    receipt: dict | None = None
     try:
         if mode == "apply":
             dump_affected_tables(database_url, ARTIFACTS / "pre-apply.dump")
@@ -79,6 +94,8 @@ def main() -> int:
             allow_nonlocal=True,
             receipt_path=ARTIFACTS / "receipt.json",
             sql_path=ARTIFACTS / "population-upsert.sql",
+            expected_plan_hash=os.environ.get("PATCHHIVE_PLAN_HASH", "").strip() or None,
+            require_plan_hash=mode == "apply",
         )
         receipt["alembic_head"] = head
         (ARTIFACTS / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
@@ -87,7 +104,7 @@ def main() -> int:
         print(json.dumps({"mode": receipt["mode"], "database": receipt["database"], "inserts": receipt["inserts"]}, indent=2))
         return 0
     finally:
-        _write_summary(_summary(before, after, mode, env_name))
+        _write_summary(_summary(before, after, mode, env_name, receipt))
 
 
 if __name__ == "__main__":

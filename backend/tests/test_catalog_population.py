@@ -194,3 +194,42 @@ def test_population_dry_run_then_apply_is_idempotent(population_url: str, tmp_pa
         assert replayed["module_catalog"] == after["module_catalog"]
         assert replayed["modules"] == after["modules"]
         assert replayed["case_catalog"] == 0
+
+
+def test_receipts_carry_run_identity_hashes_and_the_full_conflict_count(population_url, tmp_path):
+    receipt = populate(population_url, apply=False, verification_path=tmp_path / "none.json")
+    for key in ("run_id", "started_at", "finished_at", "plan_hash", "inputs_hash", "conflicts_total"):
+        assert key in receipt, key
+    assert len(receipt["plan_hash"]) == len(receipt["inputs_hash"]) == 64
+    assert receipt["conflicts_total"] >= len(receipt["conflicts"])
+
+
+@pytest.fixture
+def fresh_population_url() -> str:
+    admin = _admin()
+    try:
+        url = _recreate(admin, "patchhive_population_gate")
+        _migrate(url)
+        return url
+    finally:
+        admin.dispose()
+
+
+def test_an_apply_must_name_the_reviewed_plan(fresh_population_url, tmp_path):
+    """Spec 003 FR-020: with require_plan_hash, only the reviewed plan is applied."""
+    population_url = fresh_population_url
+    missing = tmp_path / "none.json"
+    dry = populate(population_url, apply=False, verification_path=missing)
+    before = _counts(population_url)
+
+    with pytest.raises(SystemExit, match="differs from the reviewed dry run"):
+        populate(population_url, apply=True, verification_path=missing,
+                 expected_plan_hash="0" * 64, require_plan_hash=True)
+    with pytest.raises(SystemExit):
+        populate(population_url, apply=True, verification_path=missing, require_plan_hash=True)
+    assert _counts(population_url) == before  # nothing written
+
+    applied = populate(population_url, apply=True, verification_path=missing,
+                       expected_plan_hash=dry["plan_hash"], require_plan_hash=True)
+    assert applied["plan_hash"] == dry["plan_hash"]
+    assert _counts(population_url) != before

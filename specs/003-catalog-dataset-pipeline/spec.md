@@ -308,7 +308,7 @@ Privacy: catalog data is public product specs. Keep any private source material 
 - **FR-008**: The fetch job MUST rate-limit requests with a delay between scrapes [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]. Paid fetches through Firecrawl use its managed proxy tier from `PATCHHIVE_FIRECRAWL_PROXY` (`basic`, `stealth` or `auto`, default `auto`); a proxy changes where a fetch comes from, never what may be fetched. context.dev documents no proxy option.
 - **FR-009**: The fetch job MUST checkpoint results after each target and MUST support resume by slug [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **FR-010**: The pipeline MUST treat scraped page content as untrusted data, never as instructions [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
-- **FR-011**: The pipeline MUST validate MIME types, redirects, and content size of fetched pages [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
+- **FR-011**: The pipeline MUST validate MIME types, redirects, and content size of fetched pages [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md]. Implemented 2026-10-28 in the direct transport (`catalog_scrape.default_transport`): a content-type allowlist (pages, XML/sitemaps, JSON, text, gzip), a 10 MiB body cap checked before and while reading, and response headers kept. Refusals answer `x-patchhive-refused: MIME_NOT_ALLOWED` or `BODY_TOO_LARGE`.
 
 ### Result rows
 
@@ -319,14 +319,14 @@ Privacy: catalog data is public product specs. Keep any private source material 
 
 - **FR-014**: The filter MUST exclude rows missing any field of the required provenance packet [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
 - **FR-015**: The filter MUST block bulk publication of rows with an unknown or disputed access basis [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
-- **FR-016**: The filter MUST keep all conflicting observations and mark the field `CONFLICTED` [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
+- **FR-016**: The filter MUST keep all conflicting observations and mark the field `CONFLICTED` [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md]. Implemented 2026-10-28 in part: every conflict is counted (`conflicts_total` in the receipt); the receipt lists the first 50.
 - **FR-017**: The filter MUST emit a residual targets file for unresolved rows [INFERRED].
 - **FR-018**: The pipeline MUST write overlays as versioned, content-hashed files and MUST NOT edit them in place [INFERRED].
 - **FR-019**: A dry-run MUST write a receipt only when a receipt path is given and MUST NOT change the database [OBSERVED: data/synth-catalog/README.md].
 
 ### Admission
 
-- **FR-020**: Admission MUST require explicit operator approval of a receipt that binds the current overlay [INFERRED].
+- **FR-020**: Admission MUST require explicit operator approval of a receipt that binds the current overlay [INFERRED]. Implemented 2026-10-28: a dry run reports `plan_hash` (statements and parameters, without the planning clock); the Actions apply requires that hash (`plan_hash` input) and writes nothing if the plan has changed since review.
 - **FR-021**: Admission MUST dedupe catalog rows by slug and MUST skip full modules whose `(brand, name)` already exists from any source [OBSERVED: data/synth-catalog/README.md].
 - **FR-022**: Admission MUST keep HP, power, and depth null when no source recorded them [OBSERVED: data/synth-catalog/README.md].
 - **FR-023**: Admitted Synth Catalog Research rows MUST carry `source = SynthCatalogResearch` and a `source_reference` [OBSERVED: backend/DATA_SOURCES.md].
@@ -339,7 +339,7 @@ Privacy: catalog data is public product specs. Keep any private source material 
 
 ### Observability, rollback, and authority
 
-- **FR-030**: Each import MUST record a run ID, timestamps, and imported, skipped, and processed counts [OBSERVED: backend/DATA_SOURCES.md].
+- **FR-030**: Each import MUST record a run ID, timestamps, and imported, skipped, and processed counts [OBSERVED: backend/DATA_SOURCES.md]. Implemented 2026-10-28: receipts carry `run_id` (the Actions run), `started_at`, `finished_at`, `plan_hash`, `inputs_hash` (seeds, overlays, provenance, cases) and `conflicts_total`.
 - **FR-031**: Rollback MUST be possible per run, using the run ID and receipt, without deleting rows that predate the run [INFERRED].
 - **FR-033**: ModularGrid-derived catalog rows MUST carry `access_basis = unknown` and evidence status `CATALOG_OBSERVED`, MUST NOT carry ModularGrid-derived descriptions, and MUST be excluded from any bulk publication or export (D1). They MAY be listed one by one in the catalog UI, marked "Unverified lead" (owner decision, 2026-10-27). The tags live on `module_catalog.access_basis` and `module_catalog.evidence_status` (migration `20261027_catalog_lead_tags`).
 - **FR-034**: A ModularGrid-derived row MUST become canonical only through manufacturer or manual confirmation recorded with its source URL (D1).
