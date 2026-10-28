@@ -6,7 +6,7 @@ from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from intelligence.contracts import DecisionPacket
+from intelligence.contracts import ChoiceRequest, DecisionPacket, check_choice_packet
 
 
 class DecisionDisposition(str, Enum):
@@ -47,13 +47,22 @@ class DecisionPolicy:
     def __init__(self, thresholds: PolicyThresholds) -> None:
         self.thresholds = thresholds
 
-    def evaluate(self, packet: DecisionPacket) -> PolicyResult:
+    def evaluate(self, packet: DecisionPacket, request: object | None = None) -> PolicyResult:
+        """Disposition for one packet. Given the choice request it answered, the packet
+        is also checked against that request's candidate set (spec 005 FR-003)."""
         binary_conclusion: bool | None = None
         if packet.schema_version != "patchhive.decision.v1":
             return self._result(DecisionDisposition.REJECT, "UNSUPPORTED_SCHEMA")
 
         if packet.provider_status in {"failed", "timed_out"}:
             return self._result(DecisionDisposition.ESCALATE, f"PROVIDER_{packet.provider_status.upper()}")
+
+        if isinstance(request, ChoiceRequest):
+            violation = check_choice_packet(packet, request)
+            if violation:
+                # A malformed provider answer is a provider failure (FR-009): fail closed
+                # to escalation, never to a recorded rejection of the evidence.
+                return self._result(DecisionDisposition.ESCALATE, violation)
 
         if packet.answer_type == "choice":
             if packet.selected_choice in {"none_of_above", "unknown"}:

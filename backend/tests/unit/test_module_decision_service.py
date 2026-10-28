@@ -105,3 +105,31 @@ def test_identity_refuses_empty_candidate_universe() -> None:
         assert "server-supplied" in str(exc)
     else:
         raise AssertionError("empty candidate universe must fail closed")
+
+
+def test_the_service_checks_a_providers_answer_against_the_request() -> None:
+    """The module service passes the request to the policy, so an adapter that skips its
+    own candidate check (as the Jev adapter did) still cannot propose an invented module."""
+
+    class InventingProvider:
+        def choose(self, request):
+            return DecisionPacket(
+                decision_id="d", request_id=request.request_id, provider="jev", provider_version="1",
+                evidence_hash=request.evidence_hash, answer_type="choice", selected_choice="made-up",
+                probabilities={"made-up": 1.0}, confidence=0.99,
+                candidate_set_hash=request.candidate_set_hash(), created_at=datetime.now(timezone.utc),
+            )
+
+        def score(self, request): raise AssertionError
+        def probability(self, request): raise AssertionError
+
+    proposal = ModuleDecisionService(InventingProvider(), _policy()).rank_identity(
+        request_id="r",
+        evidence_hash="h",
+        evidence_refs=("image-1",),
+        normalized_evidence={"ocr": "panel"},
+        candidates=(CatalogCandidate("a", "Make", "Alpha"),),
+        idempotency_key="idem",
+    )
+    assert proposal.policy.disposition is DecisionDisposition.ESCALATE
+    assert proposal.policy.reason_codes == ("CHOICE_NOT_IN_CANDIDATE_SET",)
