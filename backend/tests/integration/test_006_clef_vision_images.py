@@ -397,7 +397,7 @@ def test_flag_off_never_invokes_loader_or_network(tmp_path) -> None:
 
     resolution = _resolve_with(db, provider)
 
-    assert resolution.state is ResolutionState.REJECT
+    assert resolution.state is ResolutionState.UNRESOLVED
     assert resolution.error_code == "CLEF_DISABLED"
     assert loader.calls == 0
     assert loader.load_count == 0
@@ -478,7 +478,7 @@ def test_loader_failure_fails_closed(tmp_path, case) -> None:
 
     assert calls == []
     assert loader.load_count == 0
-    assert resolution.state is ResolutionState.REJECT
+    assert resolution.state is ResolutionState.UNRESOLVED
     assert resolution.error_code == "CLEF_UNAVAILABLE"
     assert resolution.proposal is None
     assert db.query(DecisionReceiptRecord).count() == 0
@@ -523,7 +523,7 @@ def test_loader_exception_is_fail_closed_without_a_cause(tmp_path) -> None:
 
     resolution = _resolve_with(db, _Recorder())
     assert resolution.error_code == "CLEF_UNAVAILABLE"
-    assert resolution.state is ResolutionState.REJECT
+    assert resolution.state is ResolutionState.UNRESOLVED
 
     request = captured["request"]
 

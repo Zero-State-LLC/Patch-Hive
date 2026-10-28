@@ -133,15 +133,16 @@ Fail-closed behavior:
   inert. Every call fails with `CLEF_DISABLED` (HTTP 409) before any network call or image load.
 - Timeouts map to `CLEF_TIMEOUT` (HTTP 504). Transport and HTTP errors map to
   `CLEF_UNAVAILABLE` (HTTP 502). Schema or candidate violations map to `CLEF_MALFORMED` (502).
-- In the Spec 006 guarded flow, a provider failure moves the resolution machine to REJECT and
-  writes NO decision receipt. The Spec 005 `resolve_module_identity` path is unchanged.
+- In the Spec 006 guarded flow, a provider failure moves the resolution machine to ESCALATE when
+  a routing target exists, else UNRESOLVED, and writes NO decision receipt. It is never REJECT:
+  a provider that did not answer says nothing about the evidence. The Spec 005 `resolve_module_identity` path is unchanged.
 - Vision input: when the flag is on, the route passes a `BoundEvidenceImageLoader`
   (`intelligence/evidence_images.py`) for the image asset bound to the evidence record. It
   reuses the existing gates: `consent_provider_processing` must be true, and the asset must not
   be soft-deleted or past `retention_expires_at` (same predicate as `evidence/retention.py`).
   A denied or missing asset degrades to a text-only request without reading the file. A cleared
   asset is read only from inside the evidence storage root and must match `content_sha256`;
-  any load failure fails closed as `CLEF_UNAVAILABLE` (REJECT, no receipt, no network call).
+  any load failure fails closed as `CLEF_UNAVAILABLE` (UNRESOLVED or ESCALATE, no receipt, no network call).
   The loader is not constructed with the flag off. Image bytes never enter packets, receipts,
   or telemetry.
 - Disposition is always computed by the Spec 005 `DecisionPolicy`; Clef only supplies a

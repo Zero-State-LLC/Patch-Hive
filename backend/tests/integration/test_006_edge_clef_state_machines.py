@@ -227,7 +227,7 @@ def test_clef_flag_off_default_fails_closed_without_network() -> None:
         unused_client.close()
 
     _PRODUCED_MACHINES.append(resolution.machine)
-    assert resolution.machine.state is ResolutionState.REJECT
+    assert resolution.machine.state is ResolutionState.UNRESOLVED
     assert resolution.error_code == "CLEF_DISABLED"
     assert resolution.proposal is None
     assert resolution.receipt_id is None
@@ -389,7 +389,7 @@ def test_clef_provider_failures_fail_closed(handler_factory, expected_code) -> N
     resolution = _resolve_clef(db, handler_factory())
     _PRODUCED_MACHINES.append(resolution.machine)
 
-    assert resolution.machine.state is ResolutionState.REJECT
+    assert resolution.machine.state is ResolutionState.UNRESOLVED
     assert resolution.error_code == expected_code
     assert resolution.proposal is None
     assert resolution.receipt_id is None
@@ -441,7 +441,7 @@ def test_packet_with_wrong_candidate_set_hash_is_rejected() -> None:
     assert db.query(SystemInventoryRevisionRecord).count() == 0
 
 
-def test_failed_packet_is_rejected_without_receipt() -> None:
+def test_failed_packet_is_unresolved_without_receipt() -> None:
     db = _db()
     _seed(db)
     packet = failed_fixture(
@@ -456,7 +456,7 @@ def test_failed_packet_is_rejected_without_receipt() -> None:
     resolution = _resolve_with(db, provider)
     _PRODUCED_MACHINES.append(resolution.machine)
 
-    assert resolution.machine.state is ResolutionState.REJECT
+    assert resolution.machine.state is ResolutionState.UNRESOLVED
     assert resolution.error_code is not None
     assert resolution.receipt_id is None
     assert db.query(DecisionReceiptRecord).count() == 0
@@ -498,22 +498,44 @@ def test_no_canon_write_before_confirmed_and_archive_lifecycle() -> None:
     _PRODUCED_MACHINES.extend([resolution.machine, unconfirmed, confirmed, archived])
 
 
-def test_reject_resolution_cannot_be_confirmed_and_can_be_archived() -> None:
+def test_clef_provider_failure_escalates_when_a_routing_target_exists() -> None:
+    db = _db()
+    _seed(db)
+
+    resolution = resolve_module_identity_guarded(
+        db,
+        evidence_id="ev-1",
+        provider=_mock_provider(_timeout_handler()),
+        policy=_policy(),
+        enabled=True,
+        idempotency_key="idem",
+        expected_policy_version="test-v1",
+        routing_targets=frozenset({"catalog-review"}),
+    )
+    _PRODUCED_MACHINES.append(resolution.machine)
+
+    assert resolution.machine.state is ResolutionState.ESCALATE
+    assert resolution.error_code == "CLEF_TIMEOUT"
+    assert resolution.proposal is None
+    assert db.query(DecisionReceiptRecord).count() == 0
+
+
+def test_failed_provider_resolution_cannot_be_confirmed_and_can_be_archived() -> None:
     db = _db()
     _seed(db)
 
     resolution = _resolve_clef(db, _timeout_handler())
-    assert resolution.state is ResolutionState.REJECT
+    assert resolution.state is ResolutionState.UNRESOLVED
     assert resolution.error_code == "CLEF_TIMEOUT"
 
-    still_rejected = confirm_via_existing_path(resolution, confirmation_path_used=True)
-    assert still_rejected.state is ResolutionState.REJECT
-    assert canon_write_permitted(still_rejected) is False
+    still_unresolved = confirm_via_existing_path(resolution, confirmation_path_used=True)
+    assert still_unresolved.state is ResolutionState.UNRESOLVED
+    assert canon_write_permitted(still_unresolved) is False
 
-    archived = archive(replace(resolution, machine=still_rejected))
+    archived = archive(replace(resolution, machine=still_unresolved))
     assert archived.state is ResolutionState.ARCHIVED
 
-    _PRODUCED_MACHINES.extend([resolution.machine, still_rejected, archived])
+    _PRODUCED_MACHINES.extend([resolution.machine, still_unresolved, archived])
 
 
 # ---------------------------------------------------------------------------
