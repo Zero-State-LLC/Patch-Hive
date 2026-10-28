@@ -422,3 +422,32 @@ def sample_rack_full(
     db_session.commit()
     db_session.refresh(rack)
     return rack
+
+
+def bearer_headers(user: User) -> dict:
+    """Authorization header for a test user (racks and patches are owner-scoped)."""
+    from core.security import create_access_token
+
+    return {"Authorization": f"Bearer {create_access_token({'user_id': user.id, 'username': user.username})}"}
+
+
+@pytest.fixture
+def owner_headers(sample_user: User) -> dict:
+    """Headers for the user who owns the sample racks."""
+    return bearer_headers(sample_user)
+
+
+def make_user(db: Session, username: str = "rackowner", role: str = "User") -> User:
+    """A persisted user to own racks or call owner-scoped routes."""
+    user = User(
+        username=username,
+        email=f"{username}@example.com",
+        password_hash="$2b$12$dummyhash",
+        referral_code=f"{username}code",
+        role=role,
+        display_name=username.title(),
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user

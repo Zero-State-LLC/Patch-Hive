@@ -22,6 +22,7 @@ from core.database import get_db
 from canon.models import CanonicalExportRecord
 from core.ops.design_walkthrough import (
     collect_live_alias_evidence,
+    login_headers,
     execute_walkthrough,
     run_staging_walkthrough,
 )
@@ -101,6 +102,21 @@ def seeded(db_session: Session):
     return result, user, admin
 
 
+def _alias(client, seeded):
+    """Alias evidence as the operator gathers it: racks are owner-scoped, so read as admin."""
+    _, _, admin = seeded
+    return collect_live_alias_evidence(
+        client, headers=login_headers(client, admin, error_code="ALIAS_EVIDENCE_UNVERIFIABLE")
+    )
+
+
+def _generate(client, seeded):
+    """Generate as the seeded user, who owns the rig."""
+    result, user, _ = seeded
+    headers = login_headers(client, user, error_code="SEED_USER_LOGIN_FAILED")
+    return client.post(f"/api/patches/generate/{result.rig_id}", json={}, headers=headers)
+
+
 def _fe_sources() -> dict[str, str]:
     return {page: (REPO / page).read_text(encoding="utf-8") for page in FE_LIST_PAGES}
 
@@ -109,7 +125,7 @@ def _fe_sources() -> dict[str, str]:
 
 
 def test_live_alias_matches_legacy_and_adds_no_write_surface(client, seeded) -> None:
-    alias = collect_live_alias_evidence(client)
+    alias = _alias(client, seeded)
     assert alias.intact()
     assert alias.missing_alias_routes == ()
     assert alias.same_set is True
@@ -133,8 +149,8 @@ def test_active_fe_list_pages_use_canon_alias_only() -> None:
 
 def test_generate_keeps_dual_write_and_gates(client, seeded) -> None:
     result, _, _ = seeded
-    alias = collect_live_alias_evidence(client)
-    gen = client.post(f"/api/patches/generate/{result.rig_id}", json={})
+    alias = _alias(client, seeded)
+    gen = _generate(client, seeded)
     assert gen.status_code == 200
     fe = collect_fe_cutover_evidence(
         alias,
@@ -195,8 +211,8 @@ def test_in_process_walkthrough_receipt_reaches_beta_eligible(
     db_session, client, seeded, design_flags
 ) -> None:
     result, user, admin = seeded
-    alias = collect_live_alias_evidence(client)
-    gen = client.post(f"/api/patches/generate/{result.rig_id}", json={})
+    alias = _alias(client, seeded)
+    gen = _generate(client, seeded)
     fe = collect_fe_cutover_evidence(
         alias, route_table(app.openapi()), fe_sources=_fe_sources(), generate_response=gen.json()
     )
@@ -237,8 +253,8 @@ def test_in_process_walkthrough_receipt_reaches_beta_eligible(
 def test_design_engine_flag_off_blocks_walkthrough_start(client, seeded, design_flags, monkeypatch) -> None:
     result, _, _ = seeded
     monkeypatch.setattr(settings, "enable_patchbook_design_engine", False)
-    alias = collect_live_alias_evidence(client)
-    gen = client.post(f"/api/patches/generate/{result.rig_id}", json={})
+    alias = _alias(client, seeded)
+    gen = _generate(client, seeded)
     fe = collect_fe_cutover_evidence(
         alias, route_table(app.openapi()), fe_sources=_fe_sources(), generate_response=gen.json()
     )
@@ -505,8 +521,8 @@ def _reject_alias(monkeypatch, **changes) -> None:
 
     real = design_walkthrough.collect_live_alias_evidence
 
-    def tampered(http):
-        alias = real(http)
+    def tampered(http, **kwargs):
+        alias = real(http, **kwargs)
         return alias.model_copy(update={**changes, "record_sha256": ""}).sealed()
 
     monkeypatch.setattr(design_walkthrough, "collect_live_alias_evidence", tampered)

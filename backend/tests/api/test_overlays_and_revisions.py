@@ -51,7 +51,7 @@ def test_list_rig_revisions_groups_runs(db_session: Session) -> None:
     db_session.commit()
 
     client = _client(db_session)
-    resp = client.get(f"/api/canon/rigs/{rack.id}/revisions")
+    resp = client.get(f"/api/canon/rigs/{rack.id}/revisions", headers=_auth_headers(user))
     assert resp.status_code == 200, resp.text
     body = resp.json()
     assert body["total"] >= 1

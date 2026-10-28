@@ -8,9 +8,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from cases.models import Case
+from community.auth import get_current_user, require_auth
+from community.models import User
 from core import generate_rig_suggested_name, get_db, hash_string_to_seed
 from modules.models import Module
 
+from .access import owned_rack, readable_rack, readable_racks
 from .catalog_compatibility import (
     dual_gate_catalog_errors_and_warnings,
     evaluate_rack_catalog_compatibility,
@@ -35,10 +38,13 @@ def _raise_if_invalid(errors: list, warnings: list) -> None:
 
 
 @router.post("/", response_model=RackResponse, status_code=201)
-def create_rack(rack: RackCreate, db: Session = Depends(get_db)):
-    """Create a new rack with validation."""
-    # For now, use a placeholder user_id (will be replaced with auth)
-    user_id = 1
+def create_rack(
+    rack: RackCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+):
+    """Create a new rack, owned by the signed-in user."""
+    user_id = current_user.id
 
     # Validate rack configuration (legacy hard gate)
     is_valid, errors, warnings = validate_rack_configuration(db, rack.case_id, rack.modules)
@@ -102,9 +108,10 @@ def list_racks(
     is_public: Optional[bool] = None,
     user_id: Optional[int] = None,
     db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
 ):
-    """List racks with optional filters."""
-    query = db.query(Rack)
+    """List the racks the caller may read: their own and public ones."""
+    query = readable_racks(db.query(Rack), current_user)
 
     # Apply filters
     if is_public is not None:
@@ -121,11 +128,13 @@ def list_racks(
 
 
 @router.get("/{rack_id}", response_model=RackResponse)
-def get_rack(rack_id: int, db: Session = Depends(get_db)):
+def get_rack(
+    rack_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+):
     """Get a specific rack by ID."""
-    rack = db.query(Rack).filter(Rack.id == rack_id).first()
-    if not rack:
-        raise HTTPException(status_code=404, detail="Rack not found")
+    rack = readable_rack(db, rack_id, current_user)
 
     return build_rack_response(db, rack)
 
@@ -135,24 +144,26 @@ def get_rack_catalog_compatibility(
     rack_id: int,
     plan_close_lid: bool = Query(False),
     db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
 ):
     """Evaluate catalog compatibility for the rack's placed modules.
 
     Requires the bound legacy case to have been materialized from the catalog
     (``meta.catalog_slug``). Returns ``bridge_status`` incomplete when unlinked.
     """
-    rack = db.query(Rack).filter(Rack.id == rack_id).first()
-    if not rack:
-        raise HTTPException(status_code=404, detail="Rack not found")
+    rack = readable_rack(db, rack_id, current_user)
     return evaluate_rack_catalog_compatibility(db, rack, plan_close_lid=plan_close_lid)
 
 
 @router.patch("/{rack_id}", response_model=RackResponse)
-def update_rack(rack_id: int, rack_update: RackUpdate, db: Session = Depends(get_db)):
-    """Update a rack."""
-    db_rack = db.query(Rack).filter(Rack.id == rack_id).first()
-    if not db_rack:
-        raise HTTPException(status_code=404, detail="Rack not found")
+def update_rack(
+    rack_id: int,
+    rack_update: RackUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+):
+    """Update a rack (owner only)."""
+    db_rack = owned_rack(db, rack_id, current_user)
 
     # Update basic fields
     update_data = rack_update.model_dump(exclude_unset=True, exclude={"modules", "name_suggested"})
@@ -198,11 +209,13 @@ def update_rack(rack_id: int, rack_update: RackUpdate, db: Session = Depends(get
 
 
 @router.delete("/{rack_id}", status_code=204)
-def delete_rack(rack_id: int, db: Session = Depends(get_db)):
-    """Delete a rack."""
-    db_rack = db.query(Rack).filter(Rack.id == rack_id).first()
-    if not db_rack:
-        raise HTTPException(status_code=404, detail="Rack not found")
+def delete_rack(
+    rack_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+):
+    """Delete a rack (owner only)."""
+    db_rack = owned_rack(db, rack_id, current_user)
 
     db.delete(db_rack)
     db.commit()

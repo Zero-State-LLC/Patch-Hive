@@ -88,6 +88,9 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    # Owner-scoped downloads are fetched by the API client (not a bare link), so the
+    # browser must expose the filename header to the cross-origin page.
+    expose_headers=["Content-Disposition"],
 )
 
 
