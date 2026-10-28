@@ -169,14 +169,38 @@ def generate_patches(
         prefer_simple=request.prefer_simple,
     )
 
-    # Create run
-    run = Run(rack_id=rack_id, status="completed")
+    seed = settings.default_generation_seed if request.seed is None else request.seed
+
+    # Readiness first (spec 001 FR-022): a rack that cannot be computed gets a
+    # NOT_COMPUTABLE answer and no run, generation record or library. The inventory
+    # revision is kept: it is the evidence of what was checked.
+    from canon.inventory_persist import persist_system_inventory_revision
+    from patches.inventory_gate import evaluate_rack_inventory_gate
+
+    gate_report, _ = evaluate_rack_inventory_gate(db, rack)
+    if not gate_report.ready:
+        persist_system_inventory_revision(db, gate_report.inventory, rack_id=int(rack.id))
+        db.commit()
+        return GeneratePatchesResponse(
+            generated_count=0,
+            patches=[],
+            run_id=None,
+            inventory_revision_id=gate_report.inventory.inventory_revision_id,
+            inventory_gate_code=gate_report.code,
+            generation_status="NOT_COMPUTABLE",
+        )
+
+    # Run lifecycle (FR-018): queued, then running, then succeeded or failed. Each
+    # step is committed, so the record shows how far a run got.
+    run = Run(rack_id=rack_id, status="queued")
     db.add(run)
     db.commit()
     db.refresh(run)
     # Matrix slice A: ensure canon FK targets + export bridge as soon as the run exists
     # (do not rely solely on GET /api/runs side-effect).
-    bridge = ensure_legacy_run_export_bridge(db, run)
+    bridge = ensure_legacy_run_export_bridge(
+        db, run, generation_seed=seed, generator_version=settings.patch_engine_version
+    )
     # F3 dual-write audit: generate must never mint legacy-* bridge ids when rack exists.
     if bridge.export_bridge_ready and (
         bridge.rig_revision_id.startswith("legacy-") or bridge.source_run_id.startswith("legacy-")
@@ -185,10 +209,18 @@ def generate_patches(
             status_code=500,
             detail="EXPORT_BRIDGE_LEGACY_ID_FORBIDDEN",
         )
+    run.status = "running"
     db.commit()
-    generation_ir, patch_graphs, provenance = generate_patches_with_ir(
-        db, rack, seed=request.seed, config=config
-    )
+
+    try:
+        generation_ir, patch_graphs, provenance = generate_patches_with_ir(
+            db, rack, seed=seed, config=config
+        )
+    except Exception:
+        db.rollback()
+        run.status = "failed"
+        db.commit()
+        raise
 
     # Save patches to database with full IR/provenance for deterministic replay.
     saved_patches = []
@@ -224,7 +256,7 @@ def generate_patches(
         db.add(db_patch)
         saved_patches.append(db_patch)
 
-    run.status = "completed"
+    run.status = "succeeded"
     db.flush()
     # Path A (KD-20): dual-write sealed GeneratedPatchRecord for Design Engine spine
     from export.patchbook.design.dual_write import dual_write_generated_patches

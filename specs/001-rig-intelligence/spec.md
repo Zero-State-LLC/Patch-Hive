@@ -175,7 +175,7 @@ Acceptance criteria:
 
 ### Runs and lifecycle
 
-- **FR-018**: Each generation attempt must create a run record bound to a rack. Its initial status is `queued`. [OBSERVED: backend/runs/models.py]
+- **FR-018**: Each generation attempt must create a run record bound to a rack. Its initial status is `queued`. [OBSERVED: backend/runs/models.py] Implemented 2026-10-27: `queued`, then `running`, then `succeeded`, or `failed` when generation raises; each step is committed. `validation_failed` is not produced yet, because generation has no blocking ValidationReport (FR-016, FR-019 remain open).
 - **FR-019**: Run state transitions must follow the [transitions table](#transitions). Implementers treat that table as the contract. [INFERRED]
 - **FR-020**: Regeneration and retry must create a new run. Existing runs, libraries, patches, stage receipts, manifests, and ledger entries are append-only. [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md]
 - **FR-021**: A run must own exactly one patch library. [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md]
@@ -265,7 +265,7 @@ Initial state: `IDLE`. Final states: `SUCCEEDED`, `NOT_COMPUTABLE`.
 |---|---|---|---|---|
 | IDLE | rig_selected | rig has a case and a rig revision is explicitly selected [INFERRED] | RIG_LOADED | load confirmed inventory of that revision only [OBSERVED: constitution] |
 | RIG_LOADED | generate_requested | readiness passes [INFERRED] | QUEUED | create a run row with status `queued` bound to the rig revision and seed [OBSERVED: backend/runs/models.py] [INFERRED] |
-| RIG_LOADED | generate_requested | readiness fails, for example unconfirmed or missing required facts [INFERRED] | NOT_COMPUTABLE | emit a `NOT_COMPUTABLE` receipt that names the failed condition and dual-write it (CHANGELOG F3; see OQ-06) [INFERRED] |
+| RIG_LOADED | generate_requested | readiness fails, for example unconfirmed or missing required facts [INFERRED] | NOT_COMPUTABLE | emit a `NOT_COMPUTABLE` receipt that names the failed condition; create no run, generation record or library (FR-022; OQ-06 resolved 2026-10-27) |
 | QUEUED | worker_started | - | RUNNING | record a start `StageReceipt` [INFERRED] |
 | RUNNING | run_succeeded | `ValidationReport` shows patches validated [OBSERVED: docs/PATCH_ENGINE.md] | SUCCEEDED | seal the generation receipt and `ArtifactManifest` and write the run's single library [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md] |
 | RUNNING | validation_failed | `ValidationReport` has blocking errors [INFERRED] | FAILED | keep the stage receipts and the `ValidationReport` [INFERRED] |
@@ -375,8 +375,11 @@ These criteria are pass or fail. They contain no invented thresholds.
 - **OQ-03** (NOT_COMPUTABLE): The canonical category set lists five categories. The `PatchSpec` comment lists nine: Voice, Modulation, Clock-Rhythm, Generative, Utility, Performance Macro, Texture-FX, Study, and Experimental-Feedback. Subtype labels such as Pad, Lead, Bass, and Drone also appear. Which set is canonical, and are subtypes a separate field?
 - **OQ-04** (NOT_COMPUTABLE): Until a port-name database exists, can generic port names be used in canonical patches? Or must patches with unmapped ports be marked unresolved?
 - **OQ-05** (NOT_COMPUTABLE): How is the seed chosen when the caller omits it, and how is that seed recorded for reproducibility?
+  - Resolved 2026-10-27: an omitted seed becomes `settings.default_generation_seed`. The generate route records the seed it used, and the engine version, on the canonical generation run (`GenerationRunRecord.generation_seed`, `.generator_version`).
 - **OQ-06** (NOT_COMPUTABLE): What is "CHANGELOG F3", and what are the two targets of the `NOT_COMPUTABLE` receipt dual-write? No retained source defines it.
+  - Resolved 2026-10-27: "F3" is the legacy-to-canon generate dual-write (docs/evidence/F3_GENERATE_DUAL_WRITE_AUDIT.md). It applies only to runs that generate. A `NOT_COMPUTABLE` attempt writes no run and no canonical generation record or library; it keeps only the inventory revision that records what was checked (`backend/patches/routes.py`).
 - **OQ-07** (NOT_COMPUTABLE): What is the full set of run status values? Only the default `queued` is observed in `backend/runs/models.py`. Also, what state results when generation yields zero patches?
+  - Partly resolved 2026-10-27: generation now records `queued`, `running`, `succeeded` and `failed`. Zero patches from a computable rack still ends `succeeded`, and `validation_failed` waits on a blocking ValidationReport (OQ-08).
 - **OQ-08** (NOT_COMPUTABLE): The bridge canon says failures are flagged and not blocked. The constitution requires fail-closed behavior at trust boundaries. Which validation findings block `SUCCEEDED`, and which are only flagged?
 - **OQ-09** (NOT_COMPUTABLE): What are the readiness conditions, for example "rig has a case" and minimum confirmed inventory? No retained source lists them.
 - **OQ-10** (NOT_COMPUTABLE): What are the privacy, retention, and access rules for evidence such as rig photos and OCR output, and for the user overlay?
