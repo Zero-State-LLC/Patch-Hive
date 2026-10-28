@@ -72,3 +72,25 @@ def test_t026_overlays_hold_only_the_partial_pass_and_repeat_nothing() -> None:
     v11 = {(e["brand"], e["name"]) for e in load("module-power-depth-v11.json", "entries")}
     assert not v3 & {(r["brand"].lower(), r["name"].lower()) for r in v4}
     assert not v11 & {(e["brand"], e["name"]) for e in v12}
+
+
+@pytest.mark.parametrize(
+    "name,tags,expected",
+    [
+        ("Pico SEQ", [], "SEQ"),
+        ("4ms PEG", [], "ENV"),
+        ("Hexinverter Mutant Clap", [], "VCO"),
+        ("12V Motor Drive", [], None),
+        ("WF2 Wavefolder and E2 Expander", [], "FX"),
+        # Whole words only: these names are not what the keyword says (Codex review on #77).
+        ("Black Octasource", [], None),  # an LFO; its category comes from maker-review-v1
+        ("Hexinverter Mindphaser", [], None),  # a complex oscillator
+        ("KickAid", [], None),  # processes a kick; not a kick voice
+        ("Demux Phaser", [], "FX"),
+        ("Kick", [], "VCO"),
+        # The name fallback never overrides what the tag and name rules assign.
+        ("Gesture Recorder", ["lfo", "envelope"], "ENV"),
+    ],
+)
+def test_name_fallback_only_fills_a_missing_category(name: str, tags: list[str], expected: str | None) -> None:
+    assert b.category(tags, name) == expected

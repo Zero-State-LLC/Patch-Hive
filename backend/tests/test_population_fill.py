@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -115,3 +116,25 @@ def test_the_1u_chicane_tile_never_becomes_a_eurorack_row():
     _, catalog = _catalog_after_review()
     assert ("Sovage Engineering", "CHICANE 1U") not in catalog
     assert catalog[("Sovage Engineering", "CHICANE")]["hp"] == 4
+
+
+def test_catalog_category_fills_only_an_empty_category():
+    catalog = {"b-n": {"brand": "B", "name": "N", "hp": 8, "category": None, "_planned": False}}
+    plan = P.Plan()
+    P._schedule_catalog(plan, catalog, {"brand": "B", "name": "N", "slug": "b-n", "hp": 8, "category": "SEQ"}, None)
+    assert catalog["b-n"]["category"] == "SEQ" and plan.updates.get("module_catalog_category") == 1
+    plan = P.Plan()
+    P._schedule_catalog(plan, catalog, {"brand": "B", "name": "N", "slug": "b-n", "hp": 8, "category": "VCO"}, None)
+    assert catalog["b-n"]["category"] == "SEQ" and not plan.updates.get("module_catalog_category")
+
+
+def test_review_supplies_maker_categories_the_name_rules_leave_empty():
+    _, catalog = _catalog_after_review()
+    review_catalog = {(r["brand"], r["name"]): r for r in json.loads(P.MAKER_REVIEW.read_text())["catalog_rows"]}
+    for key, category in {
+        ("Erica Synths", "Black Octasource"): "LFO",
+        ("Erica Synths", "Hexinverter Mindphaser"): "VCO",
+        ("Avalon Harmonics", "KickAid"): "FX",
+    }.items():
+        assert catalog[key].get("category") is None  # the additions row leaves it empty
+        assert review_catalog[key]["category"] == category  # the review row fills it

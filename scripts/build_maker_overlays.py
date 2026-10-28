@@ -31,6 +31,15 @@ CATEGORY = [
     ("MIX", r"mixer|mix\b|panner"), ("FX", r"reverb|delay|effect|distort|granular|chorus|fx"), ("MIDI", r"midi"),
     ("UTIL", r"attenuat|mult|buffer|utility|output|input|logic|switch|quantiz|offset|interface"),
 ]
+# Fallback when CATEGORY finds nothing: maker names without tags ("Pico SEQ", "Mutant Clap").
+# Applied second so it never changes a category the rules above assign.
+NAME_CATEGORY = [
+    ("SEQ", r"\bseq\b|controller|joystick|catalyst|\bqcd\b"), ("SAMP", r"recorder"),
+    ("VCO", r"\bvcno\b|clap|hi-?hats?|snare|cymbal|bass ?line|\bkick\b|cowbell"), ("ENV", r"\bpeg\b"),
+    ("LFO", r"qplfo|\brnd\b|random"),
+    ("FX", r"(?<!motor )\bdrive\b|\bphaser\b|flang|\bdsp\b|resonat|replicator|fold"),
+    ("UTIL", r"\bquant\b|expander|breakout"),
+]
 
 
 def norm(brand: str, name: str) -> str:
@@ -101,6 +110,9 @@ def category(tags: list[str], name: str) -> str | None:
     hay = " ".join(tags).lower() + " " + name.lower()
     for cat, pat in CATEGORY:
         if re.search(pat, hay):
+            return cat
+    for cat, pat in NAME_CATEGORY:
+        if re.search(pat, name.lower()):
             return cat
     return None
 
