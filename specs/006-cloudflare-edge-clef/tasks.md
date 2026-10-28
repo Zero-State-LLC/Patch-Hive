@@ -11,7 +11,7 @@ States: PENDING → CLASSIFYING → PACKET_EMITTED → POLICY_APPLIED → {AUTO_
 |------|-------|-------|----|-------|
 | PENDING | submit_evidence | valid evidence hash + bounded candidates | CLASSIFYING | idempotent on request id |
 | CLASSIFYING | provider_success | DecisionPacket schema valid | PACKET_EMITTED | fail-closed otherwise |
-| CLASSIFYING | provider_fail / timeout | — | REJECT | no confirmation possible |
+| CLASSIFYING | provider_fail / timeout | routing_target_exists | ESCALATE, else UNRESOLVED | no confirmation possible; never REJECT (spec 005: a failed provider says nothing about the evidence) |
 | PACKET_EMITTED | apply_policy | policy version pinned | POLICY_APPLIED | disposition is deterministic |
 | POLICY_APPLIED | disposition=AUTO_PROPOSE | — | AUTO_PROPOSE | proposal only, no canon write |
 | POLICY_APPLIED | disposition=USER_REVIEW | — | USER_REVIEW | surfaces exact candidate + evidence identity |
