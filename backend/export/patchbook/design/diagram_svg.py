@@ -124,7 +124,7 @@ def render_patch_diagram_svg(
     # Nodes
     for node in sorted_nodes:
         x, y = positions[node.node_id]
-        label_lines = _label_lines(node.label)
+        label_lines = _label_lines(node.label, layout_algorithm_id)
         # Hex-ish for hive; rounded rect otherwise
         if layout_algorithm_id == "hex_cell_map":
             r = 28
@@ -167,28 +167,41 @@ def render_patch_diagram_svg(
 
 # Labels this short render on one line, as they always have.
 SINGLE_LINE_LABEL = 18
-# Width available inside a node, and how many lines fit in its height.
-LABEL_WIDTH = 76.0
+# How many lines fit in a node's height.
 MAX_LABEL_LINES = 3
+# Text width inside each node shape, in points (shape width less padding).
+HEX_LABEL_WIDTH = 42.0  # pointy-top hex, r=28: about 48 pt across
+BLOCK_LABEL_WIDTH = 74.0  # brutalist block, 80 pt wide
+RECT_LABEL_WIDTH = 78.0  # rounded rect, 84 pt wide
 
 
-def _label_lines(label: str) -> list[str]:
+def _label_width(layout_algorithm_id: str) -> float:
+    if layout_algorithm_id == "hex_cell_map":
+        return HEX_LABEL_WIDTH
+    if layout_algorithm_id == "brutalist_blocks":
+        return BLOCK_LABEL_WIDTH
+    return RECT_LABEL_WIDTH
+
+
+def _label_lines(label: str, layout_algorithm_id: str = "orthogonal_schematic") -> list[str]:
     if len(label) <= SINGLE_LINE_LABEL:
         return [label]
     from reportlab.pdfbase.pdfmetrics import stringWidth
 
+    width = _label_width(layout_algorithm_id)
     lines: list[str] = []
     cur = ""
     for word in label.split():
         trial = f"{cur} {word}" if cur else word
-        if stringWidth(trial, "Helvetica", 10) <= LABEL_WIDTH or not cur:
+        if stringWidth(trial, "Helvetica", 10) <= width:
             cur = trial
         else:
-            lines.append(cur)
+            if cur:
+                lines.append(cur)
             cur = word
     if cur:
         lines.append(cur)
-    if len(lines) > MAX_LABEL_LINES or any(stringWidth(line, "Helvetica", 10) > LABEL_WIDTH * 1.25 for line in lines):
+    if len(lines) > MAX_LABEL_LINES or any(stringWidth(line, "Helvetica", 10) > width for line in lines):
         from export.patchbook.design.engine import PreflightFailed
 
         raise PreflightFailed(

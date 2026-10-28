@@ -693,20 +693,29 @@ class PageLine:
     rule: bool = False
 
 
-def _wrap_to_width(text: str, font: str, size: float, max_width: float) -> list[str]:
-    """Wrap by measured width. A single word wider than the line is split, never cut."""
+def _wrap_to_width(
+    text: str, font: str, size: float, max_width: float, rest_width: float | None = None
+) -> list[str]:
+    """Wrap by measured width; continuation lines may be narrower (``rest_width``). A
+    single word wider than its line is split across lines, never cut and never given
+    extra spaces."""
     lines: list[str] = []
     cur = ""
+
+    def limit() -> float:
+        return max_width if not lines or rest_width is None else rest_width
+
     for word in text.split():
         trial = f"{cur} {word}" if cur else word
-        if stringWidth(trial, font, size) <= max_width:
+        if stringWidth(trial, font, size) <= limit():
             cur = trial
             continue
         if cur:
             lines.append(cur)
-        while stringWidth(word, font, size) > max_width:
+            cur = ""
+        while stringWidth(word, font, size) > limit():
             cut = len(word)
-            while cut > 1 and stringWidth(word[:cut], font, size) > max_width:
+            while cut > 1 and stringWidth(word[:cut], font, size) > limit():
                 cut -= 1
             lines.append(word[:cut])
             word = word[cut:]
@@ -776,11 +785,9 @@ def _lay_out(
     add("Cables", "Helvetica-Bold", 11, 14)
     for edge in graph.edges:
         text = f"{edge.edge_id}: {edge.source_port_id} -> {edge.target_port_id} [{edge.signal_type}]"
-        chunks = _wrap_to_width(text, mono, 8, usable)
-        lines.append(PageLine(chunks[0], mono, 8, y))
-        y -= 10
-        # Continuation lines indent so one cable never reads as two.
-        for chunk in _wrap_to_width(" ".join(chunks[1:]), mono, 8, usable - 12) if len(chunks) > 1 else []:
-            lines.append(PageLine(chunk, mono, 8, y, indent=12))
+        # One pass over the original text; continuation lines indent (and are
+        # narrower) so one cable never reads as two.
+        for i, chunk in enumerate(_wrap_to_width(text, mono, 8, usable, usable - 12)):
+            lines.append(PageLine(chunk, mono, 8, y, indent=12 if i else 0))
             y -= 10
     return lines

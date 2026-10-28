@@ -98,3 +98,25 @@ def test_long_diagram_labels_wrap_and_impossible_ones_fail():
     with pytest.raises(PreflightFailed) as exc:
         _label_lines("Extremely Long Module Display Name That Will Not Fit In Any Node Box At All")
     assert exc.value.code == "PATCH_PAGE_DIAGRAM_OVERFLOW"
+
+
+def test_a_long_identifier_wraps_without_extra_spaces_or_wasted_lines():
+    port = "p" * 400
+    plan, graph = _patch(steps=1, cables=1)
+    graph.edges[0].target_port_id = port
+    cable = [line for line in _layout(plan, graph) if line.font == "Courier"]
+    # Rejoined without separators, the identifier is intact: no space was put inside it.
+    assert port in "".join(line.text for line in cable)
+    # Every continuation line but the last is full: no 2-character fragments.
+    widths = [len(line.text) for line in cable[1:-1]]
+    assert widths and min(widths) > 50
+
+
+def test_labels_are_measured_against_each_node_shape():
+    label = "Wonderful Oscillator"  # 20 characters
+    assert _label_lines(label, "orthogonal_schematic") == ["Wonderful", "Oscillator"]
+    with pytest.raises(PreflightFailed):
+        # One word wider than the hex cell's inner width.
+        _label_lines("Supercalifragilistic Osc", "hex_cell_map")
+    with pytest.raises(PreflightFailed):
+        _label_lines("Ultrawidemodulename Two", "orthogonal_schematic")
