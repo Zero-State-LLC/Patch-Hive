@@ -30,6 +30,11 @@ Superseded 2026-10-27 (owner delegated the staging decision; see
 | Deploy | `npx wrangler deploy` | `npx wrangler deploy --env staging` |
 
 Secrets are per Worker: repeat each `wrangler secret put` with `--env staging` for staging.
+The manual workflow `.github/workflows/edge-secrets.yml` (input `staging` or `production`)
+writes `DATABASE_URL` (Neon pooled, from the repo secret), the R2 S3 keys (from a
+bucket-scoped token it creates, revoking the previous one) and, if missing, `SECRET_KEY`,
+without printing any of them. It needs the repo secret `CLOUDFLARE_API_TOKEN` (Account API
+Tokens: Edit, Workers Scripts: Edit) and the repo variable `CLOUDFLARE_ACCOUNT_ID`.
 The readiness machine and FR-003 describe the staging pair.
 
 Still owned by the operator and NOT set in code or config:
