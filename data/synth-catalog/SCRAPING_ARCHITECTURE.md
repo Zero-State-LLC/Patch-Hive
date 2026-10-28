@@ -197,3 +197,21 @@ The parser also misread pages where the spec window began at a nav-menu "Power" 
 A `--brands` run now writes its own receipt (`--tag`) and, when real, replaces only those brands in `maker-crawl-v2.json` instead of overwriting it.
 
 Free dry run (`receipts/maker-crawl-v2-t026.dry-run.json`): 4ms 44 modules (36 with +12V), Pittsburgh 56 (38), Erica 9 from the site-wide product widget, Frap 0, Tiptop not fetched.
+
+### T026 paid pass, 2026-10-27, context.dev only
+
+Approved cap: 30 paid fetches and $3. Firecrawl was disabled by leaving its key unset for the run. Runs, each with its own receipt:
+
+- `--tag t026`: 4ms, Pittsburgh, Erica and Frap. 2 credits.
+- `--tag t026-erica`: Erica again, after a fix. Its `exclude` pattern had filtered out the series links it should follow. 8 credits.
+- `--tag t026-erica-replay`: a replay from cache, no spend. It applies the signed-pair fix: Hexinverter writes "+49mA, -39mA @ 12V".
+
+| Maker | Modules | With +12V | Notes |
+|---|---|---|---|
+| 4ms | 44 | 36 | free HTTP; the VCA Matrix lists draws per jumper setting and its +5V read is the internal-5V mode's +12V |
+| Pittsburgh | 56 | 38 | free HTTP, root info pages |
+| Erica | 46 | 19 | 7 index pages rendered by context.dev; product pages fetched free |
+| Frap | 0 | 0 | 1 paid fetch: context.dev returns rendered HTML for Squarespace's `?format=json`, so the JSON adapter reads nothing |
+| Tiptop | not fetched | | CAPTCHA (`challenged`) |
+
+Spend: 10 context.dev credits (ledger 1,106 to 1,116), Firecrawl 0, OpenRouter $0.0003, no overage. A rescan of all 3,322 cached crawl pages found that the signed-pair fix changes only the two Erica Hexinverter pages.

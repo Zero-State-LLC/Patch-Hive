@@ -1,0 +1,46 @@
+{
+ "generated_at": "2026-10-27T17:11:46-0700",
+ "mode": "paid",
+ "max_pages_per_brand": 250,
+ "brands": 1,
+ "statuses": {
+  "done": 1
+ },
+ "yield_by_path": {
+  "adapter:listing": {
+   "brands": 1,
+   "brands_with_modules": 1,
+   "modules": 46,
+   "with_power": 19
+  }
+ },
+ "modules_total": 46,
+ "unconfirmed_generic": 0,
+ "modules_with_power": 19,
+ "fetch_methods": {
+  "free_http": 42,
+  "cache": 16
+ },
+ "budget": {
+  "context_dev_credits": 8.0,
+  "firecrawl_credits": 0.0,
+  "context_dev_included_at_start": 54299.0,
+  "firecrawl_included_at_start": 0.0,
+  "paid_overage_usd": 0.0,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "model_tokens_in": 1462,
+  "model_tokens_out": 254,
+  "model_cost_usd": 0.0003,
+  "projected_total_usd": 0.0003,
+  "cap_usd": 3.0,
+  "calls": {
+   "search": 0,
+   "ctx_scrape": 8,
+   "fc_scrape": 0,
+   "llm": 3
+  }
+ },
+ "per_brand": [
+  {"brand": "Erica Synths", "status": "done", "path": "adapter:listing", "resolved_by": "adapter:listing", "homepage": "https://www.ericasynths.lv/", "discovered": 58, "picked": null, "pages": 58, "ambiguous_hp": 3, "modules": 46, "unconfirmed": 0}
+ ]
+}

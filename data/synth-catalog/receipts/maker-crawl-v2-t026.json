@@ -1,0 +1,55 @@
+{
+ "generated_at": "2026-10-27T17:08:43-0700",
+ "mode": "paid",
+ "max_pages_per_brand": 250,
+ "brands": 4,
+ "statuses": {
+  "done": 4
+ },
+ "yield_by_path": {
+  "adapter:listing": {
+   "brands": 3,
+   "brands_with_modules": 3,
+   "modules": 109,
+   "with_power": 79
+  },
+  "adapter:squarespace": {
+   "brands": 1,
+   "brands_with_modules": 0,
+   "modules": 0,
+   "with_power": 0
+  }
+ },
+ "modules_total": 109,
+ "unconfirmed_generic": 0,
+ "modules_with_power": 79,
+ "fetch_methods": {
+  "cache": 142,
+  "free_http": 3
+ },
+ "budget": {
+  "context_dev_credits": 2.0,
+  "firecrawl_credits": 0.0,
+  "context_dev_included_at_start": 54301.0,
+  "firecrawl_included_at_start": 0.0,
+  "paid_overage_usd": 0.0,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "model_tokens_in": 0,
+  "model_tokens_out": 0,
+  "model_cost_usd": 0.0,
+  "projected_total_usd": 0.0,
+  "cap_usd": 3.0,
+  "calls": {
+   "search": 0,
+   "ctx_scrape": 2,
+   "fc_scrape": 0,
+   "llm": 0
+  }
+ },
+ "per_brand": [
+  {"brand": "4ms Company", "status": "done", "path": "adapter:listing", "resolved_by": "adapter:listing", "homepage": "https://4mscompany.com/", "discovered": 73, "picked": null, "pages": 73, "ambiguous_hp": 0, "modules": 44, "unconfirmed": 0},
+  {"brand": "Erica Synths", "status": "done", "path": "adapter:listing", "resolved_by": "adapter:listing", "homepage": "https://www.ericasynths.lv/", "discovered": 16, "picked": null, "pages": 16, "ambiguous_hp": 0, "modules": 9, "unconfirmed": 0},
+  {"brand": "Frap Tools", "status": "done", "path": "adapter:squarespace", "resolved_by": "adapter:squarespace", "homepage": "https://frap.tools/", "discovered": 0, "picked": null, "pages": 0, "ambiguous_hp": 0, "modules": 0, "unconfirmed": 0},
+  {"brand": "Pittsburgh Modular", "status": "done", "path": "adapter:listing", "resolved_by": "adapter:listing", "homepage": "https://pittsburghmodular.com/", "discovered": 56, "picked": null, "pages": 56, "ambiguous_hp": 0, "modules": 56, "unconfirmed": 0}
+ ]
+}
