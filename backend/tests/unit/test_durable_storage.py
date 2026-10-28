@@ -17,6 +17,7 @@ from canon.fulfillment import fulfill_export, pack_dir_for_export
 from canon.models import ImageAssetRecord
 from core.storage import LocalFileStore, S3FileStore, StorageError, get_file_store
 from racks.models import Rack
+from tests.conftest import sample_owner_headers
 from tests.unit.test_pack_download import NOW, _auth_headers, _client, _seed
 
 
@@ -184,6 +185,7 @@ def test_evidence_upload_is_durable_and_restorable(
     from main import app
 
     client = _client(db_session)
+    client.headers.update(sample_owner_headers(db_session))
     resp = client.post(
         f"/api/racks/{sample_rack_basic.id}/evidence/images",
         files=[("files", ("a.jpg", _jpeg_bytes(), "image/jpeg"))],
@@ -207,6 +209,7 @@ def test_evidence_upload_refuses_to_record_unpersisted_bytes(
 
     fake_s3.fail_writes = True
     client = _client(db_session)
+    client.headers.update(sample_owner_headers(db_session))
     resp = client.post(
         f"/api/racks/{sample_rack_basic.id}/evidence/images",
         files=[("files", ("a.jpg", _jpeg_bytes(), "image/jpeg"))],
@@ -252,6 +255,7 @@ def test_design_pack_survives_local_loss_and_still_downloads(
     shutil.rmtree(pack_dir_for_export(export.id))  # container restarted
 
     client = _client(db_session)
+    client.headers.update(sample_owner_headers(db_session))
     token = client.post(
         f"/api/canon/exports/{export.id}/download-token",
         headers=_auth_headers(user),
@@ -273,6 +277,7 @@ def _upload_one(db_session: Session, rack: Rack) -> ImageAssetRecord:
     from main import app
 
     client = _client(db_session)
+    client.headers.update(sample_owner_headers(db_session))
     resp = client.post(
         f"/api/racks/{rack.id}/evidence/images",
         files=[("files", ("a.jpg", _jpeg_bytes(), "image/jpeg"))],
@@ -321,6 +326,7 @@ def test_delete_endpoint_reports_a_failed_purge_and_retries(
 
     fake_s3.fail_deletes = 1
     client = _client(db_session)
+    client.headers.update(sample_owner_headers(db_session))
     failed = client.delete(url, params={"purge_bytes": "true"})
     assert failed.status_code == 503
     assert failed.json()["detail"] == storage.WRITE_FAILED

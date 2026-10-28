@@ -18,6 +18,7 @@ from .schemas import (
     LoginRequest,
     TokenResponse,
     UserCreate,
+    PublicUserResponse,
     UserResponse,
     UserUpdate,
 )
@@ -48,7 +49,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         password_hash=get_password_hash(user.password),
         display_name=user.display_name or user.username,
         role="User",
-        referral_code=generate_referral_code(db, username=user.username, email=user.email),
+        referral_code=generate_referral_code(db),
         referred_by=referrer.id if referrer else None,
         avatar_url=user.avatar_url,
         allow_public_avatar=user.allow_public_avatar,
@@ -101,7 +102,7 @@ def get_current_profile(current_user: User = Depends(require_auth)):
     return current_user
 
 
-@router.get("/users/{user_id}", response_model=UserResponse)
+@router.get("/users/{user_id}", response_model=PublicUserResponse)
 def get_user(user_id: int, db: Session = Depends(get_db)):
     """Get user profile."""
     user = db.query(User).filter(User.id == user_id).first()
@@ -110,7 +111,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     return user
 
 
-@router.get("/users/username/{username}", response_model=UserResponse)
+@router.get("/users/username/{username}", response_model=PublicUserResponse)
 def get_user_by_username(username: str, db: Session = Depends(get_db)):
     """Get user profile by username."""
     user = db.query(User).filter(User.username == username).first()

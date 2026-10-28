@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://patchhive:${STAGING_DB_PASSWORD:-patchhive-staging-change-me}@db:5432/patchhive
-      SECRET_KEY: ${STAGING_SECRET_KEY:-staging-secret-key-change-me-32chars-min}
+      SECRET_KEY: ${STAGING_SECRET_KEY:?Set STAGING_SECRET_KEY, e.g. openssl rand -base64 32}
       CORS_ORIGINS: ${STAGING_CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
       APP_NAME: PatchHive
       APP_VERSION: ${STAGING_APP_VERSION:-0.3.0-alpha.1}

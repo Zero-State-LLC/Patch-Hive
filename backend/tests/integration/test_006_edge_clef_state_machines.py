@@ -591,9 +591,12 @@ def _post_resolution(db_session, rack_id: int, evidence_id: str, idem: str):
 
     app.dependency_overrides[get_db] = override_db
     try:
+        from tests.conftest import rack_owner_headers
+
         return TestClient(app).post(
             f"/api/racks/{rack_id}/evidence/decision-resolution",
             json={"evidence_id": evidence_id, "idempotency_key": idem},
+            headers=rack_owner_headers(db_session, rack_id),
         )
     finally:
         app.dependency_overrides.clear()

@@ -60,7 +60,9 @@ async def lifespan(app: FastAPI):
     """Application lifespan manager."""
     # Startup
     from canon.routes import validate_payment_startup_policy
+    from core.security import validate_secret_policy
 
+    validate_secret_policy(settings)
     validate_payment_startup_policy(settings)
     print(f"Starting {settings.app_name} v{settings.app_version}")
     print(f"ABX-Core version: {settings.abx_core_version}")

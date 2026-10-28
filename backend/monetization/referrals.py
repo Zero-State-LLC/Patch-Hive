@@ -4,7 +4,6 @@ Referral program utilities and credit ledger helpers.
 
 from __future__ import annotations
 
-import hashlib
 import secrets
 from datetime import datetime
 from typing import Optional
@@ -17,19 +16,16 @@ from monetization.models import CreditsLedger, Referral
 REFERRAL_REWARD_CREDITS = 3
 
 
-def generate_referral_code(db: Session, *, username: str, email: str) -> str:
-    """Generate a deterministic referral code with a collision-safe suffix."""
-    base = hashlib.sha256(f"{username.lower()}:{email.lower()}".encode()).hexdigest()[:10]
-    code = base
-    counter = 0
-    while db.query(User).filter(User.referral_code == code).first() is not None:
-        counter += 1
-        suffix = secrets.token_hex(2)
-        code = f"{base}{suffix}"
-        if counter > 5:
-            base = hashlib.sha256(f"{base}{suffix}".encode()).hexdigest()[:10]
-            code = base
-    return code
+def generate_referral_code(db: Session, length: int = 10) -> str:
+    """Generate a random, unique referral code.
+
+    The code is public (it goes in share links), so it must not be derived from
+    anything private such as the email address.
+    """
+    while True:
+        code = secrets.token_urlsafe(length)[:length].upper()
+        if db.query(User).filter(User.referral_code == code).first() is None:
+            return code
 
 
 def create_referral(db: Session, *, referrer: User, referred: User) -> Referral:

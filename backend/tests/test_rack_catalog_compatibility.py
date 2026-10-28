@@ -111,7 +111,13 @@ def test_rack_compatibility_endpoint(client: TestClient, wired_rack: Rack) -> No
 
 def test_materialize_batch(client: TestClient, db_session: Session) -> None:
     assert import_records(db_session, [_case()])["inserted"] == 1
-    resp = client.post("/api/cases/catalog/materialize-batch", params={"format_family": "eurorack"})
+    from tests.conftest import bearer_headers, make_user
+
+    resp = client.post(
+        "/api/cases/catalog/materialize-batch",
+        params={"format_family": "eurorack"},
+        headers=bearer_headers(make_user(db_session, "catalog-ops", "Ops")),
+    )
     assert resp.status_code == 200
     body = resp.json()
     assert body["scanned"] >= 1

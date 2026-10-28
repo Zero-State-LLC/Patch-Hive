@@ -43,6 +43,23 @@ def owned_rack(db: Session, rack_id: int, user: Optional[User], *, label: str = 
     return rack
 
 
+def private_rack(db: Session, rack_id: int, user: Optional[User], *, label: str = "Rack") -> Rack:
+    """Evidence (photos, candidates, inventory) is private even on a public rack: only
+    the owner and admin read roles may see it."""
+    rack = db.query(Rack).filter(Rack.id == rack_id).first()
+    if rack is None or user is None or not (user.id == rack.user_id or user.role in READ_ROLES):
+        raise HTTPException(status_code=404, detail=f"{label} not found")
+    return rack
+
+
+def owned_private_rack(db: Session, rack_id: int, user: Optional[User], *, label: str = "Rack") -> Rack:
+    """Only the owner may add, confirm, resolve or delete a rack's evidence."""
+    rack = private_rack(db, rack_id, user, label=label)
+    if not can_write(rack, user):
+        raise HTTPException(status_code=403, detail=f"Only the owner can change this {label.lower()}")
+    return rack
+
+
 def readable_racks(query: Query, user: Optional[User]) -> Query:
     """Restrict a query over Rack to the racks the caller may read."""
     if user is not None and user.role in READ_ROLES:

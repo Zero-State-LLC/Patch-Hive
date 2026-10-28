@@ -8,6 +8,7 @@ from core import get_db, settings
 from intelligence.contracts import DecisionPacket
 from intelligence.models import DecisionReceiptRecord
 from main import app
+from tests.conftest import rack_owner_headers
 
 
 def test_decision_resolution_endpoint_is_advisory_only(db_session, sample_rack_basic, monkeypatch):
@@ -53,7 +54,7 @@ def test_decision_resolution_endpoint_is_advisory_only(db_session, sample_rack_b
         yield db_session
     app.dependency_overrides[get_db] = override_db
     try:
-        client = TestClient(app)
+        client = TestClient(app, headers=rack_owner_headers(db_session, sample_rack_basic.id))
         before = db_session.query(SystemInventoryRevisionRecord).count()
         response = client.post(
             f"/api/racks/{sample_rack_basic.id}/evidence/decision-resolution",
@@ -103,7 +104,7 @@ def test_decision_resolution_endpoint_defaults_off(db_session, sample_rack_basic
         yield db_session
     app.dependency_overrides[get_db] = override_db
     try:
-        response = TestClient(app).post(
+        response = TestClient(app, headers=rack_owner_headers(db_session, sample_rack_basic.id)).post(
             f"/api/racks/{sample_rack_basic.id}/evidence/decision-resolution",
             json={"evidence_id": "ev-di-off", "idempotency_key": "off"},
         )
