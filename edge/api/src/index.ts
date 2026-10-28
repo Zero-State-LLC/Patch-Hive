@@ -93,9 +93,14 @@ export class PatchHiveApi extends DurableObject<Env> {
       return Response.json({ status: "unavailable", reason: "api container not ready" }, { status: 503 });
     }
     // Keep the public host so absolute URLs the API builds (trailing-slash redirects,
-    // links) point at api.patch-hive.com, not at the container; only the scheme changes.
-    const url = request.url.replace(/^https:/, "http:");
-    return this.ctx.container!.getTcpPort(PORT).fetch(url, request);
+    // links) point at api.patch-hive.com, not at the container. The hop to the container
+    // is plain http, so pass the public scheme and client address as forwarded headers
+    // (uvicorn trusts them: FORWARDED_ALLOW_IPS below), overwriting any a client sent.
+    const publicUrl = new URL(request.url);
+    const forwarded = new Request(request.url.replace(/^https:/, "http:"), request);
+    forwarded.headers.set("x-forwarded-proto", publicUrl.protocol.replace(":", ""));
+    forwarded.headers.set("x-forwarded-for", request.headers.get("cf-connecting-ip") ?? "");
+    return this.ctx.container!.getTcpPort(PORT).fetch(forwarded);
   }
 
   private async startAndWaitUntilHealthy(): Promise<void> {
@@ -103,9 +108,16 @@ export class PatchHiveApi extends DurableObject<Env> {
     // Under the durable_object policy a deploy does not roll the running container.
     // A deploy does restart this Durable Object, so the first request after one checks
     // the running image and replaces the container when the deploy brought a new one.
+    // The same goes for its environment (vars and secrets), so the container carries a
+    // hash of the environment it started with and is replaced when that changes too.
+    const env = containerEnv(this.env);
+    const envHash = await sha256(JSON.stringify(Object.entries(env).sort()));
     if (container.running && !this.imageChecked) {
       const info = await container.inspect();
-      if (info && imageDigest(info.image) !== imageDigest(container.images.api)) {
+      const stale =
+        info !== null &&
+        (imageDigest(info.image) !== imageDigest(container.images.api) || info.labels[ENV_LABEL] !== envHash);
+      if (stale) {
         await container.destroy();
       }
     }
@@ -117,7 +129,8 @@ export class PatchHiveApi extends DurableObject<Env> {
         // The container reaches Neon directly over TLS. Hyperdrive serves only Worker
         // runtime clients, not a Postgres driver inside a container.
         enableInternet: true,
-        env: containerEnv(this.env),
+        env,
+        labels: { [ENV_LABEL]: envHash },
       });
     }
     await container.setInactivityTimeout(INACTIVITY_TIMEOUT_MS);
@@ -137,6 +150,13 @@ export class PatchHiveApi extends DurableObject<Env> {
     }
     throw new Error("api container did not become healthy", { cause: lastError });
   }
+}
+
+const ENV_LABEL = "patchhive-env-sha256";
+
+async function sha256(text: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 // Compare images by digest when both references carry one (tags and registry
@@ -162,6 +182,8 @@ function containerEnv(env: Env): Record<string, string> {
     S3_REGION: env.S3_REGION,
     S3_KEY_PREFIX: env.S3_KEY_PREFIX,
     RUN_MIGRATIONS: "true",
+    // Only the Worker can reach the container, so trust its forwarded headers.
+    FORWARDED_ALLOW_IPS: "*",
     ...optionalEnv(env),
   };
 }
