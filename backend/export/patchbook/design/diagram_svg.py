@@ -124,7 +124,7 @@ def render_patch_diagram_svg(
     # Nodes
     for node in sorted_nodes:
         x, y = positions[node.node_id]
-        label = html.escape(node.label[:18])
+        label_lines = _label_lines(node.label)
         # Hex-ish for hive; rounded rect otherwise
         if layout_algorithm_id == "hex_cell_map":
             r = 28
@@ -144,13 +144,59 @@ def render_patch_diagram_svg(
         fill = (
             "#FFFFFF" if layout_algorithm_id in {"hex_cell_map", "brutalist_blocks"} else "#1A1A1A"
         )
-        parts.append(
-            f'<text x="{x:.1f}" y="{y + 4:.1f}" text-anchor="middle" '
-            f'font-family="Helvetica" font-size="10" fill="{fill}">{label}</text>'
-        )
+        if len(label_lines) == 1:
+            parts.append(
+                f'<text x="{x:.1f}" y="{y + 4:.1f}" text-anchor="middle" '
+                f'font-family="Helvetica" font-size="10" fill="{fill}">{html.escape(label_lines[0])}</text>'
+            )
+        else:
+            # A long name wraps inside the node instead of being cut (spec 002 FR-003).
+            top = y + 4 - (len(label_lines) - 1) * 5.5
+            spans = "".join(
+                f'<tspan x="{x:.1f}" y="{top + i * 11:.1f}">{html.escape(text)}</tspan>'
+                for i, text in enumerate(label_lines)
+            )
+            parts.append(
+                f'<text text-anchor="middle" font-family="Helvetica" font-size="10" '
+                f'fill="{fill}"><title>{html.escape(node.label)}</title>{spans}</text>'
+            )
 
     parts.append("</svg>\n")
     return "\n".join(parts)
+
+
+# Labels this short render on one line, as they always have.
+SINGLE_LINE_LABEL = 18
+# Width available inside a node, and how many lines fit in its height.
+LABEL_WIDTH = 76.0
+MAX_LABEL_LINES = 3
+
+
+def _label_lines(label: str) -> list[str]:
+    if len(label) <= SINGLE_LINE_LABEL:
+        return [label]
+    from reportlab.pdfbase.pdfmetrics import stringWidth
+
+    lines: list[str] = []
+    cur = ""
+    for word in label.split():
+        trial = f"{cur} {word}" if cur else word
+        if stringWidth(trial, "Helvetica", 10) <= LABEL_WIDTH or not cur:
+            cur = trial
+        else:
+            lines.append(cur)
+            cur = word
+    if cur:
+        lines.append(cur)
+    if len(lines) > MAX_LABEL_LINES or any(stringWidth(line, "Helvetica", 10) > LABEL_WIDTH * 1.25 for line in lines):
+        from export.patchbook.design.engine import PreflightFailed
+
+        raise PreflightFailed(
+            "PATCH_PAGE_DIAGRAM_OVERFLOW",
+            f"Module label {label!r} does not fit its diagram node. Remediation: give the "
+            "module a shorter display name.",
+        )
+    return lines
 
 
 def _hex_points(cx: float, cy: float, r: float) -> str:
