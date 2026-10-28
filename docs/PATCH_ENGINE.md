@@ -53,7 +53,7 @@ Located in: `backend/patches/engine.py`
 @dataclass
 class PatchSpec:
     name: str                    # Auto-generated deterministic name
-    category: PatchCategory      # Voice/Modulation/Clock-Rhythm/Generative/Utility/Performance Macro/Texture-FX/Study/Experimental-Feedback
+    category: PatchCategory      # Voice/Clock-Rhythm/Generative/Texture-FX/Utility (spec 001 FR-012)
     connections: List[Connection]
     description: str
     generation_seed: int

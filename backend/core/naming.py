@@ -10,7 +10,7 @@ import hashlib
 import json
 import re
 from hashlib import sha256
-from typing import Any, Dict, Iterable, Literal
+from typing import Any, Dict, Iterable
 
 from core.ops.derive_patch_semantics import derive_patch_semantics
 
@@ -239,17 +239,7 @@ def generate_rig_suggested_name(modules: Iterable[Any]) -> str:
 
 def generate_patch_name(
     seed: int,
-    category: Literal[
-        "Voice",
-        "Modulation",
-        "Clock-Rhythm",
-        "Generative",
-        "Utility",
-        "Performance Macro",
-        "Texture-FX",
-        "Study",
-        "Experimental-Feedback",
-    ],
+    category: str,
 ) -> str:
     """
     Generate a deterministic patch name from a seed and category.
@@ -273,16 +263,13 @@ def generate_patch_name(
         return f"{PATCH_PREFIXES[prefix_idx]} {PATCH_TYPES[type_idx]}"
     else:
         # Use category-based name
+        # The canonical categories (core.ir.PatchCategory); anything else is "Patch".
         category_names = {
             "Voice": "Voice",
-            "Modulation": "Modulation",
             "Clock-Rhythm": "Clock-Rhythm",
             "Generative": "Generative",
-            "Utility": "Utility",
-            "Performance Macro": "Performance Macro",
             "Texture-FX": "Texture-FX",
-            "Study": "Study",
-            "Experimental-Feedback": "Experimental-Feedback",
+            "Utility": "Utility",
         }
         return f"{PATCH_PREFIXES[prefix_idx]} {category_names.get(category, 'Patch')}"
 
