@@ -141,6 +141,40 @@ class _PublicRedirectHandler(urllib.request.HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
+# What a direct fetch may bring back (spec 003 FR-011): pages, sitemaps, robots.txt
+# and JSON feeds, at most MAX_BODY_BYTES. Anything else is refused, not read.
+MAX_BODY_BYTES = 10 * 1024 * 1024
+ALLOWED_CONTENT_TYPES = frozenset(
+    {
+        "text/html",
+        "application/xhtml+xml",
+        "text/xml",
+        "application/xml",
+        "application/rss+xml",
+        "application/atom+xml",
+        "application/json",
+        "application/ld+json",
+        "text/plain",
+        "application/gzip",
+        "application/x-gzip",
+    }
+)
+REFUSED_HEADER = "x-patchhive-refused"
+
+
+def _refused(code: str, headers: dict[str, str]) -> HttpResponse:
+    return HttpResponse(0, b"", {**headers, REFUSED_HEADER: code})
+
+
+def _bounded_read(resp, headers: dict[str, str]) -> bytes | None:
+    """Read at most MAX_BODY_BYTES; None when the body is larger."""
+    declared = headers.get("content-length", "")
+    if declared.isdigit() and int(declared) > MAX_BODY_BYTES:
+        return None
+    body = resp.read(MAX_BODY_BYTES + 1)
+    return None if len(body) > MAX_BODY_BYTES else body
+
+
 def default_transport(request: HttpRequest) -> HttpResponse:
     if not public_http_url(request.url):
         return HttpResponse(0, b"", {})
@@ -153,10 +187,19 @@ def default_transport(request: HttpRequest) -> HttpResponse:
     )
     try:
         with opener.open(raw, timeout=request.timeout) as resp:
-            return HttpResponse(getattr(resp, "status", 200), resp.read(), {})
+            headers = {k.lower(): v for k, v in resp.headers.items()}
+            media = headers.get("content-type", "").split(";", 1)[0].strip().lower()
+            # Some servers send no type at all; those are read, still size-bounded.
+            if media and media not in ALLOWED_CONTENT_TYPES:
+                return _refused("MIME_NOT_ALLOWED", headers)
+            body = _bounded_read(resp, headers)
+            if body is None:
+                return _refused("BODY_TOO_LARGE", headers)
+            return HttpResponse(getattr(resp, "status", 200), body, headers)
     except urllib.error.HTTPError as exc:
-        payload = exc.read() if exc.fp else b""
-        return HttpResponse(exc.code, payload, {})
+        headers = {k.lower(): v for k, v in (exc.headers or {}).items()}
+        payload = exc.read(MAX_BODY_BYTES) if exc.fp else b""
+        return HttpResponse(exc.code, payload, headers)
     except Exception:
         return HttpResponse(0, b"", {})
 
