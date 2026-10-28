@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { canonApi } from "@/lib/api";
+import { useAuthStore } from "@/lib/store";
 import {
   ALL_INFLUENCE_IDS,
   ARTISTIC_MODES,
@@ -121,7 +122,7 @@ export default function PatchBookStyleStudioPage() {
     try {
       const tokenResp = await canonApi.createDownloadToken(exportId, 300);
       const url = canonApi.exportArtifactUrl(exportId, artifact, tokenResp.data.token);
-      const auth = localStorage.getItem("auth_token");
+      const auth = useAuthStore.getState().token;
       const res = await fetch(url, {
         headers: auth ? { Authorization: `Bearer ${auth}` } : {},
       });

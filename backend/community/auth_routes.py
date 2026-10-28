@@ -4,16 +4,16 @@ Legacy social surfaces (votes, comments, feed) stay behind ENABLE_LEGACY_SOCIAL.
 Login, registration, and profile remain available in the default MVP surface.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.orm import Session
 
 from account.models import Referral
 from account.services import ensure_referral_code
-from core import create_access_token, get_db, get_password_hash, settings
+from core import get_db, get_password_hash, settings
 from core.security import burn_password_check, verify_and_update_password
 from monetization.referrals import create_referral, generate_referral_code
 
-from . import login_guard
+from . import login_guard, sessions
 from .auth import require_auth
 from .models import User
 from .schemas import (
@@ -88,7 +88,12 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/auth/login", response_model=TokenResponse)
-def login(request: LoginRequest, http_request: Request, db: Session = Depends(get_db)):
+def login(
+    request: LoginRequest,
+    http_request: Request,
+    response: Response,
+    db: Session = Depends(get_db),
+):
     """Login and get access token.
 
     Every failure, whether an unknown name, a wrong password or a locked account,
@@ -112,10 +117,42 @@ def login(request: LoginRequest, http_request: Request, db: Session = Depends(ge
     login_guard.record_success(user)
     if new_hash:
         user.password_hash = new_hash  # upgrade a bcrypt or pbkdf2 hash to Argon2id
+    # A short access token in the body, and a rotating refresh token in an HttpOnly cookie.
+    token = sessions.start_session(db, user, response)
     db.commit()
-
-    token = create_access_token({"user_id": user.id, "username": user.username})
     return TokenResponse(access_token=token, user=user)
+
+
+@router.post("/auth/refresh", response_model=TokenResponse)
+def refresh(http_request: Request, response: Response, db: Session = Depends(get_db)):
+    """Exchange the refresh cookie for a new access token (and a new refresh cookie)."""
+    sessions.require_same_site(http_request)
+    user, token = sessions.rotate(db, http_request, response)
+    return TokenResponse(access_token=token, user=user)
+
+
+@router.post("/auth/logout", status_code=204)
+def logout(http_request: Request, response: Response, db: Session = Depends(get_db)):
+    """Sign out this browser: revoke its refresh family and clear the cookie."""
+    sessions.require_same_site(http_request)
+    sessions.end_session(db, http_request, response)
+    response.status_code = 204
+    return response
+
+
+@router.post("/auth/logout-all", status_code=204)
+def logout_all(
+    http_request: Request,
+    response: Response,
+    current_user: User = Depends(require_auth),
+    db: Session = Depends(get_db),
+):
+    """Sign out everywhere: every access and refresh token of this user stops working."""
+    sessions.revoke_user(db, current_user)
+    db.commit()
+    sessions.clear_cookie(response)
+    response.status_code = 204
+    return response
 
 
 @router.get("/users/me", response_model=UserResponse)

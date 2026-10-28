@@ -41,6 +41,9 @@ class User(Base):
     # Sign-in brute-force protection (community/login_guard.py).
     failed_login_count = Column(Integer, nullable=False, default=0, server_default="0")
     locked_until = Column(DateTime, nullable=True)
+    # Carried in every access token as "tv"; bumping it revokes every outstanding token
+    # (sign out everywhere, role change).
+    token_version = Column(Integer, nullable=False, default=0, server_default="0")
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
@@ -114,3 +117,19 @@ class Comment(Base):
     user = relationship("User", back_populates="comments")
     rack = relationship("Rack", back_populates="comments")
     patch = relationship("Patch", back_populates="comments")
+
+
+class RefreshToken(Base):
+    """A rotating refresh token (stored hashed). Each use replaces it with a new one in
+    the same family; presenting a used token again revokes the whole family."""
+
+    __tablename__ = "refresh_tokens"
+
+    id = Column(String(64), primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    family_id = Column(String(64), nullable=False, index=True)
+    token_hash = Column(String(64), nullable=False, unique=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    revoked_at = Column(DateTime, nullable=True)
+    replaced_by = Column(String(64), nullable=True)

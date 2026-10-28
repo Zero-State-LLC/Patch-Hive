@@ -1,7 +1,7 @@
 /**
  * API client for PatchHive backend.
  */
-import axios from "axios";
+import axios, { type InternalAxiosRequestConfig } from "axios";
 import type {
   CatalogMaterializeResponse,
   CatalogModuleListResponse,
@@ -42,6 +42,8 @@ import type {
   AdminLeaderboardEntry,
 } from "@/types/admin";
 import { API_BASE_URL } from "./apiBase";
+import { refreshSession } from "./session";
+import { useAuthStore } from "./store";
 
 // Create axios instance
 const api = axios.create({
@@ -52,13 +54,28 @@ const api = axios.create({
   },
 });
 
-// Add auth token to requests
+// Attach the in-memory access token to requests.
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("auth_token");
+  const token = useAuthStore.getState().token;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
+});
+
+// An expired access token gets one silent renewal from the refresh cookie, then the
+// request is retried once. Sign-in and session calls are never retried.
+api.interceptors.response.use(undefined, async (error) => {
+  const config = error?.config as (InternalAxiosRequestConfig & { _renewed?: boolean }) | undefined;
+  const url = config?.url ?? "";
+  if (error?.response?.status !== 401 || !config || config._renewed || url.startsWith("/community/auth/")) {
+    throw error;
+  }
+  config._renewed = true;
+  const token = await refreshSession();
+  if (!token) throw error;
+  config.headers.Authorization = `Bearer ${token}`;
+  return api(config);
 });
 
 // Module API
@@ -417,7 +434,12 @@ export const runApi = {
 
 // Auth API
 export const authApi = {
-  login: (data: LoginRequest) => api.post<TokenResponse>("/community/auth/login", data),
+  // withCredentials so the browser stores the API's HttpOnly refresh cookie.
+  login: (data: LoginRequest) =>
+    api.post<TokenResponse>("/community/auth/login", data, { withCredentials: true }),
+
+  /** Revoke every session of the signed-in user, on every device. */
+  logoutAll: () => api.post("/community/auth/logout-all", null, { withCredentials: true }),
 
   register: (data: { username: string; email: string; password: string }) =>
     api.post<User>("/community/users", data),
