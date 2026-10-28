@@ -165,3 +165,26 @@ class DecisionPacket(DecisionContract):
 
     def result_hash(self) -> str:
         return stable_sha256(self)
+
+
+# Choices a provider may always return besides the request's own candidates: the
+# abstentions the policy treats as UNRESOLVED.
+ABSTAIN_CHOICES = frozenset({"none_of_above", "unknown"})
+
+
+def check_choice_packet(packet: "DecisionPacket", request: "ChoiceRequest") -> str | None:
+    """Spec 005 FR-003: a choice answer must stay inside the request's candidate set.
+
+    Returns a reason code when it does not, else None. Applied to every provider, so an
+    adapter that forgets its own check (as the Jev adapter did) still fails closed.
+    """
+    if packet.answer_type != "choice" or packet.provider_status != "succeeded":
+        return None
+    allowed = {item.choice_id for item in request.choices} | ABSTAIN_CHOICES
+    if packet.selected_choice not in allowed:
+        return "CHOICE_NOT_IN_CANDIDATE_SET"
+    if any(key not in allowed for key in packet.probabilities):
+        return "PROBABILITY_OUTSIDE_CANDIDATE_SET"
+    if packet.candidate_set_hash is not None and packet.candidate_set_hash != request.candidate_set_hash():
+        return "CANDIDATE_SET_MISMATCH"
+    return None

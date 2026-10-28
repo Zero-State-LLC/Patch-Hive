@@ -303,7 +303,7 @@ def resolve_module_identity_guarded(
     if machine.state is not ResolutionState.POLICY_APPLIED:
         raise EvidenceResolutionError("policy application guard rejected")
 
-    result = policy.evaluate(packet)
+    result = policy.evaluate(packet, request)
     proposal = DecisionProposal(request=request, packet=packet, policy=result)
 
     machine = _transition(
