@@ -38,7 +38,7 @@ POWER = OVERLAYS / "module-power-depth-v13.json"
 # Owner review (overlays/maker-review-v1.json): this row predates the review rename.
 REVIEWED = [{
     "slug": "tlm-audio-st-modular", "brand": "TLM Audio", "name": "ST MODULAR",
-    "reason": "not a module: ST MODULAR is TLM's product-line prefix; the page is the 84 HP LANGER ARM expansion",
+    "reason": "not a module: ST MODULAR is TLM's product-line prefix, and the page is the 84 HP LANGER ARM expansion",
     "evidence_url": "https://www.tlm-audio.com/product-page/st-modular-langer-arm-1u-3u-expansion",
 }]
 

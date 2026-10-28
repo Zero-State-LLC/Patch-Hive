@@ -122,6 +122,22 @@ def test_every_retirement_cites_the_real_makers_page() -> None:
             assert hosts[row["owner"]] in row["evidence_url"], row
 
 
+def test_every_manifest_retirement_renders_as_safe_sql() -> None:
+    """Each row as if it exists (staging and prod hold rows a fresh database does not)."""
+    rows = _load("catalog-retirements-v1.json")["rows"]
+    catalog = {
+        r["slug"]: {"brand": r["brand"], "name": r["name"], "hp": None, "category": None, "tombstoned": False}
+        for r in rows
+    }
+    modules = {(r["brand"], r["name"]): {"brand": r["brand"], "name": r["name"], "status": "active"} for r in rows}
+    plan = P.Plan()
+    for row in rows:
+        P._schedule_retirement(plan, catalog, modules, row)
+    assert plan.conflicts == []
+    assert plan.updates == {"catalog_retire": len(rows), "module_retire": len(rows)}
+    P.assert_safe_sql(P.render_plan(plan))
+
+
 def test_modules_held_only_by_a_retired_row_are_re_added_under_their_owner() -> None:
     manifest = _load("catalog-retirements-v1.json")
     added = {(r["brand"], B.norm(r["brand"], r["name"])) for r in _load("catalog-additions-v5.json")["rows"]}
