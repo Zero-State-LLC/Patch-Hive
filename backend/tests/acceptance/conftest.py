@@ -32,7 +32,7 @@ def _external_database_url() -> str | None:
     return url or None
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="package")
 def postgres_container() -> Generator[PostgresContainer | None, None, None]:
     if _external_database_url():
         yield None
@@ -41,7 +41,7 @@ def postgres_container() -> Generator[PostgresContainer | None, None, None]:
         yield postgres
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="package")
 def database_url(postgres_container: PostgresContainer | None) -> str:
     external = _external_database_url()
     if external:
@@ -50,12 +50,59 @@ def database_url(postgres_container: PostgresContainer | None) -> str:
     return postgres_container.get_connection_url()
 
 
-@pytest.fixture(scope="session")
-def migrated_db(database_url: str, tmp_path_factory: pytest.TempPathFactory) -> sessionmaker:
-    # Normalize SQLAlchemy URL for psycopg2
-    if database_url.startswith("postgresql://"):
-        # keep as-is; create_engine accepts postgresql://
-        pass
+# Process-wide state the acceptance package changes: these environment variables, and the
+# modules it reloads so the app reads them. Reloading swaps new objects (settings, engine,
+# app) into those modules while tests collected earlier still hold the old ones, so at
+# teardown the original module namespaces are put back rather than reloaded again.
+_ACCEPTANCE_ENV = ("DATABASE_URL", "TEST_MODE", "STRIPE_TEST_MODE", "ALLOW_PRODUCTION_PAYMENTS", "EXPORT_DIR")
+_REBOUND_MODULES = (
+    "core",
+    "core.config",
+    "core.database",
+    "main",
+    "export.routes",
+    "patches.routes",
+    "monetization.routes",
+    "canon.routes",
+)
+
+
+def _snapshot_modules() -> dict[str, dict[str, object]]:
+    return {name: dict(vars(importlib.import_module(name))) for name in _REBOUND_MODULES}
+
+
+def _restore_modules(snapshot: dict[str, dict[str, object]]) -> None:
+    for name, namespace in snapshot.items():
+        module_vars = vars(sys.modules[name])
+        module_vars.clear()
+        module_vars.update(namespace)
+
+
+def _rebind_settings() -> None:
+    import canon.routes
+    import core
+    import core.config
+    import core.database
+    import export.routes
+    import main
+    import monetization.routes
+    import patches.routes
+
+    importlib.reload(core.config)
+    importlib.reload(core.database)
+    # Route modules bind `settings` at import time; re-point them at the reloaded instance.
+    core.settings = core.config.settings
+    export.routes.settings = core.config.settings
+    patches.routes.settings = core.config.settings
+    monetization.routes.settings = core.config.settings
+    canon.routes.settings = core.config.settings
+    importlib.reload(main)
+
+
+@pytest.fixture(scope="package")
+def migrated_db(database_url: str, tmp_path_factory: pytest.TempPathFactory) -> Generator[sessionmaker, None, None]:
+    saved_env = {key: os.environ.get(key) for key in _ACCEPTANCE_ENV}
+    saved_modules = _snapshot_modules()
     os.environ["DATABASE_URL"] = database_url
     os.environ["TEST_MODE"] = "true"
     os.environ.setdefault("STRIPE_TEST_MODE", "true")
@@ -72,32 +119,23 @@ def migrated_db(database_url: str, tmp_path_factory: pytest.TempPathFactory) -> 
             export_path = REPO_ROOT / "tmp" / "acceptance-exports"
             export_path.mkdir(parents=True, exist_ok=True)
     os.environ["EXPORT_DIR"] = str(export_path)
-
-    import core
-    import core.config
-    import core.database
-    import export.routes
-    import main
-    import monetization.routes
-    import patches.routes
-    import canon.routes
-
-    importlib.reload(core.config)
-    importlib.reload(core.database)
-    # Route modules bind `settings` at import time; re-point them at the reloaded instance.
-    core.settings = core.config.settings
-    export.routes.settings = core.config.settings
-    patches.routes.settings = core.config.settings
-    monetization.routes.settings = core.config.settings
-    canon.routes.settings = core.config.settings
-    importlib.reload(main)
+    _rebind_settings()
 
     alembic_cfg = Config(str(Path(__file__).resolve().parents[1] / ".." / "alembic.ini"))
     alembic_cfg.set_main_option("sqlalchemy.url", database_url)
     command.upgrade(alembic_cfg, "head")
 
     engine = create_engine(database_url)
-    return sessionmaker(bind=engine)
+    try:
+        yield sessionmaker(bind=engine)
+    finally:
+        engine.dispose()
+        for key, value in saved_env.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+        _restore_modules(saved_modules)
 
 
 @pytest.fixture(autouse=True)
