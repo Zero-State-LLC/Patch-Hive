@@ -17,15 +17,17 @@
   "workers_dev": false,
   "preview_urls": false,
   "routes": [{ "pattern": "api.patch-hive.com", "custom_domain": true }],
+  // The account creates only `durable_object` scheduling-policy applications: the
+  // Durable Object in src/index.ts picks the image and instance size when it starts
+  // the container. One Durable Object ("primary") means one container, so the
+  // entrypoint's `alembic upgrade head` never races itself.
   "containers": [
     {
       "class_name": "PatchHiveApi",
-      "image": "../../backend/Dockerfile",
-      "image_build_context": "../../backend",
-      // One instance: the entrypoint runs `alembic upgrade head` on start, and
-      // concurrent migrations against the same database must not race.
-      "max_instances": 1,
-      "instance_type": "standard-1"
+      "scheduling_policy": "durable_object",
+      "images": {
+        "api": { "dockerfile": "../../backend/Dockerfile", "build_context": "../../backend" }
+      }
     }
   ],
   "durable_objects": {
@@ -59,10 +61,10 @@
       "containers": [
         {
           "class_name": "PatchHiveApi",
-          "image": "../../backend/Dockerfile",
-          "image_build_context": "../../backend",
-          "max_instances": 1,
-          "instance_type": "standard-1"
+          "scheduling_policy": "durable_object",
+          "images": {
+            "api": { "dockerfile": "../../backend/Dockerfile", "build_context": "../../backend" }
+          }
         }
       ],
       "durable_objects": {
