@@ -1,6 +1,7 @@
 // Edge entry for the static SPA: canonicalize www to the apex, then serve assets.
 // Missing files and unknown routes answer 404 (the SPA shell still renders its
 // not-found page for unknown routes); only real client routes fall back to the shell.
+import { securityHeaders } from "./headers";
 import { isAppRoute, looksLikeFile } from "./routes";
 
 interface Env {
@@ -13,11 +14,17 @@ const NOINDEX_HOSTS = new Set(["staging.patch-hive.com"]);
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const res = await serve(request, env);
-    if (!NOINDEX_HOSTS.has(new URL(request.url).hostname)) {
-      return res;
+    if (res.status >= 300 && res.status < 400) {
+      return res; // redirects carry no page
     }
+    const hostname = new URL(request.url).hostname;
     const headers = new Headers(res.headers);
-    headers.set("X-Robots-Tag", "noindex, nofollow");
+    for (const [name, value] of Object.entries(securityHeaders(hostname))) {
+      headers.set(name, value);
+    }
+    if (NOINDEX_HOSTS.has(hostname)) {
+      headers.set("X-Robots-Tag", "noindex, nofollow");
+    }
     return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
   },
 };

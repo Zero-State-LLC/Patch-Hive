@@ -20,7 +20,7 @@ function safeHttpUrl(value: string): string | null {
 
 export default function AccountPage() {
   const navigate = useNavigate();
-  const { isAuthenticated, setAuth } = useAuthStore();
+  const { isAuthenticated, setUser } = useAuthStore();
   const [credits, setCredits] = useState<CreditsSummary | null>(null);
   const [exports, setExports] = useState<UserExportRecord[]>([]);
   const [referrals, setReferrals] = useState<ReferralSummary | null>(null);
@@ -52,7 +52,7 @@ export default function AccountPage() {
       setProfile(profileRes.data);
       setDisplayName(profileRes.data.display_name || profileRes.data.username);
       setAvatarUrl(profileRes.data.avatar_url || "");
-      setAuth(profileRes.data, localStorage.getItem("auth_token") || "");
+      setUser(profileRes.data);
 
       try {
         const referralsRes = await accountApi.getReferrals();
@@ -67,7 +67,7 @@ export default function AccountPage() {
         /* keep empty dashboard on failure */
       });
     }
-  }, [isAuthenticated, setAuth]);
+  }, [isAuthenticated, setUser]);
 
   const handleSaveProfile = async () => {
     setSaving(true);
@@ -77,7 +77,7 @@ export default function AccountPage() {
         avatar_url: avatarUrl || undefined,
       });
       setProfile(res.data);
-      setAuth(res.data, localStorage.getItem("auth_token") || "");
+      setUser(res.data);
     } finally {
       setSaving(false);
     }

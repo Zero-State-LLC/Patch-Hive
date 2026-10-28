@@ -126,6 +126,11 @@ def update_user_role(
     if "Admin" in (previous, payload.role) and current_user.role != "Admin":
         raise HTTPException(status_code=403, detail="Only an Admin can grant or remove Admin")
     user.role = payload.role
+    if previous != payload.role:
+        # A role change takes effect at once: the user's existing tokens stop working.
+        from community.sessions import revoke_user
+
+        revoke_user(db, user)
     log_admin_action(
         db,
         actor=current_user,

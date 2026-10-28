@@ -1,32 +1,38 @@
 /**
  * Global state management using Zustand.
+ *
+ * The access token lives only in memory: script injected into the page cannot lift it
+ * from storage, and it expires in minutes. The session survives reloads through the
+ * API's HttpOnly refresh cookie (see lib/session.ts).
  */
 import { create } from "zustand";
 import type { User } from "@/types/api";
+
+// Tokens used to be kept here; remove any left behind by an older build.
+try {
+  localStorage.removeItem("auth_token");
+} catch {
+  // storage unavailable (private mode): nothing to clean up
+}
 
 interface AuthState {
   user: User | null;
   token: string | null;
   setAuth: (user: User, token: string) => void;
-  logout: () => void;
+  setUser: (user: User) => void;
+  clear: () => void;
   isAuthenticated: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
-  token: localStorage.getItem("auth_token"),
+  token: null,
 
-  setAuth: (user, token) => {
-    localStorage.setItem("auth_token", token);
-    set({ user, token });
-  },
+  setAuth: (user, token) => set({ user, token }),
 
-  logout: () => {
-    localStorage.removeItem("auth_token");
-    set({ user: null, token: null });
-  },
+  setUser: (user) => set({ user }),
 
-  isAuthenticated: () => {
-    return !!get().token;
-  },
+  clear: () => set({ user: null, token: null }),
+
+  isAuthenticated: () => !!get().token,
 }));

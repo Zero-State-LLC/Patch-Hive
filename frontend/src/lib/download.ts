@@ -1,6 +1,6 @@
 // File downloads from owner-scoped endpoints. A plain <a href> sends no Bearer token
-// (it lives in localStorage and is attached by the API client), so these fetch the
-// bytes through the authenticated client and save the returned blob.
+// (it lives in memory and is attached by the API client), so these fetch the bytes
+// through the authenticated client and save the returned blob.
 
 /** The filename a Content-Disposition header names, or the fallback. */
 export function filenameFromDisposition(
