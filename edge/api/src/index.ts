@@ -72,6 +72,7 @@ const PORT = 8000;
 
 export class PatchHiveApi extends DurableObject<Env> {
   private starting: Promise<void> | undefined;
+  private imageChecked = false;
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
@@ -91,16 +92,24 @@ export class PatchHiveApi extends DurableObject<Env> {
     } catch {
       return Response.json({ status: "unavailable", reason: "api container not ready" }, { status: 503 });
     }
-    const url = new URL(request.url);
-    url.protocol = "http:";
-    url.host = "container";
-    const forwarded = new Request(url, request);
-    forwarded.headers.delete("host");
-    return this.ctx.container!.getTcpPort(PORT).fetch(forwarded);
+    // Keep the public host so absolute URLs the API builds (trailing-slash redirects,
+    // links) point at api.patch-hive.com, not at the container; only the scheme changes.
+    const url = request.url.replace(/^https:/, "http:");
+    return this.ctx.container!.getTcpPort(PORT).fetch(url, request);
   }
 
   private async startAndWaitUntilHealthy(): Promise<void> {
     const container = this.ctx.container!;
+    // Under the durable_object policy a deploy does not roll the running container.
+    // A deploy does restart this Durable Object, so the first request after one checks
+    // the running image and replaces the container when the deploy brought a new one.
+    if (container.running && !this.imageChecked) {
+      const info = await container.inspect();
+      if (info && imageDigest(info.image) !== imageDigest(container.images.api)) {
+        await container.destroy();
+      }
+    }
+    this.imageChecked = true;
     if (!container.running) {
       container.start({
         image: container.images.api,
@@ -128,6 +137,12 @@ export class PatchHiveApi extends DurableObject<Env> {
     }
     throw new Error("api container did not become healthy", { cause: lastError });
   }
+}
+
+// Compare images by digest when both references carry one (tags and registry
+// prefixes can be spelled differently for the same image).
+function imageDigest(ref: string): string {
+  return /sha256:[0-9a-f]{64}/.exec(ref)?.[0] ?? ref;
 }
 
 function containerEnv(env: Env): Record<string, string> {
