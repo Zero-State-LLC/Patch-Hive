@@ -120,3 +120,66 @@ def test_labels_are_measured_against_each_node_shape():
         _label_lines("Supercalifragilistic Osc", "hex_cell_map")
     with pytest.raises(PreflightFailed):
         _label_lines("Ultrawidemodulename Two", "orthogonal_schematic")
+def test_body_text_and_cables_are_drawn_at_the_floor_or_above():
+    plan, graph = _patch(steps=4, cables=4)
+    for floor in (9.5, 10.5):
+        page = layout_patch_page(
+            plan, graph, FAMILY, body_font="Helvetica", mono="Courier",
+            width=WIDTH, height=HEIGHT, body_size=floor,
+        )
+        required = [
+            line for line in page
+            if not line.rule and (line.text.startswith(("Intent", "e")) or "[build]" in line.text)
+        ]
+        assert required and all(line.size >= floor for line in required)
+
+
+def test_profiles_have_their_own_floor():
+    from export.patchbook.design.a11y import body_floor_pt
+
+    assert body_floor_pt("print_pdf") == 9.5
+    assert body_floor_pt("screen_pdf") == 10.5  # 14 px
+    assert body_floor_pt("html_companion") == 10.5
+
+
+def test_a_recipe_below_the_floor_is_raised_not_rejected():
+    from export.patchbook.design.a11y import body_size_pt, validate_composition_a11y
+    from export.patchbook.design.recipe import (
+        OutputProfile,
+        PatchBookMode,
+        ResolvedStyleRecipe,
+        StyleConstraints,
+        StyleWeights,
+        TemplateFamilyId,
+    )
+
+    recipe = ResolvedStyleRecipe(
+        mode=PatchBookMode.PROFESSIONAL,
+        template_family=TemplateFamilyId.SIGNAL_MANUAL,
+        template_family_version="1.0.0",
+        seed=1,
+        weights=StyleWeights(),
+        constraints=StyleConstraints(minimum_body_size_pt=9.5),
+        output_profile=OutputProfile.SCREEN_PDF,
+    )
+    assert body_size_pt(recipe) == 10.5
+    report = validate_composition_a11y([], recipe)
+    assert report.ok
+    assert [i.code for i in report.issues] == ["BODY_SIZE_RAISED_TO_FLOOR"]
+
+
+def test_front_matter_wraps_at_large_body_sizes():
+    """At 24 pt Courier a 39-character export line is wider than the page; it must wrap."""
+    from unittest.mock import MagicMock
+
+    from export.patchbook.design.engine import _draw_wrapped
+    from reportlab.pdfbase.pdfmetrics import stringWidth
+
+    canvas = MagicMock()
+    text = "Export: export-" + "a" * 24
+    _draw_wrapped(canvas, [text, "Run: gen-run-1"], "Courier", 24, 600, WIDTH - 144)
+    drawn = [call.args for call in canvas.drawString.call_args_list]
+    assert all(stringWidth(t, "Courier", 24) <= WIDTH - 144 for _, _, t in drawn)
+    assert "".join(t for _, _, t in drawn[:-1]).replace(" ", "") == text.replace(" ", "")
+    ys = [y for _, y, _ in drawn]
+    assert all(a - b >= 24 for a, b in zip(ys, ys[1:]))  # no overlapping lines
