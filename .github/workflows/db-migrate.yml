@@ -34,7 +34,8 @@ jobs:
       - name: alembic upgrade head
         working-directory: backend
         env:
-          DATABASE_URL: ${{ inputs.target == 'prod' && secrets.PATCHHIVE_DATABASE_URL_PROD || secrets.PATCHHIVE_DATABASE_URL_STAGING }}
+          DATABASE_URL: ${{ secrets[inputs.target == 'prod' && 'PATCHHIVE_DATABASE_URL_PROD' || 'PATCHHIVE_DATABASE_URL_STAGING'] }}
         run: |
+          if [ -z "$DATABASE_URL" ]; then echo "::error::database secret for the selected target is not set"; exit 1; fi
           python -m alembic upgrade head
           python -m alembic current

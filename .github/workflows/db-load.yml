@@ -55,11 +55,13 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
       - name: Load catalog
         env:
-          DATABASE_URL: ${{ inputs.env == 'prod' && secrets.PATCHHIVE_DATABASE_URL_PROD || secrets.PATCHHIVE_DATABASE_URL_STAGING }}
+          DATABASE_URL: ${{ secrets[inputs.env == 'prod' && 'PATCHHIVE_DATABASE_URL_PROD' || 'PATCHHIVE_DATABASE_URL_STAGING'] }}
           PATCHHIVE_DB_ENV: ${{ inputs.env }}
           PATCHHIVE_LOAD_MODE: ${{ inputs.mode }}
           PATCHHIVE_PLAN_HASH: ${{ inputs.plan_hash }}
-        run: python scripts/catalog_actions_load.py --allow-nonlocal
+        run: |
+          if [ -z "$DATABASE_URL" ]; then echo "::error::database secret for $PATCHHIVE_DB_ENV is not set"; exit 1; fi
+          python scripts/catalog_actions_load.py --allow-nonlocal
       - name: Record pre-apply dump checksum
         if: inputs.mode == 'apply'
         run: |
