@@ -20,8 +20,11 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "data" / "synth-catalog"))
 
 from population import (  # noqa: E402
+    Op,
+    Plan,
     assert_safe_sql,
     dump_affected_tables,
+    plan_hash,
     populate,
 )
 
@@ -233,3 +236,42 @@ def test_an_apply_must_name_the_reviewed_plan(fresh_population_url, tmp_path):
                        expected_plan_hash=dry["plan_hash"], require_plan_hash=True)
     assert applied["plan_hash"] == dry["plan_hash"]
     assert _counts(population_url) != before
+
+
+def test_the_plan_hash_covers_the_case_writes():
+    """Spec 003 FR-020: a changed case seed, or a changed case write, is a new plan."""
+    plan = Plan(ops=[Op("insert", "INSERT INTO t (a) VALUES (:a)", {"a": 1})])
+    record = {"slug": "acme-6u", "manufacturer": "Acme", "model": "6U"}
+    cases = {"valid": [record], "actions": [{"slug": "acme-6u", "action": "inserted", "writes": 0}]}
+    base = plan_hash(plan, cases)
+
+    assert plan_hash(plan, cases) == base
+    assert plan_hash(plan) != base
+    seed_changed = {**cases, "valid": [{**record, "model": "7U"}]}
+    assert plan_hash(plan, seed_changed) != base
+    state_changed = {**cases, "actions": [{"slug": "acme-6u", "action": "updated", "writes": 2}]}
+    assert plan_hash(plan, state_changed) != base
+
+
+def test_a_case_change_after_the_dry_run_refuses_the_apply(fresh_population_url, tmp_path):
+    """The reviewed hash stops case writes too: rows changed since the dry run refuse."""
+    missing = tmp_path / "none.json"
+    dry = populate(fresh_population_url, apply=False, verification_path=missing)
+    import json
+
+    from integrations.case_catalog_populator import import_records
+    from sqlalchemy.orm import sessionmaker
+
+    seed = json.loads((ROOT / "data" / "cases" / "seed-v1.json").read_text(encoding="utf-8"))
+    engine = create_engine(fresh_population_url)
+    session = sessionmaker(bind=engine)()
+    try:
+        assert import_records(session, seed["cases"][:1])["inserted"] == 1
+    finally:
+        session.close()
+        engine.dispose()
+    before = _counts(fresh_population_url)
+    with pytest.raises(SystemExit, match="differs from the reviewed dry run"):
+        populate(fresh_population_url, apply=True, verification_path=missing,
+                 expected_plan_hash=dry["plan_hash"], require_plan_hash=True)
+    assert _counts(fresh_population_url) == before

@@ -1099,7 +1099,9 @@ def apply_plan(conn: Connection, plan: Plan) -> None:
         conn.execute(text(op.sql), op.params)
 
 
-def case_receipt(engine: Engine, *, apply: bool) -> dict[str, Any]:
+def plan_cases(engine: Engine) -> dict[str, Any]:
+    """Plan the case import with a rolled-back run: the valid records and, for each,
+    whether it would insert, fill nulls or leave the row alone."""
     import sys
 
     backend = ROOT / "backend"
@@ -1121,24 +1123,35 @@ def case_receipt(engine: Engine, *, apply: bool) -> dict[str, Any]:
             warnings.extend(errors[:2])
             continue
         valid.append(record)
-    # Plan with a rolled-back import so the counts reflect real fill-null writes only.
     session = sessionmaker(bind=engine)()
     try:
         planned = import_records(session, valid, dry_run=True)
     finally:
         session.close()
-    receipt: dict[str, Any] = {
+    return {
         "input_records": len(records),
+        "valid": valid,
+        "actions": planned.get("actions", []),
         "inserts": planned.get("inserted", 0),
         "updates": planned.get("updated", 0),
         "unchanged": planned.get("unchanged", 0),
         "rejected": rejected,
         "warnings": warnings[:20],
     }
+
+
+def case_receipt(engine: Engine, case_plan: dict[str, Any], *, apply: bool) -> dict[str, Any]:
+    receipt: dict[str, Any] = {
+        key: case_plan[key]
+        for key in ("input_records", "inserts", "updates", "unchanged", "rejected", "warnings")
+    }
     if apply:
+        from integrations.case_catalog_populator import import_records
+        from sqlalchemy.orm import sessionmaker
+
         session = sessionmaker(bind=engine)()
         try:
-            applied = import_records(session, records, dry_run=False)
+            applied = import_records(session, case_plan["valid"], dry_run=False)
         finally:
             session.close()
         receipt["applied"] = {
@@ -1167,15 +1180,20 @@ def provenance_counts(conn: Connection) -> dict[str, int]:
 _CLOCK_PARAMS = frozenset({"created_at", "updated_at"})
 
 
-def plan_hash(plan: Plan) -> str:
+def plan_hash(plan: Plan, case_plan: dict[str, Any] | None = None) -> str:
     """The identity of a plan: SHA-256 over every statement and its parameters, with
-    the planning clock left out. An apply that names this hash applies exactly the
-    writes the operator reviewed (spec 003 FR-020)."""
+    the planning clock left out, and over the case records and what each would write.
+    An apply that names this hash applies exactly the writes the operator reviewed
+    (spec 003 FR-020)."""
     digest = hashlib.sha256()
     for op in plan.ops:
         params = {k: ("<clock>" if k in _CLOCK_PARAMS else v) for k, v in op.params.items()}
         digest.update(op.sql.encode("utf-8"))
         digest.update(json.dumps(params, sort_keys=True, default=str).encode("utf-8"))
+    if case_plan is not None:
+        digest.update(b"cases")
+        digest.update(json.dumps(case_plan["valid"], sort_keys=True, default=str).encode("utf-8"))
+        digest.update(json.dumps(case_plan["actions"], sort_keys=True).encode("utf-8"))
     return digest.hexdigest()
 
 
@@ -1317,14 +1335,15 @@ def populate(
                 "schema is missing importer columns; run alembic upgrade head (db-migrate.yml) first"
             ) from None
         sql = render_plan(plan)
-        current_hash = plan_hash(plan)
+        case_plan = plan_cases(engine)
+        current_hash = plan_hash(plan, case_plan)
         if apply and require_plan_hash and expected_plan_hash != current_hash:
             raise SystemExit(
                 "refusing to apply: the plan differs from the reviewed dry run "
                 f"(expected {expected_plan_hash or 'none'}, planned {current_hash}). "
                 "Run a dry run, review it, and apply with its plan_hash."
             )
-        cases = case_receipt(engine, apply=apply)
+        cases = case_receipt(engine, case_plan, apply=apply)
         if apply:
             with engine.begin() as conn:
                 apply_plan(conn, plan)
