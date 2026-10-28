@@ -10,16 +10,21 @@ const API_ORIGINS: Record<string, string> = {
   "staging.patch-hive.com": "https://api-staging.patch-hive.com",
 };
 
+// Cloudflare Web Analytics: the edge injects this beacon script, which reports to
+// cloudflareinsights.com.
+const ANALYTICS_SCRIPT = "https://static.cloudflareinsights.com";
+const ANALYTICS_REPORT = "https://cloudflareinsights.com";
+
 export function contentSecurityPolicy(hostname: string): string {
   const api = API_ORIGINS[hostname] ?? "";
   return [
     "default-src 'self'",
-    "script-src 'self'",
+    `script-src 'self' ${ANALYTICS_SCRIPT}`,
     // Inline style attributes are used by React components; fonts come from Google.
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https:",
-    `connect-src 'self'${api ? ` ${api}` : ""}`,
+    `connect-src 'self'${api ? ` ${api}` : ""} ${ANALYTICS_REPORT}`,
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
