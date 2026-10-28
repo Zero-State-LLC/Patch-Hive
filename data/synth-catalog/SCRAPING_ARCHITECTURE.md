@@ -239,3 +239,14 @@ The crawl mixed values from different settings (QCD +5V = 88, RCD +12V = 0). No 
 ### Unlabelled signed pairs, 2026-10-27
 
 Erica writes draws without rail labels: "Power consumption +59mA, -30mA", once without the plus ("43mA, -71mA"). After a "Power consumption" or "Current draw" heading, a positive and a negative mA value now read as +12V and -12V, unless a rail label follows. A rescan of every cached page changes 26 (25 Erica and Rides in the Storm FEG, whose v11 entry already held the same draws from the model path). Erica goes from 19 to 44 of 46 modules with +12V. `module-power-depth-v12` is rebuilt in place: 50 empty values are filled and no existing value changes. Staging replica: 25 modules filled, 0 conflicts, rerun a no-op. Pittsburgh's "Power Usage: 45mA" names no rail and stays unknown.
+
+### Parsed draws the model left empty, 2026-10-27
+
+An audit of the crawl rows without +12V found 616 whose page states a draw in mA, and today's parser reads about 411 of them. Two causes:
+
+- **Generic path.** When the model answered null for a draw, the value was dropped, even though the rail-labelled parse of the spec text found it. The model now confirms only when it answers: an empty answer keeps the parse, the same value the adapter path stores unconfirmed. A disagreement still stores neither, and jumper-dependent draws stay unknown.
+- **Store feeds.** A feed row whose body has no specs now takes its draws and depth from the product page, when the page parses to the same HP.
+
+The full crawl was replayed from cache: no paid fetches, $0.0009 of model calls (`receipts/maker-crawl-v2-keep-parsed-replay.json`). It only fills: 1,059 empty values gain a value and no existing value changes. +12V coverage goes from 1,971 to 2,404 crawl rows. `module-power-depth-v11` keeps every entry and fills 865 values; it also gains 86 entries for catalog rows that had no draws before. Rows new to the crawl stay out (7, one of them a Doepfer case listing). v12 and the catalog additions are unchanged. A random sample of 14 fills matched the maker pages.
+
+Staging replica (main's data, then this build): 457 modules filled, 10 new power targets, 0 conflicts, rerun a no-op.
