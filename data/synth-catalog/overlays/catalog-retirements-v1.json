@@ -1,0 +1,2384 @@
+{
+ "dataset_version": "catalog-retirements-v1",
+ "generated_from": "hermes-research/maker-crawl-v2.json via scripts/build_reattribution.py",
+ "decided": "2026-10-28 (owner: retire every misattributed row and re-add the modules only they held)",
+ "policy": "tombstone, never delete: module_catalog.tombstoned_at + reason, modules.status='tombstoned'",
+ "shared_homepages": {
+  "British Noise Electronics": "Noise Engineering",
+  "Endangered Audio Research": "ARC",
+  "Epicycloid Engineering": "Noise Engineering",
+  "Mental Noise": "Make Noise",
+  "Phase Engineering": "Noise Engineering",
+  "Thonk Synth": "Thonk",
+  "Winter Plankton": "Winter Modular",
+  "d:Machinery": "Infinite Machinery"
+ },
+ "count": 263,
+ "rows": [
+  {
+   "slug": "british-noise-electronics-adigo-metric",
+   "brand": "British Noise Electronics",
+   "name": "Adigo Metric",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/adigo-metric/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-alia",
+   "brand": "British Noise Electronics",
+   "name": "Alia",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/alia/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-ataraxic-iteritas",
+   "brand": "British Noise Electronics",
+   "name": "Ataraxic Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/ataraxic-iteritas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-ataraxic-translatron",
+   "brand": "British Noise Electronics",
+   "name": "Ataraxic Translatron",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/ataraxic-translatron/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-basimilus-iteritas",
+   "brand": "British Noise Electronics",
+   "name": "Basimilus Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/basimilus-iteritas-legacy/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "british-noise-electronics-basimilus-iteritas-alter",
+   "brand": "British Noise Electronics",
+   "name": "Basimilus Iteritas Alter",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/basimilus-iteritas-alter/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-bin-seq",
+   "brand": "British Noise Electronics",
+   "name": "Bin Seq",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/bin-seq/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-confundo-funkidos",
+   "brand": "British Noise Electronics",
+   "name": "Confundo Funkidos",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/confundo-funkidos/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-confundo-funkitus",
+   "brand": "British Noise Electronics",
+   "name": "Confundo Funkitus",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/confundo-funkitus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-cursus-iteritas",
+   "brand": "British Noise Electronics",
+   "name": "Cursus Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/cursus-iteritas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-cursus-iteritas-percido",
+   "brand": "British Noise Electronics",
+   "name": "Cursus Iteritas Percido",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/cursus-iteritas-percido/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-expando-expandi",
+   "brand": "British Noise Electronics",
+   "name": "Expando Expandi",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/expando-expandi/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-extra-mullet",
+   "brand": "British Noise Electronics",
+   "name": "Extra Mullet",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/extra-mullet/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-fractio-solum",
+   "brand": "British Noise Electronics",
+   "name": "Fractio Solum",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/fractio-solum/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-gamut-repetitor",
+   "brand": "British Noise Electronics",
+   "name": "Gamut Repetitor",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/gamut-repetitor/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-horologic-solum",
+   "brand": "British Noise Electronics",
+   "name": "Horologic Solum",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/horologic-solum-horologic-uter/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-integra-funkitus",
+   "brand": "British Noise Electronics",
+   "name": "Integra Funkitus",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/integra-funkitus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-kith-ruina",
+   "brand": "British Noise Electronics",
+   "name": "Kith Ruina",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/kith-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-legio",
+   "brand": "British Noise Electronics",
+   "name": "Legio",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/legio/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-loquelic-iteritas",
+   "brand": "British Noise Electronics",
+   "name": "Loquelic Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/loquelic-iteritas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-loquelic-iteritas-percido",
+   "brand": "British Noise Electronics",
+   "name": "Loquelic Iteritas Percido",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/loquelic-iteritas-percido/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-manis-iteritas",
+   "brand": "British Noise Electronics",
+   "name": "Manis Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/manis-iteritas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-mimetic-digitalis",
+   "brand": "British Noise Electronics",
+   "name": "Mimetic Digitalis",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/mimetic-digitalis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-mimetic-digitwolis",
+   "brand": "British Noise Electronics",
+   "name": "Mimetic Digitwolis",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/mimetic-digitwolis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-mimetic-sequent-mimetic-multium",
+   "brand": "British Noise Electronics",
+   "name": "Mimetic Sequent / Mimetic Multium",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/mimetic-sequent-mimetic-multium/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-multi-repetitor",
+   "brand": "British Noise Electronics",
+   "name": "Multi Repetitor",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/multi-repetitor/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-muta-jovis",
+   "brand": "British Noise Electronics",
+   "name": "Muta Jovis",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/muta-jovis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-nive-grad",
+   "brand": "British Noise Electronics",
+   "name": "Nive Grad",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/nive-grad/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-noise-engineering-clep-diaz",
+   "brand": "British Noise Electronics",
+   "name": "Noise Engineering : Clep Diaz",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/clep-diaz/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-noise-engineering-integra-solum",
+   "brand": "British Noise Electronics",
+   "name": "Noise Engineering : Integra Solum",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/integra-solum/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-noise-engineering-jam-jam",
+   "brand": "British Noise Electronics",
+   "name": "Noise Engineering : Jam Jam",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/jam-jam/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-noise-engineering-pura-ruina",
+   "brand": "British Noise Electronics",
+   "name": "Noise Engineering : Pura Ruina",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/pura-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-noise-engineering-terci-ruina",
+   "brand": "British Noise Electronics",
+   "name": "Noise Engineering : Terci Ruina",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/terci-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-noise-engineering-vox-digitalis",
+   "brand": "British Noise Electronics",
+   "name": "Noise Engineering : Vox Digitalis",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/vox-digitalis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-noise-engineering-zularic-repetitor",
+   "brand": "British Noise Electronics",
+   "name": "Noise Engineering : Zularic Repetitor",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/zularic-repetitor/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-numeric-repetitor",
+   "brand": "British Noise Electronics",
+   "name": "Numeric Repetitor",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/numeric-repetitor/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-opp-ned",
+   "brand": "British Noise Electronics",
+   "name": "Opp Ned",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/opp-ned/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-plus-legio",
+   "brand": "British Noise Electronics",
+   "name": "Plus Legio",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/plus-legio/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "british-noise-electronics-pons-asinorum",
+   "brand": "British Noise Electronics",
+   "name": "Pons Asinorum",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/pons-asinorum/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-quant-gemi",
+   "brand": "British Noise Electronics",
+   "name": "Quant Gemi",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quant-gemi/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-quantic-fictus",
+   "brand": "British Noise Electronics",
+   "name": "Quantic Fictus",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantic-fictus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-quantus-ampla",
+   "brand": "British Noise Electronics",
+   "name": "Quantus Ampla",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantus-ampla/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-quantus-pax",
+   "brand": "British Noise Electronics",
+   "name": "Quantus Pax",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantus-pax/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-quantus-trajecta",
+   "brand": "British Noise Electronics",
+   "name": "Quantus Trajecta",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantus-trajecta/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-reso-legio",
+   "brand": "British Noise Electronics",
+   "name": "Reso Legio",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/reso-legio/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "british-noise-electronics-roti-pola",
+   "brand": "British Noise Electronics",
+   "name": "Roti Pola",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/roti-pola/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-seca-ruina",
+   "brand": "British Noise Electronics",
+   "name": "Seca Ruina",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/seca-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-sinc-bucina",
+   "brand": "British Noise Electronics",
+   "name": "Sinc Bucina",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-bucina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-sinc-defero",
+   "brand": "British Noise Electronics",
+   "name": "Sinc Defero",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-defero/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-sinc-iter",
+   "brand": "British Noise Electronics",
+   "name": "Sinc Iter",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-iter/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-sinc-legio",
+   "brand": "British Noise Electronics",
+   "name": "Sinc Legio",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-legio/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "british-noise-electronics-sinc-pravus",
+   "brand": "British Noise Electronics",
+   "name": "Sinc Pravus",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-pravus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-sinclastic-empulatrix",
+   "brand": "British Noise Electronics",
+   "name": "Sinclastic Empulatrix",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinclastic-empulatrix/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-soleo-vero",
+   "brand": "British Noise Electronics",
+   "name": "Soleo Vero",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/soleo-vero/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-sono-abitus",
+   "brand": "British Noise Electronics",
+   "name": "Sono Abitus",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sono-abitus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-the-mullet",
+   "brand": "British Noise Electronics",
+   "name": "The Mullet",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/the-mullet/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-tonnetz-sequent",
+   "brand": "British Noise Electronics",
+   "name": "Tonnetz Sequent",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/tonnetz-sequent/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-tymp-legio",
+   "brand": "British Noise Electronics",
+   "name": "Tymp Legio",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/tymp-legio/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "british-noise-electronics-univer-inter",
+   "brand": "British Noise Electronics",
+   "name": "Univer Inter",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/univer-inter/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-variatic-basicus",
+   "brand": "British Noise Electronics",
+   "name": "Variatic Basicus",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/variatic-basicus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-variatic-erumption",
+   "brand": "British Noise Electronics",
+   "name": "Variatic Erumption",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/variatic-erumption/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-variatic-sequent-variatic-multium",
+   "brand": "British Noise Electronics",
+   "name": "Variatic Sequent / Variatic Multium",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/variatic-sequent-variatic-multium/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-versio",
+   "brand": "British Noise Electronics",
+   "name": "Versio",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/versio/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-vice-virga",
+   "brand": "British Noise Electronics",
+   "name": "Vice Virga",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/vice-virga/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-viol-ruina",
+   "brand": "British Noise Electronics",
+   "name": "Viol Ruina",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/viol-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-xer-dualis",
+   "brand": "British Noise Electronics",
+   "name": "Xer Dualis",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/xer-dualis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-xer-mixa",
+   "brand": "British Noise Electronics",
+   "name": "Xer Mixa",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/xm/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "british-noise-electronics-xerest-pola",
+   "brand": "British Noise Electronics",
+   "name": "Xerest Pola",
+   "reason": "filed under the wrong brand: the crawl gave British Noise Electronics Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/xerest-pola/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "d-machinery-pmbp",
+   "brand": "d:Machinery",
+   "name": "PMBP",
+   "reason": "filed under the wrong brand: the crawl gave d:Machinery Infinite Machinery's homepage",
+   "owner": "Infinite Machinery",
+   "evidence_url": "https://www.infinitemachinery.com/pmbp",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "d-machinery-stereo-mixer",
+   "brand": "d:Machinery",
+   "name": "Stereo Mixer",
+   "reason": "filed under the wrong brand: the crawl gave d:Machinery Infinite Machinery's homepage",
+   "owner": "Infinite Machinery",
+   "evidence_url": "https://www.infinitemachinery.com/stereo-mixer",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "d-machinery-tz-dual-vco",
+   "brand": "d:Machinery",
+   "name": "TZ Dual VCO",
+   "reason": "filed under the wrong brand: the crawl gave d:Machinery Infinite Machinery's homepage",
+   "owner": "Infinite Machinery",
+   "evidence_url": "https://www.infinitemachinery.com/tz-dual-vco",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "endangered-audio-research-artificial-neural-network-v2-0",
+   "brand": "Endangered Audio Research",
+   "name": "Artificial Neural Network v2.0",
+   "reason": "filed under the wrong brand: the crawl gave Endangered Audio Research ARC's homepage",
+   "owner": "ARC",
+   "evidence_url": "https://www.analogueresearch.com/products/artificial-neural-network-v2-0",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "endangered-audio-research-d6-pseudorandom",
+   "brand": "Endangered Audio Research",
+   "name": "D6 Pseudorandom",
+   "reason": "filed under the wrong brand: the crawl gave Endangered Audio Research ARC's homepage",
+   "owner": "ARC",
+   "evidence_url": "https://www.analogueresearch.com/products/d6",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "endangered-audio-research-klangumwandler",
+   "brand": "Endangered Audio Research",
+   "name": "Klangumwandler",
+   "reason": "filed under the wrong brand: the crawl gave Endangered Audio Research ARC's homepage",
+   "owner": "ARC",
+   "evidence_url": "https://www.analogueresearch.com/products/klangumwandler",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "endangered-audio-research-modular-audio-mixer",
+   "brand": "Endangered Audio Research",
+   "name": "Modular Audio Mixer",
+   "reason": "filed under the wrong brand: the crawl gave Endangered Audio Research ARC's homepage",
+   "owner": "ARC",
+   "evidence_url": "https://www.analogueresearch.com/products/modular-audio-mixer",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "endangered-audio-research-noise-rainbow-v1-1",
+   "brand": "Endangered Audio Research",
+   "name": "Noise Rainbow v1.1",
+   "reason": "filed under the wrong brand: the crawl gave Endangered Audio Research ARC's homepage",
+   "owner": "ARC",
+   "evidence_url": "https://www.analogueresearch.com/products/noise-rainbow-v1-1",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "endangered-audio-research-west-coast-processor",
+   "brand": "Endangered Audio Research",
+   "name": "West Coast Processor",
+   "reason": "filed under the wrong brand: the crawl gave Endangered Audio Research ARC's homepage",
+   "owner": "ARC",
+   "evidence_url": "https://www.analogueresearch.com/products/west-coast-processor",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-adigo-metric",
+   "brand": "Epicycloid Engineering",
+   "name": "Adigo Metric",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/adigo-metric/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-alia",
+   "brand": "Epicycloid Engineering",
+   "name": "Alia",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/alia/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-ataraxic-iteritas",
+   "brand": "Epicycloid Engineering",
+   "name": "Ataraxic Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/ataraxic-iteritas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-ataraxic-translatron",
+   "brand": "Epicycloid Engineering",
+   "name": "Ataraxic Translatron",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/ataraxic-translatron/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-basimilus-iteritas",
+   "brand": "Epicycloid Engineering",
+   "name": "Basimilus Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/basimilus-iteritas-legacy/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "epicycloid-engineering-basimilus-iteritas-alter",
+   "brand": "Epicycloid Engineering",
+   "name": "Basimilus Iteritas Alter",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/basimilus-iteritas-alter/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-bin-seq",
+   "brand": "Epicycloid Engineering",
+   "name": "Bin Seq",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/bin-seq/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-clep-diaz",
+   "brand": "Epicycloid Engineering",
+   "name": "Clep Diaz",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/clep-diaz/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-confundo-funkitus",
+   "brand": "Epicycloid Engineering",
+   "name": "Confundo Funkitus",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/confundo-funkitus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-cursus-iteritas",
+   "brand": "Epicycloid Engineering",
+   "name": "Cursus Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/cursus-iteritas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-cursus-iteritas-percido",
+   "brand": "Epicycloid Engineering",
+   "name": "Cursus Iteritas Percido",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/cursus-iteritas-percido/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-expando-expandi",
+   "brand": "Epicycloid Engineering",
+   "name": "Expando Expandi",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/expando-expandi/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-extra-mullet",
+   "brand": "Epicycloid Engineering",
+   "name": "Extra Mullet",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/extra-mullet/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-gamut-repetitor",
+   "brand": "Epicycloid Engineering",
+   "name": "Gamut Repetitor",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/gamut-repetitor/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-horologic-solum",
+   "brand": "Epicycloid Engineering",
+   "name": "Horologic Solum",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/horologic-solum-horologic-uter/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-integra-solum",
+   "brand": "Epicycloid Engineering",
+   "name": "Integra Solum",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/integra-solum/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-jam-jam",
+   "brand": "Epicycloid Engineering",
+   "name": "Jam Jam",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/jam-jam/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-kith-ruina",
+   "brand": "Epicycloid Engineering",
+   "name": "Kith Ruina",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/kith-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-legio",
+   "brand": "Epicycloid Engineering",
+   "name": "Legio",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/legio/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-loquelic-iteritas",
+   "brand": "Epicycloid Engineering",
+   "name": "Loquelic Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/loquelic-iteritas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-manis-iteritas",
+   "brand": "Epicycloid Engineering",
+   "name": "Manis Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/manis-iteritas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-mimetic-digitalis",
+   "brand": "Epicycloid Engineering",
+   "name": "Mimetic Digitalis",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/mimetic-digitalis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-mimetic-digitwolis",
+   "brand": "Epicycloid Engineering",
+   "name": "Mimetic Digitwolis",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/mimetic-digitwolis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-mimetic-sequent-mimetic-multium",
+   "brand": "Epicycloid Engineering",
+   "name": "Mimetic Sequent / Mimetic Multium",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/mimetic-sequent-mimetic-multium/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-multi-repetitor",
+   "brand": "Epicycloid Engineering",
+   "name": "Multi Repetitor",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/multi-repetitor/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-muta-jovis",
+   "brand": "Epicycloid Engineering",
+   "name": "Muta Jovis",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/muta-jovis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-nive-grad",
+   "brand": "Epicycloid Engineering",
+   "name": "Nive Grad",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/nive-grad/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-noise-engineering-confundo-funkidos",
+   "brand": "Epicycloid Engineering",
+   "name": "Noise Engineering : Confundo Funkidos",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/confundo-funkidos/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-noise-engineering-fractio-solum",
+   "brand": "Epicycloid Engineering",
+   "name": "Noise Engineering : Fractio Solum",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/fractio-solum/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-noise-engineering-integra-funkitus",
+   "brand": "Epicycloid Engineering",
+   "name": "Noise Engineering : Integra Funkitus",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/integra-funkitus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-noise-engineering-loquelic-iteritas-percido",
+   "brand": "Epicycloid Engineering",
+   "name": "Noise Engineering : Loquelic Iteritas Percido",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/loquelic-iteritas-percido/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-noise-engineering-pura-ruina",
+   "brand": "Epicycloid Engineering",
+   "name": "Noise Engineering : Pura Ruina",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/pura-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-noise-engineering-quantus-trajecta",
+   "brand": "Epicycloid Engineering",
+   "name": "Noise Engineering : Quantus Trajecta",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantus-trajecta/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-noise-engineering-seca-ruina",
+   "brand": "Epicycloid Engineering",
+   "name": "Noise Engineering : Seca Ruina",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/seca-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-noise-engineering-sinc-bucina",
+   "brand": "Epicycloid Engineering",
+   "name": "Noise Engineering : Sinc Bucina",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-bucina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-noise-engineering-sinc-defero",
+   "brand": "Epicycloid Engineering",
+   "name": "Noise Engineering : Sinc Defero",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-defero/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-noise-engineering-soleo-vero",
+   "brand": "Epicycloid Engineering",
+   "name": "Noise Engineering : Soleo Vero",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/soleo-vero/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-noise-engineering-terci-ruina",
+   "brand": "Epicycloid Engineering",
+   "name": "Noise Engineering : Terci Ruina",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/terci-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-noise-engineering-viol-ruina",
+   "brand": "Epicycloid Engineering",
+   "name": "Noise Engineering : Viol Ruina",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/viol-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-numeric-repetitor",
+   "brand": "Epicycloid Engineering",
+   "name": "Numeric Repetitor",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/numeric-repetitor/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-opp-ned",
+   "brand": "Epicycloid Engineering",
+   "name": "Opp Ned",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/opp-ned/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-plus-legio",
+   "brand": "Epicycloid Engineering",
+   "name": "Plus Legio",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/plus-legio/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "epicycloid-engineering-pons-asinorum",
+   "brand": "Epicycloid Engineering",
+   "name": "Pons Asinorum",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/pons-asinorum/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-quant-gemi",
+   "brand": "Epicycloid Engineering",
+   "name": "Quant Gemi",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quant-gemi/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-quantic-fictus",
+   "brand": "Epicycloid Engineering",
+   "name": "Quantic Fictus",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantic-fictus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-quantus-ampla",
+   "brand": "Epicycloid Engineering",
+   "name": "Quantus Ampla",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantus-ampla/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-quantus-pax",
+   "brand": "Epicycloid Engineering",
+   "name": "Quantus Pax",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantus-pax/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-reso-legio",
+   "brand": "Epicycloid Engineering",
+   "name": "Reso Legio",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/reso-legio/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "epicycloid-engineering-roti-pola",
+   "brand": "Epicycloid Engineering",
+   "name": "Roti Pola",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/roti-pola/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-sinc-iter",
+   "brand": "Epicycloid Engineering",
+   "name": "Sinc Iter",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-iter/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-sinc-legio",
+   "brand": "Epicycloid Engineering",
+   "name": "Sinc Legio",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-legio/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "epicycloid-engineering-sinc-pravus",
+   "brand": "Epicycloid Engineering",
+   "name": "Sinc Pravus",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-pravus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-sinclastic-empulatrix",
+   "brand": "Epicycloid Engineering",
+   "name": "Sinclastic Empulatrix",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinclastic-empulatrix/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-sono-abitus",
+   "brand": "Epicycloid Engineering",
+   "name": "Sono Abitus",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sono-abitus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-the-mullet",
+   "brand": "Epicycloid Engineering",
+   "name": "The Mullet",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/the-mullet/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-tonnetz-sequent",
+   "brand": "Epicycloid Engineering",
+   "name": "Tonnetz Sequent",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/tonnetz-sequent/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-tymp-legio",
+   "brand": "Epicycloid Engineering",
+   "name": "Tymp Legio",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/tymp-legio/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "epicycloid-engineering-univer-inter",
+   "brand": "Epicycloid Engineering",
+   "name": "Univer Inter",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/univer-inter/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-variatic-basicus",
+   "brand": "Epicycloid Engineering",
+   "name": "Variatic Basicus",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/variatic-basicus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-variatic-erumption",
+   "brand": "Epicycloid Engineering",
+   "name": "Variatic Erumption",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/variatic-erumption/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-versio",
+   "brand": "Epicycloid Engineering",
+   "name": "Versio",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/versio/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-vice-virga",
+   "brand": "Epicycloid Engineering",
+   "name": "Vice Virga",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/vice-virga/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-vox-digitalis",
+   "brand": "Epicycloid Engineering",
+   "name": "Vox Digitalis",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/vox-digitalis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-xer-dualis",
+   "brand": "Epicycloid Engineering",
+   "name": "Xer Dualis",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/xer-dualis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-xer-mixa",
+   "brand": "Epicycloid Engineering",
+   "name": "Xer Mixa",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/xm/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-xerest-pola",
+   "brand": "Epicycloid Engineering",
+   "name": "Xerest Pola",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/xerest-pola/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "epicycloid-engineering-zularic-repetitor",
+   "brand": "Epicycloid Engineering",
+   "name": "Zularic Repetitor",
+   "reason": "filed under the wrong brand: the crawl gave Epicycloid Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/zularic-repetitor/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-analog-memory",
+   "brand": "Mental Noise",
+   "name": "Analog Memory",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/analog-memory/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-brains",
+   "brand": "Mental Noise",
+   "name": "BRAINS",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/brains/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-bruxa",
+   "brand": "Mental Noise",
+   "name": "Bruxa",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/bruxa/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-ch-svr",
+   "brand": "Mental Noise",
+   "name": "Ch.Svr",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/ch-svr/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-contour",
+   "brand": "Mental Noise",
+   "name": "Contour",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/contour/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-dpo",
+   "brand": "Mental Noise",
+   "name": "DPO",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/dpo/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-dxg",
+   "brand": "Mental Noise",
+   "name": "DXG",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/dxg/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-dynamix",
+   "brand": "Mental Noise",
+   "name": "Dynamix",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/dynamix/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-echophon",
+   "brand": "Mental Noise",
+   "name": "Echophon",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/echophon/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-erbe-verb",
+   "brand": "Mental Noise",
+   "name": "Erbe-Verb",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/erbe-verb/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-function",
+   "brand": "Mental Noise",
+   "name": "FUNCTION",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/function/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-fxdf",
+   "brand": "Mental Noise",
+   "name": "FXDf",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/fxdf/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-gte",
+   "brand": "Mental Noise",
+   "name": "GTE",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/gte/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-jumbler",
+   "brand": "Mental Noise",
+   "name": "Jumbler",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/jumbler/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-lxd",
+   "brand": "Mental Noise",
+   "name": "LxD",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/lxd/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-maths",
+   "brand": "Mental Noise",
+   "name": "MATHS",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/maths/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-maths-classic",
+   "brand": "Mental Noise",
+   "name": "MATHS (Classic)",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/maths-classic/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-mimeophon",
+   "brand": "Mental Noise",
+   "name": "Mimeophon",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/mimeophon/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-mmg",
+   "brand": "Mental Noise",
+   "name": "MMG",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/mmg/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-moddemix",
+   "brand": "Mental Noise",
+   "name": "modDemix",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/moddemix/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-moddemix-classic",
+   "brand": "Mental Noise",
+   "name": "modDemix (Classic)",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/moddemix-classic/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-morphagene",
+   "brand": "Mental Noise",
+   "name": "Morphagene",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/morphagene/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-mult",
+   "brand": "Mental Noise",
+   "name": "MULT",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/mult/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-multimod",
+   "brand": "Mental Noise",
+   "name": "MultiMod",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/multimod/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-multiwave",
+   "brand": "Mental Noise",
+   "name": "MultiWAVE",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/multiwave/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-multiwave-midi-inlet",
+   "brand": "Mental Noise",
+   "name": "MultiWAVE MIDI Inlet",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/midi-inlet/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-optomix",
+   "brand": "Mental Noise",
+   "name": "Optomix",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/optomix/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-phonogene",
+   "brand": "Mental Noise",
+   "name": "Phonogene",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/phonogene/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-plexiphon",
+   "brand": "Mental Noise",
+   "name": "Plexiphon",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/plexiphon/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-polimaths",
+   "brand": "Mental Noise",
+   "name": "PoliMATHS",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/polimaths/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-prsspnt",
+   "brand": "Mental Noise",
+   "name": "PrssPnt",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/prsspnt/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-qmmg",
+   "brand": "Mental Noise",
+   "name": "QMMG",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/qmmg/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-qpas",
+   "brand": "Mental Noise",
+   "name": "QPAS",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/qpas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-qxg",
+   "brand": "Mental Noise",
+   "name": "QXG",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/qxg/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-ren",
+   "brand": "Mental Noise",
+   "name": "René",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/rene/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-ren-classic",
+   "brand": "Mental Noise",
+   "name": "René (Classic)",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/rene-classic/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-rosie",
+   "brand": "Mental Noise",
+   "name": "Rosie",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/rosie/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-rxmx",
+   "brand": "Mental Noise",
+   "name": "RxMx",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/rxmx/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-spectraphon",
+   "brand": "Mental Noise",
+   "name": "Spectraphon",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/spectraphon/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-sto",
+   "brand": "Mental Noise",
+   "name": "STO",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/sto/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-teleplexer",
+   "brand": "Mental Noise",
+   "name": "Teleplexer",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/teleplexer/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-telharmonic",
+   "brand": "Mental Noise",
+   "name": "tELHARMONIC",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/telharmonic/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-tempi",
+   "brand": "Mental Noise",
+   "name": "TEMPI",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/tempi/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-wiard-wogglebug",
+   "brand": "Mental Noise",
+   "name": "Wiard Wogglebug",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/wiard-wogglebug/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-wogglebug",
+   "brand": "Mental Noise",
+   "name": "Wogglebug",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/wogglebug/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-x-pan",
+   "brand": "Mental Noise",
+   "name": "X-PAN",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/x-pan/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-xoh",
+   "brand": "Mental Noise",
+   "name": "XOH",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/xoh/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mental-noise-xpo",
+   "brand": "Mental Noise",
+   "name": "XPO",
+   "reason": "filed under the wrong brand: the crawl gave Mental Noise Make Noise's homepage",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/xpo/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-adigo-metric",
+   "brand": "Phase Engineering",
+   "name": "Adigo Metric",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/adigo-metric/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-alia",
+   "brand": "Phase Engineering",
+   "name": "Alia",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/alia/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-ataraxic-iteritas",
+   "brand": "Phase Engineering",
+   "name": "Ataraxic Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/ataraxic-iteritas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-basimilus-iteritas",
+   "brand": "Phase Engineering",
+   "name": "Basimilus Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/basimilus-iteritas-legacy/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "phase-engineering-basimilus-iteritas-alter",
+   "brand": "Phase Engineering",
+   "name": "Basimilus Iteritas Alter",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/basimilus-iteritas-alter/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-confundo-funkidos",
+   "brand": "Phase Engineering",
+   "name": "Confundo Funkidos",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/confundo-funkidos/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-confundo-funkitus",
+   "brand": "Phase Engineering",
+   "name": "Confundo Funkitus",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/confundo-funkitus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-cursus-iteritas",
+   "brand": "Phase Engineering",
+   "name": "Cursus Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/cursus-iteritas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-cursus-iteritas-percido",
+   "brand": "Phase Engineering",
+   "name": "Cursus Iteritas Percido",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/cursus-iteritas-percido/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-expando-expandi",
+   "brand": "Phase Engineering",
+   "name": "Expando Expandi",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/expando-expandi/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-fractio-solum",
+   "brand": "Phase Engineering",
+   "name": "Fractio Solum",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/fractio-solum/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-gamut-repetitor",
+   "brand": "Phase Engineering",
+   "name": "Gamut Repetitor",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/gamut-repetitor/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-horologic-solum",
+   "brand": "Phase Engineering",
+   "name": "Horologic Solum",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/horologic-solum-horologic-uter/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-integra-funkitus",
+   "brand": "Phase Engineering",
+   "name": "Integra Funkitus",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/integra-funkitus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-jam-jam",
+   "brand": "Phase Engineering",
+   "name": "Jam Jam",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/jam-jam/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-kith-ruina",
+   "brand": "Phase Engineering",
+   "name": "Kith Ruina",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/kith-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-legio",
+   "brand": "Phase Engineering",
+   "name": "Legio",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/legio/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-manis-iteritas",
+   "brand": "Phase Engineering",
+   "name": "Manis Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/manis-iteritas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-mimetic-digitalis",
+   "brand": "Phase Engineering",
+   "name": "Mimetic Digitalis",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/mimetic-digitalis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-mimetic-digitwolis",
+   "brand": "Phase Engineering",
+   "name": "Mimetic Digitwolis",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/mimetic-digitwolis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-mimetic-sequent-mimetic-multium",
+   "brand": "Phase Engineering",
+   "name": "Mimetic Sequent / Mimetic Multium",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/mimetic-sequent-mimetic-multium",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-multi-repetitor",
+   "brand": "Phase Engineering",
+   "name": "Multi Repetitor",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/multi-repetitor/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-muta-jovis",
+   "brand": "Phase Engineering",
+   "name": "Muta Jovis",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/muta-jovis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-nive-grad",
+   "brand": "Phase Engineering",
+   "name": "Nive Grad",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/nive-grad/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-ataraxic-translatron",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Ataraxic Translatron",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/ataraxic-translatron/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-bin-seq",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Bin Seq",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/bin-seq/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-clep-diaz",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Clep Diaz",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/clep-diaz/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-extra-mullet",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Extra Mullet",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/extra-mullet/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-integra-solum",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Integra Solum",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/integra-solum/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-loquelic-iteritas",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Loquelic Iteritas",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/loquelic-iteritas/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-loquelic-iteritas-percido",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Loquelic Iteritas Percido",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/loquelic-iteritas-percido/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-pons-asinorum",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Pons Asinorum",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/pons-asinorum/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-quantus-trajecta",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Quantus Trajecta",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantus-trajecta",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-reso-legio",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Reso Legio",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/reso-legio/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-seca-ruina",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Seca Ruina",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/seca-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-sinc-bucina",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Sinc Bucina",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-bucina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-sinc-defero",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Sinc Defero",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-defero/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-sinc-iter",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Sinc Iter",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-iter/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-soleo-vero",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Soleo Vero",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/soleo-vero/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-terci-ruina",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Terci Ruina",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/terci-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-tonnetz-sequent",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Tonnetz Sequent",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/tonnetz-sequent/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-variatic-erumption",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Variatic Erumption",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/variatic-erumption/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-noise-engineering-vox-digitalis",
+   "brand": "Phase Engineering",
+   "name": "Noise Engineering : Vox Digitalis",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/vox-digitalis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-numeric-repetitor",
+   "brand": "Phase Engineering",
+   "name": "Numeric Repetitor",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/numeric-repetitor/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-opp-ned",
+   "brand": "Phase Engineering",
+   "name": "Opp Ned",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/opp-ned/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-plus-legio",
+   "brand": "Phase Engineering",
+   "name": "Plus Legio",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/plus-legio/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "phase-engineering-pura-ruina",
+   "brand": "Phase Engineering",
+   "name": "Pura Ruina",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/pura-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-quant-gemi",
+   "brand": "Phase Engineering",
+   "name": "Quant Gemi",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quant-gemi/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-quantic-fictus",
+   "brand": "Phase Engineering",
+   "name": "Quantic Fictus",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantic-fictus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-quantus-ampla",
+   "brand": "Phase Engineering",
+   "name": "Quantus Ampla",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantus-ampla/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-quantus-pax",
+   "brand": "Phase Engineering",
+   "name": "Quantus Pax",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantus-pax/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-quantus-trajecta",
+   "brand": "Phase Engineering",
+   "name": "Quantus Trajecta",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/quantus-trajecta/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-roti-pola",
+   "brand": "Phase Engineering",
+   "name": "Roti Pola",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/roti-pola/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-sinc-legio",
+   "brand": "Phase Engineering",
+   "name": "Sinc Legio",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-legio/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "phase-engineering-sinc-pravus",
+   "brand": "Phase Engineering",
+   "name": "Sinc Pravus",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinc-pravus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-sinclastic-empulatrix",
+   "brand": "Phase Engineering",
+   "name": "Sinclastic Empulatrix",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sinclastic-empulatrix/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-sono-abitus",
+   "brand": "Phase Engineering",
+   "name": "Sono Abitus",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/sono-abitus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-the-mullet",
+   "brand": "Phase Engineering",
+   "name": "The Mullet",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/the-mullet/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-tymp-legio",
+   "brand": "Phase Engineering",
+   "name": "Tymp Legio",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/tymp-legio/",
+   "kept_as": "re-added under owner (catalog-additions-v5)"
+  },
+  {
+   "slug": "phase-engineering-univer-inter",
+   "brand": "Phase Engineering",
+   "name": "Univer Inter",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/univer-inter/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-variatic-basicus",
+   "brand": "Phase Engineering",
+   "name": "Variatic Basicus",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/variatic-basicus/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-variatic-sequent-variatic-multium",
+   "brand": "Phase Engineering",
+   "name": "Variatic Sequent / Variatic Multium",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/variatic-sequent-variatic-multium",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-versio",
+   "brand": "Phase Engineering",
+   "name": "Versio",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/versio/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-vice-virga",
+   "brand": "Phase Engineering",
+   "name": "Vice Virga",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/vice-virga/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-viol-ruina",
+   "brand": "Phase Engineering",
+   "name": "Viol Ruina",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/viol-ruina/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-xer-dualis",
+   "brand": "Phase Engineering",
+   "name": "Xer Dualis",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/xer-dualis/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-xer-mixa",
+   "brand": "Phase Engineering",
+   "name": "Xer Mixa",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/xm/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-xerest-pola",
+   "brand": "Phase Engineering",
+   "name": "Xerest Pola",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/xerest-pola/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "phase-engineering-zularic-repetitor",
+   "brand": "Phase Engineering",
+   "name": "Zularic Repetitor",
+   "reason": "filed under the wrong brand: the crawl gave Phase Engineering Noise Engineering's homepage",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/zularic-repetitor/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "winter-plankton-dassbrum",
+   "brand": "Winter Plankton",
+   "name": "DASSBRUM",
+   "reason": "filed under the wrong brand: the crawl gave Winter Plankton Winter Modular's homepage",
+   "owner": "Winter Modular",
+   "evidence_url": "https://winter-modular.com/product/dassbrum/",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "tlm-audio-st-modular",
+   "brand": "TLM Audio",
+   "name": "ST MODULAR",
+   "reason": "not a module: ST MODULAR is TLM's product-line prefix; the page is the 84 HP LANGER ARM expansion",
+   "evidence_url": "https://www.tlm-audio.com/product-page/st-modular-langer-arm-1u-3u-expansion"
+  }
+ ]
+}

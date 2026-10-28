@@ -13,7 +13,7 @@ This allows:
 
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, Index, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Index, Integer, String
 
 from core.database import Base
 
@@ -66,6 +66,11 @@ class ModuleCatalog(Base):
     access_basis = Column(String(40), nullable=True, index=True)
     evidence_status = Column(String(40), nullable=True)
 
+    # Tombstone (never deleted): hidden from browse, search and counts; a slug lookup
+    # still answers. Set only by the loader's retirement manifest.
+    tombstoned_at = Column(DateTime, nullable=True, index=True)
+    tombstone_reason = Column(String(200), nullable=True)
+
     # Metadata
     created_at = Column(String(50), default=lambda: datetime.utcnow().isoformat())
     updated_at = Column(
@@ -100,6 +105,8 @@ class ModuleCatalog(Base):
             "source": self.source,
             "access_basis": self.access_basis,
             "evidence_status": self.evidence_status,
+            "tombstoned_at": self.tombstoned_at.isoformat() if self.tombstoned_at else None,
+            "tombstone_reason": self.tombstone_reason,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }

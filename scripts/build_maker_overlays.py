@@ -106,6 +106,33 @@ def existing_index(outputs: tuple[str, ...]) -> dict[str, dict[str, tuple[str, s
     return idx
 
 
+def shared_homepage_skips(brands: list[dict]) -> dict[str, str]:
+    """Brands whose crawled homepage belongs to another brand: {skipped brand: owner}.
+
+    The v1 crawl once gave "Mental Noise" Make Noise's site, so 48 Make Noise modules were
+    added under the wrong brand. When brands share a host, the one whose name is spelled
+    in the host keeps it; the others are skipped. With no single owner, nothing is skipped.
+    """
+    from urllib.parse import urlsplit
+
+    def compact(text: str) -> str:
+        return re.sub(r"[^a-z0-9]", "", text.lower())
+
+    by_host: dict[str, list[str]] = {}
+    for b in brands:
+        host = urlsplit(b.get("homepage") or "").netloc.lower().removeprefix("www.")
+        if host:
+            by_host.setdefault(host, []).append(b["brand"])
+    skips: dict[str, str] = {}
+    for host, names in by_host.items():
+        if len(set(names)) < 2:
+            continue
+        owners = [n for n in set(names) if compact(n) and compact(n) in compact(host)]
+        if len(owners) == 1:
+            skips.update({n: owners[0] for n in set(names) if n != owners[0]})
+    return skips
+
+
 def category(tags: list[str], name: str) -> str | None:
     hay = " ".join(tags).lower() + " " + name.lower()
     for cat, pat in CATEGORY:
@@ -132,9 +159,13 @@ def main(argv: list[str] | None = None) -> int:
     crawl = json.loads((CATALOG / "hermes-research" / args.crawl).read_text())
     idx = existing_index((additions_name, power_name))
     additions, entries = [], []
-    stats = {"crawled_modules": 0, "matched_existing": 0, "new": 0, "skipped_dupe_in_crawl": 0, "skipped_hp_range": 0, "skipped_not_module": 0}
+    stats = {"crawled_modules": 0, "matched_existing": 0, "new": 0, "skipped_dupe_in_crawl": 0, "skipped_hp_range": 0, "skipped_not_module": 0, "skipped_shared_homepage": 0}
+    shared = shared_homepage_skips(crawl["brands"])
     for b in crawl["brands"]:
         if (only and b["brand"] not in only) or b["brand"] in skip:
+            continue
+        if b["brand"] in shared:
+            stats["skipped_shared_homepage"] += len(b.get("modules") or [])
             continue
         seen = set()
         for m in b.get("modules") or []:
