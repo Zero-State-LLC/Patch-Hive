@@ -38,6 +38,9 @@ class User(Base):
         String(32), unique=True, nullable=False, index=True, default=lambda: secrets.token_hex(8)
     )
     referred_by = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    # Sign-in brute-force protection (community/login_guard.py).
+    failed_login_count = Column(Integer, nullable=False, default=0, server_default="0")
+    locked_until = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 

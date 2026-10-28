@@ -101,12 +101,15 @@ def apply_referral_reward(
     if purchase_count != 1:
         return None
 
+    # Lock the pending referral so two concurrent first purchases cannot both reward
+    # it; the partial unique index uq_referrals_one_reward is the backstop.
     referral_pending = (
         db.query(Referral)
         .filter(
             Referral.referred_user_id == referred_user_id,
             Referral.status == "Pending",
         )
+        .with_for_update()
         .first()
     )
     if not referral_pending:

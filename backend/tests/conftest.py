@@ -479,3 +479,13 @@ def sample_owner_headers(db: Session) -> dict:
     """Headers for the sample user, who owns ``sample_rack_basic``."""
     user = db.query(User).filter(User.username == "testuser").first() or make_user(db, "testuser")
     return bearer_headers(user)
+
+
+@pytest.fixture(autouse=True)
+def _reset_login_rate_limit():
+    """Every test client shares one address; start each test with a clean sign-in limit."""
+    from community import login_guard
+
+    login_guard.reset_attempts()
+    yield
+    login_guard.reset_attempts()

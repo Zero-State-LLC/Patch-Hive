@@ -23,7 +23,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     """Schema for user registration."""
 
-    password: str = Field(..., min_length=8)
+    password: str = Field(..., min_length=8, max_length=128)
     referral_code: Optional[str] = Field(
         default=None, description="Optional code from a referrer during signup."
     )
@@ -85,7 +85,7 @@ class LoginRequest(BaseModel):
     """Schema for login request."""
 
     username: str
-    password: str
+    password: str = Field(..., max_length=128)
 
 
 class TokenResponse(BaseModel):
