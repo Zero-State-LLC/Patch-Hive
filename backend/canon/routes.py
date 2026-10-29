@@ -8,7 +8,6 @@ current product path; this router is the canonical contract entrypoint.
 from __future__ import annotations
 
 import hashlib
-import json
 from datetime import datetime, timezone
 from typing import Any, Literal, Optional
 
@@ -25,15 +24,14 @@ from canon.downloads import DownloadTokenError, issue_download_token, verify_dow
 from canon.exports import (
     ExportBoundaryError,
     credit_balance,
+    receive_stripe_webhook,
     request_export,
-    verify_stripe_webhook,
 )
 from canon.models import (
     CanonicalCreditLedgerEntryRecord,
     CanonicalExportRecord,
     PatchUserOverlayRecord,
     RigRevisionRecord,
-    StripeEventRecordModel,
     UserStyleRecipeRecord,
 )
 from community.auth import get_current_user, require_auth
@@ -1115,22 +1113,17 @@ async def stripe_webhook(
 
     payload = await request.body()
     try:
-        provisional_id = ""
-        try:
-            provisional_id = str(json.loads(payload).get("id") or "")
-        except (json.JSONDecodeError, TypeError, AttributeError):
-            provisional_id = ""
-        already_seen = bool(
-            provisional_id and db.get(StripeEventRecordModel, provisional_id) is not None
-        )
-        record, event = verify_stripe_webhook(
+        intake = receive_stripe_webhook(
             db,
             payload=payload,
             signature_header=stripe_signature,
             secret=secret,
             test_mode=settings.stripe_test_mode,
+            # Live-mode events belong only to production (spec 004 FR-013, research R3).
+            production=str(settings.environment).strip().lower() == "production",
         )
         db.commit()
+        record, event = intake.record, intake.event
         db.refresh(record)
     except ExportBoundaryError as exc:
         db.rollback()
@@ -1147,7 +1140,7 @@ async def stripe_webhook(
         stripe_event_id=record.stripe_event_id,
         status=record.status,
         event_type=str(event.get("type", record.event_type)),
-        duplicate=already_seen,
+        duplicate=intake.duplicate,
     )
 
 

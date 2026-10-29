@@ -216,24 +216,53 @@ def reconcile_ledger(session: Session, user_id: int) -> ReconciliationReport:
     )
 
 
-def verify_stripe_webhook(
+@dataclass(frozen=True)
+class StripeWebhookIntake:
+    record: StripeEventRecordModel
+    event: dict[str, Any]
+    duplicate: bool
+
+
+def _parse_signature_header(signature_header: str) -> tuple[int, tuple[str, ...]]:
+    """Return the one ``t`` value and every ``v1`` value (one per active secret)."""
+
+    timestamps: list[str] = []
+    signatures: list[str] = []
+    for part in signature_header.split(","):
+        key, sep, value = part.strip().partition("=")
+        if not sep:
+            continue
+        if key == "t":
+            timestamps.append(value)
+        elif key == "v1":
+            signatures.append(value)
+    if len(timestamps) != 1 or not signatures:
+        raise ExportBoundaryError("WEBHOOK_SIGNATURE_INVALID")
+    try:
+        return int(timestamps[0]), tuple(signatures)
+    except ValueError as exc:
+        raise ExportBoundaryError("WEBHOOK_SIGNATURE_INVALID") from exc
+
+
+def receive_stripe_webhook(
     session: Session,
     *,
     payload: bytes,
     signature_header: str,
     secret: str,
     test_mode: bool = True,
+    production: bool = False,
     now: int | None = None,
     tolerance_seconds: int = 300,
-) -> tuple[StripeEventRecordModel, dict[str, Any]]:
-    """Verify Stripe-style signatures and reject replay conflicts/livemode events."""
+) -> StripeWebhookIntake:
+    """Verify Stripe-style signatures, reject live-mode events outside production and
+    replay conflicts, and record the event once.
 
-    fields = dict(part.split("=", 1) for part in signature_header.split(",") if "=" in part)
-    try:
-        timestamp = int(fields["t"])
-        supplied = fields["v1"]
-    except (KeyError, ValueError) as exc:
-        raise ExportBoundaryError("WEBHOOK_SIGNATURE_INVALID") from exc
+    A live-mode event is accepted only when ``production`` is true and ``test_mode`` is
+    false. A concurrent delivery that loses the insert race answers as a duplicate.
+    """
+
+    timestamp, supplied = _parse_signature_header(signature_header)
     current = int(time.time()) if now is None else now
     if abs(current - timestamp) > tolerance_seconds:
         raise ExportBoundaryError("WEBHOOK_SIGNATURE_EXPIRED")
@@ -242,7 +271,12 @@ def verify_stripe_webhook(
         f"{timestamp}.".encode("utf-8") + payload,
         hashlib.sha256,
     ).hexdigest()
-    if not hmac.compare_digest(expected, supplied):
+    # During secret rotation the provider sends one v1 per active secret. Compare every
+    # value in constant time; do not stop at the first match.
+    matched = False
+    for candidate in supplied:
+        matched = hmac.compare_digest(expected, candidate) or matched
+    if not matched:
         raise ExportBoundaryError("WEBHOOK_SIGNATURE_INVALID")
     try:
         event = json.loads(payload)
@@ -251,7 +285,7 @@ def verify_stripe_webhook(
         livemode = bool(event["livemode"])
     except (json.JSONDecodeError, KeyError, TypeError) as exc:
         raise ExportBoundaryError("WEBHOOK_PAYLOAD_INVALID") from exc
-    if test_mode and livemode:
+    if livemode and (test_mode or not production):
         raise ExportBoundaryError("LIVEMODE_EVENT_REJECTED")
 
     payload_hash = canonical_sha256(event)
@@ -259,7 +293,7 @@ def verify_stripe_webhook(
     if existing is not None:
         if existing.payload_hash != payload_hash:
             raise ExportBoundaryError("WEBHOOK_REPLAY_CONFLICT")
-        return existing, event
+        return StripeWebhookIntake(record=existing, event=event, duplicate=True)
     record = StripeEventRecordModel(
         stripe_event_id=event_id,
         event_type=event_type,
@@ -268,6 +302,42 @@ def verify_stripe_webhook(
         status="received",
         received_at=datetime.fromtimestamp(timestamp, tz=timezone.utc),
     )
-    session.add(record)
-    session.flush()
-    return record, event
+    try:
+        with session.begin_nested():
+            session.add(record)
+            session.flush()
+    except IntegrityError:
+        # A concurrent delivery of the same event committed first.
+        winner = session.get(StripeEventRecordModel, event_id)
+        if winner is None:
+            raise
+        if winner.payload_hash != payload_hash:
+            raise ExportBoundaryError("WEBHOOK_REPLAY_CONFLICT") from None
+        return StripeWebhookIntake(record=winner, event=event, duplicate=True)
+    return StripeWebhookIntake(record=record, event=event, duplicate=False)
+
+
+def verify_stripe_webhook(
+    session: Session,
+    *,
+    payload: bytes,
+    signature_header: str,
+    secret: str,
+    test_mode: bool = True,
+    production: bool = False,
+    now: int | None = None,
+    tolerance_seconds: int = 300,
+) -> tuple[StripeEventRecordModel, dict[str, Any]]:
+    """Verify Stripe-style signatures and reject replay conflicts/livemode events."""
+
+    intake = receive_stripe_webhook(
+        session,
+        payload=payload,
+        signature_header=signature_header,
+        secret=secret,
+        test_mode=test_mode,
+        production=production,
+        now=now,
+        tolerance_seconds=tolerance_seconds,
+    )
+    return intake.record, intake.event
