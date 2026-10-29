@@ -47,7 +47,7 @@ def test_decision_resolution_endpoint_is_advisory_only(db_session, sample_rack_b
         def probability(self, request): raise AssertionError
 
     import evidence.routes as routes
-    monkeypatch.setattr(routes, "_configured_decision_provider", lambda: Provider())
+    monkeypatch.setattr(routes, "_configured_decision_provider", lambda **_: Provider())
     monkeypatch.setattr(settings, "enable_decision_intelligence", True)
 
     def override_db():
@@ -93,7 +93,7 @@ def test_decision_resolution_endpoint_defaults_off(db_session, sample_rack_basic
     ))
     db_session.commit()
 
-    def provider_must_not_run():
+    def provider_must_not_run(**_):
         raise AssertionError("provider construction occurred while feature was disabled")
 
     import evidence.routes as routes
