@@ -4,7 +4,7 @@ Mirror of [org Project #8 "Patch-Hive"](https://github.com/orgs/Zero-State-LLC/p
 
 Columns (Status): Backlog → Ready → In progress → In review → Done. Spec tasks are titled `[NNN Txxx]`; Ready means every `depends_on` is done (`just spec-dag`). Slices are described in [docs/evidence/NEXT_SLICES_2026-10-28.md](evidence/NEXT_SLICES_2026-10-28.md); decision research is in [specs/003-catalog-dataset-pipeline/research.md](../specs/003-catalog-dataset-pipeline/research.md).
 
-Snapshot: 2026-10-29 PT, 150 items.
+Snapshot: 2026-10-29 PT (later), 153 items.
 
 ## Backlog
 
@@ -41,13 +41,12 @@ Snapshot: 2026-10-29 PT, 150 items.
 - [006 T050] Bind Hyperdrive to Neon staging branch
 - [006 T060b] Verify Clef resolution path on Hyperdrive-bound staging
 - [007 T020b = 005 T061d] Run baseline vs provider-assisted evaluation on frozen corpus
-- [003 T026] Frap Tools listing adapter
 - [decision] Maker permission metadata and stealth proxy sign-off
 - [decision] Model jumper-dependent power (power_configs)
 - [beta] Open accounts (VITE_ACCOUNTS_OPEN=true) once the API is live
-- [003 T031] Rebuild the maker-crawl cache and classify 644 untagged rows (paid cap)
+- [003 T031] Classify the 644 untagged rows from their pages (paid; no full cache rebuild — T035 covers jumper pages)
 - [catalog] Review 24 rows whose tags point to two categories
-- [003 T034] Jumper-dependent power as power_configs (after schema decision)
+- [003 T034] Jumper-dependent power as power_configs — schema decided (D8), after T035
 
 ## Ready
 
@@ -64,6 +63,7 @@ Snapshot: 2026-10-29 PT, 150 items.
 - [ops] Real sign-up on production (operator)
 - [ops] Decide repo visibility vs the Actions budget
 - [ops] Review open PRs #106, #109, #110, #111
+- [003 T035] Scoped re-fetch of ~45 jumper-dependent pages (needs a cap: ~20–50 context.dev credits)
 
 ## In progress
 
@@ -71,14 +71,10 @@ _None._
 
 ## In review
 
-- [decision] HP correction for NOT NULL modules.hp (Sovage CHICANE 14 -> 4) — decided D4, #125
-- [decision] seed_catalog_from_synth.py: delete — decided D5, #124
 - [#106](https://github.com/Zero-State-LLC/Patch-Hive/pull/106) chore(deps-dev): bump zod from 4.4.3 to 4.6.7 in /frontend
 - [#109](https://github.com/Zero-State-LLC/Patch-Hive/pull/109) chore(main): release 0.3.0-alpha.4
 - [#110](https://github.com/Zero-State-LLC/Patch-Hive/pull/110) fix(api): make container startup migrations opt-in
 - [#111](https://github.com/Zero-State-LLC/Patch-Hive/pull/111) chore(codeowners): replace partner-agents team with @scrimshawlife-ctrl
-- [#124](https://github.com/Zero-State-LLC/Patch-Hive/pull/124) spec(003): record D3-D6, a row lifecycle and FR-036-038; delete the seed scripts
-- [#125](https://github.com/Zero-State-LLC/Patch-Hive/pull/125) feat(catalog): reviewed corrections; fix Sovage CHICANE's HP (003 T033)
 
 ## Done
 
@@ -91,7 +87,10 @@ _None._
 - [api] Count unknown module power per rail in rack budgets (slice A1)
 - [catalog] Six new crawl rows -> catalog-additions-v6 + power v14 (#121; the seventh was a Doepfer case)
 - [api] Verify registry snapshot ships in the API image — it didn't; registry reads module_catalog (#114)
+- [003 T026] Frap Tools listing adapter — closed: excluded (D7, host refuses connections)
 - [decision] Retire bogus catalog rows (TLM ST MODULAR) — tombstones, #116
+- [decision] HP correction for NOT NULL modules.hp (Sovage CHICANE 14 -> 4) — decided D4, #125
+- [decision] seed_catalog_from_synth.py: delete — decided D5, #124
 - [003 T030] Refuse shared homepages at crawl time (slice A2)
 - [api] Rack warning for tombstoned placements (slice A4)
 - [frontend] Skip the refresh call when signed out (slice A5)
@@ -100,6 +99,10 @@ _None._
 - [ops] Production deploy: API and frontend from main
 - [ops] Rotate the Cloudflare token pasted in chat
 - [decision] Retire the 10 live misattributed brands found by T030 (catalog-retirements-v2)
+- [#127](https://github.com/Zero-State-LLC/Patch-Hive/pull/127) docs(003): mark T033 done after the staging and prod loads
+- [#126](https://github.com/Zero-State-LLC/Patch-Hive/pull/126) docs: refresh state, slices, decisions and the board mirror for 2026-10-29
+- [#125](https://github.com/Zero-State-LLC/Patch-Hive/pull/125) feat(catalog): reviewed corrections; fix Sovage CHICANE's HP (003 T033)
+- [#124](https://github.com/Zero-State-LLC/Patch-Hive/pull/124) spec(003): record D3-D6, a row lifecycle and FR-036-038; delete the seed scripts
 - [#123](https://github.com/Zero-State-LLC/Patch-Hive/pull/123) fix(frontend): skip the refresh call on a signed-out page load (slice A5)
 - [#122](https://github.com/Zero-State-LLC/Patch-Hive/pull/122) feat(racks): warn when a rack holds a retired module (slice A4)
 - [#121](https://github.com/Zero-State-LLC/Patch-Hive/pull/121) feat(catalog): add the six crawled modules no overlay held (slice A3)

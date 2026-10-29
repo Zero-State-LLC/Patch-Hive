@@ -65,8 +65,17 @@
 
 ## Immediate continuation priorities
 
-1. Operator: real sign-up on production; verify seeded demo auth on staging (008 T030b); VirusTotal reanalysis; rotate the context.dev and OpenRouter keys; add `PROJECT_TOKEN` and `RELEASE_PLEASE_TOKEN`; decide repo visibility versus the Actions budget; review #106, #109–#111.
-2. Owner decisions ([research.md](specs/003-catalog-dataset-pipeline/research.md)): a paid cap for Frap and a scoped cache rebuild (R3, R4; one pass for both), the `power_configs` schema (R5, T034), and confirming specs 001–004 (R6).
+1. **Review #110 first.** Today `edge/api/src/index.ts` sends `RUN_MIGRATIONS: "true"`, so every API container cold start runs `alembic upgrade head` on its database, production included. Deploying a branch with a new migration migrates that database without `db-migrate.yml`. #110 makes startup migrations opt-in and warns when the schema is behind. Its CI is green, but it needs updating with main (it is behind), and that is the owner's branch.
+2. Owner decision: a cap for T035, a scoped re-fetch of about 45 jumper-dependent pages (estimated 20–50 context.dev credits), which unblocks `power_configs` (T034, D8). Frap needs no paid pass (D7).
+3. Operator:
+   - real sign-up on production;
+   - verify seeded demo auth on staging (008 T030b);
+   - VirusTotal reanalysis;
+   - rotate the context.dev and OpenRouter keys;
+   - add `PROJECT_TOKEN` and `RELEASE_PLEASE_TOKEN`;
+   - decide repo visibility versus the Actions budget;
+   - #106 (zod; its CodeQL failures came from the private-repo period, so rerun it), #109 (release), #111 (CODEOWNERS);
+   - confirm specs 001–004 (R6).
 
 **Local test automation:**
 `cd backend && pytest tests -q` with a local Postgres 15 for the population tests (1,045 passed, 2 skipped on #125) · acceptance suite separately (11 passed; #78 lets it run in the same invocation)
