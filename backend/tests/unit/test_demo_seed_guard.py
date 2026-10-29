@@ -50,3 +50,22 @@ def test_hosted_staging_needs_its_own_strong_passwords(env) -> None:
 
 def test_hosted_staging_uses_the_supplied_passwords() -> None:
     assert seed.demo_passwords(HOSTED, "staging", env=STRONG) == ("u" * 20, "a" * 20)
+
+
+def test_the_seeder_reads_the_environment_from_settings(monkeypatch) -> None:
+    """ENVIRONMENT set only in .env still refuses production (Settings reads .env)."""
+    class FakeSettings:
+        environment = "production"
+
+    monkeypatch.setattr(seed, "Settings", lambda: FakeSettings())
+    monkeypatch.delenv("ENVIRONMENT", raising=False)
+
+    class Bind:
+        url = __import__("sqlalchemy").engine.make_url("postgresql://u:p@db/patchhive")
+
+    class DB:
+        def get_bind(self):
+            return Bind()
+
+    with pytest.raises(seed.DemoSeedRefused, match="production"):
+        seed.seed_golden_demo(DB())

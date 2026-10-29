@@ -394,9 +394,11 @@ def seed_golden_demo(
     db: Session, fixture_path: Path = FIXTURE_PATH, *, environment: str | None = None
 ) -> SeedResult:
     # Checked before any write: never production, never a public password on a hosted DB.
+    # The environment comes from the same settings source as the database URL (it reads
+    # .env as well as the process environment); an explicit argument still wins.
     user_password, admin_password = demo_passwords(
         db.get_bind().url.render_as_string(hide_password=False),
-        environment if environment is not None else os.environ.get("ENVIRONMENT"),
+        environment if environment is not None else Settings().environment,
     )
     fixture = _load_fixture(fixture_path)
     _ensure_case(db, fixture)
