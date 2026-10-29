@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
-import { refreshSession, signOut } from "@/lib/session";
+import { restoreSession, signOut } from "@/lib/session";
 import { useAuthStore } from "@/lib/store";
 import AccountPage from "@/pages/Account";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
@@ -29,7 +29,7 @@ function App() {
   const { user, isAuthenticated } = useAuthStore();
   // Restore the session from the API's refresh cookie after a reload.
   useEffect(() => {
-    if (ACCOUNTS_OPEN) void refreshSession();
+    if (ACCOUNTS_OPEN) void restoreSession();
   }, []);
   const [theme, setTheme] = useState<Theme>("dark");
   const canSeeAdmin = user && ["Admin", "Ops", "Support", "ReadOnly"].includes(user.role);
