@@ -2,7 +2,7 @@
 
 **Authoritative as of:** 2026-10-29  
 **Branch pin:** `main` on `Zero-State-LLC/Patch-Hive`  
-**HEAD:** `ff73657` (#123, signed-out refresh); in review: #124 (spec 003 D3–D6, FR-036–038), #125 (reviewed corrections, CHICANE)  
+**HEAD:** `66e34a3` (#126, docs); #124 (spec 003 D3–D6, FR-036–038) and #125 (reviewed corrections) merged and loaded  
 **Recent work (2026-10-28):** gap-analysis fixes for specs 001–005 and P0/P1 security (#82–#105); Cloudflare edge for staging and production (#83–#87, #107); short-lived tokens, refresh cookie and an enforced CSP (#99, #100, #113); prod catalog load, Products page, category fill and catalog tombstones (#112–#116). 2026-10-29: slices A1–A5 (#118, #119, #121–#123) and a second retirement (#120). Staging and production both run main.  
 **Open PRs:** [#110](https://github.com/Zero-State-LLC/Patch-Hive/pull/110) opt-in container startup migrations, [#111](https://github.com/Zero-State-LLC/Patch-Hive/pull/111) CODEOWNERS, [#109](https://github.com/Zero-State-LLC/Patch-Hive/pull/109) release 0.3.0-alpha.4, [#106](https://github.com/Zero-State-LLC/Patch-Hive/pull/106) zod bump.  
 **Board:** [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8), mirrored in [docs/KANBAN.md](docs/KANBAN.md).  
@@ -50,7 +50,7 @@
 | Dual-path inventory | F0/F1/F3/F2 done; F4/F5 residual; Z deferred |
 | Named staging host | Plan only — **NOT_PERFORMED** |
 | Payments | Test-mode only |
-| Module catalog (staging = prod) | 4,184 catalog rows and 4,154 modules, of which 448 each are tombstoned; 3,736 visible from 355 brands, 0 conflicts. 855 rows have no category. Sovage CHICANE still holds 14 HP until #125 loads. Sources: Phase 2 seed (ModularGrid leads, tagged `unknown`/`CATALOG_OBSERVED`) plus maker pages (`official_publication`). Maker-crawl page cache deleted 2026-10-28; committed crawl results intact |
+| Module catalog (staging = prod) | 4,184 catalog rows and 4,154 modules, of which 448 each are tombstoned; 3,736 visible from 355 brands, 0 conflicts. 855 rows have no category. Sovage CHICANE corrected to 4 HP (#125). Sources: Phase 2 seed (ModularGrid leads, tagged `unknown`/`CATALOG_OBSERVED`) plus maker pages (`official_publication`). Maker-crawl page cache deleted 2026-10-28; committed crawl results intact |
 | API access | Module and case writes admin-only (#79). Racks owner-scoped (#80): owner reads/writes, admin read roles read all, public racks readable by anyone, others 404. Catalog materialize and stateless layout recommendation stay public |
 | Accounts | Sign-in open on staging and production (#113). No account yet created on production; a real sign-up is still to be tried |
 | Production deploy | Frontend (`patch-hive.com`) and API (`api.patch-hive.com`) on Cloudflare, both from main; CSP enforced; CORS limited to the exact origin |
@@ -65,9 +65,8 @@
 
 ## Immediate continuation priorities
 
-1. Merge #124 (spec) and #125 (reviewed corrections), then load #125: staging dry run and apply, then the prod dry run for review.
-2. Operator: real sign-up on production; verify seeded demo auth on staging (008 T030b); VirusTotal reanalysis; rotate the context.dev and OpenRouter keys; add `PROJECT_TOKEN` and `RELEASE_PLEASE_TOKEN`; decide repo visibility versus the Actions budget; review #106, #109–#111.
-3. Owner decisions ([research.md](specs/003-catalog-dataset-pipeline/research.md)): a paid cap for Frap and a scoped cache rebuild (R3, R4; one pass for both), the `power_configs` schema (R5, T034), and confirming specs 001–004 (R6).
+1. Operator: real sign-up on production; verify seeded demo auth on staging (008 T030b); VirusTotal reanalysis; rotate the context.dev and OpenRouter keys; add `PROJECT_TOKEN` and `RELEASE_PLEASE_TOKEN`; decide repo visibility versus the Actions budget; review #106, #109–#111.
+2. Owner decisions ([research.md](specs/003-catalog-dataset-pipeline/research.md)): a paid cap for Frap and a scoped cache rebuild (R3, R4; one pass for both), the `power_configs` schema (R5, T034), and confirming specs 001–004 (R6).
 
 **Local test automation:**
 `cd backend && pytest tests -q` with a local Postgres 15 for the population tests (1,045 passed, 2 skipped on #125) · acceptance suite separately (11 passed; #78 lets it run in the same invocation)

@@ -43,7 +43,7 @@
 
 - [x] T032 Delete both `seed_catalog_from_synth.py` copies and the skipped `test_seeder_catalog.py` (D5, research R2). Done 2026-10-29.
   - depends_on: []
-- [ ] T033 Add the `correct` provenance action (FR-038): archive, then write the new value while the stored value is `only_if_value`, with a maker-page citation; the FR-035 guard lifts on an `hp` correction. Ship `provenance/maker-corrections-v1.json` for Sovage CHICANE (hp 14 → 4, verification URL to the Eurorack page) and load it to staging and prod (D4, research R1).
+- [x] T033 Add the `correct` provenance action (FR-038): archive, then write the new value while the stored value is `only_if_value`, with a maker-page citation; the FR-035 guard lifts on an `hp` correction. Ship `provenance/maker-corrections-v1.json` for Sovage CHICANE (hp 14 → 4, verification URL to the Eurorack page) and load it to staging and prod (D4, research R1). Done 2026-10-29 (#125): CHICANE holds 4 HP and the Eurorack page on staging and prod; 14 and the 1U URL are archived.
   - depends_on: [T029]
 - [ ] T034 Jumper-dependent power as `power_configs` (research R5), after the owner confirms the schema.
   - depends_on: [T033]
