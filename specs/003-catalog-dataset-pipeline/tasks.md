@@ -28,6 +28,17 @@
 - [x] T027 Load the maker-crawl overlays to prod: `db-migrate.yml` (prod), then `db-load.yml` dry run, then apply after the receipt matches staging's (0 conflicts, no destructive SQL). Operator-run. Done 2026-10-28: prod migrated to `20261028_refresh_sessions`; dry run and apply with `plan_hash` `b5b62bb3…6ac`, 0 conflicts, no destructive SQL; prod holds 4,172 catalog rows and 4,142 modules, matching staging (Actions runs 40758360845, 40758948155).
   - depends_on: [T025]
 
+## Catalog quality (2026-10-28)
+
+- [x] T028 Fill missing categories from the crawl's own tags (`scripts/build_category_overlay.py`, `overlays/module-catalog-category-v1.json`); the loader fills nulls only. Done 2026-10-28 (#115): 183 rows on staging and prod; 24 ambiguous and 644 untagged rows stay empty. Prod rows without a category: 1,038 to 855.
+  - depends_on: [T027]
+- [x] T029 Tombstone rows filed under the wrong brand (the v1 crawl gave seven brands another maker's homepage) and re-add the modules only they held (`scripts/build_reattribution.py`, `overlays/catalog-retirements-v1.json`, `catalog-additions-v5`, `module-power-depth-v13`; migration `20261028_catalog_tombstones`). Done 2026-10-28 (#116): 263 rows tombstoned in each of `module_catalog` and `modules` (262 misattributed, plus TLM "ST MODULAR"), 7 re-added; staging and prod show 3,916 modules. Overlay builds now skip a brand whose homepage is another maker's site.
+  - depends_on: [T027]
+- [ ] T030 Refuse a shared homepage when the crawler resolves a brand (`catalog_maker_crawl.py`), not only when overlays are built.
+  - depends_on: [T029]
+- [ ] T031 Rebuild the maker-crawl page cache (deleted 2026-10-28 with a worktree), only when a change needs the crawl re-parsed, under an approved paid cap; then classify the 644 untagged rows from their pages.
+  - depends_on: [T028]
+
 ## Foundational
 
 - [ ] T010 Encode the transitions table as tests (workflows: anti-slop-code, production-systems)
