@@ -137,12 +137,18 @@ class PatchGenerationIR:
         """
         Get a canonical hash of the IR for deduplication/comparison.
 
-        Uses rack_id + seed + params as the deterministic key.
+        Hashes the canonical JSON (sorted keys) of the IR without the fields that
+        describe one run rather than its inputs: run id, timestamp, commit and host.
+        Inventory, seed, params and the engine and ABX-Core versions all count
+        (spec 001 FR-001).
         """
         import hashlib
 
-        key = f"{self.rack_state.rack_id}:{self.seed}:{self.params.max_patches}:{self.params.allow_feedback}"
-        return hashlib.sha256(key.encode()).hexdigest()[:16]
+        data = self.to_dict()
+        for name in ("run_id", "created_at", "git_commit", "host"):
+            data.pop(name, None)
+        canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(canonical.encode()).hexdigest()[:32]
 
 
 @dataclass

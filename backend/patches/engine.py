@@ -176,6 +176,9 @@ class PatchGenerator:
 
         # No padding to reach max_patches: a patch the rules above cannot justify would
         # have to invent its jacks (spec 001 FR-017). Fewer patches, or none, is honest.
+        if self.config.prefer_simple:
+            # Stable sort: patches with equal cable counts keep their generation order.
+            patches.sort(key=lambda patch: len(patch.connections))
         # Limit to max patches
         return patches[: self.config.max_patches]
 
@@ -809,6 +812,11 @@ def generate_patches_with_ir(
     patch_graphs, validation = resolve_and_validate(
         patch_graphs, modules_by_id, allowed_module_ids=set(gate_report.allowed_catalog_module_ids)
     )
+    if not config.allow_feedback:
+        from patches.validation import drop_feedback_patches
+
+        patch_graphs, feedback_dropped = drop_feedback_patches(patch_graphs, validation)
+        provenance.add_metric("feedback_dropped_count", feedback_dropped)
     if dropped:
         # The inventory filter removed patches that wired modules outside the confirmed
         # inventory. That is a contradiction, so it fails the run (OQ-08), not just a filter.
