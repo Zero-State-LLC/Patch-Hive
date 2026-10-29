@@ -12,6 +12,7 @@ from community.auth import get_current_user, require_auth
 from community.models import User
 from core import get_db, settings
 from racks.access import owned_patch, owned_rack, readable_patch, readable_patches
+from racks.models import Rack
 from runs.bridge import ensure_legacy_run_export_bridge
 from runs.models import Run
 
@@ -173,6 +174,13 @@ def generate_patches(
 ):
     """Generate patches for a rack the caller owns, using the patch engine."""
     rack = owned_rack(db, rack_id, current_user)
+    return run_generation(db, rack, request)
+
+
+def run_generation(db: Session, rack: Rack, request: GeneratePatchesRequest) -> GeneratePatchesResponse:
+    """The one generation path (spec 001 FR-018/FR-022): readiness gate, then a run that
+    always ends terminal. Callers check ownership or admin rights first."""
+    rack_id = rack.id
 
     # Build engine config
     config = PatchEngineConfig(
@@ -208,100 +216,105 @@ def generate_patches(
     db.add(run)
     db.commit()
     db.refresh(run)
-    # Matrix slice A: ensure canon FK targets + export bridge as soon as the run exists
-    # (do not rely solely on GET /api/runs side-effect).
-    bridge = ensure_legacy_run_export_bridge(
-        db,
-        run,
-        generation_seed=seed,
-        generator_version=settings.patch_engine_version,
-        create_library=False,
-    )
-    # F3 dual-write audit: generate must never mint legacy-* bridge ids when rack exists.
-    if bridge.export_bridge_ready and (
-        bridge.rig_revision_id.startswith("legacy-") or bridge.source_run_id.startswith("legacy-")
-    ):
-        raise HTTPException(
-            status_code=500,
-            detail="EXPORT_BRIDGE_LEGACY_ID_FORBIDDEN",
-        )
-    run.status = "running"
-    db.commit()
-
+    # Every exit after the run exists ends terminal (FR-018/FR-019): any error from here
+    # on, including the export bridge and the Design Engine dual-write, fails the run.
+    run_id = run.id
     try:
+        # Matrix slice A: ensure canon FK targets + export bridge as soon as the run exists
+        # (do not rely solely on GET /api/runs side-effect).
+        bridge = ensure_legacy_run_export_bridge(
+            db,
+            run,
+            generation_seed=seed,
+            generator_version=settings.patch_engine_version,
+            create_library=False,
+        )
+        # F3 dual-write audit: generate must never mint legacy-* bridge ids when rack exists.
+        if bridge.export_bridge_ready and (
+            bridge.rig_revision_id.startswith("legacy-") or bridge.source_run_id.startswith("legacy-")
+        ):
+            raise HTTPException(
+                status_code=500,
+                detail="EXPORT_BRIDGE_LEGACY_ID_FORBIDDEN",
+            )
+        run.status = "running"
+        db.commit()
+
         generation_ir, patch_graphs, provenance = generate_patches_with_ir(
             db, rack, seed=seed, config=config
         )
+
+        provenance_metrics = provenance.to_dict().get("metrics") or {}
+        if provenance_metrics.get("generation_status") == "VALIDATION_FAILED":
+            # A blocking finding (an invented or impossible jack) fails the run closed:
+            # nothing is saved or added to the library (FR-016/FR-019).
+            run.status = "validation_failed"
+            run.validation_report = provenance_metrics.get("validation")
+            db.commit()
+            return GeneratePatchesResponse(
+                generated_count=0,
+                patches=[],
+                run_id=run.id,
+                export_bridge_ready=False,
+                source_run_id=bridge.source_run_id,
+                rig_revision_id=bridge.rig_revision_id,
+                generation_status="VALIDATION_FAILED",
+                validation=provenance_metrics.get("validation"),
+            )
+
+        # Save patches to database with full IR/provenance for deterministic replay.
+        saved_patches = []
+        ir_dict = generation_ir.to_dict()
+        provenance_dict = provenance.to_dict()
+        metrics = provenance_dict.get("metrics") or {}
+        inventory_revision_id = metrics.get("inventory_revision_id")
+        if not inventory_revision_id and isinstance(metrics.get("inventory_gate"), dict):
+            inventory_revision_id = metrics["inventory_gate"].get("inventory_revision_id")
+        inventory_gate_code = None
+        if isinstance(metrics.get("inventory_gate"), dict):
+            inventory_gate_code = metrics["inventory_gate"].get("code")
+        generation_status = metrics.get("generation_status")
+        for spec in patch_graphs:
+            tags = _derive_tags([c.to_dict() for c in spec.connections])
+            db_patch = Patch(
+                rack_id=rack_id,
+                run_id=run.id,
+                name=spec.patch_name,
+                category=spec.category,
+                description=spec.description,
+                connections=[c.to_dict() for c in spec.connections],
+                generation_seed=spec.generation_seed,
+                generation_version=settings.patch_engine_version,
+                suggested_name=spec.patch_name,
+                engine_config=config.__dict__,
+                provenance=provenance_dict,
+                generation_ir=ir_dict,
+                generation_ir_hash=getattr(spec, "generation_ir_hash", None),
+                is_public=False,
+                tags=tags,
+            )
+            db.add(db_patch)
+            saved_patches.append(db_patch)
+
+        run.status = "succeeded"
+        run.validation_report = metrics.get("validation")
+        # Validation passed: now the run gets its library and becomes export-ready.
+        bridge = ensure_legacy_run_export_bridge(
+            db, run, generation_seed=seed, generator_version=settings.patch_engine_version
+        )
+        db.flush()
+        # Path A (KD-20): dual-write sealed GeneratedPatchRecord for Design Engine spine
+        from export.patchbook.design.dual_write import dual_write_generated_patches
+
+        dual_write_generated_patches(db, bridge=bridge, patches=saved_patches)
+        db.commit()
     except Exception:
         db.rollback()
-        run.status = "failed"
-        db.commit()
+        failed = db.get(Run, run_id)
+        if failed is not None and failed.status in {"queued", "running"}:
+            failed.status = "failed"
+            db.commit()
         raise
-
-    provenance_metrics = provenance.to_dict().get("metrics") or {}
-    if provenance_metrics.get("generation_status") == "VALIDATION_FAILED":
-        # A blocking finding (an invented or impossible jack) fails the run closed:
-        # nothing is saved or added to the library (FR-016/FR-019).
-        run.status = "validation_failed"
-        run.validation_report = provenance_metrics.get("validation")
-        db.commit()
-        return GeneratePatchesResponse(
-            generated_count=0,
-            patches=[],
-            run_id=run.id,
-            export_bridge_ready=False,
-            source_run_id=bridge.source_run_id,
-            rig_revision_id=bridge.rig_revision_id,
-            generation_status="VALIDATION_FAILED",
-            validation=provenance_metrics.get("validation"),
-        )
-
-    # Save patches to database with full IR/provenance for deterministic replay.
-    saved_patches = []
-    ir_dict = generation_ir.to_dict()
-    provenance_dict = provenance.to_dict()
-    metrics = provenance_dict.get("metrics") or {}
-    inventory_revision_id = metrics.get("inventory_revision_id")
-    if not inventory_revision_id and isinstance(metrics.get("inventory_gate"), dict):
-        inventory_revision_id = metrics["inventory_gate"].get("inventory_revision_id")
-    inventory_gate_code = None
-    if isinstance(metrics.get("inventory_gate"), dict):
-        inventory_gate_code = metrics["inventory_gate"].get("code")
-    generation_status = metrics.get("generation_status")
-    for spec in patch_graphs:
-        tags = _derive_tags([c.to_dict() for c in spec.connections])
-        db_patch = Patch(
-            rack_id=rack_id,
-            run_id=run.id,
-            name=spec.patch_name,
-            category=spec.category,
-            description=spec.description,
-            connections=[c.to_dict() for c in spec.connections],
-            generation_seed=spec.generation_seed,
-            generation_version=settings.patch_engine_version,
-            suggested_name=spec.patch_name,
-            engine_config=config.__dict__,
-            provenance=provenance_dict,
-            generation_ir=ir_dict,
-            generation_ir_hash=getattr(spec, "generation_ir_hash", None),
-            is_public=False,
-            tags=tags,
-        )
-        db.add(db_patch)
-        saved_patches.append(db_patch)
-
-    run.status = "succeeded"
-    run.validation_report = metrics.get("validation")
-    # Validation passed: now the run gets its library and becomes export-ready.
-    bridge = ensure_legacy_run_export_bridge(
-        db, run, generation_seed=seed, generator_version=settings.patch_engine_version
-    )
-    db.flush()
-    # Path A (KD-20): dual-write sealed GeneratedPatchRecord for Design Engine spine
-    from export.patchbook.design.dual_write import dual_write_generated_patches
-
-    dual_write_generated_patches(db, bridge=bridge, patches=saved_patches)
-    db.commit()
 
     # Build responses
     patch_responses = [build_patch_response(db, p) for p in saved_patches]

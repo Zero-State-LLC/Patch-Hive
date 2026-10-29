@@ -5,7 +5,8 @@ Referral program utilities and credit ledger helpers.
 from __future__ import annotations
 
 import secrets
-from datetime import datetime
+from datetime import datetime, timezone
+from hashlib import sha256
 from typing import Optional
 
 from sqlalchemy.orm import Session
@@ -144,6 +145,24 @@ def apply_referral_reward(
     )
     db.add(reward_entry)
     db.add(rewarded_entry)
+    # Spending and the balance users see read the canonical ledger (spec 004 FR-009), so
+    # the reward goes there too, once per referral, as the admin grant does.
+    from canon.models import CanonicalCreditLedgerEntryRecord
+
+    reward_key = f"referral-reward:{referral_pending.id}"
+    reward_id = f"grant-{sha256(reward_key.encode('utf-8')).hexdigest()[:24]}"
+    if db.get(CanonicalCreditLedgerEntryRecord, reward_id) is None:
+        db.add(
+            CanonicalCreditLedgerEntryRecord(
+                id=reward_id,
+                user_id=referral_pending.referrer_user_id,
+                delta=REFERRAL_REWARD_CREDITS,
+                entry_type="grant",
+                idempotency_key=reward_key,
+                export_id=None,
+                created_at=datetime.now(timezone.utc),
+            )
+        )
     return reward_entry
 
 
