@@ -110,3 +110,29 @@ def test_overlay_builds_still_skip_only_owned_hosts() -> None:
         {"brand": "Beta Labs", "homepage": "https://synthshop.example/"},
     ]
     assert B.shared_homepage_skips(brands) == {"Mental Noise": "Make Noise"}
+
+
+def test_a_partial_rerun_keeps_an_earlier_refusal() -> None:
+    """Both brands on an unowned host were refused and saved with homepage null."""
+    committed = [
+        {"brand": "In The Trees", "status": "shared_homepage", "homepage": None,
+         "candidate": "https://jasmineandolivetrees.com/"},
+        {"brand": "Jasmine & Olive Trees", "status": "shared_homepage", "homepage": None,
+         "candidate": "https://jasmineandolivetrees.com/"},
+        {"brand": "Make Noise", "status": "done", "homepage": "https://www.makenoisemusic.com/"},
+    ]
+    known = crawl.committed_claims(committed)
+    assert known["Jasmine & Olive Trees"] == "https://jasmineandolivetrees.com/"
+    rerun = {"In The Trees": {"brand": "In The Trees", "homepage": "https://jasmineandolivetrees.com/", "how": "v1_crawl"}}
+    crawl.guard_shared_homepages(rerun, known)
+    assert rerun["In The Trees"]["status"] == "shared_homepage"
+    assert rerun["In The Trees"]["shared_with"] == ["Jasmine & Olive Trees"]
+
+
+def test_a_refused_brand_saved_by_a_real_run_keeps_its_candidate() -> None:
+    crawl.BUDGET = type("B", (), {"can_spend": lambda self: True})()
+    rec = crawl.crawl_brand("In The Trees", cap=5, r={
+        "brand": "In The Trees", "homepage": None, "status": "shared_homepage", "how": "v1_crawl",
+        "candidate": "https://jasmineandolivetrees.com/", "owner": None, "shared_with": ["Jasmine & Olive Trees"],
+    })
+    assert crawl.committed_claims([rec]) == {"In The Trees": "https://jasmineandolivetrees.com/"}

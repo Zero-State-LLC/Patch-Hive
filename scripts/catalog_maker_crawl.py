@@ -745,6 +745,18 @@ def resolve_within_budget(brand: str) -> dict:
     return resolve_brand(brand)
 
 
+def committed_claims(brands: list[dict]) -> dict[str, str]:
+    """Each committed brand's claim on a host: its homepage, or for a brand an earlier run
+    refused, the candidate it was refused for. A partial rerun of one refused brand then
+    still sees the rival claim instead of crawling the shared site again."""
+    claims = {}
+    for b in brands:
+        host = b.get("homepage") or (b.get("candidate") if b.get("status") == "shared_homepage" else None)
+        if host:
+            claims[b["brand"]] = host
+    return claims
+
+
 def guard_shared_homepages(resolved: dict[str, dict], known: dict[str, str]) -> list[dict]:
     """Refuse a homepage another brand holds, before any brand is crawled (spec 003 T030).
 
@@ -917,7 +929,7 @@ def main(argv: list[str] | None = None) -> int:
         for brand, r in zip(brands, pool.map(resolve_within_budget, brands)):
             resolved[brand] = r
     committed = OUT / "maker-crawl-v2.json"
-    known = {b["brand"]: b.get("homepage") for b in json.loads(committed.read_text())["brands"]} if committed.is_file() else {}
+    known = committed_claims(json.loads(committed.read_text())["brands"]) if committed.is_file() else {}
     shared = guard_shared_homepages(resolved, known)
     for c in shared:
         print(f"shared homepage {c['host']}: {', '.join(c['brands'])} (owner: {c['owner'] or 'none'})", flush=True)
