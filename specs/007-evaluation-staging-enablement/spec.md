@@ -61,6 +61,7 @@ As the operator, I want an authorization record for staging enablement so that n
 - **FR-004** False-canonicalization MUST be zero, counted both as the Spec 005 invariant and structurally through the Spec 006 resolution machine [OBSERVED: OPERATOR_NOTES.md].
 - **FR-005** Staging enablement MUST be an authorization record, not a settings mutation; this repository MUST NOT set `ENABLE_CLEF_PROVIDER` [OBSERVED: OPERATOR_NOTES.md].
 - **FR-006** The pinned receipt's `receipt_sha256` MUST be accepted by the Spec 006 `gates_pass` guard as the evaluation receipt SHA [OBSERVED: OPERATOR_NOTES.md].
+  The receipt is self-consistent only: its SHA is unkeyed, so a forged receipt passes, and `gates_pass` accepts any 64-hex string (research R1).
 
 ### Key entities
 
@@ -72,7 +73,7 @@ As the operator, I want an authorization record for staging enablement so that n
 - **Data:** no schema migration, no D1, no network, database, or provider calls in these modules [OBSERVED: OPERATOR_NOTES.md].
 - **Security/privacy:** records hold identifiers, hashes, and aggregate metrics only; no packets, image bytes, rights payloads, source URLs, or secrets [OBSERVED: OPERATOR_NOTES.md].
 - **Observability:** the receipt chain is the audit trail; rejected events leave state unchanged [OBSERVED: OPERATOR_NOTES.md].
-- **Rollback:** set `ENABLE_CLEF_PROVIDER=false` in staging; records are append-only, so nothing needs a data rollback [INFERRED].
+- **Rollback:** set `ENABLE_CLEF_PROVIDER=false` in staging; records are append-only, so nothing needs a data rollback [OBSERVED: backend/core/config.py, backend/evidence/routes.py; RESOLVED 2026-10-29, research R2].
 
 ## Success criteria
 
@@ -83,3 +84,25 @@ As the operator, I want an authorization record for staging enablement so that n
 ## Out of scope
 
 Production enablement, live provider runs in CI, and threshold overrides (there is no override path in code) [OBSERVED: OPERATOR_NOTES.md].
+
+## Implementation status (2026-10-29)
+
+Checked against `main` at 95ca9ee. Decision research is in [research.md](research.md).
+
+| FR | Status | Evidence |
+| --- | --- | --- |
+| FR-001 Sealed, SHA-linked records | Implemented | `_Record.seal`/`intact` and predecessor SHAs [OBSERVED: backend/intelligence/evaluation_enablement.py]. Integrity only; not authenticity (R1) |
+| FR-002 Re-verify on every transition | Implemented | Guards re-check `intact()` and links; rejection leaves state unchanged [OBSERVED: backend/intelligence/enablement_machine.py; tests/integration/test_007_evaluation_enablement_machine.py passed 2026-10-29] |
+| FR-003 No STAGING_ENABLED without approval | Implemented | `staging_enabled` requires an intact approval linked to the staging record [OBSERVED: enablement_machine.py] |
+| FR-004 Zero false-canonicalization | Implemented | Spec 005 count plus the structural resolution-machine replay [OBSERVED: evaluation_enablement.py `_condition_metrics`]. The 005 base count is a hardcoded 0 (005 research R4) |
+| FR-005 Authorization record, not a settings mutation | Implemented | No module sets `ENABLE_CLEF_PROVIDER`. `edge/api/wrangler.jsonc` names it only in a comment, and `edge/api/src/index.ts` forwards it only when the Worker sets it [OBSERVED] |
+| FR-006 Receipt accepted by `gates_pass` | Partial | Accepted, but any 64-hex SHA is, and `verify_enablement_receipt` passes a forged mapping (R1) [OBSERVED: backend/core/ops/edge_readiness.py; scratch run 2026-10-29] |
+
+Counts: 5 Implemented, 1 Partial, 0 Missing.
+
+## Open questions (2026-10-29)
+
+This spec had no open-questions list. The `[INFERRED]` items and research questions:
+
+- **Rollback by `ENABLE_CLEF_PROVIDER=false`.** RESOLVED: the adapter is inert with the flag off and a failed provider persists no receipt (R2).
+- **How is an approval bound to a person?** Open for the owner. Recommendation: an Ed25519 signature over `receipt_sha256` from an allowlisted approver key, plus replay of the chain (R1, T080–T082).

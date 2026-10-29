@@ -36,3 +36,20 @@
   - depends_on: [T061, 007:T060b]
 - [ ] T070 Staging enablement only after gate passes. Tracked as 007 T050b.
   - depends_on: [T061, 007:T050b]
+
+## Gap closure (2026-10-29)
+
+From [research.md](research.md). Effort in brackets.
+
+- [ ] T081 Treat an unsupported or invalid packet as a provider failure: ESCALATE with a routing target, else UNRESOLVED, keeping the reason codes; fix the "fail closed (REJECT)" docstring in `evidence/routes.py` (R3) [S].
+  - depends_on: [T060a]
+- [ ] T082 Route every provider through `resolve_module_identity_guarded` and use `settings.decision_policy_version`; drop the hardcoded `decision-policy-v1` (R2) [S].
+  - depends_on: [T050c3, T081]
+- [ ] T083 Check idempotency before the provider call: store `idempotency_key` with a unique `(request_id, idempotency_key)` index, and set `evidence_hash` to a SHA-256 of the retained evidence packet and image (R5) [M].
+  - depends_on: [T082]
+- [ ] T084 Pass the choice request into evaluation so the candidate check runs, and replace the hardcoded `false_canonicalization_count = 0` with the structural count (R4) [S–M].
+  - depends_on: [T060]
+- [ ] T085 Name one bounded routing target (human review) in settings and pass it to the guarded resolution (R6) [S].
+  - depends_on: [T082]
+- [ ] T080 Gate the runtime on a verified 007 receipt: outside development, refuse to start (and answer 409 `ENABLEMENT_RECEIPT_REQUIRED`) unless a signed receipt names the configured provider and policy version (R1) [M].
+  - depends_on: [T082, 007:T081]

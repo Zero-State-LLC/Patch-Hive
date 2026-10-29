@@ -68,3 +68,33 @@ Decision research for the open catalog decisions (2026-10-29). Each item gives t
 ## R6. Spec confirmations (001–004 T001)
 
 Each spec is still DRAFT with `[INFERRED]` claims the operator must confirm. These are operator sittings, not engineering. Recommendation: one sitting per spec, starting with 003, whose open questions are now mostly settled (D1–D6).
+
+## R7. The 221 unsourced HP values in `module-catalog-hp-v1` (FR-004, D2)
+
+**Evidence**
+
+- `overlays/module-catalog-hp-v1.json` holds 221 fill-null HP entries. None has a `source_url`; 186 are `source_class = maker_or_retail` and 35 `unknown_non_modulargrid` [OBSERVED].
+- The loader now accepts an HP overlay entry only with `source_class = maker` and an https `source_url`. v1 is let through by name (`UNSOURCED_HP_OVERLAYS`) [OBSERVED: data/synth-catalog/population.py:839].
+- Matched by brand and name against the committed maker crawl (`hermes-research/maker-crawl-v2.json`, 2026-10-29): 45 agree with a maker page, 7 disagree, 169 have no maker HP [OBSERVED: local comparison]. The 169 are mostly Doepfer (50), Bastl (27), ADDAC (26), Befaco (12) and Intellijel (11).
+- The 7 disagreements: Acid Rain Junction (6 vs 4), ALM Akemie's Castle (18 vs 38), Befaco Hexmix VCA (12 vs 14), Intellijel Quadrax (12 vs 14), Make Noise DPO (30 vs 28), Make Noise Morphagene (18 vs 20), Qu-Bit Data Bender (12 vs 14). The crawl is not always right: Akemie's Castle is widely listed at 18 HP, so 38 looks like an extraction error [INFERRED].
+- Flagging an HP value blocks rack placement (FR-035), so flagging all 221 would block common modules [OBSERVED: backend/racks/validation.py].
+
+**Options**
+
+1. Keep all 221 grandfathered. Simple, but D2 says retailer values come only from one-off manual lookups, and these carry no lookup record.
+2. Flag all 221. Honest, but blocks placement of 221 modules until each is re-checked.
+3. Triage: re-source the 45 that agree (a v3 HP manifest citing the maker page, no value change); check the 7 by hand against the maker page and fix the wrong ones with `correct` entries (D4); keep the 169 grandfathered but mark them `hp_source = legacy_unsourced` so the catalog can show "HP not maker-checked"; then look up the 169 on maker pages (Doepfer and Bastl publish HP on free pages) and retire `UNSOURCED_HP_OVERLAYS` when the list is empty.
+
+**Recommendation:** option 3. It fixes the known errors now, keeps placement working, and makes the remaining gap visible and finite. Effort: M (one manifest builder, one small API field, a free lookup pass). Awaits the owner (tasks T038, T039).
+
+## R8. A correction leaves `needs_reverify` set (row lifecycle, FR-038)
+
+**Evidence:** the lifecycle table says `FLAGGED --correct--> LIVE` [OBSERVED: spec.md, Row lifecycle]. `_correct_row` writes the new value and `updated_at` only; nothing in the loader ever sets `needs_reverify = FALSE` [OBSERVED: data/synth-catalog/population.py:585]. CHICANE's HP block lifts only because the FR-035 guard also looks for a `correct` archive row [OBSERVED: backend/racks/validation.py]; the flag itself stays set, so counts of flagged rows and the admin view still show it.
+
+**Recommendation:** not a decision; the spec already says what should happen. Clear `needs_reverify` in the same UPDATE when every field this row was flagged for has a `correct` archive row. Keep it set if another flagged field is still open. Effort: S (task T036).
+
+## R9. A tombstoned row can still be corrected or flagged (row lifecycle, D3)
+
+**Evidence:** `TOMBSTONED` is final [OBSERVED: spec.md, Row lifecycle]. The retirement UPDATE checks `tombstoned_at IS NULL` [OBSERVED: population.py:931], but `_row_where`, used by archive, correct and reverify, matches on slug, brand and name only [OBSERVED: population.py:525]. A later manifest that names a retired row would archive and rewrite it.
+
+**Recommendation:** not a decision. Add the tombstone check to the archive, correct and reverify statements, and count a skipped entry in the receipt as `refused: row_tombstoned`. Effort: S (task T037).

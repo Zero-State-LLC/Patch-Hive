@@ -116,3 +116,22 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
 
 - [x] T090 Integration tests for decision and deployment machines.
   - depends_on: [T010, T070]
+
+## Gap closure (2026-10-29)
+
+From [research.md](research.md). Effort in brackets.
+
+- [ ] T100 Make `gates_pass` verify the evaluation receipt itself: carry it in `ReadinessEvidence`, call the signed 007 verifier, and require its `receipt_sha256` to match (R1) [S].
+  - depends_on: [T070, 007:T081]
+- [ ] T101 Put production deploy workflows behind a GitHub environment with required reviewers (R2).
+  - depends_on: [T001]
+  - [ ] T101b Create `staging` and `production` environments; give `production` required reviewers and a `main`-only branch rule; move `PATCHHIVE_DATABASE_URL_PROD` and the Cloudflare token into it (operator, repo admin) [S].
+    - depends_on: [T001]
+  - [ ] T101a Set the job `environment:` in `db-migrate.yml`, `db-load.yml` and `edge-secrets.yml` from the target input, mapping `prod` to `production`, and read secrets from the environment (code) [S].
+    - depends_on: [T101b]
+- [ ] T102 Delete `.github/workflows/deploy-worker-pin-pr.yml`; it deploys the Noema project, not PatchHive (R3) [S].
+  - depends_on: [T001]
+- [ ] T103 Drop `actions: write` from `db-load.yml` (R4) [S].
+  - depends_on: [T001]
+- [ ] T104 Revoke the newly created R2 token when the bulk secret write or the Worker check fails in `edge-secrets.yml` (R5) [S].
+  - depends_on: [T001]

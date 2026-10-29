@@ -21,6 +21,57 @@ This feature also specifies the historical publishing layer. That layer lets an 
 
 **Why:** Performers need a reproducible, accessible, printable manual that agrees with their confirmed inventory and canonical patch artifacts. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] Publishing lets owners share those artifacts with provenance. Moderation keeps the public surface accountable. [OBSERVED: PUBLISHING_IMPLEMENTATION.md]
 
+## Implementation status (2026-10-29)
+
+Checked against the code on `main` at 95ca9ee. Open gaps link to [research.md](research.md) and to the gap-closure tasks in [tasks.md](tasks.md). "Design Engine" means `backend/export/patchbook/design/`. Totals: compilation 7 implemented, 15 partial, 2 missing; publishing 17 implemented, 2 partial, 1 missing.
+
+| FR | Status | Evidence |
+|---|---|---|
+| FR-001 | Implemented | One execution page per patch. Overflow fails instead of continuing (#101) [OBSERVED: design/engine.py]. Plate mode is under FR-016. |
+| FR-002 | Implemented | No page has a QR code or companion link, so none can hold required content [OBSERVED: repo grep 2026-10-29]. |
+| FR-003 | Implemented | Text wraps by measured width (#101). The legacy rig and patch PDFs wrap and continue on a new page (#133). |
+| FR-004 | Partial | Body, steps, cables, cover and colophon use the floor (#102). The cover disclaimer is drawn at 8 pt (R4, T035). |
+| FR-005 | Implemented | Dash pattern, number and label per signal; preflight `COLOR_ONLY_DIAGRAMS` [OBSERVED: design/diagram_svg.py, design/preflight.py]. |
+| FR-006 | Partial | `composition_hash` is computed from content hashes, but replay is never checked (R1, T030). |
+| FR-007 | Partial | Each patch gets one `design_engine` stage receipt. The page stages are not separate and leave no receipts [OBSERVED: design/content_spine.py]. |
+| FR-008 | Partial | Preflight checks the diagram region and execution footer only (`DIAGRAM_REGION_MISSING`, `EXECUTION_FOOTER_MISSING`). |
+| FR-009 | Partial | The three classes are typed. Each family has one default, with no fallback to another class [OBSERVED: design/families/registry.py]. |
+| FR-010 | Implemented | Required content is never dropped; a page that can't hold it fails (#101). |
+| FR-011 | Partial | SVG first, numbered routes, arrows, dash encoding. Feedback cycles are not marked [OBSERVED: design/diagram_svg.py]. |
+| FR-012 | Partial | `CONTRAST_BELOW_AA`, `READING_ORDER_EMPTY`, a text companion and per-page JSON. No full WCAG 2.2 AA check. |
+| FR-013 | Partial | The legacy route refuses patches from another rig (#133). The Design Engine checks only for a patch with no cables. |
+| FR-014 | Partial | Same evidence as FR-013 [INFERRED]. |
+| FR-015 | Partial | Overflow codes (#101) and the font floor (#102). Label collisions and cable crossings are not checked (OQ-9). |
+| FR-016 | Missing | No book validation stage. In plate mode the manifest has 2N+2 pages and the PDF N+2 (R1, T030, T031). |
+| FR-017 | Missing | The manifest has no per-page entries (R1, T030). |
+| FR-018 | Partial | PDF, manifest, two-hash `checksums.json`, page JSON, diagram SVGs, library index, LICENSE, companion. No README and no per-file checksums (R1). |
+| FR-019 | Partial | Only a few section 15 codes exist. Preflight warnings are dropped (R5, T036). |
+| FR-020 | Implemented | Composition reads sealed compilations and writes only into the pack directory [INFERRED from design/engine.py]. |
+| FR-021 | Partial | The optional block goes first, then the export fails with a code (#101). No per-patch rejection and no other layout. |
+| FR-022 | Implemented | Cover and colophon are separate pages [OBSERVED: design/engine.py]. |
+| FR-023 | Partial | Stage receipts carry `determinism_class` and `operation_version`. No rune declares its schemas, side effects or test vectors [OBSERVED: canon/contracts.py]. |
+| FR-024 | Partial | No `COMPILE_PATCH_PAGE` stage. The preflight and overflow gates cover part of it. |
+| FR-030 | Implemented | The router is mounted only when the flag is set; the default is false [OBSERVED: backend/main.py, backend/core/config.py]. |
+| FR-031 | Implemented | Publishing pages are only under `frontend/src/legacy/`, and no active page imports them [OBSERVED: repo grep 2026-10-29]. |
+| FR-032 | Implemented | With the flag off every route is 404 and changes nothing (OQ-5). |
+| FR-033 | Implemented | 403 `Export ownership mismatch` on export and publication create [OBSERVED: backend/publishing/routes.py]. |
+| FR-034 | Implemented | `unique_publication_export`, and 400 on a second create [OBSERVED: backend/publishing/models.py, routes.py]. |
+| FR-035 | Implemented | `slug` is unique; `unique_slug` [OBSERVED: backend/publishing/models.py]. |
+| FR-036 | Partial | The gallery excludes unlisted. Create has no `unlisted` default (R3, T034). |
+| FR-037 | Implemented | `PublicationUpdate` has only the listed fields, and `status` takes only `published` or `hidden` [OBSERVED: backend/publishing/schemas.py]. |
+| FR-038 | Implemented | Only lifecycle pairs are accepted; anything else is 409 `INVALID_TRANSITION` (#101). |
+| FR-039 | Implemented | The public payload has no email or database id; the publisher shows as "PatchHive User" [OBSERVED: backend/publishing/routes.py]. |
+| FR-040 | Implemented | License and `run_id`, `generated_at`, `patch_count`, `manifest_hash` [OBSERVED: same]. |
+| FR-041 | Implemented | 403 `Downloads disabled` when `allow_download` is false [OBSERVED: same]. |
+| FR-042 | Partial | `limit`, `recent_days` and `cursor` are checked. `export_type` takes any string (R3, T034). |
+| FR-043 | Implemented | Read, download and report require `published`; the gallery also requires `public` [OBSERVED: same]. |
+| FR-044 | Implemented | `ReportCreate` needs a reason (3–200 characters); details are optional [OBSERVED: backend/publishing/schemas.py]. |
+| FR-045 | Implemented | `_audit_moderation` writes actor, action, target, delta and reason, and sets `moderation_audit_id` and `removed_reason` [OBSERVED: backend/publishing/routes.py]. |
+| FR-046 | Implemented | Removed is filtered from every read, and any PATCH is refused (#130). |
+| FR-047 | Implemented | Separate `publication_exports` table [OBSERVED: backend/publishing/models.py]. |
+| FR-048 | Missing | Publish checks no book validation (R2, T032). |
+| FR-049 | Implemented | Publishing imports no decision-layer code [OBSERVED: repo grep 2026-10-29]. |
+
 ## Scope
 
 In scope:
@@ -137,8 +188,8 @@ Acceptance criteria:
 
 - **FR-001**: Each published patch must occupy exactly one page. A patch must not continue onto another page, share a page, or rely on its facing page. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **FR-002**: A QR code or online companion may extend a page, but it must not contain required execution information. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- **FR-003**: Required content must not be hidden, clipped, truncated, or replaced by an ellipsis. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] Implemented 2026-10-28 for the Design Engine execution PDF: titles, intents, steps and cables wrap by measured width (`layout_patch_page`), and long diagram labels wrap inside their node instead of being cut at 18 characters.
-- **FR-004**: Body text must not be smaller than 9.5 pt in print profiles or 14 px equivalent in digital profiles. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] Implemented 2026-10-28 for the Design Engine PDF: intent, steps and cables (required content) and cover and colophon text are drawn at `body_size_pt()`, the recipe minimum but never below 9.5 pt for print profiles or 10.5 pt (14 px) for digital ones. A recipe asking for less is raised, with a `BODY_SIZE_RAISED_TO_FLOOR` warning; any text run below the floor is an error. Captions, the title block and footers are not body text.
+- **FR-003**: Required content must not be hidden, clipped, truncated, or replaced by an ellipsis. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] Implemented 2026-10-28 (#101) for the Design Engine execution PDF: titles, intents, steps and cables wrap by measured width (`layout_patch_page`), and long diagram labels wrap inside their node instead of being cut at 18 characters. Implemented 2026-10-29 (#133) for the legacy rig and patch PDFs: text wraps and continues on a new page.
+- **FR-004**: Body text must not be smaller than 9.5 pt in print profiles or 14 px equivalent in digital profiles. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] Implemented 2026-10-28 (#102) for the Design Engine PDF: intent, steps and cables (required content) and cover and colophon text are drawn at `body_size_pt()`, the recipe minimum but never below 9.5 pt for print profiles or 10.5 pt (14 px) for digital ones. A recipe asking for less is raised, with a `BODY_SIZE_RAISED_TO_FLOOR` warning; any text run below the floor is an error. Captions, the title block and footers are not body text. The cover's patent disclaimer is still 8 pt (research R4).
 - **FR-005**: Color must not be the only way to encode a signal or cable. Pages must remain understandable in grayscale. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **FR-006**: Fixed normalized input, schema version, generator version, layout profile, and seed must produce canonical-equivalent output. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **FR-007**: Compilation must run the pipeline stages in the order shown in [Page compilation machine](#page-compilation-machine-per-patch) and write a receipt for each stage. A terminal failure must keep all completed receipts and diagnostics. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
@@ -160,6 +211,7 @@ Acceptance criteria:
   - Required modes and normal-break behavior are explicit.
   - Warnings match the ValidationReport.
   - Unsupported safety claims are absent.
+  - Implemented 2026-10-29 in part (#133): the legacy patch book refuses patches from another rig (`PATCH_BOOK_REFERENCE_UNRESOLVED`), and `POST /api/export/patchbook` is off by default (410).
 - **FR-014**: Compilation must use only confirmed inventory and capabilities. A missing physical or functional fact must produce an explicit error. The compiler must not invent a substitute fact. [INFERRED] (constitution principles 3 and 8)
 - **FR-015**: Page-fit validation must confirm the following: [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
   - The patch produces exactly one rendered page.
@@ -195,7 +247,7 @@ Acceptance criteria:
 - **FR-035**: Each publication slug must be unique. [OBSERVED: backend/publishing/models.py]
 - **FR-036**: Visibility is either `unlisted` or `public`. The default is `unlisted`. The gallery must exclude unlisted publications. [OBSERVED: backend/publishing/models.py] [OBSERVED: PUBLISHING_IMPLEMENTATION.md]
 - **FR-037**: Owner updates are limited to `title`, `description`, `visibility`, `allow_download`, `allow_remix`, `cover_image_url`, and `status`. Status can only be set to `published` or `hidden`. [OBSERVED: docs/PUBLISHING_API.md]
-- **FR-038**: Publication status must change only through the [publication lifecycle transitions](#publication-lifecycle-machine). [OBSERVED: PUBLISHING_IMPLEMENTATION.md] ("immutable records (status transitions only)"; see OQ-4) Implemented 2026-10-28: creation starts in `draft`; owner, admin and report actions accept only the pairs in the lifecycle table and answer 409 `INVALID_TRANSITION` otherwise, with no state change.
+- **FR-038**: Publication status must change only through the [publication lifecycle transitions](#publication-lifecycle-machine). [OBSERVED: PUBLISHING_IMPLEMENTATION.md] ("immutable records (status transitions only)"; see OQ-4) Implemented 2026-10-28 (#101): creation starts in `draft`; owner, admin and report actions accept only the pairs in the lifecycle table and answer 409 `INVALID_TRANSITION` otherwise, with no state change.
 - **FR-039**: Public payloads must exclude email addresses and internal IDs. [OBSERVED: PUBLISHING_IMPLEMENTATION.md]
 - **FR-040**: The public read must include the license and provenance (`run_id`, `generated_at`, `patch_count`, `manifest_hash`). [OBSERVED: docs/PUBLISHING_API.md]
 - **FR-041**: Artifact downloads (`pdf`, `svg`, `zip`) must be served only when `allow_download` is `true`. [OBSERVED: docs/PUBLISHING_API.md]
@@ -203,7 +255,7 @@ Acceptance criteria:
 - **FR-043**: The gallery and public read must serve only publications in the `published` state. The gallery must also require `public` visibility. [INFERRED]
 - **FR-044**: Readers can report a publication with a required reason and optional details. [OBSERVED: docs/PUBLISHING_API.md] [OBSERVED: backend/publishing/models.py]
 - **FR-045**: Admin hide and admin remove require admin privileges. Each action writes an audit log entry with the actor, action type, target, before and after delta, and reason. Removal stores `removed_reason` and links `moderation_audit_id`. [OBSERVED: docs/PUBLISHING_API.md] [OBSERVED: PUBLISHING_IMPLEMENTATION.md] [OBSERVED: backend/publishing/models.py]
-- **FR-046**: A removed publication must not be accessible. [OBSERVED: PUBLISHING_IMPLEMENTATION.md]
+- **FR-046**: A removed publication must not be accessible. [OBSERVED: PUBLISHING_IMPLEMENTATION.md] Implemented 2026-10-29 (#130): a removed publication refuses any PATCH, metadata included.
 - **FR-047**: Publication exports must stay separate from paid MVP exports. [OBSERVED: backend/publishing/models.py]
 - **FR-048**: A publish transition requires an export bound to a PatchBookManifest that passed book validation. [INFERRED] (constitution principles 9 and 10; see OQ-6)
 - **FR-049**: No probabilistic or decision-layer component can change a publication's status, perform moderation, or accept a compiled page. [INFERRED] (constitution principle 4)
@@ -318,8 +370,7 @@ States:
 
 | from | event | guard | to | effect |
 |---|---|---|---|---|
-| `queued` | `build_spec_ok` | the inputs are present and their versions are compatible; semantic validation pass
-es | `spec_built` | Write the PatchPageSpec with its canonical hash and a stage receipt. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
+| `queued` | `build_spec_ok` | the inputs are present and their versions are compatible; semantic validation passes | `spec_built` | Write the PatchPageSpec with its canonical hash and a stage receipt. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
 | `queued` | `build_spec_fail` | an input is missing, a version is incompatible, or semantic validation fails | `rejected` | Write a receipt with `PATCH_PAGE_REQUIRED_CONTENT_MISSING` or `PATCH_PAGE_GRAPH_MISMATCH` and remediation. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] (fail-closed guard [INFERRED], constitution principle 9) |
 | `spec_built` | `score_density` | none | `density_scored` | Record text density and diagram density. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
 | `density_scored` | `select_layout_ok` | an untried approved layout class supports the output profile | `layout_selected` | Record the selected layout deterministically. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
@@ -442,17 +493,28 @@ stateDiagram-v2
 ## Open questions
 
 - **OQ-1**: `POST /me/publications` returns `status: "published"`, but the model defaults to `draft`. Does create publish immediately, or does it create a draft? NOT_COMPUTABLE. [OBSERVED: docs/PUBLISHING_API.md] [OBSERVED: backend/publishing/models.py]
+  - Resolved 2026-10-29 from the code: create makes a `draft`; the owner publishes it with `PATCH` (#101; research R6).
 - **OQ-2**: Can an owner unhide a publication that an admin hid? The sources don't say. NOT_COMPUTABLE.
+  - Resolved 2026-10-29 from the code: no. An admin hide sets `moderation_audit_id`, and an owner status change then gets 409 `PUBLICATION_UNDER_MODERATION` (research R6).
 - **OQ-3**: Can an admin remove a draft? NOT_COMPUTABLE.
+  - Resolved 2026-10-29 from the code: no. Admin remove accepts `published` or `hidden` only; a draft gets 409 `INVALID_TRANSITION` (research R6).
 - **OQ-4**: "Immutable records (status transitions only)" conflicts with owner metadata edits. Which fields are mutable after publish? NOT_COMPUTABLE. [OBSERVED: PUBLISHING_IMPLEMENTATION.md]
+  - Resolved 2026-10-29 from the code: the FR-037 fields stay editable in `draft`, `published` and `hidden`. A removed publication refuses any edit (#130; research R6).
 - **OQ-5**: Which response code do publishing endpoints return when the flag is off? NOT_COMPUTABLE.
+  - Resolved 2026-10-29 from the code: 404. The router is not mounted, so no handler runs and no state changes (`backend/main.py`; research R6).
 - **OQ-6**: Must a publication export bind to a validated PatchBookManifest, given that it is isolated from paid MVP exports? NOT_COMPUTABLE.
+  - Still open (owner). Today no publication export binds one, and publish checks nothing. Research R2 recommends refusing publish until one does.
 - **OQ-7**: Does a PageFitReport `warning` ever allow acceptance, and under which policy? NOT_COMPUTABLE.
+  - Still open (owner). As built, a preflight warning allows the pack and is recorded nowhere (research R5).
 - **OQ-8**: Is a book with zero accepted patch pages valid? NOT_COMPUTABLE.
+  - Resolved 2026-10-29 from the code: no. The Design Engine fails `EXPORT_NO_PATCHES`, and the legacy route returns 404 (research R6).
 - **OQ-9**: Cable-crossing, ambiguity, and visual-diff thresholds aren't specified. NOT_COMPUTABLE.
 - **OQ-10**: How are concurrent owner and admin transitions ordered? NOT_COMPUTABLE.
+  - Still open (owner). As built, nothing orders them: there is no row lock or version check, so the last commit wins (research R7).
 - **OQ-11**: `ENABLE_PATCHBOOK_PUBLICATION_PROFILE` enables multi-page publications. How does it reconcile with the one-page publishing law? NOT_COMPUTABLE. [OBSERVED: docs/FEATURE_FLAGS.md]
+  - Still open (owner). As built, each patch gets a non-executable plate, and its one-page execution page goes in the appendix (research R7).
 - **OQ-12**: The legal effect and enforcement of the `CC BY-NC 4.0` default license and of `allow_remix` are unknown. NOT_COMPUTABLE. [OBSERVED: backend/publishing/models.py]
 - **OQ-13**: Report rate limits, anonymous reporting rules, and data retention for reports and audit logs aren't specified. NOT_COMPUTABLE.
+  - Partly answered 2026-10-29 from the code: reports may be anonymous, and the report route has no rate limit. Retention is still open (research R6).
 - **OQ-14**: The source extracts were truncated. Requirements in the missing text are NOT_COMPUTABLE until the operator supplies them.
 - **OQ-15**: Confirm the Workflows section, including whether ADVERSARY threat-models the public read, download, and report surfaces. NOT_COMPUTABLE.

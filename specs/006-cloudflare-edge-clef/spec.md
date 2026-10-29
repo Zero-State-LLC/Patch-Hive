@@ -31,6 +31,8 @@ A hostname (`api.patch-hive.com` or operator-chosen) MUST serve the existing Fas
 
 Amended 2026-10-27: `api.patch-hive.com` is production (`ENVIRONMENT=production`, no feature flags). `api-staging.patch-hive.com` is staging (`ENVIRONMENT=staging`), where the 007 enablement and 008 walkthrough run. Each allows only its own frontend origin.
 
+Exact-origin CORS and an enforced CSP implemented 2026-10-28 (#113). Production refuses to start with a decision provider on, implemented 2026-10-29 (#132). API security headers implemented 2026-10-29 (#130).
+
 ### FR-003 Database continuity
 The API MUST use the Neon staging branch through its pooled connection string. No D1 schema migration.
 
@@ -88,3 +90,30 @@ Clef remains flagged off until a retained labeled corpus (text + vision cases) m
 ## Acceptance summary
 
 Feature is not eligible for normal traffic until Pages, API hostname, Hyperdrive, Clef adapter, policy tests, evaluation gate, and DOMAIN_CUTOVER_CHECKLIST receipts all pass.
+
+Amended 2026-10-29: per the FR-001 and FR-003 amendments, read "Pages" as the Workers static-assets frontend and "Hyperdrive" as Neon's pooled endpoint (research R6).
+
+## Implementation status (2026-10-29)
+
+Checked against `main` at 95ca9ee. Decision research is in [research.md](research.md).
+
+| FR | Status | Evidence |
+| --- | --- | --- |
+| FR-001 Edge frontend | Implemented | SPA on Workers static assets (#55), production and staging pairs live [OBSERVED: CURRENT_STATE.md]; CSP enforced (#113) [OBSERVED: frontend/worker/headers.ts] |
+| FR-002 Public API surface | Implemented | Exact-origin `CORS_ORIGINS` and `ALLOW_PRODUCTION_PAYMENTS=false` per Worker env [OBSERVED: edge/api/wrangler.jsonc]; security headers (#130) [OBSERVED: edge/api/src/index.ts]; production refuses providers (#132) [OBSERVED: backend/core/startup_policy.py] |
+| FR-003 Database continuity | Implemented | Staging and production migrated 2026-10-28 [OBSERVED: CURRENT_STATE.md]; startup migrations opt-in (#110) [OBSERVED: backend/docker-entrypoint.sh]. T050b stays open: no receipt in the tree |
+| FR-004 Clef as DecisionProvider | Implemented | Adapter state machine, flag default off (T020) [OBSERVED: backend/intelligence/clef_provider.py, core/config.py] |
+| FR-005 Policy ownership unchanged | Implemented | Guarded resolution applies `DecisionPolicy` (T060a) [OBSERVED: backend/intelligence/clef_resolution.py] |
+| FR-006 State machines | Partial | All three machines exist and pass tests [OBSERVED: tests/integration/test_006_edge_clef_state_machines.py, 2026-10-29 run]. `gates_pass` accepts any 64-hex SHA (R1); the Jev path skips the resolution machine (005 research R2) |
+| FR-007 Evaluation gate | Partial | Clef flag off by default and refused in production (#132). Corpus has 0 cases (007 T010b); the receipt is forgeable (007 research R1) |
+| Ops: deploy workflows (no FR) | Partial | No environment protection on production targets, a foreign workflow, an extra `actions: write`, an unrevoked R2 token on failure (R2–R5) [OBSERVED: .github/workflows/] |
+
+Counts: 5 Implemented, 2 Partial, 0 Missing.
+
+## Open questions (2026-10-29)
+
+This spec had no open-questions list. Questions raised by research:
+
+- **Does the acceptance summary still require Pages and Hyperdrive?** RESOLVED: no. FR-001 and FR-003 were amended (R6); the summary is amended above.
+- **Can production run a decision provider before BETA_READY?** RESOLVED: no. Startup refuses it (#132) [OBSERVED: backend/core/startup_policy.py].
+- **Who creates the GitHub `production` environment?** RESOLVED: a repo admin, in the repo settings; it cannot be created from the tree (R2, T101b).
