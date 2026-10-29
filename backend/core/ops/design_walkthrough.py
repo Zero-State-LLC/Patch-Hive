@@ -12,10 +12,11 @@ from __future__ import annotations
 import hashlib
 import uuid
 from dataclasses import dataclass
-from typing import Any, Callable, Mapping
+from typing import Any, Callable, Literal, Mapping
 
 from core.ops.f5_cutover import (
     RUNTIME_FLAGS_ROUTE,
+    STAGING_ENVIRONMENT,
     AliasParityEvidence,
     CutoverError,
     DesignEngineFlags,
@@ -259,15 +260,23 @@ def fetch_server_flags(http: Any, *, admin: SeedAccount) -> DesignEngineFlags:
 
 
 def verify_server_flags(
-    http: Any, *, admin: SeedAccount, expected_environment: str | None = None
+    http: Any, *, admin: SeedAccount, expected_environment: Literal["staging"]
 ) -> DesignEngineFlags:
-    """Server flags that are verified test-mode with production payments disabled."""
+    """Server flags that are verified test-mode with production payments disabled.
+
+    The server must report exactly ``staging`` (spec 008 R2). ``expected_environment``
+    is required; any other value, including a missing one, is refused before any
+    request is made.
+    """
+    if expected_environment != STAGING_ENVIRONMENT:
+        raise CutoverError("EXPECTED_ENVIRONMENT_NOT_STAGING", str(expected_environment))
     flags = fetch_server_flags(http, admin=admin)
     failed = flags_test_mode_failures(flags)
-    if failed:
+    blocking = [code for code in failed if code != "SERVER_ENVIRONMENT_NOT_STAGING"]
+    if blocking:
         raise CutoverError("FLAGS_NOT_TEST_MODE", ",".join(failed))
-    if expected_environment is not None and flags.environment != expected_environment:
-        raise CutoverError("SERVER_ENVIRONMENT_MISMATCH", flags.environment)
+    if failed:
+        raise CutoverError("SERVER_ENVIRONMENT_NOT_STAGING", flags.environment)
     return flags
 
 
@@ -303,7 +312,7 @@ def run_staging_walkthrough(
     sources: Mapping[str, str],
     fe_sources: Mapping[str, str],
     source_commit_sha: str,
-    expected_environment: str | None = None,
+    expected_environment: Literal["staging"],
     log: Callable[[str], None] = lambda _message: None,
 ) -> StagingWalkthroughRun:
     """Spec 008 live walkthrough with every gate enforced before side effects.

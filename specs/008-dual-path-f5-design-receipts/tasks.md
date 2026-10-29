@@ -68,7 +68,7 @@ parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
 
 From [research.md](research.md). Effort in brackets.
 
-- [ ] T070 Require a staging server: `expected_environment` becomes a required `"staging"`, `flags_test_mode_failures` fails unless the server reports exactly `staging` (`SERVER_ENVIRONMENT_NOT_STAGING`), and the CLI drops the free `--environment` value (R2) [S].
+- [x] T070 Require a staging server: `expected_environment` becomes a required `"staging"`, `flags_test_mode_failures` fails unless the server reports exactly `staging` (`SERVER_ENVIRONMENT_NOT_STAGING`), and the CLI drops the free `--environment` value (R2) [S]. Done 2026-10-29.
   - depends_on: [T040a]
 - [ ] T071 Pin only against a signed 007 receipt, and sign the `ReadinessPin` with the approver key so `pinned_by` is a key id (R1) [S].
   - depends_on: [T050a, 007:T081]

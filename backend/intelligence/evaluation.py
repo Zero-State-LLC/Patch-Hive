@@ -9,14 +9,21 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
 
 import hashlib
 
 from pydantic import BaseModel, ConfigDict
 
-from intelligence.contracts import DecisionPacket
+from intelligence.contracts import ChoiceOption, ChoiceRequest, DecisionPacket, DecisionPurpose
 from intelligence.policy import DecisionDisposition, DecisionPolicy
+from intelligence.resolution_machine import (
+    ResolutionEvent,
+    ResolutionEventType,
+    ResolutionGuard,
+    canon_write_permitted,
+    replay,
+)
 
 
 class EvaluationCase(BaseModel):
@@ -27,6 +34,90 @@ class EvaluationCase(BaseModel):
     expected_choice: str
     licensed_source: str
     packet: DecisionPacket
+    # Candidate set the provider was asked to choose from (spec 005 R4). Both fields are
+    # optional and omitted from the corpus digest when absent.
+    # candidate_options: the full options (id + description) used at inference. The set
+    #   hash covers descriptions, so only full options can validate packet.candidate_set_hash.
+    # candidate_ids: bare ids. Membership is checked; the hash comparison is skipped
+    #   because the descriptions are unknown. candidate_options wins when both are set.
+    candidate_ids: tuple[str, ...] | None = None
+    candidate_options: tuple[ChoiceOption, ...] | None = None
+
+
+OPTIONAL_CANDIDATE_FIELDS = frozenset({"candidate_ids", "candidate_options"})
+
+
+def absent_candidate_fields(case: Any) -> set[str]:
+    """Candidate fields to leave out of a digest payload so older corpora keep their digest."""
+    return {name for name in OPTIONAL_CANDIDATE_FIELDS if getattr(case, name) is None}
+
+
+def case_policy_inputs(case: Any) -> tuple[DecisionPacket, ChoiceRequest | None]:
+    """Packet and choice request to hand to ``policy.evaluate`` for one case.
+
+    No candidates: the packet alone. Bare ids: membership only, so the packet's
+    candidate_set_hash is cleared before the check. Full options: the whole check."""
+    packet = case.packet
+    if case.candidate_options is not None:
+        options = tuple(case.candidate_options)
+    elif case.candidate_ids is not None:
+        options = tuple(ChoiceOption(choice_id=item) for item in dict.fromkeys(case.candidate_ids))
+        packet = packet.model_copy(update={"candidate_set_hash": None})
+    else:
+        return packet, None
+    if all(item.choice_id != "none_of_above" for item in options):
+        options += (ChoiceOption(choice_id="none_of_above"),)
+    return packet, ChoiceRequest(
+        request_id=case.packet.request_id,
+        purpose=DecisionPurpose.module_identity,
+        evidence_hash=case.packet.evidence_hash,
+        idempotency_key=f"eval:{case.case_id}",
+        question="evaluation replay",
+        choices=options,
+    )
+
+
+def case_request(case: Any) -> ChoiceRequest | None:
+    """The choice request a case's packet answered, or None when the case names no candidates."""
+    return case_policy_inputs(case)[1]
+
+
+def structural_false_canonicalizations(cases: Iterable[Any], policy: DecisionPolicy) -> int:
+    """Count cases where the Spec 006 resolution machine would permit a canon write
+    from the policy disposition alone (no user confirmation). Must be zero.
+
+    Accepts anything with ``case_id``, ``packet``, ``candidate_ids`` and ``candidate_options``."""
+    count = 0
+    for case in cases:
+        disposition = policy.evaluate(*case_policy_inputs(case)).disposition
+        request_id = f"eval:{case.case_id}"
+        machine = replay(
+            request_id,
+            (
+                ResolutionEvent(
+                    ResolutionEventType.SUBMIT_EVIDENCE,
+                    request_id,
+                    ResolutionGuard(evidence_hash_valid=True, candidates_bounded=True),
+                ),
+                ResolutionEvent(
+                    ResolutionEventType.PROVIDER_SUCCESS,
+                    request_id,
+                    ResolutionGuard(packet_schema_valid=True),
+                ),
+                ResolutionEvent(
+                    ResolutionEventType.APPLY_POLICY,
+                    request_id,
+                    ResolutionGuard(policy_version_pinned=True),
+                ),
+                ResolutionEvent(
+                    ResolutionEventType.DISPOSITION,
+                    request_id,
+                    ResolutionGuard(disposition=disposition, routing_target_exists=True),
+                ),
+            ),
+        )
+        count += int(canon_write_permitted(machine))
+    return count
 
 
 @dataclass(frozen=True)
@@ -78,7 +169,7 @@ def evaluate(cases: Iterable[EvaluationCase], policy: DecisionPolicy) -> Evaluat
         correct += int(is_correct)
         ranked = sorted(packet.probabilities, key=packet.probabilities.get, reverse=True)
         topk_correct += int(case.expected_choice in ranked[: min(3, len(ranked))])
-        result = policy.evaluate(packet)
+        result = policy.evaluate(*case_policy_inputs(case))
         abstained += int(result.disposition is DecisionDisposition.UNRESOLVED)
         review += int(result.disposition is DecisionDisposition.USER_REVIEW)
         escalated += int(result.disposition is DecisionDisposition.ESCALATE)
@@ -114,9 +205,9 @@ def evaluate(cases: Iterable[EvaluationCase], policy: DecisionPolicy) -> Evaluat
         review_rate=review / n,
         escalation_rate=escalated / n,
         brier_score=brier_total / n,
-        # Canonicalization is structurally outside DecisionPolicy. This metric is
-        # retained as an explicit release invariant rather than inferred from accuracy.
-        false_canonicalization_count=0,
+        # Replayed through the resolution machine per case (spec 005 R4), so the metric
+        # cannot report zero by construction.
+        false_canonicalization_count=structural_false_canonicalizations(rows, policy),
         topk_accuracy=topk_correct / n,
         cohort_metrics=cohort_metrics,
     )
@@ -129,7 +220,10 @@ def metrics_json(metrics: EvaluationMetrics) -> str:
 def corpus_sha256(cases: Iterable[EvaluationCase]) -> str:
     """Stable digest over validated evaluation cases, independent of JSONL formatting."""
     rows = sorted(
-        (case.model_dump(mode="json") for case in cases),
+        # An absent candidate set is omitted, so corpora frozen before the field existed
+        # keep their digest.
+        (case.model_dump(mode="json", exclude=absent_candidate_fields(case))
+         for case in cases),
         key=lambda row: row["case_id"],
     )
     payload = json.dumps(rows, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
