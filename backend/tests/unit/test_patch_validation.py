@@ -3,7 +3,7 @@
 from types import SimpleNamespace
 
 from core.ir import ConnectionIR, PatchGraphIR
-from patches.validation import resolve_and_validate
+from patches.validation import drop_feedback_patches, resolve_and_validate
 
 
 def _module(module_id: int, name: str, ports: list[tuple[str, str]] | None = None):
@@ -78,3 +78,24 @@ def test_feedback_and_empty_runs_are_only_flagged():
     assert [f.code for f in loop.findings] == ["FEEDBACK_LOOP"] and not loop.blocking
     _, empty = resolve_and_validate([], MODULES)
     assert [f.code for f in empty.findings] == ["NO_PATCHES"] and not empty.blocking
+
+
+def test_drop_feedback_patches_removes_looped_patches_and_reindexes_findings():
+    graphs, report = resolve_and_validate(
+        [
+            _patch((4, "Audio Out", 2, "Audio In")),
+            _patch((2, "LP Out", 2, "Cutoff CV")),
+            _patch((3, "LFO Out", 4, "Audio In")),
+        ],
+        MODULES,
+    )
+    kept, dropped = drop_feedback_patches(graphs, report)
+    assert dropped == 1 and kept == [graphs[0], graphs[2]]
+    assert "FEEDBACK_LOOP" not in [f.code for f in report.findings]
+    assert {f.patch_index for f in report.findings} <= {0, 1}
+
+
+def test_drop_feedback_patches_is_a_no_op_without_loops():
+    graphs, report = resolve_and_validate([_patch((1, "Audio Out", 2, "Audio In"))], MODULES)
+    kept, dropped = drop_feedback_patches(graphs, report)
+    assert dropped == 0 and kept == graphs

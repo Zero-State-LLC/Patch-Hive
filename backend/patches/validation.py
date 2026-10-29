@@ -23,7 +23,7 @@ Findings have three severities:
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from core.ir import ConnectionIR, PatchGraphIR
@@ -196,3 +196,28 @@ def resolve_and_validate(
             )
         )
     return resolved, report
+
+
+def drop_feedback_patches(
+    patch_graphs: List[PatchGraphIR], report: ValidationReport
+) -> Tuple[List[PatchGraphIR], int]:
+    """Remove patches that carry a ``FEEDBACK_LOOP`` finding (``allow_feedback=false``).
+    Their findings go with them and the rest are re-indexed. Returns the kept patches
+    and how many were dropped."""
+    looped = {f.patch_index for f in report.findings if f.code == "FEEDBACK_LOOP"}
+    if not looped:
+        return list(patch_graphs), 0
+    new_index: Dict[int, int] = {}
+    kept: List[PatchGraphIR] = []
+    for index, graph in enumerate(patch_graphs):
+        if index not in looped:
+            new_index[index] = len(kept)
+            kept.append(graph)
+    report.findings = [
+        replace(f, patch_index=new_index[f.patch_index])
+        if f.patch_index is not None
+        else f
+        for f in report.findings
+        if f.patch_index is None or f.patch_index in new_index
+    ]
+    return kept, len(patch_graphs) - len(kept)

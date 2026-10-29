@@ -31,7 +31,6 @@ on:
 
 permissions:
   contents: read
-  actions: write
 
 concurrency:
   group: neon-db-${{ inputs.env }}
