@@ -170,13 +170,23 @@ def test_provider_fail_and_timeout_go_unresolved_or_escalate() -> None:
 
 
 def test_provider_success_with_invalid_packet_fails_closed() -> None:
+    # An unreadable packet is a provider failure: open, or routed for review, never REJECT.
     event = _event(
         ResolutionEventType.PROVIDER_SUCCESS,
         ResolutionGuard(packet_schema_valid=False),
     )
     after = transition(_machine(ResolutionState.CLASSIFYING), event)
-    assert after.state is ResolutionState.REJECT
+    assert after.state is ResolutionState.UNRESOLVED
     assert after.history[-1].reason == "PACKET_SCHEMA_INVALID"
+    routed = transition(
+        _machine(ResolutionState.CLASSIFYING),
+        _event(
+            ResolutionEventType.PROVIDER_SUCCESS,
+            ResolutionGuard(packet_schema_valid=False, routing_target_exists=True),
+        ),
+    )
+    assert routed.state is ResolutionState.ESCALATE
+    assert canon_write_permitted(after) is canon_write_permitted(routed) is False
 
 
 def test_escalation_without_routing_target_goes_unresolved() -> None:

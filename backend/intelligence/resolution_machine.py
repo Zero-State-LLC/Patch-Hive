@@ -258,7 +258,13 @@ def transition(machine: ResolutionMachine, event: ResolutionEvent) -> Resolution
     if state is ResolutionState.CLASSIFYING:
         if event.type is ResolutionEventType.PROVIDER_SUCCESS:
             if not event.guard.packet_schema_valid:
-                return _accept(machine, event, ResolutionState.REJECT, "PACKET_SCHEMA_INVALID")
+                # An unreadable packet is a provider failure, not a verdict on the evidence.
+                target = (
+                    ResolutionState.ESCALATE
+                    if event.guard.routing_target_exists
+                    else ResolutionState.UNRESOLVED
+                )
+                return _accept(machine, event, target, "PACKET_SCHEMA_INVALID")
             return _accept(machine, event, ResolutionState.PACKET_EMITTED, "PROVIDER_SUCCESS")
         if event.type in {ResolutionEventType.PROVIDER_FAIL, ResolutionEventType.PROVIDER_TIMEOUT}:
             # A provider that did not answer says nothing about the evidence (spec 005):

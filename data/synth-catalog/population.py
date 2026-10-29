@@ -396,7 +396,10 @@ def _schedule_provenance(
     stats.setdefault("rows_already_processed", 0)
     stats.setdefault("value_not_matched", 0)
     stats.setdefault("corrected_values", 0)
+    stats.setdefault("refused_row_tombstoned", 0)
+    stats.setdefault("reverify_clear_scheduled", 0)
     markers: list[tuple[str, str, str, str]] = []
+    resolved: list[tuple[str, str, str, str]] = []
     for row in manifest.get("rows") or []:
         table = row.get("table")
         if table not in ARCHIVE_FIELDS:
@@ -416,6 +419,15 @@ def _schedule_provenance(
             if state and (state["brand"] != brand or state["name"] != name):
                 plan.conflict(table="module_catalog", slug=row_key, reason="provenance_identity_mismatch")
                 continue
+        if state is not None and (state.get("tombstoned") or state.get("status") == "tombstoned"):
+            stats["refused_row_tombstoned"] += 1
+            continue
+        # A corrected row leaves FLAGGED once every flagged field is fixed (research R8).
+        # Checked on every run, so a correction applied before this rule existed counts too.
+        if state is not None and state.get("needs_reverify") and any(
+            item.get("action") == "correct" for item in row.get("fields") or []
+        ):
+            resolved.append((table, row_key, brand, name))
         # A row is processed once per batch. Rows inserted later (or fields filled
         # later from manufacturer overlays) are never touched by this batch.
         if (table, row_key, ROW_MARKER) in archived:
@@ -484,6 +496,53 @@ def _schedule_provenance(
             stats["flagged_rows"] += 1
     if markers:
         _archive_markers(plan, batch, markers)
+    for table, row_key, brand, name in resolved:
+        _clear_reverify_if_resolved(plan, table, row_key, brand, name)
+        stats["reverify_clear_scheduled"] += 1
+
+
+def _clear_reverify_if_resolved(plan: Plan, table: str, row_key: str, brand: str, name: str) -> None:
+    """Clear ``needs_reverify`` once every field the row was flagged for is fixed (FLAGGED -> LIVE).
+
+    A ``flag`` or ``relabel`` is fixed by a later ``correct`` of the same field; a ``null`` is
+    fixed once the field holds a value again. The database decides, so the statement is safe
+    to re-run and does nothing while any flagged field is still open.
+    """
+    nulled_and_empty = [
+        f"({column} IS NULL AND EXISTS (SELECT 1 FROM catalog_value_archive n "
+        f"WHERE n.table_name = '{table}' AND n.row_key = :row_key AND n.field = '{column}' "
+        "AND n.action = 'null'))"
+        for column in sorted(NULLABLE[table])
+    ]
+    plan.add_update(
+        f"{table}_reverify_cleared",
+        Op(
+            "clear_reverify",
+            f"""
+            UPDATE {table}
+            SET needs_reverify = FALSE,
+                {"updated_at = :updated_at" if table == "module_catalog" else "updated_at = CURRENT_TIMESTAMP"}
+            WHERE {_row_where(table)}
+              AND needs_reverify
+              AND EXISTS (
+                SELECT 1 FROM catalog_value_archive c
+                WHERE c.table_name = '{table}' AND c.row_key = :row_key AND c.action = 'correct'
+              )
+              AND NOT EXISTS (
+                SELECT 1 FROM catalog_value_archive a
+                WHERE a.table_name = '{table}' AND a.row_key = :row_key
+                  AND a.action IN ('flag', 'relabel') AND a.field <> '*'
+                  AND NOT EXISTS (
+                    SELECT 1 FROM catalog_value_archive c
+                    WHERE c.table_name = a.table_name AND c.row_key = a.row_key
+                      AND c.field = a.field AND c.action = 'correct' AND c.archived_at >= a.archived_at
+                  )
+              )
+              AND NOT ({" OR ".join(nulled_and_empty)})
+            """,
+            {"row_key": row_key, "brand": brand, "name": name, "updated_at": _stamp()},
+        ),
+    )
 
 
 def _archive_markers(plan: Plan, batch: str, markers: list[tuple[str, str, str, str]]) -> None:
@@ -523,9 +582,10 @@ def _archive_markers(plan: Plan, batch: str, markers: list[tuple[str, str, str, 
 
 
 def _row_where(table: str) -> str:
+    # A retired row is final (row lifecycle): no manifest archives, corrects or flags it.
     if table == "modules":
-        return "brand = :brand AND name = :name"
-    return "slug = :row_key AND brand = :brand AND name = :name"
+        return "brand = :brand AND name = :name AND status <> 'tombstoned'"
+    return "slug = :row_key AND brand = :brand AND name = :name AND tombstoned_at IS NULL"
 
 
 def _archive_row(
@@ -559,7 +619,7 @@ def _archive_row(
             SELECT :batch, :table_name, :row_key, :brand, :name, :f{index},
                    CAST(t.{column} AS TEXT), :t{index}, :m{index}, :a{index}, CURRENT_TIMESTAMP
             FROM {table} t
-            WHERE {_row_where(table).replace("brand =", "t.brand =").replace("name =", "t.name =").replace("slug =", "t.slug =")}
+            WHERE {_row_where(table).replace("brand =", "t.brand =").replace("name =", "t.name =").replace("slug =", "t.slug =").replace("status <>", "t.status <>").replace("tombstoned_at IS", "t.tombstoned_at IS")}
               AND t.{column} IS NOT NULL{expected}
               AND NOT EXISTS (
                 SELECT 1 FROM catalog_value_archive a
@@ -695,7 +755,7 @@ def _verification_index(path: Path | None) -> dict[str, dict[str, Any]]:
 
 def _catalog_state(conn: Connection) -> dict[str, dict[str, Any]]:
     rows = conn.execute(
-        text("SELECT slug, brand, name, hp, category, tombstoned_at FROM module_catalog")
+        text("SELECT slug, brand, name, hp, category, tombstoned_at, needs_reverify FROM module_catalog")
     ).mappings()
     return {
         row["slug"]: {
@@ -704,6 +764,7 @@ def _catalog_state(conn: Connection) -> dict[str, dict[str, Any]]:
             "hp": row["hp"],
             "category": row["category"],
             "tombstoned": row["tombstoned_at"] is not None,
+            "needs_reverify": bool(row["needs_reverify"]),
             "_planned": False,
         }
         for row in rows
@@ -714,7 +775,7 @@ def _module_state(conn: Connection) -> dict[tuple[str, str], dict[str, Any]]:
     rows = conn.execute(
         text(
             "SELECT brand, name, hp, power_12v_ma, power_neg12v_ma, power_5v_ma, depth_mm, "
-            "verification_status, verification_source_url, status FROM modules"
+            "verification_status, verification_source_url, status, needs_reverify FROM modules"
         )
     ).mappings()
     state: dict[tuple[str, str], dict[str, Any]] = {}

@@ -92,3 +92,58 @@ def test_the_chicane_manifest_cites_the_eurorack_page() -> None:
     assert fields["verification_source_url"]["value"] == "https://www.sovageengineering.com/product-page/chicane"
     assert all(f["evidence_url"] == "https://www.sovageengineering.com/product-page/chicane" for f in row["fields"])
     assert MANIFEST in P.PROVENANCE_MANIFESTS
+
+
+def _flagged(**extra):
+    modules = _modules()
+    modules[("Acme", "Chicane")].update({"needs_reverify": True, "status": "active", **extra})
+    return modules
+
+
+def test_a_correction_schedules_the_flag_check_after_the_write() -> None:
+    plan = _plan(_manifest(), _flagged())
+    kinds = [op.kind for op in plan.ops]
+    assert kinds == ["archive_values", "correct_values", "archive_markers", "clear_reverify"]
+    clear = plan.ops[-1].sql
+    # Cleared only while no flag or relabel lacks a later correction, and no nulled field is empty.
+    assert "a.action IN ('flag', 'relabel')" in clear and "c.archived_at >= a.archived_at" in clear
+    assert "depth_mm IS NULL" in clear and "status <> 'tombstoned'" in clear
+    assert plan.provenance["test-corrections"]["reverify_clear_scheduled"] == 1
+    P.assert_safe_sql(P.render_plan(plan))
+
+
+def test_a_correction_applied_earlier_still_gets_the_flag_check() -> None:
+    plan = _plan(_manifest(), _flagged(), archived={("modules", "Acme::Chicane", P.ROW_MARKER)})
+    assert [op.kind for op in plan.ops] == ["clear_reverify"]
+
+
+def test_an_unflagged_row_needs_no_check() -> None:
+    plan = _plan(_manifest(), _modules())
+    assert "clear_reverify" not in [op.kind for op in plan.ops]
+
+
+def test_a_tombstoned_row_is_refused_and_untouched() -> None:
+    modules = _flagged(status="tombstoned")
+    plan = _plan(_manifest(), modules)
+    assert plan.ops == []
+    assert modules[("Acme", "Chicane")]["hp"] == 14
+    assert plan.provenance["test-corrections"]["refused_row_tombstoned"] == 1
+
+
+def test_a_tombstoned_catalog_row_is_refused() -> None:
+    manifest = {"batch": "test-catalog", "rows": [{
+        "table": "module_catalog", "slug": "acme-chicane", "brand": "Acme", "name": "Chicane",
+        "fields": [{"field": "hp", "action": "null", "only_if_value": 14}]}]}
+    catalog = {"acme-chicane": {"brand": "Acme", "name": "Chicane", "hp": 14, "tombstoned": True}}
+    plan = P.Plan()
+    P._schedule_provenance(plan, catalog, {}, manifest, set())
+    assert plan.ops == [] and catalog["acme-chicane"]["hp"] == 14
+    assert plan.provenance["test-catalog"]["refused_row_tombstoned"] == 1
+
+
+def test_every_row_statement_skips_retired_rows() -> None:
+    assert "status <> 'tombstoned'" in P._row_where("modules")
+    assert "tombstoned_at IS NULL" in P._row_where("module_catalog")
+    plan = _plan(_manifest(), _modules())
+    archive = plan.ops[0].sql
+    assert "t.status <> 'tombstoned'" in archive
