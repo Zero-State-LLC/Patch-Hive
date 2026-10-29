@@ -381,6 +381,19 @@ export interface GeneratePatchesResponse {
   inventory_revision_id?: string | null;
   inventory_gate_code?: string | null;
   generation_status?: string | null;
+  validation?: GenerationValidation | null;
+}
+
+export interface GenerationFinding {
+  severity: "block" | "unresolved" | "flag" | string;
+  code: string;
+  message: string;
+  patch_index?: number | null;
+}
+
+export interface GenerationValidation {
+  blocking: boolean;
+  findings: GenerationFinding[];
 }
 
 export interface RunPatchesResponse {

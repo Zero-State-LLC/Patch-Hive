@@ -564,3 +564,75 @@ class TestFurtherRules:
         first = [p.to_dict() for p in generate_patches_for_rack(db_session, sample_rack_full, seed=9)]
         second = [p.to_dict() for p in generate_patches_for_rack(db_session, sample_rack_full, seed=9)]
         assert first == second
+
+
+class TestGenerationOptions:
+    """Spec 001 FR-013 (research R2): allow_feedback and prefer_simple."""
+
+    def _generate(self, monkeypatch, db_session, rack, specs, **options):
+        import patches.engine as engine
+
+        monkeypatch.setattr(engine, "generate_patches_for_rack", lambda *a, **k: specs)
+        return engine.generate_patches_with_ir(
+            db_session, rack, seed=1, config=PatchEngineConfig(**options)
+        )
+
+    def test_prefer_simple_is_a_stable_sort_by_cable_count_before_the_cut(
+        self, db_session: Session, sample_rack_full: Rack
+    ):
+        generator = PatchGenerator(
+            ModuleAnalyzer(db_session, sample_rack_full), 7, PatchEngineConfig(max_patches=50)
+        )
+        everything = generator.generate_patches()
+        assert len({len(p.connections) for p in everything}) > 1
+
+        simple = PatchGenerator(
+            ModuleAnalyzer(db_session, sample_rack_full),
+            7,
+            PatchEngineConfig(max_patches=3, prefer_simple=True),
+        ).generate_patches()
+        expected = sorted(everything, key=lambda p: len(p.connections))[:3]
+        assert [p.name for p in simple] == [p.name for p in expected]
+        assert [len(p.connections) for p in simple] == sorted(len(p.connections) for p in simple)
+
+    def test_defaults_keep_generation_order(self, db_session: Session, sample_rack_full: Rack):
+        everything = PatchGenerator(
+            ModuleAnalyzer(db_session, sample_rack_full), 7, PatchEngineConfig(max_patches=50)
+        ).generate_patches()
+        cut = PatchGenerator(
+            ModuleAnalyzer(db_session, sample_rack_full), 7, PatchEngineConfig(max_patches=3)
+        ).generate_patches()
+        assert [p.name for p in cut] == [p.name for p in everything[:3]]
+
+    def test_feedback_patches_are_dropped_by_default_and_counted(
+        self, monkeypatch, db_session: Session, sample_rack_full: Rack
+    ):
+        ids = [m.module_id for m in sample_rack_full.modules][:2]
+        loop = PatchSpec(
+            "Loop", "Voice", [Connection(ids[0], "Audio Out", ids[0], "Audio In", "audio")]
+        )
+        fine = PatchSpec(
+            "Fine", "Voice", [Connection(ids[0], "Audio Out", ids[1], "Audio In", "audio")]
+        )
+        _, graphs, provenance = self._generate(
+            monkeypatch, db_session, sample_rack_full, [loop, fine]
+        )
+        metrics = provenance.to_dict()["metrics"]
+        assert [g.patch_name for g in graphs] == ["Fine"]
+        assert metrics["feedback_dropped_count"] == 1
+        assert not any(f["code"] == "FEEDBACK_LOOP" for f in metrics["validation"]["findings"])
+
+    def test_allow_feedback_keeps_looped_patches_and_their_finding(
+        self, monkeypatch, db_session: Session, sample_rack_full: Rack
+    ):
+        ids = [m.module_id for m in sample_rack_full.modules][:2]
+        loop = PatchSpec(
+            "Loop", "Voice", [Connection(ids[0], "Audio Out", ids[0], "Audio In", "audio")]
+        )
+        _, graphs, provenance = self._generate(
+            monkeypatch, db_session, sample_rack_full, [loop], allow_feedback=True
+        )
+        metrics = provenance.to_dict()["metrics"]
+        assert [g.patch_name for g in graphs] == ["Loop"]
+        assert "feedback_dropped_count" not in metrics
+        assert any(f["code"] == "FEEDBACK_LOOP" for f in metrics["validation"]["findings"])

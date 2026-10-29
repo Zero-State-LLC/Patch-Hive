@@ -228,6 +228,8 @@ def compose_design_export_pack(
         first = next((i for i in gate.issues if i.severity == "error"), None)
         code = first.code if first else "PREFLIGHT_FAILED"
         raise PreflightFailed(code, first.message if first else "preflight failed")
+    # Warnings do not block the pack, but they are never dropped (spec 002 OQ-7, FR-019).
+    preflight_warnings = sorted({i.code for i in gate.issues if i.severity == "warning"})
 
     comp_hash = composition_hash(
         library_content_hash=library.library_content_hash,
@@ -289,6 +291,7 @@ def compose_design_export_pack(
         "layout_algorithm_id": family.layout_algorithm_id,
         "page_count": len(layout_irs),
         "resolved_tier": recipe.resolved_tier,
+        "warnings": preflight_warnings,
         "paths": {
             "pdf": "PatchBook.pdf",
             "companion": "technical/companion.txt",
@@ -593,14 +596,24 @@ def _render_execution_pdf(
     c.drawString(inch, height - inch, "PatchHive PatchBook")
     c.setFont(body_font, 11)
     c.setFillColorRGB(*accent)
-    c.drawString(inch, height - 1.35 * inch, family.cover_subtitle)
-    if family.patent_disclaimer:
-        c.setFillColorRGB(0, 0, 0)
-        c.setFont("Helvetica", 8)
-        for i, chunk in enumerate(_wrap_to_width(PATENT_FUTURE_DISCLAIMER, "Helvetica", 8, width - 2 * inch)):
-            c.drawString(inch, height - 1.55 * inch - i * 10, chunk)
+    subtitle_y = height - 1.35 * inch
+    c.drawString(inch, subtitle_y, family.cover_subtitle)
     c.setFillColorRGB(0, 0, 0)
-    y_meta = height - 1.9 * inch if family.patent_disclaimer else height - 1.7 * inch
+    y_meta = height - 1.7 * inch
+    if family.patent_disclaimer:
+        # The notice is drawn at the body floor (FR-004). The metadata block starts
+        # below its last wrapped line, so a long notice cannot overlap it. Its first
+        # baseline sits one leading plus the subtitle's descent under the subtitle,
+        # so large body sizes clear the subtitle too.
+        notice_leading = max(18.0, body_size * 1.5) if body_size >= 9 else body_size * 1.5
+        y_meta = _draw_wrapped(
+            c,
+            [PATENT_FUTURE_DISCLAIMER],
+            "Helvetica",
+            body_size,
+            subtitle_y - 11 * 0.25 - notice_leading,
+            width - 2 * inch,
+        )
     _draw_wrapped(
         c,
         [
