@@ -39,6 +39,7 @@ def test_clean_name(brand: str, raw: str, clean: str) -> None:
         "Warp Drive (1.25A)",
         "Teensy 3.2",
         "EURORACK 104 Case",
+        "A-100 Kofferversionen",
     ],
 )
 def test_store_products_that_are_not_modules(name: str) -> None:
@@ -50,7 +51,7 @@ def test_real_module_names_pass() -> None:
         assert not b.NOT_MODULE_NAME.search(name), name
 
 
-@pytest.mark.parametrize("version", [3, 4])
+@pytest.mark.parametrize("version", [3, 4, 5, 6])
 def test_committed_overlays_respect_fr007_and_tag_official_rows(version: int) -> None:
     overlays = ROOT / "data" / "synth-catalog" / "overlays"
     rows = json.loads((overlays / f"catalog-additions-v{version}.json").read_text())["rows"]
@@ -94,3 +95,29 @@ def test_t026_overlays_hold_only_the_partial_pass_and_repeat_nothing() -> None:
 )
 def test_name_fallback_only_fills_a_missing_category(name: str, tags: list[str], expected: str | None) -> None:
     assert b.category(tags, name) == expected
+
+
+A3_ROWS = {
+    ("2hp", "Mix"),
+    ("Bastl Instruments", "Aikido"),
+    ("Bastl Instruments", "Citadel Alchemist"),
+    ("Bastl Instruments", "Citadel FX Wizard"),
+    ("Bastl Instruments", "Citadel Wave Bard"),
+    ("Tubbutec", "USB bridge A"),
+}
+
+
+def test_a3_overlays_hold_only_the_new_crawl_rows() -> None:
+    """--only-new: the six modules no earlier overlay held, and no power entry for a matched row."""
+    overlays = ROOT / "data" / "synth-catalog" / "overlays"
+    load = lambda name, key: json.loads((overlays / name).read_text())[key]  # noqa: E731
+    v6, v14 = load("catalog-additions-v6.json", "rows"), load("module-power-depth-v14.json", "entries")
+    assert {(r["brand"], r["name"]) for r in v6} == A3_ROWS
+    assert {(e["brand"], e["name"]) for e in v14} == A3_ROWS
+    earlier = {
+        (r["brand"], r["name"])
+        for n in range(1, 6)
+        if (path := overlays / f"catalog-additions-v{n}.json").is_file()
+        for r in json.loads(path.read_text())["rows"]
+    }
+    assert not A3_ROWS & earlier
