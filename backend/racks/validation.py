@@ -6,10 +6,11 @@ from __future__ import annotations
 
 from typing import List, Tuple
 
-from sqlalchemy import inspect, text
+from sqlalchemy import func, inspect, text
 from sqlalchemy.orm import Session
 
 from cases.models import Case
+from modules.catalog import ModuleCatalog
 from modules.models import Module
 
 from .schemas import RackModuleSpec, RackValidationError
@@ -21,6 +22,59 @@ RAILS = (
     ("power_5v_ma", "power_5v_ma", "+5V"),
 )
 UNKNOWN_NAMES_SHOWN = 10
+
+
+ALTERNATIVES_SHOWN = 3
+
+
+def tombstone_note(db: Session, module: Module) -> dict | None:
+    """Why a placed module is tombstoned, and live modules with the same name.
+
+    None for a live module. The reason comes from its catalog row (the loader's
+    retirement manifest); alternatives are same-named modules under other brands that
+    are not tombstoned (for a misattributed row, the real maker's module).
+    """
+    if module.status != "tombstoned":
+        return None
+    catalog = (
+        db.query(ModuleCatalog.tombstone_reason)
+        .filter(ModuleCatalog.brand == module.brand, ModuleCatalog.name == module.name)
+        .first()
+    )
+    alternatives = (
+        db.query(Module)
+        .filter(
+            func.lower(Module.name) == module.name.lower(),
+            Module.brand != module.brand,
+            Module.status.is_distinct_from("tombstoned"),
+        )
+        .order_by(Module.brand, Module.id)
+        .limit(ALTERNATIVES_SHOWN)
+        .all()
+    )
+    return {
+        "reason": (catalog.tombstone_reason if catalog else None) or "retired from the catalog",
+        "alternatives": [{"id": m.id, "brand": m.brand, "name": m.name} for m in alternatives],
+    }
+
+
+def tombstone_warning(index: int, module: Module, note: dict) -> RackValidationError:
+    names = ", ".join(f"{a['brand']} {a['name']}" for a in note["alternatives"])
+    return RackValidationError(
+        field=f"modules[{index}].module_id",
+        message=(
+            f"{module.brand} {module.name} is retired from the catalog ({note['reason']})"
+            + (f"; consider {names}" if names else "")
+        ),
+        details={
+            "code": "MODULE_TOMBSTONED",
+            "module_id": module.id,
+            "module_name": module.name,
+            "brand": module.brand,
+            "reason": note["reason"],
+            "alternatives": note["alternatives"],
+        },
+    )
 
 
 def hp_needs_reverify(db: Session, module: Module) -> bool:

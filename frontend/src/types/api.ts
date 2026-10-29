@@ -263,6 +263,11 @@ export interface RackModule extends RackModuleSpec {
     power_neg12v_ma?: number | null;
     power_5v_ma?: number | null;
     depth_mm?: number | null;
+    /** "tombstoned" when the catalog retired this module; it stays placed. */
+    status?: string;
+    tombstone_reason?: string | null;
+    /** Live modules with the same name under other brands. */
+    alternatives?: { id: number; brand: string; name: string }[];
   };
 }
 
