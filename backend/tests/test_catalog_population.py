@@ -275,3 +275,38 @@ def test_a_case_change_after_the_dry_run_refuses_the_apply(fresh_population_url,
         populate(fresh_population_url, apply=True, verification_path=missing,
                  expected_plan_hash=dry["plan_hash"], require_plan_hash=True)
     assert _counts(fresh_population_url) == before
+
+
+def test_a_reviewed_correction_fixes_a_stored_value_once(fresh_population_url, tmp_path):
+    """Spec 003 FR-038 on Postgres: put CHICANE's 1U-tile values back, then reload."""
+    missing = tmp_path / "none.json"
+    populate(fresh_population_url, apply=True, verification_path=missing)
+    engine = create_engine(fresh_population_url)
+    try:
+        with engine.begin() as conn:
+            conn.execute(text(
+                "UPDATE modules SET hp = 14, verification_source_url = "
+                "'https://www.sovageengineering.com/product-page/chicane-1u' "
+                "WHERE brand = 'Sovage Engineering' AND name = 'CHICANE'"
+            ))
+            conn.execute(text("DELETE FROM catalog_value_archive WHERE batch = 'maker-corrections-v1'"))
+        receipt = populate(fresh_population_url, apply=True, verification_path=missing)
+        assert receipt["updates"].get("modules_correct") == 1
+        with engine.connect() as conn:
+            row = conn.execute(text(
+                "SELECT hp, verification_source_url FROM modules "
+                "WHERE brand = 'Sovage Engineering' AND name = 'CHICANE'"
+            )).one()
+            archived = conn.execute(text(
+                "SELECT field, old_value FROM catalog_value_archive "
+                "WHERE batch = 'maker-corrections-v1' AND action = 'correct' ORDER BY field"
+            )).all()
+        assert (row.hp, row.verification_source_url) == (4, "https://www.sovageengineering.com/product-page/chicane")
+        assert [tuple(a) for a in archived] == [
+            ("hp", "14"),
+            ("verification_source_url", "https://www.sovageengineering.com/product-page/chicane-1u"),
+        ]
+        again = populate(fresh_population_url, apply=True, verification_path=missing)
+        assert "modules_correct" not in again["updates"]
+    finally:
+        engine.dispose()

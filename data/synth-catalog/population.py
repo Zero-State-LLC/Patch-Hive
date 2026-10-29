@@ -313,6 +313,7 @@ PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "maker-crawl-v2-rail-fix-v1.json",
     CATALOG / "provenance" / "maker-review-v1.json",
     CATALOG / "provenance" / "maker-crawl-v2-jumper-fix-v1.json",
+    CATALOG / "provenance" / "maker-corrections-v1.json",
 )
 ARCHIVE_FIELDS = {
     "modules": {
@@ -327,7 +328,23 @@ ARCHIVE_FIELDS = {
     "module_catalog": {"hp"},
 }
 NULLABLE = {"modules": set(POWER_FIELDS) | {"verification_source_url"}, "module_catalog": {"hp"}}
-ARCHIVE_ACTIONS = {"null", "keep", "flag", "relabel"}
+ARCHIVE_ACTIONS = {"null", "keep", "flag", "relabel", "correct"}
+HP_BAND = (1, 42)  # FR-007
+
+
+def _correction_problem(table: str, item: dict[str, Any]) -> str | None:
+    """Why a ``correct`` entry is unusable, or None (spec 003 FR-038)."""
+    if item.get("only_if_value") is None or item.get("value") is None:
+        return "correction_needs_old_and_new_value"
+    if not str(item.get("evidence_url") or "").startswith("https://"):
+        return "correction_needs_maker_page"
+    if item["field"] == "hp":
+        value = item["value"]
+        if not isinstance(value, int) or not HP_BAND[0] <= value <= HP_BAND[1]:
+            return "correction_hp_outside_band"
+    if item["field"] == "verification_source_url" and not str(item["value"]).startswith("https://"):
+        return "correction_bad_url"
+    return None
 ROW_MARKER = "*"
 
 
@@ -353,9 +370,10 @@ def _schedule_provenance(
     manifest: dict[str, Any],
     archived: set[tuple[str, str, str]],
 ) -> None:
-    """Archive listed values with their source tag, then null, flag or relabel.
+    """Archive listed values with their source tag, then null, flag, relabel or correct.
 
-    The manifest carries no values. Each statement copies the current DB value
+    Only a ``correct`` entry carries a value: the new one, with the wrong value it
+    replaces and the maker page that states it (FR-038). Every other action carries none. Each statement copies the current DB value
     into catalog_value_archive first; the follow-up UPDATE only clears a field
     whose archived copy matches the current value, so nothing is lost and a
     re-run is a no-op. Never deletes.
@@ -376,6 +394,7 @@ def _schedule_provenance(
     )
     stats.setdefault("rows_already_processed", 0)
     stats.setdefault("value_not_matched", 0)
+    stats.setdefault("corrected_values", 0)
     markers: list[tuple[str, str, str, str]] = []
     for row in manifest.get("rows") or []:
         table = row.get("table")
@@ -415,6 +434,9 @@ def _schedule_provenance(
             if action == "null" and field_name not in NULLABLE[table]:
                 plan.conflict(table=table, field=field_name, reason="not_nullable")
                 continue
+            if action == "correct" and (problem := _correction_problem(table, item)):
+                plan.conflict(table=table, field=field_name, reason=problem)
+                continue
             if (table, row_key, field_name) in archived:
                 stats["already_archived"] += 1
                 continue
@@ -435,6 +457,15 @@ def _schedule_provenance(
         stats["archived_values"] += len(todo)
         for item in todo:
             _bump(stats["by_action"], item["action"])
+        corrections = [item for item in todo if item["action"] == "correct"]
+        if corrections:
+            _correct_row(plan, batch, table, row_key, brand, name, corrections)
+            for item in corrections:
+                state[item["field"]] = item["value"]
+            stats["corrected_values"] += len(corrections)
+        todo = [item for item in todo if item["action"] != "correct"]
+        if not todo:
+            continue
         nulls = [item["field"] for item in todo if item["action"] == "null"]
         relabel = any(item["action"] == "relabel" for item in todo)
         if not nulls and not relabel and all(item["action"] == "keep" for item in todo):
@@ -545,6 +576,50 @@ def _archive_row(
                 old_value, source_tag, maker_check, action, archived_at
             )"""
             + "\n            UNION ALL".join(selects),
+            params,
+        ),
+    )
+
+
+def _correct_row(
+    plan: Plan,
+    batch: str,
+    table: str,
+    row_key: str,
+    brand: str,
+    name: str,
+    items: list[dict[str, Any]],
+) -> None:
+    """Write corrected values, only where this batch archived the value now stored.
+
+    The archive insert above copies a value only while it equals ``only_if_value``, so a
+    value changed since review is neither archived nor overwritten (FR-038).
+    """
+    params: dict[str, Any] = {"batch": batch, "row_key": row_key, "brand": brand, "name": name}
+    sets = []
+    for index, item in enumerate(items):
+        column = item["field"]
+        if column not in ARCHIVE_FIELDS[table]:
+            raise RuntimeError("refusing unknown correction field")
+        params[f"c{index}"] = item["value"]
+        sets.append(
+            f"{column} = CASE WHEN EXISTS (SELECT 1 FROM catalog_value_archive a WHERE a.batch = :batch "
+            f"AND a.table_name = '{table}' AND a.row_key = :row_key AND a.field = '{column}' "
+            f"AND a.action = 'correct' AND a.old_value = CAST({table}.{column} AS TEXT)) "
+            f"THEN :c{index} ELSE {column} END"
+        )
+    sets.append("updated_at = :updated_at" if table == "module_catalog" else "updated_at = CURRENT_TIMESTAMP")
+    params["updated_at"] = _stamp()
+    assignments = ",\n                ".join(sets)
+    plan.add_update(
+        f"{table}_correct",
+        Op(
+            "correct_values",
+            f"""
+            UPDATE {table}
+            SET {assignments}
+            WHERE {_row_where(table)}
+            """,
             params,
         ),
     )
