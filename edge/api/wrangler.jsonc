@@ -19,8 +19,10 @@
   "routes": [{ "pattern": "api.patch-hive.com", "custom_domain": true }],
   // The account creates only `durable_object` scheduling-policy applications: the
   // Durable Object in src/index.ts picks the image and instance size when it starts
-  // the container. One Durable Object ("primary") means one container, so the
-  // entrypoint's `alembic upgrade head` never races itself.
+  // the container. One Durable Object ("primary") means one container.
+  // Startup migrations are off: neither environment sets RUN_MIGRATIONS, so a cold
+  // start never migrates. Run the db-migrate workflow (.github/workflows/db-migrate.yml)
+  // for the target database before deploying code that needs a new migration.
   "containers": [
     {
       "class_name": "PatchHiveApi",

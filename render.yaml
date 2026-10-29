@@ -27,6 +27,9 @@ services:
         generateValue: true
       - key: PORT
         value: 10000
+      # Startup migrations are opt-in; this self-contained Render stack opts in.
+      - key: RUN_MIGRATIONS
+        value: "true"
     healthCheckPath: /health/ready
     autoDeploy: true
 
