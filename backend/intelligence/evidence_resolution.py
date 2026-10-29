@@ -10,8 +10,9 @@ from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
 
-from canon.models import ClassificationEvidenceRecord
+from canon.models import ClassificationEvidenceRecord, ImageAssetRecord
 from canon.visual_contracts import ClassificationCandidate
+from intelligence.contracts import stable_sha256
 from intelligence.module_service import CatalogCandidate, DecisionProposal, ModuleDecisionService
 from intelligence.persistence import persist_decision_proposal
 from intelligence.policy import DecisionPolicy
@@ -42,7 +43,7 @@ def resolve_module_identity(
     service = ModuleDecisionService(provider, policy)
     proposal = service.rank_identity(
         request_id=inputs.request_id,
-        evidence_hash=evidence_id,
+        evidence_hash=inputs.evidence_hash,
         evidence_refs=inputs.evidence_refs,
         normalized_evidence=inputs.normalized_evidence,
         candidates=inputs.candidates,
@@ -52,11 +53,20 @@ def resolve_module_identity(
     return proposal
 
 
+def retained_evidence_hash(evidence_packet: dict, image_sha256: str) -> str:
+    """SHA-256 of the retained evidence packet plus the image asset SHA (research R5)."""
+    return stable_sha256(
+        {"evidence_packet": evidence_packet, "image_sha256": str(image_sha256)}
+    )
+
+
 @dataclass(frozen=True)
 class IdentityInputs:
     """Bounded, validated inputs for one module-identity decision."""
 
     request_id: str
+    # SHA-256 of the retained evidence packet plus the image asset SHA (research R5).
+    evidence_hash: str
     evidence_refs: tuple[str, ...]
     normalized_evidence: dict
     candidates: tuple[CatalogCandidate, ...]
@@ -111,8 +121,13 @@ def load_identity_inputs(db: Session, *, evidence_id: str) -> IdentityInputs:
     if not candidates:
         raise EvidenceResolutionError("evidence record contains no bounded module candidates")
 
+    asset = db.get(ImageAssetRecord, evidence.image_asset_id)
+    if asset is None:
+        raise EvidenceResolutionError("evidence image asset not found")
+
     return IdentityInputs(
         request_id=f"module-identity:{evidence_id}",
+        evidence_hash=retained_evidence_hash(packet, asset.content_sha256),
         evidence_refs=(str(evidence.image_asset_id), evidence_id),
         normalized_evidence={
             "evidence_status": str(evidence.status),

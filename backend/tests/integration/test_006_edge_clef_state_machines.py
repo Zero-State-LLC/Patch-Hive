@@ -42,7 +42,7 @@ from intelligence.clef_resolution import (
     resolve_module_identity_guarded,
 )
 from intelligence.contracts import DecisionPacket
-from intelligence.evidence_resolution import DecisionIntelligenceDisabled
+from intelligence.evidence_resolution import DecisionIntelligenceDisabled, retained_evidence_hash
 from intelligence.fixture_provider import FixtureDecisionProvider, failed_fixture
 from intelligence.models import DecisionReceiptRecord
 from intelligence.policy import DecisionPolicy, PolicyThresholds
@@ -342,7 +342,10 @@ def test_clef_success_paths_follow_policy(
     assert receipt.id == resolution.receipt_id
     assert receipt.disposition == disposition.value
     assert receipt.provider == "clef"
-    assert receipt.evidence_hash == "ev-1"
+    # Hash of the retained packet plus image SHA (spec 005 R5), not the raw evidence id.
+    assert receipt.evidence_hash == retained_evidence_hash(
+        db.get(ClassificationEvidenceRecord, "ev-1").evidence_packet, "a" * 64
+    )
     assert db.query(SystemInventoryRevisionRecord).count() == 0
 
     if expected_telemetry is not None:

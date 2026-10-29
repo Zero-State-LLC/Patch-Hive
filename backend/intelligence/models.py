@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from sqlalchemy import JSON, Column, DateTime, Float, String, event
+from sqlalchemy import JSON, Column, DateTime, Float, Index, String, event
 
 from core.database import Base
 
@@ -17,9 +17,15 @@ class DecisionReceiptRecord(Base):
     """Diagnostic/provenance record only. It has no foreign key into canonical artifacts."""
 
     __tablename__ = "decision_receipts"
+    # One receipt per (request, idempotency key). NULL keys (receipts that predate the
+    # column) never collide.
+    __table_args__ = (
+        Index("uq_decision_receipts_request_idempotency", "request_id", "idempotency_key", unique=True),
+    )
 
     id = Column(String(64), primary_key=True)
     request_id = Column(String(128), nullable=False, index=True)
+    idempotency_key = Column(String(128), nullable=True)
     schema_version = Column(String(64), nullable=False)
     provider = Column(String(100), nullable=False)
     provider_version = Column(String(100), nullable=False)

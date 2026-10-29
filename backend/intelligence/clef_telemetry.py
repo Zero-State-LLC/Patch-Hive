@@ -63,7 +63,7 @@ def telemetry_for_provider_failure(
     )
 
 
-def _categorize(result: PolicyResult) -> OutcomeCategory:
+def categorize_policy_result(result: PolicyResult) -> OutcomeCategory:
     disposition = result.disposition
     if disposition is DecisionDisposition.AUTO_PROPOSE:
         return OutcomeCategory.PROPOSED
@@ -90,7 +90,7 @@ def telemetry_for_policy_result(
     return ResolutionTelemetry(
         provider=packet.provider,
         provider_version=packet.provider_version,
-        category=_categorize(result),
+        category=categorize_policy_result(result),
         adapter_state=None,
         error_code=None,
         disposition=result.disposition.value,

@@ -21,6 +21,7 @@ from sqlalchemy.orm import Session
 
 from intelligence.clef_telemetry import (
     ResolutionTelemetry,
+    categorize_policy_result,
     emit,
     telemetry_for_policy_result,
     telemetry_for_provider_failure,
@@ -32,8 +33,9 @@ from intelligence.evidence_resolution import (
     load_identity_inputs,
 )
 from intelligence.module_service import DecisionProposal, ModuleDecisionService
-from intelligence.persistence import persist_decision_proposal
-from intelligence.policy import DecisionPolicy
+from intelligence.models import DecisionReceiptRecord
+from intelligence.persistence import find_idempotent_receipt, persist_decision_proposal
+from intelligence.policy import DecisionDisposition, DecisionPolicy, PolicyResult
 from intelligence.provider import DecisionProvider
 from intelligence.resolution_machine import (
     ResolutionEvent,
@@ -71,6 +73,9 @@ class GuardedResolution:
     receipt_id: str | None
     error_code: str | None
     telemetry: ResolutionTelemetry
+    # Set when the idempotency key matched a stored receipt: the provider was not
+    # called and the machine is replayed from the stored disposition.
+    replayed_receipt: DecisionReceiptRecord | None = None
 
     @property
     def state(self) -> ResolutionState:
@@ -156,6 +161,73 @@ def _provider_failure_result(
     )
 
 
+def _replayed_resolution(
+    machine: ResolutionMachine,
+    stored: DecisionReceiptRecord,
+    *,
+    candidate_count: int,
+    policy_pinned: bool,
+    routing_target_exists: bool,
+) -> GuardedResolution:
+    result = PolicyResult(
+        policy_version=stored.policy_version,
+        disposition=DecisionDisposition(stored.disposition),
+        reason_codes=tuple(stored.reason_codes or ()),
+    )
+    # Replay the stored outcome through the machine so it ends in a real final state.
+    # The stored receipt only exists for a packet that passed the schema check.
+    request_id = machine.request_id
+    machine = _transition(
+        machine,
+        request_id=request_id,
+        event_type=ResolutionEventType.SUBMIT_EVIDENCE,
+        guard=ResolutionGuard(
+            evidence_hash_valid=True,
+            candidates_bounded=1 <= candidate_count <= MAX_BOUNDED_CANDIDATES,
+        ),
+    )
+    machine = _transition(
+        machine,
+        request_id=request_id,
+        event_type=ResolutionEventType.PROVIDER_SUCCESS,
+        guard=ResolutionGuard(packet_schema_valid=True),
+    )
+    machine = _transition(
+        machine,
+        request_id=request_id,
+        event_type=ResolutionEventType.APPLY_POLICY,
+        guard=ResolutionGuard(policy_version_pinned=policy_pinned),
+    )
+    machine = _transition(
+        machine,
+        request_id=request_id,
+        event_type=ResolutionEventType.DISPOSITION,
+        guard=ResolutionGuard(
+            disposition=result.disposition, routing_target_exists=routing_target_exists
+        ),
+    )
+    telemetry = ResolutionTelemetry(
+        provider=stored.provider,
+        provider_version=stored.provider_version,
+        category=categorize_policy_result(result),
+        adapter_state=None,
+        error_code=None,
+        disposition=result.disposition.value,
+        reason_codes=result.reason_codes,
+        resolution_state=machine.state.value,
+        latency_ms=None,
+        has_confidence=stored.confidence is not None,
+    )
+    return GuardedResolution(
+        machine=machine,
+        proposal=None,
+        receipt_id=stored.id,
+        error_code=None,
+        telemetry=telemetry,
+        replayed_receipt=stored,
+    )
+
+
 def _packet_schema_valid(packet: DecisionPacket, request: Any) -> bool:
     try:
         DecisionPacket.model_validate(packet.model_dump())
@@ -200,6 +272,23 @@ def resolve_module_identity_guarded(
     request_id = inputs.request_id
     machine = new_machine(request_id)
 
+    # Idempotency is checked before any provider call (research R5). A reused key with
+    # different evidence raises IdempotencyConflict.
+    stored = find_idempotent_receipt(
+        db,
+        request_id=request_id,
+        idempotency_key=idempotency_key,
+        evidence_hash=inputs.evidence_hash,
+    )
+    if stored is not None:
+        return _replayed_resolution(
+            machine,
+            stored,
+            candidate_count=len(inputs.candidates),
+            policy_pinned=stored.policy_version == expected_policy_version,
+            routing_target_exists=bool(routing_targets),
+        )
+
     machine = _transition(
         machine,
         request_id=request_id,
@@ -214,7 +303,7 @@ def resolve_module_identity_guarded(
 
     request = ModuleDecisionService.build_identity_request(
         request_id=request_id,
-        evidence_hash=evidence_id,
+        evidence_hash=inputs.evidence_hash,
         evidence_refs=inputs.evidence_refs,
         normalized_evidence=inputs.normalized_evidence,
         candidates=inputs.candidates,

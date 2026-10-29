@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 from canon.models import ClassificationEvidenceRecord, ImageAssetRecord, SystemInventoryRevisionRecord
 from core.database import Base
-from intelligence.contracts import DecisionPacket
+from intelligence.contracts import DecisionPacket, stable_sha256
 from intelligence.evidence_resolution import (
     DecisionIntelligenceDisabled,
     EvidenceResolutionError,
@@ -107,7 +107,14 @@ def test_fixture_resolution_persists_advisory_only() -> None:
     )
     assert proposal.packet.selected_choice == "module-a"
     receipt = db.query(DecisionReceiptRecord).one()
-    assert receipt.evidence_hash == "ev-1"
+    # Hash of the retained evidence packet plus the image SHA, not the raw evidence id.
+    assert receipt.evidence_hash == stable_sha256(
+        {
+            "evidence_packet": db.get(ClassificationEvidenceRecord, "ev-1").evidence_packet,
+            "image_sha256": "a" * 64,
+        }
+    )
+    assert receipt.idempotency_key == "idem"
     assert receipt.disposition == "AUTO_PROPOSE"
     # This orchestration module has no inventory model dependency/write path.
 
@@ -117,9 +124,14 @@ def test_provider_failure_persists_escalation_without_canon_mutation() -> None:
 
     db = _db()
     _seed(db)
+    # The packet must be bound to the retained evidence, so it carries the real hash.
+    evidence_hash = stable_sha256({
+        "evidence_packet": db.get(ClassificationEvidenceRecord, "ev-1").evidence_packet,
+        "image_sha256": "a" * 64,
+    })
     packet = failed_fixture(
         decision_id="failed-1", request_id="module-identity:ev-1",
-        provider_status="failed", evidence_hash="ev-1", error_code="FIXTURE_FAILURE",
+        provider_status="failed", evidence_hash=evidence_hash, error_code="FIXTURE_FAILURE",
     )
     provider = FixtureDecisionProvider({"module-identity:ev-1": packet})
     before = db.query(SystemInventoryRevisionRecord).count()

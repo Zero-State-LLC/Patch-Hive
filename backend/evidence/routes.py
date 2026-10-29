@@ -431,6 +431,24 @@ def list_rack_evidence_candidates(
     # valid advisory from unrelated evidence into this rack's review surface.
     candidate_ids = [item["candidate_id"] for item in items]
     evidence_hashes = {str(item["evidence_id"]) for item in items}
+    # Receipts carry a hash of the retained packet and image (R5). Receipts written
+    # before that change carry the raw evidence id, so both forms bind.
+    hash_by_evidence_id: dict[str, str] = {}
+    if evidence_hashes:
+        from canon.models import ClassificationEvidenceRecord, ImageAssetRecord
+        from intelligence.evidence_resolution import retained_evidence_hash
+
+        rows = (
+            db.query(ClassificationEvidenceRecord, ImageAssetRecord.content_sha256)
+            .join(ImageAssetRecord, ImageAssetRecord.id == ClassificationEvidenceRecord.image_asset_id)
+            .filter(ClassificationEvidenceRecord.id.in_(evidence_hashes))
+            .all()
+        )
+        for record, image_sha in rows:
+            hash_by_evidence_id[record.id] = retained_evidence_hash(
+                record.evidence_packet or {}, image_sha
+            )
+    evidence_hashes |= set(hash_by_evidence_id.values())
     receipts_by_binding: dict[tuple[str, str], DecisionReceiptRecord] = {}
     if candidate_ids and evidence_hashes:
         receipt_rows = (
@@ -452,7 +470,10 @@ def list_rack_evidence_candidates(
 
     candidates = []
     for item in items:
-        receipt = receipts_by_binding.get((item["candidate_id"], str(item["evidence_id"])))
+        evidence_id = str(item["evidence_id"])
+        receipt = receipts_by_binding.get(
+            (item["candidate_id"], hash_by_evidence_id.get(evidence_id, evidence_id))
+        ) or receipts_by_binding.get((item["candidate_id"], evidence_id))
         advisory = None
         if receipt is not None:
             advisory = {
@@ -806,6 +827,7 @@ def _resolve_with_guarded_flow(
         DecisionIntelligenceDisabled,
         EvidenceResolutionError,
     )
+    from intelligence.persistence import IdempotencyConflict
     from intelligence.policy import DecisionPolicy, PolicyThresholds
 
     # Retention- and consent-aware loader for the image asset bound to this evidence.
@@ -835,11 +857,30 @@ def _resolve_with_guarded_flow(
             enabled=True,
             idempotency_key=body.idempotency_key,
             expected_policy_version=settings.decision_policy_version,
+            routing_targets=(
+                frozenset({settings.decision_routing_target})
+                if settings.decision_routing_target
+                else frozenset()
+            ),
         )
     except DecisionIntelligenceDisabled as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except IdempotencyConflict as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     except (EvidenceResolutionError, RuntimeError, ValueError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    stored = resolution.replayed_receipt
+    if stored is not None:
+        # Same key, same evidence: answer from the stored receipt, no provider call.
+        return DecisionResolutionResponse(
+            evidence_id=body.evidence_id,
+            selected_choice=stored.selected_choice,
+            disposition=stored.disposition,
+            provider=stored.provider,
+            confidence=stored.confidence,
+            canonical_authority=False,
+        )
 
     if resolution.proposal is None:
         code = resolution.error_code or "PROVIDER_ERROR"
