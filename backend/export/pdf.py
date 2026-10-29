@@ -19,6 +19,10 @@ from patches.models import Patch
 from racks.models import Rack
 
 
+from .visualization import generate_patch_diagram_svg, generate_rack_layout_svg
+from .waveform import generate_waveform_svg, infer_waveform_params_from_patch
+
+
 def _draw_wrapped(c, text: str, x: float, y: float, *, width: float, font: str, size: float, leading: float) -> float:
     """Draw ``text`` wrapped to ``width`` (never cut, spec 002 FR-003); returns the next y."""
     c.setFont(font, size)
@@ -26,9 +30,6 @@ def _draw_wrapped(c, text: str, x: float, y: float, *, width: float, font: str, 
         c.drawString(x, y, line)
         y -= leading
     return y
-
-from .visualization import generate_patch_diagram_svg, generate_rack_layout_svg
-from .waveform import generate_waveform_svg, infer_waveform_params_from_patch
 
 
 def _load_svg2rlg():
