@@ -106,31 +106,46 @@ def existing_index(outputs: tuple[str, ...]) -> dict[str, dict[str, tuple[str, s
     return idx
 
 
-def shared_homepage_skips(brands: list[dict]) -> dict[str, str]:
-    """Brands whose crawled homepage belongs to another brand: {skipped brand: owner}.
+def shared_homepage_conflicts(brands: list[dict]) -> list[dict]:
+    """Hosts claimed by more than one brand: [{host, brands, owner}], owner None if unclear.
 
     The v1 crawl once gave "Mental Noise" Make Noise's site, so 48 Make Noise modules were
-    added under the wrong brand. When brands share a host, the one whose name is spelled
-    in the host keeps it; the others are skipped. With no single owner, nothing is skipped.
+    added under the wrong brand. When brands share a host, the one whose name is spelled in
+    the host owns it; with no single such brand there is no owner.
     """
     from urllib.parse import urlsplit
 
     def compact(text: str) -> str:
         return re.sub(r"[^a-z0-9]", "", text.lower())
 
-    by_host: dict[str, list[str]] = {}
+    by_host: dict[str, set[str]] = {}
     for b in brands:
         host = urlsplit(b.get("homepage") or "").netloc.lower().removeprefix("www.")
         if host:
-            by_host.setdefault(host, []).append(b["brand"])
-    skips: dict[str, str] = {}
-    for host, names in by_host.items():
-        if len(set(names)) < 2:
+            by_host.setdefault(host, set()).add(b["brand"])
+    conflicts = []
+    for host in sorted(by_host):
+        names = sorted(by_host[host])
+        if len(names) < 2:
             continue
-        owners = [n for n in set(names) if compact(n) and compact(n) in compact(host)]
-        if len(owners) == 1:
-            skips.update({n: owners[0] for n in set(names) if n != owners[0]})
-    return skips
+        owners = [n for n in names if compact(n) and compact(n) in compact(host)]
+        conflicts.append({"host": host, "brands": names, "owner": owners[0] if len(owners) == 1 else None})
+    return conflicts
+
+
+def shared_homepage_skips(brands: list[dict]) -> dict[str, str]:
+    """Brands whose homepage belongs to another brand: {skipped brand: owner}.
+
+    Only hosts with a single owner; with no owner, nothing is skipped here (the crawler
+    refuses those hosts before crawling, so overlays never see them from a new run).
+    """
+    return {
+        name: c["owner"]
+        for c in shared_homepage_conflicts(brands)
+        if c["owner"]
+        for name in c["brands"]
+        if name != c["owner"]
+    }
 
 
 def category(tags: list[str], name: str) -> str | None:

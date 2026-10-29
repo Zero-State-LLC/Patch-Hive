@@ -34,7 +34,7 @@
   - depends_on: [T027]
 - [x] T029 Tombstone rows filed under the wrong brand (the v1 crawl gave seven brands another maker's homepage) and re-add the modules only they held (`scripts/build_reattribution.py`, `overlays/catalog-retirements-v1.json`, `catalog-additions-v5`, `module-power-depth-v13`; migration `20261028_catalog_tombstones`). Done 2026-10-28 (#116): 263 rows tombstoned in each of `module_catalog` and `modules` (262 misattributed, plus TLM "ST MODULAR"), 7 re-added; staging and prod show 3,916 modules. Overlay builds now skip a brand whose homepage is another maker's site.
   - depends_on: [T027]
-- [ ] T030 Refuse a shared homepage when the crawler resolves a brand (`catalog_maker_crawl.py`), not only when overlays are built.
+- [x] T030 Refuse a shared homepage when the crawler resolves a brand (`catalog_maker_crawl.py`), not only when overlays are built. Done 2026-10-28: every brand is resolved before any is crawled; a host another brand holds is recorded as `shared_homepage` (with owner and candidate) in the receipt and not crawled. The owner is the brand named in the host, else the one brand resolved by an adapter or the curated list. The committed v2 data shows 18 refused brands: the 8 retired in T029, 5 more with an owner (four copies of ALM Busy Circuits, and Instruō) and 5 on hosts with no owner. The 10 not yet retired are still live in prod.
   - depends_on: [T029]
 - [ ] T031 Rebuild the maker-crawl page cache (deleted 2026-10-28 with a worktree), only when a change needs the crawl re-parsed, under an approved paid cap; then classify the 644 untagged rows from their pages.
   - depends_on: [T028]
