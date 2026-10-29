@@ -43,7 +43,7 @@ Nothing in the loader or admin tools can change `modules.hp` after insert. The F
 
 **Recommendation:** delete both copies; have the loader fill `registry_manufacturer_slug` (empty only); leave the device slug empty until `device_models` is populated.
 
-**Registry half settled 2026-10-28 (#114).** Confirmed: the snapshot was not in the API image, so search and every maker's models were empty in production. The registry now reads a maker's models from `module_catalog` (brand name or alias), so it no longer needs the snapshot or the slug fill. Still open: deleting the two seed-script copies.
+**Registry half settled 2026-10-28 (#114).** Confirmed: the snapshot was not in the API image, so search and every maker's models were empty in production. The registry now reads a maker's models from `module_catalog` (brand name or alias), so it no longer needs the snapshot or the slug fill. Seed scripts deleted 2026-10-29 (spec 003 D5, T032). Decision 3 (the HP correction) is spec 003 D4 / FR-038, implemented in T033.
 
 ## 5. Scraping policy
 
