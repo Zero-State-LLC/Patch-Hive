@@ -434,7 +434,7 @@ def test_packet_with_wrong_candidate_set_hash_is_rejected() -> None:
     resolution = _resolve_with(db, _UncheckedProvider())
     _PRODUCED_MACHINES.append(resolution.machine)
 
-    assert resolution.machine.state is ResolutionState.REJECT
+    assert resolution.machine.state is ResolutionState.UNRESOLVED
     assert resolution.error_code == "PACKET_SCHEMA_INVALID"
     assert resolution.receipt_id is None
     assert db.query(DecisionReceiptRecord).count() == 0

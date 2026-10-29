@@ -52,7 +52,8 @@ class DecisionPolicy:
         is also checked against that request's candidate set (spec 005 FR-003)."""
         binary_conclusion: bool | None = None
         if packet.schema_version != "patchhive.decision.v1":
-            return self._result(DecisionDisposition.REJECT, "UNSUPPORTED_SCHEMA")
+            # A packet we cannot read says nothing about the evidence (FR-009, research R3).
+            return self._result(DecisionDisposition.ESCALATE, "UNSUPPORTED_SCHEMA")
 
         if packet.provider_status in {"failed", "timed_out"}:
             return self._result(DecisionDisposition.ESCALATE, f"PROVIDER_{packet.provider_status.upper()}")
