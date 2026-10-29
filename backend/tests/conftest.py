@@ -489,3 +489,16 @@ def _reset_login_rate_limit():
     login_guard.reset_attempts()
     yield
     login_guard.reset_attempts()
+
+
+@pytest.fixture
+def export_fulfillment_pending(monkeypatch):
+    """Exports accepted (fulfillment on) with the fulfiller stubbed, so an export stays
+    queued the way a real one does while its pack is being composed. Without both
+    flags, POST /api/canon/exports is refused before any debit (spec 004 FR-005)."""
+    import canon.fulfillment as fulfillment
+    from core.config import settings
+
+    monkeypatch.setattr(settings, "enable_canon_export_fulfillment", True)
+    monkeypatch.setattr(settings, "enable_inline_export_fulfillment", True)
+    monkeypatch.setattr(fulfillment, "fulfill_export", lambda session, export_id: None)

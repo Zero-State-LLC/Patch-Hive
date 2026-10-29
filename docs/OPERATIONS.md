@@ -96,6 +96,8 @@ Restored by `scripts/staging/seed-demo.ps1` (also run at end of `smoke.ps1`):
 | Demo user | `golden_demo` | `demo-pass` | User |
 | Admin | `admin_demo` | `admin-pass` | Admin |
 
+These passwords are public and work only on a **local** database. The seeder refuses production, and refuses any hosted database unless `ENVIRONMENT=staging` and `PATCHHIVE_DEMO_USER_PASSWORD` / `PATCHHIVE_DEMO_ADMIN_PASSWORD` (16+ characters, not the ones above) are set; the walkthrough then logs in with those.
+
 **Not valid:** `Admin` / `Admin` (old UI label only — fixed on Login page).
 
 ### Staging vs production
