@@ -24,13 +24,13 @@
 
 ## Gap closure (2026-10-29)
 
-- [ ] T030 Add a `validate_book` stage to `compose_design_export_pack`: count the pages drawn against the manifest, write one manifest entry per page (index, kind, patch artifact id, page hash, SVG hash, status), write a SHA-256 per bundle file in `checksums.json`, recompute `composition_hash`, and fail with `PATCH_BOOK_PAGE_COUNT_MISMATCH`, `PATCH_BOOK_REFERENCE_UNRESOLVED` or `PATCH_BOOK_ASSET_HASH_MISMATCH` (FR-016, FR-017, FR-006; research R1).
+- [x] T030 Add a `validate_book` stage to `compose_design_export_pack`: count the pages drawn against the manifest, write one manifest entry per page (index, kind, patch artifact id, page hash, SVG hash, status), write a SHA-256 per bundle file in `checksums.json`, recompute `composition_hash`, and fail with `PATCH_BOOK_PAGE_COUNT_MISMATCH`, `PATCH_BOOK_REFERENCE_UNRESOLVED` or `PATCH_BOOK_ASSET_HASH_MISMATCH` (FR-016, FR-017, FR-006; research R1). Done 2026-10-29: `validate_book` in design/engine.py writes `pages`, per-file `checksums.json` and `validation/book.json`; tests in test_patchbook_validate_book.py.
   - depends_on: []
-- [ ] T031 Plate mode: with T030 in place, a publication-profile pack whose plates are not drawn fails `PATCH_BOOK_PAGE_COUNT_MISMATCH` (manifest 2N+2 against PDF N+2), with a test on the dual-artifact fixture (FR-016; research R1).
+- [x] T031 Plate mode: with T030 in place, a publication-profile pack whose plates are not drawn fails `PATCH_BOOK_PAGE_COUNT_MISMATCH` (manifest 2N+2 against PDF N+2), with a test on the dual-artifact fixture (FR-016; research R1). Done 2026-10-29: the dual-artifact plate test now expects the failure and its receipt.
   - depends_on: [T030]
-- [ ] T036 Record every preflight warning in the book manifest and stage receipt instead of dropping it (FR-019, OQ-7; research R5).
+- [x] T036 Record every preflight warning in the book manifest and stage receipt instead of dropping it (FR-019, OQ-7; research R5). Done 2026-10-29: the manifest keeps the codes (#138) and `validation/book.json` lists each warning with its message.
   - depends_on: [T030]
-- [ ] T032 Refuse `draft` → `published` with 409 `PUBLICATION_BOOK_NOT_VALIDATED` when the export is not bound to a validated book, which today is every legacy export (FR-048; research R2 option 3).
+- [x] T032 Refuse `draft` → `published` with 409 `PUBLICATION_BOOK_NOT_VALIDATED` when the export is not bound to a validated book, which today is every legacy export (FR-048; research R2 option 3). Done 2026-10-29: `update_publication` refuses it; the lifecycle API test changed with FR-048.
   - depends_on: []
 - [ ] T033 Only if the owner wants publishing back (OQ-6): bind each publication export to a canon export whose pack passed `validate_book`, and let T032's check pass for it (FR-048; research R2 option 1).
   - depends_on: [T001, T030, T032]
