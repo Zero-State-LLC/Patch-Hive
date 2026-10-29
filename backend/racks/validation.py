@@ -89,10 +89,13 @@ def hp_needs_reverify(db: Session, module: Module) -> bool:
     bind = db.get_bind()
     if not inspect(bind).has_table("catalog_value_archive"):
         return False
+    # A reviewed correction from a maker page (spec 003 FR-038) settles the flagged HP.
     row = db.execute(
         text(
-            "SELECT 1 FROM catalog_value_archive WHERE table_name = 'modules' "
-            "AND row_key = :key AND field = 'hp' AND action = 'flag' LIMIT 1"
+            "SELECT 1 FROM catalog_value_archive f WHERE f.table_name = 'modules' "
+            "AND f.row_key = :key AND f.field = 'hp' AND f.action = 'flag' "
+            "AND NOT EXISTS (SELECT 1 FROM catalog_value_archive c WHERE c.table_name = 'modules' "
+            "AND c.row_key = :key AND c.field = 'hp' AND c.action = 'correct') LIMIT 1"
         ),
         {"key": f"{module.brand}::{module.name}"},
     ).first()
