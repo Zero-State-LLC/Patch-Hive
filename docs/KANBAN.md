@@ -2,7 +2,7 @@
 
 Mirror of [org Project #8 "Patch-Hive"](https://github.com/orgs/Zero-State-LLC/projects/8). The project is the source of truth. Regenerate this file with `gh project item-list 8 --owner Zero-State-LLC`.
 
-Columns (Status): Backlog → Ready → In progress → In review → Done. Spec tasks are titled `[NNN Txxx]`; Ready means every `depends_on` is done (`just spec-dag`). Slices are described in [docs/evidence/NEXT_SLICES_2026-10-28.md](evidence/NEXT_SLICES_2026-10-28.md); decision research is in [specs/003-catalog-dataset-pipeline/research.md](../specs/003-catalog-dataset-pipeline/research.md).
+Columns (Status): Backlog → Ready → In progress → In review → Done. Spec tasks are titled `[NNN Txxx]`; Ready means every `depends_on` is done (`just spec-dag`). Slices are described in [docs/evidence/NEXT_SLICES_2026-10-28.md](evidence/NEXT_SLICES_2026-10-28.md); decision research is in each spec's `research.md` (001–008, 2026-10-29). Gap-closure tasks added on 2026-10-29 (001 T030–T034, 002 T030–T036, 003 T036–T039, 004 T040–T051, 005 T080–T085, 006 T100–T104, 007 T080–T083, 008 T070–T072) are in the spec `tasks.md` files and not yet on the board.
 
 Snapshot: 2026-10-29 PT (later), 153 items.
 

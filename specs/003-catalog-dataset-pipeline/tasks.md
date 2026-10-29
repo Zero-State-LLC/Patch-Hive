@@ -50,6 +50,17 @@
 - [ ] T034 Jumper-dependent power as `power_configs` (D8, research R5): migration, a loader action filling settings from T035's receipt, and a setting picker in rack budgets.
   - depends_on: [T033, T035]
 
+## Lifecycle gaps and legacy HP (2026-10-29)
+
+- [ ] T036 Clear `needs_reverify` in the correction UPDATE once every field the row was flagged for has a `correct` archive row; keep it set while another flagged field is open. Test on a staging replica: CHICANE ends unflagged (research R8).
+  - depends_on: [T033]
+- [ ] T037 Refuse archive, flag and correct entries on tombstoned rows (`tombstoned_at IS NULL` / `status <> 'tombstoned'` in every statement); count each as `refused: row_tombstoned` in the receipt (research R9).
+  - depends_on: [T029, T033]
+- [ ] T038 Owner decision on the 221 unsourced v1 HP values (research R7: keep, flag, or triage).
+  - depends_on: []
+- [ ] T039 If triage is chosen: a v3 HP manifest re-sourcing the 45 maker-confirmed values, a hand check of the 7 disagreements with `correct` entries for the wrong ones, an `hp_source = legacy_unsourced` marker on the rest, then a free maker-page lookup of the 169 and removal of `UNSOURCED_HP_OVERLAYS` once empty.
+  - depends_on: [T038, T037]
+
 ## Foundational
 
 - [ ] T010 Encode the transitions table as tests (workflows: anti-slop-code, production-systems)

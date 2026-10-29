@@ -12,7 +12,7 @@ No requirement is confirmed until the operator signs off. Prices, tier quantitie
 - `STRIPE_INTEGRATION_PROMPT.md`. This is an implementation prompt. It describes intended behavior, not verified shipped behavior. The excerpt was truncated at `cancel_subscription`.
 - `REFERRAL_IMPLEMENTATION.md`. This file states the referral canon rules.
 - `backend/monetization/`. The retained files are `routes.py` and `referrals.py`. The prompt proposes `stripe_models.py` and `stripe_service.py`, but neither is retained.
-- `docs/SECURITY.md`. Its contents were not provided, so security requirements derived from it are NOT_COMPUTABLE.
+- `docs/SECURITY.md`. Its contents were not provided when this spec was drafted. It now exists; see OQ-10.
 
 ## Summary
 
@@ -23,6 +23,49 @@ Why: monetization funds the product. Commerce must not leak into canon. Tier, cr
 - Canon is deterministic.
 - Evidence is not canon.
 - Commerce fails closed at trust boundaries.
+
+## Implementation status (2026-10-29)
+
+Checked against `main` at `95ca9ee`. Paths are under `backend/` unless shown otherwise. Totals: 15 Implemented, 10 Partial, 11 Missing. Gaps map to [research.md](research.md) and the Gap closure tasks in [tasks.md](tasks.md).
+
+| FR | Status | Evidence |
+|---|---|---|
+| FR-001 | Partial | Tier names and Design Engine family floors exist; every user resolves to one configured default tier, not their own (`canon/entitlements.py`). T050. |
+| FR-002 | Partial | Signup writes no ledger entry (`community/auth_routes.py`). "Demo mode only" is not defined, and the default tier is `core`. |
+| FR-003 | Missing | No per-period grant. T049. |
+| FR-004 | Missing | No STUDIO entitlement of any kind. T049. |
+| FR-005 | Implemented | Server-set price `patchbook_export_cost = 3` (`core/config.py`, `canon/routes.py`); 503 `EXPORT_FULFILLMENT_UNAVAILABLE` before any debit (#129). |
+| FR-006 | Missing | No one-time checkout. T046. |
+| FR-007 | Partial | Legacy `credits_ledger` uses `Purchase`, `Spend`, `Grant`; the canonical ledger uses `grant`, `debit`, `reversal`, with no `purchase` type (`canon/exports.py`). T046. |
+| FR-008 | Partial | Code only inserts; no trigger or guard (`canon/models.py`). T042. |
+| FR-009 | Partial | `/api/canon/credits/balance` sums the canonical ledger; the legacy `/api/monetization/credits/balance` sums another ledger and disagrees. T044. |
+| FR-010 | Implemented | No expiry field or logic in either ledger (`canon/models.py`, `monetization/models.py`). |
+| FR-011 | Missing | Webhook stores events as `received` and never processes them (`canon/routes.py`). T045, T046. |
+| FR-012 | Partial | Event-id replay safety and payload-hash conflict (`canon/exports.py`); no payment-id idempotency; a concurrent duplicate returns 500. T040, T046. |
+| FR-013 | Partial | Constant-time HMAC, 300 s tolerance, livemode gate (`canon/exports.py`); only the last `v1` is kept; live-mode events pass outside production with `STRIPE_TEST_MODE=false`. T040, T041. |
+| FR-014 | Missing | No unresolved state; `processed_at` is never set. T045. |
+| FR-015 | Missing | No subscription record. T049. |
+| FR-016 | Missing | No subscription grants. T049. |
+| FR-017 | Missing | No cancel route. T049. |
+| FR-018 | Missing | No subscription-deleted handling. T049. |
+| FR-019 | Implemented | `stripe_test_mode = True`, `allow_production_payments = False` by default (`core/config.py`); production webhook 403 `PRODUCTION_PAYMENTS_DISABLED` and the startup payment policy (`canon/routes.py`). |
+| FR-020 | Missing | No provider customer link. T046. |
+| FR-021 | Partial | `users.referral_code` is unique and random, and `ensure_referral_code` sets it only when empty (`community/models.py`, `account/services.py`); nothing at the database blocks a change. |
+| FR-022 | Implemented | `/signup?ref=<code>` (`monetization/referrals.py`). |
+| FR-023 | Implemented | Behind `enable_legacy_referrals` (`community/auth_routes.py`). |
+| FR-024 | Implemented | `create_referral` and `apply_referral_reward` (`monetization/referrals.py`). |
+| FR-025 | Implemented | `create_referral` rejects pending and rewarded users (`monetization/referrals.py`). |
+| FR-026 | Implemented | 3-credit `Grant` with the note and `referral_id`; the spendable canonical copy only for a provider-verified purchase (#131). |
+| FR-027 | Implemented | `purchase_count != 1` returns no reward (`monetization/referrals.py`). |
+| FR-028 | Missing | No provider caller of `record_purchase(payment_verified=True)`. T046, T047. |
+| FR-029 | Partial | Code appends a `Rewarded` row and never edits `Pending`; no database guard (`alembic/versions/20240921_make_referrals_append_only.py` drops the unique pair only). |
+| FR-030 | Implemented | No refund path exists, so nothing revokes a reward. |
+| FR-031 | Implemented | `get_referral_summary` behind the flag (`community/routes.py`); `earned_credits` reads the legacy ledger (research R6, T044). |
+| FR-032 | Implemented | Row lock on the `Pending` row plus `uq_referrals_one_reward` (#98). |
+| FR-033 | Partial | The legacy route still takes a client `credits_delta` behind `enable_legacy_referrals`, but mints no spendable credit (#131). T043. |
+| FR-034 | Implemented | No generation module imports `monetization` or `canon.entitlements` (repo grep of `patchhive/`, `intelligence/`, `runs/`). |
+| FR-035 | Implemented | The tier is read only at export, to choose a template family (`canon/routes.py`); it is not a generation input. |
+| FR-036 | Implemented | Codes come from `secrets.token_urlsafe`, not the email (`monetization/referrals.py`, `account/services.py`). |
 
 ## Scope
 
@@ -123,7 +166,7 @@ Acceptance criteria:
 - **FR-002** FREE is demo mode only and grants 0 credits on signup. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
 - **FR-003** Each paid tier grants credits per billing period. The source lists CORE at 25 credits each month and PRO at 100 credits each month. It lists STUDIO as unlimited. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] The source also lists prices of $4.99, $14.99, and $29.99. These prices are unconfirmed. See OQ-1.
 - **FR-004** PatchHive represents unlimited credits as an explicit unlimited entitlement. It must not use a large numeric sentinel. [INFERRED] The observed code uses `999999`, per STRIPE_INTEGRATION_PROMPT.md.
-- **FR-005** A PatchBook export costs 3 credits. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
+- **FR-005** A PatchBook export costs 3 credits. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] Implemented 2026-10-29 (#129): the server sets the price (`patchbook_export_cost`) and ignores a client cost, and an export that nothing will fulfill is refused with 503 `EXPORT_FULFILLMENT_UNAVAILABLE` before any debit.
 - **FR-006** A one-time purchase charges according to a published per-credit rule. The source specifies $0.20 per credit with a $5.00 minimum charge. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] This rule is unconfirmed. See OQ-1.
 
 ### Ledger
@@ -160,6 +203,8 @@ Acceptance criteria:
 - **FR-026** The reward is 3 credits. PatchHive appends it to the referrer's ledger as a `Grant` with the following properties. [OBSERVED: REFERRAL_IMPLEMENTATION.md, backend/monetization/referrals.py]
   - The note is `Referral reward: <referred_user_id>`.
   - The entry links to the referral.
+
+  Implemented 2026-10-29 (#131): the spendable copy in the canonical ledger is written once per referral, and only for a provider-verified purchase (`payment_verified`). A self-reported purchase never earns spendable credit.
 - **FR-027** The reward fires only when the referred user's `Purchase` ledger count equals exactly 1, a `Pending` row exists, and no `Rewarded` row exists. [OBSERVED: backend/monetization/referrals.py]
 - **FR-028** Every provider-confirmed paid purchase, both one-time and subscription, goes through the single purchase-recording path that evaluates referral eligibility. [INFERRED] The observed one-time provider path writes `Purchase` directly and skips referral evaluation. The observed subscription path writes `Grant`, not `Purchase`. Both behaviors appear in STRIPE_INTEGRATION_PROMPT.md. Whether a subscription payment counts as a "paid purchase" is unresolved. See OQ-3.
 - **FR-029** Referral rows are append-only. A reward appends a `Rewarded` row with `first_purchase_id` and `rewarded_at`. PatchHive never modifies the `Pending` row. [OBSERVED: REFERRAL_IMPLEMENTATION.md, backend/monetization/referrals.py]
@@ -169,14 +214,14 @@ Acceptance criteria:
   - Pending referrals, excluding referred users who are already rewarded.
   - Rewarded referrals.
   - The total of the user's `Grant` entries that link to a referral.
-- **FR-032** The `Purchase` entry and its referral evaluation commit atomically. Concurrent purchases by one referred user produce at most one reward. [INFERRED]
+- **FR-032** The `Purchase` entry and its referral evaluation commit atomically. Concurrent purchases by one referred user produce at most one reward. [INFERRED] Implemented 2026-10-28 (#98): the `Pending` row is locked, and the partial unique index `uq_referrals_one_reward` is the backstop.
 
 ### Trust boundary
 
 - **FR-033** Only server-side confirmation from a verified payment provider can create a `Purchase` ledger entry. A client-submitted purchase must not mint credits or trigger rewards. [INFERRED] In the observed code, the legacy `/purchases` endpoint accepts an authenticated user's own `credits_delta`. A feature flag gates that endpoint, per backend/monetization/routes.py. ADVERSARY must review this endpoint.
 - **FR-034** Referral logic never affects generation, patch visibility, or exploration. [OBSERVED: REFERRAL_IMPLEMENTATION.md]
 - **FR-035** Tier and credit state may gate whether a user can perform an action, such as an export. That state is never an input to canonical generation, so output for fixed canonical inputs stays identical across tiers. [INFERRED] This follows constitution principle 1.
-- **FR-036** A referral code must not let anyone recover or confirm a user's email address. [INFERRED] The observed code derives the code from a truncated hash of the username and email, per backend/monetization/referrals.py. ADVERSARY must review this derivation.
+- **FR-036** A referral code must not let anyone recover or confirm a user's email address. [INFERRED] The observed code derives the code from a truncated hash of the username and email, per backend/monetization/referrals.py. ADVERSARY must review this derivation. Update 2026-10-29: codes are now random (`secrets.token_urlsafe`), so they carry no email [OBSERVED: monetization/referrals.py, account/services.py]. Codes issued before that change were not checked.
 
 ## Key entities
 
@@ -353,7 +398,7 @@ stateDiagram-v2
 
 ## Security, privacy, observability, and rollback
 
-- **Security.** ADVERSARY reviews these items: the legacy client-submitted purchase endpoint (FR-033), provider event verification (FR-013), and referral-code derivation (FR-036). The contents of `docs/SECURITY.md` are NOT_COMPUTABLE. [INFERRED]
+- **Security.** ADVERSARY reviews these items: the legacy client-submitted purchase endpoint (FR-033), provider event verification (FR-013), and referral-code derivation (FR-036). `docs/SECURITY.md` now states the payment rules; see OQ-10.
 - **Privacy.** The provider receives the user's email and display name when PatchHive creates the customer. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] Disclosure and consent requirements are NOT_COMPUTABLE. [INFERRED]
 - **Observability.** Every applied, duplicate, and unresolved provider event is recorded with its provider event identifier and its disposition. [INFERRED] The constitution principle 6 requires this provenance.
 - **Rollback.** Payments are flag-gated and default to disabled. Legacy referrals are flag-gated. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md, backend/monetization/routes.py] Rollback never deletes ledger or referral rows. [INFERRED]
@@ -390,18 +435,18 @@ ED] The observed sentinel `999999` can be exhausted or shown as a literal number
 
 ## Open questions
 
-All items are NOT_COMPUTABLE from the retained sources. The operator must resolve each one before planning.
+Reviewed 2026-10-29 against the code ([research.md](research.md) R7). Items the code answers are marked RESOLVED with evidence. The rest are owner, business or legal decisions; each carries a recommendation.
 
-- **OQ-1** Are the tier prices ($4.99, $14.99, $29.99), the monthly credit quantities (25, 100, unlimited), and the one-time rule ($0.20 per credit, $5.00 minimum) ratified? They come from an implementation prompt only. Currency, tax, and regional pricing are also undefined. NOT_COMPUTABLE.
-- **OQ-2** What is the refund, chargeback, and dispute flow for purchases? When does PatchHive append a `Refund` entry, and can a balance go negative? NOT_COMPUTABLE.
-- **OQ-3** Does a subscription payment count as a "first paid purchase" for referral rewards? If yes, does it record a `Purchase` entry, a `Grant` entry, or both? NOT_COMPUTABLE.
-- **OQ-4** Which provider subscription statuses, such as `past_due`, `unpaid`, `incomplete`, and `trialing`, must PatchHive distinguish? What entitlement applies in each? NOT_COMPUTABLE.
-- **OQ-5** What operator action resolves or rejects an `Unresolved` commerce event? Who is authorized, and what audit record does it produce? NOT_COMPUTABLE.
-- **OQ-6** Does signup succeed, fail, or warn when the referral code does not resolve? NOT_COMPUTABLE.
-- **OQ-7** How do upgrades, downgrades, and proration affect the stored tier and the per-period grant? NOT_COMPUTABLE.
-- **OQ-8** What does "unlimited" mean for STUDIO: no spend check, a fair-use cap, or something else? NOT_COMPUTABLE.
-- **OQ-9** Which features does each tier gate beyond credits? The sources say "Basic," "Advanced," and "All" PatchBook features without a list. NOT_COMPUTABLE.
-- **OQ-10** What does `docs/SECURITY.md` require for payment secrets, webhook handling, and personal data? Its contents were not provided. NOT_COMPUTABLE.
-- **OQ-11** Is the legacy `/purchases` endpoint retired, restricted to server use, or kept? See FR-033. NOT_COMPUTABLE.
-- **OQ-12** How does account deletion interact with the append-only ledger and referral rows? See EC-8. NOT_COMPUTABLE.
-- **OQ-13** What legal terms, refund policy, and consumer-protection obligations apply to selling credits and subscriptions? NOT_COMPUTABLE.
+- **OQ-1** Are the tier prices ($4.99, $14.99, $29.99), the monthly credit quantities (25, 100, unlimited), and the one-time rule ($0.20 per credit, $5.00 minimum) ratified? They come from an implementation prompt only. Currency, tax, and regional pricing are also undefined. NOT_COMPUTABLE. Still open (owner). Recommendation: ratify prices, quantities and currency before T046. The export price is already a server setting (`patchbook_export_cost = 3`).
+- **OQ-2** What is the refund, chargeback, and dispute flow for purchases? When does PatchHive append a `Refund` entry, and can a balance go negative? NOT_COMPUTABLE. Partly answered: a failed export gets one `reversal`, and an export never takes a balance below zero [OBSERVED: canon/exports.py]. Purchase refunds and chargebacks are still open (owner, legal). Recommendation: on a provider refund, reverse only unspent credits, record the rest as unresolved, never go negative, and never revoke a referral reward (FR-030).
+- **OQ-3** Does a subscription payment count as a "first paid purchase" for referral rewards? If yes, does it record a `Purchase` entry, a `Grant` entry, or both? NOT_COMPUTABLE. Still open (owner). Recommendation: yes. The first paid invoice records a provider-verified purchase through `record_purchase(payment_verified=True)`, and the period credits are a separate grant.
+- **OQ-4** Which provider subscription statuses, such as `past_due`, `unpaid`, `incomplete`, and `trialing`, must PatchHive distinguish? What entitlement applies in each? NOT_COMPUTABLE. Still open (owner). Recommendation: grant only when an invoice is paid for a new period; `trialing`, `incomplete`, `past_due` and `unpaid` grant nothing and keep credits already granted.
+- **OQ-5** What operator action resolves or rejects an `Unresolved` commerce event? Who is authorized, and what audit record does it produce? NOT_COMPUTABLE. Still open (owner). Recommendation: admin role only, one `CanonicalAdminAuditEventRecord` per resolve or reject, with a reason (T048).
+- **OQ-6** Does signup succeed, fail, or warn when the referral code does not resolve? RESOLVED 2026-10-29: with referrals on, a code that does not resolve fails signup with 400 `Invalid referral code`; with referrals off, the code is ignored [OBSERVED: community/auth_routes.py].
+- **OQ-7** How do upgrades, downgrades, and proration affect the stored tier and the per-period grant? NOT_COMPUTABLE. Still open (owner). Recommendation: store the tier from the provider price on every update; grant the new tier's credits only at the next period, with no proration.
+- **OQ-8** What does "unlimited" mean for STUDIO: no spend check, a fair-use cap, or something else? NOT_COMPUTABLE. Still open (owner). Recommendation: an explicit entitlement flag, not a number (FR-004), with a fair-use cap the owner sets.
+- **OQ-9** Which features does each tier gate beyond credits? The sources say "Basic," "Advanced," and "All" PatchBook features without a list. NOT_COMPUTABLE. Partly answered: Design Engine template families have a tier floor [OBSERVED: canon/entitlements.py]. Other tier features are still open (owner).
+- **OQ-10** What does `docs/SECURITY.md` require for payment secrets, webhook handling, and personal data? RESOLVED 2026-10-29: `docs/SECURITY.md` requires append-only credit entries; webhooks with constant-time HMAC, timestamp tolerance, unique event ids, replay-conflict detection and a livemode gate; and `STRIPE_TEST_MODE=true` with `ALLOW_PRODUCTION_PAYMENTS=false` until a payment activation review [OBSERVED: docs/SECURITY.md]. Gaps against it: T040, T041, T042.
+- **OQ-11** Is the legacy `/purchases` endpoint retired, restricted to server use, or kept? See FR-033. NOT_COMPUTABLE. Still open (owner). Recommendation: delete the route (research R5, T043). It mints no spendable credit since #131, but its `Purchase` row can use up a referred user's first-purchase slot (EC-3).
+- **OQ-12** How does account deletion interact with the append-only ledger and referral rows? See EC-8. NOT_COMPUTABLE. Partly answered: the canonical ledger blocks deleting a user who has entries (`ON DELETE RESTRICT`), while the legacy ledger cascades; no account-deletion route was found [OBSERVED: canon/models.py, monetization/models.py]. Still open (owner, legal). Recommendation: anonymize the user and keep ledger and referral rows.
+- **OQ-13** What legal terms, refund policy, and consumer-protection obligations apply to selling credits and subscriptions? NOT_COMPUTABLE. Still open (legal). No recommendation from engineering.

@@ -2,13 +2,13 @@
 
 **Authoritative as of:** 2026-10-29  
 **Branch pin:** `main` on `Zero-State-LLC/Patch-Hive`  
-**HEAD:** `66e34a3` (#126, docs); #124 (spec 003 D3–D6, FR-036–038) and #125 (reviewed corrections) merged and loaded  
+**HEAD:** `95ca9ee` (#133); gap-analysis fixes #129–#133 merged and deployed to staging and production  
 **Recent work (2026-10-28):** gap-analysis fixes for specs 001–005 and P0/P1 security (#82–#105); Cloudflare edge for staging and production (#83–#87, #107); short-lived tokens, refresh cookie and an enforced CSP (#99, #100, #113); prod catalog load, Products page, category fill and catalog tombstones (#112–#116). 2026-10-29: slices A1–A5 (#118, #119, #121–#123) and a second retirement (#120). Staging and production both run main.  
-**Open PRs:** [#110](https://github.com/Zero-State-LLC/Patch-Hive/pull/110) opt-in container startup migrations, [#111](https://github.com/Zero-State-LLC/Patch-Hive/pull/111) CODEOWNERS, [#109](https://github.com/Zero-State-LLC/Patch-Hive/pull/109) release 0.3.0-alpha.4, [#106](https://github.com/Zero-State-LLC/Patch-Hive/pull/106) zod bump.  
+**Open PRs:** [#109](https://github.com/Zero-State-LLC/Patch-Hive/pull/109) release 0.3.0-alpha.4, [#111](https://github.com/Zero-State-LLC/Patch-Hive/pull/111) CODEOWNERS, [#106](https://github.com/Zero-State-LLC/Patch-Hive/pull/106) zod bump.  
 **Board:** [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8), mirrored in [docs/KANBAN.md](docs/KANBAN.md).  
 **Open owner decisions:** [docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md](docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md).  
 **Next slices:** [docs/evidence/NEXT_SLICES_2026-10-28.md](docs/evidence/NEXT_SLICES_2026-10-28.md) (A1–A5 done; status updated 2026-10-29).  
-**Decision research:** [specs/003-catalog-dataset-pipeline/research.md](specs/003-catalog-dataset-pipeline/research.md).  
+**Decision research (2026-10-29):** one `research.md` per spec, 001–008, each with an "Implementation status (2026-10-29)" table in its `spec.md` and gap-closure tasks in its `tasks.md`. The decisions awaiting the owner: receipt signing (007 R1), the provider purchase machines (004 R1), the 221 unsourced v1 HP values (003 R7), deleting the legacy purchase route (004 R5) and GitHub environment protection for prod workflows (006 R2).  
 
 **Alpha tag lineage:** `v0.3.0-alpha` (late alpha — **not** production)
 

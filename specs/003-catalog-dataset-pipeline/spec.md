@@ -318,7 +318,7 @@ Initial state: `LIVE`. Final state: `TOMBSTONED` (no un-tombstoning yet).
 | from | event | guard | to | effect |
 |---|---|---|---|---|
 | LIVE | flag | provenance manifest action `flag` or `null` on a NOT NULL field | FLAGGED | Archive the value; set `needs_reverify` |
-| FLAGGED | correct | correction entry matches the stored value (`only_if_value`) AND cites a maker page | LIVE | Archive the old value; write the new one; an HP correction lifts the FR-035 block |
+| FLAGGED | correct | correction entry matches the stored value (`only_if_value`) AND cites a maker page | LIVE | Archive the old value; write the new one; clear `needs_reverify` once every flagged field is corrected (research R8); an HP correction lifts the FR-035 block |
 | LIVE | correct | as above | LIVE | Archive the old value; write the new one |
 | LIVE | retire | retirement manifest names the row with a reason and evidence | TOMBSTONED | Set `tombstoned_at` and reason (catalog), `status = tombstoned` (modules) |
 | FLAGGED | retire | as above | TOMBSTONED | As above |
@@ -328,6 +328,7 @@ Illegal transitions:
 - Any state -> deleted. Rows are never deleted.
 - `LIVE` or `FLAGGED` -> a changed value without a correction entry that names the old value and a maker page.
 - `TOMBSTONED` -> `LIVE` (needs its own decision and manifest).
+- `TOMBSTONED` -> any flag or correction. A manifest entry naming a retired row is refused and counted in the receipt (research R9).
 - A correction applied when the stored value is no longer `only_if_value` (the value changed since review).
 
 Privacy: catalog data is public product specs. Keep any private source material out of the repo, and store row refs only.
@@ -434,6 +435,8 @@ Privacy: catalog data is public product specs. Keep any private source material 
 - The scraper and any model only propose. The deterministic filter and the operator dispose (constitution principles 4 and 5) [INFERRED].
 
 ## Open questions
+
+- **OPEN (owner): the 221 unsourced v1 HP values.** Triage is recommended: re-source the 45 that match a maker page, hand-check and correct the 7 that disagree, mark the 169 unmatched as not maker-checked until looked up (research R7; tasks T038, T039).
 
 - **PARTLY RESOLVED (2026-10-29): Fetch cost and budget.** Observed cost: the full v2 maker crawl used 2,569 paid fetches, about 1,116 context.dev and 33 Firecrawl credits (`receipts/scrape-ledger.json`); the T026 pass used 10 credits. Caps so far are approved in chat and written into `SCRAPING_ARCHITECTURE.md`. Still open: an approvals receipt the crawler checks before a paid fetch (FR-003).
 - **RESOLVED (D2): Retailer scraping permission.** There is no automated retailer crawling. Retailer values come only from one-off manual lookups.
