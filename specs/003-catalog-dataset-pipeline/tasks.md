@@ -21,7 +21,7 @@
   - depends_on: [T022]
 - [x] T024 Paid crawl run under an owner-approved cap, sized from the T023 dry-run receipt (`--max-paid-fetches`, `--cap`). Done 2026-10-27 via context.dev: 3,429 modules from 315 brands (`receipts/maker-crawl-v2.json`).
   - depends_on: [T023]
-- [ ] T026 Render pass for script-rendered makers (4ms, Erica) and adapter fixes for Frap, Tiptop and Pittsburgh, under a small approved paid cap. Paid pass 2026-10-27 (context.dev, 10 credits): 4ms 44, Pittsburgh 56 and Erica 46 modules merged into `maker-crawl-v2.json`. Tiptop is excluded (CAPTCHA). Frap is still at 0 and needs a listing adapter over rendered HTML. Overlays built 2026-10-27 (`catalog-additions-v4`: 136 rows; `module-power-depth-v12`: 141 entries; jumper-dependent draws left unknown; staging replica: 0 conflicts). Loaded to staging (T025) and prod (T027). Open only for Frap.
+- [x] T026 Render pass for script-rendered makers (4ms, Erica) and adapter fixes for Frap, Tiptop and Pittsburgh, under a small approved paid cap. Paid pass 2026-10-27 (context.dev, 10 credits): 4ms 44, Pittsburgh 56 and Erica 46 modules merged into `maker-crawl-v2.json`. Tiptop is excluded (CAPTCHA). Frap is still at 0 and needs a listing adapter over rendered HTML. Overlays built 2026-10-27 (`catalog-additions-v4`: 136 rows; `module-power-depth-v12`: 141 entries; jumper-dependent draws left unknown; staging replica: 0 conflicts). Loaded to staging (T025) and prod (T027). Closed 2026-10-29: Frap is excluded (D7: its host refuses connections from the crawl network; no paid workaround), like Tiptop.
   - depends_on: [T024]
 - [x] T025 Build loader overlays from `maker-crawl-v2.json` (insert-if-absent, fill-null, flag disagreements) and load them to staging. Done 2026-10-27: overlays through `catalog-additions-v4` and `module-power-depth-v12`, with the rail, jumper, review and signed-pair fixes; staging holds 4,172 catalog rows and 4,142 modules with 0 conflicts. The prod load is T027.
   - depends_on: [T024]
@@ -45,8 +45,10 @@
   - depends_on: []
 - [x] T033 Add the `correct` provenance action (FR-038): archive, then write the new value while the stored value is `only_if_value`, with a maker-page citation; the FR-035 guard lifts on an `hp` correction. Ship `provenance/maker-corrections-v1.json` for Sovage CHICANE (hp 14 → 4, verification URL to the Eurorack page) and load it to staging and prod (D4, research R1). Done 2026-10-29 (#125): CHICANE holds 4 HP and the Eurorack page on staging and prod; 14 and the 1U URL are archived.
   - depends_on: [T029]
-- [ ] T034 Jumper-dependent power as `power_configs` (research R5), after the owner confirms the schema.
-  - depends_on: [T033]
+- [ ] T035 Scoped re-fetch of the jumper-dependent pages (about 45: the 42 live 4ms modules, the 2 Dave Jones Design modules and Velectronic A-Envelope), under an approved cap of about 50 context.dev credits; record each setting's draws verbatim (research R4).
+  - depends_on: [T030]
+- [ ] T034 Jumper-dependent power as `power_configs` (D8, research R5): migration, a loader action filling settings from T035's receipt, and a setting picker in rack budgets.
+  - depends_on: [T033, T035]
 
 ## Foundational
 
