@@ -241,8 +241,9 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
 
     for hp_path in sorted((CATALOG / "overlays").glob("module-catalog-hp-v*.json")):
         hp_overlay = _load_optional(hp_path)  # v1 maker/retail; v2+ maker re-verify (2026-10-17)
+        legacy = hp_path.name in UNSOURCED_HP_OVERLAYS
         for entry in hp_overlay.get("entries") or []:
-            _schedule_hp(plan, catalog, entry)
+            _schedule_hp(plan, catalog, entry, legacy_unsourced=legacy)
 
     for category_path in sorted((CATALOG / "overlays").glob("module-catalog-category-v*.json")):
         for entry in _load_optional(category_path).get("entries") or []:
@@ -833,12 +834,28 @@ def _schedule_catalog(plan: Plan, catalog: dict[str, dict[str, Any]], row: dict[
     )
 
 
-def _schedule_hp(plan: Plan, catalog: dict[str, dict[str, Any]], entry: dict[str, Any]) -> None:
+# HP overlays written before entries carried their maker page. Kept as loaded
+# (spec 003 FR-024 review pending); every later HP overlay must cite a maker page.
+UNSOURCED_HP_OVERLAYS = frozenset({"module-catalog-hp-v1.json"})
+
+
+def _schedule_hp(
+    plan: Plan,
+    catalog: dict[str, dict[str, Any]],
+    entry: dict[str, Any],
+    *,
+    legacy_unsourced: bool = False,
+) -> None:
     slug = entry.get("slug")
     brand = (entry.get("brand") or "").strip()
     name = (entry.get("name") or "").strip()
     hp = entry.get("hp")
     if hp is None:
+        return
+    # HP decides placement, so only a maker page may supply it (FR-024, FR-027).
+    sourced = entry.get("source_class") == "maker" and str(entry.get("source_url") or "").startswith("https://")
+    if not sourced and not legacy_unsourced:
+        plan.conflict(table="module_catalog", slug=slug, reason="hp_overlay_unsourced")
         return
     row = catalog.get(slug) if slug else None
     if row is None and brand and name:
