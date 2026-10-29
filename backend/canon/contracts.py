@@ -7,7 +7,7 @@ import json
 import math
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Annotated, Any, Literal, Self
+from typing import Annotated, Any, ClassVar, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -206,6 +206,22 @@ class RigMetricsPacket(ArtifactContract):
     learning_gradient_index: MetricScore | None = None
     performance_density_index: MetricScore | None = None
     confidence_notes: tuple[str, ...] = ()
+
+    # Fields added for FR-027. A packet sealed before them has none of these keys in its
+    # hashed dump, so they are left out while None to keep that stored hash valid.
+    _ADDED_OPTIONAL: ClassVar[tuple[str, ...]] = (
+        "rig_id",
+        "category_counts",
+        "modulation_budget",
+        "clock_coherence_score",
+        "chaos_headroom",
+        "learning_gradient_index",
+        "performance_density_index",
+    )
+
+    def computed_hash(self) -> str:
+        absent = {name for name in self._ADDED_OPTIONAL if getattr(self, name) is None}
+        return canonical_sha256(self.model_dump(exclude={"canonical_hash", *absent}))
 
 
 class LayoutPlacement(CanonicalContract):

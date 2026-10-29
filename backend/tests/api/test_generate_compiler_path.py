@@ -138,3 +138,49 @@ def test_second_run_on_same_revision_reuses_the_packet(
         .count()
     )
     assert count == 1
+
+
+def test_losing_the_metrics_insert_race_reuses_the_winner(
+    db_session: Session, sample_rack_basic: Rack, owner_headers: dict, monkeypatch
+) -> None:
+    """Two runs miss the packet, both insert: the loser keeps its run and reuses the row."""
+    from canon import rig_metrics
+    from canon.models import RigRevisionRecord
+
+    body = _generate(db_session, sample_rack_basic, owner_headers)
+    revision_id = body["rig_revision_id"]
+    winner = (
+        db_session.query(RigMetricsPacketRecord)
+        .filter(RigMetricsPacketRecord.rig_revision_id == revision_id)
+        .one()
+    )
+    # Make the loser's existence check miss, as it does when the winner has not committed.
+    real_query = db_session.query
+    calls = {"n": 0}
+
+    class _Miss:
+        def filter(self, *_a, **_k):
+            return self
+
+        def first(self):
+            return None
+
+    def fake_query(model, *a, **k):
+        if model is RigMetricsPacketRecord and calls["n"] == 0:
+            calls["n"] += 1
+            return _Miss()
+        return real_query(model, *a, **k)
+
+    monkeypatch.setattr(db_session, "query", fake_query)
+    marker = RigRevisionRecord  # the revision row must survive the failed insert
+    packet = rig_metrics.ensure_rig_metrics_packet(
+        db_session, rig_revision_id=revision_id, source_run_id="gen-run-loser"
+    )
+    assert packet is not None and packet.canonical_hash == winner.canonical_hash
+    assert db_session.get(marker, revision_id) is not None
+    assert (
+        real_query(RigMetricsPacketRecord)
+        .filter(RigMetricsPacketRecord.rig_revision_id == revision_id)
+        .count()
+        == 1
+    )

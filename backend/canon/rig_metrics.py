@@ -9,6 +9,7 @@ from __future__ import annotations
 from collections import Counter
 from datetime import datetime, timezone
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from canon.contracts import NOT_COMPUTABLE, RigMetricsPacket
@@ -86,13 +87,25 @@ def ensure_rig_metrics_packet(
     if existing is not None:
         return RigMetricsPacket.model_validate(existing.packet)
     packet = build_rig_metrics_packet(db, revision, source_run_id=source_run_id)
-    db.add(
-        RigMetricsPacketRecord(
-            id=packet.artifact_id,
-            rig_revision_id=rig_revision_id,
-            packet=packet.canonical_dict(),
-            canonical_hash=packet.canonical_hash or "",
+    # A concurrent run on the same revision may insert first. The insert runs in a
+    # savepoint so that losing the race rolls back only the insert, not the generation run.
+    try:
+        with db.begin_nested():
+            db.add(
+                RigMetricsPacketRecord(
+                    id=packet.artifact_id,
+                    rig_revision_id=rig_revision_id,
+                    packet=packet.canonical_dict(),
+                    canonical_hash=packet.canonical_hash or "",
+                )
+            )
+    except IntegrityError:
+        winner = (
+            db.query(RigMetricsPacketRecord)
+            .filter(RigMetricsPacketRecord.rig_revision_id == rig_revision_id)
+            .first()
         )
-    )
-    db.flush()
+        if winner is None:
+            raise
+        return RigMetricsPacket.model_validate(winner.packet)
     return packet
