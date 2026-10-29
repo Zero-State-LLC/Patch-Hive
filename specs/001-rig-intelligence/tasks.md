@@ -34,15 +34,15 @@
 
 ## Gap closure (2026-10-29)
 
-- [ ] T033 Hash the generation IR's canonical JSON (modules, seed, all params, engine and ABX-Core versions; not run id, time, commit or host) into the 32-character `generation_ir_hash`, with a test that a module change changes the hash (FR-001; research R3).
+- [x] T033 Hash the generation IR's canonical JSON (modules, seed, all params, engine and ABX-Core versions; not run id, time, commit or host) into the 32-character `generation_ir_hash`, with a test that a module change changes the hash (FR-001; research R3). Done 2026-10-29.
   - depends_on: []
-- [ ] T032 Read `allow_feedback` (drop patches with a `FEEDBACK_LOOP` finding when false, counted in provenance) and `prefer_simple` (stable sort by cable count before the `max_patches` cut); bump `patch_engine_version` if a golden output changes (FR-013, P1.5; research R2).
+- [x] T032 Read `allow_feedback` (drop patches with a `FEEDBACK_LOOP` finding when false, counted in provenance) and `prefer_simple` (stable sort by cable count before the `max_patches` cut); bump `patch_engine_version` if a golden output changes (FR-013, P1.5; research R2). Done 2026-10-29.
   - depends_on: [T033]
 - [ ] T030 Run `canon.compiler.compile_patch` for each patch that passes validation in `run_generation`, compare it with the dual-write adapter in tests, then store the compiler's plan, report and stage receipts; move the `run_canon_pipeline` demo rig into a test fixture (FR-004, FR-015, FR-016, P5.2; research R1).
   - depends_on: [T032]
 - [ ] T031 Emit a `RigMetricsPacket` per rig revision with `rig_id`, `module_count` and `category_counts`; the six scores are `NOT_COMPUTABLE` until OQ-11 defines them (FR-027; research R1).
   - depends_on: [T030]
-- [ ] T034 Rig page: show blocking findings for `VALIDATION_FAILED`, keep the inventory hint for `NOT_COMPUTABLE` only, and say "no patch rule fits this rack" for zero patches (frontend `RigDetail.tsx`; research R4).
+- [x] T034 Rig page: show blocking findings for `VALIDATION_FAILED`, keep the inventory hint for `NOT_COMPUTABLE` only, and say "no patch rule fits this rack" for zero patches (frontend `RigDetail.tsx`; research R4). Done 2026-10-29.
   - depends_on: []
 
 ## Polish

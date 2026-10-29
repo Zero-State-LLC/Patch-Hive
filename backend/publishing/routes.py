@@ -9,7 +9,7 @@ import json
 import os
 import zipfile
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import FileResponse
@@ -400,7 +400,7 @@ def download_publication_artifact(
 def list_gallery(
     limit: int = Query(20, ge=1, le=50),
     cursor: Optional[str] = None,
-    export_type: Optional[str] = None,
+    export_type: Optional[Literal["patch", "rack"]] = None,
     recent_days: Optional[int] = Query(None, ge=1, le=365),
     db: Session = Depends(get_db),
 ):

@@ -25,6 +25,9 @@ def test_db_load_workflow_contract() -> None:
     assert "catalog_actions_load.py --allow-nonlocal" in text
     assert "set -x" not in text
     assert "echo " not in text
+    permissions = text[text.index("\npermissions:"):text.index("\nconcurrency:")]
+    assert "contents: read" in permissions
+    assert "actions: write" not in text
     assert "neon-db-${{ inputs.env }}" in text
     migrate = (ROOT / ".github" / "workflows" / "db-migrate.yml").read_text(encoding="utf-8")
     assert "neon-db-${{ inputs.target }}" in migrate
@@ -42,3 +45,21 @@ def test_actions_summary_shape(tmp_path: Path) -> None:
     assert "staging" in summary
     early = loader._summary({"modules": 0}, None, "apply", "prod")
     assert "stopped early" in early
+
+
+def test_edge_secrets_revokes_new_token_when_write_fails() -> None:
+    text = (ROOT / ".github" / "workflows" / "edge-secrets.yml").read_text(encoding="utf-8")
+    assert "id: write" in text
+    step = text[text.index("- name: Revoke the new R2 token after a failed write"):text.index("- name: Clean up")]
+    assert "if: failure() && env.NEW_R2_TOKEN_ID != '' && steps.write.conclusion != 'success'" in step
+    assert 'os.environ["NEW_R2_TOKEN_ID"]' in step
+    assert 'method="DELETE"' in step
+    assert "print(token" not in step
+    # The older-token revoke must stay after the write, and the new-token revoke after both.
+    assert text.index("id: write") < text.index("- name: Revoke older R2 tokens for this Worker") < text.index(
+        "- name: Revoke the new R2 token after a failed write"
+    )
+
+
+def test_pin_pr_workflow_removed() -> None:
+    assert not (ROOT / ".github" / "workflows" / "deploy-worker-pin-pr.yml").exists()

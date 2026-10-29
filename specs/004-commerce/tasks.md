@@ -10,11 +10,11 @@
 
 From [research.md](research.md) R1–R8. Machine B (T046) lands before any referral reward can become spendable (T047). Payments stay off until T051.
 
-- [ ] T040 Webhook hardening: accept the event if any `v1` signature matches (secret rotation); on a concurrent duplicate insert, roll back a savepoint and answer as a duplicate, not 500 (FR-012, FR-013, research R4). Effort S.
+- [x] T040 Webhook hardening: accept the event if any `v1` signature matches (secret rotation); on a concurrent duplicate insert, roll back a savepoint and answer as a duplicate, not 500 (FR-012, FR-013, research R4). Effort S. Done 2026-10-29: `receive_stripe_webhook` in `canon/exports.py`; tests in `tests/unit/test_commerce_webhook_hardening.py` and `tests/api/test_canon_export_api.py`.
   - depends_on: []
-- [ ] T041 Reject live-mode events in every environment except production, whatever `STRIPE_TEST_MODE` says, and refuse to start with `STRIPE_TEST_MODE=false` outside production (FR-013, research R3). Effort S.
+- [x] T041 Reject live-mode events in every environment except production, whatever `STRIPE_TEST_MODE` says, and refuse to start with `STRIPE_TEST_MODE=false` outside production (FR-013, research R3). Effort S. Done 2026-10-29: live-mode gate in `canon/exports.py`; `validate_stripe_mode_startup_policy` in `core/startup_policy.py`.
   - depends_on: []
-- [ ] T042 Append-only trigger on `canonical_credit_ledger` that rejects `UPDATE` and `DELETE`, mirroring `20260925_decision_receipts`, with a Postgres test (FR-008, research R2). Effort S.
+- [x] T042 Append-only trigger on `canonical_credit_ledger` that rejects `UPDATE` and `DELETE`, mirroring `20260925_decision_receipts`, with a Postgres test (FR-008, research R2). Effort S. Done 2026-10-29: migration `20261029_ledger_append_only`; Postgres test `tests/acceptance/test_ledger_append_only.py`.
   - depends_on: []
 - [ ] T043 Delete `POST /api/monetization/purchases` and `PurchaseCreate`; move referral signup and the referral summary to their own flag (FR-033, OQ-11, research R5). Needs owner sign-off on OQ-11. Effort S.
   - depends_on: []

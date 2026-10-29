@@ -129,9 +129,9 @@ From [research.md](research.md). Effort in brackets.
     - depends_on: [T001]
   - [ ] T101a Set the job `environment:` in `db-migrate.yml`, `db-load.yml` and `edge-secrets.yml` from the target input, mapping `prod` to `production`, and read secrets from the environment (code) [S].
     - depends_on: [T101b]
-- [ ] T102 Delete `.github/workflows/deploy-worker-pin-pr.yml`; it deploys the Noema project, not PatchHive (R3) [S].
+- [x] T102 Delete `.github/workflows/deploy-worker-pin-pr.yml`; it deploys the Noema project, not PatchHive (R3) [S]. Done 2026-10-29.
   - depends_on: [T001]
-- [ ] T103 Drop `actions: write` from `db-load.yml` (R4) [S].
+- [x] T103 Drop `actions: write` from `db-load.yml` (R4) [S]. Done 2026-10-29.
   - depends_on: [T001]
-- [ ] T104 Revoke the newly created R2 token when the bulk secret write or the Worker check fails in `edge-secrets.yml` (R5) [S].
+- [x] T104 Revoke the newly created R2 token when the bulk secret write or the Worker check fails in `edge-secrets.yml` (R5) [S]. Done 2026-10-29.
   - depends_on: [T001]
