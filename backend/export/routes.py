@@ -251,6 +251,11 @@ def export_patchbook_document(
     current_user: Optional[User] = Depends(get_current_user),
 ):
     """Export PatchBook PDF bytes for a rack/patch selection."""
+    if not settings.enable_legacy_patchbook_export:
+        raise HTTPException(
+            status_code=410,
+            detail="LEGACY_PATCHBOOK_EXPORT_DISABLED: the Design Engine is the patch book path",
+        )
     if not payload.rack_id and not payload.patch_ids:
         raise HTTPException(status_code=400, detail="rack_id or patch_ids required")
 
@@ -270,7 +275,14 @@ def export_patchbook_document(
     if not rack:
         raise HTTPException(status_code=404, detail="Rack not found")
     readable_rack(db, rack.id, current_user)
-    # Every selected patch must be readable too (they may sit on other racks).
+    # A book compiles against one rig: a patch from another rig would silently lose the
+    # modules that rig lacks (spec 002 FR-013/FR-014).
+    foreign = sorted(p.id for p in patches if p.rack_id != rack.id)
+    if foreign:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "PATCH_BOOK_REFERENCE_UNRESOLVED", "patch_ids": foreign},
+        )
     for patch in patches:
         readable_patch(db, patch.id, current_user)
     if not patches:

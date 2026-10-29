@@ -15,6 +15,13 @@ from patches.models import Patch
 from racks.models import Rack
 
 
+@pytest.fixture(autouse=True)
+def legacy_patchbook_on(monkeypatch):
+    from core import settings
+
+    monkeypatch.setattr(settings, "enable_legacy_patchbook_export", True)
+
+
 @pytest.fixture
 def client(db_session: Session, owner_headers: dict):
     from core import get_db
@@ -72,3 +79,29 @@ def test_export_patchbook_api_headers(
 
     response_repeat = client.post("/api/export/patchbook", json=payload)
     assert response_repeat.headers["X-PatchBook-Content-Hash"] == expected_hash
+
+
+def test_the_legacy_patch_book_is_off_unless_enabled(
+    client: TestClient, db_session: Session, sample_rack_basic: Rack, monkeypatch
+):
+    from core import settings
+
+    monkeypatch.setattr(settings, "enable_legacy_patchbook_export", False)
+    patch = _create_patch(db_session, sample_rack_basic)
+    resp = client.post("/api/export/patchbook", json={"rack_id": sample_rack_basic.id, "patch_ids": [patch.id]})
+    assert resp.status_code == 410
+    assert resp.json()["detail"].startswith("LEGACY_PATCHBOOK_EXPORT_DISABLED")
+
+
+def test_a_patch_from_another_rig_is_refused(
+    client: TestClient, db_session: Session, sample_rack_basic: Rack, sample_rack_full: Rack
+):
+    """Spec 002 FR-013/FR-014: a book compiles against one rig, never silently dropping modules."""
+    ours = _create_patch(db_session, sample_rack_basic)
+    theirs = _create_patch(db_session, sample_rack_full)
+    resp = client.post(
+        "/api/export/patchbook",
+        json={"rack_id": sample_rack_basic.id, "patch_ids": [ours.id, theirs.id]},
+    )
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == {"code": "PATCH_BOOK_REFERENCE_UNRESOLVED", "patch_ids": [theirs.id]}
