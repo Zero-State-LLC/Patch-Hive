@@ -130,3 +130,43 @@ def test_rack_response_includes_catalog_slug(client: TestClient, wired_rack: Rac
     assert resp.status_code == 200
     case = resp.json()["case"]
     assert case["catalog_slug"] == "full-co-dual-84"
+
+
+def _tombstone(db: Session, rack: Rack) -> Module:
+    """Retire the rack's module the way the loader does, and add a same-named live twin."""
+    from datetime import datetime
+
+    from modules.catalog import ModuleCatalog
+
+    placed = db.query(Module).filter(Module.id == rack.modules[0].module_id).one()
+    placed.status = "tombstoned"
+    placed.tombstoned_at = datetime(2026, 10, 28)
+    db.add(ModuleCatalog(
+        slug="test-util-8", brand=placed.brand, name=placed.name, hp=8,
+        tombstoned_at=datetime(2026, 10, 28), tombstone_reason="filed under the wrong brand",
+    ))
+    twin = Module(brand="Real Maker", name="UTIL 8", hp=8, module_type="UTIL", io_ports=[], tags=[], source="test")
+    db.add(twin)
+    db.commit()
+    return twin
+
+
+def test_a_rack_holding_a_tombstoned_module_says_so_on_read(
+    client: TestClient, wired_rack: Rack, db_session: Session
+) -> None:
+    twin = _tombstone(db_session, wired_rack)
+    body = client.get(f"/api/racks/{wired_rack.id}").json()
+    module = body["modules"][0]["module"]
+    assert module["status"] == "tombstoned"
+    assert module["tombstone_reason"] == "filed under the wrong brand"
+    assert module["alternatives"] == [{"id": twin.id, "brand": "Real Maker", "name": "UTIL 8"}]
+    warning = next(w for w in body["validation_warnings"] if w["details"]["code"] == "MODULE_TOMBSTONED")
+    assert warning["field"] == "modules[0].module_id"
+    assert "consider Real Maker UTIL 8" in warning["message"]
+
+
+def test_a_live_rack_has_no_tombstone_warning(client: TestClient, wired_rack: Rack) -> None:
+    body = client.get(f"/api/racks/{wired_rack.id}").json()
+    assert body["modules"][0]["module"]["status"] == "active"
+    assert body["modules"][0]["module"]["alternatives"] == []
+    assert not [w for w in body["validation_warnings"] if w["details"]["code"] == "MODULE_TOMBSTONED"]

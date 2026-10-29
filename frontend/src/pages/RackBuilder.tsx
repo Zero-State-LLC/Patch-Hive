@@ -172,7 +172,9 @@ export default function RackBuilderPage() {
   // Rigs belong to the signed-in user, so creating one needs an account.
   const signedIn = useAuthStore((st) => st.isAuthenticated());
   // Bulk materialize rewrites shared catalog data; the API allows only Admin and Ops.
-  const canBulkMaterialize = useAuthStore((st) => st.user?.role === "Admin" || st.user?.role === "Ops");
+  const canBulkMaterialize = useAuthStore(
+    (st) => st.user?.role === "Admin" || st.user?.role === "Ops",
+  );
   const [candidates, setCandidates] = useState<ReviewCandidate[]>(DEMO_CANDIDATES);
   const [inventoryRevisionId, setInventoryRevisionId] = useState<string | null>(null);
   const [readyForGeneration, setReadyForGeneration] = useState(false);
@@ -291,6 +293,11 @@ export default function RackBuilderPage() {
       ...railMeter(placementPowerSummary[r.key], r.capacity),
     }));
   }, [liveRack, placementPowerSummary]);
+
+  /** Placed modules the catalog retired: they stay in the rack, flagged with a reason. */
+  const retiredPlacements = (liveRack?.modules ?? []).filter(
+    (m) => m.module?.status === "tombstoned",
+  );
 
   const unknownRails = (["p12", "n12", "p5"] as RailKey[])
     .map((key) => ({ key, n: placementPowerSummary[key].unknown }))
@@ -1438,9 +1445,7 @@ export default function RackBuilderPage() {
                             {rail.rail}
                           </span>
                         </span>
-                        <span className="muted">
-                          {rail.label}
-                        </span>
+                        <span className="muted">{rail.label}</span>
                       </div>
                       <div
                         className="usage-bar"
@@ -1473,6 +1478,31 @@ export default function RackBuilderPage() {
                   those rails are lower bounds.
                 </p>
               ) : null}
+            </div>
+          ) : null}
+
+          {retiredPlacements.length > 0 ? (
+            <div
+              className="status status-warning"
+              role="status"
+              style={{ marginTop: "var(--space-3)" }}
+            >
+              <p style={{ margin: 0 }}>
+                {retiredPlacements.length === 1
+                  ? "One placed module is"
+                  : `${retiredPlacements.length} placed modules are`}{" "}
+                retired from the catalog. They stay in this rack; check each one.
+              </p>
+              <ul style={{ margin: "var(--space-2) 0 0", paddingLeft: "1.2rem" }}>
+                {retiredPlacements.map((m) => (
+                  <li key={m.id}>
+                    {m.module?.brand} {m.module?.name}: {m.module?.tombstone_reason ?? "retired"}
+                    {m.module?.alternatives?.length
+                      ? `. Consider ${m.module.alternatives.map((a) => `${a.brand} ${a.name}`).join(", ")}.`
+                      : "."}
+                  </li>
+                ))}
+              </ul>
             </div>
           ) : null}
 
