@@ -19,6 +19,12 @@ const DEMO_ACCOUNTS = import.meta.env.DEV
     }
   : null;
 
+// API error codes shown as words.
+const AUTH_ERRORS: Record<string, string> = {
+  USERNAME_OR_EMAIL_TAKEN: "That username or email is already in use.",
+  TOO_MANY_SIGNUPS: "Too many sign-ups from this network. Try again in a few minutes.",
+};
+
 export default function LoginPage() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
@@ -48,7 +54,7 @@ export default function LoginPage() {
       const apiError = err as { response?: { data?: { detail?: string | { msg?: string }[] } } };
       const detail = apiError.response?.data?.detail;
       if (typeof detail === "string") {
-        setError(detail);
+        setError(AUTH_ERRORS[detail] ?? detail);
       } else if (Array.isArray(detail)) {
         setError(detail.map((d) => d.msg || "Validation error").join(" · "));
       } else {

@@ -344,7 +344,7 @@ class ConfirmationDecisionIn(BaseModel):
 
 class ConfirmationBatchRequest(BaseModel):
     decisions: list[ConfirmationDecisionIn]
-    confirmed_by: str | None = "user"
+    # Who confirmed is the signed-in user, never a client-supplied name (spec 005 FR-006).
 
 
 class ConfirmationBatchResponse(BaseModel):
@@ -602,6 +602,7 @@ def confirm_rack_evidence_candidates(
     Provider output remains evidence only. Confirmed modules require an explicit
     ``module_revision_id`` (gallery revision) on confirm/manual_add.
     """
+    confirmed_by = f"user:{current_user.id}"
     from canon.inventory import (
         InventoryBuildError,
         build_system_inventory_revision,
@@ -664,7 +665,7 @@ def confirm_rack_evidence_candidates(
                 candidate_id=decision_in.candidate_id,
                 status=decision_in.status,  # type: ignore[arg-type]
                 resolved_status=resolved,
-                confirmed_by=body.confirmed_by,
+                confirmed_by=confirmed_by,
                 confirmed_at=now,
                 replacement_candidate_id=decision_in.replacement_candidate_id,
                 manual_module_revision_id=(
@@ -686,7 +687,7 @@ def confirm_rack_evidence_candidates(
             candidates=candidates,
             decisions=decisions,
             created_at=now,
-            created_by=body.confirmed_by,
+            created_by=confirmed_by,
         )
     except InventoryBuildError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

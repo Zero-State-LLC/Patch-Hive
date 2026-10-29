@@ -271,6 +271,9 @@ def update_publication(
         raise HTTPException(status_code=404, detail="Publication not found")
 
     update_data = payload.model_dump(exclude_unset=True)
+    # A removed publication is closed: no status change and no metadata edit (spec 002).
+    if publication.status == "removed":
+        raise HTTPException(status_code=409, detail="PUBLICATION_UNDER_MODERATION")
     if "status" in update_data:
         status_value = update_data["status"]
         if status_value not in {"published", "hidden"}:
