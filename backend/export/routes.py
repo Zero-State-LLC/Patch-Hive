@@ -275,6 +275,9 @@ def export_patchbook_document(
     if not rack:
         raise HTTPException(status_code=404, detail="Rack not found")
     readable_rack(db, rack.id, current_user)
+    # Readability first: an inaccessible patch stays a 404, never named in a 400.
+    for patch in patches:
+        readable_patch(db, patch.id, current_user)
     # A book compiles against one rig: a patch from another rig would silently lose the
     # modules that rig lacks (spec 002 FR-013/FR-014).
     foreign = sorted(p.id for p in patches if p.rack_id != rack.id)
@@ -283,8 +286,6 @@ def export_patchbook_document(
             status_code=400,
             detail={"code": "PATCH_BOOK_REFERENCE_UNRESOLVED", "patch_ids": foreign},
         )
-    for patch in patches:
-        readable_patch(db, patch.id, current_user)
     if not patches:
         raise HTTPException(status_code=404, detail="No patches available for rack")
 

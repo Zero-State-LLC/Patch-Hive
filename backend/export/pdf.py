@@ -23,10 +23,28 @@ from .visualization import generate_patch_diagram_svg, generate_rack_layout_svg
 from .waveform import generate_waveform_svg, infer_waveform_params_from_patch
 
 
-def _draw_wrapped(c, text: str, x: float, y: float, *, width: float, font: str, size: float, leading: float) -> float:
-    """Draw ``text`` wrapped to ``width`` (never cut, spec 002 FR-003); returns the next y."""
+def _draw_wrapped(
+    c,
+    text: str,
+    x: float,
+    y: float,
+    *,
+    width: float,
+    font: str,
+    size: float,
+    leading: float,
+    page_height: float,
+    margin: float = inch,
+) -> float:
+    """Draw ``text`` wrapped to ``width`` (never cut, spec 002 FR-003), starting a new page
+    at the bottom margin so nothing runs off the page; returns the next y on the page the
+    text ended on."""
     c.setFont(font, size)
     for line in simpleSplit(text, font, size, width):
+        if y < margin:
+            c.showPage()
+            c.setFont(font, size)
+            y = page_height - margin
         c.drawString(x, y, line)
         y -= leading
     return y
@@ -81,7 +99,7 @@ def generate_patch_pdf(db: Session, patch: Patch, output_path: Optional[str] = N
     if patch.description:
         y = _draw_wrapped(
             c, f"Description: {patch.description}", inch, y,
-            width=width - 2 * inch, font="Helvetica", size=10, leading=13,
+            width=width - 2 * inch, font="Helvetica", size=10, leading=13, page_height=height,
         )
         y -= 27
 
@@ -219,6 +237,7 @@ def generate_rack_pdf(db: Session, rack: Rack, output_path: Optional[str] = None
     if rack.description:
         y = _draw_wrapped(
             c, rack.description, inch, y, width=width - 2 * inch, font="Helvetica", size=12, leading=15,
+            page_height=height,
         )
 
     c.setFont("Helvetica", 10)
@@ -245,6 +264,7 @@ def generate_rack_pdf(db: Session, rack: Rack, output_path: Optional[str] = None
         if patch.description:
             _draw_wrapped(
                 c, patch.description, inch, y, width=width - 2 * inch, font="Helvetica", size=10, leading=13,
+                page_height=height,
             )
 
         c.showPage()

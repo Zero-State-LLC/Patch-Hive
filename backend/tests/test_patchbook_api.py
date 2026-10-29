@@ -105,3 +105,26 @@ def test_a_patch_from_another_rig_is_refused(
     )
     assert resp.status_code == 400
     assert resp.json()["detail"] == {"code": "PATCH_BOOK_REFERENCE_UNRESOLVED", "patch_ids": [theirs.id]}
+
+
+def test_an_unreadable_patch_is_not_named(
+    client: TestClient, db_session: Session, sample_rack_basic: Rack, sample_case
+):
+    """An inaccessible patch stays a 404; its id never appears in the foreign-patch error."""
+    from tests.conftest import make_user
+
+    stranger = make_user(db_session, "stranger-book")
+    private = Rack(user_id=stranger.id, name="Private", case_id=sample_case.id, is_public=False)
+    db_session.add(private)
+    db_session.commit()
+    hidden = Patch(rack_id=private.id, name="Hidden", category="Voice", connections=[],
+                   generation_seed=1, generation_version="1.0.0")
+    db_session.add(hidden)
+    db_session.commit()
+    ours = _create_patch(db_session, sample_rack_basic)
+    resp = client.post(
+        "/api/export/patchbook",
+        json={"rack_id": sample_rack_basic.id, "patch_ids": [ours.id, hidden.id]},
+    )
+    assert resp.status_code == 404
+    assert str(hidden.id) not in resp.text
