@@ -20,8 +20,9 @@ Offline evaluation (`intelligence/evaluation.py`, `evaluation_enablement.py`, `c
 ## Constraints / non-goals
 
 - Fail closed. No test or fixture is edited to force green.
-- A case with no `candidate_ids` still skips the candidate check, because the existing corpora do not record the candidate set. This is a gap to close when fixtures gain candidates; it is not silently treated as checked.
-- An absent `candidate_ids` is omitted from the corpus digest, so existing frozen corpora keep their hashes.
+- With `candidate_options` the request is rebuilt from the full options, so `candidate_set_hash` (which covers descriptions) is validated. With bare `candidate_ids` only membership of the selected choice is checked and the hash comparison is skipped, because descriptions are unknown; rebuilding from ids alone made valid packets fail with `CANDIDATE_SET_MISMATCH`.
+- A case with neither field still skips the candidate check, because the existing corpora do not record the candidate set. This is a gap to close when fixtures gain candidates; it is not silently treated as checked.
+- Absent `candidate_ids` / `candidate_options` are omitted from the corpus digest, so existing frozen corpora keep their hashes.
 - No deploy, no network write.
 
 ## Open questions

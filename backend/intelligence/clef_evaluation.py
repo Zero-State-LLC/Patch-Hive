@@ -12,10 +12,11 @@ from typing import Iterable
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from intelligence.contracts import DecisionPacket
+from intelligence.contracts import ChoiceOption, DecisionPacket
 from intelligence.evaluation import (
     EvaluationCase,
     EvaluationMetrics,
+    absent_candidate_fields,
     evaluate,
     evaluation_receipt,
 )
@@ -39,6 +40,7 @@ class LabeledCorpusCase(BaseModel):
     licensed_source: str = Field(min_length=1)
     packet: DecisionPacket
     candidate_ids: tuple[str, ...] | None = None
+    candidate_options: tuple[ChoiceOption, ...] | None = None
     image_sha256: str | None = None
     notes: str | None = None
 
@@ -71,6 +73,7 @@ class LabeledCorpusCase(BaseModel):
             licensed_source=self.licensed_source,
             packet=self.packet,
             candidate_ids=self.candidate_ids,
+            candidate_options=self.candidate_options,
         )
 
 
@@ -108,7 +111,7 @@ def load_labeled_corpus(path: Path) -> tuple[LabeledCorpusCase, ...]:
 
 def labeled_corpus_sha256(cases: Iterable[LabeledCorpusCase]) -> str:
     rows = sorted(
-        (case.model_dump(mode="json", exclude={"candidate_ids"} if case.candidate_ids is None else None)
+        (case.model_dump(mode="json", exclude=absent_candidate_fields(case))
          for case in cases),
         key=lambda row: row["case_id"],
     )
