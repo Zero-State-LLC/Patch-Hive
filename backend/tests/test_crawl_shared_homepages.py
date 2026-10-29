@@ -46,9 +46,9 @@ def test_the_committed_v2_resolutions_reproduce_every_known_misattribution() -> 
         "Warped Circuits": "ALM Busy Circuits",
         # Both spellings are in the host; the curated one owns it.
         "Instruō": "Instruo",
-        # No owner at all: every brand on the host is refused.
-        "In The Trees": None,
-        "Jasmine & Olive Trees": None,
+        # "&" reads as "and": jasmineandolivetrees.com is Jasmine & Olive Trees' site.
+        "In The Trees": "Jasmine & Olive Trees",
+        # No owner at all (a retailer): every brand on the host is refused.
         "Mad Rooster Lab": None,
         "Olitronik_lab": None,
         "Vintage Synth Lab": None,

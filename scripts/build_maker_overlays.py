@@ -115,8 +115,12 @@ def shared_homepage_conflicts(brands: list[dict]) -> list[dict]:
     """
     from urllib.parse import urlsplit
 
+    import unicodedata
+
     def compact(text: str) -> str:
-        return re.sub(r"[^a-z0-9]", "", text.lower())
+        # "Jasmine & Olive Trees" is spelled jasmineandolivetrees; "Instruō" is instruo.
+        plain = unicodedata.normalize("NFKD", text.replace("&", " and ")).encode("ascii", "ignore").decode()
+        return re.sub(r"[^a-z0-9]", "", plain.lower())
 
     by_host: dict[str, set[str]] = {}
     for b in brands:
@@ -131,6 +135,27 @@ def shared_homepage_conflicts(brands: list[dict]) -> list[dict]:
         owners = [n for n in names if compact(n) and compact(n) in compact(host)]
         conflicts.append({"host": host, "brands": names, "owner": owners[0] if len(owners) == 1 else None})
     return conflicts
+
+
+TRUSTED_RESOLUTION = ("curated", "curated_confirmed")
+
+
+def misattributed_brands(brands: list[dict]) -> dict[str, str | None]:
+    """Every brand on a shared host that is not its owner: {brand: owner or None}.
+
+    The owner is the brand named in the host; failing that, the one brand whose homepage
+    came from a maker adapter or the curated list (``resolved_by``), as the crawler
+    decides (spec 003 T030). With no owner, every brand on the host maps to None.
+    """
+    how = {b["brand"]: b.get("resolved_by") or "" for b in brands}
+    out: dict[str, str | None] = {}
+    for c in shared_homepage_conflicts(brands):
+        owner = c["owner"]
+        if owner is None:
+            trusted = [n for n in c["brands"] if how.get(n, "").startswith("adapter:") or how.get(n) in TRUSTED_RESOLUTION]
+            owner = trusted[0] if len(trusted) == 1 else None
+        out.update({n: owner for n in c["brands"] if n != owner})
+    return out
 
 
 def shared_homepage_skips(brands: list[dict]) -> dict[str, str]:
