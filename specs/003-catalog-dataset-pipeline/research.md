@@ -50,7 +50,7 @@ Decision research for the open catalog decisions (2026-10-29). Each item gives t
 
 **Recommendation:** don't rebuild on its own. Rebuild only for a change that must re-parse pages, scoped to the brands it needs.
 
-**Update 2026-10-29:** R3 no longer needs a pass (D7). The one change that needs pages read again is D8 (jumper settings), so a scoped re-fetch is T035: the 4ms modules whose draws were left unknown, plus Dave Jones Design Otool and Velectronic A-Envelope. That's about 46 product pages, an estimated 20–50 context.dev credits at the v2 crawl's rate (about 0.44 credit per call). It waits on an owner cap.
+**Update 2026-10-29:** R3 no longer needs a pass (D7). The one change that needs pages read again is D8 (jumper settings), so a scoped re-fetch is T035: about 45 product pages: the 42 live 4ms modules (41 with an unknown rail), the 2 Dave Jones Design modules and Velectronic A-Envelope. That's an estimated 20–50 context.dev credits at the v2 crawl's rate (about 0.44 credit per call). It waits on an owner cap.
 
 ## R5. Jumper-dependent power (decision note §1)
 
