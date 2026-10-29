@@ -6,13 +6,75 @@ from __future__ import annotations
 
 from typing import List, Tuple
 
-from sqlalchemy import inspect, text
+from sqlalchemy import func, inspect, text
 from sqlalchemy.orm import Session
 
 from cases.models import Case
+from modules.catalog import ModuleCatalog
 from modules.models import Module
 
 from .schemas import RackModuleSpec, RackValidationError
+
+# Module column, case column, label for each rail.
+RAILS = (
+    ("power_12v_ma", "power_12v_ma", "+12V"),
+    ("power_neg12v_ma", "power_neg12v_ma", "-12V"),
+    ("power_5v_ma", "power_5v_ma", "+5V"),
+)
+UNKNOWN_NAMES_SHOWN = 10
+
+
+ALTERNATIVES_SHOWN = 3
+
+
+def tombstone_note(db: Session, module: Module) -> dict | None:
+    """Why a placed module is tombstoned, and live modules with the same name.
+
+    None for a live module. The reason comes from its catalog row (the loader's
+    retirement manifest); alternatives are same-named modules under other brands that
+    are not tombstoned (for a misattributed row, the real maker's module).
+    """
+    if module.status != "tombstoned":
+        return None
+    catalog = (
+        db.query(ModuleCatalog.tombstone_reason)
+        .filter(ModuleCatalog.brand == module.brand, ModuleCatalog.name == module.name)
+        .first()
+    )
+    alternatives = (
+        db.query(Module)
+        .filter(
+            func.lower(Module.name) == module.name.lower(),
+            Module.brand != module.brand,
+            Module.status.is_distinct_from("tombstoned"),
+        )
+        .order_by(Module.brand, Module.id)
+        .limit(ALTERNATIVES_SHOWN)
+        .all()
+    )
+    return {
+        "reason": (catalog.tombstone_reason if catalog else None) or "retired from the catalog",
+        "alternatives": [{"id": m.id, "brand": m.brand, "name": m.name} for m in alternatives],
+    }
+
+
+def tombstone_warning(index: int, module: Module, note: dict) -> RackValidationError:
+    names = ", ".join(f"{a['brand']} {a['name']}" for a in note["alternatives"])
+    return RackValidationError(
+        field=f"modules[{index}].module_id",
+        message=(
+            f"{module.brand} {module.name} is retired from the catalog ({note['reason']})"
+            + (f"; consider {names}" if names else "")
+        ),
+        details={
+            "code": "MODULE_TOMBSTONED",
+            "module_id": module.id,
+            "module_name": module.name,
+            "brand": module.brand,
+            "reason": note["reason"],
+            "alternatives": note["alternatives"],
+        },
+    )
 
 
 def hp_needs_reverify(db: Session, module: Module) -> bool:
@@ -27,10 +89,13 @@ def hp_needs_reverify(db: Session, module: Module) -> bool:
     bind = db.get_bind()
     if not inspect(bind).has_table("catalog_value_archive"):
         return False
+    # A reviewed correction from a maker page (spec 003 FR-038) settles the flagged HP.
     row = db.execute(
         text(
-            "SELECT 1 FROM catalog_value_archive WHERE table_name = 'modules' "
-            "AND row_key = :key AND field = 'hp' AND action = 'flag' LIMIT 1"
+            "SELECT 1 FROM catalog_value_archive f WHERE f.table_name = 'modules' "
+            "AND f.row_key = :key AND f.field = 'hp' AND f.action = 'flag' "
+            "AND NOT EXISTS (SELECT 1 FROM catalog_value_archive c WHERE c.table_name = 'modules' "
+            "AND c.row_key = :key AND c.field = 'hp' AND c.action = 'correct') LIMIT 1"
         ),
         {"key": f"{module.brand}::{module.name}"},
     ).first()
@@ -49,6 +114,9 @@ def validate_rack_configuration(
     Power semantics (C2):
     - Rail is None → unspecified; never invent capacity; advisory if modules draw power.
     - Rail is int (including 0) → enforce exceed as hard error.
+    - A module rail that is None is unknown, never 0 (spec 003 FR-022). A rail whose
+      known draws fit but which has unknown draws is a ``POWER_RAIL_INCOMPLETE``
+      warning: the budget is "at least X mA", not confirmed.
     - powered is False and modules draw power → hard error.
     - Non-Eurorack format with any module placement → hard error (MVP placement is Eurorack-only).
     """
@@ -95,6 +163,7 @@ def validate_rack_configuration(
     total_power_12v = 0
     total_power_neg12v = 0
     total_power_5v = 0
+    unknown_draw: dict[str, list[str]] = {label: [] for _, _, label in RAILS}
 
     for idx, module_spec in enumerate(modules):
         module = db.query(Module).filter(Module.id == module_spec.module_id).first()
@@ -176,8 +245,13 @@ def validate_rack_configuration(
             total_power_neg12v += module.power_neg12v_ma
         if module.power_5v_ma:
             total_power_5v += module.power_5v_ma
+        for module_field, _, label in RAILS:
+            if getattr(module, module_field) is None:
+                unknown_draw[label].append(module.name)
 
     any_draw = total_power_12v > 0 or total_power_neg12v > 0 or total_power_5v > 0
+    any_unknown = any(unknown_draw.values())
+    unknown_counts = {label: len(names) for label, names in unknown_draw.items()}
     rails_known = (
         case.power_12v_ma is not None
         or case.power_neg12v_ma is not None
@@ -201,7 +275,7 @@ def validate_rack_configuration(
             )
         )
 
-    if any_draw and not rails_known and case.powered is not False:
+    if (any_draw or any_unknown) and not rails_known and case.powered is not False:
         warnings.append(
             RackValidationError(
                 field="power",
@@ -214,6 +288,7 @@ def validate_rack_configuration(
                     "total_power_12v": total_power_12v,
                     "total_power_neg12v": total_power_neg12v,
                     "total_power_5v": total_power_5v,
+                    "unknown_draw_count": unknown_counts,
                 },
             )
         )
@@ -266,5 +341,33 @@ def validate_rack_configuration(
                 },
             )
         )
+
+    # Known draws fit (or the rail was already flagged above); unknown draws mean the
+    # budget is only a lower bound.
+    totals = {"+12V": total_power_12v, "-12V": total_power_neg12v, "+5V": total_power_5v}
+    if case.powered is not False:
+        for _, case_field, label in RAILS:
+            capacity = getattr(case, case_field)
+            names = unknown_draw[label]
+            if capacity is None or not names or totals[label] > capacity:
+                continue
+            count = len(names)
+            warnings.append(
+                RackValidationError(
+                    field="power",
+                    message=(
+                        f"{label}: at least {totals[label]}mA of {capacity}mA, plus {count} "
+                        f"module{'' if count == 1 else 's'} with unknown draw; budget not confirmed"
+                    ),
+                    details={
+                        "code": "POWER_RAIL_INCOMPLETE",
+                        "rail": label,
+                        "known_draw_ma": totals[label],
+                        "case_capacity_ma": capacity,
+                        "unknown_draw_count": count,
+                        "unknown_modules": names[:UNKNOWN_NAMES_SHOWN],
+                    },
+                )
+            )
 
     return len(errors) == 0, errors, warnings

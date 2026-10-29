@@ -1,28 +1,39 @@
 # CURRENT_STATE
 
-**Authoritative as of:** 2026-10-28  
+**Authoritative as of:** 2026-10-29  
 **Branch pin:** `main` on `Zero-State-LLC/Patch-Hive`  
-**HEAD:** `433bb76` (#80, users own their racks)  
-**Recent work:** maker-crawl catalog pipeline (spec 003 T020–T027, #64–#77) loaded to staging; API write auth (#79) and rack ownership (#80); phishing-scanner fixes for patch-hive.com (#69).  
-**Open PRs:** [#78](https://github.com/Zero-State-LLC/Patch-Hive/pull/78) acceptance-suite env isolation.  
+**HEAD:** `66e34a3` (#126, docs); #124 (spec 003 D3–D6, FR-036–038) and #125 (reviewed corrections) merged and loaded  
+**Recent work (2026-10-28):** gap-analysis fixes for specs 001–005 and P0/P1 security (#82–#105); Cloudflare edge for staging and production (#83–#87, #107); short-lived tokens, refresh cookie and an enforced CSP (#99, #100, #113); prod catalog load, Products page, category fill and catalog tombstones (#112–#116). 2026-10-29: slices A1–A5 (#118, #119, #121–#123) and a second retirement (#120). Staging and production both run main.  
+**Open PRs:** [#110](https://github.com/Zero-State-LLC/Patch-Hive/pull/110) opt-in container startup migrations, [#111](https://github.com/Zero-State-LLC/Patch-Hive/pull/111) CODEOWNERS, [#109](https://github.com/Zero-State-LLC/Patch-Hive/pull/109) release 0.3.0-alpha.4, [#106](https://github.com/Zero-State-LLC/Patch-Hive/pull/106) zod bump.  
 **Board:** [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8), mirrored in [docs/KANBAN.md](docs/KANBAN.md).  
 **Open owner decisions:** [docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md](docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md).  
+**Next slices:** [docs/evidence/NEXT_SLICES_2026-10-28.md](docs/evidence/NEXT_SLICES_2026-10-28.md) (A1–A5 done; status updated 2026-10-29).  
+**Decision research:** [specs/003-catalog-dataset-pipeline/research.md](specs/003-catalog-dataset-pipeline/research.md).  
 
 **Alpha tag lineage:** `v0.3.0-alpha` (late alpha — **not** production)
 
-### Recent merges (OBSERVED)
+### Recent merges (OBSERVED, 2026-10-28)
 
 | PR | Result |
 |----|--------|
-| [#62](https://github.com/Zero-State-LLC/Patch-Hive/pull/62) | FastAPI on Cloudflare Containers for `api.patch-hive.com` (merged; not deployed) |
-| [#63](https://github.com/Zero-State-LLC/Patch-Hive/pull/63) | Evidence, exports and design packs mirrored to R2 |
-| [#64](https://github.com/Zero-State-LLC/Patch-Hive/pull/64)–[#65](https://github.com/Zero-State-LLC/Patch-Hive/pull/65) | Spec 003 owner decisions D1/D2; ModularGrid rows tagged as leads; maker-only source scope |
-| [#66](https://github.com/Zero-State-LLC/Patch-Hive/pull/66)–[#67](https://github.com/Zero-State-LLC/Patch-Hive/pull/67) | Maker crawl v2 (shared router, adapters, paid run) and loader overlays |
-| [#68](https://github.com/Zero-State-LLC/Patch-Hive/pull/68), [#70](https://github.com/Zero-State-LLC/Patch-Hive/pull/70), [#71](https://github.com/Zero-State-LLC/Patch-Hive/pull/71) | Rail-parser fix, false-conflict fix, product-identity review: staging at 0 conflicts |
-| [#72](https://github.com/Zero-State-LLC/Patch-Hive/pull/72)–[#77](https://github.com/Zero-State-LLC/Patch-Hive/pull/77) | T026 pass (4ms, Pittsburgh, Erica), coverage fixes, categories; T025 done, T027 (prod) added |
-| [#69](https://github.com/Zero-State-LLC/Patch-Hive/pull/69) | patch-hive.com: no sign-in until the API is live, real 404s, favicon, robots/sitemap |
-| [#79](https://github.com/Zero-State-LLC/Patch-Hive/pull/79) | Module and case writes admin-only and audited |
-| [#80](https://github.com/Zero-State-LLC/Patch-Hive/pull/80) | Users own their racks; patches, runs and exports follow the rack |
+| [#82](https://github.com/Zero-State-LLC/Patch-Hive/pull/82), [#98](https://github.com/Zero-State-LLC/Patch-Hive/pull/98) | P0 and P1 security fixes from the gap analysis: export idempotency per user, admin-only role grants, sign-in lockout and per-IP limits, Argon2 with rehash, one referral reward |
+| [#83](https://github.com/Zero-State-LLC/Patch-Hive/pull/83)–[#87](https://github.com/Zero-State-LLC/Patch-Hive/pull/87), [#107](https://github.com/Zero-State-LLC/Patch-Hive/pull/107) | Edge: production and staging pairs on Cloudflare, container scheduling, secrets workflow (production secrets now reach the production Worker), https forwarding |
+| [#88](https://github.com/Zero-State-LLC/Patch-Hive/pull/88), [#92](https://github.com/Zero-State-LLC/Patch-Hive/pull/92)–[#97](https://github.com/Zero-State-LLC/Patch-Hive/pull/97) | Spec 001: gated run lifecycle, append-only runs and patches, rack soft-delete, five categories, six engine rules, port resolution and validation |
+| [#99](https://github.com/Zero-State-LLC/Patch-Hive/pull/99), [#100](https://github.com/Zero-State-LLC/Patch-Hive/pull/100), [#113](https://github.com/Zero-State-LLC/Patch-Hive/pull/113) | 15-minute in-memory access tokens, rotating refresh cookie, CSP enforced, sign-in open |
+| [#101](https://github.com/Zero-State-LLC/Patch-Hive/pull/101), [#102](https://github.com/Zero-State-LLC/Patch-Hive/pull/102) | Spec 002: patch pages wrap or fail with a code, font floors, publication lifecycle |
+| [#103](https://github.com/Zero-State-LLC/Patch-Hive/pull/103) | Spec 003: bounded downloads, identified receipts, apply bound to the reviewed `plan_hash` (case writes included) |
+| [#104](https://github.com/Zero-State-LLC/Patch-Hive/pull/104), [#105](https://github.com/Zero-State-LLC/Patch-Hive/pull/105) | Spec 005: answers bounded to the request's candidates; a failed provider is UNRESOLVED or ESCALATE, never REJECT |
+| [#112](https://github.com/Zero-State-LLC/Patch-Hive/pull/112) | Catalog loaded to prod (T027) |
+| [#114](https://github.com/Zero-State-LLC/Patch-Hive/pull/114) | Products page reads the module catalog (was empty in production) |
+| [#115](https://github.com/Zero-State-LLC/Patch-Hive/pull/115) | 183 missing categories filled from crawl tags (T028) |
+| [#116](https://github.com/Zero-State-LLC/Patch-Hive/pull/116) | 263 misattributed or bogus rows tombstoned, 7 modules re-added under their makers (T029) |
+| [#117](https://github.com/Zero-State-LLC/Patch-Hive/pull/117) | Docs, board mirror and the next-slices plan |
+| [#118](https://github.com/Zero-State-LLC/Patch-Hive/pull/118) | A1: unknown module power counted per rail, not as 0 mA; one rounding rule |
+| [#119](https://github.com/Zero-State-LLC/Patch-Hive/pull/119) | A2: the crawler refuses a homepage another brand owns (T030) |
+| [#120](https://github.com/Zero-State-LLC/Patch-Hive/pull/120) | Second retirement: 185 more misattributed rows (ALM Busy Circuits copies and others) |
+| [#121](https://github.com/Zero-State-LLC/Patch-Hive/pull/121) | A3: six crawled modules no overlay held |
+| [#122](https://github.com/Zero-State-LLC/Patch-Hive/pull/122) | A4: racks warn when they hold a retired module |
+| [#123](https://github.com/Zero-State-LLC/Patch-Hive/pull/123) | A5: signed-out page loads skip the refresh call |
 
 ## OBSERVED product posture
 
@@ -31,17 +42,19 @@
 | Product identity | Deterministic Eurorack **rig + patch documentation** |
 | Canonical domain | `backend/canon/` (+ design recipes, export fulfillment) |
 | Design Engine flags | **Default off** — staging overlay + walkthrough PASS (#147) |
-| Alembic | Single head through `20261027_catalog_lead_tags`; staging migrated 2026-10-27, prod not yet |
+| Alembic | Single head through `20261028_catalog_tombstones`; staging and prod migrated 2026-10-28 |
+| Rig validation | Unknown draws are per rail (`POWER_RAIL_INCOMPLETE`, lower bounds); retired placements warn (`MODULE_TOMBSTONED`) on every rack read |
 | Health | `/health` liveness; `/health/ready` includes DB |
 | Local Compose staging | `docker-compose.staging.yml` + `scripts/staging/*` + `scripts/test/run.*` |
 | Test automation | `scripts/test/run.sh\|ps1` · CI `acceptance-tests.yml` · 11 acceptance PASS |
 | Dual-path inventory | F0/F1/F3/F2 done; F4/F5 residual; Z deferred |
 | Named staging host | Plan only — **NOT_PERFORMED** |
 | Payments | Test-mode only |
-| Module catalog (staging) | 4,172 catalog rows, 4,142 modules, 0 conflicts; sources: Phase 2 seed (ModularGrid leads, tagged `unknown`/`CATALOG_OBSERVED`) plus maker pages (`official_publication`). Prod not loaded (T027) |
+| Module catalog (staging = prod) | 4,184 catalog rows and 4,154 modules, of which 448 each are tombstoned; 3,736 visible from 355 brands, 0 conflicts. 855 rows have no category. Sovage CHICANE corrected to 4 HP (#125). Sources: Phase 2 seed (ModularGrid leads, tagged `unknown`/`CATALOG_OBSERVED`) plus maker pages (`official_publication`). Maker-crawl page cache deleted 2026-10-28; committed crawl results intact |
 | API access | Module and case writes admin-only (#79). Racks owner-scoped (#80): owner reads/writes, admin read roles read all, public racks readable by anyone, others 404. Catalog materialize and stateless layout recommendation stay public |
-| Accounts | Sign-in hidden in production builds until `VITE_ACCOUNTS_OPEN=true` (after the API is live) |
-| Production deploy | Frontend live on Cloudflare Workers (`patch-hive.com`) from a build before #69/#80; API (`api.patch-hive.com`) **not deployed** |
+| Accounts | Sign-in open on staging and production (#113). No account yet created on production; a real sign-up is still to be tried |
+| Production deploy | Frontend (`patch-hive.com`) and API (`api.patch-hive.com`) on Cloudflare, both from main; CSP enforced; CORS limited to the exact origin |
+| CI | Repo is public so GitHub Actions runs on free minutes; with the repo private the Actions budget blocks every job |
 | Production readiness | **Not ready** (beta-staging engineering) — [assessment](docs/evidence/PRODUCTION_READINESS_ASSESSMENT_2026-07-21.md) · [matrix](docs/evidence/PRODUCTION_READINESS_MATRIX.md) · [delta](docs/evidence/PRODUCTION_READINESS_DELTA_2026-07-26.md) |
 
 ## Decision Intelligence specification campaign (2026-09-25)
@@ -52,14 +65,20 @@
 
 ## Immediate continuation priorities
 
-1. Operator: deploy the frontend (#69, #80) and request a VirusTotal reanalysis; rotate the context.dev and OpenRouter keys; add `RELEASE_PLEASE_TOKEN` and `PROJECT_TOKEN`.
-2. Operator: deploy the API (`api.patch-hive.com`), then open accounts (`VITE_ACCOUNTS_OPEN=true`).
-3. Operator: load the catalog to prod (T027: `db-migrate.yml` prod, `db-load.yml` dry run, then apply).
-4. Engineering, no decision needed: count unknown module power per rail in rack budgets; seven new crawl rows as overlays v5/v13; verify the registry snapshot ships in the API image.
-5. Owner decisions: see [OPEN_DESIGN_DECISIONS_2026-10-28.md](docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md).
+1. **Review #110 first.** Today `edge/api/src/index.ts` sends `RUN_MIGRATIONS: "true"`, so every API container cold start runs `alembic upgrade head` on its database, production included. Deploying a branch with a new migration migrates that database without `db-migrate.yml`. #110 makes startup migrations opt-in and warns when the schema is behind. Its CI is green, but it needs updating with main (it is behind), and that is the owner's branch.
+2. Owner decision: a cap for T035, a scoped re-fetch of about 45 jumper-dependent pages (estimated 20–50 context.dev credits), which unblocks `power_configs` (T034, D8). Frap needs no paid pass (D7).
+3. Operator:
+   - real sign-up on production;
+   - verify seeded demo auth on staging (008 T030b);
+   - VirusTotal reanalysis;
+   - rotate the context.dev and OpenRouter keys;
+   - add `PROJECT_TOKEN` and `RELEASE_PLEASE_TOKEN`;
+   - decide repo visibility versus the Actions budget;
+   - #106 (zod; its CodeQL failures came from the private-repo period, so rerun it), #109 (release), #111 (CODEOWNERS);
+   - confirm specs 001–004 (R6).
 
 **Local test automation:**
-`cd backend && pytest tests --ignore=tests/acceptance -q` (CI form; 871 passed on #80) · acceptance suite separately (11 passed; #78 lets it run in the same invocation)
+`cd backend && pytest tests -q` with a local Postgres 15 for the population tests (1,045 passed, 2 skipped on #125) · acceptance suite separately (11 passed; #78 lets it run in the same invocation)
 
 ## Authority boundary
 

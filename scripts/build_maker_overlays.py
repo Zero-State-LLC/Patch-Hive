@@ -53,7 +53,7 @@ HP_MIN, HP_MAX = 1, 42  # FR-007: HP outside 1..42 is discarded
 # Products that share a maker's store with modules: pedals, upgrades, bare panels, power, MCUs.
 NOT_MODULE_NAME = re.compile(
     r"(\bpedal\b|\bupgrade\b|(aluminum|alu|replacement|front|blank)\s+panel|\bpanel only\b|\bteensy\b|"
-    r"power supply|\bpsu\b|\brow power\b|\(\d+(\.\d+)?\s*a\)|\bcase\b|\bskiff\b|\bcable|\bt-shirt|\bgift card)",
+    r"power supply|\bpsu\b|\brow power\b|\(\d+(\.\d+)?\s*a\)|\bcase\b|\bskiff\b|kofferversion|\bcable|\bt-shirt|\bgift card)",
     re.I,
 )
 
@@ -106,6 +106,73 @@ def existing_index(outputs: tuple[str, ...]) -> dict[str, dict[str, tuple[str, s
     return idx
 
 
+def shared_homepage_conflicts(brands: list[dict]) -> list[dict]:
+    """Hosts claimed by more than one brand: [{host, brands, owner}], owner None if unclear.
+
+    The v1 crawl once gave "Mental Noise" Make Noise's site, so 48 Make Noise modules were
+    added under the wrong brand. When brands share a host, the one whose name is spelled in
+    the host owns it; with no single such brand there is no owner.
+    """
+    from urllib.parse import urlsplit
+
+    import unicodedata
+
+    def compact(text: str) -> str:
+        # "Jasmine & Olive Trees" is spelled jasmineandolivetrees; "Instruō" is instruo.
+        plain = unicodedata.normalize("NFKD", text.replace("&", " and ")).encode("ascii", "ignore").decode()
+        return re.sub(r"[^a-z0-9]", "", plain.lower())
+
+    by_host: dict[str, set[str]] = {}
+    for b in brands:
+        host = urlsplit(b.get("homepage") or "").netloc.lower().removeprefix("www.")
+        if host:
+            by_host.setdefault(host, set()).add(b["brand"])
+    conflicts = []
+    for host in sorted(by_host):
+        names = sorted(by_host[host])
+        if len(names) < 2:
+            continue
+        owners = [n for n in names if compact(n) and compact(n) in compact(host)]
+        conflicts.append({"host": host, "brands": names, "owner": owners[0] if len(owners) == 1 else None})
+    return conflicts
+
+
+TRUSTED_RESOLUTION = ("curated", "curated_confirmed")
+
+
+def misattributed_brands(brands: list[dict]) -> dict[str, str | None]:
+    """Every brand on a shared host that is not its owner: {brand: owner or None}.
+
+    The owner is the brand named in the host; failing that, the one brand whose homepage
+    came from a maker adapter or the curated list (``resolved_by``), as the crawler
+    decides (spec 003 T030). With no owner, every brand on the host maps to None.
+    """
+    how = {b["brand"]: b.get("resolved_by") or "" for b in brands}
+    out: dict[str, str | None] = {}
+    for c in shared_homepage_conflicts(brands):
+        owner = c["owner"]
+        if owner is None:
+            trusted = [n for n in c["brands"] if how.get(n, "").startswith("adapter:") or how.get(n) in TRUSTED_RESOLUTION]
+            owner = trusted[0] if len(trusted) == 1 else None
+        out.update({n: owner for n in c["brands"] if n != owner})
+    return out
+
+
+def shared_homepage_skips(brands: list[dict]) -> dict[str, str]:
+    """Brands whose homepage belongs to another brand: {skipped brand: owner}.
+
+    Only hosts with a single owner; with no owner, nothing is skipped here (the crawler
+    refuses those hosts before crawling, so overlays never see them from a new run).
+    """
+    return {
+        name: c["owner"]
+        for c in shared_homepage_conflicts(brands)
+        if c["owner"]
+        for name in c["brands"]
+        if name != c["owner"]
+    }
+
+
 def category(tags: list[str], name: str) -> str | None:
     hay = " ".join(tags).lower() + " " + name.lower()
     for cat, pat in CATEGORY:
@@ -124,6 +191,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--power-version", type=int, default=9)
     ap.add_argument("--brands", default="", help="comma-separated: build only these brands (a partial crawl pass)")
     ap.add_argument("--skip-brands", default="", help="comma-separated: leave these brands out (built in a later version)")
+    ap.add_argument("--only-new", action="store_true", help="emit only modules no catalog row or earlier overlay holds (no power entries for matched rows)")
     args = ap.parse_args(argv)
     only = {b.strip() for b in args.brands.split(",") if b.strip()}
     skip = {b.strip() for b in args.skip_brands.split(",") if b.strip()}
@@ -132,9 +200,13 @@ def main(argv: list[str] | None = None) -> int:
     crawl = json.loads((CATALOG / "hermes-research" / args.crawl).read_text())
     idx = existing_index((additions_name, power_name))
     additions, entries = [], []
-    stats = {"crawled_modules": 0, "matched_existing": 0, "new": 0, "skipped_dupe_in_crawl": 0, "skipped_hp_range": 0, "skipped_not_module": 0}
+    stats = {"crawled_modules": 0, "matched_existing": 0, "new": 0, "skipped_dupe_in_crawl": 0, "skipped_hp_range": 0, "skipped_not_module": 0, "skipped_shared_homepage": 0}
+    shared = shared_homepage_skips(crawl["brands"])
     for b in crawl["brands"]:
         if (only and b["brand"] not in only) or b["brand"] in skip:
+            continue
+        if b["brand"] in shared:
+            stats["skipped_shared_homepage"] += len(b.get("modules") or [])
             continue
         seen = set()
         for m in b.get("modules") or []:
@@ -175,6 +247,8 @@ def main(argv: list[str] | None = None) -> int:
                 "provenance": "OBSERVED", "status": "found", "extracted_by": m.get("extracted_by"),
                 "verification_status": "verified", "verification_source_url": m["source_url"],
             }
+            if args.only_new and existing:
+                continue
             if any(entry[f] is not None for f in ("power_12v_ma", "power_neg12v_ma", "power_5v_ma", "depth_mm")) or not existing:
                 entries.append(entry)
     D = CATALOG / "overlays"

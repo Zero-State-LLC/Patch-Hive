@@ -1,0 +1,2605 @@
+{
+ "dataset_version": "module-catalog-category-v1",
+ "generated_from": "hermes-research/maker-crawl-v2.json",
+ "policy": "maker's own page tags (whole-tag match), name and URL path; fill-null only; ambiguous rows left empty; no ModularGrid",
+ "count": 183,
+ "entries": [
+  {
+   "slug": "abyss-devices-saevitus",
+   "brand": "Abyss Devices",
+   "name": "Saevitus",
+   "category": "VCF",
+   "basis": "source_url_path",
+   "tags": [
+    "tube",
+    "feedback"
+   ],
+   "source_url": "https://abyssdevices.com/product/saevitus-12ax7-tube-distortion-vca-filter-feedback-rgb-led/",
+   "content_sha256": "4fbac0d19093243091db590371fc07a3dc0d220182d6b76c51385a355dc43d51"
+  },
+  {
+   "slug": "after-later-audio-g-t",
+   "brand": "After Later Audio",
+   "name": "G&T",
+   "category": "SEQ",
+   "basis": "source_url_path",
+   "tags": [],
+   "source_url": "https://afterlateraudio.com/products/gt-gates-and-triggers-1u-intellijel-format",
+   "content_sha256": "1c08fcb1025f79c0889d3e60acc469138b89fdfa1b9e5cea41c040418f156fe7"
+  },
+  {
+   "slug": "aircraft-designs-horizon-discrete-program-equalizer",
+   "brand": "Aircraft Designs",
+   "name": "Horizon Discrete Program Equalizer",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "equalizer",
+    "analog",
+    "Pultec",
+    "program"
+   ],
+   "source_url": "https://aircraftdesigns.info/horizon",
+   "content_sha256": "18c9f08d06a1e3de0e2aa5aa2fc7891c56e50f48f93f1ef8c1fe32c670a135a4"
+  },
+  {
+   "slug": "ajh-synth-minimod-glide-noise-mk2",
+   "brand": "AJH Synth",
+   "name": "MiniMod Glide & Noise Mk2",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "glide",
+    "noise",
+    "hold"
+   ],
+   "source_url": "https://ajhsynth.com/Glide.html",
+   "content_sha256": "bdafc19ff1e755c8cc516c51cc86061510b6cb259caf4a65505f68c8f2a7290b"
+  },
+  {
+   "slug": "alyseum-extractor",
+   "brand": "Alyseum",
+   "name": "EXTRACTOR",
+   "category": "SEQ",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "CV",
+    "trigger",
+    "gate",
+    "S&H"
+   ],
+   "source_url": "https://www.alyseum.com/extractor.html",
+   "content_sha256": "e98491d37706c0e386d821c6731f6988d751539f1aeadc62278ff382c6976b2a"
+  },
+  {
+   "slug": "analogue-systems-rs-270",
+   "brand": "Analogue Systems",
+   "name": "RS-270",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "converter",
+    "adaptor",
+    "passive"
+   ],
+   "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs270",
+   "content_sha256": "889202b1d4abdca805116b911a9a1b7a738b4832d9108ada878bf8875700bdef"
+  },
+  {
+   "slug": "animodule-anvilope",
+   "brand": "AniModule",
+   "name": "AnVilope",
+   "category": "ENV",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "envelope",
+    "gate"
+   ],
+   "source_url": "https://www.animodule.com/product/anvilope",
+   "content_sha256": "b0cc853b5d26dcc56a9f518d5b621b5a6a5732207b63ca147a4524cdc2961ff1"
+  },
+  {
+   "slug": "archaea-hover-euro",
+   "brand": "Archaea",
+   "name": "Hover Euro",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "sensor",
+    "CV",
+    "gate",
+    "controller"
+   ],
+   "source_url": "https://archaea.co.uk/product/hover-euro/",
+   "content_sha256": "f6f3db64a45262e4abdbad223311e7b249e81a8a74f8be3d280aaa0d87cc0bbf"
+  },
+  {
+   "slug": "at1-bms-01",
+   "brand": "AT1",
+   "name": "BMS-01",
+   "category": "UTIL",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "multiplier",
+    "summing",
+    "utility",
+    "CV"
+   ],
+   "source_url": "https://at1-modular.company.site/BMS-01-p731089134",
+   "content_sha256": "2b8543d29df7963f5010c612368b19e57fdb6c8b8a97ba67a64006b6aabcef8e"
+  },
+  {
+   "slug": "atonal-circuits-bit",
+   "brand": "Atonal Circuits",
+   "name": "BIT",
+   "category": "SAMP",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "bit crusher",
+    "sample rate",
+    "bits",
+    "dc coupled"
+   ],
+   "source_url": "https://www.atonal.be/store/BIT-p491223341",
+   "content_sha256": "f302fc1c3d364aabfef3902ee828a0b540e85738c522f01d39d9d5608e12ece1"
+  },
+  {
+   "slug": "atonal-circuits-odds",
+   "brand": "Atonal Circuits",
+   "name": "ODDS",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "gate",
+    "random",
+    "probability",
+    "memory"
+   ],
+   "source_url": "https://www.atonal.be/store/ODDS-p460202366",
+   "content_sha256": "a8d5bbffc3029dc8d0d70bf0fbbc9f4cce33ffb401d099f7f4e3a93cdcbc9d9b"
+  },
+  {
+   "slug": "atonal-circuits-thru",
+   "brand": "Atonal Circuits",
+   "name": "µTHRU",
+   "category": "SEQ",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "MIDI",
+    "clock",
+    "sync"
+   ],
+   "source_url": "https://www.atonal.be/store/uTHRU-p794972300",
+   "content_sha256": "02d39c14950a92b459c3b9b8f2681338eff0224dbeb52e51284e88052ec0c54b"
+  },
+  {
+   "slug": "atovproject-punkbus",
+   "brand": "AtoVproject",
+   "name": "PunkBus",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "passive",
+    "bus"
+   ],
+   "source_url": "https://atov.de/products/punkbus",
+   "content_sha256": "f2ce6c5e0ed78435a8a504912a829297dd029b02f62f961d453d1b9ad75611fc"
+  },
+  {
+   "slug": "avalon-harmonics-cvmod8-v2",
+   "brand": "Avalon Harmonics",
+   "name": "CVMod8 V2",
+   "category": "MIX",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "attenuverter",
+    "offset",
+    "mixer",
+    "CV"
+   ],
+   "source_url": "https://shop.avalon-harmonics.com/products/avalon-harmonics-cvmod8-v2",
+   "content_sha256": "0de1759af7f54ad2794969ca5bc8e640dff1b84aa40bd2ce30eafa678f243a66"
+  },
+  {
+   "slug": "b-art-instruments-b-13",
+   "brand": "b:art instruments",
+   "name": "b:13",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "mute",
+    "dual",
+    "CV",
+    "audio"
+   ],
+   "source_url": "https://bartinstruments.com/products/b-13",
+   "content_sha256": "d9427b62bd2b26210155ba00e1e6d666fbb4563cdd1d89624a6f7f346b1ce914"
+  },
+  {
+   "slug": "barcode-circuits-axon-2",
+   "brand": "Barcode Circuits",
+   "name": "AXON-2",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "expander",
+    "buttons"
+   ],
+   "source_url": "https://busycircuits.com/products/alm040",
+   "content_sha256": "4bbc2e28755d8356f9e13db28a109a477ea3042e7e9ef807deb14ac1863e37d6"
+  },
+  {
+   "slug": "barcode-circuits-stem-ripper",
+   "brand": "Barcode Circuits",
+   "name": "Stem Ripper",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "recorder",
+    "stereo",
+    "expander"
+   ],
+   "source_url": "https://busycircuits.com/products/alm050",
+   "content_sha256": "650fc49ad763a606a3f54378caeb060d37329c10a31703b57d6962c26eb2505c"
+  },
+  {
+   "slug": "bard-twins-waveshaper",
+   "brand": "Bard",
+   "name": "Twins Waveshaper",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "waveshaper",
+    "vacuum tube",
+    "voltage control"
+   ],
+   "source_url": "https://bardsynthesizers.com/twins.html",
+   "content_sha256": "5a4fa37f3e87e5b2f143b76dafdbc3042d9c3b8c5b8c658a2368d6db0a65ce4e"
+  },
+  {
+   "slug": "bard-vtg-lowpass-gate",
+   "brand": "Bard",
+   "name": "VTG Lowpass Gate",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "lowpass gate",
+    "vacuum tube",
+    "dual"
+   ],
+   "source_url": "https://bardsynthesizers.com/vtg.html",
+   "content_sha256": "66d8f3b765f91661d3ae9b3eb7ee967cd0cba5139d42a34888481df73c0d4efc"
+  },
+  {
+   "slug": "beepboop-electronics-bbcv-fm-radio",
+   "brand": "BeepBoop Electronics",
+   "name": "BBCV FM Radio",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "radio",
+    "noise",
+    "1U"
+   ],
+   "source_url": "https://beepboopelectronics.co.uk/product/bbcv-beep-boop-control-voltage-fm-1u-radio/",
+   "content_sha256": "3ae51e2af7d01977164026b9dac60e33d0b19be99776107d8705d1a7ce4e01ad"
+  },
+  {
+   "slug": "befaco-i4",
+   "brand": "Befaco",
+   "name": "I4",
+   "category": "UTIL",
+   "basis": "source_url_path",
+   "tags": [],
+   "source_url": "https://www.befaco.org/i4-instrument-interface/",
+   "content_sha256": "b4fd02f98a8adb3c1065249fba413923b3e82d3a8274d6035acd604db24e0ab5"
+  },
+  {
+   "slug": "biopower-audio-ao",
+   "brand": "Biopower Audio",
+   "name": "AO",
+   "category": "MIX",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "attenuverter",
+    "offset",
+    "mixer",
+    "dual"
+   ],
+   "source_url": "https://www.biopoweraudio.com/store/p/aorta",
+   "content_sha256": "557bf3b7bb9b9c6d2e0321e967a3c59dcf82ac8b16a9b7ce556502693ccf0d91"
+  },
+  {
+   "slug": "biopower-audio-razor",
+   "brand": "Biopower Audio",
+   "name": "RAZOR",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "ribbon",
+    "controller",
+    "pitch bend"
+   ],
+   "source_url": "https://www.biopoweraudio.com/store/p/axeandrazor",
+   "content_sha256": "c66ece7e97f63e48bf4630f325b4b8802e7cb8bf09751e00c5f60632e973fe3d"
+  },
+  {
+   "slug": "british-noise-electronics-kith-ruina",
+   "brand": "British Noise Electronics",
+   "name": "Kith Ruina",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "drive",
+    "EQ"
+   ],
+   "source_url": "https://noiseengineering.us/products/kith-ruina/",
+   "content_sha256": "f4b455daaacce385a86d4f0ec837f66e42b6b7498cb111ad4def4684f400474e"
+  },
+  {
+   "slug": "der-mann-mit-der-maschine-db8e",
+   "brand": "Der Mann mit der Maschine",
+   "name": "DB8E",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "display",
+    "controller",
+    "encoder"
+   ],
+   "source_url": "https://shop.dermannmitdermaschine.de/products/db8e-display-controller",
+   "content_sha256": "9426416cfcb02e9d9bfe41a1042765a022f2060864fd9fe666027f978055618d"
+  },
+  {
+   "slug": "der-mann-mit-der-maschine-g8-v2",
+   "brand": "Der Mann mit der Maschine",
+   "name": "G8 v2",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "gates",
+    "expander"
+   ],
+   "source_url": "https://shop.dermannmitdermaschine.de/products/g8",
+   "content_sha256": "072cef12bb7e57f8e1141f87c91aa5c18a22433c3b9a00919bf48ea51cffc539"
+  },
+  {
+   "slug": "der-mann-mit-der-maschine-m4",
+   "brand": "Der Mann mit der Maschine",
+   "name": "M4",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "fader",
+    "controller",
+    "motorized",
+    "haptic"
+   ],
+   "source_url": "https://shop.dermannmitdermaschine.de/products/m4",
+   "content_sha256": "e4da529a2b29dd55f2a16aa1885a84ac2e666ed22024a66d854a0c958f0ecbc8"
+  },
+  {
+   "slug": "der-mann-mit-der-maschine-p10",
+   "brand": "Der Mann mit der Maschine",
+   "name": "P10",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "controller"
+   ],
+   "source_url": "https://shop.dermannmitdermaschine.de/products/p10",
+   "content_sha256": "3099007fd8dde782f9090832e038c381c25cb5992845600a266ce3c8791a69a7"
+  },
+  {
+   "slug": "der-mann-mit-der-maschine-p2b8",
+   "brand": "Der Mann mit der Maschine",
+   "name": "P2B8",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "controller"
+   ],
+   "source_url": "https://shop.dermannmitdermaschine.de/products/p2b8",
+   "content_sha256": "f7267df911557d14ac29079738b2f03f83efa92b7f82c33b9a27dc8ba11c12c3"
+  },
+  {
+   "slug": "der-mann-mit-der-maschine-p4b2",
+   "brand": "Der Mann mit der Maschine",
+   "name": "P4B2",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "controller",
+    "pots",
+    "buttons"
+   ],
+   "source_url": "https://shop.dermannmitdermaschine.de/products/p4b2",
+   "content_sha256": "c93cfb32353229e2e76ee594bde95d9d43fc93abe823ee5c218a2849767c3be8"
+  },
+  {
+   "slug": "die-systems-m-s-a",
+   "brand": "DIE Systems",
+   "name": "M+S+A",
+   "category": "MIX",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "mixer",
+    "splitter",
+    "attenuverter",
+    "utility"
+   ],
+   "source_url": "https://die.systems/product/msa/",
+   "content_sha256": "0e510ce37c642d3739e6bb77bb4e06befb97119f57d0ebe417cc07e30009da0b"
+  },
+  {
+   "slug": "dpw-design-sh-1-shape-spectral-enhancer",
+   "brand": "DPW Design",
+   "name": "SH-1 Shape, Spectral Enhancer",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "compressor",
+    "limiter",
+    "spectral enhancer",
+    "stereo"
+   ],
+   "source_url": "https://dpw.se/product/sh-1-shape-spectral-enhancer/",
+   "content_sha256": "3c77c2fcbd2337805718bc14681583bcb590a6ee380e1513279a18a7deb29afd"
+  },
+  {
+   "slug": "dpw-design-sh2-shape-spectral-enhancer",
+   "brand": "DPW Design",
+   "name": "SH2 Shape, Spectral Enhancer",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "compressor",
+    "limiter",
+    "spectral enhancer",
+    "stereo"
+   ],
+   "source_url": "https://dpw.se/product/sh2-shape-spectral-enhancer/",
+   "content_sha256": "a76c0aee844b0049807f0ff48016b89d80a9f9340a67f1b3bc83f73bb64789cb"
+  },
+  {
+   "slug": "ear-modular-nightrain",
+   "brand": "Ear Modular",
+   "name": "Nightrain ・ 夜雨",
+   "category": "LFO",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "noise",
+    "source",
+    "spectral",
+    "modulation"
+   ],
+   "source_url": "https://www.earmodular.com/modular/nightrain",
+   "content_sha256": "4664c96611a4f6ef2158f8e5594d8f6609ef60a11d0e221217596d13336d8fe1"
+  },
+  {
+   "slug": "endorphin-es-golden-master",
+   "brand": "Endorphin.es",
+   "name": "GOLDEN MASTER",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "EQ",
+    "compressor",
+    "mid/side",
+    "mastering"
+   ],
+   "source_url": "https://www.endorphin.es/modules/p/golden-master",
+   "content_sha256": "4913f4f6a6f1468ceb89c83e74d825004f5fa623e0f13634e429c2f925cc14ee"
+  },
+  {
+   "slug": "endorphin-es-golden-master-1u",
+   "brand": "Endorphin.es",
+   "name": "GOLDEN MASTER 1U",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "mastering",
+    "EQ",
+    "compressor",
+    "mid/side"
+   ],
+   "source_url": "https://www.endorphin.es/modules/p/golden-master-1u",
+   "content_sha256": "ec4429d1b349f21f0c9c7c0a795d4ae2d06b5932dd2ff21e689f5483d5eed0a8"
+  },
+  {
+   "slug": "eowave-magnetosphere",
+   "brand": "Eowave",
+   "name": "MAGNETOSPHERE",
+   "category": "VCF",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "low-pass",
+    "filter",
+    "discrete",
+    "24dB"
+   ],
+   "source_url": "https://www.eowave.com/modules/magnetosphere",
+   "content_sha256": "ad6dfa568f10bf37203b4d0caec075835ebe95a39c48ec5cb1e5486c24b1a4e9"
+  },
+  {
+   "slug": "eowave-orage-mk1",
+   "brand": "Eowave",
+   "name": "ORAGE MK1",
+   "category": "VCO",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "VCO",
+    "oscillator",
+    "FM"
+   ],
+   "source_url": "https://www.eowave.com/modules/orage-mk1",
+   "content_sha256": "c761db44de38dc457df954169e1e6f38dcfa25d27b6b46cc05277a649bc681fc"
+  },
+  {
+   "slug": "epicycloid-engineering-expando-expandi",
+   "brand": "Epicycloid Engineering",
+   "name": "Expando Expandi",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "CV expander",
+    "expander"
+   ],
+   "source_url": "https://noiseengineering.us/products/expando-expandi/",
+   "content_sha256": "adb6d869776eb38d32817f88b0b87e8c9b5a54be38df45dc7aa8b67e5a4069cf"
+  },
+  {
+   "slug": "epicycloid-engineering-kith-ruina",
+   "brand": "Epicycloid Engineering",
+   "name": "Kith Ruina",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "drive",
+    "EQ"
+   ],
+   "source_url": "https://noiseengineering.us/products/kith-ruina/",
+   "content_sha256": "f4b455daaacce385a86d4f0ec837f66e42b6b7498cb111ad4def4684f400474e"
+  },
+  {
+   "slug": "eurorack-hardware-or",
+   "brand": "Eurorack Hardware",
+   "name": "OR",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "passive",
+    "OR",
+    "combiner"
+   ],
+   "source_url": "https://www.eurorackhardware.com/OR--Dual-OR-Combiner-_p_45.html",
+   "content_sha256": "a37ec78482b3ba57a28f2ae581cff55a5bd18857aeb98cc637e8c8e29c48a9c4"
+  },
+  {
+   "slug": "existentialelectronics-4x-attenuverter",
+   "brand": "ExistentialElectronics",
+   "name": "4x attenuverter",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "attenuverter",
+    "quad",
+    "CV",
+    "analog"
+   ],
+   "source_url": "https://existentialelectronics.com/attenuverter",
+   "content_sha256": "bde9e9a17d956dd1d790081ab9ac57328c2b634f9a5297cfb80571bee655e0dd"
+  },
+  {
+   "slug": "feedback-bus3",
+   "brand": "Feedback",
+   "name": "BUS3",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "router",
+    "matrix",
+    "bus",
+    "passive"
+   ],
+   "source_url": "https://feedback-modules.myshopify.com/products/bus3",
+   "content_sha256": "70911bed7f82ea5071bd532bcbd8528143f52b4923a296fa476ad8301b924809"
+  },
+  {
+   "slug": "feedback-static",
+   "brand": "Feedback",
+   "name": "STATIC",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "noise",
+    "morph",
+    "spectrum"
+   ],
+   "source_url": "https://feedback-modules.myshopify.com/products/static",
+   "content_sha256": "eadcc19e852cec36228d94da6318db71a7f6668c3e7e40a8ee27e45a99913909"
+  },
+  {
+   "slug": "fkmg-circuits-axon-2",
+   "brand": "FKMG Circuits",
+   "name": "AXON-2",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "expander",
+    "buttons"
+   ],
+   "source_url": "https://busycircuits.com/products/alm040",
+   "content_sha256": "4bbc2e28755d8356f9e13db28a109a477ea3042e7e9ef807deb14ac1863e37d6"
+  },
+  {
+   "slug": "flatsix-modular-slight-of-hand",
+   "brand": "FlatSix Modular",
+   "name": "Slight Of Hand",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "keyboard",
+    "arduino",
+    "1U"
+   ],
+   "source_url": "https://flatsixmodular.com/slightofhand/",
+   "content_sha256": "1ad5589da18b81b3fc1b1259a27234938d3afdd1c5e71ebe51f01ce8398d0098"
+  },
+  {
+   "slug": "folktek-root",
+   "brand": "Folktek",
+   "name": "Root",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "router",
+    "touch",
+    "cv",
+    "gate"
+   ],
+   "source_url": "https://folktek.com/products/root",
+   "content_sha256": "7227faaf65497ea423e0fcfcb71b825ec8d5598d53d6253a9e67a3a9dbf6cf9a"
+  },
+  {
+   "slug": "foxing-hour-luma",
+   "brand": "Foxing Hour",
+   "name": "LUMA",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "converter",
+    "RGB",
+    "greyscale"
+   ],
+   "source_url": "https://foxinghour.com/products/luma-rgb-to-y-greyscale-converter",
+   "content_sha256": "0aff0217aab003b04259eee834598c6137bc0ad78b7f4c8b80abf4c7fc2c000f"
+  },
+  {
+   "slug": "fully-wired-electronics-mini-quad-mute",
+   "brand": "Fully Wired Electronics",
+   "name": "Mini Quad Mute",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "mute",
+    "quad"
+   ],
+   "source_url": "https://www.fullywiredelectronics.com/product-page/mini-quad-mute",
+   "content_sha256": "45cbe7b18c28a8f24f2dd821bcbefa2e88edc0aedc65c72e0b2b679747c734fc"
+  },
+  {
+   "slug": "fully-wired-electronics-mini-quad-stereo-mute",
+   "brand": "Fully Wired Electronics",
+   "name": "Mini Quad Stereo Mute",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "mute",
+    "stereo",
+    "quad"
+   ],
+   "source_url": "https://www.fullywiredelectronics.com/product-page/mini-quad-stereo-mute",
+   "content_sha256": "3b656ab85c6ace2cfd03bcfae88c1f0cc736bf698b377def197c7b163800f318"
+  },
+  {
+   "slug": "fully-wired-electronics-quad-passive-converter",
+   "brand": "Fully Wired Electronics",
+   "name": "Quad Passive Converter",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "converter",
+    "passive",
+    "TRS",
+    "1U"
+   ],
+   "source_url": "https://www.fullywiredelectronics.com/product-page/quad-passive-converter-trs-1u",
+   "content_sha256": "7dd8523b93b90c8608a0eed388d26d2e76e0a01372cb06cecf951ada29c5b729"
+  },
+  {
+   "slug": "genxnoise-nexus",
+   "brand": "GenXnoise",
+   "name": "neXus",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "CV",
+    "breakout",
+    "passive",
+    "audio"
+   ],
+   "source_url": "https://www.genxnoise.com/product-page/nexus-cv-breakout-module-for-akai-mpc-one-live-ii",
+   "content_sha256": "1733bbad4a52bb2433470d2579b1d0f583728ff8cf9cc6c3472aaa4f0aa891c5"
+  },
+  {
+   "slug": "god-s-box-loose-fruit",
+   "brand": "God's Box",
+   "name": "Loose Fruit",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "waveshaper",
+    "crossfader",
+    "CV"
+   ],
+   "source_url": "https://godsbox.co.uk/loose-fruit.html",
+   "content_sha256": "3c373b3895d9d0ce98a796f8ccd8cae19cc755d3cfa093791471d7fb980e5c17"
+  },
+  {
+   "slug": "guru-gara-synth-4024-sub-oszillator",
+   "brand": "Guru Gara Synth",
+   "name": "4024 Sub-Oszillator",
+   "category": "VCO",
+   "basis": "source_url_path",
+   "tags": [
+    "DIY",
+    "PCB"
+   ],
+   "source_url": "https://gurugarasynth.com/de/products/4024-sub-oscillator",
+   "content_sha256": "8d3a7f545b7de554fbd9ae7f86c5d93d4f41d624d7fcc4377aba07ce6a9979d5"
+  },
+  {
+   "slug": "guru-gara-synth-polarizing-mischer-pcb-und-frontplatte",
+   "brand": "Guru Gara Synth",
+   "name": "Polarizing Mischer / PCB und Frontplatte",
+   "category": "MIX",
+   "basis": "source_url_path",
+   "tags": [
+    "polarizing",
+    "PCB"
+   ],
+   "source_url": "https://gurugarasynth.com/de/products/polarizing-mixer-pcb-and-front-panel",
+   "content_sha256": "8b577b9bf9362ef5a7b5b08b715a6a9fc8fa85e68a4584537f4326f13be80a63"
+  },
+  {
+   "slug": "hexinverter-lectronique-vcnoiz",
+   "brand": "Hexinverter Électronique",
+   "name": "vcNOIZ",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "noise",
+    "digital",
+    "voltage controlled"
+   ],
+   "source_url": "http://www.hexinverter.net/vcnoiz",
+   "content_sha256": "a91da219fa4988bc24674a756a6ca8d4722a1dbddd0ec3598e33cd3905c6d833"
+  },
+  {
+   "slug": "hive-mind-synthesis-video-gate-1u-10hp",
+   "brand": "Hive Mind Synthesis",
+   "name": "Video Gate 1U 10HP",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "video",
+    "passive",
+    "gate",
+    "1u"
+   ],
+   "source_url": "https://hivemindsynthesis.com/shop/p/video-gate-1u-10hp",
+   "content_sha256": "ea4e41e3ae654bcef0ed2cdf3458116ab45b2867c3a988cbc7f24d1db9b8d6d2"
+  },
+  {
+   "slug": "isobar-industries-serratus",
+   "brand": "Isobar Industries",
+   "name": "Serratus",
+   "category": "ENV",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "comb",
+    "mutation",
+    "CV",
+    "envelope-follower"
+   ],
+   "source_url": "https://isobar.studio/serratus",
+   "content_sha256": "e02218ab67465fc0bda21e67f88abdf44f7dc40e70e535fc0bf6695940db7fee"
+  },
+  {
+   "slug": "jolin-rosa-infinite-morpher",
+   "brand": "Jolin",
+   "name": "ROSA ⇝ infinite morpher",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "morpher",
+    "mute",
+    "CV",
+    "quadraphonic"
+   ],
+   "source_url": "https://jolin.tech/shop/p/rosa",
+   "content_sha256": "c6ae8d7f0e1513e53d87fd578c2239da42bcf7e168e85abee005a4508b9fada1"
+  },
+  {
+   "slug": "larix-elektro-controle-attenuverter-bank",
+   "brand": "Larix Elektro",
+   "name": "CONTROLE ATTENUVERTER BANK",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "attenuverter",
+    "bank",
+    "kit"
+   ],
+   "source_url": "https://www.larix-elektro.com/PRODUCT_CONTROLE_Attv-Bank.html",
+   "content_sha256": "9d5139c78a1365b1242bde8bebf9cfed75322333d34bd47cd728db684b8b0baa"
+  },
+  {
+   "slug": "larix-elektro-controle-attv-4",
+   "brand": "Larix Elektro",
+   "name": "CONTROLE Attv-4",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "CV",
+    "extension",
+    "attenuverter"
+   ],
+   "source_url": "https://www.larix-elektro.com/PRODUCT_CONTROLE_Attv-4.html",
+   "content_sha256": "8245908513638f23443c9124dfa9b8b933dbe08e711f26411ead4ca40c2b6aea"
+  },
+  {
+   "slug": "larix-elektro-controle-tricomp",
+   "brand": "Larix Elektro",
+   "name": "CONTROLE TRICOMP",
+   "category": "SEQ",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "comparator",
+    "gate",
+    "trigger"
+   ],
+   "source_url": "https://www.larix-elektro.com/PRODUCT_CONTROLE_TRICOMP.html",
+   "content_sha256": "06c3fd250faab42531933396cf7cfe03895dddd4ea76e344e2a99048f08389c7"
+  },
+  {
+   "slug": "making-sound-machines-plinky",
+   "brand": "Making Sound Machines",
+   "name": "Plinky",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "synth",
+    "touch",
+    "eurorack"
+   ],
+   "source_url": "https://makingsoundmachines.com/plinky/",
+   "content_sha256": "7964dae7b2e923445c9c630a752e9e4c60b0a5e6d8d80d998254f28bf648c6cb"
+  },
+  {
+   "slug": "making-sound-machines-tausend-db",
+   "brand": "Making Sound Machines",
+   "name": "Tausend dB",
+   "category": "VCA",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "amplifier",
+    "saturation",
+    "mute",
+    "CV"
+   ],
+   "source_url": "https://makingsoundmachines.com/tausenddb/",
+   "content_sha256": "6aeace14488fe093f795f178bb577373ae8671554af597239fccf69dd739c562"
+  },
+  {
+   "slug": "manifold-research-centre-quad-torus-bridge",
+   "brand": "Manifold Research Centre",
+   "name": "quad torus bridge",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "passive",
+    "DI",
+    "balanced",
+    "transformer"
+   ],
+   "source_url": "https://www.manifoldresearchcentre.com/quad-torus-bridge",
+   "content_sha256": "e0535116234f8c17c6a085e619a0cd17bbf871278c6171c822db150e3a061b66"
+  },
+  {
+   "slug": "manikk-digital8",
+   "brand": "Manikk",
+   "name": "Digital8",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "expander",
+    "digital",
+    "SPI"
+   ],
+   "source_url": "https://manikk.com/product/digital8/",
+   "content_sha256": "c319cf8c1f007a185aab4617a31533a45adcb3d74225769c9155fc53f9326876"
+  },
+  {
+   "slug": "manikk-noise",
+   "brand": "Manikk",
+   "name": "NOISE",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "noise",
+    "percussion"
+   ],
+   "source_url": "https://manikk.com/product/noise/",
+   "content_sha256": "5383b13b090f48707b1943171e96393d19b67d06d2e1a6cf6693fb578fdbbf97"
+  },
+  {
+   "slug": "manikk-otto-passive-stereo",
+   "brand": "Manikk",
+   "name": "Otto Passive Stereo",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "passive",
+    "stereo"
+   ],
+   "source_url": "https://manikk.com/product/otto-passive-stereo/",
+   "content_sha256": "530ea28faf3bcb4cf9e0bc34944d49452a74295feed27b915d4096ab6afadbdf"
+  },
+  {
+   "slug": "manikk-otto-passive-stereo-diy-kit",
+   "brand": "Manikk",
+   "name": "Otto Passive Stereo DIY Kit",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "passive",
+    "stereo",
+    "kit",
+    "diy"
+   ],
+   "source_url": "https://manikk.com/product/otto-passive-stereo-diy-kit/",
+   "content_sha256": "1ff6983c937168aa6d03fd79e09901aad12d7c8fd7ce43420f769e2da0df762f"
+  },
+  {
+   "slug": "mehr-music-machines-deuxd",
+   "brand": "Mehr Music Machines",
+   "name": "Deuxd",
+   "category": "VCF",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "filter",
+    "stereo",
+    "dual",
+    "VCF"
+   ],
+   "source_url": "https://mehrmusicmachines.com/products/deuxd-dual-stereo-vcf-with-internal-crossmod",
+   "content_sha256": "0f03021fa101720513052e2db6d8ae5cc9682c2e79b37295060a57b29ce94915"
+  },
+  {
+   "slug": "melted-electronics-glitch-boy",
+   "brand": "Melted Electronics",
+   "name": "Glitch Boy",
+   "category": "MIDI",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "video",
+    "glitch",
+    "chiptune",
+    "MIDI"
+   ],
+   "source_url": "https://meltedelectronics.com/products/glitch-boy/",
+   "content_sha256": "a987bb3de79ce4d384ae9f8d5d2267bb8707b2953864e80ba9cf277d50af45f7"
+  },
+  {
+   "slug": "mental-noise-brains",
+   "brand": "Mental Noise",
+   "name": "BRAINS",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "pressure points",
+    "gate",
+    "controller"
+   ],
+   "source_url": "https://www.makenoisemusic.com/retired/retired-modules/brains/",
+   "content_sha256": "d511e086f0496b3d2cf37737fa5a2d81ac7dcb0f04ef18f3c4f49d19512d2b97"
+  },
+  {
+   "slug": "mental-noise-lxd",
+   "brand": "Mental Noise",
+   "name": "LxD",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "low pass gate",
+    "vactrol",
+    "strike",
+    "audio"
+   ],
+   "source_url": "https://www.makenoisemusic.com/modules/lxd/",
+   "content_sha256": "b58dbcdfaef3b571009a997c90ceeeccea908600b3c0bd856c8974fcd9ba7b3a"
+  },
+  {
+   "slug": "mental-noise-x-pan",
+   "brand": "Mental Noise",
+   "name": "X-PAN",
+   "category": "VCA",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "mixer",
+    "stereo",
+    "VCA",
+    "panning"
+   ],
+   "source_url": "https://www.makenoisemusic.com/modules/x-pan/",
+   "content_sha256": "16ce793039ca2b9eb649128263e19c7bd2a7829211671030b4cea34ddbb7912e"
+  },
+  {
+   "slug": "michigan-synth-works-bln-audio-level-converter",
+   "brand": "Michigan Synth Works",
+   "name": "BLN: Audio Level Converter",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "audio",
+    "level",
+    "converter"
+   ],
+   "source_url": "https://michigansynthworks.com/products/bln-4-channel-audio-level-converter",
+   "content_sha256": "9f62650c9af67bc29018fe20987a07105771784cfb893cd66f33378b4f5fed44"
+  },
+  {
+   "slug": "michigan-synth-works-neutron-sound-qat-quad-attenuverter",
+   "brand": "Michigan Synth Works",
+   "name": "Neutron Sound QAT Quad Attenuverter",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "attenuverter",
+    "quad"
+   ],
+   "source_url": "https://michigansynthworks.com/products/neutron-sound-qat-quad-attenuverter",
+   "content_sha256": "b18fab174c662810c514784e07e44303f4220f1034c5ec6251b994bf36317971"
+  },
+  {
+   "slug": "midcentury-modular-low-pass-gate",
+   "brand": "MidCentury Modular",
+   "name": "Low Pass Gate",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "low pass gate",
+    "vactrol",
+    "Buchla",
+    "LPG"
+   ],
+   "source_url": "https://www.midcentury-modular.com/store/p/lpg",
+   "content_sha256": "73a6a2db56c317e18db1d6d8a46a40d33366be243f5b363f27c32386576032f8"
+  },
+  {
+   "slug": "modbap-modular-transit",
+   "brand": "Modbap Modular",
+   "name": "Transit",
+   "category": "MIX",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "mixer",
+    "stereo",
+    "ducking",
+    "mutes"
+   ],
+   "source_url": "https://www.modbap.com/products/transit",
+   "content_sha256": "d7e53db10f86d495fcc19eea7742dc92d4572cb959605c86dce8f17ad1755edf"
+  },
+  {
+   "slug": "modulaire-maritime-isotita",
+   "brand": "Modulaire Maritime",
+   "name": "Isotita",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "equalizer",
+    "1U",
+    "3U"
+   ],
+   "source_url": "https://www.modulaire-maritime.com/product-page/isotita",
+   "content_sha256": "10abba45555f9a5cca8026f14205aba0c02287157e0521c33995f9a75a371513"
+  },
+  {
+   "slug": "modulaire-maritime-klaviatura",
+   "brand": "Modulaire Maritime",
+   "name": "klaviatura",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "keyboard",
+    "CV",
+    "gate"
+   ],
+   "source_url": "https://www.modulaire-maritime.com/product-page/klaviatura",
+   "content_sha256": "a82c75e5a93c21e04ada298e71b2037b2c7dc4c5a78ed04dd87cb63eb8669a8d"
+  },
+  {
+   "slug": "modulaire-maritime-tarot-la-coupe",
+   "brand": "Modulaire Maritime",
+   "name": "TAROT \"La Coupe\"",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "waveshaper",
+    "paraphonic"
+   ],
+   "source_url": "https://www.modulaire-maritime.com/product-page/tarot-la-coupe",
+   "content_sha256": "dccb61c6425818c80475a23c71a586dd0ea50d07539a29afc702a3fe3627c5f1"
+  },
+  {
+   "slug": "morph-modular-dbio",
+   "brand": "Morph Modular",
+   "name": "DBio",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "passive",
+    "1U",
+    "bus",
+    "DB25"
+   ],
+   "source_url": "https://morphmodular.com/product/dbio/",
+   "content_sha256": "42e8a73487eed60a050073d2024a9126666f8c22b8289e23e8ae6be69f26a9d9"
+  },
+  {
+   "slug": "morph-modular-interstellar-transformer",
+   "brand": "Morph Modular",
+   "name": "Interstellar Transformer",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "DI",
+    "transformer",
+    "passive",
+    "isolation"
+   ],
+   "source_url": "https://morphmodular.com/product/interstellar-transformer/",
+   "content_sha256": "d434d64ad8e94e2ab5482fa66300344e0000e1987b21e51a8d6a87078b74fec4"
+  },
+  {
+   "slug": "morph-modular-node18",
+   "brand": "Morph Modular",
+   "name": "Node18",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "passive",
+    "patchbay",
+    "1U",
+    "routing"
+   ],
+   "source_url": "https://morphmodular.com/product/node18/",
+   "content_sha256": "ec2868d4d4103d848c2c4c1bfda70b953d585291a339c3c4ac13a2b312dae2a6"
+  },
+  {
+   "slug": "morph-modular-unit-docker",
+   "brand": "Morph Modular",
+   "name": "Unit Docker",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "passive",
+    "1U",
+    "reversible"
+   ],
+   "source_url": "https://morphmodular.com/product/unit-docker/",
+   "content_sha256": "7eca4854a4041aa71fd9f81e4efdb7487c0fbdd2017f0674a0d1b30819eed783"
+  },
+  {
+   "slug": "motley-modular-aydabtu",
+   "brand": "Motley Modular",
+   "name": "AYDABTU",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "compressor",
+    "analog",
+    "sidechain",
+    "parallel"
+   ],
+   "source_url": "https://www.motleymodular.com/aydabtu/",
+   "content_sha256": "4644350381af17455721f6d34255c3aa77b99d20faaca519578d83d436630c2c"
+  },
+  {
+   "slug": "motovilo-eq-2",
+   "brand": "Motovilo",
+   "name": "EQ-2",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "equalizer",
+    "tilt",
+    "mid",
+    "dual"
+   ],
+   "source_url": "https://motovilo.com/modules/eq-2/",
+   "content_sha256": "27e3f84793af0f1ed93a755a8fd372744b559ba3bbc8b35646f22aaec79814fb"
+  },
+  {
+   "slug": "motovilo-zlinein",
+   "brand": "Motovilo",
+   "name": "zLINEIN",
+   "category": "UTIL",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "line input",
+    "stereo",
+    "balanced",
+    "gain"
+   ],
+   "source_url": "https://motovilo.com/modules/zlinein/",
+   "content_sha256": "e820fa0e571121d59eb63f5a59b30a22d3d52a8de052ce32be552a8e3211e063"
+  },
+  {
+   "slug": "nakedboards-terrain",
+   "brand": "Nakedboards",
+   "name": "Terrain",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "random",
+    "landscape",
+    "sound-shaping"
+   ],
+   "source_url": "https://nakedboards.online/terrain",
+   "content_sha256": "f4ac7e2b43a6181e5fd1b59bcff3e0f334601c55690e1bd746459313880ca979"
+  },
+  {
+   "slug": "nano-modules-ceq",
+   "brand": "NANO Modules",
+   "name": "CEQ",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "equalizer",
+    "compressor",
+    "DJ",
+    "analog"
+   ],
+   "source_url": "https://nanoindustri.es/product/ceq/",
+   "content_sha256": "7bf04dfe199740115e4fef5175ff06410fbb7fe7e33bacb99ea6907b1996aaf7"
+  },
+  {
+   "slug": "nekyia-circuits-sosumi",
+   "brand": "Nekyia Circuits",
+   "name": "Sosumi",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "low pass gate",
+    "vactrol",
+    "percussive"
+   ],
+   "source_url": "https://nekyiacircuits.com/product/sosumi-dual-low-pass-gate/",
+   "content_sha256": "515d57ae8d492b0dbcfe71d5706ed08c4d9a31ab588aca7f77d533e9ce46b806"
+  },
+  {
+   "slug": "niio-analog-dual-level",
+   "brand": "NIIO analog",
+   "name": "DUAL LEVEL",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "dual",
+    "level",
+    "cv"
+   ],
+   "source_url": "https://www.niioanalog.com/dual-level",
+   "content_sha256": "d2d0e8288d24029d11608d3ba75365e7b1e009927dcee52e65f529dccc10bd09"
+  },
+  {
+   "slug": "nonlinearcircuits-1u-sloth-chaos",
+   "brand": "Nonlinearcircuits",
+   "name": "1u Sloth Chaos",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "1u"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/1u-sloth-chaos",
+   "content_sha256": "2a5eae72f81a84406ee478fa4d87eeee3dc5e1270c73cd1337883129d75e4d2d"
+  },
+  {
+   "slug": "nonlinearcircuits-4hp-neuron",
+   "brand": "Nonlinearcircuits",
+   "name": "4HP Neuron",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "waveshaper",
+    "gate",
+    "pulse",
+    "CV"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/4hpneuron",
+   "content_sha256": "bffc68c86182d27043921d73d23058f3fc5bf894c8c7dc48b6881aea8b7238cb"
+  },
+  {
+   "slug": "nonlinearcircuits-badum-tisss",
+   "brand": "Nonlinearcircuits",
+   "name": "BaDum Tisss",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "snare",
+    "hi-hat",
+    "ring mod"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/badum-tisss",
+   "content_sha256": "c3d5b012b4eab07dcd374f99755c60f25bc7dabf1a9466a25bb63c89ea8b29e9"
+  },
+  {
+   "slug": "nonlinearcircuits-big-jobs",
+   "brand": "Nonlinearcircuits",
+   "name": "Big Jobs",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaotic",
+    "signal generator",
+    "PLL",
+    "audio"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/bigjobs",
+   "content_sha256": "5abf5916f7c53a2d66f4afcc01376c5bc36b28f4e83e5586f0096bd602795da1"
+  },
+  {
+   "slug": "nonlinearcircuits-brain-custard",
+   "brand": "Nonlinearcircuits",
+   "name": "Brain Custard",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "noise",
+    "audio"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/brain-custard",
+   "content_sha256": "bb8e90a3fec86029c5efa59cfcb1cd157e4f410c8a32777fad839f2b4292c755"
+  },
+  {
+   "slug": "nonlinearcircuits-gator",
+   "brand": "Nonlinearcircuits",
+   "name": "Gator",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "gate combiner",
+    "passive"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/gator",
+   "content_sha256": "3e0989527c17f75339f92fb1c88eb1a73889ea3e520da9d88970db8d315c5186"
+  },
+  {
+   "slug": "nonlinearcircuits-how-s-the-serenity",
+   "brand": "Nonlinearcircuits",
+   "name": "How's the Serenity",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "cv",
+    "sync"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/serenity",
+   "content_sha256": "13985dad57a032445d199388b6d596f3b88aca4047f5bb6e49c423aabaa5eba5"
+  },
+  {
+   "slug": "nonlinearcircuits-hyperchaos-deluxe",
+   "brand": "Nonlinearcircuits",
+   "name": "Hyperchaos Deluxe",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "CV",
+    "gate"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/hyperchaos-deluxe",
+   "content_sha256": "d7865f2479488540605d8364d55c9a737b24550e88c0626e4e6f2d8167e19251"
+  },
+  {
+   "slug": "nonlinearcircuits-ian-fritz-hypster",
+   "brand": "Nonlinearcircuits",
+   "name": "Ian Fritz Hypster",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "generator",
+    "voltage-controlled",
+    "audio"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/ian-fritz-hypster",
+   "content_sha256": "48a691e244b39a091f7c70070eacebd76a0660ebc96f1a070a6cead9a1c618c1"
+  },
+  {
+   "slug": "nonlinearcircuits-let-s-get-fenestrated",
+   "brand": "Nonlinearcircuits",
+   "name": "Let's get fenestrated!",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "window comparator",
+    "gate",
+    "chaos",
+    "CV"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/fenestrated",
+   "content_sha256": "419c419f39d842c6fa83b3ba44592a4591f4d3fb547fe6ab12546509f27d1621"
+  },
+  {
+   "slug": "nonlinearcircuits-low-pass-gate",
+   "brand": "Nonlinearcircuits",
+   "name": "Low Pass Gate",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "low pass gate",
+    "Buchla",
+    "DIY"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/low-pass-gate",
+   "content_sha256": "0416a5af70bdc7c66dd174c682b769fa7ab4489c5bc978034db87dece624e45c"
+  },
+  {
+   "slug": "nonlinearcircuits-ming-rod",
+   "brand": "Nonlinearcircuits",
+   "name": "Ming Rod",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "ring mod",
+    "transistor",
+    "phase"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/mingrod",
+   "content_sha256": "dd12af52e3136da736b89eb9bf90139fa4868e093ce25741a08cbfe4c6dde6ee"
+  },
+  {
+   "slug": "nonlinearcircuits-neuron",
+   "brand": "Nonlinearcircuits",
+   "name": "Neuron",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "waveshaper",
+    "gate",
+    "pulse",
+    "CV"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/8hp-neuron",
+   "content_sha256": "f27fd3352500f1fd6cb93981bd08dd919e2f9d60a717e9f1c036f7c1afc973ca"
+  },
+  {
+   "slug": "nonlinearcircuits-primal-hyperchaos",
+   "brand": "Nonlinearcircuits",
+   "name": "Primal Hyperchaos",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "cv",
+    "gate"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/primal-hyperchaos",
+   "content_sha256": "9ff219765ae9b4537b5511d3f956488d48dbce6b9ee6d160209396b60012892f"
+  },
+  {
+   "slug": "nonlinearcircuits-sandy-freckle",
+   "brand": "Nonlinearcircuits",
+   "name": "Sandy Freckle",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "random",
+    "pulse",
+    "burst",
+    "generator"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/sandyfreckle",
+   "content_sha256": "3a1034f48b7a18de0df4b0054f53211a237082f492e736a9ed03a5551ddd4e8c"
+  },
+  {
+   "slug": "nonlinearcircuits-sloth-chaos-single-4hp",
+   "brand": "Nonlinearcircuits",
+   "name": "Sloth Chaos (single, 4HP)",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "DIY"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/4hp-sloth-chaos",
+   "content_sha256": "0784a00a6708a7d019a2dc89452b77f3adb994a7cc24f9966f590f184fece7e1"
+  },
+  {
+   "slug": "nonlinearcircuits-sloth-dk",
+   "brand": "Nonlinearcircuits",
+   "name": "Sloth DK",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "CV",
+    "random",
+    "slow"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/sloth-dk",
+   "content_sha256": "a62f123cc8558df2ae1345f87113f060e67380b0138c46c72777bc59fb7fafea"
+  },
+  {
+   "slug": "nonlinearcircuits-squid-axon",
+   "brand": "Nonlinearcircuits",
+   "name": "Squid Axon",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "analog shift register",
+    "chaos",
+    "CV",
+    "audio"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/squid-axon",
+   "content_sha256": "c1e56db8fe53791b57f41aae7e93acbd701390e86bc682c5bcd0041cc326b136"
+  },
+  {
+   "slug": "nonlinearcircuits-stochaos",
+   "brand": "Nonlinearcircuits",
+   "name": "STOCHAOS",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "random",
+    "gate",
+    "CV"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/stochaos",
+   "content_sha256": "f191a5cc90e798bac31abb46214bc9e75ebb187e599418cbff14f11ae55536e2"
+  },
+  {
+   "slug": "nonlinearcircuits-stooges",
+   "brand": "Nonlinearcircuits",
+   "name": "Stooges",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "jerk",
+    "cv",
+    "gate"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/stooges",
+   "content_sha256": "84cffabaed27508f129116d5731e534c9e14eb7b46248b1ee480f0eca63d96f7"
+  },
+  {
+   "slug": "nonlinearcircuits-this-2-shall-pass",
+   "brand": "Nonlinearcircuits",
+   "name": "This 2 shall pass",
+   "category": "LFO",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "XOR",
+    "ring modulator",
+    "dual",
+    "passive"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/this2shallpass",
+   "content_sha256": "39f538992d24ef6d776e7ec3ac4e314f6be157cf557ef5d7731cfede8f44f256"
+  },
+  {
+   "slug": "nonlinearcircuits-triple-sloth",
+   "brand": "Nonlinearcircuits",
+   "name": "Triple Sloth",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "cv"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/triple-sloth",
+   "content_sha256": "c558d38b3a27a85325ab2c4b20ba5ce01ef05d03d6825e27d8ed8f2f5f8604c8"
+  },
+  {
+   "slug": "nonlinearcircuits-winnits",
+   "brand": "Nonlinearcircuits",
+   "name": "Winnits",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "CV",
+    "reverse sigmoid"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/winnits",
+   "content_sha256": "b764d6067b69923a60066970c38c854f2e993e260c9752e030bdb08e88ea8cad"
+  },
+  {
+   "slug": "okay-synthesizer-lowstepper",
+   "brand": "Okay Synthesizer",
+   "name": "Lowstepper",
+   "category": "LFO",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "LFO",
+    "dual",
+    "CV",
+    "audio-rate"
+   ],
+   "source_url": "https://okaysynthesizer.com/products/lowstepper",
+   "content_sha256": "574beb7f81c93e5a2470d56f12977d6d08658478c66777b5c088ed4572a76c9c"
+  },
+  {
+   "slug": "olivia-artz-modular-uncertainty",
+   "brand": "Olivia Artz Modular",
+   "name": "Uncertainty",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "uncertainty",
+    "random"
+   ],
+   "source_url": "https://oamodular.org/products/uncertainty",
+   "content_sha256": "93047331c276df7d3ad2676c254183e3326770be3e6ee50279b2ac93bd2ec752"
+  },
+  {
+   "slug": "phase-engineering-expando-expandi",
+   "brand": "Phase Engineering",
+   "name": "Expando Expandi",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "CV expander",
+    "expander"
+   ],
+   "source_url": "https://noiseengineering.us/products/expando-expandi/",
+   "content_sha256": "adb6d869776eb38d32817f88b0b87e8c9b5a54be38df45dc7aa8b67e5a4069cf"
+  },
+  {
+   "slug": "phase-engineering-kith-ruina",
+   "brand": "Phase Engineering",
+   "name": "Kith Ruina",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "drive",
+    "eq",
+    "tone"
+   ],
+   "source_url": "https://noiseengineering.us/products/kith-ruina/",
+   "content_sha256": "f4b455daaacce385a86d4f0ec837f66e42b6b7498cb111ad4def4684f400474e"
+  },
+  {
+   "slug": "phase-engineering-nive-grad",
+   "brand": "Phase Engineering",
+   "name": "Nive Grad",
+   "category": "MIX",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "level shift",
+    "interface",
+    "mixer"
+   ],
+   "source_url": "https://noiseengineering.us/products/nive-grad/",
+   "content_sha256": "85ce7702870f19bff6b8a0bddc7e83d0d3822cdcec6638adc2caf4affc8e3113"
+  },
+  {
+   "slug": "pindsvik-audio-tlbx",
+   "brand": "Pindsvik Audio",
+   "name": "TLBX",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "converter",
+    "transposer",
+    "comparator"
+   ],
+   "source_url": "https://pindsvikaudio.com/shop/mod-tlbx-tlbx-24",
+   "content_sha256": "4c1ba859b04d5a6d3280e17225a8ed7be7cabe4adcabbe721c21958c6c6f8188"
+  },
+  {
+   "slug": "plum-audio-ex12",
+   "brand": "Plum Audio",
+   "name": "ex12",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "expander",
+    "cv",
+    "1u"
+   ],
+   "source_url": "https://www.plum-audio.com/product-page/ex12-cv-expander",
+   "content_sha256": "5fb480ec1cb1839cbdd7ebd10aaff63ffa53b7735599a5581bba4efd9c6a5bc8"
+  },
+  {
+   "slug": "plum-audio-ex6",
+   "brand": "Plum Audio",
+   "name": "ex6",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "expander",
+    "cv",
+    "1u"
+   ],
+   "source_url": "https://www.plum-audio.com/product-page/ex6-cv-expander",
+   "content_sha256": "9575c5b84f2c4d07c92424fa3ea426f66046edebb9834d4197f8a06fa62d92b8"
+  },
+  {
+   "slug": "pusherman-hapha",
+   "brand": "Pusherman",
+   "name": "HAPHA",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "random",
+    "voltage",
+    "compact"
+   ],
+   "source_url": "https://pushermanproductions.com/products/st-modular-hapha-compact-locked-random-voltage-3-hp",
+   "content_sha256": "e80d029c19470b67f7119a272ae6a7fd0a36ca6ca32a449f63262e0fb0ffdf18"
+  },
+  {
+   "slug": "pusherman-influencer",
+   "brand": "Pusherman",
+   "name": "INFLUENCER",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "random",
+    "cv",
+    "generator"
+   ],
+   "source_url": "https://pushermanproductions.com/products/st-modular-influencer",
+   "content_sha256": "5a60da1a4c00b5747589d7098263a43213197540b631c3688df447dbe7c257a4"
+  },
+  {
+   "slug": "rabid-elephant-natural-gate",
+   "brand": "Rabid Elephant",
+   "name": "Natural Gate",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "LPG",
+    "dual",
+    "lowpass gate",
+    "decay"
+   ],
+   "source_url": "https://rabidelephant.com/products/natural-gate",
+   "content_sha256": "f5f246d9ed09cafabc57471022f1e3d9c12165799f43e293583e555d3522e49c"
+  },
+  {
+   "slug": "raw-analogue-sound-bonkers",
+   "brand": "Raw Analogue Sound",
+   "name": "bonkers",
+   "category": "MIX",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "crossfader",
+    "mixer",
+    "output"
+   ],
+   "source_url": "https://www.rawanaloguesound.com/bonkers/",
+   "content_sha256": "bae7df5387adbbe64bc4adba719db661b68041053cbd62fef96e9c6b7de69c51"
+  },
+  {
+   "slug": "rides-in-the-storm-ngm",
+   "brand": "Rides in the Storm",
+   "name": "NGM",
+   "category": "MIX",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "mixer",
+    "passive",
+    "gain"
+   ],
+   "source_url": "https://rides-in-the-storm.de/modules/ngm",
+   "content_sha256": "33a9c1e209ad1aeb8cdf4e27b84edd011c698e54061e3e4ca1ba3de8e7584072"
+  },
+  {
+   "slug": "ritual-electronics-electronics",
+   "brand": "Ritual Electronics",
+   "name": "Electronics",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "shift register",
+    "gate",
+    "cv",
+    "random"
+   ],
+   "source_url": "https://www.ritualelectronics.com/shop/re012-amnis-3",
+   "content_sha256": "5a313ffb61118f2d2b716550391b15247df865d9c3ad0416fe3c9bf0e14593e8"
+  },
+  {
+   "slug": "ritual-electronics-flexibilit",
+   "brand": "Ritual Electronics",
+   "name": "Flexibilité",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "attenuverter",
+    "volume",
+    "expression",
+    "CV"
+   ],
+   "source_url": "https://www.ritualelectronics.com/shop/re1u002-flexibilite-12",
+   "content_sha256": "0099ef57b2c2c1b51bbaaedd91efcb0998969567cd4692824217c7ae9d6952b9"
+  },
+  {
+   "slug": "setonixsynth-tidbit-audio-psychedelic-voltage-processor-pvp-chaos",
+   "brand": "SetonixSynth",
+   "name": "Tidbit Audio Psychedelic Voltage Processor PVP Chaos",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "voltage",
+    "processor",
+    "four-channel"
+   ],
+   "source_url": "https://www.setonixsynth.com/shop/p/psychedelic-voltage-processor",
+   "content_sha256": "e1406cb529c32bf4a5cb96cc7d378bfe368382cf881e0c89c0ff86d0a858b3c9"
+  },
+  {
+   "slug": "shkrjn-dual-low-pass-gate",
+   "brand": "shkrjn",
+   "name": "Dual Low Pass Gate",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "low pass gate",
+    "vactrol",
+    "dual",
+    "dynamics"
+   ],
+   "source_url": "https://www.shkrjn.com/modules/p/dual-low-pass-gate",
+   "content_sha256": "36b74b523a47d68e849eeb18743852f0d39a215088d2bb44371799a77b693db8"
+  },
+  {
+   "slug": "signs-modular-ampeq",
+   "brand": "Signs Modular",
+   "name": "ampeq",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "preamp",
+    "eq",
+    "stereo",
+    "drive"
+   ],
+   "source_url": "https://signsmodular.com/ampeq.html",
+   "content_sha256": "6ba807fff79acfa8642c64c7e6358432e1a38460ec9e6274272fcece19619229"
+  },
+  {
+   "slug": "signs-modular-exp1",
+   "brand": "Signs Modular",
+   "name": "exp1",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "expander",
+    "gesture",
+    "voltage",
+    "mute"
+   ],
+   "source_url": "https://signsmodular.com/exp1.html",
+   "content_sha256": "8adba681487713252dad6288cba4b598100ce17ace72beeaa19fc201d494b53d"
+  },
+  {
+   "slug": "signs-modular-pxl",
+   "brand": "Signs Modular",
+   "name": "pxl",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "low pass gate",
+    "resonant",
+    "vactrol",
+    "4 channel"
+   ],
+   "source_url": "https://signsmodular.com/pxl.html",
+   "content_sha256": "442466bf76e411304470c8345f06d34834cb8bd60fbbbc4051ef7fa5396f89b2"
+  },
+  {
+   "slug": "sonic-potions-mal-2",
+   "brand": "Sonic Potions",
+   "name": "Mal-2",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "random",
+    "CV",
+    "gate",
+    "DIY"
+   ],
+   "source_url": "https://www.sonic-potions.com/mal-2",
+   "content_sha256": "86613a9f97f7422ade5716e4c83bf092c02a738c8ce36cebcde9ad78686ec09e"
+  },
+  {
+   "slug": "sonoclast-zero",
+   "brand": "Sonoclast",
+   "name": "Zero",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "attenuverter",
+    "power",
+    "breakout"
+   ],
+   "source_url": "https://sonoclast.com/products/zero/",
+   "content_sha256": "c883671e50c00cfa7346d4dcf85d08676b665116bf035c8b8e145f9a23285ad7"
+  },
+  {
+   "slug": "sovage-engineering-piti-boucan",
+   "brand": "Sovage Engineering",
+   "name": "PITI BOUCAN",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "noise",
+    "1U",
+    "Intellijel"
+   ],
+   "source_url": "https://www.sovageengineering.com/product-page/piti-boucan",
+   "content_sha256": "a95c0bc2901249707d70c1b04cae31410f8842719861a642f3deb799dbf36f8d"
+  },
+  {
+   "slug": "sssr-labs-sm630-aws",
+   "brand": "SSSR Labs",
+   "name": "SM630 AWS",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "waveshaper",
+    "analog",
+    "voltage controlled",
+    "eurorack"
+   ],
+   "source_url": "https://www.sssrlabs.com/store/sm630/",
+   "content_sha256": "e6b6d54a3ab2fa8325de3a38aabcccef2db5f31e53c8b2ac6c9ae49f36849913"
+  },
+  {
+   "slug": "sssr-labs-sm800a-wobla",
+   "brand": "SSSR Labs",
+   "name": "SM800a Wobla",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "controller",
+    "slider",
+    "CV"
+   ],
+   "source_url": "https://www.sssrlabs.com/store/sm800a/",
+   "content_sha256": "2313ea342efe5679ccd12001570aaebebec1678452b80ea245ff1ba0a3a6c6a8"
+  },
+  {
+   "slug": "sssr-labs-sm800b-wobla",
+   "brand": "SSSR Labs",
+   "name": "SM800b Wobla",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "controller",
+    "slider",
+    "CV"
+   ],
+   "source_url": "https://www.sssrlabs.com/store/sm800b/",
+   "content_sha256": "63fa0704ad8bddf3fc4822f3fe323dc41ad33a26220d8b6484c5be262465f0ee"
+  },
+  {
+   "slug": "st-modular-klangmaschine",
+   "brand": "ST Modular",
+   "name": "Klangmaschine",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "FM",
+    "synthesizer",
+    "digital",
+    "noise"
+   ],
+   "source_url": "https://www.st-modular.de/modules/klangmaschine",
+   "content_sha256": "384909c38184f53b612220c8ac23bfd6412094d81acbed2206f5d94ee82e7b18"
+  },
+  {
+   "slug": "st-modular-once-in-a-while",
+   "brand": "ST Modular",
+   "name": "Once In A While",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "mute",
+    "CV",
+    "stereo",
+    "performance"
+   ],
+   "source_url": "https://www.st-modular.de/modules/once-in-a-while",
+   "content_sha256": "b07142355f9e2697daffcf67e2e63618144ac6f41c97e8c20f207f0ec01905ae"
+  },
+  {
+   "slug": "st-modular-radio",
+   "brand": "ST Modular",
+   "name": "Radio",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "radio",
+    "fm",
+    "cv",
+    "noise"
+   ],
+   "source_url": "https://www.st-modular.de/modules/radio",
+   "content_sha256": "e1a18a7a05e650e890accb6259d29f18de0ed1ec2933f940e23d9077ec2d03dd"
+  },
+  {
+   "slug": "st-modular-stereo-total",
+   "brand": "ST Modular",
+   "name": "Stereo Total",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "stereo",
+    "converter",
+    "width",
+    "imager"
+   ],
+   "source_url": "https://www.st-modular.de/modules/stereo-total",
+   "content_sha256": "526d4e189e5ef238f93527e3de1b2bb590951ee66a4d483d7ddc332c1d253c86"
+  },
+  {
+   "slug": "studiokat-analog-chaos-v1",
+   "brand": "StudioKAT",
+   "name": "Analog Chaos v1",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "chaos",
+    "CV"
+   ],
+   "source_url": "https://www.studiokat.jp/items/149562926",
+   "content_sha256": "4498d1cd4e33da9097ff794902eba5d6115da199db0722b0101122fea9e1d90b"
+  },
+  {
+   "slug": "studiokat-passive-or",
+   "brand": "StudioKAT",
+   "name": "Passive OR",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "OR",
+    "passive"
+   ],
+   "source_url": "https://www.studiokat.jp/items/149564203",
+   "content_sha256": "d1449132fed1982f7c961bff6d692066bb1dd30a51c92714d202210de1879742"
+  },
+  {
+   "slug": "swizzle-circuits-axon-2",
+   "brand": "Swizzle Circuits",
+   "name": "AXON-2",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "expander",
+    "buttons"
+   ],
+   "source_url": "https://busycircuits.com/products/alm040",
+   "content_sha256": "4bbc2e28755d8356f9e13db28a109a477ea3042e7e9ef807deb14ac1863e37d6"
+  },
+  {
+   "slug": "syntonie-animate-exp",
+   "brand": "Syntonie",
+   "name": "Animate Exp",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "expander",
+    "waveform"
+   ],
+   "source_url": "https://syntonie.fr/products/animate-exp",
+   "content_sha256": "efca11b9f4024e31daf32ea3ada723b16aae8b973573f820f76747d71794fdc5"
+  },
+  {
+   "slug": "tenderfoot-electronics-faff",
+   "brand": "Tenderfoot Electronics",
+   "name": "FAFF",
+   "category": "VCF",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "filter",
+    "VCA",
+    "multimode",
+    "phaser"
+   ],
+   "source_url": "https://tenderfootelectronics.com/products/faff-multimode-filter-vca",
+   "content_sha256": "dd095ab49ec7eac2bc2c197beb17b53599d6df31278823ab9d368bb259b0e714"
+  },
+  {
+   "slug": "tlm-audio-matt-mutable-instruments-shades-clone",
+   "brand": "TLM Audio",
+   "name": "MATT (Mutable Instruments Shades Clone)",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "attenuverter",
+    "CV",
+    "clone"
+   ],
+   "source_url": "https://www.tlm-audio.com/product-page/matt-mutable-instruments-shades-clone",
+   "content_sha256": "4562f2361cfd4ad8a216719476691a0be6536555ce835653a059c96771824169"
+  },
+  {
+   "slug": "tlm-audio-rands-mutable-instruments-marbles-clone",
+   "brand": "TLM Audio",
+   "name": "RANDS (Mutable Instruments Marbles Clone)",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "random",
+    "CV",
+    "clone",
+    "generator"
+   ],
+   "source_url": "https://www.tlm-audio.com/product-page/rands-mutable-instruments-marbles-clone",
+   "content_sha256": "57c5e7be30e7419d740e1cee5d6cd2d69b2798a9b49f62692425d1a8df222ee4"
+  },
+  {
+   "slug": "tlm-audio-stereo-total",
+   "brand": "TLM Audio",
+   "name": "STEREO TOTAL",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "stereo",
+    "converter",
+    "width",
+    "imager"
+   ],
+   "source_url": "https://www.tlm-audio.com/product-page/st-modular-stereo-total",
+   "content_sha256": "bb0cb5da91cc690df073055085e7b76c5dd42982019d1328ae219d61ccbf0b15"
+  },
+  {
+   "slug": "tokyo-tape-music-center-dual-low-pass-gate-model-tokyo-gate",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Dual Low Pass Gate MODEL TOKYO GATE",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "low pass gate",
+    "vactrol",
+    "Buchla",
+    "dual"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/dual-low-pass-gate-model-tokyo-gate/",
+   "content_sha256": "425469fd968bf3fb0f1b14f42027a91fc2cda31033d6faa0cbae7672dbbac933"
+  },
+  {
+   "slug": "tokyo-tape-music-center-dual-low-pass-gate-model-tokyo-gate-2",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Dual Low Pass Gate MODEL TOKYO GATE 2",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "low pass gate",
+    "vactrol",
+    "dual",
+    "Buchla"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/dual-low-pass-gate-model-tokyo-gate-2/",
+   "content_sha256": "5c96a01690d0e913b005620ce78604d699f02ff006e40b4ab19600b4c1db98fd"
+  },
+  {
+   "slug": "tokyo-tape-music-center-dual-low-pass-gate-model-tokyo-gate-rev2",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Dual Low Pass Gate MODEL TOKYO GATE Rev2",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "low pass gate",
+    "vactrol",
+    "dual"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/dual-low-pass-gate-model-tokyo-gate-rev2/",
+   "content_sha256": "8259b7167b8d05fe78e1749b53d6bb532b4cb99a9e9bdd93ab67eefe791c0c49"
+  },
+  {
+   "slug": "tokyo-tape-music-center-equalizer-line-driver-model-175",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Equalizer Line Driver MODEL 175",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "equalizer",
+    "line driver",
+    "Buchla",
+    "100 series"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/equalizer-line-driver-model-175/",
+   "content_sha256": "93801cfca03919b523bb785cde51ab8ff13580983f448d7a2eaf6105c22b86e8"
+  },
+  {
+   "slug": "tokyo-tape-music-center-gate-single",
+   "brand": "Tokyo Tape Music Center",
+   "name": "GATE single",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "low pass gate",
+    "vactrol",
+    "Buchla"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/tokyo-gate-single/",
+   "content_sha256": "4d75f0dddb5890e4d1568d57616d41945e5e3da3395cd6d6a224c56124927b65"
+  },
+  {
+   "slug": "tokyo-tape-music-center-timbre-tokyo-gate",
+   "brand": "Tokyo Tape Music Center",
+   "name": "TIMBRE & TOKYO GATE",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "low pass gate",
+    "timbre",
+    "vactrol",
+    "eurorack"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/timbre-tokyo-gate/",
+   "content_sha256": "93310112c7eaaae7365fb598680e584be18aae6b4324007c475a69d60327c42b"
+  },
+  {
+   "slug": "tokyo-tape-music-center-touch-controlled-voltage-source-model-112",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Touch Controlled Voltage Source MODEL 112",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "touch",
+    "voltage",
+    "source",
+    "eurorack"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/touch-controlled-voltage-source-model-112/",
+   "content_sha256": "a99630c175abcd6482c5f58bb1f62a5db086784339fecfde840e20f801d0f234"
+  },
+  {
+   "slug": "tokyo-tape-music-center-touch-controlled-voltage-source-model-112-3",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Touch Controlled Voltage Source MODEL 112-3",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "touch",
+    "voltage",
+    "source"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/touch-controlled-voltage-source-model-112-3/",
+   "content_sha256": "1e5947d28615245ab14d0d1b31a1745e357a84176d6b7424cbe2e195d71b2dc6"
+  },
+  {
+   "slug": "tokyo-tape-music-center-touch-controlled-voltage-source-model-112-mk2",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Touch Controlled Voltage Source MODEL 112 MK2",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "touch",
+    "cv",
+    "voltage"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/touch-controlled-voltage-source-model-112-mk2/",
+   "content_sha256": "9c092cb831f9a4ebdb2511e239bb49f052f83a74aeb08223a335d7b6f58895b1"
+  },
+  {
+   "slug": "tokyo-tape-music-center-white-noise-generator-model-160",
+   "brand": "Tokyo Tape Music Center",
+   "name": "White Noise Generator Model 160",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "noise",
+    "generator",
+    "eurorack"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/white-noise-generator-model-160/",
+   "content_sha256": "0829c34dedf01b04dbce916ea35afcd5481b628a428435b76fd590129c49239b"
+  },
+  {
+   "slug": "tronix-audio-origami",
+   "brand": "Tronix-Audio",
+   "name": "Origami",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "wavefolder",
+    "CV",
+    "EQ",
+    "fold"
+   ],
+   "source_url": "https://tronix-audio.de/origami/",
+   "content_sha256": "f9898fbb912be9880c65b5193cfac089b2ee3325e0cce5ecce2dac1ccd544071"
+  },
+  {
+   "slug": "vav-synths-n-wave-middle-out-waveshaper-10hp",
+   "brand": "VAV Synths",
+   "name": "N-Wave: Middle-Out Waveshaper (10HP)",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "waveshaper"
+   ],
+   "source_url": "https://vavsynths.com/products/n-wave",
+   "content_sha256": "805b83811d909c069bae478535fb7d462ca9b89c7d469a16c3af9ef3e32d2db7"
+  },
+  {
+   "slug": "vermona-melodicer",
+   "brand": "Vermona",
+   "name": "meloDICER",
+   "category": "LFO",
+   "basis": "crawl_tag",
+   "tags": [
+    "random",
+    "gate",
+    "cv"
+   ],
+   "source_url": "https://www.vermona.com/produkte/module/produkt/melodicer/",
+   "content_sha256": "9b5472569fbfff5187693a34296c974ecc4ccfee4e34691d36c7e07b097405c2"
+  },
+  {
+   "slug": "vpme-de-b32",
+   "brand": "vpme.de",
+   "name": "B32",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "controller",
+    "DROID"
+   ],
+   "source_url": "https://vpme.de/b32-controller/",
+   "content_sha256": "890f79158072565fb7d9355e2299e028b38124eb1cf15e3cce4885f9e8056c01"
+  },
+  {
+   "slug": "vpme-de-db8e",
+   "brand": "vpme.de",
+   "name": "DB8E",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "display",
+    "controller",
+    "encoder",
+    "gauge"
+   ],
+   "source_url": "https://vpme.de/db8e/",
+   "content_sha256": "3a3d72d5565dbca4b37965a23f7ec5be30773ce185e9593d8941b5188074343c"
+  },
+  {
+   "slug": "vpme-de-g8-v2",
+   "brand": "vpme.de",
+   "name": "G8 v2",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "gates",
+    "expander",
+    "eurorack"
+   ],
+   "source_url": "https://vpme.de/g8/",
+   "content_sha256": "3598b561d94e5cabaebb74a9e6891b46660679138c0c0ccc638972a2d461993c"
+  },
+  {
+   "slug": "vpme-de-m4",
+   "brand": "vpme.de",
+   "name": "M4",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "fader",
+    "controller",
+    "motorized",
+    "haptic"
+   ],
+   "source_url": "https://vpme.de/m4/",
+   "content_sha256": "35696ab5c213aafbe1531b15c6bc2240040cadc0a093c74b5573291304c6c8dc"
+  },
+  {
+   "slug": "vpme-de-p10",
+   "brand": "vpme.de",
+   "name": "P10",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "controller",
+    "droid"
+   ],
+   "source_url": "https://vpme.de/p10/",
+   "content_sha256": "8e9a54d29773197ff0aab2ade42dc24c17c7f03933dfacafcad53d1f2ba23f75"
+  },
+  {
+   "slug": "vpme-de-p2b8",
+   "brand": "vpme.de",
+   "name": "P2B8",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "controller",
+    "eurorack"
+   ],
+   "source_url": "https://vpme.de/p2b8/",
+   "content_sha256": "5c74bffa5f33965887b5c373de5bdd1bbe541e9e340a92cf1bc7b6d7a206e281"
+  },
+  {
+   "slug": "vpme-de-p4b2",
+   "brand": "vpme.de",
+   "name": "P4B2",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "controller",
+    "pots",
+    "buttons"
+   ],
+   "source_url": "https://vpme.de/p4b2/",
+   "content_sha256": "b5a8eeaadf2be3dad9a539070cc17c89fb5c3a1a6dcdce7926f2abc3d99bb0ad"
+  },
+  {
+   "slug": "vpme-de-r2m-r2c",
+   "brand": "vpme.de",
+   "name": "R2M/R2C",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "controller",
+    "connection",
+    "remote"
+   ],
+   "source_url": "https://vpme.de/r2mc/",
+   "content_sha256": "5cc54c06d2488382282b72a32b76938d70d19134f7a8548910aeb9bfce40e1c1"
+  },
+  {
+   "slug": "warped-circuits-axon-2",
+   "brand": "Warped Circuits",
+   "name": "AXON-2",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "expander",
+    "buttons"
+   ],
+   "source_url": "https://busycircuits.com/products/alm040",
+   "content_sha256": "4bbc2e28755d8356f9e13db28a109a477ea3042e7e9ef807deb14ac1863e37d6"
+  },
+  {
+   "slug": "warped-circuits-pip-slope",
+   "brand": "Warped Circuits",
+   "name": "Pip Slope",
+   "category": "ENV",
+   "basis": "crawl_tags_or_name",
+   "tags": [
+    "envelope",
+    "function generator",
+    "modulator"
+   ],
+   "source_url": "https://busycircuits.com/products/alm028",
+   "content_sha256": "5940a3f26a110b0798cdf6159990fc855ccd4be5ec407b920eab54080c179335"
+  },
+  {
+   "slug": "wildfire-laboratories-lsn-stereo",
+   "brand": "Wildfire Laboratories",
+   "name": "LSN-STEREO",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "feedback",
+    "stereo",
+    "vactrol",
+    "cv"
+   ],
+   "source_url": "https://www.wildfirelaboratories.com/current-devices/p/lsn-stereo",
+   "content_sha256": "2d86fe094e6437da0a216507804bf28984a4a1bb22f31d4a5fd5c29a1d9d80db"
+  },
+  {
+   "slug": "wildfire-laboratories-rusty-hum",
+   "brand": "Wildfire Laboratories",
+   "name": "RUSTY HUM",
+   "category": "VCA",
+   "basis": "crawl_tag",
+   "tags": [
+    "microphone",
+    "vactrol",
+    "CV",
+    "feedback"
+   ],
+   "source_url": "https://www.wildfirelaboratories.com/current-devices/p/rusty-hum",
+   "content_sha256": "a85ead1ad409b74bfd8c3ca7a84b59d3ac2bd89b2ac8c5ad8df632e66eac5b86"
+  },
+  {
+   "slug": "wildfire-laboratories-sovereign",
+   "brand": "Wildfire Laboratories",
+   "name": "SOVEREIGN",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "ring mod",
+    "audio mangler",
+    "DTMF"
+   ],
+   "source_url": "https://www.wildfirelaboratories.com/current-devices/p/sovereign",
+   "content_sha256": "da15bc3d68c2545178bc76144dbe8a8a9fb3a7f0d50f887922a4ea196d289769"
+  },
+  {
+   "slug": "wildsync-djmeq-300",
+   "brand": "Wildsync",
+   "name": "DJMEQ-300",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "EQ",
+    "stereo",
+    "mono"
+   ],
+   "source_url": "https://wildsyncgear.com/wildsync-djmeq-300/",
+   "content_sha256": "a8db91c4bd09b69d77522958298df756680b2221f973eb2a98a043248bfca6d0"
+  },
+  {
+   "slug": "x1l3-mx2",
+   "brand": "x1l3",
+   "name": "MX2",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "expander",
+    "gates",
+    "latching"
+   ],
+   "source_url": "https://x1l3.bigcartel.com/product/mx2-manipulator-expander-latching-gates",
+   "content_sha256": "44cca27b61a2498cb23c9bf54a9e67ba818fc63bef37b2084e0a1476cb616692"
+  },
+  {
+   "slug": "zorx-1u-through",
+   "brand": "Zorx",
+   "name": "1U Through",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "passive",
+    "1U",
+    "patch"
+   ],
+   "source_url": "https://www.zorxelectronics.com/product/1u-through-for-needham-woodworks-extension-cabs",
+   "content_sha256": "b91d8b535cc8e0c89d01082554ec0079c625de9a70ed8541c226eb8964fdc291"
+  },
+  {
+   "slug": "zorx-3u-through",
+   "brand": "Zorx",
+   "name": "3U Through",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "passive",
+    "patch",
+    "through"
+   ],
+   "source_url": "https://www.zorxelectronics.com/product/zorx-3u-through-for-easy-access-to-cv-ins-for-moog-matriarch-pedals",
+   "content_sha256": "d30254f55595577d71a1b779e6e9cb71cec9aeb0fbbdc612d2bd1268618af7bc"
+  }
+ ]
+}

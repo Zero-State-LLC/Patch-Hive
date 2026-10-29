@@ -2,7 +2,8 @@
 """Manufacturer-site catalog crawl (spec 003 D2; v1 approved by Danny 2026-10-17, $15 combined cap).
 
 Stages: resolve (curated homepage, else the v1 crawl's homepage, else search) ->
-discover (a per-maker adapter from maker-sources.json, else robots sitemaps, the
+refuse shared homepages (every brand is resolved first; a host another brand holds is
+recorded as ``shared_homepage`` and not crawled) -> discover (a per-maker adapter from maker-sources.json, else robots sitemaps, the
 Shopify feed and homepage links) -> fetch -> extract (deterministic regex; on the
 generic path an open-weights model confirms, and every accepted value must be
 parsed deterministically or appear verbatim on the maker's page).
@@ -42,6 +43,7 @@ CATALOG = ROOT / "data" / "synth-catalog"
 sys.path.insert(0, str(CATALOG))
 sys.path.insert(0, str(ROOT / "scripts"))
 
+import build_maker_overlays  # noqa: E402
 import maker_adapters  # noqa: E402
 from catalog_scrape import CatalogScraper  # noqa: E402
 
@@ -732,15 +734,71 @@ def crawl_generic(brand: str, home: str, cap: int, rec: dict) -> None:
                 rec["modules"].append(row)
 
 
-def crawl_brand(brand: str, cap: int) -> dict:
+def _trusted(how: str | None) -> bool:
+    """Resolved from a maker adapter or the curated homepage list, not inferred."""
+    return bool(how) and (how.startswith("adapter:") or how in ("curated", "curated_confirmed"))
+
+
+def resolve_within_budget(brand: str) -> dict:
+    if not BUDGET.can_spend():
+        return {"brand": brand, "homepage": None, "status": "budget_stop"}
+    return resolve_brand(brand)
+
+
+def committed_claims(brands: list[dict]) -> dict[str, str]:
+    """Each committed brand's claim on a host: its homepage, or for a brand an earlier run
+    refused, the candidate it was refused for. A partial rerun of one refused brand then
+    still sees the rival claim instead of crawling the shared site again."""
+    claims = {}
+    for b in brands:
+        host = b.get("homepage") or (b.get("candidate") if b.get("status") == "shared_homepage" else None)
+        if host:
+            claims[b["brand"]] = host
+    return claims
+
+
+def guard_shared_homepages(resolved: dict[str, dict], known: dict[str, str]) -> list[dict]:
+    """Refuse a homepage another brand holds, before any brand is crawled (spec 003 T030).
+
+    ``resolved`` is this run's resolutions by brand; ``known`` holds homepages of brands
+    outside this run (the committed crawl). The brand named in the host keeps it; failing
+    that, the one brand whose homepage came from a maker adapter or the curated list
+    ("ALM Busy Circuits" on busycircuits.com). Every other brand on that host, or all of
+    them when there is no owner, is turned into a ``shared_homepage`` record and not
+    crawled. Returns the conflicts for the receipt.
+    """
+    entries = [{"brand": b, "homepage": r["homepage"]} for b, r in resolved.items() if r.get("homepage")]
+    entries += [{"brand": b, "homepage": h} for b, h in known.items() if b not in resolved and h]
+    conflicts = [c for c in build_maker_overlays.shared_homepage_conflicts(entries) if set(c["brands"]) & set(resolved)]
+    for c in conflicts:
+        if c["owner"] is None:
+            trusted = [b for b in c["brands"] if b in resolved and _trusted(resolved[b].get("how"))]
+            if len(trusted) == 1:
+                c["owner"] = trusted[0]
+        for brand in c["brands"]:
+            if brand == c["owner"] or brand not in resolved:
+                continue
+            r = resolved[brand]
+            resolved[brand] = {
+                "brand": brand, "homepage": None, "status": "shared_homepage", "how": r.get("how"),
+                "candidate": r.get("homepage"), "owner": c["owner"],
+                "shared_with": [b for b in c["brands"] if b != brand],
+            }
+    return conflicts
+
+
+def crawl_brand(brand: str, cap: int, r: dict | None = None) -> dict:
     rec = {"brand": brand, "modules": [], "unconfirmed": [], "pages": 0, "status": None, "methods": {}, "ambiguous_hp": 0}
     if not BUDGET.can_spend():
         rec["status"] = "budget_stop"
         return rec
-    r = resolve_brand(brand)
+    r = r or resolve_brand(brand)
     rec["resolved_by"] = r.get("how")
     if not r.get("homepage"):
         rec["status"] = r["status"]
+        for key in ("candidate", "owner", "shared_with"):
+            if r.get(key):
+                rec[key] = r[key]
         return rec
     home = rec["homepage"] = r["homepage"]
     readable, _, delay = FETCH.robots_info(home)
@@ -792,6 +850,7 @@ def summarize(results: list[dict], budget: dict, args) -> dict:
         "budget": budget,
         "per_brand": [
             {k: r.get(k) for k in ("brand", "status", "path", "resolved_by", "homepage", "discovered", "picked", "pages", "ambiguous_hp")}
+            | {k: r[k] for k in ("candidate", "owner", "shared_with") if r.get(k)}
             | {"modules": len(r["modules"]), "unconfirmed": len(r.get("unconfirmed") or [])}
             for r in results
         ],
@@ -863,10 +922,22 @@ def main(argv: list[str] | None = None) -> int:
         brands = [b for b in brands if b in wanted]
     if args.limit:
         brands = brands[: args.limit]
+    # Resolve every brand first, so a homepage another brand holds is refused before
+    # anything is crawled (the v1 crawl gave seven brands another maker's site).
+    resolved: dict[str, dict] = {}
+    with cf.ThreadPoolExecutor(max_workers=args.workers) as pool:
+        for brand, r in zip(brands, pool.map(resolve_within_budget, brands)):
+            resolved[brand] = r
+    committed = OUT / "maker-crawl-v2.json"
+    known = committed_claims(json.loads(committed.read_text())["brands"]) if committed.is_file() else {}
+    shared = guard_shared_homepages(resolved, known)
+    for c in shared:
+        print(f"shared homepage {c['host']}: {', '.join(c['brands'])} (owner: {c['owner'] or 'none'})", flush=True)
+
     results = []
     done = 0
     with cf.ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futs = {pool.submit(crawl_brand, b, args.max_pages): b for b in brands}
+        futs = {pool.submit(crawl_brand, b, args.max_pages, resolved[b]): b for b in brands}
         for fut in cf.as_completed(futs):
             try:
                 results.append(fut.result())
@@ -881,6 +952,7 @@ def main(argv: list[str] | None = None) -> int:
     results.sort(key=lambda r: r["brand"].lower())
     budget = BUDGET.snapshot()
     summary = summarize(results, budget, args)
+    summary["shared_homepages"] = shared
     # A --brands run is a partial pass: it gets its own receipt (--tag) and, when real,
     # replaces only those brands in the full crawl instead of overwriting it.
     tag = f"-{args.tag}" if args.brands else ""

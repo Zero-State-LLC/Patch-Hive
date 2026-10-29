@@ -1,0 +1,1693 @@
+{
+ "dataset_version": "catalog-retirements-v2",
+ "generated_from": "hermes-research/maker-crawl-v2.json via scripts/build_reattribution.py",
+ "decided": "2026-10-28 (owner: retire the misattributed brands spec 003 T030 found, the same way)",
+ "policy": "tombstone, never delete: module_catalog.tombstoned_at + reason, modules.status='tombstoned'",
+ "shared_homepages": {
+  "Barcode Circuits": "ALM Busy Circuits",
+  "British Noise Electronics": "Noise Engineering",
+  "Endangered Audio Research": "ARC",
+  "Epicycloid Engineering": "Noise Engineering",
+  "FKMG Circuits": "ALM Busy Circuits",
+  "In The Trees": "Jasmine & Olive Trees",
+  "Instruō": "Instruo",
+  "Mad Rooster Lab": null,
+  "Mental Noise": "Make Noise",
+  "Olitronik_lab": null,
+  "Phase Engineering": "Noise Engineering",
+  "Swizzle Circuits": "ALM Busy Circuits",
+  "Thonk Synth": "Thonk",
+  "Vintage Synth Lab": null,
+  "Warped Circuits": "ALM Busy Circuits",
+  "Winter Plankton": "Winter Modular",
+  "d:Machinery": "Infinite Machinery"
+ },
+ "count": 185,
+ "rows": [
+  {
+   "slug": "barcode-circuits-akemie-s-castle",
+   "brand": "Barcode Circuits",
+   "name": "Akemie's Castle",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm011",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-akemie-s-taiko",
+   "brand": "Barcode Circuits",
+   "name": "Akemie's Taiko",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm015",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-asq-1",
+   "brand": "Barcode Circuits",
+   "name": "ASQ-1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm035",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-axon-1",
+   "brand": "Barcode Circuits",
+   "name": "AXON-1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm022-ex",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-axon-2",
+   "brand": "Barcode Circuits",
+   "name": "AXON-2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm040",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-beast-s-chalkboard",
+   "brand": "Barcode Circuits",
+   "name": "Beast's Chalkboard",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm002",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-boss-bow-two",
+   "brand": "Barcode Circuits",
+   "name": "BOSS BOW TWO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm027",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-cizzle",
+   "brand": "Barcode Circuits",
+   "name": "CIZZLE",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm042",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-fmco",
+   "brand": "Barcode Circuits",
+   "name": "FMco",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm045",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-hpo",
+   "brand": "Barcode Circuits",
+   "name": "HPO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm019",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-jumble-henge",
+   "brand": "Barcode Circuits",
+   "name": "Jumble Henge",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm029",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-mcfx2",
+   "brand": "Barcode Circuits",
+   "name": "MCFx2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm030",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-mco",
+   "brand": "Barcode Circuits",
+   "name": "MCO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm046",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-mega-milton",
+   "brand": "Barcode Circuits",
+   "name": "MEGA MILTON",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm037",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-mega-tang",
+   "brand": "Barcode Circuits",
+   "name": "MEGA-TANG",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm033",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-mfd",
+   "brand": "Barcode Circuits",
+   "name": "MFD",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm044",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-mfx",
+   "brand": "Barcode Circuits",
+   "name": "MFX",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm032",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-mmmidi",
+   "brand": "Barcode Circuits",
+   "name": "mmMidi",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm023",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-mmt",
+   "brand": "Barcode Circuits",
+   "name": "mmT",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm023-ex1",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-mt-ex1",
+   "brand": "Barcode Circuits",
+   "name": "MT-EX1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm033-ex1",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-mt-ex2",
+   "brand": "Barcode Circuits",
+   "name": "MT-EX2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm033-ex2",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-mum-m8",
+   "brand": "Barcode Circuits",
+   "name": "MUM M8",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm018",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-o-a-x2",
+   "brand": "Barcode Circuits",
+   "name": "O/A/x2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm010",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-pamela-s-disco",
+   "brand": "Barcode Circuits",
+   "name": "Pamela's Disco",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm049",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-passive-mult",
+   "brand": "Barcode Circuits",
+   "name": "Passive Mult",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm026",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-pe-1",
+   "brand": "Barcode Circuits",
+   "name": "PE-1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm016",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-pip-filter",
+   "brand": "Barcode Circuits",
+   "name": "Pip Filter",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm039",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-pip-lfo",
+   "brand": "Barcode Circuits",
+   "name": "Pip LFO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm048",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-pip-slope",
+   "brand": "Barcode Circuits",
+   "name": "Pip Slope",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm028",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-ppexp1",
+   "brand": "Barcode Circuits",
+   "name": "PPEXP1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm034-ex1",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-ppexp2",
+   "brand": "Barcode Circuits",
+   "name": "PPEXP2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm034-ex2",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-quaid-gigaslope",
+   "brand": "Barcode Circuits",
+   "name": "QUAID GIGASLOPE",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm047",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "not re-added: no page for it in the current crawl"
+  },
+  {
+   "slug": "barcode-circuits-quaid-megaslope",
+   "brand": "Barcode Circuits",
+   "name": "Quaid Megaslope",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm020",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-s-b-g",
+   "brand": "Barcode Circuits",
+   "name": "S.B.G",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm006",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-s-b-g-pro",
+   "brand": "Barcode Circuits",
+   "name": "S.B.G-PRO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm041",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-squid-salmple",
+   "brand": "Barcode Circuits",
+   "name": "SQUID SALMPLE",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm022",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-stem-ripper",
+   "brand": "Barcode Circuits",
+   "name": "Stem Ripper",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm050",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-stem-ripper-thru",
+   "brand": "Barcode Circuits",
+   "name": "Stem Ripper Thru",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm050-ex1",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-stereo-sum",
+   "brand": "Barcode Circuits",
+   "name": "STEREO SUM",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm038",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-tangle-quartet",
+   "brand": "Barcode Circuits",
+   "name": "Tangle Quartet",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm009",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-tazm-o",
+   "brand": "Barcode Circuits",
+   "name": "TAZM-O",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm036",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-tyso-daiko",
+   "brand": "Barcode Circuits",
+   "name": "Tyso Daiko",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm031",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "barcode-circuits-with-mixer",
+   "brand": "Barcode Circuits",
+   "name": "With Mixer",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm051",
+   "reason": "filed under the wrong brand: the crawl gave Barcode Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-akemie-s-castle",
+   "brand": "FKMG Circuits",
+   "name": "Akemie's Castle",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm011",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-akemie-s-taiko",
+   "brand": "FKMG Circuits",
+   "name": "Akemie's Taiko",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm015",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-asq-1",
+   "brand": "FKMG Circuits",
+   "name": "ASQ-1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm035",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-axon-1",
+   "brand": "FKMG Circuits",
+   "name": "AXON-1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm022-ex",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-axon-2",
+   "brand": "FKMG Circuits",
+   "name": "AXON-2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm040",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-beast-s-chalkboard",
+   "brand": "FKMG Circuits",
+   "name": "Beast's Chalkboard",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm002",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-boss-bow-two",
+   "brand": "FKMG Circuits",
+   "name": "BOSS BOW TWO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm027",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-cizzle",
+   "brand": "FKMG Circuits",
+   "name": "CIZZLE",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm042",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-fmco",
+   "brand": "FKMG Circuits",
+   "name": "FMco",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm045",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-hpo",
+   "brand": "FKMG Circuits",
+   "name": "HPO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm019",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-jumble-henge",
+   "brand": "FKMG Circuits",
+   "name": "Jumble Henge",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm029",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-mcfx2",
+   "brand": "FKMG Circuits",
+   "name": "MCFx2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm030",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-mco",
+   "brand": "FKMG Circuits",
+   "name": "MCO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm046",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-mega-milton",
+   "brand": "FKMG Circuits",
+   "name": "MEGA MILTON",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm037",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-mega-tang",
+   "brand": "FKMG Circuits",
+   "name": "MEGA-TANG",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm033",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-mfd",
+   "brand": "FKMG Circuits",
+   "name": "MFD",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm044",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-mfx",
+   "brand": "FKMG Circuits",
+   "name": "MFX",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm032",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-mmmidi",
+   "brand": "FKMG Circuits",
+   "name": "mmMidi",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm023",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-mmt",
+   "brand": "FKMG Circuits",
+   "name": "mmT",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm023-ex1",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-mt-ex1",
+   "brand": "FKMG Circuits",
+   "name": "MT-EX1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm033-ex1",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-mt-ex2",
+   "brand": "FKMG Circuits",
+   "name": "MT-EX2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm033-ex2",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-mum-m8",
+   "brand": "FKMG Circuits",
+   "name": "MUM M8",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm018",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-o-a-x2",
+   "brand": "FKMG Circuits",
+   "name": "O/A/x2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm010",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-pamela-s-disco",
+   "brand": "FKMG Circuits",
+   "name": "Pamela's Disco",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm049",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-passive-mult",
+   "brand": "FKMG Circuits",
+   "name": "Passive Mult",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm026",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-pe-1",
+   "brand": "FKMG Circuits",
+   "name": "PE-1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm016",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-pip-filter",
+   "brand": "FKMG Circuits",
+   "name": "Pip Filter",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm039",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-pip-lfo",
+   "brand": "FKMG Circuits",
+   "name": "Pip LFO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm048",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-pip-slope",
+   "brand": "FKMG Circuits",
+   "name": "Pip Slope",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm028",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-ppexp1",
+   "brand": "FKMG Circuits",
+   "name": "PPEXP1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm034-ex1",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-ppexp2",
+   "brand": "FKMG Circuits",
+   "name": "PPEXP2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm034-ex2",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-quaid-megaslope",
+   "brand": "FKMG Circuits",
+   "name": "Quaid Megaslope",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm020",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-s-b-g",
+   "brand": "FKMG Circuits",
+   "name": "S.B.G",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm006",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-s-b-g-pro",
+   "brand": "FKMG Circuits",
+   "name": "S.B.G-PRO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm041",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-squid-salmple",
+   "brand": "FKMG Circuits",
+   "name": "SQUID SALMPLE",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm022",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-stem-ripper",
+   "brand": "FKMG Circuits",
+   "name": "Stem Ripper",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm050",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-stem-ripper-thru",
+   "brand": "FKMG Circuits",
+   "name": "Stem Ripper Thru",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm050-ex1",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-stereo-sum",
+   "brand": "FKMG Circuits",
+   "name": "STEREO SUM",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm038",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-tangle-quartet",
+   "brand": "FKMG Circuits",
+   "name": "Tangle Quartet",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm009",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-tazm-o",
+   "brand": "FKMG Circuits",
+   "name": "TAZM-O",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm036",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-tyso-daiko",
+   "brand": "FKMG Circuits",
+   "name": "Tyso Daiko",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm031",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "fkmg-circuits-with-mixer",
+   "brand": "FKMG Circuits",
+   "name": "With Mixer",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm051",
+   "reason": "filed under the wrong brand: the crawl gave FKMG Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "in-the-trees-door",
+   "brand": "In The Trees",
+   "name": "Door",
+   "owner": "Jasmine & Olive Trees",
+   "evidence_url": "https://jasmineandolivetrees.com/products/door",
+   "reason": "filed under the wrong brand: the crawl gave In The Trees Jasmine & Olive Trees's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "in-the-trees-doppler",
+   "brand": "In The Trees",
+   "name": "Doppler",
+   "owner": "Jasmine & Olive Trees",
+   "evidence_url": "https://jasmineandolivetrees.com/products/doppler",
+   "reason": "filed under the wrong brand: the crawl gave In The Trees Jasmine & Olive Trees's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "in-the-trees-light",
+   "brand": "In The Trees",
+   "name": "Light",
+   "owner": "Jasmine & Olive Trees",
+   "evidence_url": "https://jasmineandolivetrees.com/products/light",
+   "reason": "filed under the wrong brand: the crawl gave In The Trees Jasmine & Olive Trees's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "in-the-trees-prio",
+   "brand": "In The Trees",
+   "name": "Prio",
+   "owner": "Jasmine & Olive Trees",
+   "evidence_url": "https://jasmineandolivetrees.com/products/prio",
+   "reason": "filed under the wrong brand: the crawl gave In The Trees Jasmine & Olive Trees's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "in-the-trees-tour",
+   "brand": "In The Trees",
+   "name": "Tour",
+   "owner": "Jasmine & Olive Trees",
+   "evidence_url": "https://jasmineandolivetrees.com/products/tour",
+   "reason": "filed under the wrong brand: the crawl gave In The Trees Jasmine & Olive Trees's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "in-the-trees-tour-expander",
+   "brand": "In The Trees",
+   "name": "Tour Expander",
+   "owner": "Jasmine & Olive Trees",
+   "evidence_url": "https://jasmineandolivetrees.com/products/tour-expander",
+   "reason": "filed under the wrong brand: the crawl gave In The Trees Jasmine & Olive Trees's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "in-the-trees-traffic",
+   "brand": "In The Trees",
+   "name": "Traffic",
+   "owner": "Jasmine & Olive Trees",
+   "evidence_url": "https://jasmineandolivetrees.com/products/traffic",
+   "reason": "filed under the wrong brand: the crawl gave In The Trees Jasmine & Olive Trees's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "in-the-trees-water",
+   "brand": "In The Trees",
+   "name": "Water",
+   "owner": "Jasmine & Olive Trees",
+   "evidence_url": "https://jasmineandolivetrees.com/products/water",
+   "reason": "filed under the wrong brand: the crawl gave In The Trees Jasmine & Olive Trees's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "instru-radh",
+   "brand": "Instruō",
+   "name": "àradh",
+   "owner": "Instruo",
+   "evidence_url": "https://www.instruomodular.com/product/aradh/",
+   "reason": "filed under the wrong brand: the crawl gave Instruō Instruo's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "instru-t-gh",
+   "brand": "Instruō",
+   "name": "tágh",
+   "owner": "Instruo",
+   "evidence_url": "https://www.instruomodular.com/product/tagh-2/",
+   "reason": "filed under the wrong brand: the crawl gave Instruō Instruo's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "mad-rooster-lab-meng-qi-dplpg-dual-passive-low-pass-gate",
+   "brand": "Mad Rooster Lab",
+   "name": "Meng Qi DPLPG Dual Passive Low Pass Gate",
+   "owner": null,
+   "evidence_url": "https://modularsynthlab.com/product/meng-qi-dplpg-dual-passive-low-pass-gate/",
+   "reason": "filed under the wrong brand: https://modularsynthlab.com/ is not Mad Rooster Lab's site",
+   "kept_as": "not re-added: no maker owns that host"
+  },
+  {
+   "slug": "mad-rooster-lab-soma-ether-v2",
+   "brand": "Mad Rooster Lab",
+   "name": "SOMA ETHER V2",
+   "owner": null,
+   "evidence_url": "https://modularsynthlab.com/product/soma-ether-v2/",
+   "reason": "filed under the wrong brand: https://modularsynthlab.com/ is not Mad Rooster Lab's site",
+   "kept_as": "not re-added: no maker owns that host"
+  },
+  {
+   "slug": "olitronik-lab-meng-qi-dplpg-dual-passive-low-pass-gate",
+   "brand": "Olitronik_lab",
+   "name": "Meng Qi DPLPG Dual Passive Low Pass Gate",
+   "owner": null,
+   "evidence_url": "https://modularsynthlab.com/product/meng-qi-dplpg-dual-passive-low-pass-gate/",
+   "reason": "filed under the wrong brand: https://modularsynthlab.com/ is not Olitronik_lab's site",
+   "kept_as": "not re-added: no maker owns that host"
+  },
+  {
+   "slug": "swizzle-circuits-akemie-s-castle",
+   "brand": "Swizzle Circuits",
+   "name": "Akemie's Castle",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm011",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-akemie-s-taiko",
+   "brand": "Swizzle Circuits",
+   "name": "Akemie's Taiko",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm015",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-asq-1",
+   "brand": "Swizzle Circuits",
+   "name": "ASQ-1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm035",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-axon-1",
+   "brand": "Swizzle Circuits",
+   "name": "AXON-1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm022-ex",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-axon-2",
+   "brand": "Swizzle Circuits",
+   "name": "AXON-2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm040",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-beast-s-chalkboard",
+   "brand": "Swizzle Circuits",
+   "name": "Beast's Chalkboard",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm002",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-boss-bow-two",
+   "brand": "Swizzle Circuits",
+   "name": "BOSS BOW TWO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm027",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-cizzle",
+   "brand": "Swizzle Circuits",
+   "name": "CIZZLE",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm042",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-fmco",
+   "brand": "Swizzle Circuits",
+   "name": "FMco",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm045",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-hpo",
+   "brand": "Swizzle Circuits",
+   "name": "HPO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm019",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-jumble-henge",
+   "brand": "Swizzle Circuits",
+   "name": "Jumble Henge",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm029",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-mcfx2",
+   "brand": "Swizzle Circuits",
+   "name": "MCFx2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm030",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-mco",
+   "brand": "Swizzle Circuits",
+   "name": "MCO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm046",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-mega-milton",
+   "brand": "Swizzle Circuits",
+   "name": "MEGA MILTON",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm037",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-mega-tang",
+   "brand": "Swizzle Circuits",
+   "name": "MEGA-TANG",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm033",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-mfd",
+   "brand": "Swizzle Circuits",
+   "name": "MFD",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm044",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-mfx",
+   "brand": "Swizzle Circuits",
+   "name": "MFX",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm032",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-mmmidi",
+   "brand": "Swizzle Circuits",
+   "name": "mmMidi",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm023",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-mmt",
+   "brand": "Swizzle Circuits",
+   "name": "mmT",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm023-ex1",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-mt-ex1",
+   "brand": "Swizzle Circuits",
+   "name": "MT-EX1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm033-ex1",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-mt-ex2",
+   "brand": "Swizzle Circuits",
+   "name": "MT-EX2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm033-ex2",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-mum-m8",
+   "brand": "Swizzle Circuits",
+   "name": "MUM M8",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm018",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-o-a-x2",
+   "brand": "Swizzle Circuits",
+   "name": "O/A/x2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm010",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-pamela-s-disco",
+   "brand": "Swizzle Circuits",
+   "name": "Pamela's Disco",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm049",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-passive-mult",
+   "brand": "Swizzle Circuits",
+   "name": "Passive Mult",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm026",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-pe-1",
+   "brand": "Swizzle Circuits",
+   "name": "PE-1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm016",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-pip-filter",
+   "brand": "Swizzle Circuits",
+   "name": "Pip Filter",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm039",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-pip-lfo",
+   "brand": "Swizzle Circuits",
+   "name": "Pip LFO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm048",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-pip-slope",
+   "brand": "Swizzle Circuits",
+   "name": "Pip Slope",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm028",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-ppexp1",
+   "brand": "Swizzle Circuits",
+   "name": "PPEXP1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm034-ex1",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-ppexp2",
+   "brand": "Swizzle Circuits",
+   "name": "PPEXP2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm034-ex2",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-quaid-gigaslope",
+   "brand": "Swizzle Circuits",
+   "name": "QUAID GIGASLOPE",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm047",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "not re-added: no page for it in the current crawl"
+  },
+  {
+   "slug": "swizzle-circuits-quaid-megaslope",
+   "brand": "Swizzle Circuits",
+   "name": "Quaid Megaslope",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm020",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-s-b-g",
+   "brand": "Swizzle Circuits",
+   "name": "S.B.G",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm006",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-s-b-g-pro",
+   "brand": "Swizzle Circuits",
+   "name": "S.B.G-PRO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm041",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-squid-salmple",
+   "brand": "Swizzle Circuits",
+   "name": "SQUID SALMPLE",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm022",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-stem-ripper",
+   "brand": "Swizzle Circuits",
+   "name": "Stem Ripper",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm050",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-stem-ripper-thru",
+   "brand": "Swizzle Circuits",
+   "name": "Stem Ripper Thru",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm050-ex1",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-stereo-sum",
+   "brand": "Swizzle Circuits",
+   "name": "STEREO SUM",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm038",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-tangle-quartet",
+   "brand": "Swizzle Circuits",
+   "name": "Tangle Quartet",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm009",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-tazm-o",
+   "brand": "Swizzle Circuits",
+   "name": "TAZM-O",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm036",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-tyso-daiko",
+   "brand": "Swizzle Circuits",
+   "name": "Tyso Daiko",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm031",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "swizzle-circuits-with-mixer",
+   "brand": "Swizzle Circuits",
+   "name": "With Mixer",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm051",
+   "reason": "filed under the wrong brand: the crawl gave Swizzle Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "vintage-synth-lab-delay-echo-effect-diy-kit",
+   "brand": "Vintage Synth Lab",
+   "name": "Delay/Echo effect, DIY kit",
+   "owner": null,
+   "evidence_url": "https://modularsynthlab.com/product/42/",
+   "reason": "filed under the wrong brand: https://modularsynthlab.com/ is not Vintage Synth Lab's site",
+   "kept_as": "not re-added: no maker owns that host"
+  },
+  {
+   "slug": "vintage-synth-lab-meng-qi-dplpg-dual-passive-low-pass-gate",
+   "brand": "Vintage Synth Lab",
+   "name": "Meng Qi DPLPG Dual Passive Low Pass Gate",
+   "owner": null,
+   "evidence_url": "https://modularsynthlab.com/product/meng-qi-dplpg-dual-passive-low-pass-gate/",
+   "reason": "filed under the wrong brand: https://modularsynthlab.com/ is not Vintage Synth Lab's site",
+   "kept_as": "not re-added: no maker owns that host"
+  },
+  {
+   "slug": "warped-circuits-akemie-s-castle",
+   "brand": "Warped Circuits",
+   "name": "Akemie's Castle",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm011",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-akemie-s-taiko",
+   "brand": "Warped Circuits",
+   "name": "Akemie's Taiko",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm015",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-asq-1",
+   "brand": "Warped Circuits",
+   "name": "ASQ-1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm035",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-axon-1",
+   "brand": "Warped Circuits",
+   "name": "AXON-1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm022-ex",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-axon-2",
+   "brand": "Warped Circuits",
+   "name": "AXON-2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm040",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-beast-s-chalkboard",
+   "brand": "Warped Circuits",
+   "name": "Beast's Chalkboard",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm002",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-boss-bow-two",
+   "brand": "Warped Circuits",
+   "name": "BOSS BOW TWO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm027",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-cizzle",
+   "brand": "Warped Circuits",
+   "name": "CIZZLE",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm042",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-fmco",
+   "brand": "Warped Circuits",
+   "name": "FMco",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm045",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-hpo",
+   "brand": "Warped Circuits",
+   "name": "HPO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm019",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-jumble-henge",
+   "brand": "Warped Circuits",
+   "name": "Jumble Henge",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm029",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-mcfx2",
+   "brand": "Warped Circuits",
+   "name": "MCFx2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm030",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-mco",
+   "brand": "Warped Circuits",
+   "name": "MCO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm046",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-mega-milton",
+   "brand": "Warped Circuits",
+   "name": "MEGA MILTON",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm037",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-mega-tang",
+   "brand": "Warped Circuits",
+   "name": "MEGA-TANG",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm033",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-mfd",
+   "brand": "Warped Circuits",
+   "name": "MFD",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm044",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-mfx",
+   "brand": "Warped Circuits",
+   "name": "MFX",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm032",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-mmmidi",
+   "brand": "Warped Circuits",
+   "name": "mmMidi",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm023",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-mmt",
+   "brand": "Warped Circuits",
+   "name": "mmT",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm023-ex1",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-mt-ex1",
+   "brand": "Warped Circuits",
+   "name": "MT-EX1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm033-ex1",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-mt-ex2",
+   "brand": "Warped Circuits",
+   "name": "MT-EX2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm033-ex2",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-mum-m8",
+   "brand": "Warped Circuits",
+   "name": "MUM M8",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm018",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-o-a-x2",
+   "brand": "Warped Circuits",
+   "name": "O/A/x2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm010",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-pamela-s-disco",
+   "brand": "Warped Circuits",
+   "name": "Pamela's Disco",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm049",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-passive-mult",
+   "brand": "Warped Circuits",
+   "name": "Passive Mult",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm026",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-pe-1",
+   "brand": "Warped Circuits",
+   "name": "PE-1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm016",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-pip-filter",
+   "brand": "Warped Circuits",
+   "name": "Pip Filter",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm039",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-pip-lfo",
+   "brand": "Warped Circuits",
+   "name": "Pip LFO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm048",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-pip-slope",
+   "brand": "Warped Circuits",
+   "name": "Pip Slope",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm028",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-ppexp1",
+   "brand": "Warped Circuits",
+   "name": "PPEXP1",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm034-ex1",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-ppexp2",
+   "brand": "Warped Circuits",
+   "name": "PPEXP2",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm034-ex2",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-quaid-megaslope",
+   "brand": "Warped Circuits",
+   "name": "Quaid Megaslope",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm020",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-s-b-g",
+   "brand": "Warped Circuits",
+   "name": "S.B.G",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm006",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-s-b-g-pro",
+   "brand": "Warped Circuits",
+   "name": "S.B.G-PRO",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm041",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-squid-salmple",
+   "brand": "Warped Circuits",
+   "name": "SQUID SALMPLE",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm022",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-stem-ripper",
+   "brand": "Warped Circuits",
+   "name": "Stem Ripper",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm050",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-stem-ripper-thru",
+   "brand": "Warped Circuits",
+   "name": "Stem Ripper Thru",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm050-ex1",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-stereo-sum",
+   "brand": "Warped Circuits",
+   "name": "STEREO SUM",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm038",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-tangle-quartet",
+   "brand": "Warped Circuits",
+   "name": "Tangle Quartet",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm009",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-tazm-o",
+   "brand": "Warped Circuits",
+   "name": "TAZM-O",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm036",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-tyso-daiko",
+   "brand": "Warped Circuits",
+   "name": "Tyso Daiko",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm031",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  },
+  {
+   "slug": "warped-circuits-with-mixer",
+   "brand": "Warped Circuits",
+   "name": "With Mixer",
+   "owner": "ALM Busy Circuits",
+   "evidence_url": "https://busycircuits.com/products/alm051",
+   "reason": "filed under the wrong brand: the crawl gave Warped Circuits ALM Busy Circuits's homepage",
+   "kept_as": "existing row under owner"
+  }
+ ]
+}

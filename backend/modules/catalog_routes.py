@@ -20,6 +20,10 @@ from modules.models import Module
 
 router = APIRouter()
 
+# Rows the loader's retirement manifest tombstoned are hidden from browse, search,
+# counts and materialization; a lookup by slug still answers.
+LIVE = ModuleCatalog.tombstoned_at.is_(None)
+
 
 @router.get("/catalog")
 def browse_module_catalog(
@@ -63,7 +67,7 @@ def browse_module_catalog(
     query = db.query(ModuleCatalog)
 
     # Apply filters
-    filters = []
+    filters = [LIVE]
 
     if search:
         search_term = f"%{search}%"
@@ -120,6 +124,7 @@ def list_catalog_brands(db: Session = Depends(get_db)):
 
     brands = (
         db.query(ModuleCatalog.brand, func.count(ModuleCatalog.id).label("count"))
+        .filter(LIVE)
         .group_by(ModuleCatalog.brand)
         .order_by(ModuleCatalog.brand)
         .all()
@@ -138,6 +143,7 @@ def list_catalog_categories(db: Session = Depends(get_db)):
 
     categories = (
         db.query(ModuleCatalog.category, func.count(ModuleCatalog.id).label("count"))
+        .filter(LIVE)
         .group_by(ModuleCatalog.category)
         .order_by(func.count(ModuleCatalog.id).desc())
         .all()
@@ -154,23 +160,28 @@ def get_catalog_stats(db: Session = Depends(get_db)):
     """Get catalog statistics including HP coverage for research seeds."""
     from sqlalchemy import func
 
-    total_modules = db.query(func.count(ModuleCatalog.id)).scalar() or 0
-    total_brands = db.query(func.count(func.distinct(ModuleCatalog.brand))).scalar() or 0
-    total_categories = db.query(func.count(func.distinct(ModuleCatalog.category))).scalar() or 0
+    total_modules = db.query(func.count(ModuleCatalog.id)).filter(LIVE).scalar() or 0
+    total_brands = db.query(func.count(func.distinct(ModuleCatalog.brand))).filter(LIVE).scalar() or 0
+    total_categories = (
+        db.query(func.count(func.distinct(ModuleCatalog.category))).filter(LIVE).scalar() or 0
+    )
 
     # HP distribution (among known only)
-    avg_hp = db.query(func.avg(ModuleCatalog.hp)).scalar()
-    min_hp = db.query(func.min(ModuleCatalog.hp)).scalar()
-    max_hp = db.query(func.max(ModuleCatalog.hp)).scalar()
+    avg_hp = db.query(func.avg(ModuleCatalog.hp)).filter(LIVE).scalar()
+    min_hp = db.query(func.min(ModuleCatalog.hp)).filter(LIVE).scalar()
+    max_hp = db.query(func.max(ModuleCatalog.hp)).filter(LIVE).scalar()
     hp_known = (
-        db.query(func.count(ModuleCatalog.id)).filter(ModuleCatalog.hp.isnot(None)).scalar() or 0
+        db.query(func.count(ModuleCatalog.id))
+        .filter(LIVE, ModuleCatalog.hp.isnot(None))
+        .scalar()
+        or 0
     )
     hp_unknown = total_modules - hp_known
 
     # Availability
     available_count = (
         db.query(func.count(ModuleCatalog.id))
-        .filter(ModuleCatalog.is_available == "available")
+        .filter(LIVE, ModuleCatalog.is_available == "available")
         .scalar()
         or 0
     )
@@ -179,6 +190,7 @@ def get_catalog_stats(db: Session = Depends(get_db)):
 
     source_rows = (
         db.query(ModuleCatalog.source, func.count(ModuleCatalog.id).label("count"))
+        .filter(LIVE)
         .group_by(ModuleCatalog.source)
         .order_by(func.count(ModuleCatalog.id).desc())
         .all()
@@ -217,6 +229,11 @@ def materialize_catalog_entry(db: Session, slug: str) -> Dict[str, Any]:
     entry = db.query(ModuleCatalog).filter(ModuleCatalog.slug == slug).first()
     if not entry:
         raise HTTPException(status_code=404, detail=f"Module '{slug}' not found in catalog")
+    if entry.tombstoned_at is not None:
+        raise HTTPException(
+            status_code=409,
+            detail={"code": "CATALOG_ROW_TOMBSTONED", "reason": entry.tombstone_reason},
+        )
 
     existing = (
         db.query(Module)
@@ -309,7 +326,7 @@ def materialize_catalog_batch(
     Default: only HP-known rows (placeable). Does not invent power/depth/I/O.
     Continues on per-row failures so one bad slug cannot abort the batch.
     """
-    query = db.query(ModuleCatalog).order_by(
+    query = db.query(ModuleCatalog).filter(LIVE).order_by(
         ModuleCatalog.brand.asc(), ModuleCatalog.name.asc()
     )
     if brand:

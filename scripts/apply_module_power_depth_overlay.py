@@ -4,10 +4,18 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
+
+
+def stored_ma(value: object) -> int:
+    """A published draw as the INTEGER column keeps it: half away from zero, so 3.5 mA is
+    4, the same rule the catalog loader uses (population._as_stored)."""
+    number = float(value)
+    return int(math.copysign(math.floor(abs(number) + 0.5), number))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -63,13 +71,13 @@ def main(argv: list[str] | None = None) -> int:
             params = {"id": row["id"]}
             if row["power_12v_ma"] is None and e.get("power_12v_ma") is not None:
                 sets.append("power_12v_ma=:p12")
-                params["p12"] = int(e["power_12v_ma"])
+                params["p12"] = stored_ma(e["power_12v_ma"])
             if row["power_neg12v_ma"] is None and e.get("power_neg12v_ma") is not None:
                 sets.append("power_neg12v_ma=:pn12")
-                params["pn12"] = int(e["power_neg12v_ma"])
+                params["pn12"] = stored_ma(e["power_neg12v_ma"])
             if row["power_5v_ma"] is None and e.get("power_5v_ma") is not None:
                 sets.append("power_5v_ma=:p5")
-                params["p5"] = int(e["power_5v_ma"])
+                params["p5"] = stored_ma(e["power_5v_ma"])
             if row["depth_mm"] is None and e.get("depth_mm") is not None:
                 sets.append("depth_mm=:d")
                 params["d"] = float(e["depth_mm"])

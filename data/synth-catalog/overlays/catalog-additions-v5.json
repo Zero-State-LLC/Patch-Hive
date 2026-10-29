@@ -1,0 +1,147 @@
+{
+ "dataset_version": "catalog-additions-v5",
+ "generated_from": "hermes-research/maker-crawl-v2.json via scripts/build_reattribution.py",
+ "decided": "2026-10-28 (owner: retire every misattributed row and re-add the modules only they held)",
+ "policy": "maker's own pages only; values regex-parsed or verbatim; insert-if-absent / fill-null",
+ "count": 7,
+ "rows": [
+  {
+   "brand": "Noise Engineering",
+   "name": "Basimilus Iteritas",
+   "hp": 12,
+   "category": "VCO",
+   "manufacturer_url": "https://noiseengineering.us/products/basimilus-iteritas-legacy/",
+   "image_url": "https://cdn.shopify.com/s/files/1/0552/0923/0485/products/basimilus-iteritas-1024x2048.png?v=1676502094",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://noiseengineering.us/products/basimilus-iteritas-legacy/",
+   "tags": [
+    "drum",
+    "bass",
+    "noise",
+    "oscillator"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "af6270e017c2d74b895957f60eab00fc4a3a30bbd73ce9d039c9ccd24934cea2",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Noise Engineering",
+   "name": "Plus Legio",
+   "hp": 6,
+   "category": "VCO",
+   "manufacturer_url": "https://noiseengineering.us/products/plus-legio/",
+   "image_url": "https://noiseengineering.us/panels/plus_legio.webp",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://noiseengineering.us/products/plus-legio/",
+   "tags": [
+    "synth voice",
+    "additive",
+    "envelope",
+    "modulation"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "a897fda36034dc78d53a007e68cc31f14bd2fd4a8b691a8eca6083c3bf5b9f43",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Infinite Machinery",
+   "name": "PMBP",
+   "hp": 8,
+   "category": null,
+   "manufacturer_url": "https://www.infinitemachinery.com/pmbp",
+   "image_url": "https://www.infinitemachinery.com/images/thumbs/0000200_pmbp_550.png",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://www.infinitemachinery.com/pmbp",
+   "tags": [
+    "power",
+    "distribution",
+    "DIY",
+    "external"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "6090bf9c17231a9a49032f14f4ac434fa21aff593b38715766ee34a794772ada",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Noise Engineering",
+   "name": "Reso Legio",
+   "hp": 6,
+   "category": "FX",
+   "manufacturer_url": "https://noiseengineering.us/products/reso-legio/",
+   "image_url": "https://noiseengineering.us/panels/reso_legio.webp",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://noiseengineering.us/products/reso-legio/",
+   "tags": [
+    "resonator",
+    "chorus",
+    "stereo"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "4445dbe5738a5c0aa83d9a1d0fcef43d1ab2ea967527e6fc27077aeeb9bcafcb",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Noise Engineering",
+   "name": "Sinc Legio",
+   "hp": 6,
+   "category": "VCO",
+   "manufacturer_url": "https://noiseengineering.us/products/sinc-legio/",
+   "image_url": "https://noiseengineering.us/panels/sinc_legio.webp",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://noiseengineering.us/products/sinc-legio/",
+   "tags": [
+    "oscillator",
+    "phase modulation",
+    "wavefolder",
+    "stereo"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "1104f4caabb3141f2a9e1a137deb421d5f8af8442d58d95935e95c9ece2c5c44",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Infinite Machinery",
+   "name": "Stereo Mixer",
+   "hp": 12,
+   "category": "VCA",
+   "manufacturer_url": "https://www.infinitemachinery.com/stereo-mixer",
+   "image_url": "https://www.infinitemachinery.com/images/thumbs/0000201_stereo-mixer_550.png",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://www.infinitemachinery.com/stereo-mixer",
+   "tags": [
+    "mixer",
+    "stereo",
+    "VCA"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "63d04b8eb0af52ac23a11dd6cc1ce8659fecd2b30dd559bf746f970fcaae6ff5",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Noise Engineering",
+   "name": "Tymp Legio",
+   "hp": 6,
+   "category": "VCO",
+   "manufacturer_url": "https://noiseengineering.us/products/tymp-legio/",
+   "image_url": "https://noiseengineering.us/panels/tymp_legio.webp",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://noiseengineering.us/products/tymp-legio/",
+   "tags": [
+    "drum",
+    "percussion",
+    "voice",
+    "firmware"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "5db8da70fdff7866e8266884df3106ea3b6183d400d418b0fec720814b4d0195",
+   "fetch_method": "cache"
+  }
+ ]
+}

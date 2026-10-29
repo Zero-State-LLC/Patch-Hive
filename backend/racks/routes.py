@@ -21,7 +21,7 @@ from .catalog_compatibility import (
 )
 from .models import Rack, RackModule
 from .schemas import RackCreate, RackListResponse, RackResponse, RackUpdate
-from .validation import validate_rack_configuration
+from .validation import tombstone_note, tombstone_warning, validate_rack_configuration
 
 router = APIRouter()
 
@@ -239,8 +239,13 @@ def build_rack_response(
     # Get modules with details
     rack_modules = db.query(RackModule).filter(RackModule.rack_id == rack.id).all()
     modules_response = []
-    for rm in rack_modules:
+    warnings = list(validation_warnings or [])
+    for index, rm in enumerate(rack_modules):
         module = db.query(Module).filter(Module.id == rm.module_id).first()
+        # A tombstoned module stays placed; every read says so (not only the last write).
+        note = tombstone_note(db, module) if module else None
+        if note:
+            warnings.append(tombstone_warning(index, module, note))
         modules_response.append(
             {
                 "id": rm.id,
@@ -258,6 +263,9 @@ def build_rack_response(
                         "power_neg12v_ma": module.power_neg12v_ma,
                         "power_5v_ma": module.power_5v_ma,
                         "depth_mm": module.depth_mm,
+                        "status": module.status,
+                        "tombstone_reason": note["reason"] if note else None,
+                        "alternatives": note["alternatives"] if note else [],
                     }
                     if module
                     else None
@@ -308,5 +316,5 @@ def build_rack_response(
             else None
         ),
         vote_count=vote_count,
-        validation_warnings=list(validation_warnings or []),
+        validation_warnings=warnings,
     )

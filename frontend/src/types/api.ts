@@ -222,8 +222,12 @@ export interface CompatibilityResponse {
   power_headroom: {
     rail: string;
     case_capacity_ma?: number | null;
+    /** Known draws only: a lower bound when unknown_draw_count > 0. */
     module_draw_ma: number;
+    /** An upper bound when unknown_draw_count > 0. */
     headroom_ma?: number | null;
+    unknown_draw_count?: number;
+    unknown_modules?: string[];
     status: CompatibilityStatus;
     message: string;
   }[];
@@ -259,6 +263,11 @@ export interface RackModule extends RackModuleSpec {
     power_neg12v_ma?: number | null;
     power_5v_ma?: number | null;
     depth_mm?: number | null;
+    /** "tombstoned" when the catalog retired this module; it stays placed. */
+    status?: string;
+    tombstone_reason?: string | null;
+    /** Live modules with the same name under other brands. */
+    alternatives?: { id: number; brand: string; name: string }[];
   };
 }
 
