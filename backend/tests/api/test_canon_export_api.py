@@ -316,3 +316,99 @@ def test_an_export_nothing_will_fulfill_is_refused_before_any_debit(
     balance = client.get("/api/canon/credits/balance", headers=_auth_headers(user)).json()["balance"]
     assert balance == 10
     assert client.get("/api/canon/exports", headers=_auth_headers(user)).json() == []
+
+
+def _webhook_settings(monkeypatch: pytest.MonkeyPatch, *, environment: str, test_mode: bool) -> str:
+    import canon.routes as canon_routes
+
+    secret = "whsec_test_secret_value_1234"
+    monkeypatch.setattr(settings, "stripe_test_mode", test_mode)
+    monkeypatch.setattr(settings, "stripe_webhook_secret", secret)
+    monkeypatch.setattr(settings, "environment", environment)
+    monkeypatch.setattr(settings, "allow_production_payments", False)
+    monkeypatch.setattr(canon_routes, "settings", settings)
+    return secret
+
+
+def test_stripe_webhook_rejects_livemode_in_staging_with_test_mode_off(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Spec 004 T041: live-mode events belong only to production."""
+    import time
+
+    secret = _webhook_settings(monkeypatch, environment="staging", test_mode=False)
+    payload = json.dumps({"id": "evt_live", "type": "charge.succeeded", "livemode": True}).encode()
+    resp = client.post(
+        "/api/canon/webhooks/stripe",
+        content=payload,
+        headers={"Stripe-Signature": _signature(payload, secret, int(time.time()))},
+    )
+    assert resp.status_code == 409, resp.text
+    assert resp.json()["detail"] == "LIVEMODE_EVENT_REJECTED"
+
+
+def test_stripe_webhook_accepts_a_rotated_secret_on_the_second_v1(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Spec 004 T040: the provider sends one v1 per active secret during rotation."""
+    import time
+
+    secret = _webhook_settings(monkeypatch, environment="development", test_mode=True)
+    timestamp = int(time.time())
+    payload = json.dumps({"id": "evt_rot", "type": "charge.succeeded", "livemode": False}).encode()
+    stale = _signature(payload, "whsec_retired_secret_value_99", timestamp).split(",")[1]
+    current = _signature(payload, secret, timestamp)
+    resp = client.post(
+        "/api/canon/webhooks/stripe",
+        content=payload,
+        headers={"Stripe-Signature": current.replace(",", f",{stale},", 1)},
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["duplicate"] is False
+
+
+def test_stripe_webhook_concurrent_duplicate_answers_200_duplicate(
+    client: TestClient, db_session: Session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Spec 004 T040: losing the insert race is a duplicate, not a 500."""
+    import time
+
+    from sqlalchemy import insert
+
+    from canon.contracts import canonical_sha256
+    from canon.models import StripeEventRecordModel
+
+    secret = _webhook_settings(monkeypatch, environment="development", test_mode=True)
+    event = {"id": "evt_race", "type": "charge.succeeded", "livemode": False}
+    payload = json.dumps(event).encode()
+    # The winning delivery commits after this one's lookup missed.
+    db_session.execute(
+        insert(StripeEventRecordModel.__table__).values(
+            stripe_event_id="evt_race",
+            event_type="charge.succeeded",
+            payload_hash=canonical_sha256(event),
+            livemode=False,
+            status="received",
+            received_at=NOW,
+        )
+    )
+    db_session.commit()
+    real_get = db_session.get
+    lookups: list[str] = []
+
+    def racing_get(model, ident, *args, **kwargs):
+        lookups.append(ident)
+        if model is StripeEventRecordModel and len(lookups) == 1:
+            return None
+        return real_get(model, ident, *args, **kwargs)
+
+    monkeypatch.setattr(db_session, "get", racing_get)
+    resp = client.post(
+        "/api/canon/webhooks/stripe",
+        content=payload,
+        headers={"Stripe-Signature": _signature(payload, secret, int(time.time()))},
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["duplicate"] is True
+    assert resp.json()["stripe_event_id"] == "evt_race"
+    assert lookups == ["evt_race", "evt_race"]
