@@ -7,6 +7,7 @@ import { AdminNav } from "./AdminNav";
 export default function AdminRuns() {
   const [runs, setRuns] = useState<AdminRun[]>([]);
   const [rerunRigId, setRerunRigId] = useState("");
+  const [rerunError, setRerunError] = useState("");
 
   const fetchRuns = async () => {
     const response = await adminApi.listRuns();
@@ -48,14 +49,31 @@ export default function AdminRuns() {
             className="button button-primary"
             onClick={async () => {
               if (!rerunRigId) return;
-              await adminApi.rerunRig(Number(rerunRigId));
-              setRerunRigId("");
+              setRerunError("");
+              try {
+                await adminApi.rerunRig(Number(rerunRigId));
+                setRerunRigId("");
+              } catch (err: unknown) {
+                const detail = (err as { response?: { data?: { detail?: unknown } } }).response
+                  ?.data?.detail;
+                const code =
+                  typeof detail === "string"
+                    ? detail
+                    : ((detail as { inventory_gate_code?: string; code?: string } | undefined)
+                        ?.inventory_gate_code ?? (detail as { code?: string } | undefined)?.code);
+                setRerunError(code ? `Rerun refused: ${code}` : "Rerun failed");
+              }
               void fetchRuns();
             }}
           >
             Rerun
           </button>
         </div>
+        {rerunError ? (
+          <p className="status status-danger" role="alert">
+            {rerunError}
+          </p>
+        ) : null}
         {runs.length ? (
           <div style={{ overflowX: "auto" }} className="panel">
             <table className="data-table">
