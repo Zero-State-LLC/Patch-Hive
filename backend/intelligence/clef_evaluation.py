@@ -38,6 +38,7 @@ class LabeledCorpusCase(BaseModel):
     expected_choice: str = Field(min_length=1)
     licensed_source: str = Field(min_length=1)
     packet: DecisionPacket
+    candidate_ids: tuple[str, ...] | None = None
     image_sha256: str | None = None
     notes: str | None = None
 
@@ -69,6 +70,7 @@ class LabeledCorpusCase(BaseModel):
             expected_choice=self.expected_choice,
             licensed_source=self.licensed_source,
             packet=self.packet,
+            candidate_ids=self.candidate_ids,
         )
 
 
@@ -106,7 +108,8 @@ def load_labeled_corpus(path: Path) -> tuple[LabeledCorpusCase, ...]:
 
 def labeled_corpus_sha256(cases: Iterable[LabeledCorpusCase]) -> str:
     rows = sorted(
-        (case.model_dump(mode="json") for case in cases),
+        (case.model_dump(mode="json", exclude={"candidate_ids"} if case.candidate_ids is None else None)
+         for case in cases),
         key=lambda row: row["case_id"],
     )
     payload = json.dumps(

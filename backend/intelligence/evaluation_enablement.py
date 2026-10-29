@@ -34,16 +34,12 @@ from intelligence.clef_evaluation import (
     verify_pinned_receipt,
 )
 from intelligence.contracts import stable_sha256
-from intelligence.evaluation import evaluate
+from intelligence.evaluation import (  # noqa: F401  (re-exported for existing callers)
+    evaluate,
+    structural_false_canonicalizations,
+)
 from intelligence.evaluation_corpus import CorpusFreeze, verify_corpus_freeze
 from intelligence.policy import DecisionPolicy
-from intelligence.resolution_machine import (
-    ResolutionEvent,
-    ResolutionEventType,
-    ResolutionGuard,
-    canon_write_permitted,
-    replay,
-)
 
 BASELINE_RUN_SCHEMA = "patchhive.eval-baseline-run.v1"
 THRESHOLD_PROPOSAL_SCHEMA = "patchhive.eval-threshold-proposal.v1"
@@ -167,44 +163,6 @@ def expected_calibration_error(
     return min(1.0, max(0.0, error))
 
 
-def structural_false_canonicalizations(
-    cases: Iterable[LabeledCorpusCase], policy: DecisionPolicy
-) -> int:
-    """Count cases where the Spec 006 resolution machine would permit a canon write
-    from the policy disposition alone (no user confirmation). Must be zero."""
-    count = 0
-    for case in cases:
-        disposition = policy.evaluate(case.packet).disposition
-        request_id = f"eval:{case.case_id}"
-        machine = replay(
-            request_id,
-            (
-                ResolutionEvent(
-                    ResolutionEventType.SUBMIT_EVIDENCE,
-                    request_id,
-                    ResolutionGuard(evidence_hash_valid=True, candidates_bounded=True),
-                ),
-                ResolutionEvent(
-                    ResolutionEventType.PROVIDER_SUCCESS,
-                    request_id,
-                    ResolutionGuard(packet_schema_valid=True),
-                ),
-                ResolutionEvent(
-                    ResolutionEventType.APPLY_POLICY,
-                    request_id,
-                    ResolutionGuard(policy_version_pinned=True),
-                ),
-                ResolutionEvent(
-                    ResolutionEventType.DISPOSITION,
-                    request_id,
-                    ResolutionGuard(disposition=disposition, routing_target_exists=True),
-                ),
-            ),
-        )
-        count += int(canon_write_permitted(machine))
-    return count
-
-
 def _condition_metrics(
     condition: Literal["baseline", "assisted"],
     provider_id: str,
@@ -212,7 +170,6 @@ def _condition_metrics(
     policy: DecisionPolicy,
 ) -> ConditionMetrics:
     metrics = evaluate((case.to_evaluation_case() for case in cases), policy)
-    structural = structural_false_canonicalizations(cases, policy)
     return ConditionMetrics(
         condition=condition,
         provider_id=provider_id,
@@ -224,7 +181,7 @@ def _condition_metrics(
         abstention_rate=metrics.abstention_rate,
         review_rate=metrics.review_rate,
         escalation_rate=metrics.escalation_rate,
-        false_canonicalization_count=metrics.false_canonicalization_count + structural,
+        false_canonicalization_count=metrics.false_canonicalization_count,
         modality_counts={
             "text": sum(1 for case in cases if case.modality is Modality.text),
             "vision": sum(1 for case in cases if case.modality is Modality.vision),

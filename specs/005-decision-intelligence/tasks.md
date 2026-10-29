@@ -47,7 +47,7 @@ From [research.md](research.md). Effort in brackets.
   - depends_on: [T050c3, T081]
 - [ ] T083 Check idempotency before the provider call: store `idempotency_key` with a unique `(request_id, idempotency_key)` index, and set `evidence_hash` to a SHA-256 of the retained evidence packet and image (R5) [M].
   - depends_on: [T082]
-- [ ] T084 Pass the choice request into evaluation so the candidate check runs, and replace the hardcoded `false_canonicalization_count = 0` with the structural count (R4) [S–M].
+- [x] T084 Pass the choice request into evaluation so the candidate check runs, and replace the hardcoded `false_canonicalization_count = 0` with the structural count (R4) [S–M]. Done 2026-10-29: cases carry optional `candidate_ids`; `evaluate` builds the request and counts the resolution-machine replay. Cases without `candidate_ids` skip the candidate check.
   - depends_on: [T060]
 - [ ] T085 Name one bounded routing target (human review) in settings and pass it to the guarded resolution (R6) [S].
   - depends_on: [T082]
