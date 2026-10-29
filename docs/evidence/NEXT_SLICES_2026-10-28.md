@@ -1,5 +1,7 @@
 # Next slices (2026-10-28)
 
+**Status 2026-10-29:** A1 (#118), A2 (#119), A3 (#121), A4 (#122) and A5 (#123) are done and deployed. Also done: a second retirement (#120), C2 (seed scripts deleted, #124) and C1 (reviewed corrections, #125, in review). C3–C6 wait on the owner; see [research.md](../../specs/003-catalog-dataset-pipeline/research.md).
+
 Planned after #116. Staging and production both run main (`c59b2db`) and hold the same catalog: 3,916 visible modules from 364 brands. Each slice is one PR (or one operator task) and is on [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8). Order is the recommended order within each group.
 
 ## A. Engineering, no decision needed

@@ -2,7 +2,10 @@
 
 Research from a read-only pass over the code and specs, for decisions that need the owner. Each has a recommendation; the matching cards are on [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8) under `[decision]`. Settled since the research: module and case writes are admin-only (#79), users own their racks (#80), catalog rows are retired by tombstone (#116, decision 2), and the Products page reads the module catalog (#114, the registry half of decision 4). Updated 2026-10-28 evening.
 
-## 1. Unknown power draws count as 0 mA
+## 1. Unknown power draws count as 0 mA — fixed (#118)
+
+**Fixed 2026-10-29 (#118).** Per-rail unknowns, a NULL +5V counts as unknown, one rounding rule. Jumper-dependent draws are still open: spec 003 research R5, task T034.
+
 
 This is a bug, so it does not wait on a decision; it is a `[api]` card in Ready.
 
@@ -29,7 +32,10 @@ The research below is kept for the record.
 
 **Recommendation:** a `retire` loader action that archives the old values and sets `status = tombstoned`, `is_available = retired`; browse hides retired rows by default, materialize skips them, validation warns on existing placements.
 
-## 3. Correcting a wrong `modules.hp` (Sovage CHICANE: stored 14, true 4)
+## 3. Correcting a wrong `modules.hp` (Sovage CHICANE: stored 14, true 4) — decided
+
+**Decided 2026-10-29 (spec 003 D4, FR-038; #125).** A `correct` provenance action archives the old value and writes a new one cited to a maker page, only while the stored value is `only_if_value`. An HP correction lifts the FR-035 block. First use: CHICANE 14 → 4. The research below is kept for the record.
+
 
 Nothing in the loader or admin tools can change `modules.hp` after insert. The FR-035 placement block lifts only when `needs_reverify` is false, and nothing sets it back.
 
