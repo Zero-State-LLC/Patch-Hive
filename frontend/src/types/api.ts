@@ -222,8 +222,12 @@ export interface CompatibilityResponse {
   power_headroom: {
     rail: string;
     case_capacity_ma?: number | null;
+    /** Known draws only: a lower bound when unknown_draw_count > 0. */
     module_draw_ma: number;
+    /** An upper bound when unknown_draw_count > 0. */
     headroom_ma?: number | null;
+    unknown_draw_count?: number;
+    unknown_modules?: string[];
     status: CompatibilityStatus;
     message: string;
   }[];

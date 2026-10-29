@@ -101,3 +101,66 @@ def test_empty_modules_ok(db_session: Session):
     assert ok
     assert errors == []
     assert warnings == []
+
+
+# --- unknown draws per rail (spec 003 FR-022: unknown is never 0) -----------------
+
+
+def _partial(db: Session, *, name: str, p12=None, n12=None, p5=None) -> Module:
+    m = Module(
+        brand="T", name=name, hp=4, module_type="UTIL",
+        power_12v_ma=p12, power_neg12v_ma=n12, power_5v_ma=p5,
+        source="test", source_reference="t",
+    )
+    db.add(m)
+    db.commit()
+    db.refresh(m)
+    return m
+
+
+def _place(*mods: Module) -> list[RackModuleSpec]:
+    return [RackModuleSpec(module_id=m.id, row_index=0, start_hp=i * 4) for i, m in enumerate(mods)]
+
+
+def _codes(items) -> list[tuple[str, str | None]]:
+    return [((i.details or {}).get("code"), (i.details or {}).get("rail")) for i in items]
+
+
+def test_a_known_rail_with_unknown_draws_is_incomplete(db_session: Session):
+    case = _case(db_session, power_12v_ma=500, power_neg12v_ma=500, power_5v_ma=100)
+    known = _partial(db_session, name="Known", p12=60, n12=20, p5=0)
+    no_neg = _partial(db_session, name="No -12", p12=40)
+    ok, errors, warnings = validate_rack_configuration(db_session, case.id, _place(known, no_neg))
+    assert ok and errors == []
+    assert _codes(warnings) == [("POWER_RAIL_INCOMPLETE", "-12V"), ("POWER_RAIL_INCOMPLETE", "+5V")]
+    neg = warnings[0].details
+    assert neg["known_draw_ma"] == 20 and neg["unknown_draw_count"] == 1
+    assert neg["unknown_modules"] == ["No -12"]
+    assert "at least 20mA of 500mA, plus 1 module with unknown draw" in warnings[0].message
+
+
+def test_known_draws_over_capacity_stay_an_error_whatever_is_unknown(db_session: Session):
+    case = _case(db_session, power_12v_ma=50, power_neg12v_ma=500, power_5v_ma=0)
+    big = _partial(db_session, name="Big", p12=80, n12=10, p5=0)
+    unknown = _partial(db_session, name="Unknown")
+    ok, errors, warnings = validate_rack_configuration(db_session, case.id, _place(big, unknown))
+    assert not ok
+    assert _codes(errors) == [("POWER_EXCEEDED_12V", None)]
+    # +12V already fails; the other rails are lower bounds.
+    assert _codes(warnings) == [("POWER_RAIL_INCOMPLETE", "-12V"), ("POWER_RAIL_INCOMPLETE", "+5V")]
+
+
+def test_fully_specified_modules_raise_no_power_warning(db_session: Session):
+    case = _case(db_session, power_12v_ma=500, power_neg12v_ma=500, power_5v_ma=100)
+    mod = _partial(db_session, name="Full", p12=60, n12=20, p5=0)
+    ok, errors, warnings = validate_rack_configuration(db_session, case.id, _place(mod))
+    assert ok and errors == [] and warnings == []
+
+
+def test_modules_with_no_known_draw_still_warn_on_an_unspecified_case(db_session: Session):
+    case = _case(db_session, power_12v_ma=None, power_neg12v_ma=None, power_5v_ma=None)
+    mod = _partial(db_session, name="Blank")
+    ok, errors, warnings = validate_rack_configuration(db_session, case.id, _place(mod))
+    assert ok
+    assert _codes(warnings) == [("POWER_UNSPECIFIED", None)]
+    assert warnings[0].details["unknown_draw_count"] == {"+12V": 1, "-12V": 1, "+5V": 1}
