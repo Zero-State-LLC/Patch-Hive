@@ -61,6 +61,8 @@ Settled: maker pages and manuals only, no ModularGrid fetching, robots.txt respe
 
 ## 6. Budget approvals (spec 003 FR-003)
 
+**Update 2026-10-29:** Frap needs no paid pass: its host refuses connections from the crawl network, so it's excluded like Tiptop (spec 003 D7). The one paid run left is T035, a scoped re-fetch of about 45 jumper-dependent pages (estimated 20–50 context.dev credits), which feeds `power_configs` (D8, T034). It waits on an owner cap.
+
 Two runs now wait on a cap: the Frap listing adapter (T026) and rebuilding the maker-crawl page cache, which was deleted on 2026-10-28 with a worktree (T031). The committed crawl results are intact; the cache is only needed to re-parse pages.
 
 Paid runs need a recorded budget approval; caps so far are written into `data/synth-catalog/SCRAPING_ARCHITECTURE.md` by hand. Recommendation: an approvals receipt (who, cap, date) the crawler checks before any paid fetch.

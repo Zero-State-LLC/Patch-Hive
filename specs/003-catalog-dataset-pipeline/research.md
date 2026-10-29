@@ -38,6 +38,8 @@ Decision research for the open catalog decisions (2026-10-29). Each item gives t
 
 **Recommendation:** owner sets a cap (suggest 80 context.dev credits). Run a free dry run first. Never route around a block (decision note §5).
 
+**Update 2026-10-29:** `frap.tools` resolves (46.252.150.74) but accepts no TCP connection on 80 or 443 from the crawl network [OBSERVED: curl and nc, 2026-10-29]. That is a refusal at the network level. A paid renderer would reach it from another network, which is routing around it. **Decided (D7):** no paid pass. Frap is excluded like Tiptop until the maker supplies data or access, and T026 closes.
+
 ## R4. Rebuilding the maker-crawl page cache (T031)
 
 **Evidence**
@@ -46,7 +48,9 @@ Decision research for the open catalog decisions (2026-10-29). Each item gives t
 - The full v2 crawl used 2,569 paid fetches: about 1,116 context.dev credits and 33 Firecrawl credits [OBSERVED: receipts/scrape-ledger.json]. A full rebuild would cost about the same.
 - 644 catalog rows still lack a category because their pages had no tags [OBSERVED: #115].
 
-**Recommendation:** don't rebuild on its own. Rebuild only for a change that must re-parse pages, scoped to the brands it needs, and pair it with R3 so one paid pass serves both.
+**Recommendation:** don't rebuild on its own. Rebuild only for a change that must re-parse pages, scoped to the brands it needs.
+
+**Update 2026-10-29:** R3 no longer needs a pass (D7). The one change that needs pages read again is D8 (jumper settings), so a scoped re-fetch is T035: the 4ms modules whose draws were left unknown, plus Dave Jones Design Otool and Velectronic A-Envelope. That's about 46 product pages, an estimated 20–50 context.dev credits at the v2 crawl's rate (about 0.44 credit per call). It waits on an owner cap.
 
 ## R5. Jumper-dependent power (decision note §1)
 
@@ -57,7 +61,9 @@ Decision research for the open catalog decisions (2026-10-29). Each item gives t
 1. A `power_configs` JSON column: one +12/−12/+5 set per setting, each with its source.
 2. Store the worst case per rail. That mixes two settings into a draw neither one has.
 
-**Recommendation:** option 1, as its own spec slice. It needs a migration, a loader action and UI to pick a setting. Not started until the owner confirms the schema.
+**Recommendation:** option 1, as its own spec slice. It needs a migration, a loader action and UI to pick a setting.
+
+**Decided (D8, 2026-10-29):** option 1. Not built yet: the committed crawl keeps one value per page, so there's nothing to load until T035 reads the settings from the maker pages.
 
 ## R6. Spec confirmations (001–004 T001)
 

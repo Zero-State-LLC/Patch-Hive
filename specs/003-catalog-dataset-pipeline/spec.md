@@ -19,12 +19,14 @@ Recorded after the T001 review. These are confirmed and override the `[INFERRED]
 
 ## Owner decisions (2026-10-28)
 
-D3 and D6 were confirmed by the owner during the 2026-10-28 catalog work (#116, #119, #120). D4 and D5 follow the recommendations in [research.md](research.md), adopted when the owner asked on 2026-10-29 for the open decisions to be researched and implemented. All four override the `[INFERRED]` text below where they differ.
+D3 and D6 were confirmed by the owner during the 2026-10-28 catalog work (#116, #119, #120). D4, D5, D7 and D8 follow the recommendations in [research.md](research.md), adopted when the owner asked on 2026-10-29 for the open decisions to be researched and handled as recommended. All override the `[INFERRED]` text below where they differ.
 
 - **D3 Retire, never delete.** A catalog row that is wrong (filed under another maker's brand, or not a module) is tombstoned through a committed retirement manifest that names each row, its reason and its evidence. Tombstoned rows leave browse, search and counts, stay readable by slug, and are never materialized (FR-036). A rack that already holds one is warned, not changed.
 - **D4 Reviewed corrections may overwrite.** A stored value that a maker page shows to be wrong may be replaced only through a committed correction manifest. Each entry names the wrong value it replaces (`only_if_value`), the new value, and the maker page that states it. The old value is archived first (FR-038). This relaxes the earlier rule that an admitted non-null HP is never overwritten.
 - **D5 One loader.** The catalog loader (`data/synth-catalog/population.py`) is the only writer of catalog rows. `seed_catalog_from_synth.py` (both copies) is deleted: no automation ran it, it overwrote HP, category and source, and it invented defaults (HP 10, type VCO).
 - **D6 A crawl never takes another maker's homepage.** A brand whose resolved homepage another brand owns is refused before crawling (FR-037).
+- **D7 A refused site stays refused (2026-10-29).** Frap Tools' host accepts no TCP connection from the crawl network (ports 80 and 443, observed 2026-10-29), and Tiptop answers every request with a CAPTCHA. Neither is fetched through a paid renderer or proxy from another network. Both are excluded until the maker supplies data or access (research R3).
+- **D8 Jumper-dependent power is stored per setting (2026-10-29).** A module whose draw depends on a jumper gets one +12 V / −12 V / +5 V set per setting, each with its source page (`power_configs`). The single draw columns stay unknown for it (FR-022). This is not implemented yet: the committed crawl keeps only one value per page, so the settings must be read from the maker pages again under an approved cap (research R4, R5; tasks T034, T035).
 
 ## Sources
 
@@ -433,15 +435,25 @@ Privacy: catalog data is public product specs. Keep any private source material 
 
 ## Open questions
 
-- **NOT_COMPUTABLE: Fetch cost and budget.** The per-batch Firecrawl cost, the budget ceiling, and where budget approval is recorded are not stated in the sources.
+- **PARTLY RESOLVED (2026-10-29): Fetch cost and budget.** Observed cost: the full v2 maker crawl used 2,569 paid fetches, about 1,116 context.dev and 33 Firecrawl credits (`receipts/scrape-ledger.json`); the T026 pass used 10 credits. Caps so far are approved in chat and written into `SCRAPING_ARCHITECTURE.md`. Still open: an approvals receipt the crawler checks before a paid fetch (FR-003).
 - **RESOLVED (D2): Retailer scraping permission.** There is no automated retailer crawling. Retailer values come only from one-off manual lookups.
 - **RESOLVED (D1, D2): Conflict between documents.** Automated fetching is limited to official manufacturer pages and manuals. The ModularGrid-derived seed is a discovery lead, not curated canon.
-- **NOT_COMPUTABLE: Access basis for scraped rows.** Policy lists allowed values, but none is assigned to Firecrawl output.
-- **NOT_COMPUTABLE: Thomann coverage.** The script docstring names Thomann, but the extracted URL patterns show none.
-- **NOT_COMPUTABLE: File conventions.** The schemas and naming for residual-N targets files, `*.filtered.json`, and `overlays/*-vN.json` do not appear in the sources.
-- **NOT_COMPUTABLE: Case pipeline behavior.** `scripts/build_case_catalog_seed.py` content was not in the excerpt, so case pipeline behavior is unconfirmed.
+- **RESOLVED (D2): Access basis for scraped rows.** Maker-page rows carry `access_basis = official_publication`; ModularGrid-derived leads carry `unknown` (FR-033).
+- **RESOLVED (D2): Thomann coverage.** No retailer is crawled; Thomann values come only from one-off manual lookups.
+- **RESOLVED (2026-10-29): File conventions.** Observed in `data/synth-catalog/`:
+  - `overlays/catalog-additions-vN.json` (insert-if-absent rows);
+  - `module-power-depth-vN.json` (fill-null specs);
+  - `module-catalog-hp-vN.json`;
+  - `module-catalog-category-vN.json`;
+  - `catalog-retirements-vN.json` (tombstones);
+  - `maker-review-v1.json` (renames);
+  - `provenance/*.json` (archive-then-null, flag, keep, relabel or correct, one batch each);
+  - `receipts/*.json` (dry-run and apply receipts, the spend ledger).
+
+  Every overlay is versioned, and an applied version is never rewritten (FR-018, FR-036).
+- **RESOLVED (2026-10-29): Case pipeline behavior.** The loader imports `data/cases/seed-v1.json` through `integrations.case_catalog_populator.import_records`: insert-if-absent and fill-null, rejected records counted. The plan hash covers the case writes (FR-020; #103).
 - **NOT_COMPUTABLE: Roadmap targets.** `docs/PRODUCT_DATABASE_COMPLETENESS_ROADMAP.md` content was not in the excerpt. Coverage targets are unknown.
-- **NOT_COMPUTABLE: Brand count.** Sources differ: about 700, 767, and "~700+".
+- **RESOLVED (2026-10-29): Brand count.** Observed on prod: 703 registry manufacturers; 355 brands with live catalog rows after the tombstones.
 - **Seed path.** Confirm that the sealed seed enters at `OVERLAY`, or define a separate entry state.
 - **Verification ritual.** Confirm whether the "3-consecutive scrubbed runs" verification [OBSERVED: data/synth-catalog/PATCHHIVE_INTEGRATION.md] applies to every admission.
 - **Slug dedupe.** Confirm whether catalog dedupe should become `(brand, slug)` to avoid cross-brand collisions.
