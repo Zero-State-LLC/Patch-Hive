@@ -3,14 +3,15 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 const post = vi.fn();
 vi.mock("axios", () => ({ default: { post: (...args: unknown[]) => post(...args) } }));
 
-import { refreshSession, signOut, SESSION_HEADER } from "./session";
-import { useAuthStore } from "./store";
+import { refreshSession, restoreSession, signOut, SESSION_HEADER } from "./session";
+import { SESSION_HINT, useAuthStore } from "./store";
 
 const user = { id: 1, username: "u" } as never;
 
 afterEach(() => {
   post.mockReset();
   useAuthStore.getState().clear();
+  localStorage.removeItem(SESSION_HINT);
 });
 
 describe("refreshSession", () => {
@@ -38,5 +39,44 @@ describe("signOut", () => {
     post.mockRejectedValue(new Error("offline"));
     await expect(signOut()).rejects.toThrow();
     expect(useAuthStore.getState().token).toBeNull();
+  });
+});
+
+describe("session hint", () => {
+  it("is set by a successful renewal and cleared by a refused one", async () => {
+    post.mockResolvedValueOnce({ data: { access_token: "fresh", user } });
+    await refreshSession();
+    expect(localStorage.getItem(SESSION_HINT)).toBe("1");
+
+    post.mockRejectedValueOnce({ response: { status: 401 } });
+    await refreshSession();
+    expect(localStorage.getItem(SESSION_HINT)).toBe("0");
+  });
+
+  it("survives a network error, which says nothing about the cookie", async () => {
+    localStorage.setItem(SESSION_HINT, "1");
+    post.mockRejectedValueOnce(new Error("offline"));
+    await refreshSession();
+    expect(localStorage.getItem(SESSION_HINT)).toBe("1");
+  });
+
+  it("makes a signed-out page load skip the refresh call", async () => {
+    localStorage.setItem(SESSION_HINT, "0");
+    expect(await restoreSession()).toBeNull();
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it("still tries once with no hint (first visit, or a session from before the hint)", async () => {
+    post.mockResolvedValueOnce({ data: { access_token: "fresh", user } });
+    expect(await restoreSession()).toBe("fresh");
+    expect(post).toHaveBeenCalledTimes(1);
+  });
+
+  it("is set by sign-in and cleared by sign-out", async () => {
+    useAuthStore.getState().setAuth(user, "token");
+    expect(localStorage.getItem(SESSION_HINT)).toBe("1");
+    post.mockResolvedValueOnce({});
+    await signOut();
+    expect(localStorage.getItem(SESSION_HINT)).toBe("0");
   });
 });
