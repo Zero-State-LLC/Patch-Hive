@@ -33,15 +33,60 @@ from monetization.models import CreditsLedger  # noqa: E402, F401
 
 FIXTURE_PATH = Path(__file__).resolve().parents[1] / "fixtures" / "golden_demo_seed.json"
 
-# Demo/test-only seeded accounts (Spec 008 T030). These are fixture credentials for
-# local and staging demo hosts, not secrets. The seeder is the single source of
-# truth: staging walkthroughs log in with exactly these and never patch hashes.
+# Demo/test-only seeded accounts (Spec 008 T030). These fixed passwords are public (this
+# repo is public), so they are used only against a local database. A hosted database
+# takes its passwords from PATCHHIVE_DEMO_USER_PASSWORD / PATCHHIVE_DEMO_ADMIN_PASSWORD,
+# and production is never seeded (see demo_passwords). Walkthroughs log in with whatever
+# the seeder returned and never patch hashes.
 DEMO_USER_USERNAME = "golden_demo"
 DEMO_USER_PASSWORD = "demo-pass"
 DEMO_USER_ROLE = "User"
 DEMO_ADMIN_USERNAME = "admin_demo"
 DEMO_ADMIN_PASSWORD = "admin-pass"
 DEMO_ADMIN_ROLE = "Admin"
+
+
+LOCAL_HOSTS = frozenset({"localhost", "127.0.0.1", "::1", "", "db", "postgres"})
+PRODUCTION_ENVIRONMENTS = frozenset({"production", "prod"})
+MIN_HOSTED_PASSWORD = 16
+
+
+class DemoSeedRefused(RuntimeError):
+    """Seeding these accounts here would publish a known login (or touch production)."""
+
+
+def demo_passwords(database_url: str, environment: str | None, env: dict[str, str] | None = None) -> tuple[str, str]:
+    """(user password, admin password) for this target, or DemoSeedRefused.
+
+    Production is never seeded. A local database (localhost, a socket, SQLite, the
+    compose service) uses the fixed demo passwords. Any other host must be declared
+    staging (ENVIRONMENT=staging) and supply both passwords through the environment, at
+    least 16 characters each, never the published ones.
+    """
+    from sqlalchemy.engine import make_url
+
+    env = dict(os.environ if env is None else env)
+    if (environment or "").strip().lower() in PRODUCTION_ENVIRONMENTS:
+        raise DemoSeedRefused("refusing to seed demo accounts in production")
+    url = make_url(database_url)
+    host = (url.host or "").lower()
+    if url.get_backend_name() == "sqlite" or host in LOCAL_HOSTS:
+        return DEMO_USER_PASSWORD, DEMO_ADMIN_PASSWORD
+    # A hosted URL can't tell a staging branch from production, so say which it is.
+    if (environment or "").strip().lower() != "staging":
+        raise DemoSeedRefused(
+            f"refusing to seed demo accounts on {host}: a hosted database is seeded only with ENVIRONMENT=staging"
+        )
+    user_pw = env.get("PATCHHIVE_DEMO_USER_PASSWORD", "")
+    admin_pw = env.get("PATCHHIVE_DEMO_ADMIN_PASSWORD", "")
+    if len(user_pw) < MIN_HOSTED_PASSWORD or len(admin_pw) < MIN_HOSTED_PASSWORD:
+        raise DemoSeedRefused(
+            f"refusing to seed demo accounts on {host}: set PATCHHIVE_DEMO_USER_PASSWORD and "
+            f"PATCHHIVE_DEMO_ADMIN_PASSWORD (at least {MIN_HOSTED_PASSWORD} characters each)"
+        )
+    if user_pw in (DEMO_USER_PASSWORD, DEMO_ADMIN_PASSWORD) or admin_pw in (DEMO_USER_PASSWORD, DEMO_ADMIN_PASSWORD):
+        raise DemoSeedRefused("refusing the published demo passwords on a hosted database")
+    return user_pw, admin_pw
 
 
 @dataclass(frozen=True)
@@ -345,14 +390,21 @@ def _fingerprint_patch(patch: Patch) -> str:
     return sha256(payload.encode()).hexdigest()
 
 
-def seed_golden_demo(db: Session, fixture_path: Path = FIXTURE_PATH) -> SeedResult:
+def seed_golden_demo(
+    db: Session, fixture_path: Path = FIXTURE_PATH, *, environment: str | None = None
+) -> SeedResult:
+    # Checked before any write: never production, never a public password on a hosted DB.
+    user_password, admin_password = demo_passwords(
+        db.get_bind().url.render_as_string(hide_password=False),
+        environment if environment is not None else os.environ.get("ENVIRONMENT"),
+    )
     fixture = _load_fixture(fixture_path)
     _ensure_case(db, fixture)
     _ensure_modules(db, fixture["rig"]["modules"])
 
-    user = _ensure_user(db, DEMO_USER_USERNAME, DEMO_USER_PASSWORD, DEMO_USER_ROLE)
+    user = _ensure_user(db, DEMO_USER_USERNAME, user_password, DEMO_USER_ROLE)
     # Canonical staging admin (avoid username "admin" — acceptance fixtures use that).
-    _ensure_user(db, DEMO_ADMIN_USERNAME, DEMO_ADMIN_PASSWORD, DEMO_ADMIN_ROLE)
+    _ensure_user(db, DEMO_ADMIN_USERNAME, admin_password, DEMO_ADMIN_ROLE)
 
     existing_rack = db.query(Rack).filter(Rack.user_id == user.id).first()
     if existing_rack:
@@ -441,11 +493,12 @@ def seed_golden_demo(db: Session, fixture_path: Path = FIXTURE_PATH) -> SeedResu
     return SeedResult(
         user_id=user.id,
         username=user.username,
-        password=DEMO_USER_PASSWORD,
+        password=user_password,
         rig_id=rack.id,
         run_id=run.id,
         patch_count=len(patches),
         run_fingerprint=run_fingerprint,
+        admin_password=admin_password,
     )
 
 
