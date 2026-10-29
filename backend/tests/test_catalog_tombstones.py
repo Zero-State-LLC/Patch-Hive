@@ -195,3 +195,43 @@ def test_a_tombstoned_row_still_answers_by_slug_but_is_not_materialized(
         materialize_catalog_entry(db_session, "mental-noise-maths")
     assert exc.value.status_code == 409
     assert exc.value.detail["code"] == "CATALOG_ROW_TOMBSTONED"
+
+
+# --- manifest v2 (brands found by the crawl-time guard, spec 003 T030) -------------
+
+
+def test_manifest_v2_retires_only_what_v1_did_not() -> None:
+    v1 = {r["slug"] for r in _load("catalog-retirements-v1.json")["rows"]}
+    v2 = _load("catalog-retirements-v2.json")
+    rows = v2["rows"]
+    assert v2["count"] == len(rows) == len({r["slug"] for r in rows})
+    assert not v1 & {r["slug"] for r in rows}
+    hosts = {
+        "ALM Busy Circuits": "busycircuits.com", "Instruo": "instruomodular.com",
+        "Jasmine & Olive Trees": "jasmineandolivetrees.com", None: "modularsynthlab.com",
+    }
+    for row in rows:
+        assert row["reason"] and ";" not in row["reason"], row
+        assert hosts[row["owner"]] in row["evidence_url"], row
+        assert row["kept_as"] in {
+            "existing row under owner",
+            "not re-added: no maker owns that host",
+            "not re-added: no page for it in the current crawl",
+        }, row
+
+
+def test_manifest_v2_renders_as_safe_sql() -> None:
+    rows = _load("catalog-retirements-v2.json")["rows"]
+    catalog = {r["slug"]: {"brand": r["brand"], "name": r["name"], "hp": None, "category": None, "tombstoned": False} for r in rows}
+    modules = {(r["brand"], r["name"]): {"brand": r["brand"], "name": r["name"], "status": "active"} for r in rows}
+    plan = P.Plan()
+    for row in rows:
+        P._schedule_retirement(plan, catalog, modules, row)
+    assert plan.conflicts == []
+    P.assert_safe_sql(P.render_plan(plan))
+
+
+def test_the_builder_never_rewrites_an_applied_manifest() -> None:
+    import build_reattribution as R
+
+    assert R.main(["--version", "1"]) == 2
