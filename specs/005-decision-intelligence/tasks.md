@@ -41,9 +41,9 @@
 
 From [research.md](research.md). Effort in brackets.
 
-- [ ] T081 Treat an unsupported or invalid packet as a provider failure: ESCALATE with a routing target, else UNRESOLVED, keeping the reason codes; fix the "fail closed (REJECT)" docstring in `evidence/routes.py` (R3) [S].
+- [x] T081 Treat an unsupported or invalid packet as a provider failure: ESCALATE with a routing target, else UNRESOLVED, keeping the reason codes; fix the "fail closed (REJECT)" docstring in `evidence/routes.py` (R3) [S]. Done 2026-10-29 (#135): `UNSUPPORTED_SCHEMA` and an invalid PROVIDER_SUCCESS packet go to ESCALATE when a routing target exists, else UNRESOLVED (`PACKET_SCHEMA_INVALID`); the docstring is fixed.
   - depends_on: [T060a]
-- [ ] T082 Route every provider through `resolve_module_identity_guarded` and use `settings.decision_policy_version`; drop the hardcoded `decision-policy-v1` (R2) [S].
+- [x] T082 Route every provider through `resolve_module_identity_guarded` and use `settings.decision_policy_version`; drop the hardcoded `decision-policy-v1` (R2) [S]. Done 2026-10-29 (#135): `resolve_rack_evidence_decision` always takes the guarded flow, with `settings.decision_policy_version`; the hardcoded path is gone.
   - depends_on: [T050c3, T081]
 - [ ] T083 Check idempotency before the provider call: store `idempotency_key` with a unique `(request_id, idempotency_key)` index, and set `evidence_hash` to a SHA-256 of the retained evidence packet and image (R5) [M].
   - depends_on: [T082]
