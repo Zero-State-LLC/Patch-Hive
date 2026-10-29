@@ -7,7 +7,7 @@ import json
 import math
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Literal, Self
+from typing import Annotated, Any, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -186,10 +186,25 @@ class RigRevision(CanonicalContract):
     created_at: datetime
 
 
+NOT_COMPUTABLE = "NOT_COMPUTABLE"
+
+# A score is a number, or ``NOT_COMPUTABLE`` while its formula is undefined (spec 001 OQ-11).
+MetricScore = Annotated[float, Field(ge=0)] | Literal["NOT_COMPUTABLE"]
+
+
 class RigMetricsPacket(ArtifactContract):
+    # ``rig_id`` and ``category_counts`` are optional so packets sealed before FR-027
+    # (spec 001) still validate; None fields drop out of the canonical hash.
+    rig_id: str | None = None
     module_count: int = Field(ge=0)
+    category_counts: dict[str, int] | None = None
     total_hp: int | None = Field(default=None, ge=0)
-    routing_flex_score: float = Field(ge=0)
+    modulation_budget: MetricScore | None = None
+    routing_flex_score: MetricScore
+    clock_coherence_score: MetricScore | None = None
+    chaos_headroom: MetricScore | None = None
+    learning_gradient_index: MetricScore | None = None
+    performance_density_index: MetricScore | None = None
     confidence_notes: tuple[str, ...] = ()
 
 

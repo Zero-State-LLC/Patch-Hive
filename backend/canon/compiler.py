@@ -212,8 +212,13 @@ def compile_patch(
     nodes: Iterable[PatchNode],
     edges: Iterable[PatchEdge],
     created_at: datetime,
+    title: str | None = None,
 ) -> PatchCompilation:
-    """Compile a complete, byte-stable patch artifact set from normalized inputs."""
+    """Compile a complete, byte-stable patch artifact set from normalized inputs.
+
+    ``title`` names the plan (the patch's own name on the generation path). It is part of
+    the input hash. Without it the plan is titled ``Signal Path <hash>``.
+    """
 
     ordered_nodes = tuple(sorted(nodes, key=lambda node: node.node_id))
     ordered_edges = tuple(sorted(edges, key=lambda edge: edge.edge_id))
@@ -224,6 +229,7 @@ def compile_patch(
         "intent": intent,
         "nodes": ordered_nodes,
         "edges": ordered_edges,
+        **({"title": title} if title is not None else {}),
     }
     input_hash = canonical_sha256(input_payload)
     patch_id = _stable_id("patch", input_hash, GENERATOR_VERSION, seed)
@@ -236,7 +242,7 @@ def compile_patch(
         created_at=created_at,
     )
     graph = PatchGraph(nodes=ordered_nodes, edges=ordered_edges, **common).seal()
-    title = f"Signal Path {input_hash[:8].upper()}"
+    plan_title = title if title is not None else f"Signal Path {input_hash[:8].upper()}"
     phases = ("prep", "threshold", "peak", "release", "seal")
     instructions = (
         "Power down, set levels low, and verify every destination range.",
@@ -269,7 +275,7 @@ def compile_patch(
         created_at=created_at,
     )
     plan = PatchPlan(
-        title=title,
+        title=plan_title,
         intent=intent,
         steps=steps,
         variations=(variation,),

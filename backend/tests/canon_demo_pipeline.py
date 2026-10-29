@@ -1,7 +1,8 @@
-"""Minimal deterministic pipeline: metrics + layouts + compile (CANON_MVP).
+"""Test fixture: a fixed two-module demo rig run through metrics, layouts and compile.
 
-Composes ``runes`` + ``compiler`` for product-path tests. Does not reimplement
-historical VL2 ``patchhive.pipeline.run``.
+Moved out of ``canon`` (spec 001 T030, research R1): generation compiles real racks in
+``patches.routes.run_generation``; this demo rig is test data only. Composes ``runes`` +
+``compiler``. Does not reimplement historical VL2 ``patchhive.pipeline.run``.
 """
 
 from __future__ import annotations

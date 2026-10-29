@@ -38,9 +38,9 @@
   - depends_on: []
 - [x] T032 Read `allow_feedback` (drop patches with a `FEEDBACK_LOOP` finding when false, counted in provenance) and `prefer_simple` (stable sort by cable count before the `max_patches` cut); bump `patch_engine_version` if a golden output changes (FR-013, P1.5; research R2). Done 2026-10-29.
   - depends_on: [T033]
-- [ ] T030 Run `canon.compiler.compile_patch` for each patch that passes validation in `run_generation`, compare it with the dual-write adapter in tests, then store the compiler's plan, report and stage receipts; move the `run_canon_pipeline` demo rig into a test fixture (FR-004, FR-015, FR-016, P5.2; research R1).
+- [x] T030 Run `canon.compiler.compile_patch` for each patch that passes validation in `run_generation`, compare it with the dual-write adapter in tests, then store the compiler's plan, report and stage receipts; move the `run_canon_pipeline` demo rig into a test fixture (FR-004, FR-015, FR-016, P5.2; research R1). Done 2026-10-29: `compile_orm_patch` runs `compile_patch` for each validated patch; the dual-write stores its graph, plan, report, variations and 3 stage receipts per patch (`stage_receipts`); tests compare it with the adapter; the demo rig is `tests/canon_demo_pipeline.py`. Path B still uses the adapter.
   - depends_on: [T032]
-- [ ] T031 Emit a `RigMetricsPacket` per rig revision with `rig_id`, `module_count` and `category_counts`; the six scores are `NOT_COMPUTABLE` until OQ-11 defines them (FR-027; research R1).
+- [x] T031 Emit a `RigMetricsPacket` per rig revision with `rig_id`, `module_count` and `category_counts`; the six scores are `NOT_COMPUTABLE` until OQ-11 defines them (FR-027; research R1). Done 2026-10-29: `canon/rig_metrics.py` stores one packet per rig revision in `rig_metrics_packets` (migration `20261029_rig_metrics_packets`); `total_hp` is added when every width is known.
   - depends_on: [T030]
 - [x] T034 Rig page: show blocking findings for `VALIDATION_FAILED`, keep the inventory hint for `NOT_COMPUTABLE` only, and say "no patch rule fits this rack" for zero patches (frontend `RigDetail.tsx`; research R4). Done 2026-10-29.
   - depends_on: []

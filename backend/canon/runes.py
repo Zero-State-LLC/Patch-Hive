@@ -179,6 +179,9 @@ def suggest_layouts(
 ) -> tuple[SuggestedLayout, ...]:
     """Place modules deterministically without claiming a fit when HP is unknown."""
 
+    score = metrics.routing_flex_score
+    if isinstance(score, str):
+        raise ValueError("routing_flex_score is NOT_COMPUTABLE; layouts cannot be scored")
     placements = tuple(
         LayoutPlacement(instance_id=module.instance_id, row=0, start_hp=module.position)
         for module in rig.modules
@@ -195,7 +198,7 @@ def suggest_layouts(
         layout_id=layout_id,
         label="Stable source order",
         placements=placements,
-        score=metrics.routing_flex_score,
+        score=score,
         confidence=1.0 if metrics.total_hp is not None else 0.5,
         status=(
             EpistemicStatus.confirmed if metrics.total_hp is not None else EpistemicStatus.missing

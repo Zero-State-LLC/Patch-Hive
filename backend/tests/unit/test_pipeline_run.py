@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from canon.pipeline import run_canon_pipeline
+from tests.canon_demo_pipeline import run_canon_pipeline
 
 
 def test_pipeline_bundle() -> None:
