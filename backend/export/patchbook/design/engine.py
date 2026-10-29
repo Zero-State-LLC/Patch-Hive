@@ -596,18 +596,22 @@ def _render_execution_pdf(
     c.drawString(inch, height - inch, "PatchHive PatchBook")
     c.setFont(body_font, 11)
     c.setFillColorRGB(*accent)
-    c.drawString(inch, height - 1.35 * inch, family.cover_subtitle)
+    subtitle_y = height - 1.35 * inch
+    c.drawString(inch, subtitle_y, family.cover_subtitle)
     c.setFillColorRGB(0, 0, 0)
     y_meta = height - 1.7 * inch
     if family.patent_disclaimer:
         # The notice is drawn at the body floor (FR-004). The metadata block starts
-        # below its last wrapped line, so a long notice cannot overlap it.
+        # below its last wrapped line, so a long notice cannot overlap it. Its first
+        # baseline sits one leading plus the subtitle's descent under the subtitle,
+        # so large body sizes clear the subtitle too.
+        notice_leading = max(18.0, body_size * 1.5) if body_size >= 9 else body_size * 1.5
         y_meta = _draw_wrapped(
             c,
             [PATENT_FUTURE_DISCLAIMER],
             "Helvetica",
             body_size,
-            height - 1.55 * inch,
+            subtitle_y - 11 * 0.25 - notice_leading,
             width - 2 * inch,
         )
     _draw_wrapped(

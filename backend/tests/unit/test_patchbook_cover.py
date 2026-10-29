@@ -49,28 +49,31 @@ class _Recorder:
         pass
 
 
-def _recipe() -> ResolvedStyleRecipe:
+def _recipe(min_body: float = 9.5) -> ResolvedStyleRecipe:
     return ResolvedStyleRecipe(
         mode=PatchBookMode.PROFESSIONAL,
         template_family=TemplateFamilyId.PATENT_FUTURE,
         template_family_version="1.0.0",
         seed=1,
         weights=StyleWeights(legibility=95, diagram_literalness=96),
-        constraints=StyleConstraints(book_profile=BookProfile.EXECUTION_PAGE),
+        constraints=StyleConstraints(
+            book_profile=BookProfile.EXECUTION_PAGE, minimum_body_size_pt=min_body
+        ),
         output_profile=OutputProfile.PRINT_PDF,
         resolved_tier="core",
         zero_state_brand_cap=6,
     )
 
 
+@pytest.mark.parametrize("min_body", [9.5, 24.0])
 def test_long_disclaimer_wraps_without_touching_the_metadata(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, min_body: float
 ) -> None:
     recorder = _Recorder()
     monkeypatch.setattr(engine.canvas, "Canvas", lambda *a, **k: recorder)
     monkeypatch.setattr(engine, "normalize_pdf_metadata", lambda b: b)
     monkeypatch.setattr(engine, "PATENT_FUTURE_DISCLAIMER", LONG_NOTICE)
-    recipe = _recipe()
+    recipe = _recipe(min_body)
     family = get_family(recipe.template_family)
     assert family.patent_disclaimer
 
@@ -95,5 +98,12 @@ def test_long_disclaimer_wraps_without_touching_the_metadata(
     lowest_notice = min(d[1] for d in notice)
     highest_meta = max(d[1] for d in meta)
     assert highest_meta < lowest_notice
+    # No vertical overlap, using ascent 0.72 em and descent 0.25 em.
+    size = body_size_pt(recipe)
+    assert size == min_body
+    subtitle_y = next(d[1] for d in cover if d[3] == family.cover_subtitle)
+    highest_notice = max(d[1] for d in notice)
+    assert highest_notice + 0.72 * size < subtitle_y - 0.25 * 11
+    assert highest_meta + 0.72 * size < lowest_notice - 0.25 * size
     # The cover is one page: its text is drawn before the first showPage.
     assert {d[0] for d in cover} == {0}
