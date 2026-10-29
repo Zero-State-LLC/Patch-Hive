@@ -50,7 +50,10 @@ def test_the_migration_extends_the_single_head() -> None:
     # alembic_version.version_num is VARCHAR(32).
     assert len(module.revision) <= 32
     script = ScriptDirectory.from_config(Config(str(BACKEND / "alembic.ini")))
-    assert script.get_heads() == [module.revision]
+    heads = script.get_heads()
+    assert len(heads) == 1
+    # Later migrations may extend the head; this revision must stay on its single line.
+    assert module.revision in {rev.revision for rev in script.iterate_revisions(heads[0], "base")}
 
 
 def test_postgres_upgrade_rejects_update_and_delete(monkeypatch: pytest.MonkeyPatch) -> None:

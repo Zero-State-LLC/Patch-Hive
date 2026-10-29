@@ -393,9 +393,10 @@ class StripeEventRecord(CanonicalContract):
     event_type: str
     payload_hash: str
     livemode: bool
-    status: Literal["received", "processed", "rejected"]
+    status: Literal["received", "processed", "duplicate", "unresolved", "ignored", "rejected"]
     received_at: datetime
     processed_at: datetime | None = None
+    reason_code: str | None = None
 
 
 class AdminAuditEvent(CanonicalContract):

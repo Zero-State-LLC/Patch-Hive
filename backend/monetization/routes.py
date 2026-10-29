@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from community.auth import require_auth
 from community.models import User
 from core import get_db, settings
-from monetization.credits import get_credits_balance
 from monetization.referrals import record_purchase
 from monetization.schemas import PurchaseCreate
 
@@ -33,12 +32,3 @@ def create_purchase(
     db.commit()
     return {"status": "recorded"}
 
-
-@router.get("/credits/balance")
-def get_balance(
-    current_user: User = Depends(require_auth),
-    db: Session = Depends(get_db),
-):
-    """Get the current user's credits balance."""
-    balance = get_credits_balance(db, current_user.id)
-    return {"balance": balance}
