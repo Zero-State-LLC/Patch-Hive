@@ -28,5 +28,6 @@ describe("security headers", () => {
     expect(headers["Content-Security-Policy"]).toBe(contentSecurityPolicy("patch-hive.com"));
     expect(headers).not.toHaveProperty("Content-Security-Policy-Report-Only");
     expect(headers["X-Content-Type-Options"]).toBe("nosniff");
+    expect(headers["Strict-Transport-Security"]).toBe("max-age=31536000; includeSubDomains");
   });
 });

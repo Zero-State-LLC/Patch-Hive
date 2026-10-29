@@ -29,15 +29,19 @@ router = APIRouter()
 
 
 @router.post("/users", response_model=UserResponse, status_code=201)
-def register_user(user: UserCreate, db: Session = Depends(get_db)):
+def register_user(user: UserCreate, http_request: Request, db: Session = Depends(get_db)):
     """Register a new user."""
-    existing = db.query(User).filter(User.username == user.username).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="Username already taken")
-
-    existing = db.query(User).filter(User.email == user.email).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
+    if not login_guard.allow_registration(login_guard.client_address(http_request)):
+        raise HTTPException(status_code=429, detail="TOO_MANY_SIGNUPS")
+    # One reply for a taken username or email, so sign-up does not reveal which emails
+    # have accounts.
+    taken = (
+        db.query(User)
+        .filter((User.username == user.username) | (User.email == user.email))
+        .first()
+    )
+    if taken:
+        raise HTTPException(status_code=400, detail="USERNAME_OR_EMAIL_TAKEN")
 
     referrer = None
     if settings.enable_legacy_referrals and user.referral_code:
