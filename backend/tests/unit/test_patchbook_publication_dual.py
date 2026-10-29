@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import dataclasses
 from pathlib import Path
+
+import pytest
 
 from export.patchbook.design.content_spine import LoadedLibrary, LoadedLibraryItem
 from export.patchbook.design.engine import compose_design_export_pack
@@ -58,6 +61,48 @@ def _minimal_library() -> LoadedLibrary:
         load_path="compile_on_export",
         items=(item,),
     )
+
+
+def test_preflight_warnings_are_recorded_in_the_manifest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A warning never blocks the pack, and never vanishes (spec 002 OQ-7, FR-019)."""
+    import json
+
+    from export.patchbook.design import engine
+    from export.patchbook.design.preflight import PreflightIssue
+
+    real = engine.run_preflight
+
+    def with_warnings(*args, **kwargs):
+        report = real(*args, **kwargs)
+        if kwargs.get("pack_dir") is not None:
+            return report
+        extra = (
+            PreflightIssue(code="INK_COVERAGE_HIGH", severity="warning", message="x"),
+            PreflightIssue(code="BODY_SIZE_RAISED_TO_FLOOR", severity="warning", message="y"),
+        )
+        return dataclasses.replace(report, issues=report.issues + extra)
+
+    recipe = ResolvedStyleRecipe(
+        mode=PatchBookMode.PROFESSIONAL,
+        template_family=TemplateFamilyId.SIGNAL_MANUAL,
+        template_family_version="1.0.0",
+        seed=1,
+        weights=StyleWeights(legibility=95, diagram_literalness=96),
+        constraints=StyleConstraints(book_profile=BookProfile.EXECUTION_PAGE),
+        output_profile=OutputProfile.PRINT_PDF,
+        resolved_tier="core",
+        zero_state_brand_cap=6,
+    )
+    monkeypatch.setattr(engine, "run_preflight", with_warnings)
+    compose_design_export_pack(
+        _minimal_library(), recipe, out_dir=tmp_path / "pack", export_id="export-warn-1"
+    )
+    manifest = json.loads((tmp_path / "pack" / "manifest" / "patch-book.json").read_text())
+    assert "INK_COVERAGE_HIGH" in manifest["warnings"]
+    assert "BODY_SIZE_RAISED_TO_FLOOR" in manifest["warnings"]
+    assert manifest["warnings"] == sorted(set(manifest["warnings"]))
 
 
 def test_plate_family_publication_emits_plate_and_appendix(tmp_path: Path) -> None:

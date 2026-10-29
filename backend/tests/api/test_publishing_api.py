@@ -132,6 +132,39 @@ class TestPublishingAPI:
 
         assert response.status_code == 403
 
+    def test_visibility_defaults_to_unlisted(
+        self, client: TestClient, db_session: Session, sample_user: User, sample_case
+    ):
+        rack = Rack(user_id=sample_user.id, name="Rack", case_id=sample_case.id)
+        db_session.add(rack)
+        db_session.commit()
+        db_session.refresh(rack)
+        export = _create_export(db_session, sample_user, _create_patch(db_session, rack), None)
+
+        response = client.post(
+            "/api/me/publications",
+            json={
+                "export_id": export.id,
+                "title": "No visibility given",
+                "allow_download": True,
+                "allow_remix": False,
+            },
+            headers=_auth_headers(sample_user),
+        )
+
+        assert response.status_code in (200, 201), response.text
+        assert response.json()["visibility"] == "unlisted"
+
+    @pytest.mark.parametrize("export_type", ["patch", "rack"])
+    def test_gallery_accepts_known_export_types(self, client: TestClient, export_type: str):
+        response = client.get("/api/gallery/publications", params={"export_type": export_type})
+        assert response.status_code == 200
+
+    @pytest.mark.parametrize("export_type", ["bogus", "PATCH", "book"])
+    def test_gallery_rejects_unknown_export_type(self, client: TestClient, export_type: str):
+        response = client.get("/api/gallery/publications", params={"export_type": export_type})
+        assert response.status_code == 422
+
     def test_unlisted_not_in_gallery(
         self, client: TestClient, db_session: Session, sample_user: User, sample_case
     ):

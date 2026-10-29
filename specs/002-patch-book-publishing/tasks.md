@@ -34,9 +34,9 @@
   - depends_on: []
 - [ ] T033 Only if the owner wants publishing back (OQ-6): bind each publication export to a canon export whose pack passed `validate_book`, and let T032's check pass for it (FR-048; research R2 option 1).
   - depends_on: [T001, T030, T032]
-- [ ] T034 Default `PublicationCreate.visibility` to `unlisted` and type the gallery `export_type` as `patch` or `rack` (422 otherwise), with tests (FR-036, FR-042; research R3).
+- [x] T034 Default `PublicationCreate.visibility` to `unlisted` and type the gallery `export_type` as `patch` or `rack` (422 otherwise), with tests (FR-036, FR-042; research R3). Done 2026-10-29.
   - depends_on: []
-- [ ] T035 Draw the cover's patent disclaimer at `body_size_pt()` with `_draw_wrapped`, and start the metadata block at the returned y, with a test that the two never overlap (FR-004; research R4).
+- [x] T035 Draw the cover's patent disclaimer at `body_size_pt()` with `_draw_wrapped`, and start the metadata block at the returned y, with a test that the two never overlap (FR-004; research R4). Done 2026-10-29.
   - depends_on: []
 
 ## Polish
