@@ -10,7 +10,7 @@ from typing import Optional
 
 from reportlab.lib.pagesizes import A4, letter
 from reportlab.lib.units import inch
-from reportlab.lib.utils import ImageReader
+from reportlab.lib.utils import ImageReader, simpleSplit
 from reportlab.pdfgen import canvas
 from sqlalchemy.orm import Session
 
@@ -18,8 +18,36 @@ from core import settings
 from patches.models import Patch
 from racks.models import Rack
 
+
 from .visualization import generate_patch_diagram_svg, generate_rack_layout_svg
 from .waveform import generate_waveform_svg, infer_waveform_params_from_patch
+
+
+def _draw_wrapped(
+    c,
+    text: str,
+    x: float,
+    y: float,
+    *,
+    width: float,
+    font: str,
+    size: float,
+    leading: float,
+    page_height: float,
+    margin: float = inch,
+) -> float:
+    """Draw ``text`` wrapped to ``width`` (never cut, spec 002 FR-003), starting a new page
+    at the bottom margin so nothing runs off the page; returns the next y on the page the
+    text ended on."""
+    c.setFont(font, size)
+    for line in simpleSplit(text, font, size, width):
+        if y < margin:
+            c.showPage()
+            c.setFont(font, size)
+            y = page_height - margin
+        c.drawString(x, y, line)
+        y -= leading
+    return y
 
 
 def _load_svg2rlg():
@@ -69,9 +97,11 @@ def generate_patch_pdf(db: Session, patch: Patch, output_path: Optional[str] = N
 
     # Description
     if patch.description:
-        c.setFont("Helvetica", 10)
-        c.drawString(inch, y, f"Description: {patch.description}")
-        y -= 40
+        y = _draw_wrapped(
+            c, f"Description: {patch.description}", inch, y,
+            width=width - 2 * inch, font="Helvetica", size=10, leading=13, page_height=height,
+        )
+        y -= 27
 
     # Get rack
     rack = db.query(Rack).filter(Rack.id == patch.rack_id).first()
@@ -203,14 +233,17 @@ def generate_rack_pdf(db: Session, rack: Rack, output_path: Optional[str] = None
     c.drawString(inch, height - 2.5 * inch, f"Rack Configuration")
     c.drawString(inch, height - 2.8 * inch, f"{len(patches)} Patches")
 
-    c.setFont("Helvetica", 12)
+    y = height - 3.2 * inch
     if rack.description:
-        c.drawString(inch, height - 3.2 * inch, rack.description[:100])
+        y = _draw_wrapped(
+            c, rack.description, inch, y, width=width - 2 * inch, font="Helvetica", size=12, leading=15,
+            page_height=height,
+        )
 
     c.setFont("Helvetica", 10)
     c.drawString(
         inch,
-        height - 3.6 * inch,
+        y - 0.25 * inch,
         f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
     )
 
@@ -229,8 +262,10 @@ def generate_rack_pdf(db: Session, rack: Rack, output_path: Optional[str] = None
         y -= 20
 
         if patch.description:
-            c.setFont("Helvetica", 10)
-            c.drawString(inch, y, patch.description[:100])
+            _draw_wrapped(
+                c, patch.description, inch, y, width=width - 2 * inch, font="Helvetica", size=10, leading=13,
+                page_height=height,
+            )
 
         c.showPage()
 

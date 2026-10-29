@@ -87,6 +87,9 @@ class Settings(BaseSettings):
     # Legacy POST /api/export/runs/{id}/patchbook debit path (transitional).
     # MVP UI and acceptance use /api/canon/exports; set false to hard-disable debit.
     enable_legacy_patchbook_debit: bool = False
+    # Legacy two-page patch book (POST /api/export/patchbook). Its pages break the spec
+    # 002 one-page rule; the Design Engine is the book path. Off unless explicitly set.
+    enable_legacy_patchbook_export: bool = False
     stripe_test_mode: bool = True
     allow_production_payments: bool = False
     # Empty defaults: development may derive local secrets; production policy enforces real ones.
