@@ -771,15 +771,11 @@ def resolve_rack_evidence_decision(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_auth),
 ) -> DecisionResolutionResponse:
-    """Produce and retain one non-canonical identity advisory."""
-    from intelligence.evidence_resolution import (
-        DecisionIntelligenceDisabled,
-        EvidenceResolutionError,
-        resolve_module_identity,
-    )
-    from intelligence.policy import DecisionPolicy, PolicyThresholds
-    from intelligence.jev_provider import JevProviderError
+    """Produce and retain one non-canonical identity advisory.
 
+    Every provider runs behind the resolution machine and the configured policy version
+    (spec 005 FR-010, research R2); there is no unguarded path.
+    """
     owned_private_rack(db, rack_id, current_user)
 
     evidence = db.get(ClassificationEvidenceRecord, body.evidence_id)
@@ -792,52 +788,18 @@ def resolve_rack_evidence_decision(
     if not settings.enable_decision_intelligence:
         raise HTTPException(status_code=409, detail="DECISION_INTELLIGENCE_DISABLED")
 
-    if settings.decision_provider == "clef":
-        return _resolve_with_guarded_flow(db, body)
-
-    try:
-        provider = _configured_decision_provider()
-        thresholds = PolicyThresholds(
-            policy_version="decision-policy-v1",
-            auto_propose_at=settings.decision_auto_propose_at,
-            user_review_at=settings.decision_user_review_at,
-            probability_margin=settings.decision_probability_margin,
-        )
-        proposal = resolve_module_identity(
-            db,
-            evidence_id=body.evidence_id,
-            provider=provider,
-            policy=DecisionPolicy(thresholds),
-            enabled=True,
-            idempotency_key=body.idempotency_key,
-        )
-    except DecisionIntelligenceDisabled as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except JevProviderError as exc:
-        status_code = 504 if str(exc) == "JEV_TIMEOUT" else 502
-        raise HTTPException(status_code=status_code, detail=str(exc)) from exc
-    except (EvidenceResolutionError, RuntimeError, ValueError) as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-
-    db.commit()
-    return DecisionResolutionResponse(
-        evidence_id=body.evidence_id,
-        selected_choice=proposal.packet.selected_choice,
-        disposition=proposal.policy.disposition.value,
-        provider=proposal.packet.provider,
-        confidence=proposal.packet.confidence,
-        canonical_authority=False,
-    )
+    return _resolve_with_guarded_flow(db, body)
 
 
 def _resolve_with_guarded_flow(
     db: Session, body: DecisionResolutionRequest
 ) -> DecisionResolutionResponse:
-    """Spec 006 path: Clef behind the T010 resolution machine and Spec 005 policy.
+    """Any provider behind the T010 resolution machine and Spec 005 policy.
 
     Disposition stays owned by DecisionPolicy; the response is advisory only and
-    canonical inventory is never touched. Provider failures fail closed (REJECT)
-    and persist no receipt.
+    canonical inventory is never touched. A provider failure or an unreadable packet
+    ends UNRESOLVED (or ESCALATE with a review route), returns an error code and
+    persists no receipt.
     """
     from intelligence.clef_resolution import resolve_module_identity_guarded
     from intelligence.evidence_resolution import (
