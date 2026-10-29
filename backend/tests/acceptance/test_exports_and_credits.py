@@ -45,7 +45,7 @@ def _canon_export_body(sources: dict[str, str], idempotency_key: str) -> dict:
     }
 
 
-def test_export_blocked_without_credits(api_client, db_session: Session, golden_demo_seed):
+def test_export_blocked_without_credits(export_fulfillment_pending, api_client, db_session: Session, golden_demo_seed):
     sources = _attach_canon_export_sources(db_session, run_id=golden_demo_seed.run_id)
 
     login_resp = api_client.post(
@@ -78,7 +78,7 @@ def test_export_blocked_without_credits(api_client, db_session: Session, golden_
     assert not exports
 
 
-def test_admin_grant_then_export_succeeds(
+def test_admin_grant_then_export_succeeds(export_fulfillment_pending, 
     api_client, db_session: Session, golden_demo_seed, admin_user
 ):
     sources = _attach_canon_export_sources(db_session, run_id=golden_demo_seed.run_id)
@@ -165,7 +165,7 @@ def test_admin_grant_then_export_succeeds(
     assert credit_balance(db_session, golden_demo_seed.user_id) == expected_balance
 
 
-def test_failed_export_compensates_without_net_spend(
+def test_failed_export_compensates_without_net_spend(export_fulfillment_pending, 
     api_client, db_session: Session, golden_demo_seed, admin_user
 ):
     """Terminal failure after debit is reversed via one immutable compensation entry."""

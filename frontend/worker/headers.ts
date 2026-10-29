@@ -35,6 +35,8 @@ export function securityHeaders(hostname: string): Record<string, string> {
   return {
     "Content-Security-Policy": contentSecurityPolicy(hostname),
     "X-Content-Type-Options": "nosniff",
+    // HTTPS only, for a year, on every subdomain (staging and the API are HTTPS too).
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
     "Referrer-Policy": "strict-origin-when-cross-origin",
   };
 }

@@ -206,16 +206,34 @@ function containerEnv(env: Env): Record<string, string> {
   };
 }
 
+// Headers every API response carries: HTTPS only, no MIME sniffing, never framed.
+export const API_SECURITY_HEADERS: Record<string, string> = {
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+};
+
+export function withSecurityHeaders(response: Response): Response {
+  const secured = new Response(response.body, response);
+  for (const [name, value] of Object.entries(API_SECURITY_HEADERS)) {
+    secured.headers.set(name, value);
+  }
+  return secured;
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     // Fail closed: without these the backend would boot on its development defaults.
     const missing = REQUIRED_SECRETS.filter((name) => !env[name]);
     if (missing.length > 0) {
-      return Response.json(
-        { status: "unavailable", reason: "api secrets not configured", missing },
-        { status: 503 },
+      return withSecurityHeaders(
+        Response.json(
+          { status: "unavailable", reason: "api secrets not configured", missing },
+          { status: 503 },
+        ),
       );
     }
-    return env.API.getByName("primary").fetch(request);
+    return withSecurityHeaders(await env.API.getByName("primary").fetch(request));
   },
 };
