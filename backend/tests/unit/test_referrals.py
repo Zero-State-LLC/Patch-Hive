@@ -111,8 +111,23 @@ def test_a_referral_reward_is_spendable_once(db_session: Session):
     create_referral(db_session, referrer=referrer, referred=referred)
     db_session.commit()
 
-    record_purchase(db_session, user=referred, credits_delta=5)
-    record_purchase(db_session, user=referred, credits_delta=2)
+    record_purchase(db_session, user=referred, credits_delta=5, payment_verified=True)
+    record_purchase(db_session, user=referred, credits_delta=2, payment_verified=True)
     db_session.commit()
 
     assert credit_balance(db_session, referrer.id) == REFERRAL_REWARD_CREDITS
+
+
+def test_a_self_reported_purchase_earns_no_spendable_reward(db_session: Session):
+    """The legacy purchase route is user-callable, so its rewards stay unspendable."""
+    from canon.exports import credit_balance
+
+    referrer = _create_user(db_session, "referrer4", "referrer4@example.com", "refcode4")
+    referred = _create_user(db_session, "referred4", "referred4@example.com", "newcode4")
+    create_referral(db_session, referrer=referrer, referred=referred)
+    db_session.commit()
+
+    record_purchase(db_session, user=referred, credits_delta=0)
+    db_session.commit()
+
+    assert credit_balance(db_session, referrer.id) == 0

@@ -11,7 +11,7 @@ From the 2026-10-29 gap analysis (P1):
 
 - **One generation path.** `run_generation(db, rack, request)` holds the whole generate flow; any error after the run exists rolls back and sets the run `failed`.
 - **Admin rerun** uses `run_generation`: 404 for a missing or deleted rig, 409 `RIG_NOT_COMPUTABLE` (with the gate code, no run) when the gate fails, otherwise the terminal run. The admin page shows refusals.
-- **Referral rewards** are also written to the canonical ledger as a `grant`, keyed per referral, so they count once and can be spent.
+- **Referral rewards** for a provider-verified purchase are also written to the canonical ledger as a `grant`, keyed per referral, so they count once and can be spent. The user-callable legacy purchase route never earns a spendable reward (Codex review). No verified purchase path exists yet (spec 004 Machine B), so rewards stay unspendable until it does.
 
 ## Affected users / systems
 
@@ -31,7 +31,7 @@ None.
 |---|---|---|
 | A dual-write failure leaves the run `failed` | `OBSERVED` | `test_a_run_that_fails_after_generation_ends_failed` |
 | Rerun is gated and terminal | `OBSERVED` | `test_admin_rerun_*` |
-| The reward is spendable once | `OBSERVED` | `test_a_referral_reward_is_spendable_once` |
+| A verified reward is spendable once; a self-reported one isn't | `OBSERVED` | `test_a_referral_reward_is_spendable_once`, `test_a_self_reported_purchase_earns_no_spendable_reward` |
 
 ## Author / date
 
