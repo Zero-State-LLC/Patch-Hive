@@ -1,0 +1,108 @@
+{
+ "dataset_version": "module-power-depth-overlay-v14",
+ "generated_from": "hermes-research/maker-crawl-v2.json (brands: 2hp, Bastl Instruments, Doepfer, Tubbutec)",
+ "policy": "maker's own pages only; values regex-parsed or verbatim; no ModularGrid; insert-if-absent / fill-null; disagreements are flagged by the loader",
+ "count": 6,
+ "entries": [
+  {
+   "brand": "2hp",
+   "name": "Mix",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 45,
+   "source_url": "https://www.twohp.com/modules/p/mix",
+   "sources": {
+    "depth_mm": "https://www.twohp.com/modules/p/mix"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.twohp.com/modules/p/mix"
+  },
+  {
+   "brand": "Bastl Instruments",
+   "name": "Citadel Alchemist",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://bastl-instruments.com/eurorack/modules/citadel-alchemist",
+   "sources": {
+    "depth_mm": "https://bastl-instruments.com/eurorack/modules/citadel-alchemist"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://bastl-instruments.com/eurorack/modules/citadel-alchemist"
+  },
+  {
+   "brand": "Bastl Instruments",
+   "name": "Citadel FX Wizard",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://bastl-instruments.com/eurorack/modules/citadel-fx-wizard",
+   "sources": {
+    "depth_mm": "https://bastl-instruments.com/eurorack/modules/citadel-fx-wizard"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://bastl-instruments.com/eurorack/modules/citadel-fx-wizard"
+  },
+  {
+   "brand": "Bastl Instruments",
+   "name": "Citadel Wave Bard",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://bastl-instruments.com/eurorack/modules/citadel-wave-bard",
+   "sources": {
+    "depth_mm": "https://bastl-instruments.com/eurorack/modules/citadel-wave-bard"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://bastl-instruments.com/eurorack/modules/citadel-wave-bard"
+  },
+  {
+   "brand": "Bastl Instruments",
+   "name": "Aikido",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": 24,
+   "source_url": "https://bastl-instruments.com/eurorack/modules/aikido",
+   "sources": {
+    "depth_mm": "https://bastl-instruments.com/eurorack/modules/aikido"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex",
+   "verification_status": "verified",
+   "verification_source_url": "https://bastl-instruments.com/eurorack/modules/aikido"
+  },
+  {
+   "brand": "Tubbutec",
+   "name": "USB bridge A",
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
+   "depth_mm": null,
+   "source_url": "https://tubbutec.de/product/usb-bridge-a/",
+   "sources": {},
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "regex+deepseek/deepseek-v4.1-flash",
+   "verification_status": "verified",
+   "verification_source_url": "https://tubbutec.de/product/usb-bridge-a/"
+  }
+ ]
+}

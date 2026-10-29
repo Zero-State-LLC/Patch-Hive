@@ -37,7 +37,9 @@ import build_maker_overlays as B  # noqa: E402
 
 CRAWL = "maker-crawl-v2.json"
 # Manifest version -> the catalog-additions and module-power-depth versions it writes.
-OUTPUT_VERSIONS = {1: (5, 13), 2: (6, 14)}
+# v2 re-added nothing (no files); 6 and 14 hold the slice-A3 crawl rows, so a later
+# version takes the next free numbers.
+OUTPUT_VERSIONS = {1: (5, 13), 2: (7, 15)}
 
 # Owner review (overlays/maker-review-v1.json): this row predates the review rename (v1).
 REVIEWED = [{

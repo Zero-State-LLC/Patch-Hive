@@ -53,7 +53,7 @@ HP_MIN, HP_MAX = 1, 42  # FR-007: HP outside 1..42 is discarded
 # Products that share a maker's store with modules: pedals, upgrades, bare panels, power, MCUs.
 NOT_MODULE_NAME = re.compile(
     r"(\bpedal\b|\bupgrade\b|(aluminum|alu|replacement|front|blank)\s+panel|\bpanel only\b|\bteensy\b|"
-    r"power supply|\bpsu\b|\brow power\b|\(\d+(\.\d+)?\s*a\)|\bcase\b|\bskiff\b|\bcable|\bt-shirt|\bgift card)",
+    r"power supply|\bpsu\b|\brow power\b|\(\d+(\.\d+)?\s*a\)|\bcase\b|\bskiff\b|kofferversion|\bcable|\bt-shirt|\bgift card)",
     re.I,
 )
 
@@ -191,6 +191,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--power-version", type=int, default=9)
     ap.add_argument("--brands", default="", help="comma-separated: build only these brands (a partial crawl pass)")
     ap.add_argument("--skip-brands", default="", help="comma-separated: leave these brands out (built in a later version)")
+    ap.add_argument("--only-new", action="store_true", help="emit only modules no catalog row or earlier overlay holds (no power entries for matched rows)")
     args = ap.parse_args(argv)
     only = {b.strip() for b in args.brands.split(",") if b.strip()}
     skip = {b.strip() for b in args.skip_brands.split(",") if b.strip()}
@@ -246,6 +247,8 @@ def main(argv: list[str] | None = None) -> int:
                 "provenance": "OBSERVED", "status": "found", "extracted_by": m.get("extracted_by"),
                 "verification_status": "verified", "verification_source_url": m["source_url"],
             }
+            if args.only_new and existing:
+                continue
             if any(entry[f] is not None for f in ("power_12v_ma", "power_neg12v_ma", "power_5v_ma", "depth_mm")) or not existing:
                 entries.append(entry)
     D = CATALOG / "overlays"
