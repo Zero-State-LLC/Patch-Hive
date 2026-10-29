@@ -290,7 +290,10 @@ def resolve_module_identity_guarded(
         machine,
         request_id=request_id,
         event_type=ResolutionEventType.PROVIDER_SUCCESS,
-        guard=ResolutionGuard(packet_schema_valid=_packet_schema_valid(packet, request)),
+        guard=ResolutionGuard(
+            packet_schema_valid=_packet_schema_valid(packet, request),
+            routing_target_exists=bool(routing_targets),
+        ),
     )
     if machine.state is not ResolutionState.PACKET_EMITTED:
         return _provider_failure_result(
