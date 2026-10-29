@@ -161,7 +161,7 @@ def test_referral_codes_are_not_derived_from_the_email(client: TestClient) -> No
 # --- Exports, patches -----------------------------------------------------------
 
 
-def test_exports_ignore_a_client_credit_cost(client: TestClient, db_session: Session) -> None:
+def test_exports_ignore_a_client_credit_cost(export_fulfillment_pending, client: TestClient, db_session: Session) -> None:
     from tests.api.test_canon_export_api import _grant
     from tests.unit.test_canon_contracts import _persist_hierarchy
 

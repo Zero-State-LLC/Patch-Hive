@@ -827,6 +827,11 @@ def create_canonical_export(
 ) -> CanonicalExportResponse:
     if not body.formats:
         raise HTTPException(status_code=400, detail="At least one export format is required")
+    # Spec 004 FR-005: never take credits for an export nothing will fulfill. Inline
+    # fulfillment is the only fulfiller (there is no queue worker), and it refunds every
+    # failure it catches, so with either flag off the request is refused before any debit.
+    if not (settings.enable_canon_export_fulfillment and settings.enable_inline_export_fulfillment):
+        raise HTTPException(status_code=503, detail="EXPORT_FULFILLMENT_UNAVAILABLE")
 
     # KD-14 / spec 004 FR-005: the server sets the price; a client credit_cost is
     # never trusted, whatever the Design Engine flag says.

@@ -459,20 +459,34 @@ def rerun_rig(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin_mutate),
 ):
-    new_run = Run(rack_id=rig_id, status="queued")
-    db.add(new_run)
+    """Re-run generation for a rig through the normal path: readiness gate first, and a
+    run that ends terminal (spec 001 FR-018/FR-022). Nothing is left queued."""
+    from patches.routes import run_generation
+    from patches.schemas import GeneratePatchesRequest
+    from racks.models import Rack
+
+    rack = db.query(Rack).filter(Rack.id == rig_id, Rack.deleted_at.is_(None)).first()
+    if rack is None:
+        raise HTTPException(status_code=404, detail="Rig not found")
+    result = run_generation(db, rack, GeneratePatchesRequest())
+    if result.run_id is None:
+        raise HTTPException(
+            status_code=409,
+            detail={"code": "RIG_NOT_COMPUTABLE", "inventory_gate_code": result.inventory_gate_code},
+        )
+    run = db.get(Run, result.run_id)
     log_admin_action(
         db,
         actor=current_user,
         action_type="run.rerun",
         target_type="run",
-        target_id=str(rig_id),
-        delta_json={"status": "queued"},
+        target_id=str(run.id),
+        delta_json={"rack_id": rig_id, "status": run.status},
         reason="rerun",
     )
     db.commit()
-    db.refresh(new_run)
-    return new_run
+    db.refresh(run)
+    return run
 
 
 @router.post("/exports/{export_id}/unlock", status_code=201)

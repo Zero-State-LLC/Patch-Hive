@@ -89,7 +89,10 @@ def test_list_and_confirm_candidates(
     assert result["confirmed_count"] == 1
     assert result["ready_for_generation"] is True
     assert result["inventory_revision_id"].startswith("inv-rev-")
-    assert db_session.get(SystemInventoryRevisionRecord, result["inventory_revision_id"])
+    revision = db_session.get(SystemInventoryRevisionRecord, result["inventory_revision_id"])
+    assert revision
+    # The body said "tester"; who confirmed is the signed-in owner (spec 005 FR-006).
+    assert revision.created_by == f"user:{sample_rack_basic.user_id}"
 
     # Confirm without module revision fails closed
     bad = client.post(

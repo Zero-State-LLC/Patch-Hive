@@ -67,7 +67,7 @@ def test_canonical_export_requires_auth(client: TestClient) -> None:
     assert resp.status_code == 401
 
 
-def test_canonical_export_and_download_token_flow(client: TestClient, db_session: Session) -> None:
+def test_canonical_export_and_download_token_flow(export_fulfillment_pending, client: TestClient, db_session: Session) -> None:
     user, _patch = _persist_hierarchy(db_session)
     _grant(db_session, user.id, 10)
 
@@ -109,6 +109,14 @@ def test_canonical_export_and_download_token_flow(client: TestClient, db_session
     assert balance.status_code == 200
     assert balance.json()["balance"] == 10 - settings.patchbook_export_cost
 
+    # Fulfillment finishes: the pack exists, so a download token may be issued.
+    from canon.models import CanonicalExportRecord
+
+    record = db_session.get(CanonicalExportRecord, export_id)
+    record.status = "succeeded"
+    record.pack_manifest_hash = "b" * 64
+    db_session.commit()
+
     token_resp = client.post(
         f"/api/canon/exports/{export_id}/download-token",
         headers=_auth_headers(user),
@@ -137,7 +145,7 @@ def test_canonical_export_and_download_token_flow(client: TestClient, db_session
     assert any(entry["entry_type"] == "debit" for entry in body_summary["entries"])
 
 
-def test_canonical_export_insufficient_credits(client: TestClient, db_session: Session) -> None:
+def test_canonical_export_insufficient_credits(export_fulfillment_pending, client: TestClient, db_session: Session) -> None:
     user, _patch = _persist_hierarchy(db_session)
     resp = client.post(
         "/api/canon/exports",
@@ -277,3 +285,34 @@ def test_payment_startup_policy_fail_closed() -> None:
                 secret_key="x" * 32,
             )
         )
+
+
+@pytest.mark.parametrize(
+    "canon_on,inline_on",
+    [(False, False), (True, False), (False, True)],
+)
+def test_an_export_nothing_will_fulfill_is_refused_before_any_debit(
+    client: TestClient, db_session: Session, monkeypatch, canon_on: bool, inline_on: bool
+) -> None:
+    """Spec 004 FR-005: with no fulfiller, no credits are taken."""
+    monkeypatch.setattr(settings, "enable_canon_export_fulfillment", canon_on)
+    monkeypatch.setattr(settings, "enable_inline_export_fulfillment", inline_on)
+    user, _patch = _persist_hierarchy(db_session)
+    _grant(db_session, user.id, 10)
+    resp = client.post(
+        "/api/canon/exports",
+        headers=_auth_headers(user),
+        json={
+            "source_run_id": "run-1",
+            "source_rig_revision_id": "rig-rev-1",
+            "artifact_manifest_hash": "a" * 64,
+            "formats": ["pdf"],
+            "license": "personal",
+            "idempotency_key": f"idem-off-{canon_on}-{inline_on}",
+        },
+    )
+    assert resp.status_code == 503
+    assert resp.json()["detail"] == "EXPORT_FULFILLMENT_UNAVAILABLE"
+    balance = client.get("/api/canon/credits/balance", headers=_auth_headers(user)).json()["balance"]
+    assert balance == 10
+    assert client.get("/api/canon/exports", headers=_auth_headers(user)).json() == []

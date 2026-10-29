@@ -292,6 +292,30 @@ class TestPublishingAPI:
             db_session.refresh(pub)
             assert pub.status in {"removed", "hidden"}
 
+    def test_a_removed_publication_cannot_be_edited(
+        self, client: TestClient, db_session: Session, sample_user: User, sample_case
+    ):
+        from tests.conftest import bearer_headers
+
+        rack = Rack(user_id=sample_user.id, name="Rack", case_id=sample_case.id)
+        db_session.add(rack)
+        db_session.commit()
+        patch = _create_patch(db_session, rack)
+        removed = _create_publication(
+            db_session, _create_export(db_session, sample_user, patch, None), sample_user,
+            slug="removed-edit", status="removed",
+        )
+        before = removed.title
+        resp = client.patch(
+            f"/api/me/publications/{removed.id}",
+            json={"title": "Back again", "visibility": "public"},
+            headers=bearer_headers(sample_user),
+        )
+        assert resp.status_code == 409
+        assert resp.json()["detail"] == "PUBLICATION_UNDER_MODERATION"
+        db_session.refresh(removed)
+        assert removed.title == before and removed.status == "removed"
+
     def test_a_deleted_rack_cannot_be_exported(
         self, client: TestClient, db_session: Session, sample_user: User, sample_case
     ):

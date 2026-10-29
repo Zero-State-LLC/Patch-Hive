@@ -238,3 +238,55 @@ def test_a_passing_run_keeps_its_report_and_is_export_ready(
     assert run["export_bridge_ready"] is True
     assert run["validation"]["blocking"] is False
     app.dependency_overrides.clear()
+
+
+def test_a_run_that_fails_after_generation_ends_failed(
+    db_session: Session, sample_rack_basic: Rack, owner_headers: dict, monkeypatch
+) -> None:
+    """Spec 001 FR-018/FR-019: an error in the dual-write never leaves a run `running`."""
+    import export.patchbook.design.dual_write as dual_write
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("dual-write down")
+
+    monkeypatch.setattr(dual_write, "dual_write_generated_patches", boom)
+    client = _client(db_session, owner_headers)
+    try:
+        client.post(f"/api/patches/generate/{sample_rack_basic.id}", json={})
+    except RuntimeError:
+        pass  # TestClient re-raises server errors
+    runs = db_session.query(Run).filter(Run.rack_id == sample_rack_basic.id).all()
+    assert [r.status for r in runs] == ["failed"]
+    assert db_session.query(Patch).filter(Patch.rack_id == sample_rack_basic.id).count() == 0
+
+
+def test_admin_rerun_goes_through_the_generation_path(
+    db_session: Session, sample_rack_basic: Rack
+) -> None:
+    """A rerun passes the readiness gate and ends terminal; nothing is left queued."""
+    from tests.conftest import bearer_headers, make_user
+
+    admin = make_user(db_session, "rerun-admin", role="Admin")
+    client = _client(db_session, bearer_headers(admin))
+    resp = client.post(f"/api/admin/runs/{sample_rack_basic.id}/rerun")
+    assert resp.status_code == 201, resp.text
+    assert resp.json()["status"] == "succeeded"
+    statuses = {r.status for r in db_session.query(Run).filter(Run.rack_id == sample_rack_basic.id)}
+    assert "queued" not in statuses and "running" not in statuses
+
+
+def test_admin_rerun_refuses_a_rig_the_gate_cannot_compute(
+    db_session: Session, sample_case
+) -> None:
+    from tests.conftest import bearer_headers, make_user
+
+    admin = make_user(db_session, "rerun-admin-2", role="Admin")
+    empty = Rack(user_id=admin.id, name="Empty", case_id=sample_case.id)
+    db_session.add(empty)
+    db_session.commit()
+    client = _client(db_session, bearer_headers(admin))
+    resp = client.post(f"/api/admin/runs/{empty.id}/rerun")
+    assert resp.status_code == 409
+    assert resp.json()["detail"]["code"] == "RIG_NOT_COMPUTABLE"
+    assert db_session.query(Run).filter(Run.rack_id == empty.id).count() == 0
+    assert client.post("/api/admin/runs/999999/rerun").status_code == 404
