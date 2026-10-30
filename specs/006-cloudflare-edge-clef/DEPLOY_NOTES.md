@@ -37,6 +37,39 @@ without printing any of them. It needs the repo secret `CLOUDFLARE_API_TOKEN` (A
 Tokens: Edit, Workers Scripts: Edit) and the repo variable `CLOUDFLARE_ACCOUNT_ID`.
 The readiness machine and FR-003 describe the staging pair.
 
+### Production protection for the manual workflows (T101)
+
+`db-migrate.yml` (job `migrate`), `db-load.yml` (job `load`) and `edge-secrets.yml` (job
+`secrets`) set a job-level `environment:` that resolves to `production` when the target input
+selects production (`target == 'prod'`, `env == 'prod'`, `env == 'production'` respectively)
+and to `staging` otherwise. Repo-level secrets and variables stay visible inside an
+environment, so merging this change alters nothing at runtime until the operator moves the
+secrets (T101b). A missing `staging` environment is created unprotected on its first run.
+
+Operator steps (T101b, repo admin; Settings, Environments):
+
+1. Create the environment `production`.
+2. Tick Required reviewers and add the owner. Leave "Prevent self-review" OFF while there is a
+   single reviewer: with it on, the person who dispatches a run cannot approve it and the run
+   deadlocks. Untick "Allow administrators to bypass configured protection rules".
+3. Deployment branches and tags: Selected branches and tags, add the rule `main` only. Runs
+   dispatched from any other branch are then refused for `production`.
+4. Optionally create `staging` (no reviewers) and move the staging secrets into it.
+5. Add `PATCHHIVE_DATABASE_URL_PROD` as a `production` environment secret.
+6. `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are used by both staging and production
+   runs of `edge-secrets.yml`. Before moving them, issue a separate staging-scoped Cloudflare
+   token. Put the production token in `production` and the staging token in `staging`
+   (account id as an environment variable in each). Otherwise a staging run cannot read them,
+   or a repo-level copy has to stay, which defeats the protection.
+7. Run one approved test from `main` (for example `db-migrate.yml` with target `prod`, or
+   `edge-secrets.yml` with `staging`) and confirm the approval prompt and the secrets resolve.
+8. Last, delete the repo-level copies (`PATCHHIVE_DATABASE_URL_PROD`, `CLOUDFLARE_API_TOKEN`,
+   and the repo variable `CLOUDFLARE_ACCOUNT_ID`). A leftover repo-level copy keeps working
+   without approval only for jobs that have no `environment:`, so it is a fallback to remove,
+   not a bypass of these three workflows once the environment holds the same name.
+
+Branch protection and CODEOWNERS are separate and are not changed here.
+
 Still owned by the operator and NOT set in code or config:
 
 - Cloudflare account id and the Workers AI API token used by Clef.

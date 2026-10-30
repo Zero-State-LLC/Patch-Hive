@@ -40,6 +40,7 @@ jobs:
   load:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    environment: ${{ inputs.env == 'prod' && 'production' || 'staging' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
