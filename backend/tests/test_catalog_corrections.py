@@ -236,7 +236,7 @@ def test_the_v2_manifest_corrects_the_v1_overlay_hp_in_every_table() -> None:
 
 
 def test_the_v3_manifest_corrects_the_hand_checked_v1_hp_in_every_table() -> None:
-    """Spec 003 T039: DPO and Morphagene hold v1's value on a pre-v3 load; the maker page wins."""
+    """Spec 003 T039: rows holding a v1 value their maker page contradicts take the page value."""
     path = ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v3.json"
     manifest = json.loads(path.read_text())
     assert manifest["batch"] == "maker-corrections-v3" and manifest["flag_reverify"] is False
@@ -257,6 +257,10 @@ def test_the_v3_manifest_corrects_the_hand_checked_v1_hp_in_every_table() -> Non
         ("module_catalog", "Make Noise", "Morphagene"): (18, 20),
         ("modules", "Make Noise", "DPO"): (30, 28),
         ("modules", "Make Noise", "Morphagene"): (18, 20),
+        ("module_catalog", "Bastl Instruments", "Knit Rider"): (2, 16),
+        ("module_catalog", "Intellijel", "MEMS Mic 1U"): (2, 10),
+        ("modules", "Bastl Instruments", "Knit Rider"): (2, 16),
+        ("modules", "Intellijel", "MEMS Mic 1U"): (2, 10),
     }
     # Each old value is the unsourced v1 overlay's; each new value is the maker-cited v3 one,
     # so a fresh load and a corrected database agree.

@@ -397,7 +397,7 @@ def test_maker_corrections_v3_and_the_legacy_hp_marker(fresh_population_url, tmp
     hp_source marks exactly the rows whose HP is still an uncited v1 value."""
     missing = tmp_path / "none.json"
     first = populate(fresh_population_url, apply=True, verification_path=missing)
-    assert first["updates"]["hp_source_legacy_marked"] == 36
+    assert first["updates"]["hp_source_legacy_marked"] == 88
     engine = create_engine(fresh_population_url)
     try:
         with engine.connect() as conn:
@@ -405,12 +405,16 @@ def test_maker_corrections_v3_and_the_legacy_hp_marker(fresh_population_url, tmp
                 "SELECT slug, hp FROM module_catalog WHERE hp_source = 'legacy_unsourced'"
             )).all())
             fresh = dict(conn.execute(text(
-                "SELECT slug, hp FROM module_catalog WHERE slug IN ('make-noise-dpo', 'make-noise-morphagene')"
+                "SELECT slug, hp FROM module_catalog WHERE slug IN ('make-noise-dpo', 'make-noise-morphagene', "
+                "'bastl-instruments-knit-rider', 'intellijel-mems-mic-1u')"
             )).all())
         # A fresh load takes the maker value from v3; no re-sourced value is marked.
-        assert fresh == {"make-noise-dpo": 28, "make-noise-morphagene": 20}
-        assert len(marked) == 36 and marked["make-noise-maths"] == 20
+        assert fresh == {"make-noise-dpo": 28, "make-noise-morphagene": 20,
+                         "bastl-instruments-knit-rider": 16, "intellijel-mems-mic-1u": 10}
+        assert len(marked) == 88 and marked["make-noise-maths"] == 20
         assert marked["addac-system-addac200pi"] == 2
+        # A citation the page check could not confirm stays marked.
+        assert marked["make-noise-rene"] == 34 and marked["befaco-bandit"] == 8
         assert not set(marked) & {"make-noise-dpo", "doepfer-a-110", "mutable-instruments-grids"}
 
         with engine.begin() as conn:

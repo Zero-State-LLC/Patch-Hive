@@ -39,6 +39,40 @@
    ]
   },
   {
+   "table": "module_catalog",
+   "slug": "bastl-instruments-knit-rider",
+   "brand": "Bastl Instruments",
+   "name": "Knit Rider",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 2,
+     "value": 16,
+     "evidence_url": "https://bastl-instruments.com/eurorack/modules/knit-rider",
+     "source_tag": "maker-corrections-v3: 16 HP (\"Technical details 16 HP\") on https://bastl-instruments.com/eurorack/modules/knit-rider; 2 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "intellijel-mems-mic-1u",
+   "brand": "Intellijel",
+   "name": "MEMS Mic 1U",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 2,
+     "value": 10,
+     "evidence_url": "https://intellijel.com/shop/eurorack/mems-mic-1u/",
+     "source_tag": "maker-corrections-v3: 10 HP (\"Width 10HP\") on https://intellijel.com/shop/eurorack/mems-mic-1u/; 2 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
    "table": "modules",
    "brand": "Make Noise",
    "name": "DPO",
@@ -66,6 +100,38 @@
      "value": 20,
      "evidence_url": "https://www.makenoisemusic.com/modules/morphagene/",
      "source_tag": "maker-corrections-v3: 20 HP (\"Width: 20hp\") on https://www.makenoisemusic.com/modules/morphagene/; 18 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Bastl Instruments",
+   "name": "Knit Rider",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 2,
+     "value": 16,
+     "evidence_url": "https://bastl-instruments.com/eurorack/modules/knit-rider",
+     "source_tag": "maker-corrections-v3: 16 HP (\"Technical details 16 HP\") on https://bastl-instruments.com/eurorack/modules/knit-rider; 2 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Intellijel",
+   "name": "MEMS Mic 1U",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 2,
+     "value": 10,
+     "evidence_url": "https://intellijel.com/shop/eurorack/mems-mic-1u/",
+     "source_tag": "maker-corrections-v3: 10 HP (\"Width 10HP\") on https://intellijel.com/shop/eurorack/mems-mic-1u/; 2 came from the unsourced module-catalog-hp-v1 overlay",
      "maker_check": "maker_page_reviewed"
     }
    ]
