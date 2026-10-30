@@ -61,8 +61,12 @@ class RowCapacityResult(BaseModel):
 class PowerRailResult(BaseModel):
     rail: str
     case_capacity_ma: Optional[int] = None
+    # Sum of the known draws only. With unknown draws this is a lower bound.
     module_draw_ma: int
+    # With unknown draws this is an upper bound.
     headroom_ma: Optional[int] = None
+    unknown_draw_count: int = 0
+    unknown_modules: list[str] = Field(default_factory=list)
     status: CompatibilityStatus
     message: str
 

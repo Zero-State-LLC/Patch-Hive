@@ -5,9 +5,11 @@ Referral program utilities and credit ledger helpers.
 from __future__ import annotations
 
 import secrets
-from datetime import datetime
+from datetime import datetime, timezone
+from hashlib import sha256
 from typing import Optional
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from community.models import User
@@ -67,12 +69,15 @@ def record_purchase(
     user: User,
     credits_delta: int = 0,
     notes: Optional[str] = None,
+    payment_verified: bool = False,
 ) -> CreditsLedger:
     """
     Record a paid purchase event and apply referral rewards if eligible.
 
     The ledger entry uses change_type="Purchase" and is treated as the
-    canonical marker for first-paid purchase eligibility.
+    canonical marker for first-paid purchase eligibility. Only a purchase the payment
+    provider verified (``payment_verified``) earns a spendable canonical reward; the
+    user-callable legacy route never does.
     """
     purchase_entry = CreditsLedger(
         user_id=user.id,
@@ -82,7 +87,12 @@ def record_purchase(
     )
     db.add(purchase_entry)
     db.flush()
-    apply_referral_reward(db, referred_user_id=user.id, purchase_entry_id=purchase_entry.id)
+    apply_referral_reward(
+        db,
+        referred_user_id=user.id,
+        purchase_entry_id=purchase_entry.id,
+        payment_verified=payment_verified,
+    )
     return purchase_entry
 
 
@@ -91,6 +101,7 @@ def apply_referral_reward(
     *,
     referred_user_id: int,
     purchase_entry_id: int,
+    payment_verified: bool = False,
 ) -> Optional[CreditsLedger]:
     """Grant referral credits after the referred user's first paid purchase."""
     purchase_count = (
@@ -144,6 +155,27 @@ def apply_referral_reward(
     )
     db.add(reward_entry)
     db.add(rewarded_entry)
+    # Spending and the balance users see read the canonical ledger (spec 004 FR-009), so a
+    # reward for a provider-verified purchase goes there too, once per referral. A
+    # self-reported purchase (the legacy route) must never mint spendable credits.
+    if not payment_verified:
+        return reward_entry
+    from canon.models import CanonicalCreditLedgerEntryRecord
+
+    reward_key = f"referral-reward:{referral_pending.id}"
+    reward_id = f"grant-{sha256(reward_key.encode('utf-8')).hexdigest()[:24]}"
+    if db.get(CanonicalCreditLedgerEntryRecord, reward_id) is None:
+        db.add(
+            CanonicalCreditLedgerEntryRecord(
+                id=reward_id,
+                user_id=referral_pending.referrer_user_id,
+                delta=REFERRAL_REWARD_CREDITS,
+                entry_type="grant",
+                idempotency_key=reward_key,
+                export_id=None,
+                created_at=datetime.now(timezone.utc),
+            )
+        )
     return reward_entry
 
 
@@ -164,17 +196,24 @@ def get_referral_summary(db: Session, *, user: User) -> dict:
         if referral.status == "Pending" and referral.referred_user_id not in rewarded_ids
     ]
     rewarded_referrals = [referral for referral in referrals if referral.status == "Rewarded"]
-    earned_credits = (
-        db.query(CreditsLedger)
-        .filter(
-            CreditsLedger.user_id == user.id,
-            CreditsLedger.change_type == "Grant",
-            CreditsLedger.referral_id.isnot(None),
+    # Count only spendable credit: the canonical referral grants keyed by this user's own
+    # referrals (spec 004 FR-009, FR-031, research R6). Legacy-ledger rewards for a
+    # self-reported purchase are not spendable, so they are not earned credit.
+    from canon.models import CanonicalCreditLedgerEntryRecord
+
+    reward_keys = [f"referral-reward:{referral.id}" for referral in referrals]
+    earned_total = 0
+    if reward_keys:
+        earned_total = int(
+            db.query(func.coalesce(func.sum(CanonicalCreditLedgerEntryRecord.delta), 0))
+            .filter(
+                CanonicalCreditLedgerEntryRecord.user_id == user.id,
+                CanonicalCreditLedgerEntryRecord.entry_type == "grant",
+                CanonicalCreditLedgerEntryRecord.idempotency_key.in_(reward_keys),
+            )
+            .scalar()
+            or 0
         )
-        .with_entities(CreditsLedger.credits_delta)
-        .all()
-    )
-    earned_total = sum(entry.credits_delta for entry in earned_credits)
     return {
         "referral_code": user.referral_code,
         "referral_link": f"/signup?ref={user.referral_code}",

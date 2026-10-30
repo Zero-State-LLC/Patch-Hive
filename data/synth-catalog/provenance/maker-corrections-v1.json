@@ -1,0 +1,33 @@
+{
+ "batch": "maker-corrections-v1",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted.",
+ "decided": "2026-10-29 (owner: research and implement the open catalog decisions; research.md R1)",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "modules",
+   "brand": "Sovage Engineering",
+   "name": "CHICANE",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 14,
+     "value": 4,
+     "evidence_url": "https://www.sovageengineering.com/product-page/chicane",
+     "source_tag": "maker-corrections-v1: 4 HP on https://www.sovageengineering.com/product-page/chicane (14 HP is the 1U tile)",
+     "maker_check": "maker_page_reviewed"
+    },
+    {
+     "field": "verification_source_url",
+     "action": "correct",
+     "only_if_value": "https://www.sovageengineering.com/product-page/chicane-1u",
+     "value": "https://www.sovageengineering.com/product-page/chicane",
+     "evidence_url": "https://www.sovageengineering.com/product-page/chicane",
+     "source_tag": "maker-corrections-v1: the Eurorack page, not the 1U tile",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}

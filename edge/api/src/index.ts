@@ -18,6 +18,9 @@ interface Env extends Partial<Record<OptionalName, string>> {
   S3_BUCKET: string;
   S3_REGION: string;
   S3_KEY_PREFIX: string;
+  // Opt-in only. Neither environment sets it in wrangler.jsonc: databases are migrated
+  // by the db-migrate workflow, never by a cold start.
+  RUN_MIGRATIONS?: string;
 }
 
 // Feature flags and decision-provider settings, forwarded only when the Worker sets
@@ -65,8 +68,8 @@ const REQUIRED_SECRETS = [
 // Stop the container after this long without a request (it restores durable files
 // from R2 on the next start).
 const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000;
-// The entrypoint runs `alembic upgrade head` before uvicorn listens, so a cold start
-// can take a while.
+// The entrypoint waits for the database (and, only when RUN_MIGRATIONS opts in, runs
+// `alembic upgrade head`) before uvicorn listens, so a cold start can take a while.
 const READY_ATTEMPTS = 300;
 const PORT = 8000;
 
@@ -173,6 +176,12 @@ function imageDigest(ref: string): string {
   return /sha256:[0-9a-f]{64}/.exec(ref)?.[0] ?? ref;
 }
 
+// Only the exact values "true" and "1" enable startup migrations; anything else,
+// including unset, sends "false". Exported for tests.
+export function runMigrations(value: string | undefined): "true" | "false" {
+  return value === "true" || value === "1" ? "true" : "false";
+}
+
 function containerEnv(env: Env): Record<string, string> {
   return {
     DATABASE_URL: env.DATABASE_URL ?? "",
@@ -189,11 +198,28 @@ function containerEnv(env: Env): Record<string, string> {
     S3_SECRET_ACCESS_KEY: env.S3_SECRET_ACCESS_KEY ?? "",
     S3_REGION: env.S3_REGION,
     S3_KEY_PREFIX: env.S3_KEY_PREFIX,
-    RUN_MIGRATIONS: "true",
+    // Cold starts never migrate unless the Worker explicitly opts in.
+    RUN_MIGRATIONS: runMigrations(env.RUN_MIGRATIONS),
     // Only the Worker can reach the container, so trust its forwarded headers.
     FORWARDED_ALLOW_IPS: "*",
     ...optionalEnv(env),
   };
+}
+
+// Headers every API response carries: HTTPS only, no MIME sniffing, never framed.
+export const API_SECURITY_HEADERS: Record<string, string> = {
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+};
+
+export function withSecurityHeaders(response: Response): Response {
+  const secured = new Response(response.body, response);
+  for (const [name, value] of Object.entries(API_SECURITY_HEADERS)) {
+    secured.headers.set(name, value);
+  }
+  return secured;
 }
 
 export default {
@@ -201,11 +227,13 @@ export default {
     // Fail closed: without these the backend would boot on its development defaults.
     const missing = REQUIRED_SECRETS.filter((name) => !env[name]);
     if (missing.length > 0) {
-      return Response.json(
-        { status: "unavailable", reason: "api secrets not configured", missing },
-        { status: 503 },
+      return withSecurityHeaders(
+        Response.json(
+          { status: "unavailable", reason: "api secrets not configured", missing },
+          { status: 503 },
+        ),
       );
     }
-    return env.API.getByName("primary").fetch(request);
+    return withSecurityHeaders(await env.API.getByName("primary").fetch(request));
   },
 };

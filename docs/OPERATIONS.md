@@ -9,7 +9,7 @@ PatchHive remains a modular monolith. Apply the single Alembic head before appli
 1. Install exactly from `backend/pyproject.toml` / `backend/requirements.txt` and `frontend/package-lock.json`.
 2. Run backend, frontend, property/contract, security, and accessibility automation (or rely on green PR CI).
 3. Run `alembic heads` and require a **single head**. As of 2026-07-26, head includes `20260726_module_registry_slugs` (after device registry + PDB wiring). Re-check on the release SHA; do not trust this note alone.
-4. Run PostgreSQL integration and migration tests (`alembic upgrade head` against Postgres 15). Deploy/staging containers must apply Alembic via `docker-entrypoint.sh` (`RUN_MIGRATIONS=true`); never use `init_db()`/`create_all()` as the production schema path.
+4. Run PostgreSQL integration and migration tests (`alembic upgrade head` against Postgres 15). Deployed databases (Cloudflare staging and production) are migrated only by the manual `db-migrate.yml` workflow, run before deploying code that adds a migration. Container startup migrations are opt-in (`RUN_MIGRATIONS` exactly `true` or `1`; default off) and are not enabled on either Cloudflare Worker, so a cold start never mutates the database. Never use `init_db()`/`create_all()` as the production schema path.
 5. Generate and retain Python/npm CycloneDX SBOMs and build provenance (Security workflow artifacts).
 6. Run ledger reconciliation (`reconcile_ledger` or equivalent admin path) and require no anomalies.
 7. Verify all legacy feature flags are false (`ENABLE_LEGACY_SOCIAL`, `ENABLE_LEGACY_PUBLISHING`, `ENABLE_LEGACY_LEADERBOARDS`, `ENABLE_LEGACY_REFERRALS`).
@@ -95,6 +95,8 @@ Restored by `scripts/staging/seed-demo.ps1` (also run at end of `smoke.ps1`):
 |---------|----------|----------|------|
 | Demo user | `golden_demo` | `demo-pass` | User |
 | Admin | `admin_demo` | `admin-pass` | Admin |
+
+These passwords are public and work only on a **local** database. The seeder refuses production, and refuses any hosted database unless `ENVIRONMENT=staging` and `PATCHHIVE_DEMO_USER_PASSWORD` / `PATCHHIVE_DEMO_ADMIN_PASSWORD` (16+ characters, not the ones above) are set; the walkthrough then logs in with those.
 
 **Not valid:** `Admin` / `Admin` (old UI label only — fixed on Login page).
 

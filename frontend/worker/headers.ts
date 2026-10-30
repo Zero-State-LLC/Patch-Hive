@@ -1,8 +1,7 @@
 // Response headers the edge adds to every page.
 //
-// The Content-Security-Policy ships in report-only mode first: browsers log what it would
-// block without blocking anything. Promote it to `Content-Security-Policy` once the
-// console stays clean on both hosts.
+// The Content-Security-Policy is enforced. It ran report-only first and was promoted on
+// 2026-10-28 after the console stayed clean on both hosts.
 
 // The API each frontend host talks to (frontend/.env.production, .env.staging).
 const API_ORIGINS: Record<string, string> = {
@@ -34,8 +33,10 @@ export function contentSecurityPolicy(hostname: string): string {
 
 export function securityHeaders(hostname: string): Record<string, string> {
   return {
-    "Content-Security-Policy-Report-Only": contentSecurityPolicy(hostname),
+    "Content-Security-Policy": contentSecurityPolicy(hostname),
     "X-Content-Type-Options": "nosniff",
+    // HTTPS only, for a year, on every subdomain (staging and the API are HTTPS too).
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
     "Referrer-Policy": "strict-origin-when-cross-origin",
   };
 }

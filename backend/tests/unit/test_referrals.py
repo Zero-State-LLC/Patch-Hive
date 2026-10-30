@@ -100,3 +100,83 @@ def test_self_referral_rejected(db_session: Session):
         create_referral(db_session, referrer=user, referred=user)
     except ValueError as exc:
         assert "cannot be the same" in str(exc)
+
+
+def test_a_referral_reward_is_spendable_once(db_session: Session):
+    """Spec 004 FR-009: the reward lands in the canonical ledger that spending reads."""
+    from canon.exports import credit_balance
+
+    referrer = _create_user(db_session, "referrer3", "referrer3@example.com", "refcode3")
+    referred = _create_user(db_session, "referred3", "referred3@example.com", "newcode3")
+    create_referral(db_session, referrer=referrer, referred=referred)
+    db_session.commit()
+
+    record_purchase(db_session, user=referred, credits_delta=5, payment_verified=True)
+    record_purchase(db_session, user=referred, credits_delta=2, payment_verified=True)
+    db_session.commit()
+
+    assert credit_balance(db_session, referrer.id) == REFERRAL_REWARD_CREDITS
+
+
+def test_a_self_reported_purchase_earns_no_spendable_reward(db_session: Session):
+    """The legacy purchase route is user-callable, so its rewards stay unspendable."""
+    from canon.exports import credit_balance
+
+    referrer = _create_user(db_session, "referrer4", "referrer4@example.com", "refcode4")
+    referred = _create_user(db_session, "referred4", "referred4@example.com", "newcode4")
+    create_referral(db_session, referrer=referrer, referred=referred)
+    db_session.commit()
+
+    record_purchase(db_session, user=referred, credits_delta=0)
+    db_session.commit()
+
+    assert credit_balance(db_session, referrer.id) == 0
+
+
+def test_referral_summary_counts_only_spendable_referral_credit(db_session: Session):
+    """Spec 004 FR-031, research R6: ``earned_credits`` is canonical referral grants only."""
+    from canon.exports import credit_balance
+    from monetization.referrals import get_referral_summary
+
+    referrer = _create_user(db_session, "referrer5", "referrer5@example.com", "refcode5")
+    verified = _create_user(db_session, "referred5", "referred5@example.com", "newcode5")
+    reported = _create_user(db_session, "referred6", "referred6@example.com", "newcode6")
+    create_referral(db_session, referrer=referrer, referred=verified)
+    create_referral(db_session, referrer=referrer, referred=reported)
+    db_session.commit()
+
+    # A self-reported purchase writes a legacy reward that is not spendable.
+    record_purchase(db_session, user=reported, credits_delta=0)
+    db_session.commit()
+    assert get_referral_summary(db_session, user=referrer)["earned_credits"] == 0
+
+    record_purchase(db_session, user=verified, credits_delta=5, payment_verified=True)
+    db_session.commit()
+
+    summary = get_referral_summary(db_session, user=referrer)
+    assert summary["earned_credits"] == REFERRAL_REWARD_CREDITS
+    assert summary["earned_credits"] == credit_balance(db_session, referrer.id)
+
+
+def test_referral_summary_ignores_other_canonical_grants(db_session: Session):
+    """An admin grant is spendable but is not referral credit."""
+    from datetime import datetime, timezone
+
+    from canon.models import CanonicalCreditLedgerEntryRecord
+    from monetization.referrals import get_referral_summary
+
+    user = _create_user(db_session, "granted", "granted@example.com", "grantcode")
+    db_session.add(
+        CanonicalCreditLedgerEntryRecord(
+            id="grant-admin-test",
+            user_id=user.id,
+            delta=10,
+            entry_type="grant",
+            idempotency_key="admin-grant:test",
+            export_id=None,
+            created_at=datetime.now(timezone.utc),
+        )
+    )
+    db_session.commit()
+
+    assert get_referral_summary(db_session, user=user)["earned_credits"] == 0

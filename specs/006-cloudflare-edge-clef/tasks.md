@@ -77,7 +77,7 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
   - depends_on: [T001]
   - [x] T050a Pass `DATABASE_URL` and `SECRET_KEY` from Worker secrets into the container, and answer 503 without starting it when either is unset (code).
     - depends_on: [T001]
-  - [ ] T050b Create the Neon staging branch and set its pooled connection string (`sslmode=require`) as the `edge/api` `DATABASE_URL` secret; the container's first start runs `alembic upgrade head` (operator).
+  - [ ] T050b Create the Neon staging branch and set its pooled connection string (`sslmode=require`) as the `edge/api` `DATABASE_URL` secret; migrate it with the `db-migrate.yml` workflow (target `staging`); container starts do not migrate (operator).
     - depends_on: [T050a]
 
 - [ ] T055 Keep evidence uploads, exports and design packs in durable object storage (R2), not on the container's disk. Container disks are wiped when the instance sleeps, restarts or redeploys, and `backend/evidence/routes.py`, `backend/export/`, `backend/publishing/routes.py` and `backend/canon/fulfillment.py` write under `export_dir` / `export_store_root` and record local paths in Postgres.
@@ -116,3 +116,22 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
 
 - [x] T090 Integration tests for decision and deployment machines.
   - depends_on: [T010, T070]
+
+## Gap closure (2026-10-29)
+
+From [research.md](research.md). Effort in brackets.
+
+- [x] T100 Make `gates_pass` verify the evaluation receipt itself: carry it in `ReadinessEvidence`, call the signed 007 verifier, and require its `receipt_sha256` to match (R1) [S]. Done 2026-10-29: `evaluation_receipt` and `evaluation_receipt_signature` are checked against the committed allowlist.
+  - depends_on: [T070, 007:T081]
+- [ ] T101 Put production deploy workflows behind a GitHub environment with required reviewers (R2).
+  - depends_on: [T001]
+  - [ ] T101b Create `staging` and `production` environments; give `production` required reviewers and a `main`-only branch rule; move `PATCHHIVE_DATABASE_URL_PROD` and the Cloudflare token into it (operator, repo admin) [S].
+    - depends_on: [T001]
+  - [ ] T101a Set the job `environment:` in `db-migrate.yml`, `db-load.yml` and `edge-secrets.yml` from the target input, mapping `prod` to `production`, and read secrets from the environment (code) [S].
+    - depends_on: [T101b]
+- [x] T102 Delete `.github/workflows/deploy-worker-pin-pr.yml`; it deploys the Noema project, not PatchHive (R3) [S]. Done 2026-10-29.
+  - depends_on: [T001]
+- [x] T103 Drop `actions: write` from `db-load.yml` (R4) [S]. Done 2026-10-29.
+  - depends_on: [T001]
+- [x] T104 Revoke the newly created R2 token when the bulk secret write or the Worker check fails in `edge-secrets.yml` (R5) [S]. Done 2026-10-29.
+  - depends_on: [T001]

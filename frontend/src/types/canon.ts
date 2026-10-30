@@ -124,10 +124,18 @@ export interface CanonicalArtifactIdentity {
   confidence: number;
   status: EpistemicStatus;
 }
+export type MetricScore = number | "NOT_COMPUTABLE";
 export interface RigMetricsPacket extends CanonicalArtifactIdentity {
+  rig_id?: string | null;
   module_count: number;
+  category_counts?: Record<string, number> | null;
   total_hp?: number | null;
-  routing_flex_score: number;
+  modulation_budget?: MetricScore | null;
+  routing_flex_score: MetricScore;
+  clock_coherence_score?: MetricScore | null;
+  chaos_headroom?: MetricScore | null;
+  learning_gradient_index?: MetricScore | null;
+  performance_density_index?: MetricScore | null;
   confidence_notes: string[];
 }
 export interface LayoutPlacement {
@@ -266,9 +274,10 @@ export interface StripeEventRecord {
   event_type: string;
   payload_hash: string;
   livemode: boolean;
-  status: "received" | "processed" | "rejected";
+  status: "received" | "processed" | "duplicate" | "unresolved" | "ignored" | "rejected";
   received_at: string;
   processed_at?: string | null;
+  reason_code?: string | null;
 }
 export interface AdminAuditEvent {
   schema_version: typeof CANON_SCHEMA_VERSION;

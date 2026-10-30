@@ -250,3 +250,32 @@ def test_regeneration_creates_a_new_run_without_mutating_prior_run(db_session: S
     assert second_run.id != first_run.id
     assert second_library.run_id == second_run.id
     assert db_session.get(GenerationRunRecord, "run-1").normalized_input_hash == first_hash
+
+
+def test_rig_metrics_packet_sealed_before_fr027_keeps_its_hash() -> None:
+    """Hashes below were sealed by the schema before rig_id, category_counts and the five
+    extra scores existed (main at 3faaa63). They must still verify and round-trip."""
+    from datetime import datetime, timezone
+
+    common = dict(
+        entity_id="rev-1",
+        generator_version="canon-metrics.1.0.0",
+        generation_seed=7,
+        source_run_id="run-1",
+        source_rig_revision_id="rev-1",
+        created_at=datetime(2025, 12, 21, tzinfo=timezone.utc),
+        routing_flex_score=0.5,
+    )
+    with_hp = RigMetricsPacket(
+        artifact_id="metrics-legacy", module_count=2, total_hp=20, confidence_notes=("n",), **common
+    ).seal()
+    no_hp = RigMetricsPacket(artifact_id="metrics-legacy2", module_count=2, **common).seal()
+    assert with_hp.canonical_hash == "dba520d94b6528dc4ecc4273b477dc7fd5239544f5a7f696ba99247a60eaa0cc"
+    assert no_hp.canonical_hash == "19c9a4710a02b2764fe596330cb2ef83501ceac5ae307f7beb5282eae65f3d46"
+    restored = RigMetricsPacket.model_validate_json(with_hp.canonical_json())
+    assert restored.computed_hash() == with_hp.canonical_hash
+    # A packet that sets the new fields hashes differently.
+    assert RigMetricsPacket(
+        artifact_id="metrics-legacy", module_count=2, total_hp=20, confidence_notes=("n",),
+        rig_id="1", **common,
+    ).seal().canonical_hash != with_hp.canonical_hash

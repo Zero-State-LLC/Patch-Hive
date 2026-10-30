@@ -67,7 +67,7 @@ def test_canonical_export_requires_auth(client: TestClient) -> None:
     assert resp.status_code == 401
 
 
-def test_canonical_export_and_download_token_flow(client: TestClient, db_session: Session) -> None:
+def test_canonical_export_and_download_token_flow(export_fulfillment_pending, client: TestClient, db_session: Session) -> None:
     user, _patch = _persist_hierarchy(db_session)
     _grant(db_session, user.id, 10)
 
@@ -109,6 +109,14 @@ def test_canonical_export_and_download_token_flow(client: TestClient, db_session
     assert balance.status_code == 200
     assert balance.json()["balance"] == 10 - settings.patchbook_export_cost
 
+    # Fulfillment finishes: the pack exists, so a download token may be issued.
+    from canon.models import CanonicalExportRecord
+
+    record = db_session.get(CanonicalExportRecord, export_id)
+    record.status = "succeeded"
+    record.pack_manifest_hash = "b" * 64
+    db_session.commit()
+
     token_resp = client.post(
         f"/api/canon/exports/{export_id}/download-token",
         headers=_auth_headers(user),
@@ -137,7 +145,7 @@ def test_canonical_export_and_download_token_flow(client: TestClient, db_session
     assert any(entry["entry_type"] == "debit" for entry in body_summary["entries"])
 
 
-def test_canonical_export_insufficient_credits(client: TestClient, db_session: Session) -> None:
+def test_canonical_export_insufficient_credits(export_fulfillment_pending, client: TestClient, db_session: Session) -> None:
     user, _patch = _persist_hierarchy(db_session)
     resp = client.post(
         "/api/canon/exports",
@@ -277,3 +285,178 @@ def test_payment_startup_policy_fail_closed() -> None:
                 secret_key="x" * 32,
             )
         )
+
+
+@pytest.mark.parametrize(
+    "canon_on,inline_on",
+    [(False, False), (True, False), (False, True)],
+)
+def test_an_export_nothing_will_fulfill_is_refused_before_any_debit(
+    client: TestClient, db_session: Session, monkeypatch, canon_on: bool, inline_on: bool
+) -> None:
+    """Spec 004 FR-005: with no fulfiller, no credits are taken."""
+    monkeypatch.setattr(settings, "enable_canon_export_fulfillment", canon_on)
+    monkeypatch.setattr(settings, "enable_inline_export_fulfillment", inline_on)
+    user, _patch = _persist_hierarchy(db_session)
+    _grant(db_session, user.id, 10)
+    resp = client.post(
+        "/api/canon/exports",
+        headers=_auth_headers(user),
+        json={
+            "source_run_id": "run-1",
+            "source_rig_revision_id": "rig-rev-1",
+            "artifact_manifest_hash": "a" * 64,
+            "formats": ["pdf"],
+            "license": "personal",
+            "idempotency_key": f"idem-off-{canon_on}-{inline_on}",
+        },
+    )
+    assert resp.status_code == 503
+    assert resp.json()["detail"] == "EXPORT_FULFILLMENT_UNAVAILABLE"
+    balance = client.get("/api/canon/credits/balance", headers=_auth_headers(user)).json()["balance"]
+    assert balance == 10
+    assert client.get("/api/canon/exports", headers=_auth_headers(user)).json() == []
+
+
+def _webhook_settings(monkeypatch: pytest.MonkeyPatch, *, environment: str, test_mode: bool) -> str:
+    import canon.routes as canon_routes
+
+    secret = "whsec_test_secret_value_1234"
+    monkeypatch.setattr(settings, "stripe_test_mode", test_mode)
+    monkeypatch.setattr(settings, "stripe_webhook_secret", secret)
+    monkeypatch.setattr(settings, "environment", environment)
+    monkeypatch.setattr(settings, "allow_production_payments", False)
+    monkeypatch.setattr(canon_routes, "settings", settings)
+    return secret
+
+
+def test_stripe_webhook_rejects_livemode_in_staging_with_test_mode_off(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Spec 004 T041: live-mode events belong only to production."""
+    import time
+
+    secret = _webhook_settings(monkeypatch, environment="staging", test_mode=False)
+    payload = json.dumps({"id": "evt_live", "type": "charge.succeeded", "livemode": True}).encode()
+    resp = client.post(
+        "/api/canon/webhooks/stripe",
+        content=payload,
+        headers={"Stripe-Signature": _signature(payload, secret, int(time.time()))},
+    )
+    assert resp.status_code == 409, resp.text
+    assert resp.json()["detail"] == "LIVEMODE_EVENT_REJECTED"
+
+
+def test_stripe_webhook_accepts_a_rotated_secret_on_the_second_v1(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Spec 004 T040: the provider sends one v1 per active secret during rotation."""
+    import time
+
+    secret = _webhook_settings(monkeypatch, environment="development", test_mode=True)
+    timestamp = int(time.time())
+    payload = json.dumps({"id": "evt_rot", "type": "charge.succeeded", "livemode": False}).encode()
+    stale = _signature(payload, "whsec_retired_secret_value_99", timestamp).split(",")[1]
+    current = _signature(payload, secret, timestamp)
+    resp = client.post(
+        "/api/canon/webhooks/stripe",
+        content=payload,
+        headers={"Stripe-Signature": current.replace(",", f",{stale},", 1)},
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["duplicate"] is False
+
+
+def test_stripe_webhook_concurrent_duplicate_answers_200_duplicate(
+    client: TestClient, db_session: Session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Spec 004 T040: losing the insert race is a duplicate, not a 500."""
+    import time
+
+    from sqlalchemy import insert
+
+    from canon.contracts import canonical_sha256
+    from canon.models import StripeEventRecordModel
+
+    secret = _webhook_settings(monkeypatch, environment="development", test_mode=True)
+    event = {"id": "evt_race", "type": "charge.succeeded", "livemode": False}
+    payload = json.dumps(event).encode()
+    # The winning delivery commits after this one's lookup missed.
+    db_session.execute(
+        insert(StripeEventRecordModel.__table__).values(
+            stripe_event_id="evt_race",
+            event_type="charge.succeeded",
+            payload_hash=canonical_sha256(event),
+            livemode=False,
+            status="received",
+            received_at=NOW,
+        )
+    )
+    db_session.commit()
+    real_get = db_session.get
+    lookups: list[str] = []
+
+    def racing_get(model, ident, *args, **kwargs):
+        lookups.append(ident)
+        if model is StripeEventRecordModel and len(lookups) == 1:
+            return None
+        return real_get(model, ident, *args, **kwargs)
+
+    monkeypatch.setattr(db_session, "get", racing_get)
+    resp = client.post(
+        "/api/canon/webhooks/stripe",
+        content=payload,
+        headers={"Stripe-Signature": _signature(payload, secret, int(time.time()))},
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["duplicate"] is True
+    assert resp.json()["stripe_event_id"] == "evt_race"
+    assert lookups == ["evt_race", "evt_race"]
+
+
+@pytest.mark.parametrize(
+    "event_type,status,reason_code",
+    [
+        ("charge.succeeded", "ignored", None),
+        ("checkout.session.completed", "unresolved", "HANDLER_NOT_IMPLEMENTED"),
+    ],
+)
+def test_stripe_webhook_answers_with_the_event_disposition(
+    client: TestClient,
+    db_session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+    event_type: str,
+    status: str,
+    reason_code: str | None,
+) -> None:
+    """Spec 004 T045: no event stays ``received``; the reply carries the disposition."""
+    import time
+
+    from canon.models import StripeEventRecordModel
+
+    secret = _webhook_settings(monkeypatch, environment="development", test_mode=True)
+    payload = json.dumps(
+        {"id": "evt_disp", "type": event_type, "livemode": False, "data": {"object": {}}}
+    ).encode()
+    resp = client.post(
+        "/api/canon/webhooks/stripe",
+        content=payload,
+        headers={"Stripe-Signature": _signature(payload, secret, int(time.time()))},
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert (body["status"], body["reason_code"], body["duplicate"]) == (status, reason_code, False)
+    record = db_session.get(StripeEventRecordModel, "evt_disp")
+    assert record.status == status
+    assert record.processed_at is not None
+    assert db_session.query(CanonicalCreditLedgerEntryRecord).count() == 0
+
+
+def test_the_legacy_balance_route_is_gone(client: TestClient, db_session: Session) -> None:
+    """Spec 004 T044, FR-009: the canonical balance is the only balance."""
+    user, _patch = _persist_hierarchy(db_session)
+    _grant(db_session, user.id, 7)
+    legacy = client.get("/api/monetization/credits/balance", headers=_auth_headers(user))
+    assert legacy.status_code == 404
+    canonical = client.get("/api/canon/credits/balance", headers=_auth_headers(user))
+    assert canonical.json()["balance"] == 7

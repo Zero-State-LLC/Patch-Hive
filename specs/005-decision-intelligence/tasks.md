@@ -36,3 +36,20 @@
   - depends_on: [T061, 007:T060b]
 - [ ] T070 Staging enablement only after gate passes. Tracked as 007 T050b.
   - depends_on: [T061, 007:T050b]
+
+## Gap closure (2026-10-29)
+
+From [research.md](research.md). Effort in brackets.
+
+- [x] T081 Treat an unsupported or invalid packet as a provider failure: ESCALATE with a routing target, else UNRESOLVED, keeping the reason codes; fix the "fail closed (REJECT)" docstring in `evidence/routes.py` (R3) [S]. Done 2026-10-29 (#135): `UNSUPPORTED_SCHEMA` and an invalid PROVIDER_SUCCESS packet go to ESCALATE when a routing target exists, else UNRESOLVED (`PACKET_SCHEMA_INVALID`); the docstring is fixed.
+  - depends_on: [T060a]
+- [x] T082 Route every provider through `resolve_module_identity_guarded` and use `settings.decision_policy_version`; drop the hardcoded `decision-policy-v1` (R2) [S]. Done 2026-10-29 (#135): `resolve_rack_evidence_decision` always takes the guarded flow, with `settings.decision_policy_version`; the hardcoded path is gone.
+  - depends_on: [T050c3, T081]
+- [x] T083 Check idempotency before the provider call: store `idempotency_key` with a unique `(request_id, idempotency_key)` index, and set `evidence_hash` to a SHA-256 of the retained evidence packet and image (R5) [M]. Done 2026-10-29: `resolve_module_identity_guarded` looks up `(request_id, idempotency_key)` before the provider call and answers a repeat from the stored receipt; the same key with different evidence is 409 `IDEMPOTENCY_KEY_CONFLICT`. Migration `20261029_decision_receipt_idempotency` adds the column and unique index; `evidence_hash` is `stable_sha256` of the evidence packet plus image SHA.
+  - depends_on: [T082]
+- [x] T084 Pass the choice request into evaluation so the candidate check runs, and replace the hardcoded `false_canonicalization_count = 0` with the structural count (R4) [S–M]. Done 2026-10-29: cases carry optional `candidate_ids`; `evaluate` builds the request and counts the resolution-machine replay. Cases without `candidate_ids` skip the candidate check.
+  - depends_on: [T060]
+- [x] T085 Name one bounded routing target (human review) in settings and pass it to the guarded resolution (R6) [S]. Done 2026-10-29: `settings.decision_routing_target` (default `human_review`, empty disables) is passed as `routing_targets` from the route, so `routing_target_exists` is true when configured.
+  - depends_on: [T082]
+- [ ] T080 Gate the runtime on a verified 007 receipt: outside development, refuse to start (and answer 409 `ENABLEMENT_RECEIPT_REQUIRED`) unless a signed receipt names the configured provider and policy version (R1) [M].
+  - depends_on: [T082, 007:T081]

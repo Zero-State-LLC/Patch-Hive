@@ -23,10 +23,11 @@ describe("security headers", () => {
     expect(csp).not.toMatch(/script-src[^;]*unsafe-inline/);
   });
 
-  it("ships the policy in report-only mode first", () => {
+  it("enforces the policy", () => {
     const headers = securityHeaders("patch-hive.com");
-    expect(headers["Content-Security-Policy-Report-Only"]).toBeTruthy();
-    expect(headers).not.toHaveProperty("Content-Security-Policy");
+    expect(headers["Content-Security-Policy"]).toBe(contentSecurityPolicy("patch-hive.com"));
+    expect(headers).not.toHaveProperty("Content-Security-Policy-Report-Only");
     expect(headers["X-Content-Type-Options"]).toBe("nosniff");
+    expect(headers["Strict-Transport-Security"]).toBe("max-age=31536000; includeSubDomains");
   });
 });

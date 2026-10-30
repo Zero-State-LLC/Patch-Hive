@@ -313,17 +313,38 @@ def test_flag_stays_default_off_and_no_payments_after_full_path(art) -> None:
     assert fresh.allow_production_payments is False
 
 
-def test_pinned_receipt_sha_satisfies_edge_readiness_gate(art) -> None:
+def test_signed_pinned_receipt_satisfies_edge_readiness_gate(art, monkeypatch, tmp_path) -> None:
+    from intelligence.receipt_signing import sign_receipt_sha256
+    from tests.eval007_helpers import install_allowlist, throwaway_approver
+
+    key, entry = throwaway_approver("operator-1")
+    install_allowlist(monkeypatch, tmp_path, entry)
+    receipt = art["receipt"]
+    signature = sign_receipt_sha256(key, key_id="operator-1", receipt_sha256=receipt.receipt_sha256)
     evidence = ReadinessEvidence(
         payments_live_disabled=True,
         d1_absent=True,
         clef_flag_default_off=True,
         staging_host_plan_passed=True,
-        evaluation_receipt_sha256=art["receipt"].receipt_sha256,
+        evaluation_receipt_sha256=receipt.receipt_sha256,
+        evaluation_receipt=receipt,
+        evaluation_receipt_signature=signature,
     )
     result = readiness_transition(ReadinessState.CLEF_FLAGGED, ReadinessEvent.GATES_PASS, evidence)
-    assert result.accepted
+    assert result.accepted, result.failed_checks
     assert result.to_state is ReadinessState.GATES_PASSED
+
+    unsigned = ReadinessEvidence(
+        payments_live_disabled=True,
+        d1_absent=True,
+        clef_flag_default_off=True,
+        staging_host_plan_passed=True,
+        evaluation_receipt_sha256=receipt.receipt_sha256,
+        evaluation_receipt=receipt,
+    )
+    result = readiness_transition(ReadinessState.CLEF_FLAGGED, ReadinessEvent.GATES_PASS, unsigned)
+    assert result.accepted is False
+    assert "EVALUATION_RECEIPT_UNVERIFIED:RECEIPT_SIGNATURE_MISSING" in result.failed_checks
 
 
 def _drive(a: dict, upto: int):

@@ -17,6 +17,17 @@ Recorded after the T001 review. These are confirmed and override the `[INFERRED]
   - Retailer pages (Perfect Circuit, Thomann and others) are allowed only as one-off manual lookups, recorded as `RETAILER_OBSERVED` (`access_basis = manual_research`). They are never canonical and never bulk-crawled.
   - ModularGrid is never fetched.
 
+## Owner decisions (2026-10-28)
+
+D3 and D6 were confirmed by the owner during the 2026-10-28 catalog work (#116, #119, #120). D4, D5, D7 and D8 follow the recommendations in [research.md](research.md), adopted when the owner asked on 2026-10-29 for the open decisions to be researched and handled as recommended. All override the `[INFERRED]` text below where they differ.
+
+- **D3 Retire, never delete.** A catalog row that is wrong (filed under another maker's brand, or not a module) is tombstoned through a committed retirement manifest that names each row, its reason and its evidence. Tombstoned rows leave browse, search and counts, stay readable by slug, and are never materialized (FR-036). A rack that already holds one is warned, not changed.
+- **D4 Reviewed corrections may overwrite.** A stored value that a maker page shows to be wrong may be replaced only through a committed correction manifest. Each entry names the wrong value it replaces (`only_if_value`), the new value, and the maker page that states it. The old value is archived first (FR-038). This relaxes the earlier rule that an admitted non-null HP is never overwritten.
+- **D5 One loader.** The catalog loader (`data/synth-catalog/population.py`) is the only writer of catalog rows. `seed_catalog_from_synth.py` (both copies) is deleted: no automation ran it, it overwrote HP, category and source, and it invented defaults (HP 10, type VCO).
+- **D6 A crawl never takes another maker's homepage.** A brand whose resolved homepage another brand owns is refused before crawling (FR-037).
+- **D7 A refused site stays refused (2026-10-29).** Frap Tools' host accepts no TCP connection from the crawl network (ports 80 and 443, observed 2026-10-29), and Tiptop answers every request with a CAPTCHA. Neither is fetched through a paid renderer or proxy from another network. Both are excluded until the maker supplies data or access (research R3).
+- **D8 Jumper-dependent power is stored per setting (2026-10-29).** A module whose draw depends on a jumper gets one +12 V / −12 V / +5 V set per setting, each with its source page (`power_configs`). The single draw columns stay unknown for it (FR-022). This is not implemented yet: the committed crawl keeps only one value per page, so the settings must be read from the maker pages again under an approved cap (research R4, R5; tasks T034, T035).
+
 ## Sources
 
 - `data/synth-catalog/README.md`
@@ -267,7 +278,7 @@ Initial state: `TARGETED`. Final states: `ADMITTED`, `REJECTED`.
 - `BLOCKED` -> `FETCHING` directly. [INFERRED]
 - `RECEIPTED` -> `ADMITTED` when the overlay changed after the receipt was written. [INFERRED]
 - `REJECTED` -> `ADMITTED`. [INFERRED]
-- `ADMITTED` -> any state that overwrites a non-null HP. [OBSERVED: backend/DATA_SOURCES.md]
+- `ADMITTED` -> any state that overwrites a non-null HP, except a reviewed correction (D4, FR-038). [OBSERVED: backend/DATA_SOURCES.md]
 - Any row with `access_basis` of `unknown` -> bulk publication. [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md]
 
 ```mermaid
@@ -291,6 +302,34 @@ stateDiagram-v2
 ```
 
 Sealed seed path: the Synth Catalog Research seed is already research output. It reuses the `OVERLAY` -> `RECEIPTED` -> `ADMITTED` steps, with the seed file acting as the overlay [INFERRED]. For confirmation, see Open questions.
+
+### Row lifecycle (admitted rows)
+
+The batch machine above admits rows. Each admitted row then has its own lifecycle, set only by committed manifests the loader applies (D3, D4).
+
+| State | Meaning | Label |
+|---|---|---|
+| `LIVE` | Admitted and visible in browse, search and counts. | [OBSERVED: data/synth-catalog/population.py] |
+| `FLAGGED` | A value awaits a maker-page check (`needs_reverify`); an HP flag blocks placement (FR-035). | [OBSERVED: backend/racks/validation.py] |
+| `TOMBSTONED` | Retired: hidden from browse, search, counts and materialization; readable by slug. | [OBSERVED: backend/modules/catalog_routes.py] |
+
+Initial state: `LIVE`. Final state: `TOMBSTONED` (no un-tombstoning yet).
+
+| from | event | guard | to | effect |
+|---|---|---|---|---|
+| LIVE | flag | provenance manifest action `flag` or `null` on a NOT NULL field | FLAGGED | Archive the value; set `needs_reverify` |
+| FLAGGED | correct | correction entry matches the stored value (`only_if_value`) AND cites a maker page | LIVE | Archive the old value; write the new one; clear `needs_reverify` once every flagged field is corrected (research R8); an HP correction lifts the FR-035 block |
+| LIVE | correct | as above | LIVE | Archive the old value; write the new one |
+| LIVE | retire | retirement manifest names the row with a reason and evidence | TOMBSTONED | Set `tombstoned_at` and reason (catalog), `status = tombstoned` (modules) |
+| FLAGGED | retire | as above | TOMBSTONED | As above |
+
+Illegal transitions:
+
+- Any state -> deleted. Rows are never deleted.
+- `LIVE` or `FLAGGED` -> a changed value without a correction entry that names the old value and a maker page.
+- `TOMBSTONED` -> `LIVE` (needs its own decision and manifest).
+- `TOMBSTONED` -> any flag or correction. A manifest entry naming a retired row is refused and counted in the receipt (research R9).
+- A correction applied when the stored value is no longer `only_if_value` (the value changed since review).
 
 Privacy: catalog data is public product specs. Keep any private source material out of the repo, and store row refs only.
 
@@ -344,6 +383,9 @@ Privacy: catalog data is public product specs. Keep any private source material 
 - **FR-033**: ModularGrid-derived catalog rows MUST carry `access_basis = unknown` and evidence status `CATALOG_OBSERVED`, MUST NOT carry ModularGrid-derived descriptions, and MUST be excluded from any bulk publication or export (D1). They MAY be listed one by one in the catalog UI, marked "Unverified lead" (owner decision, 2026-10-27). The tags live on `module_catalog.access_basis` and `module_catalog.evidence_status` (migration `20261027_catalog_lead_tags`).
 - **FR-034**: A ModularGrid-derived row MUST become canonical only through manufacturer or manual confirmation recorded with its source URL (D1).
 - **FR-035**: Rack placement MUST refuse a module whose HP is flagged `needs_reverify` until it is re-verified (D1). The guard rejects with `MODULE_HP_NEEDS_REVERIFY` when the archive holds an `hp` row with action `flag`; a module whose HP was confirmed (`keep`) stays placeable.
+- **FR-036**: A wrong catalog row MUST be retired by tombstone, never deleted, through a committed retirement manifest (`overlays/catalog-retirements-vN.json`) that gives each row a reason and evidence (D3). Browse, search, counts and batch materialization MUST skip tombstoned rows; a lookup by slug MAY still answer; materializing one MUST fail with `CATALOG_ROW_TOMBSTONED`. A rack holding one MUST be warned (`MODULE_TOMBSTONED`) and MUST NOT be changed. An applied manifest MUST NOT be rewritten; later retirements go in a new version. Implemented 2026-10-28 (#116, #120, #122).
+- **FR-037**: The crawler MUST resolve every brand before crawling any, and MUST refuse a homepage another brand owns: the brand named in the host owns it, else the one brand resolved by a maker adapter or the curated list; with no owner, every brand on the host is refused. Refusals MUST be recorded in the receipt, and a partial rerun MUST still see earlier refusals (D6). Implemented 2026-10-28 (#119).
+- **FR-038**: A stored value MAY be corrected only through a committed correction manifest under `provenance/` (D4). Each entry MUST name the field, the wrong value (`only_if_value`), the new value and the maker page that states it. The loader MUST archive the old value before writing the new one and MUST skip the entry when the stored value differs from `only_if_value`. A corrected HP MUST lie in the FR-007 band and lifts the FR-035 placement block for that row.
 - **FR-032**: No provider or model output MAY move a row past `EVIDENCE_ONLY` without the deterministic filter and operator admission (constitution principle 4) [INFERRED].
 
 ## Key entities
@@ -394,15 +436,27 @@ Privacy: catalog data is public product specs. Keep any private source material 
 
 ## Open questions
 
-- **NOT_COMPUTABLE: Fetch cost and budget.** The per-batch Firecrawl cost, the budget ceiling, and where budget approval is recorded are not stated in the sources.
+- **OPEN (owner): the 221 unsourced v1 HP values.** Triage is recommended: re-source the 45 that match a maker page, hand-check and correct the 7 that disagree, mark the 169 unmatched as not maker-checked until looked up (research R7; tasks T038, T039).
+
+- **PARTLY RESOLVED (2026-10-29): Fetch cost and budget.** Observed cost: the full v2 maker crawl used 2,569 paid fetches, about 1,116 context.dev and 33 Firecrawl credits (`receipts/scrape-ledger.json`); the T026 pass used 10 credits. Caps so far are approved in chat and written into `SCRAPING_ARCHITECTURE.md`. Still open: an approvals receipt the crawler checks before a paid fetch (FR-003).
 - **RESOLVED (D2): Retailer scraping permission.** There is no automated retailer crawling. Retailer values come only from one-off manual lookups.
 - **RESOLVED (D1, D2): Conflict between documents.** Automated fetching is limited to official manufacturer pages and manuals. The ModularGrid-derived seed is a discovery lead, not curated canon.
-- **NOT_COMPUTABLE: Access basis for scraped rows.** Policy lists allowed values, but none is assigned to Firecrawl output.
-- **NOT_COMPUTABLE: Thomann coverage.** The script docstring names Thomann, but the extracted URL patterns show none.
-- **NOT_COMPUTABLE: File conventions.** The schemas and naming for residual-N targets files, `*.filtered.json`, and `overlays/*-vN.json` do not appear in the sources.
-- **NOT_COMPUTABLE: Case pipeline behavior.** `scripts/build_case_catalog_seed.py` content was not in the excerpt, so case pipeline behavior is unconfirmed.
+- **RESOLVED (D2): Access basis for scraped rows.** Maker-page rows carry `access_basis = official_publication`; ModularGrid-derived leads carry `unknown` (FR-033).
+- **RESOLVED (D2): Thomann coverage.** No retailer is crawled; Thomann values come only from one-off manual lookups.
+- **RESOLVED (2026-10-29): File conventions.** Observed in `data/synth-catalog/`:
+  - `overlays/catalog-additions-vN.json` (insert-if-absent rows);
+  - `module-power-depth-vN.json` (fill-null specs);
+  - `module-catalog-hp-vN.json`;
+  - `module-catalog-category-vN.json`;
+  - `catalog-retirements-vN.json` (tombstones);
+  - `maker-review-v1.json` (renames);
+  - `provenance/*.json` (archive-then-null, flag, keep, relabel or correct, one batch each);
+  - `receipts/*.json` (dry-run and apply receipts, the spend ledger).
+
+  Every overlay is versioned, and an applied version is never rewritten (FR-018, FR-036).
+- **RESOLVED (2026-10-29): Case pipeline behavior.** The loader imports `data/cases/seed-v1.json` through `integrations.case_catalog_populator.import_records`: insert-if-absent and fill-null, rejected records counted. The plan hash covers the case writes (FR-020; #103).
 - **NOT_COMPUTABLE: Roadmap targets.** `docs/PRODUCT_DATABASE_COMPLETENESS_ROADMAP.md` content was not in the excerpt. Coverage targets are unknown.
-- **NOT_COMPUTABLE: Brand count.** Sources differ: about 700, 767, and "~700+".
+- **RESOLVED (2026-10-29): Brand count.** Observed on prod: 703 registry manufacturers; 355 brands with live catalog rows after the tombstones.
 - **Seed path.** Confirm that the sealed seed enters at `OVERLAY`, or define a separate entry state.
 - **Verification ritual.** Confirm whether the "3-consecutive scrubbed runs" verification [OBSERVED: data/synth-catalog/PATCHHIVE_INTEGRATION.md] applies to every admission.
 - **Slug dedupe.** Confirm whether catalog dedupe should become `(brand, slug)` to avoid cross-brand collisions.

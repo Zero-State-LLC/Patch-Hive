@@ -132,6 +132,39 @@ class TestPublishingAPI:
 
         assert response.status_code == 403
 
+    def test_visibility_defaults_to_unlisted(
+        self, client: TestClient, db_session: Session, sample_user: User, sample_case
+    ):
+        rack = Rack(user_id=sample_user.id, name="Rack", case_id=sample_case.id)
+        db_session.add(rack)
+        db_session.commit()
+        db_session.refresh(rack)
+        export = _create_export(db_session, sample_user, _create_patch(db_session, rack), None)
+
+        response = client.post(
+            "/api/me/publications",
+            json={
+                "export_id": export.id,
+                "title": "No visibility given",
+                "allow_download": True,
+                "allow_remix": False,
+            },
+            headers=_auth_headers(sample_user),
+        )
+
+        assert response.status_code in (200, 201), response.text
+        assert response.json()["visibility"] == "unlisted"
+
+    @pytest.mark.parametrize("export_type", ["patch", "rack"])
+    def test_gallery_accepts_known_export_types(self, client: TestClient, export_type: str):
+        response = client.get("/api/gallery/publications", params={"export_type": export_type})
+        assert response.status_code == 200
+
+    @pytest.mark.parametrize("export_type", ["bogus", "PATCH", "book"])
+    def test_gallery_rejects_unknown_export_type(self, client: TestClient, export_type: str):
+        response = client.get("/api/gallery/publications", params={"export_type": export_type})
+        assert response.status_code == 422
+
     def test_unlisted_not_in_gallery(
         self, client: TestClient, db_session: Session, sample_user: User, sample_case
     ):
@@ -292,6 +325,30 @@ class TestPublishingAPI:
             db_session.refresh(pub)
             assert pub.status in {"removed", "hidden"}
 
+    def test_a_removed_publication_cannot_be_edited(
+        self, client: TestClient, db_session: Session, sample_user: User, sample_case
+    ):
+        from tests.conftest import bearer_headers
+
+        rack = Rack(user_id=sample_user.id, name="Rack", case_id=sample_case.id)
+        db_session.add(rack)
+        db_session.commit()
+        patch = _create_patch(db_session, rack)
+        removed = _create_publication(
+            db_session, _create_export(db_session, sample_user, patch, None), sample_user,
+            slug="removed-edit", status="removed",
+        )
+        before = removed.title
+        resp = client.patch(
+            f"/api/me/publications/{removed.id}",
+            json={"title": "Back again", "visibility": "public"},
+            headers=bearer_headers(sample_user),
+        )
+        assert resp.status_code == 409
+        assert resp.json()["detail"] == "PUBLICATION_UNDER_MODERATION"
+        db_session.refresh(removed)
+        assert removed.title == before and removed.status == "removed"
+
     def test_a_deleted_rack_cannot_be_exported(
         self, client: TestClient, db_session: Session, sample_user: User, sample_case
     ):
@@ -309,7 +366,8 @@ class TestPublishingAPI:
     def test_publication_lifecycle_follows_the_spec(
         self, client: TestClient, db_session: Session, sample_user: User, sample_case
     ):
-        """Spec 002: create -> draft; owner publishes; unlisted pairs are 409 and change nothing."""
+        """Spec 002: create -> draft; unlisted pairs are 409 and change nothing. Publishing a
+        draft needs a validated book (FR-048), which no legacy export has."""
         rack = Rack(user_id=sample_user.id, name="Rack", case_id=sample_case.id)
         db_session.add(rack)
         db_session.commit()
@@ -327,7 +385,17 @@ class TestPublishingAPI:
         assert client.get(f"/api/p/{pub['slug']}").status_code == 404  # drafts are not public
         url = f"/api/me/publications/{pub['id']}"
         assert client.patch(url, json={"status": "hidden"}, headers=owner).status_code == 409
-        assert client.patch(url, json={"status": "published"}, headers=owner).json()["status"] == "published"
+        refused = client.patch(url, json={"status": "published"}, headers=owner)
+        assert refused.status_code == 409
+        assert refused.json()["detail"] == "PUBLICATION_BOOK_NOT_VALIDATED"
+        stored = db_session.get(Publication, pub["id"])
+        db_session.refresh(stored)
+        assert stored.status == "draft" and stored.published_at is None
+
+        # The moderation path runs on a publication published before FR-048.
+        stored.status = "published"
+        stored.published_at = datetime.utcnow()
+        db_session.commit()
 
         admin = User(username="mod", email="mod@example.com", password_hash="h", is_admin=True)
         db_session.add(admin)

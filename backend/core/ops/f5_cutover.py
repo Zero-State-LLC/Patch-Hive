@@ -46,6 +46,9 @@ RUNTIME_FLAGS_SCHEMA = "patchhive.runtime-flags.v1"
 # server, never the local overlay file.
 RUNTIME_FLAGS_ROUTE = ("GET", "/api/admin/ops/runtime-flags")
 
+# The only environment a walkthrough receipt may be captured against.
+STAGING_ENVIRONMENT = "staging"
+
 CANON_LIST_ROUTE = ("GET", "/api/canon/rigs")
 CANON_DETAIL_ROUTE = ("GET", "/api/canon/rigs/{rig_id}")
 LEGACY_LIST_ROUTE = ("GET", "/api/racks/")
@@ -455,6 +458,10 @@ def flags_test_mode_failures(flags: DesignEngineFlags) -> tuple[str, ...]:
         failed.append("PRODUCTION_PAYMENTS_ENABLED")
     if flags.environment.strip().lower() in {"production", "prod"}:
         failed.append("PRODUCTION_ENVIRONMENT")
+    # Allowlist, not denylist (spec 008 R2): a beta claim rests on a staging run, so
+    # development, test, a typo, or an empty value is refused too.
+    if flags.environment != STAGING_ENVIRONMENT:
+        failed.append("SERVER_ENVIRONMENT_NOT_STAGING")
     return tuple(failed)
 
 

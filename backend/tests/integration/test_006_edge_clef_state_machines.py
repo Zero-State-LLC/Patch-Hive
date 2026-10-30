@@ -42,7 +42,7 @@ from intelligence.clef_resolution import (
     resolve_module_identity_guarded,
 )
 from intelligence.contracts import DecisionPacket
-from intelligence.evidence_resolution import DecisionIntelligenceDisabled
+from intelligence.evidence_resolution import DecisionIntelligenceDisabled, retained_evidence_hash
 from intelligence.fixture_provider import FixtureDecisionProvider, failed_fixture
 from intelligence.models import DecisionReceiptRecord
 from intelligence.policy import DecisionPolicy, PolicyThresholds
@@ -342,7 +342,10 @@ def test_clef_success_paths_follow_policy(
     assert receipt.id == resolution.receipt_id
     assert receipt.disposition == disposition.value
     assert receipt.provider == "clef"
-    assert receipt.evidence_hash == "ev-1"
+    # Hash of the retained packet plus image SHA (spec 005 R5), not the raw evidence id.
+    assert receipt.evidence_hash == retained_evidence_hash(
+        db.get(ClassificationEvidenceRecord, "ev-1").evidence_packet, "a" * 64
+    )
     assert db.query(SystemInventoryRevisionRecord).count() == 0
 
     if expected_telemetry is not None:
@@ -434,7 +437,7 @@ def test_packet_with_wrong_candidate_set_hash_is_rejected() -> None:
     resolution = _resolve_with(db, _UncheckedProvider())
     _PRODUCED_MACHINES.append(resolution.machine)
 
-    assert resolution.machine.state is ResolutionState.REJECT
+    assert resolution.machine.state is ResolutionState.UNRESOLVED
     assert resolution.error_code == "PACKET_SCHEMA_INVALID"
     assert resolution.receipt_id is None
     assert db.query(DecisionReceiptRecord).count() == 0
@@ -715,7 +718,28 @@ READINESS_STEPS: tuple[ReadinessEvent, ...] = (
 )
 
 
-def _complete_evidence(**overrides) -> ReadinessEvidence:
+@pytest.fixture(scope="module")
+def signed_receipt():
+    """The synthetic 007 receipt signed by a throwaway in-memory approver key (006 T100)."""
+    from intelligence.receipt_signing import sign_receipt_sha256
+    from tests.eval007_helpers import build_receipt_chain, throwaway_approver
+
+    receipt = build_receipt_chain()["receipt"]
+    key, entry = throwaway_approver("operator-1")
+    signature = sign_receipt_sha256(key, key_id="operator-1", receipt_sha256=receipt.receipt_sha256)
+    return receipt, signature, entry
+
+
+@pytest.fixture()
+def readiness_allowlist(signed_receipt, monkeypatch, tmp_path):
+    from tests.eval007_helpers import install_allowlist
+
+    install_allowlist(monkeypatch, tmp_path, signed_receipt[2])
+    return signed_receipt
+
+
+def _complete_evidence(signed, **overrides) -> ReadinessEvidence:
+    receipt, signature, _ = signed
     base = dict(
         frontend_build_output_present=True,
         frontend_custom_domain_attached=True,
@@ -727,7 +751,9 @@ def _complete_evidence(**overrides) -> ReadinessEvidence:
         d1_absent=True,
         clef_flag_default_off=True,
         staging_host_plan_passed=True,
-        evaluation_receipt_sha256="a" * 64,
+        evaluation_receipt_sha256=receipt.receipt_sha256,
+        evaluation_receipt=receipt,
+        evaluation_receipt_signature=signature,
         operator_approved=True,
         checklist_receipts=("receipt-1",),
     )
@@ -735,9 +761,9 @@ def _complete_evidence(**overrides) -> ReadinessEvidence:
     return ReadinessEvidence(**base)
 
 
-def test_readiness_replay_reaches_beta_ready() -> None:
+def test_readiness_replay_reaches_beta_ready(readiness_allowlist) -> None:
     state, results = replay_readiness(
-        (event, _complete_evidence()) for event in READINESS_STEPS
+        (event, _complete_evidence(readiness_allowlist)) for event in READINESS_STEPS
     )
 
     assert state is ReadinessState.BETA_READY
@@ -746,9 +772,38 @@ def test_readiness_replay_reaches_beta_ready() -> None:
     assert live_payments_permitted(state) is False
 
 
-def test_readiness_replay_stops_at_gates_without_operator_approval() -> None:
+def test_readiness_replay_stops_before_gates_with_a_bare_receipt_sha(readiness_allowlist) -> None:
     state, results = replay_readiness(
-        (event, _complete_evidence(operator_approved=False)) for event in READINESS_STEPS
+        (
+            event,
+            _complete_evidence(
+                readiness_allowlist, evaluation_receipt=None, evaluation_receipt_signature=None
+            ),
+        )
+        for event in READINESS_STEPS
+    )
+
+    assert state is ReadinessState.CLEF_FLAGGED
+    assert "EVALUATION_RECEIPT_MISSING" in results[4].failed_checks
+    assert production_claims_permitted(state) is False
+
+
+def test_readiness_replay_stops_before_gates_with_the_committed_allowlist(
+    signed_receipt,
+) -> None:
+    # The committed allowlist holds no keys until the operator commits one (007 T082).
+    state, results = replay_readiness(
+        (event, _complete_evidence(signed_receipt)) for event in READINESS_STEPS
+    )
+
+    assert state is ReadinessState.CLEF_FLAGGED
+    assert "EVALUATION_RECEIPT_UNVERIFIED:APPROVER_KEY_UNKNOWN" in results[4].failed_checks
+
+
+def test_readiness_replay_stops_at_gates_without_operator_approval(readiness_allowlist) -> None:
+    state, results = replay_readiness(
+        (event, _complete_evidence(readiness_allowlist, operator_approved=False))
+        for event in READINESS_STEPS
     )
 
     assert state is ReadinessState.GATES_PASSED

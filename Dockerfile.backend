@@ -19,17 +19,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY backend/ .
 
-# Entrypoint: alembic upgrade head then exec CMD
+# Entrypoint: wait for the DB, optionally migrate (RUN_MIGRATIONS=true), then exec CMD
 RUN chmod +x /app/docker-entrypoint.sh
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV RUN_MIGRATIONS=true
 
 # Expose port (Render sets PORT env var)
 EXPOSE $PORT
 
-# Migrate then run the application
+# Run the application (render.yaml opts in to startup migrations explicitly)
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}

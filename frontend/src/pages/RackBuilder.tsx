@@ -10,6 +10,7 @@ import {
 } from "@/lib/api";
 import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 import { firstFreeStartHp, packModulesOntoRows } from "@/lib/placementPack";
+import { railMeter, summarizePower, type RailKey, type RailTone } from "@/lib/powerBudget";
 import { useAuthStore } from "@/lib/store";
 import type {
   Case,
@@ -171,7 +172,9 @@ export default function RackBuilderPage() {
   // Rigs belong to the signed-in user, so creating one needs an account.
   const signedIn = useAuthStore((st) => st.isAuthenticated());
   // Bulk materialize rewrites shared catalog data; the API allows only Admin and Ops.
-  const canBulkMaterialize = useAuthStore((st) => st.user?.role === "Admin" || st.user?.role === "Ops");
+  const canBulkMaterialize = useAuthStore(
+    (st) => st.user?.role === "Admin" || st.user?.role === "Ops",
+  );
   const [candidates, setCandidates] = useState<ReviewCandidate[]>(DEMO_CANDIDATES);
   const [inventoryRevisionId, setInventoryRevisionId] = useState<string | null>(null);
   const [readyForGeneration, setReadyForGeneration] = useState(false);
@@ -252,74 +255,54 @@ export default function RackBuilderPage() {
     };
   }, [preselectedModuleId, liveMode]);
 
-  const placementPowerSummary = useMemo(() => {
-    let known = 0;
-    let unknown = 0;
-    let draw12 = 0;
-    let drawN12 = 0;
-    let draw5 = 0;
-    for (const spec of placementModules) {
-      const mod =
-        liveRack?.modules?.find((m) => m.module_id === spec.module_id)?.module ??
-        galleryModules.find((m) => m.id === spec.module_id);
-      if (!mod) {
-        unknown += 1;
-        continue;
-      }
-      if (mod.power_12v_ma != null) {
-        known += 1;
-        draw12 += mod.power_12v_ma || 0;
-        drawN12 += mod.power_neg12v_ma || 0;
-        draw5 += mod.power_5v_ma || 0;
-      } else {
-        unknown += 1;
-      }
-    }
-    return { known, unknown, draw12, drawN12, draw5, total: placementModules.length };
-  }, [placementModules, liveRack, galleryModules]);
+  const placementPowerSummary = useMemo(
+    () =>
+      summarizePower(
+        placementModules.map(
+          (spec) =>
+            liveRack?.modules?.find((m) => m.module_id === spec.module_id)?.module ??
+            galleryModules.find((m) => m.id === spec.module_id),
+        ),
+      ),
+    [placementModules, liveRack, galleryModules],
+  );
 
-  /** Case rail capacity vs known placement draw (fail-closed: null capacity = unspecified). */
+  /** Case rail capacity vs known placement draw; unknown draws make it a lower bound. */
   const powerRailMeters = useMemo(() => {
     const c = liveRack?.case;
     if (!c)
       return [] as {
         rail: string;
+        key: RailKey;
         draw: number;
+        unknown: number;
         capacity: number | null;
         headroom: number | null;
-        tone: "success" | "warning" | "danger" | "neutral";
+        tone: RailTone;
         pct: number;
+        label: string;
       }[];
-
-    const rails: { rail: string; draw: number; capacity: number | null | undefined }[] = [
-      { rail: "+12V", draw: placementPowerSummary.draw12, capacity: c.power_12v_ma },
-      { rail: "−12V", draw: placementPowerSummary.drawN12, capacity: c.power_neg12v_ma },
-      { rail: "+5V", draw: placementPowerSummary.draw5, capacity: c.power_5v_ma },
+    const rails: { rail: string; key: RailKey; capacity: number | null | undefined }[] = [
+      { rail: "+12V", key: "p12", capacity: c.power_12v_ma },
+      { rail: "−12V", key: "n12", capacity: c.power_neg12v_ma },
+      { rail: "+5V", key: "p5", capacity: c.power_5v_ma },
     ];
-
-    return rails.map((r) => {
-      const capacity = r.capacity ?? null;
-      if (capacity == null) {
-        return {
-          rail: r.rail,
-          draw: r.draw,
-          capacity: null,
-          headroom: null,
-          tone: "neutral" as const,
-          pct: 0,
-        };
-      }
-      const headroom = capacity - r.draw;
-      const pct = capacity > 0 ? Math.min(100, Math.round((r.draw / capacity) * 100)) : 0;
-      const tone =
-        headroom < 0
-          ? ("danger" as const)
-          : pct >= 85
-            ? ("warning" as const)
-            : ("success" as const);
-      return { rail: r.rail, draw: r.draw, capacity, headroom, tone, pct };
-    });
+    return rails.map((r) => ({
+      rail: r.rail,
+      key: r.key,
+      ...railMeter(placementPowerSummary[r.key], r.capacity),
+    }));
   }, [liveRack, placementPowerSummary]);
+
+  /** Placed modules the catalog retired: they stay in the rack, flagged with a reason. */
+  const retiredPlacements = (liveRack?.modules ?? []).filter(
+    (m) => m.module?.status === "tombstoned",
+  );
+
+  const unknownRails = (["p12", "n12", "p5"] as RailKey[])
+    .map((key) => ({ key, n: placementPowerSummary[key].unknown }))
+    .filter((r) => r.n > 0);
+  const RAIL_LABEL: Record<RailKey, string> = { p12: "+12", n12: "−12", p5: "+5" };
 
   const previewModule = useMemo(() => {
     if (addModuleId == null) return null;
@@ -1443,13 +1426,10 @@ export default function RackBuilderPage() {
           {placementModules.length > 0 || liveRack?.case ? (
             <div className="power-rail-panel" aria-label="Power rail usage" aria-live="polite">
               <p className="muted" style={{ marginTop: 0, marginBottom: "var(--space-2)" }}>
-                Placement power: <strong>{placementPowerSummary.known}</strong> modules with +12
-                known
-                {placementPowerSummary.unknown
-                  ? ` · ${placementPowerSummary.unknown} unknown (not assumed)`
-                  : ""}
-                {placementPowerSummary.known
-                  ? ` · Σ +12 ${placementPowerSummary.draw12}mA / −12 ${placementPowerSummary.drawN12}mA / +5 ${placementPowerSummary.draw5}mA`
+                Placement power: <strong>{placementPowerSummary.fullyKnown}</strong> of{" "}
+                {placementPowerSummary.total} modules state every rail
+                {placementPowerSummary.total
+                  ? ` · known Σ +12 ${placementPowerSummary.p12.known}mA / −12 ${placementPowerSummary.n12.known}mA / +5 ${placementPowerSummary.p5.known}mA`
                   : ""}
               </p>
               {powerRailMeters.length > 0 ? (
@@ -1465,11 +1445,7 @@ export default function RackBuilderPage() {
                             {rail.rail}
                           </span>
                         </span>
-                        <span className="muted">
-                          {rail.capacity == null
-                            ? `draw ${rail.draw}mA · case capacity unspecified`
-                            : `${rail.draw}/${rail.capacity}mA · headroom ${rail.headroom}mA`}
-                        </span>
+                        <span className="muted">{rail.label}</span>
                       </div>
                       <div
                         className="usage-bar"
@@ -1492,16 +1468,41 @@ export default function RackBuilderPage() {
                   ))}
                 </div>
               ) : null}
-              {placementPowerSummary.unknown > 0 ? (
+              {unknownRails.length > 0 ? (
                 <p
                   className="status status-warning"
                   style={{ marginBottom: 0, fontSize: "0.85rem" }}
                 >
-                  Soft gap: {placementPowerSummary.unknown} module
-                  {placementPowerSummary.unknown === 1 ? "" : "s"} without +12 specs: not assumed in
-                  draw totals.
+                  Unknown draw, not assumed:{" "}
+                  {unknownRails.map((r) => `${RAIL_LABEL[r.key]} ${r.n}`).join(" · ")}. Totals on
+                  those rails are lower bounds.
                 </p>
               ) : null}
+            </div>
+          ) : null}
+
+          {retiredPlacements.length > 0 ? (
+            <div
+              className="status status-warning"
+              role="status"
+              style={{ marginTop: "var(--space-3)" }}
+            >
+              <p style={{ margin: 0 }}>
+                {retiredPlacements.length === 1
+                  ? "One placed module is"
+                  : `${retiredPlacements.length} placed modules are`}{" "}
+                retired from the catalog. They stay in this rack; check each one.
+              </p>
+              <ul style={{ margin: "var(--space-2) 0 0", paddingLeft: "1.2rem" }}>
+                {retiredPlacements.map((m) => (
+                  <li key={m.id}>
+                    {m.module?.brand} {m.module?.name}: {m.module?.tombstone_reason ?? "retired"}
+                    {m.module?.alternatives?.length
+                      ? `. Consider ${m.module.alternatives.map((a) => `${a.brand} ${a.name}`).join(", ")}.`
+                      : "."}
+                  </li>
+                ))}
+              </ul>
             </div>
           ) : null}
 
@@ -1793,7 +1794,9 @@ export default function RackBuilderPage() {
                             {r.case_capacity_ma != null
                               ? ` · ${r.module_draw_ma}/${r.case_capacity_ma}mA`
                               : ` · draw ${r.module_draw_ma}mA (case capacity unspecified)`}
-                            {r.headroom_ma != null ? ` · headroom ${r.headroom_ma}mA` : ""}
+                            {r.headroom_ma != null && !r.unknown_draw_count
+                              ? ` · headroom ${r.headroom_ma}mA`
+                              : ""}
                             {r.message ? `: ${r.message}` : ""}
                           </li>
                         ))}

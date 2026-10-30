@@ -47,8 +47,8 @@ rg 'from patchhive|import patchhive' backend/patches backend/racks backend/main.
 | `test_gallery_revisions.py` | `canon.gallery_revisions` |
 | `test_function_store_commit.py` | `canon.function_registry` |
 | `test_query_surface.py` | `canon.query_surface` |
-| `test_pipeline_run.py` | `canon.pipeline` |
-| `test_export_pack.py` | `canon.export_pack` + `canon.pipeline` |
+| `test_pipeline_run.py` | `tests.canon_demo_pipeline` |
+| `test_export_pack.py` | `canon.export_pack` + `tests.canon_demo_pipeline` |
 
 Historical VL2 pipeline under `backend/patchhive/**` remains for package-internal / rune maps; default unit tests no longer import it.
 

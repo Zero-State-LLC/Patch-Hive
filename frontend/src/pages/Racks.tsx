@@ -478,7 +478,9 @@ export default function RacksPage() {
                                 key={r.rail}
                                 className={`status-chip status-chip--${gateTone(r.status)}`}
                                 title={
-                                  r.headroom_ma != null ? `headroom ${r.headroom_ma}mA` : r.message
+                                  r.headroom_ma != null && !r.unknown_draw_count
+                                    ? `headroom ${r.headroom_ma}mA`
+                                    : r.message
                                 }
                               >
                                 {r.rail}: {r.status}
@@ -527,7 +529,11 @@ export default function RacksPage() {
                               {compat.compatibility.power_headroom?.map((r) => (
                                 <li key={r.rail}>
                                   {r.rail}: {r.status}
-                                  {r.headroom_ma != null ? ` · headroom ${r.headroom_ma}mA` : ""}
+                                  {r.unknown_draw_count
+                                    ? ` · ${r.message}`
+                                    : r.headroom_ma != null
+                                      ? ` · headroom ${r.headroom_ma}mA`
+                                      : ""}
                                 </li>
                               ))}
                             </ul>

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from core.config import Settings
@@ -18,8 +20,18 @@ from core.ops.edge_readiness import (
     replay_readiness,
     summarize,
 )
+from intelligence.receipt_signing import sign_receipt_sha256
+from tests.eval007_helpers import build_receipt_chain, install_allowlist, throwaway_approver
 
-_FIXED_RECEIPT_SHA = "a" * 64
+# gates_pass verifies the signed 007 receipt (006 T100). The receipt is the
+# synthetic 007 chain; the approver key is a throwaway generated in memory.
+_CHAIN = build_receipt_chain()
+_RECEIPT = _CHAIN["receipt"]
+_APPROVER_KEY, _APPROVER_ENTRY = throwaway_approver("operator-1")
+_SIGNATURE = sign_receipt_sha256(
+    _APPROVER_KEY, key_id="operator-1", receipt_sha256=_RECEIPT.receipt_sha256
+)
+_FIXED_RECEIPT_SHA = _RECEIPT.receipt_sha256
 
 _VALID_PAIRS = {
     (ReadinessState.UNCONFIGURED, ReadinessEvent.FRONTEND_DEPLOYED),
@@ -29,6 +41,12 @@ _VALID_PAIRS = {
     (ReadinessState.CLEF_FLAGGED, ReadinessEvent.GATES_PASS),
     (ReadinessState.GATES_PASSED, ReadinessEvent.OPERATOR_APPROVE),
 }
+
+
+@pytest.fixture(autouse=True)
+def approver_allowlist(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    """Allowlist holding only the throwaway approver key."""
+    install_allowlist(monkeypatch, tmp_path, _APPROVER_ENTRY)
 
 
 @pytest.fixture()
@@ -51,6 +69,8 @@ def _valid_evidence(**overrides: object) -> ReadinessEvidence:
         "clef_flag_default_off": True,
         "staging_host_plan_passed": True,
         "evaluation_receipt_sha256": _FIXED_RECEIPT_SHA,
+        "evaluation_receipt": _RECEIPT,
+        "evaluation_receipt_signature": _SIGNATURE,
         "operator_approved": True,
         "checklist_receipts": ("receipt-1",),
     }
@@ -164,6 +184,80 @@ def test_bad_receipt_sha_blocks_gates_pass() -> None:
         assert result.accepted is False, bad
         assert result.to_state is ReadinessState.CLEF_FLAGGED
         assert "EVALUATION_RECEIPT_SHA_INVALID" in result.failed_checks, bad
+
+
+def _gates(evidence: ReadinessEvidence):
+    return readiness_transition(ReadinessState.CLEF_FLAGGED, ReadinessEvent.GATES_PASS, evidence)
+
+
+def test_gates_pass_accepts_the_signed_receipt() -> None:
+    result = _gates(_valid_evidence())
+    assert result.accepted, result.failed_checks
+    assert result.to_state is ReadinessState.GATES_PASSED
+
+
+def test_gates_pass_refuses_a_bare_sha_without_the_receipt() -> None:
+    result = _gates(_valid_evidence(evaluation_receipt=None, evaluation_receipt_signature=None))
+    assert result.accepted is False
+    assert "EVALUATION_RECEIPT_MISSING" in result.failed_checks
+
+
+def test_gates_pass_refuses_an_unsigned_receipt() -> None:
+    result = _gates(_valid_evidence(evaluation_receipt_signature=None))
+    assert result.accepted is False
+    assert "EVALUATION_RECEIPT_UNVERIFIED:RECEIPT_SIGNATURE_MISSING" in result.failed_checks
+
+
+def test_gates_pass_requires_the_evidence_sha_to_match_the_receipt() -> None:
+    result = _gates(_valid_evidence(evaluation_receipt_sha256="b" * 64))
+    assert result.accepted is False
+    assert result.failed_checks == ("EVALUATION_RECEIPT_SHA_MISMATCH",)
+
+
+def test_gates_pass_refuses_a_resealed_receipt() -> None:
+    altered = _RECEIPT.model_copy(update={"source_commit_sha": "9" * 40})
+    resealed = altered.model_copy(update={"receipt_sha256": altered.computed_sha256()})
+    result = _gates(
+        _valid_evidence(
+            evaluation_receipt=resealed, evaluation_receipt_sha256=resealed.receipt_sha256
+        )
+    )
+    assert result.accepted is False
+    assert "EVALUATION_RECEIPT_UNVERIFIED:SIGNATURE_RECEIPT_SHA_MISMATCH" in result.failed_checks
+    assert "EVALUATION_RECEIPT_UNVERIFIED:SIGNATURE_INVALID" in result.failed_checks
+
+
+def test_gates_pass_refuses_a_signature_from_an_unlisted_key() -> None:
+    other_key, _ = throwaway_approver("operator-1")
+    forged = sign_receipt_sha256(
+        other_key, key_id="operator-1", receipt_sha256=_RECEIPT.receipt_sha256
+    )
+    result = _gates(_valid_evidence(evaluation_receipt_signature=forged))
+    assert result.accepted is False
+    assert "EVALUATION_RECEIPT_UNVERIFIED:SIGNATURE_INVALID" in result.failed_checks
+
+
+def test_gates_pass_refuses_a_revoked_key(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    revoked = _APPROVER_ENTRY.model_copy(update={"revoked_at": "2026-10-25T00:00:00Z"})
+    install_allowlist(monkeypatch, tmp_path, revoked)
+    result = _gates(_valid_evidence())
+    assert result.accepted is False
+    assert "EVALUATION_RECEIPT_UNVERIFIED:APPROVER_KEY_REVOKED" in result.failed_checks
+
+
+def test_gates_pass_refuses_with_the_committed_empty_allowlist(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import intelligence.receipt_signing as receipt_signing
+
+    monkeypatch.setattr(
+        receipt_signing,
+        "APPROVER_ALLOWLIST_PATH",
+        Path(receipt_signing.__file__).with_name("evaluation_approvers.json"),
+    )
+    result = _gates(_valid_evidence())
+    assert result.accepted is False
+    assert "EVALUATION_RECEIPT_UNVERIFIED:APPROVER_KEY_UNKNOWN" in result.failed_checks
 
 
 def test_beta_ready_is_final() -> None:

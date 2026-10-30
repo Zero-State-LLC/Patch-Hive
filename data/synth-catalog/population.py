@@ -165,8 +165,8 @@ def _stamp() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-POWER_OVERLAY_LATEST = 12
-CATALOG_ADDITIONS_LATEST = 4
+POWER_OVERLAY_LATEST = 14
+CATALOG_ADDITIONS_LATEST = 6
 ENTRY_VERIFICATION = {"verified", "corrected", "flagged"}
 
 
@@ -241,8 +241,13 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
 
     for hp_path in sorted((CATALOG / "overlays").glob("module-catalog-hp-v*.json")):
         hp_overlay = _load_optional(hp_path)  # v1 maker/retail; v2+ maker re-verify (2026-10-17)
+        legacy = hp_path.name in UNSOURCED_HP_OVERLAYS
         for entry in hp_overlay.get("entries") or []:
-            _schedule_hp(plan, catalog, entry)
+            _schedule_hp(plan, catalog, entry, legacy_unsourced=legacy)
+
+    for category_path in sorted((CATALOG / "overlays").glob("module-catalog-category-v*.json")):
+        for entry in _load_optional(category_path).get("entries") or []:
+            _schedule_category(plan, catalog, entry)
 
     for row in candidates.get("rows") or []:
         _schedule_candidate(plan, catalog, modules, row, verification)
@@ -270,6 +275,12 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
             if key in verified_keys and entry.get("verification_status") != "verified":
                 continue
             _schedule_power(plan, catalog, modules, entry)
+
+    # Retirements run last, so a row this plan inserts (a fresh database) is
+    # tombstoned in the same transaction.
+    for retirement_path in sorted((CATALOG / "overlays").glob("catalog-retirements-v*.json")):
+        for entry in _load_optional(retirement_path).get("rows") or []:
+            _schedule_retirement(plan, catalog, modules, entry)
 
     for row in modules.values():
         if row.get("_planned"):
@@ -303,6 +314,7 @@ PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "maker-crawl-v2-rail-fix-v1.json",
     CATALOG / "provenance" / "maker-review-v1.json",
     CATALOG / "provenance" / "maker-crawl-v2-jumper-fix-v1.json",
+    CATALOG / "provenance" / "maker-corrections-v1.json",
 )
 ARCHIVE_FIELDS = {
     "modules": {
@@ -317,7 +329,23 @@ ARCHIVE_FIELDS = {
     "module_catalog": {"hp"},
 }
 NULLABLE = {"modules": set(POWER_FIELDS) | {"verification_source_url"}, "module_catalog": {"hp"}}
-ARCHIVE_ACTIONS = {"null", "keep", "flag", "relabel"}
+ARCHIVE_ACTIONS = {"null", "keep", "flag", "relabel", "correct"}
+HP_BAND = (1, 42)  # FR-007
+
+
+def _correction_problem(table: str, item: dict[str, Any]) -> str | None:
+    """Why a ``correct`` entry is unusable, or None (spec 003 FR-038)."""
+    if item.get("only_if_value") is None or item.get("value") is None:
+        return "correction_needs_old_and_new_value"
+    if not str(item.get("evidence_url") or "").startswith("https://"):
+        return "correction_needs_maker_page"
+    if item["field"] == "hp":
+        value = item["value"]
+        if not isinstance(value, int) or not HP_BAND[0] <= value <= HP_BAND[1]:
+            return "correction_hp_outside_band"
+    if item["field"] == "verification_source_url" and not str(item["value"]).startswith("https://"):
+        return "correction_bad_url"
+    return None
 ROW_MARKER = "*"
 
 
@@ -343,9 +371,10 @@ def _schedule_provenance(
     manifest: dict[str, Any],
     archived: set[tuple[str, str, str]],
 ) -> None:
-    """Archive listed values with their source tag, then null, flag or relabel.
+    """Archive listed values with their source tag, then null, flag, relabel or correct.
 
-    The manifest carries no values. Each statement copies the current DB value
+    Only a ``correct`` entry carries a value: the new one, with the wrong value it
+    replaces and the maker page that states it (FR-038). Every other action carries none. Each statement copies the current DB value
     into catalog_value_archive first; the follow-up UPDATE only clears a field
     whose archived copy matches the current value, so nothing is lost and a
     re-run is a no-op. Never deletes.
@@ -366,7 +395,11 @@ def _schedule_provenance(
     )
     stats.setdefault("rows_already_processed", 0)
     stats.setdefault("value_not_matched", 0)
+    stats.setdefault("corrected_values", 0)
+    stats.setdefault("refused_row_tombstoned", 0)
+    stats.setdefault("reverify_clear_scheduled", 0)
     markers: list[tuple[str, str, str, str]] = []
+    resolved: list[tuple[str, str, str, str]] = []
     for row in manifest.get("rows") or []:
         table = row.get("table")
         if table not in ARCHIVE_FIELDS:
@@ -386,6 +419,15 @@ def _schedule_provenance(
             if state and (state["brand"] != brand or state["name"] != name):
                 plan.conflict(table="module_catalog", slug=row_key, reason="provenance_identity_mismatch")
                 continue
+        if state is not None and (state.get("tombstoned") or state.get("status") == "tombstoned"):
+            stats["refused_row_tombstoned"] += 1
+            continue
+        # A corrected row leaves FLAGGED once every flagged field is fixed (research R8).
+        # Checked on every run, so a correction applied before this rule existed counts too.
+        if state is not None and state.get("needs_reverify") and any(
+            item.get("action") == "correct" for item in row.get("fields") or []
+        ):
+            resolved.append((table, row_key, brand, name))
         # A row is processed once per batch. Rows inserted later (or fields filled
         # later from manufacturer overlays) are never touched by this batch.
         if (table, row_key, ROW_MARKER) in archived:
@@ -404,6 +446,9 @@ def _schedule_provenance(
                 continue
             if action == "null" and field_name not in NULLABLE[table]:
                 plan.conflict(table=table, field=field_name, reason="not_nullable")
+                continue
+            if action == "correct" and (problem := _correction_problem(table, item)):
+                plan.conflict(table=table, field=field_name, reason=problem)
                 continue
             if (table, row_key, field_name) in archived:
                 stats["already_archived"] += 1
@@ -425,6 +470,15 @@ def _schedule_provenance(
         stats["archived_values"] += len(todo)
         for item in todo:
             _bump(stats["by_action"], item["action"])
+        corrections = [item for item in todo if item["action"] == "correct"]
+        if corrections:
+            _correct_row(plan, batch, table, row_key, brand, name, corrections)
+            for item in corrections:
+                state[item["field"]] = item["value"]
+            stats["corrected_values"] += len(corrections)
+        todo = [item for item in todo if item["action"] != "correct"]
+        if not todo:
+            continue
         nulls = [item["field"] for item in todo if item["action"] == "null"]
         relabel = any(item["action"] == "relabel" for item in todo)
         if not nulls and not relabel and all(item["action"] == "keep" for item in todo):
@@ -442,6 +496,53 @@ def _schedule_provenance(
             stats["flagged_rows"] += 1
     if markers:
         _archive_markers(plan, batch, markers)
+    for table, row_key, brand, name in resolved:
+        _clear_reverify_if_resolved(plan, table, row_key, brand, name)
+        stats["reverify_clear_scheduled"] += 1
+
+
+def _clear_reverify_if_resolved(plan: Plan, table: str, row_key: str, brand: str, name: str) -> None:
+    """Clear ``needs_reverify`` once every field the row was flagged for is fixed (FLAGGED -> LIVE).
+
+    A ``flag`` or ``relabel`` is fixed by a later ``correct`` of the same field; a ``null`` is
+    fixed once the field holds a value again. The database decides, so the statement is safe
+    to re-run and does nothing while any flagged field is still open.
+    """
+    nulled_and_empty = [
+        f"({column} IS NULL AND EXISTS (SELECT 1 FROM catalog_value_archive n "
+        f"WHERE n.table_name = '{table}' AND n.row_key = :row_key AND n.field = '{column}' "
+        "AND n.action = 'null'))"
+        for column in sorted(NULLABLE[table])
+    ]
+    plan.add_update(
+        f"{table}_reverify_cleared",
+        Op(
+            "clear_reverify",
+            f"""
+            UPDATE {table}
+            SET needs_reverify = FALSE,
+                {"updated_at = :updated_at" if table == "module_catalog" else "updated_at = CURRENT_TIMESTAMP"}
+            WHERE {_row_where(table)}
+              AND needs_reverify
+              AND EXISTS (
+                SELECT 1 FROM catalog_value_archive c
+                WHERE c.table_name = '{table}' AND c.row_key = :row_key AND c.action = 'correct'
+              )
+              AND NOT EXISTS (
+                SELECT 1 FROM catalog_value_archive a
+                WHERE a.table_name = '{table}' AND a.row_key = :row_key
+                  AND a.action IN ('flag', 'relabel') AND a.field <> '*'
+                  AND NOT EXISTS (
+                    SELECT 1 FROM catalog_value_archive c
+                    WHERE c.table_name = a.table_name AND c.row_key = a.row_key
+                      AND c.field = a.field AND c.action = 'correct' AND c.archived_at >= a.archived_at
+                  )
+              )
+              AND NOT ({" OR ".join(nulled_and_empty)})
+            """,
+            {"row_key": row_key, "brand": brand, "name": name, "updated_at": _stamp()},
+        ),
+    )
 
 
 def _archive_markers(plan: Plan, batch: str, markers: list[tuple[str, str, str, str]]) -> None:
@@ -481,9 +582,10 @@ def _archive_markers(plan: Plan, batch: str, markers: list[tuple[str, str, str, 
 
 
 def _row_where(table: str) -> str:
+    # A retired row is final (row lifecycle): no manifest archives, corrects or flags it.
     if table == "modules":
-        return "brand = :brand AND name = :name"
-    return "slug = :row_key AND brand = :brand AND name = :name"
+        return "brand = :brand AND name = :name AND status <> 'tombstoned'"
+    return "slug = :row_key AND brand = :brand AND name = :name AND tombstoned_at IS NULL"
 
 
 def _archive_row(
@@ -517,7 +619,7 @@ def _archive_row(
             SELECT :batch, :table_name, :row_key, :brand, :name, :f{index},
                    CAST(t.{column} AS TEXT), :t{index}, :m{index}, :a{index}, CURRENT_TIMESTAMP
             FROM {table} t
-            WHERE {_row_where(table).replace("brand =", "t.brand =").replace("name =", "t.name =").replace("slug =", "t.slug =")}
+            WHERE {_row_where(table).replace("brand =", "t.brand =").replace("name =", "t.name =").replace("slug =", "t.slug =").replace("status <>", "t.status <>").replace("tombstoned_at IS", "t.tombstoned_at IS")}
               AND t.{column} IS NOT NULL{expected}
               AND NOT EXISTS (
                 SELECT 1 FROM catalog_value_archive a
@@ -535,6 +637,50 @@ def _archive_row(
                 old_value, source_tag, maker_check, action, archived_at
             )"""
             + "\n            UNION ALL".join(selects),
+            params,
+        ),
+    )
+
+
+def _correct_row(
+    plan: Plan,
+    batch: str,
+    table: str,
+    row_key: str,
+    brand: str,
+    name: str,
+    items: list[dict[str, Any]],
+) -> None:
+    """Write corrected values, only where this batch archived the value now stored.
+
+    The archive insert above copies a value only while it equals ``only_if_value``, so a
+    value changed since review is neither archived nor overwritten (FR-038).
+    """
+    params: dict[str, Any] = {"batch": batch, "row_key": row_key, "brand": brand, "name": name}
+    sets = []
+    for index, item in enumerate(items):
+        column = item["field"]
+        if column not in ARCHIVE_FIELDS[table]:
+            raise RuntimeError("refusing unknown correction field")
+        params[f"c{index}"] = item["value"]
+        sets.append(
+            f"{column} = CASE WHEN EXISTS (SELECT 1 FROM catalog_value_archive a WHERE a.batch = :batch "
+            f"AND a.table_name = '{table}' AND a.row_key = :row_key AND a.field = '{column}' "
+            f"AND a.action = 'correct' AND a.old_value = CAST({table}.{column} AS TEXT)) "
+            f"THEN :c{index} ELSE {column} END"
+        )
+    sets.append("updated_at = :updated_at" if table == "module_catalog" else "updated_at = CURRENT_TIMESTAMP")
+    params["updated_at"] = _stamp()
+    assignments = ",\n                ".join(sets)
+    plan.add_update(
+        f"{table}_correct",
+        Op(
+            "correct_values",
+            f"""
+            UPDATE {table}
+            SET {assignments}
+            WHERE {_row_where(table)}
+            """,
             params,
         ),
     )
@@ -608,13 +754,17 @@ def _verification_index(path: Path | None) -> dict[str, dict[str, Any]]:
 
 
 def _catalog_state(conn: Connection) -> dict[str, dict[str, Any]]:
-    rows = conn.execute(text("SELECT slug, brand, name, hp, category FROM module_catalog")).mappings()
+    rows = conn.execute(
+        text("SELECT slug, brand, name, hp, category, tombstoned_at, needs_reverify FROM module_catalog")
+    ).mappings()
     return {
         row["slug"]: {
             "brand": row["brand"],
             "name": row["name"],
             "hp": row["hp"],
             "category": row["category"],
+            "tombstoned": row["tombstoned_at"] is not None,
+            "needs_reverify": bool(row["needs_reverify"]),
             "_planned": False,
         }
         for row in rows
@@ -625,7 +775,7 @@ def _module_state(conn: Connection) -> dict[tuple[str, str], dict[str, Any]]:
     rows = conn.execute(
         text(
             "SELECT brand, name, hp, power_12v_ma, power_neg12v_ma, power_5v_ma, depth_mm, "
-            "verification_status, verification_source_url FROM modules"
+            "verification_status, verification_source_url, status, needs_reverify FROM modules"
         )
     ).mappings()
     state: dict[tuple[str, str], dict[str, Any]] = {}
@@ -745,12 +895,28 @@ def _schedule_catalog(plan: Plan, catalog: dict[str, dict[str, Any]], row: dict[
     )
 
 
-def _schedule_hp(plan: Plan, catalog: dict[str, dict[str, Any]], entry: dict[str, Any]) -> None:
+# HP overlays written before entries carried their maker page. Kept as loaded
+# (spec 003 FR-024 review pending); every later HP overlay must cite a maker page.
+UNSOURCED_HP_OVERLAYS = frozenset({"module-catalog-hp-v1.json"})
+
+
+def _schedule_hp(
+    plan: Plan,
+    catalog: dict[str, dict[str, Any]],
+    entry: dict[str, Any],
+    *,
+    legacy_unsourced: bool = False,
+) -> None:
     slug = entry.get("slug")
     brand = (entry.get("brand") or "").strip()
     name = (entry.get("name") or "").strip()
     hp = entry.get("hp")
     if hp is None:
+        return
+    # HP decides placement, so only a maker page may supply it (FR-024, FR-027).
+    sourced = entry.get("source_class") == "maker" and str(entry.get("source_url") or "").startswith("https://")
+    if not sourced and not legacy_unsourced:
+        plan.conflict(table="module_catalog", slug=slug, reason="hp_overlay_unsourced")
         return
     row = catalog.get(slug) if slug else None
     if row is None and brand and name:
@@ -766,6 +932,86 @@ def _schedule_hp(plan: Plan, catalog: dict[str, dict[str, Any]], entry: dict[str
         return
     row["hp"] = hp
     plan.add_update("hp_overlay", _hp_update(slug, brand, name, int(hp)))
+
+
+def _schedule_category(plan: Plan, catalog: dict[str, dict[str, Any]], entry: dict[str, Any]) -> None:
+    """Fill a catalog row's missing category from a category overlay (never overwrite)."""
+    slug = entry.get("slug")
+    brand = (entry.get("brand") or "").strip()
+    name = (entry.get("name") or "").strip()
+    category = entry.get("category")
+    if not category:
+        return
+    row = catalog.get(slug) if slug else None
+    if row is None:
+        _bump(plan.unmatched, "category")
+        return
+    if row["brand"] != brand or row["name"] != name:
+        plan.conflict(table="module_catalog", slug=slug, reason="category_overlay_identity_mismatch")
+        return
+    if row.get("category"):
+        return
+    row["category"] = category
+    plan.add_update("category_overlay", _category_update(slug, brand, name, str(category)))
+
+
+def _schedule_retirement(
+    plan: Plan,
+    catalog: dict[str, dict[str, Any]],
+    modules: dict[tuple[str, str], dict[str, Any]],
+    entry: dict[str, Any],
+) -> None:
+    """Tombstone a catalog row and its module row named by a retirement manifest.
+
+    Never deletes: module_catalog gets tombstoned_at and a reason, modules gets
+    status 'tombstoned' (the admin convention). Rows already tombstoned are left alone.
+    """
+    brand = (entry.get("brand") or "").strip()
+    name = (entry.get("name") or "").strip()
+    reason = (entry.get("reason") or "").strip()
+    if not (brand and name and reason):
+        plan.conflict(table="module_catalog", reason="retirement_missing_identity_or_reason")
+        return
+    slug = (entry.get("slug") or create_slug(brand, name))[:200]
+    row = catalog.get(slug)
+    if row is None:
+        _bump(plan.unmatched, "retire_catalog")
+    elif row["brand"] != brand or row["name"] != name:
+        plan.conflict(table="module_catalog", slug=slug, reason="retirement_identity_mismatch")
+        return
+    elif not row.get("tombstoned"):
+        row["tombstoned"] = True
+        plan.add_update(
+            "catalog_retire",
+            Op(
+                "retire_catalog",
+                """
+                UPDATE module_catalog
+                SET tombstoned_at = CAST(:tombstoned_at AS TIMESTAMP), tombstone_reason = :reason,
+                    updated_at = :updated_at
+                WHERE slug = :slug AND brand = :brand AND name = :name AND tombstoned_at IS NULL
+                """,
+                {"slug": slug, "brand": brand, "name": name, "reason": reason[:200],
+                 "tombstoned_at": _stamp(), "updated_at": _stamp()},
+            ),
+        )
+    module = modules.get((brand, name))
+    if module is None:
+        _bump(plan.unmatched, "retire_module")
+    elif module.get("status") != "tombstoned":
+        module["status"] = "tombstoned"
+        plan.add_update(
+            "module_retire",
+            Op(
+                "retire_module",
+                """
+                UPDATE modules
+                SET status = 'tombstoned', tombstoned_at = CAST(:tombstoned_at AS TIMESTAMP)
+                WHERE brand = :brand AND name = :name AND status IS DISTINCT FROM 'tombstoned'
+                """,
+                {"brand": brand, "name": name, "tombstoned_at": _stamp()},
+            ),
+        )
 
 
 def _category_update(slug: str, brand: str, name: str, category: str) -> Op:
@@ -1177,7 +1423,7 @@ def provenance_counts(conn: Connection) -> dict[str, int]:
 
 
 # Parameters that hold the time of planning, not what is written.
-_CLOCK_PARAMS = frozenset({"created_at", "updated_at"})
+_CLOCK_PARAMS = frozenset({"created_at", "updated_at", "tombstoned_at"})
 
 
 def plan_hash(plan: Plan, case_plan: dict[str, Any] | None = None) -> str:

@@ -149,3 +149,94 @@ def settings_namespace(**overrides) -> SimpleNamespace:
     }
     values.update(overrides)
     return SimpleNamespace(**values)
+
+
+# ---------------------------------------------------------------------------
+# Signed receipts (T081). Throwaway keys live in memory only; nothing is written
+# to the committed allowlist.
+# ---------------------------------------------------------------------------
+
+KEY_VALID_FROM = "2026-01-01T00:00:00Z"
+
+
+def throwaway_approver(
+    key_id: str = "operator-1",
+    *,
+    valid_from: str = KEY_VALID_FROM,
+    revoked_at: str | None = None,
+):
+    """A fresh in-memory Ed25519 key pair and its allowlist entry."""
+    import base64
+
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+    from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+
+    from intelligence.receipt_signing import ApproverKey
+
+    private_key = Ed25519PrivateKey.generate()
+    public_raw = private_key.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw)
+    entry = ApproverKey(
+        key_id=key_id,
+        public_key=base64.b64encode(public_raw).decode("ascii"),
+        valid_from=valid_from,
+        revoked_at=revoked_at,
+    )
+    return private_key, entry
+
+
+def allowlist_of(*keys):
+    from intelligence.receipt_signing import APPROVER_ALLOWLIST_SCHEMA, ApproverAllowlist
+
+    return ApproverAllowlist(schema_version=APPROVER_ALLOWLIST_SCHEMA, approvers=tuple(keys))
+
+
+def install_allowlist(monkeypatch, directory, *keys) -> None:
+    """Point the committed-allowlist loader at a temporary file holding ``keys``."""
+    import intelligence.receipt_signing as receipt_signing
+
+    path = directory / "evaluation_approvers.json"
+    path.write_text(allowlist_of(*keys).model_dump_json(), encoding="utf-8")
+    monkeypatch.setattr(receipt_signing, "APPROVER_ALLOWLIST_PATH", path)
+
+
+def build_receipt_chain(*, approved_by: str = "operator-1") -> dict:
+    """The full synthetic 007 chain and its pinned receipt."""
+    from intelligence.evaluation_corpus import freeze_corpus
+    from intelligence.evaluation_enablement import (
+        approve_thresholds,
+        enable_staging,
+        pin_receipt,
+        propose_thresholds,
+        run_baseline_comparison,
+    )
+
+    manifest = admitted_manifest()
+    corpus = freeze_corpus(manifest)
+    run = run_baseline_comparison(
+        corpus=corpus,
+        baseline_cases=baseline_cases(manifest),
+        assisted_cases=assisted_cases(manifest),
+        policy=POLICY,
+        harness_sha=HARNESS_SHA,
+        baseline_provider_id="fixture",
+        assisted_provider_id="clef",
+    )
+    proposal = propose_thresholds(run, proposal_version="thresholds-v1")
+    approval = approve_thresholds(
+        proposal, approved_by=approved_by, approved_at=APPROVED_AT, explicit_sign_off=True
+    )
+    staging = enable_staging(
+        approval=approval, run=run, settings_obj=staging_settings(), target_environment="staging"
+    )
+    receipt = pin_receipt(
+        corpus=corpus, run=run, proposal=proposal, approval=approval, staging=staging,
+        source_commit_sha=SOURCE_SHA,
+    )
+    return {
+        "corpus": corpus,
+        "run": run,
+        "proposal": proposal,
+        "approval": approval,
+        "staging": staging,
+        "receipt": receipt,
+    }

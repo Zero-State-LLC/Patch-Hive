@@ -17,13 +17,22 @@ copied into these records; only identifiers, hashes, and aggregate metrics are.
 from __future__ import annotations
 
 import hashlib
+import hmac
 import math
 import re
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Literal, Mapping, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationError,
+    field_validator,
+    model_validator,
+)
 
 from core.ops.edge_readiness import config_gate_checks
 from intelligence.clef_evaluation import (
@@ -31,18 +40,20 @@ from intelligence.clef_evaluation import (
     Modality,
     OperatorThresholds,
     receipt_sha256,
-    verify_pinned_receipt,
 )
 from intelligence.contracts import stable_sha256
-from intelligence.evaluation import evaluate
+from intelligence.evaluation import (  # noqa: F401  (re-exported for existing callers)
+    evaluate,
+    structural_false_canonicalizations,
+)
 from intelligence.evaluation_corpus import CorpusFreeze, verify_corpus_freeze
 from intelligence.policy import DecisionPolicy
-from intelligence.resolution_machine import (
-    ResolutionEvent,
-    ResolutionEventType,
-    ResolutionGuard,
-    canon_write_permitted,
-    replay,
+from intelligence.receipt_signing import (
+    ApproverAllowlist,
+    ReceiptSignature,
+    SignatureError,
+    load_approver_allowlist,
+    signature_failures,
 )
 
 BASELINE_RUN_SCHEMA = "patchhive.eval-baseline-run.v1"
@@ -167,44 +178,6 @@ def expected_calibration_error(
     return min(1.0, max(0.0, error))
 
 
-def structural_false_canonicalizations(
-    cases: Iterable[LabeledCorpusCase], policy: DecisionPolicy
-) -> int:
-    """Count cases where the Spec 006 resolution machine would permit a canon write
-    from the policy disposition alone (no user confirmation). Must be zero."""
-    count = 0
-    for case in cases:
-        disposition = policy.evaluate(case.packet).disposition
-        request_id = f"eval:{case.case_id}"
-        machine = replay(
-            request_id,
-            (
-                ResolutionEvent(
-                    ResolutionEventType.SUBMIT_EVIDENCE,
-                    request_id,
-                    ResolutionGuard(evidence_hash_valid=True, candidates_bounded=True),
-                ),
-                ResolutionEvent(
-                    ResolutionEventType.PROVIDER_SUCCESS,
-                    request_id,
-                    ResolutionGuard(packet_schema_valid=True),
-                ),
-                ResolutionEvent(
-                    ResolutionEventType.APPLY_POLICY,
-                    request_id,
-                    ResolutionGuard(policy_version_pinned=True),
-                ),
-                ResolutionEvent(
-                    ResolutionEventType.DISPOSITION,
-                    request_id,
-                    ResolutionGuard(disposition=disposition, routing_target_exists=True),
-                ),
-            ),
-        )
-        count += int(canon_write_permitted(machine))
-    return count
-
-
 def _condition_metrics(
     condition: Literal["baseline", "assisted"],
     provider_id: str,
@@ -212,7 +185,6 @@ def _condition_metrics(
     policy: DecisionPolicy,
 ) -> ConditionMetrics:
     metrics = evaluate((case.to_evaluation_case() for case in cases), policy)
-    structural = structural_false_canonicalizations(cases, policy)
     return ConditionMetrics(
         condition=condition,
         provider_id=provider_id,
@@ -224,7 +196,7 @@ def _condition_metrics(
         abstention_rate=metrics.abstention_rate,
         review_rate=metrics.review_rate,
         escalation_rate=metrics.escalation_rate,
-        false_canonicalization_count=metrics.false_canonicalization_count + structural,
+        false_canonicalization_count=metrics.false_canonicalization_count,
         modality_counts={
             "text": sum(1 for case in cases if case.modality is Modality.text),
             "vision": sum(1 for case in cases if case.modality is Modality.vision),
@@ -705,13 +677,134 @@ def pin_receipt(
     return receipt.model_copy(update={"receipt_sha256": receipt.computed_sha256()})
 
 
-def verify_enablement_receipt(receipt: EvaluationEnablementReceipt | Mapping[str, Any] | None) -> bool:
-    """True when the receipt's stored SHA matches its content."""
+@dataclass(frozen=True)
+class EnablementChain:
+    """The chain records a receipt was pinned from, for verification by replay."""
+
+    corpus: CorpusFreeze
+    run: BaselineRun
+    proposal: ThresholdProposal
+    approval: OperatorApproval
+    staging: StagingEnablement
+
+
+def _validated_receipt(
+    receipt: object, chain: EnablementChain | None
+) -> tuple[EvaluationEnablementReceipt | None, tuple[str, ...]]:
+    """Validate the full receipt model and, given the chain, replay it (T080)."""
     if receipt is None:
-        return False
-    payload = receipt.as_payload() if isinstance(receipt, EvaluationEnablementReceipt) else dict(receipt)
-    if payload.get("schema_version") != ENABLEMENT_RECEIPT_SCHEMA:
-        return False
-    if not _HEX64.match(str(payload.get("receipt_sha256", ""))):
-        return False
-    return verify_pinned_receipt(payload)
+        return None, ("RECEIPT_MISSING",)
+    if isinstance(receipt, EvaluationEnablementReceipt):
+        payload: dict[str, Any] = receipt.as_payload()
+    elif isinstance(receipt, Mapping):
+        payload = dict(receipt)
+    else:
+        return None, ("RECEIPT_NOT_A_RECEIPT",)
+    try:
+        # model_copy(update=...) skips validation, so a model is re-validated too.
+        validated = EvaluationEnablementReceipt.model_validate(payload)
+    except (ValidationError, TypeError, ValueError):
+        return None, ("RECEIPT_SCHEMA_INVALID",)
+    try:
+        canonical = validated.as_payload()
+    except (TypeError, ValueError):
+        return None, ("RECEIPT_SCHEMA_INVALID",)
+    if canonical != payload:
+        return None, ("RECEIPT_NOT_CANONICAL",)
+    if validated.schema_version != ENABLEMENT_RECEIPT_SCHEMA:
+        return None, ("RECEIPT_SCHEMA_VERSION",)
+    stored = validated.receipt_sha256
+    if not _HEX64.match(stored):
+        return None, ("RECEIPT_SHA_INVALID",)
+    try:
+        computed = validated.computed_sha256()
+    except (TypeError, ValueError):
+        return None, ("RECEIPT_SHA_MISMATCH",)
+    if not hmac.compare_digest(stored.encode("ascii"), computed.encode("ascii")):
+        return None, ("RECEIPT_SHA_MISMATCH",)
+    if chain is not None:
+        try:
+            rebuilt = pin_receipt(
+                corpus=chain.corpus,
+                run=chain.run,
+                proposal=chain.proposal,
+                approval=chain.approval,
+                staging=chain.staging,
+                source_commit_sha=validated.source_commit_sha,
+            )
+        except EnablementError as exc:
+            return None, (f"RECEIPT_CHAIN_INVALID:{exc.code}",)
+        if rebuilt.as_payload() != canonical:
+            return None, ("RECEIPT_CONTENT_MISMATCH",)
+    return validated, ()
+
+
+def enablement_receipt_failures(
+    receipt: EvaluationEnablementReceipt | Mapping[str, Any] | None,
+    *,
+    chain: EnablementChain | None = None,
+) -> tuple[str, ...]:
+    """Failure codes for an unsigned receipt check; empty means it verifies."""
+    return _validated_receipt(receipt, chain)[1]
+
+
+def verify_enablement_receipt(
+    receipt: EvaluationEnablementReceipt | Mapping[str, Any] | None,
+    *,
+    chain: EnablementChain | None = None,
+) -> bool:
+    """True when the receipt validates as a full model and its stored SHA matches.
+
+    A mapping must validate as ``EvaluationEnablementReceipt`` and round-trip to
+    exactly the same payload. With ``chain``, the receipt is rebuilt with
+    ``pin_receipt`` from the chain records and must equal it (T080). This proves
+    consistency, not authorship: use ``verify_signed_enablement_receipt`` for that.
+    """
+    return not enablement_receipt_failures(receipt, chain=chain)
+
+
+def signed_enablement_receipt_failures(
+    receipt: EvaluationEnablementReceipt | Mapping[str, Any] | None,
+    signature: ReceiptSignature | None,
+    *,
+    allowlist: ApproverAllowlist | None = None,
+    chain: EnablementChain | None = None,
+    now: datetime | None = None,
+) -> tuple[str, ...]:
+    """Failure codes for a signed receipt (T081); empty means it verifies.
+
+    The receipt must pass ``verify_enablement_receipt``; then ``signature`` must
+    be a valid Ed25519 signature over its ``receipt_sha256`` by the allowlisted
+    key whose id equals the receipt's ``approved_by``. With no ``allowlist`` the
+    committed allowlist is loaded; an unreadable or invalid allowlist refuses.
+    """
+    validated, failures = _validated_receipt(receipt, chain)
+    if validated is None:
+        return failures
+    if allowlist is None:
+        try:
+            allowlist = load_approver_allowlist()
+        except SignatureError as exc:
+            return (exc.code,)
+    return signature_failures(
+        signature,
+        receipt_sha256=validated.receipt_sha256,
+        approved_by=validated.approved_by,
+        approved_at=validated.approved_at,
+        allowlist=allowlist,
+        now=now,
+    )
+
+
+def verify_signed_enablement_receipt(
+    receipt: EvaluationEnablementReceipt | Mapping[str, Any] | None,
+    signature: ReceiptSignature | None,
+    *,
+    allowlist: ApproverAllowlist | None = None,
+    chain: EnablementChain | None = None,
+    now: datetime | None = None,
+) -> bool:
+    """True when the receipt verifies and carries a valid allowlisted approver signature."""
+    return not signed_enablement_receipt_failures(
+        receipt, signature, allowlist=allowlist, chain=chain, now=now
+    )

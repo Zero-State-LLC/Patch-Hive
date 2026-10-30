@@ -22,6 +22,9 @@ from fastapi import Request
 MAX_FAILURES = 5
 LOCK_MINUTES = 15
 IP_ATTEMPTS_PER_MINUTE = 20
+# Sign-up: a few accounts per address per window is plenty for a person, and slows a script.
+REGISTER_ATTEMPTS = 5
+REGISTER_WINDOW_SECONDS = 600
 
 _lock = threading.Lock()
 _attempts: dict[str, deque[float]] = {}
@@ -33,17 +36,36 @@ def client_address(request: Request) -> str:
     return forwarded or (request.client.host if request.client else "unknown")
 
 
-def allow_attempt(address: str, *, now: float | None = None) -> bool:
-    """Record one attempt from ``address``; False once it is over the per-minute limit."""
+def allow_attempt(
+    address: str,
+    *,
+    now: float | None = None,
+    bucket: str = "login",
+    limit: int = IP_ATTEMPTS_PER_MINUTE,
+    window_seconds: float = 60,
+) -> bool:
+    """Record one attempt from ``address`` in ``bucket``; False once it is over ``limit``
+    within ``window_seconds``. Per container (in memory): a cold start resets it."""
     now = time.monotonic() if now is None else now
+    key = address if bucket == "login" else f"{bucket}:{address}"
     with _lock:
-        window = _attempts.setdefault(address, deque())
-        while window and now - window[0] > 60:
+        window = _attempts.setdefault(key, deque())
+        while window and now - window[0] > window_seconds:
             window.popleft()
-        if len(window) >= IP_ATTEMPTS_PER_MINUTE:
+        if len(window) >= limit:
             return False
         window.append(now)
         return True
+
+
+def allow_registration(address: str, *, now: float | None = None) -> bool:
+    return allow_attempt(
+        address,
+        now=now,
+        bucket="register",
+        limit=REGISTER_ATTEMPTS,
+        window_seconds=REGISTER_WINDOW_SECONDS,
+    )
 
 
 def reset_attempts() -> None:

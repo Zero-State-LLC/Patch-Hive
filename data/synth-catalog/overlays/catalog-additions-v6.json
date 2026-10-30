@@ -1,0 +1,102 @@
+{
+ "dataset_version": "catalog-additions-v6",
+ "generated_from": "hermes-research/maker-crawl-v2.json (brands: 2hp, Bastl Instruments, Doepfer, Tubbutec)",
+ "policy": "maker's own pages only; values regex-parsed or verbatim; no ModularGrid; insert-if-absent / fill-null; disagreements are flagged by the loader",
+ "count": 6,
+ "rows": [
+  {
+   "brand": "2hp",
+   "name": "Mix",
+   "hp": 2,
+   "category": "MIX",
+   "manufacturer_url": "https://www.twohp.com/modules/p/mix",
+   "image_url": "http://static1.squarespace.com/static/573b5370b09f9524489340f2/573b5ef2c2ea5113612593f2/5c6f1c3424a694fe522117c6/1720655184613/2hp_Mix_Cropped_Landscape.jpg?format=1500w",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://www.twohp.com/modules/p/mix",
+   "tags": [],
+   "access_basis": "official_publication",
+   "content_sha256": "6a35e5bc2f0962d631fbfe8385114521ecb597689775220baec845dd8e867fab",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Bastl Instruments",
+   "name": "Citadel Alchemist",
+   "hp": 16,
+   "category": null,
+   "manufacturer_url": "https://bastl-instruments.com/eurorack/modules/citadel-alchemist",
+   "image_url": "https://bastl-instruments.com/content/3-eurorack/1-modules/2-citadel-alchemist/bastl-citadel-alchemist-1r.png",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://bastl-instruments.com/eurorack/modules/citadel-alchemist",
+   "tags": [],
+   "access_basis": "official_publication",
+   "content_sha256": "cf9b59430b261cd7d350c6b680105941b0ec1c0e7ea1720a4ff8df000dc59227",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Bastl Instruments",
+   "name": "Citadel FX Wizard",
+   "hp": 16,
+   "category": "FX",
+   "manufacturer_url": "https://bastl-instruments.com/eurorack/modules/citadel-fx-wizard",
+   "image_url": "https://bastl-instruments.com/content/3-eurorack/1-modules/3-citadel-fx-wizard/bastl-citadel-fx-wizard-1r.png",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://bastl-instruments.com/eurorack/modules/citadel-fx-wizard",
+   "tags": [],
+   "access_basis": "official_publication",
+   "content_sha256": "5cfb86a51a1103b76b4b7e5719ec922d25350ad295b93d766579a224f5828fd9",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Bastl Instruments",
+   "name": "Citadel Wave Bard",
+   "hp": 16,
+   "category": null,
+   "manufacturer_url": "https://bastl-instruments.com/eurorack/modules/citadel-wave-bard",
+   "image_url": "https://bastl-instruments.com/content/3-eurorack/1-modules/4-citadel-wave-bard/bastl-citadel-wave-bard-1r.png",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://bastl-instruments.com/eurorack/modules/citadel-wave-bard",
+   "tags": [],
+   "access_basis": "official_publication",
+   "content_sha256": "38aabde5daca0e2385725fd81e40f0118132ff6bf3b45d9f7f422134e7d9eba2",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Bastl Instruments",
+   "name": "Aikido",
+   "hp": 11,
+   "category": null,
+   "manufacturer_url": "https://bastl-instruments.com/eurorack/modules/aikido",
+   "image_url": "https://bastl-instruments.com/thumbs/eurorack/modules/aikido/008-518x1200.jpg",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://bastl-instruments.com/eurorack/modules/aikido",
+   "tags": [],
+   "access_basis": "official_publication",
+   "content_sha256": "456b2656ce94c7a6585bdce4532ed7333e2479e0099e3459487893c313c2f7b5",
+   "fetch_method": "cache"
+  },
+  {
+   "brand": "Tubbutec",
+   "name": "USB bridge A",
+   "hp": 2,
+   "category": "MIDI",
+   "manufacturer_url": "https://tubbutec.de/product/usb-bridge-a/",
+   "image_url": "https://tubbutec.de/wp-content/uploads/2020/11/UsbBridgeA-double-newColors.jpg",
+   "is_available": "available",
+   "source": "ManufacturerCrawl",
+   "source_reference": "https://tubbutec.de/product/usb-bridge-a/",
+   "tags": [
+    "USB",
+    "MIDI",
+    "bridge"
+   ],
+   "access_basis": "official_publication",
+   "content_sha256": "4500236f4fed76bb78f16cf3873868365c12d596a4c0656f253b7d5f1d01f9ec",
+   "fetch_method": "free_http"
+  }
+ ]
+}

@@ -197,6 +197,8 @@ def test_flags_from_settings_defaults_fail_closed() -> None:
         ({"stripe_test_mode": False}, "PAYMENTS_NOT_TEST_MODE"),
         ({"allow_production_payments": True}, "PRODUCTION_PAYMENTS_ENABLED"),
         ({"environment": "Production"}, "PRODUCTION_ENVIRONMENT"),
+        ({"environment": "development"}, "SERVER_ENVIRONMENT_NOT_STAGING"),
+        ({"environment": "Staging"}, "SERVER_ENVIRONMENT_NOT_STAGING"),
     ],
 )
 def test_start_walkthrough_requires_test_mode_flags(art, overrides, code) -> None:

@@ -8,6 +8,7 @@ import {
   runApi,
   type InventoryRevisionSummary,
 } from "@/lib/api";
+import { describeEmptyGeneration } from "@/lib/generateOutcome";
 import { useAuthStore } from "@/lib/store";
 import type { Patch, Run } from "@/types/api";
 
@@ -243,14 +244,10 @@ export default function RigDetailPage() {
     try {
       const result = await patchApi.generate(rigIdNum, {});
       const body = result.data;
-      const status = body.generation_status ?? "OK";
       const count = body.generated_count ?? body.patches?.length ?? 0;
-      if (status === "NOT_COMPUTABLE" || count === 0) {
-        setGenerateStatus(
-          `Generation ${status}: no patches produced` +
-            (body.inventory_gate_code ? ` (${body.inventory_gate_code})` : "") +
-            ". Confirm inventory modules, then retry.",
-        );
+      const emptyMessage = describeEmptyGeneration(body);
+      if (emptyMessage) {
+        setGenerateStatus(emptyMessage);
       } else {
         setGenerateStatus(
           `Generated ${count} patch${count === 1 ? "" : "es"}` +
@@ -398,7 +395,10 @@ export default function RigDetailPage() {
         >
           <p
             className={`status ${
-              generateStatus.includes("NOT_COMPUTABLE") || generateStatus.includes("failed")
+              generateStatus.includes("NOT_COMPUTABLE") ||
+              generateStatus.includes("VALIDATION_FAILED") ||
+              generateStatus.includes("No patch rule") ||
+              generateStatus.includes("failed")
                 ? "status-warning"
                 : "status-success"
             }`}

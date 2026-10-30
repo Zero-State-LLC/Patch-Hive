@@ -8,7 +8,6 @@ current product path; this router is the canonical contract entrypoint.
 from __future__ import annotations
 
 import hashlib
-import json
 from datetime import datetime, timezone
 from typing import Any, Literal, Optional
 
@@ -25,15 +24,14 @@ from canon.downloads import DownloadTokenError, issue_download_token, verify_dow
 from canon.exports import (
     ExportBoundaryError,
     credit_balance,
+    receive_stripe_webhook,
     request_export,
-    verify_stripe_webhook,
 )
 from canon.models import (
     CanonicalCreditLedgerEntryRecord,
     CanonicalExportRecord,
     PatchUserOverlayRecord,
     RigRevisionRecord,
-    StripeEventRecordModel,
     UserStyleRecipeRecord,
 )
 from community.auth import get_current_user, require_auth
@@ -169,6 +167,7 @@ class StripeWebhookResponse(BaseModel):
     status: str
     event_type: str
     duplicate: bool
+    reason_code: str | None = None
 
 
 def _download_secret() -> str:
@@ -827,6 +826,11 @@ def create_canonical_export(
 ) -> CanonicalExportResponse:
     if not body.formats:
         raise HTTPException(status_code=400, detail="At least one export format is required")
+    # Spec 004 FR-005: never take credits for an export nothing will fulfill. Inline
+    # fulfillment is the only fulfiller (there is no queue worker), and it refunds every
+    # failure it catches, so with either flag off the request is refused before any debit.
+    if not (settings.enable_canon_export_fulfillment and settings.enable_inline_export_fulfillment):
+        raise HTTPException(status_code=503, detail="EXPORT_FULFILLMENT_UNAVAILABLE")
 
     # KD-14 / spec 004 FR-005: the server sets the price; a client credit_cost is
     # never trusted, whatever the Design Engine flag says.
@@ -1110,22 +1114,17 @@ async def stripe_webhook(
 
     payload = await request.body()
     try:
-        provisional_id = ""
-        try:
-            provisional_id = str(json.loads(payload).get("id") or "")
-        except (json.JSONDecodeError, TypeError, AttributeError):
-            provisional_id = ""
-        already_seen = bool(
-            provisional_id and db.get(StripeEventRecordModel, provisional_id) is not None
-        )
-        record, event = verify_stripe_webhook(
+        intake = receive_stripe_webhook(
             db,
             payload=payload,
             signature_header=stripe_signature,
             secret=secret,
             test_mode=settings.stripe_test_mode,
+            # Live-mode events belong only to production (spec 004 FR-013, research R3).
+            production=str(settings.environment).strip().lower() == "production",
         )
         db.commit()
+        record, event = intake.record, intake.event
         db.refresh(record)
     except ExportBoundaryError as exc:
         db.rollback()
@@ -1142,7 +1141,8 @@ async def stripe_webhook(
         stripe_event_id=record.stripe_event_id,
         status=record.status,
         event_type=str(event.get("type", record.event_type)),
-        duplicate=already_seen,
+        duplicate=intake.duplicate,
+        reason_code=record.reason_code,
     )
 
 

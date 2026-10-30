@@ -41,6 +41,23 @@ class RigRevisionRecord(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
 
 
+class RigMetricsPacketRecord(Base):
+    """One metrics packet per rig revision (spec 001 FR-027, T031). Append-only."""
+
+    __tablename__ = "rig_metrics_packets"
+
+    id = Column(String(64), primary_key=True)
+    rig_revision_id = Column(
+        String(64),
+        ForeignKey("rig_revisions.id", ondelete="RESTRICT"),
+        nullable=False,
+        unique=True,
+    )
+    packet = Column(JSON, nullable=False)
+    canonical_hash = Column(String(64), nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+
 class GenerationRunRecord(Base):
     __tablename__ = "generation_runs"
 
@@ -286,9 +303,12 @@ class StripeEventRecordModel(Base):
     event_type = Column(String(100), nullable=False)
     payload_hash = Column(String(64), nullable=False)
     livemode = Column(Boolean, nullable=False)
+    # received (inside the intake transaction only), then processed, duplicate,
+    # unresolved or ignored (canon.webhook_events, spec 004 FR-014).
     status = Column(String(20), nullable=False, default="received")
     received_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
     processed_at = Column(DateTime(timezone=True), nullable=True)
+    reason_code = Column(String(64), nullable=True)
 
 
 class CanonicalAdminAuditEventRecord(Base):
@@ -406,6 +426,7 @@ def _reject_mutation(_mapper, _connection, target) -> None:
 
 IMMUTABLE_RECORDS = (
     RigRevisionRecord,
+    RigMetricsPacketRecord,
     GenerationRunRecord,
     PatchLibraryRecord,
     GeneratedPatchRecord,

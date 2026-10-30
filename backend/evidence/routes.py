@@ -344,7 +344,7 @@ class ConfirmationDecisionIn(BaseModel):
 
 class ConfirmationBatchRequest(BaseModel):
     decisions: list[ConfirmationDecisionIn]
-    confirmed_by: str | None = "user"
+    # Who confirmed is the signed-in user, never a client-supplied name (spec 005 FR-006).
 
 
 class ConfirmationBatchResponse(BaseModel):
@@ -431,6 +431,24 @@ def list_rack_evidence_candidates(
     # valid advisory from unrelated evidence into this rack's review surface.
     candidate_ids = [item["candidate_id"] for item in items]
     evidence_hashes = {str(item["evidence_id"]) for item in items}
+    # Receipts carry a hash of the retained packet and image (R5). Receipts written
+    # before that change carry the raw evidence id, so both forms bind.
+    hash_by_evidence_id: dict[str, str] = {}
+    if evidence_hashes:
+        from canon.models import ClassificationEvidenceRecord, ImageAssetRecord
+        from intelligence.evidence_resolution import retained_evidence_hash
+
+        rows = (
+            db.query(ClassificationEvidenceRecord, ImageAssetRecord.content_sha256)
+            .join(ImageAssetRecord, ImageAssetRecord.id == ClassificationEvidenceRecord.image_asset_id)
+            .filter(ClassificationEvidenceRecord.id.in_(evidence_hashes))
+            .all()
+        )
+        for record, image_sha in rows:
+            hash_by_evidence_id[record.id] = retained_evidence_hash(
+                record.evidence_packet or {}, image_sha
+            )
+    evidence_hashes |= set(hash_by_evidence_id.values())
     receipts_by_binding: dict[tuple[str, str], DecisionReceiptRecord] = {}
     if candidate_ids and evidence_hashes:
         receipt_rows = (
@@ -452,7 +470,10 @@ def list_rack_evidence_candidates(
 
     candidates = []
     for item in items:
-        receipt = receipts_by_binding.get((item["candidate_id"], str(item["evidence_id"])))
+        evidence_id = str(item["evidence_id"])
+        receipt = receipts_by_binding.get(
+            (item["candidate_id"], hash_by_evidence_id.get(evidence_id, evidence_id))
+        ) or receipts_by_binding.get((item["candidate_id"], evidence_id))
         advisory = None
         if receipt is not None:
             advisory = {
@@ -602,6 +623,7 @@ def confirm_rack_evidence_candidates(
     Provider output remains evidence only. Confirmed modules require an explicit
     ``module_revision_id`` (gallery revision) on confirm/manual_add.
     """
+    confirmed_by = f"user:{current_user.id}"
     from canon.inventory import (
         InventoryBuildError,
         build_system_inventory_revision,
@@ -664,7 +686,7 @@ def confirm_rack_evidence_candidates(
                 candidate_id=decision_in.candidate_id,
                 status=decision_in.status,  # type: ignore[arg-type]
                 resolved_status=resolved,
-                confirmed_by=body.confirmed_by,
+                confirmed_by=confirmed_by,
                 confirmed_at=now,
                 replacement_candidate_id=decision_in.replacement_candidate_id,
                 manual_module_revision_id=(
@@ -686,7 +708,7 @@ def confirm_rack_evidence_candidates(
             candidates=candidates,
             decisions=decisions,
             created_at=now,
-            created_by=body.confirmed_by,
+            created_by=confirmed_by,
         )
     except InventoryBuildError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -770,15 +792,11 @@ def resolve_rack_evidence_decision(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_auth),
 ) -> DecisionResolutionResponse:
-    """Produce and retain one non-canonical identity advisory."""
-    from intelligence.evidence_resolution import (
-        DecisionIntelligenceDisabled,
-        EvidenceResolutionError,
-        resolve_module_identity,
-    )
-    from intelligence.policy import DecisionPolicy, PolicyThresholds
-    from intelligence.jev_provider import JevProviderError
+    """Produce and retain one non-canonical identity advisory.
 
+    Every provider runs behind the resolution machine and the configured policy version
+    (spec 005 FR-010, research R2); there is no unguarded path.
+    """
     owned_private_rack(db, rack_id, current_user)
 
     evidence = db.get(ClassificationEvidenceRecord, body.evidence_id)
@@ -791,58 +809,25 @@ def resolve_rack_evidence_decision(
     if not settings.enable_decision_intelligence:
         raise HTTPException(status_code=409, detail="DECISION_INTELLIGENCE_DISABLED")
 
-    if settings.decision_provider == "clef":
-        return _resolve_with_guarded_flow(db, body)
-
-    try:
-        provider = _configured_decision_provider()
-        thresholds = PolicyThresholds(
-            policy_version="decision-policy-v1",
-            auto_propose_at=settings.decision_auto_propose_at,
-            user_review_at=settings.decision_user_review_at,
-            probability_margin=settings.decision_probability_margin,
-        )
-        proposal = resolve_module_identity(
-            db,
-            evidence_id=body.evidence_id,
-            provider=provider,
-            policy=DecisionPolicy(thresholds),
-            enabled=True,
-            idempotency_key=body.idempotency_key,
-        )
-    except DecisionIntelligenceDisabled as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except JevProviderError as exc:
-        status_code = 504 if str(exc) == "JEV_TIMEOUT" else 502
-        raise HTTPException(status_code=status_code, detail=str(exc)) from exc
-    except (EvidenceResolutionError, RuntimeError, ValueError) as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-
-    db.commit()
-    return DecisionResolutionResponse(
-        evidence_id=body.evidence_id,
-        selected_choice=proposal.packet.selected_choice,
-        disposition=proposal.policy.disposition.value,
-        provider=proposal.packet.provider,
-        confidence=proposal.packet.confidence,
-        canonical_authority=False,
-    )
+    return _resolve_with_guarded_flow(db, body)
 
 
 def _resolve_with_guarded_flow(
     db: Session, body: DecisionResolutionRequest
 ) -> DecisionResolutionResponse:
-    """Spec 006 path: Clef behind the T010 resolution machine and Spec 005 policy.
+    """Any provider behind the T010 resolution machine and Spec 005 policy.
 
     Disposition stays owned by DecisionPolicy; the response is advisory only and
-    canonical inventory is never touched. Provider failures fail closed (REJECT)
-    and persist no receipt.
+    canonical inventory is never touched. A provider failure or an unreadable packet
+    ends UNRESOLVED (or ESCALATE with a review route), returns an error code and
+    persists no receipt.
     """
     from intelligence.clef_resolution import resolve_module_identity_guarded
     from intelligence.evidence_resolution import (
         DecisionIntelligenceDisabled,
         EvidenceResolutionError,
     )
+    from intelligence.persistence import IdempotencyConflict
     from intelligence.policy import DecisionPolicy, PolicyThresholds
 
     # Retention- and consent-aware loader for the image asset bound to this evidence.
@@ -872,11 +857,32 @@ def _resolve_with_guarded_flow(
             enabled=True,
             idempotency_key=body.idempotency_key,
             expected_policy_version=settings.decision_policy_version,
+            routing_targets=(
+                frozenset({settings.decision_routing_target})
+                if settings.decision_routing_target
+                else frozenset()
+            ),
         )
     except DecisionIntelligenceDisabled as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except IdempotencyConflict as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     except (EvidenceResolutionError, RuntimeError, ValueError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    replayed = resolution.replayed_outcome
+    if replayed is not None:
+        # Same key, same evidence: answer from the stored outcome, no provider call.
+        # The disposition is the one bound to this key, not the shared receipt's.
+        stored = replayed.receipt
+        return DecisionResolutionResponse(
+            evidence_id=body.evidence_id,
+            selected_choice=stored.selected_choice,
+            disposition=replayed.disposition,
+            provider=stored.provider,
+            confidence=stored.confidence,
+            canonical_authority=False,
+        )
 
     if resolution.proposal is None:
         code = resolution.error_code or "PROVIDER_ERROR"

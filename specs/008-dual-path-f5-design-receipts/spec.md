@@ -54,9 +54,11 @@ As the operator, I want the readiness matrix and cutover checklist pinned to the
 
 - **FR-001** The FE list pages MUST read `canonApi.listRigs`/`getRig`; all writes MUST stay on their existing endpoints [OBSERVED: OPERATOR_NOTES.md T020].
 - **FR-002** `scripts/seed_golden_demo.py` MUST be the single source of demo credentials; the walkthrough MUST NOT rewrite a password hash [OBSERVED: OPERATOR_NOTES.md T030].
+  Amended 2026-10-29 (#129): the seeder refuses production, and refuses a hosted database unless `ENVIRONMENT=staging` with both demo passwords supplied through the environment [OBSERVED: scripts/seed_golden_demo.py].
 - **FR-003** Walkthrough flags MUST come from the running server's read-only `GET /api/admin/ops/runtime-flags`, which returns `schema_version`, `environment`, and six booleans only [OBSERVED: OPERATOR_NOTES.md T040].
 - **FR-004** Every artifact MUST be sealed by `record_sha256` and carry its predecessor's SHA; `BETA_ELIGIBLE` is terminal [OBSERVED: OPERATOR_NOTES.md].
 - **FR-005** Pinning MUST require a verified Spec 007 enablement receipt [OBSERVED: OPERATOR_NOTES.md T050].
+  The 007 verifier checks an unkeyed SHA only, so a forged receipt passes (research R1).
 - **FR-006** Production payments MUST remain disabled; reaching `BETA_ELIGIBLE` MUST NOT flip any flag [OBSERVED: tasks.md, OPERATOR_NOTES.md].
 
 ### Key entities
@@ -69,7 +71,7 @@ As the operator, I want the readiness matrix and cutover checklist pinned to the
 - **Data:** no route added or changed for T010; no schema change [OBSERVED: OPERATOR_NOTES.md].
 - **Security/privacy:** records never hold passwords, tokens, database URLs, or pack bytes [OBSERVED: OPERATOR_NOTES.md]. The runtime-flags endpoint is admin-only and read-only [OBSERVED].
 - **Observability:** rejected events are recorded and leave state unchanged [OBSERVED: OPERATOR_NOTES.md].
-- **Rollback:** revert the two FE list pages to the legacy endpoints; the canonical alias routes predate this feature [INFERRED].
+- **Rollback:** revert the two FE list pages to the legacy endpoints; the canonical alias routes predate this feature [OBSERVED: OPERATOR_NOTES.md T010; RESOLVED 2026-10-29, research R3].
 
 ## Success criteria
 
@@ -80,3 +82,26 @@ As the operator, I want the readiness matrix and cutover checklist pinned to the
 ## Out of scope
 
 Enabling payments, changing runtime config, routing, or DNS, and the unrouted `frontend/src/legacy/pages/Publish.tsx` [OBSERVED: OPERATOR_NOTES.md].
+
+## Implementation status (2026-10-29)
+
+Checked against `main` at 95ca9ee. Decision research is in [research.md](research.md).
+
+| FR | Status | Evidence |
+| --- | --- | --- |
+| FR-001 FE list reads the canon alias | Implemented | `canonApi.listRigs` in `Racks.tsx` and `Modules.tsx` (T020) [OBSERVED: frontend/src/pages/] |
+| FR-002 Seed is the single credential source | Implemented | `check_seed_auth` is read-only (T030a); hosted seeding needs `ENVIRONMENT=staging` and its own passwords (#129) [OBSERVED: scripts/seed_golden_demo.py] |
+| FR-003 Flags from the server's runtime-flags endpoint | Implemented | `GET /api/admin/ops/runtime-flags` [OBSERVED: backend/admin/routes.py, backend/core/ops/design_walkthrough.py] |
+| FR-004 Sealed records; BETA_ELIGIBLE terminal | Implemented | `_Sealed` records and the cutover machine [OBSERVED: backend/core/ops/f5_cutover.py; tests/integration/test_008_f5_cutover_machine.py passed 2026-10-29]. Unkeyed SHA, so integrity only (R1) |
+| FR-005 Pin requires a verified 007 receipt | Partial | Calls `verify_enablement_receipt`, which a forged mapping passes (R1) [OBSERVED: f5_cutover.py] |
+| FR-006 Production payments stay off | Implemented | `PRODUCTION_PAYMENTS_ENABLED` fails the walkthrough; the machine flips no flag [OBSERVED: f5_cutover.py `flags_test_mode_failures`] |
+| SC-001 Staging-only receipt | Partial | Only `production`/`prod` are refused, and `expected_environment` is optional (R2) [OBSERVED: f5_cutover.py, design_walkthrough.py] |
+
+Counts (FRs): 5 Implemented, 1 Partial, 0 Missing.
+
+## Open questions (2026-10-29)
+
+This spec had no open-questions list. The `[INFERRED]` items and research questions:
+
+- **Rollback by reverting the two list pages.** RESOLVED: the alias routes predate this feature (R3).
+- **Must the walkthrough run against `staging` only?** Open for the owner. Recommendation: yes, an allowlist of exactly `staging` (R2, T070).

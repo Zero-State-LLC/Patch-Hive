@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import io
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -54,6 +56,231 @@ class ComposeResult:
     page_count: int
     layout_irs: tuple[PatchPageLayoutIR, ...]
     family_algorithm: str
+
+
+# --- Book validation (spec 002 FR-006, FR-016, FR-017, FR-019) ----------------------
+
+BOOK_VALIDATION_RECEIPT_PATH = "validation/book.json"
+BOOK_VALIDATION_OPERATION_VERSION = "1.0.0"
+CHECKSUMS_PATH = "manifest/checksums.json"
+
+# Section 15 book codes, each with its remediation (FR-019).
+BOOK_REMEDIATION = {
+    "PATCH_BOOK_PAGE_COUNT_MISMATCH": (
+        "Draw every page the manifest lists, or remove it from the layout. Plate mode "
+        "fails until plates are drawn; use the execution_page profile."
+    ),
+    "PATCH_BOOK_REFERENCE_UNRESOLVED": (
+        "Re-run the export from the same sealed library so every page, patch and "
+        "bundle path resolves."
+    ),
+    "PATCH_BOOK_ASSET_HASH_MISMATCH": (
+        "Re-run the export; a bundle file changed after it was written or the layout "
+        "IR no longer replays the composition hash."
+    ),
+}
+
+_PATCH_PAGE_KINDS = (PageKind.EXECUTION, PageKind.APPENDIX_EXECUTION)
+
+
+class BookValidationFailed(PreflightFailed):
+    """A `validate_book` check failed; the receipt stays in the pack."""
+
+
+@dataclass(frozen=True)
+class BookValidation:
+    pages: tuple[dict[str, Any], ...]
+    pdf_page_count: int
+    manifest_page_count: int
+    patch_count: int
+    patch_page_count: int
+    replay_composition_hash: str | None
+    error_code: str | None = None
+    message: str | None = None
+
+    @property
+    def status(self) -> str:
+        return "fail" if self.error_code else "pass"
+
+
+def validate_book(
+    root: Path,
+    layout_irs: list[PatchPageLayoutIR],
+    library: LoadedLibrary,
+    *,
+    pages_drawn: int,
+    svg_hashes: dict[str, str],
+    paths: dict[str, Any],
+    expected_composition_hash: str,
+    resolved_recipe_hash: str,
+) -> BookValidation:
+    """Check the rendered pack against its layout and return one entry per page.
+
+    The checks run in order and the first failure sets the error code: page counts
+    and order, then references, then asset hashes and replay.
+    """
+    library_ids = {item.compilation.patch_graph.artifact_id for item in library.items}
+    errors: list[tuple[str, str]] = []
+    page_failures: set[int] = set()
+
+    # Page count: the PDF is the authority. Patches and patch pages match one to one.
+    patch_pages = [ir for ir in layout_irs if ir.page_kind in _PATCH_PAGE_KINDS]
+    if pages_drawn != len(layout_irs):
+        errors.append(
+            (
+                "PATCH_BOOK_PAGE_COUNT_MISMATCH",
+                f"PatchBook.pdf has {pages_drawn} pages; the manifest lists {len(layout_irs)}",
+            )
+        )
+    if len(patch_pages) != len(library.items):
+        errors.append(
+            (
+                "PATCH_BOOK_PAGE_COUNT_MISMATCH",
+                f"{len(library.items)} patches but {len(patch_pages)} patch pages",
+            )
+        )
+    if [ir.page_index for ir in layout_irs] != list(range(len(layout_irs))):
+        errors.append(("PATCH_BOOK_PAGE_COUNT_MISMATCH", "page order is not 0..n-1"))
+
+    # References: every patch page names a library patch with a diagram, every patch
+    # has a page, and every bundle path the manifest will list exists.
+    for ir in layout_irs:
+        if ir.patch_artifact_id is None:
+            continue
+        if ir.patch_artifact_id not in library_ids:
+            page_failures.add(ir.page_index)
+            errors.append(
+                (
+                    "PATCH_BOOK_REFERENCE_UNRESOLVED",
+                    f"page {ir.page_index} names unknown patch {ir.patch_artifact_id}",
+                )
+            )
+        elif not (root / _diagram_path(ir.patch_artifact_id)).is_file():
+            page_failures.add(ir.page_index)
+            errors.append(
+                (
+                    "PATCH_BOOK_REFERENCE_UNRESOLVED",
+                    f"page {ir.page_index} diagram {_diagram_path(ir.patch_artifact_id)} is missing",
+                )
+            )
+    paged_ids = {ir.patch_artifact_id for ir in patch_pages}
+    for artifact_id in sorted(library_ids - paged_ids):
+        errors.append(("PATCH_BOOK_REFERENCE_UNRESOLVED", f"patch {artifact_id} has no page"))
+    for key, value in sorted(paths.items()):
+        if key in {"layout_ir_dir", "book_validation"}:
+            continue  # a directory, and the receipt this stage is about to write
+        for rel in value if isinstance(value, list) else [value]:
+            if not (root / rel).is_file():
+                errors.append(("PATCH_BOOK_REFERENCE_UNRESOLVED", f"{key} path {rel} is missing"))
+
+    # Asset hashes: each diagram on disk matches the SVG drawn, and the layout IR on
+    # disk replays composition_hash (deterministic replay, FR-006).
+    on_disk_svg: dict[str, str] = {}
+    for artifact_id, expected in sorted(svg_hashes.items()):
+        target = root / _diagram_path(artifact_id)
+        if not target.is_file():
+            continue  # already reported as unresolved
+        on_disk_svg[artifact_id] = _sha256_file(target)
+        if on_disk_svg[artifact_id] != expected:
+            page_failures.update(
+                ir.page_index for ir in layout_irs if ir.patch_artifact_id == artifact_id
+            )
+            errors.append(
+                (
+                    "PATCH_BOOK_ASSET_HASH_MISMATCH",
+                    f"{_diagram_path(artifact_id)} does not match the diagram drawn",
+                )
+            )
+    replay_hash: str | None = None
+    try:
+        replayed = [
+            PatchPageLayoutIR.model_validate_json(path.read_text(encoding="utf-8"))
+            for path in sorted((root / "pages" / "layout_ir").glob("*.json"))
+        ]
+        replay_hash = composition_hash(
+            library_content_hash=library.library_content_hash,
+            bridge_artifact_manifest_hash=library.bridge_artifact_manifest_hash,
+            resolved_recipe_hash=resolved_recipe_hash,
+            layout_irs=replayed,
+            design_engine_version=DESIGN_ENGINE_VERSION,
+        )
+    except ValueError as exc:  # pydantic ValidationError is a ValueError
+        errors.append(("PATCH_BOOK_ASSET_HASH_MISMATCH", f"layout IR does not load: {exc}"))
+    if replay_hash is not None and replay_hash != expected_composition_hash:
+        errors.append(
+            ("PATCH_BOOK_ASSET_HASH_MISMATCH", "layout IR on disk does not replay composition_hash")
+        )
+
+    pages = tuple(
+        {
+            "index": ir.page_index,
+            "kind": ir.page_kind.value,
+            "page_id": ir.page_id,
+            "patch_artifact_id": ir.patch_artifact_id,
+            "page_hash": canonical_sha256(ir.model_dump(mode="json")),
+            "svg_hash": on_disk_svg.get(ir.patch_artifact_id) if ir.patch_artifact_id else None,
+            "status": "fail" if ir.page_index in page_failures else "pass",
+        }
+        for ir in layout_irs
+    )
+    first = errors[0] if errors else (None, None)
+    return BookValidation(
+        pages=pages,
+        pdf_page_count=pages_drawn,
+        manifest_page_count=len(layout_irs),
+        patch_count=len(library.items),
+        patch_page_count=len(patch_pages),
+        replay_composition_hash=replay_hash,
+        error_code=first[0],
+        message="; ".join(msg for _, msg in errors) if errors else None,
+    )
+
+
+def _book_validation_receipt(
+    validation: BookValidation,
+    *,
+    export_id: str,
+    composition_hash_value: str,
+    warning_issues: list[tuple[str, str, str]],
+) -> dict[str, Any]:
+    """The `validate_book` stage receipt. No timestamps, so a replay writes the same bytes."""
+    return {
+        "stage": "validate_book",
+        "operation": "compose_design_export_pack.validate_book",
+        "operation_version": BOOK_VALIDATION_OPERATION_VERSION,
+        "determinism_class": "deterministic",
+        "design_engine_version": DESIGN_ENGINE_VERSION,
+        "export_id": export_id,
+        "input_hash": composition_hash_value,
+        "output_hash": canonical_sha256(list(validation.pages)),
+        "status": validation.status,
+        "error_code": validation.error_code,
+        "message": validation.message,
+        "remediation": BOOK_REMEDIATION.get(validation.error_code or ""),
+        "pdf_page_count": validation.pdf_page_count,
+        "manifest_page_count": validation.manifest_page_count,
+        "patch_count": validation.patch_count,
+        "patch_page_count": validation.patch_page_count,
+        "replay_composition_hash": validation.replay_composition_hash,
+        "pages": list(validation.pages),
+        # Every preflight warning, never dropped (spec 002 FR-019, OQ-7).
+        "warnings": [
+            {"code": code, "severity": severity, "message": message}
+            for code, severity, message in warning_issues
+        ],
+    }
+
+
+def _diagram_path(artifact_id: str) -> str:
+    return f"diagrams/svg/{artifact_id}.svg"
+
+
+def _bundle_files(root: Path) -> list[str]:
+    return sorted(p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file())
+
+
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def compose_design_export_pack(
@@ -120,14 +347,18 @@ def compose_design_export_pack(
     layout_irs.append(_front_matter_page(0, "cover", recipe, family))
     page_index = 1
     diagram_paths: list[str] = []
+    svg_hashes: dict[str, str] = {}
     for item in library.items:
         # Deterministic technical SVG per patch (color + dash + number)
         svg = render_patch_diagram_svg(
             item.compilation, layout_algorithm_id=family.layout_algorithm_id
         )
-        svg_rel = f"diagrams/svg/{item.compilation.patch_graph.artifact_id}.svg"
+        svg_rel = _diagram_path(item.compilation.patch_graph.artifact_id)
         (root / svg_rel).write_text(svg, encoding="utf-8")
         diagram_paths.append(svg_rel)
+        svg_hashes[item.compilation.patch_graph.artifact_id] = hashlib.sha256(
+            svg.encode("utf-8")
+        ).hexdigest()
 
         if plate_primary:
             # Artistic/publication primary: non-executable plate (appendix holds execution)
@@ -228,6 +459,12 @@ def compose_design_export_pack(
         first = next((i for i in gate.issues if i.severity == "error"), None)
         code = first.code if first else "PREFLIGHT_FAILED"
         raise PreflightFailed(code, first.message if first else "preflight failed")
+    # Warnings do not block the pack, but they are never dropped (spec 002 OQ-7, FR-019):
+    # the manifest lists their codes and the book validation receipt lists each one.
+    warning_issues = sorted(
+        {(i.code, i.severity, i.message) for i in gate.issues if i.severity == "warning"}
+    )
+    preflight_warnings = sorted({code for code, _, _ in warning_issues})
 
     comp_hash = composition_hash(
         library_content_hash=library.library_content_hash,
@@ -238,7 +475,7 @@ def compose_design_export_pack(
     )
 
     pdf_path = root / "PatchBook.pdf"
-    _render_execution_pdf(
+    pages_drawn = _render_execution_pdf(
         library,
         recipe,
         family,
@@ -276,6 +513,46 @@ def compose_design_export_pack(
         appendix = root / "technical" / "PatchBook-execution.pdf"
         appendix.write_bytes(pdf_path.read_bytes())
 
+    license_lines = ["PatchHive export. Designed and Engineered by Zero State.\n"]
+    if family.patent_disclaimer:
+        license_lines.append(PATENT_FUTURE_DISCLAIMER + "\n")
+    (root / "LICENSE.txt").write_text("".join(license_lines), encoding="utf-8")
+
+    paths: dict[str, Any] = {
+        "pdf": "PatchBook.pdf",
+        "companion": "technical/companion.txt",
+        "library_index": "source/library_index.json",
+        "resolved_recipe": "style/resolved_recipe.json",
+        "family": "style/family.json",
+        "diagrams": diagram_paths,
+        "layout_ir_dir": "pages/layout_ir",
+        "book_validation": BOOK_VALIDATION_RECEIPT_PATH,
+    }
+
+    # validate_book: the PDF is the page-count authority, every reference resolves,
+    # every asset is hash-valid, and the IR on disk replays composition_hash (spec 002
+    # FR-006, FR-016, FR-017). A failure keeps its receipt in the pack (FR-007).
+    validation = validate_book(
+        root,
+        layout_irs,
+        library,
+        pages_drawn=pages_drawn,
+        svg_hashes=svg_hashes,
+        paths=paths,
+        expected_composition_hash=comp_hash,
+        resolved_recipe_hash=resolved_hash,
+    )
+    receipt = _book_validation_receipt(
+        validation,
+        export_id=export_id,
+        composition_hash_value=comp_hash,
+        warning_issues=warning_issues,
+    )
+    (root / BOOK_VALIDATION_RECEIPT_PATH).parent.mkdir(parents=True, exist_ok=True)
+    (root / BOOK_VALIDATION_RECEIPT_PATH).write_text(canonical_json(receipt), encoding="utf-8")
+    if validation.error_code is not None:
+        raise BookValidationFailed(validation.error_code, validation.message or "")
+
     manifest: dict[str, Any] = {
         "schema_version": "patchhive.design_export_pack.v1",
         "export_id": export_id,
@@ -288,28 +565,37 @@ def compose_design_export_pack(
         "template_family": recipe.template_family.value,
         "layout_algorithm_id": family.layout_algorithm_id,
         "page_count": len(layout_irs),
+        "pages": list(validation.pages),
+        "validation_status": "pass",
         "resolved_tier": recipe.resolved_tier,
-        "paths": {
-            "pdf": "PatchBook.pdf",
-            "companion": "technical/companion.txt",
-            "library_index": "source/library_index.json",
-            "resolved_recipe": "style/resolved_recipe.json",
-            "family": "style/family.json",
-            "diagrams": diagram_paths,
-            "layout_ir_dir": "pages/layout_ir",
-        },
+        "warnings": preflight_warnings,
+        "paths": paths,
     }
     body_hash = canonical_sha256({k: v for k, v in manifest.items() if k != "pack_manifest_hash"})
     manifest["pack_manifest_hash"] = body_hash
     (root / "manifest" / "patch-book.json").write_text(canonical_json(manifest), encoding="utf-8")
-    (root / "manifest" / "checksums.json").write_text(
-        canonical_json({"composition_hash": comp_hash, "pack_manifest_hash": body_hash}),
+
+    # Emit: one SHA-256 per bundle file, then read every file back against it.
+    file_hashes = {
+        rel: _sha256_file(root / rel) for rel in _bundle_files(root) if rel != CHECKSUMS_PATH
+    }
+    (root / CHECKSUMS_PATH).write_text(
+        canonical_json(
+            {
+                "composition_hash": comp_hash,
+                "pack_manifest_hash": body_hash,
+                "files": file_hashes,
+            }
+        ),
         encoding="utf-8",
     )
-    license_lines = ["PatchHive export. Designed and Engineered by Zero State.\n"]
-    if family.patent_disclaimer:
-        license_lines.append(PATENT_FUTURE_DISCLAIMER + "\n")
-    (root / "LICENSE.txt").write_text("".join(license_lines), encoding="utf-8")
+    recorded = json.loads((root / CHECKSUMS_PATH).read_text(encoding="utf-8"))["files"]
+    for rel, digest in sorted(recorded.items()):
+        target = root / rel
+        if not target.is_file() or _sha256_file(target) != digest:
+            raise BookValidationFailed(
+                "PATCH_BOOK_ASSET_HASH_MISMATCH", f"{rel} does not match manifest/checksums.json"
+            )
 
     # Post-pack preflight (files present)
     post = run_preflight(layout_irs, recipe, pack_dir=root)
@@ -568,7 +854,8 @@ def _render_execution_pdf(
     *,
     export_id: str,
     composition_hash: str,
-) -> None:
+) -> int:
+    """Draw the PDF and return the number of pages drawn (one ``showPage`` each)."""
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=letter)
     width, height = letter
@@ -588,19 +875,30 @@ def _render_execution_pdf(
     # Body text, steps and cables never go below the profile's floor (spec 002 FR-004).
     body_size = body_size_pt(recipe)
 
+    drawn = 0
     # Cover
     c.setFont("Helvetica-Bold", 22)
     c.drawString(inch, height - inch, "PatchHive PatchBook")
     c.setFont(body_font, 11)
     c.setFillColorRGB(*accent)
-    c.drawString(inch, height - 1.35 * inch, family.cover_subtitle)
-    if family.patent_disclaimer:
-        c.setFillColorRGB(0, 0, 0)
-        c.setFont("Helvetica", 8)
-        for i, chunk in enumerate(_wrap_to_width(PATENT_FUTURE_DISCLAIMER, "Helvetica", 8, width - 2 * inch)):
-            c.drawString(inch, height - 1.55 * inch - i * 10, chunk)
+    subtitle_y = height - 1.35 * inch
+    c.drawString(inch, subtitle_y, family.cover_subtitle)
     c.setFillColorRGB(0, 0, 0)
-    y_meta = height - 1.9 * inch if family.patent_disclaimer else height - 1.7 * inch
+    y_meta = height - 1.7 * inch
+    if family.patent_disclaimer:
+        # The notice is drawn at the body floor (FR-004). The metadata block starts
+        # below its last wrapped line, so a long notice cannot overlap it. Its first
+        # baseline sits one leading plus the subtitle's descent under the subtitle,
+        # so large body sizes clear the subtitle too.
+        notice_leading = max(18.0, body_size * 1.5) if body_size >= 9 else body_size * 1.5
+        y_meta = _draw_wrapped(
+            c,
+            [PATENT_FUTURE_DISCLAIMER],
+            "Helvetica",
+            body_size,
+            subtitle_y - 11 * 0.25 - notice_leading,
+            width - 2 * inch,
+        )
     _draw_wrapped(
         c,
         [
@@ -619,6 +917,7 @@ def _render_execution_pdf(
     c.drawString(inch, 0.75 * inch, "A Zero State Product")
     c.setFillColorRGB(0, 0, 0)
     c.showPage()
+    drawn += 1
 
     recipe_h = recipe_hash(recipe)
     for item in library.items:
@@ -655,6 +954,7 @@ def _render_execution_pdf(
         )
         c.drawRightString(width - inch, 0.55 * inch, f"legibility={recipe.weights.legibility}")
         c.showPage()
+        drawn += 1
 
     # Colophon
     c.setFont("Helvetica-Bold", 14)
@@ -676,6 +976,7 @@ def _render_execution_pdf(
     if family.patent_disclaimer:
         _draw_wrapped(c, [PATENT_FUTURE_DISCLAIMER], "Helvetica", 8, y_after - 10, width - 2 * inch)
     c.showPage()
+    drawn += 1
 
     c.setAuthor("PatchHive")
     c.setCreator(PDF_CREATOR_PATTERN)
@@ -683,6 +984,7 @@ def _render_execution_pdf(
     c.setSubject(f"PatchHive PatchBook eng={DESIGN_ENGINE_VERSION} {composition_hash[:16]}")
     c.save()
     path.write_bytes(normalize_pdf_metadata(buf.getvalue()))
+    return drawn
 
 
 # --- Page layout (spec 002 FR-001/003/010/021) -------------------------------------

@@ -79,3 +79,16 @@ parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
 - [x] T070 Integration tests for the evaluation state machine and gate checks.
   - depends_on: [T010a, T060a]
   - acceptance: no path reaches STAGING_ENABLED without OPERATOR_APPROVED; fail-closed on missing corpus or unapproved thresholds.
+
+## Gap closure (2026-10-29)
+
+From [research.md](research.md). Effort in brackets.
+
+- [x] T080 Verify by replay: `verify_enablement_receipt` validates the full `EvaluationEnablementReceipt` model (no bare mapping) and, given the chain records, rebuilds the receipt with `pin_receipt` and compares (R1) [S]. Done 2026-10-29: mappings and models re-validate and must round-trip exactly; `chain=EnablementChain(...)` replays through `pin_receipt`.
+  - depends_on: [T060a]
+- [x] T081 Sign receipts: an Ed25519 signature over `receipt_sha256` against a committed approver allowlist (`key_id`, public key, `valid_from`, `revoked_at`); `approved_by` becomes the key id; reject unknown or revoked keys (R1) [M]. Done 2026-10-29: `intelligence/receipt_signing.py` and `verify_signed_enablement_receipt`; `intelligence/evaluation_approvers.json` is committed with no keys (T082 adds one).
+  - depends_on: [T080]
+- [ ] T082 Generate the approver key pair offline and commit only the public key to the allowlist through a reviewed PR (operator) [S].
+  - depends_on: [T081]
+- [ ] T083 Sign the receipt pinned in T060b with the approver key and retain the signature beside it (operator) [S].
+  - depends_on: [T060b, T082]

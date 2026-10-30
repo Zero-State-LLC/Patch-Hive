@@ -173,6 +173,18 @@ def test_reverify_for_other_fields_still_places(
     assert _place(db_session, sample_case, sample_vco).status_code == 201
 
 
+def test_a_reviewed_hp_correction_lifts_the_placement_block(
+    db_session: Session, sample_case: Case, sample_vco: Module
+) -> None:
+    """Spec 003 FR-038: a maker-page correction settles a flagged HP."""
+    sample_vco.needs_reverify = True
+    db_session.commit()
+    _archive(db_session, sample_vco, field="hp", action="flag")
+    _archive(db_session, sample_vco, field="hp", action="correct")
+
+    assert _place(db_session, sample_case, sample_vco).status_code == 201
+
+
 def test_no_archive_table_means_no_hp_flag(
     db_session: Session, sample_case: Case, sample_vco: Module
 ) -> None:

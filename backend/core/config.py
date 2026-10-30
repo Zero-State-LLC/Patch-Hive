@@ -76,6 +76,9 @@ class Settings(BaseSettings):
     clef_base_url: str = "https://api.cloudflare.com/client/v4"
     clef_timeout_seconds: float = 10.0
     decision_policy_version: str = "decision-policy-v1"
+    # The one bounded routing target (spec 005 R6): the existing confirmation UI. Empty
+    # means no target, so a failed provider or a policy ESCALATE ends UNRESOLVED.
+    decision_routing_target: str = "human_review"
 
     # Patch Engine
     patch_engine_version: str = "1.0.0"
@@ -87,6 +90,9 @@ class Settings(BaseSettings):
     # Legacy POST /api/export/runs/{id}/patchbook debit path (transitional).
     # MVP UI and acceptance use /api/canon/exports; set false to hard-disable debit.
     enable_legacy_patchbook_debit: bool = False
+    # Legacy two-page patch book (POST /api/export/patchbook). Its pages break the spec
+    # 002 one-page rule; the Design Engine is the book path. Off unless explicitly set.
+    enable_legacy_patchbook_export: bool = False
     stripe_test_mode: bool = True
     allow_production_payments: bool = False
     # Empty defaults: development may derive local secrets; production policy enforces real ones.

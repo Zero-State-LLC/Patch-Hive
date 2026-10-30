@@ -156,7 +156,7 @@ After frontend deployment, update backend CORS:
 
 ### 3. Initialize Database
 
-The backend Docker image runs **`alembic upgrade head`** via `docker-entrypoint.sh` before Uvicorn starts (`RUN_MIGRATIONS=true` by default). Do **not** rely on `create_all()` / `init_db()` for deploy.
+The backend Docker image runs **`alembic upgrade head`** via `docker-entrypoint.sh` before Uvicorn starts only when `RUN_MIGRATIONS` is `true` or `1` (default off). `render.yaml` sets `RUN_MIGRATIONS=true` for this self-contained Render stack. Do **not** rely on `create_all()` / `init_db()` for deploy.
 
 **Manual migrations** (shell):
 ```bash

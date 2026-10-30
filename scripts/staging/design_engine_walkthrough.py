@@ -76,7 +76,6 @@ def _source_sha() -> str:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--receipt-out", default="design-walkthrough-receipt.json")
-    parser.add_argument("--environment", default="staging")
     args = parser.parse_args()
 
     api = os.environ.get("STAGING_API_URL", "http://localhost:18000").rstrip("/")
@@ -134,7 +133,7 @@ def main() -> int:
             sources=sources,
             fe_sources=fe_sources,
             source_commit_sha=_source_sha(),
-            expected_environment=args.environment,
+            expected_environment="staging",
             log=print,
         )
     except CutoverError as exc:

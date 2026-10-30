@@ -1,8 +1,11 @@
 # Open design decisions (2026-10-28)
 
-Research from a read-only pass over the code and specs, for decisions that need the owner. Each has a recommendation; the matching cards are on [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8) under `[decision]`. Settled since the research: module and case writes are admin-only (#79), and users own their racks (#80).
+Research from a read-only pass over the code and specs, for decisions that need the owner. Each has a recommendation; the matching cards are on [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8) under `[decision]`. Settled since the research: module and case writes are admin-only (#79), users own their racks (#80), catalog rows are retired by tombstone (#116, decision 2), and the Products page reads the module catalog (#114, the registry half of decision 4). Updated 2026-10-28 evening.
 
-## 1. Unknown power draws count as 0 mA
+## 1. Unknown power draws count as 0 mA — fixed (#118)
+
+**Fixed 2026-10-29 (#118).** Per-rail unknowns, a NULL +5V counts as unknown, one rounding rule. Jumper-dependent draws are still open: spec 003 research R5, task T034.
+
 
 This is a bug, so it does not wait on a decision; it is a `[api]` card in Ready.
 
@@ -15,7 +18,12 @@ Fix: per-rail unknowns (a rail with any unknown draw is `incomplete`, "≥ X mA 
 
 **Decision (later):** how to model jumper-dependent draws. Recommended: a `power_configs` JSON column with one +12V/+5V/-12V set per jumper setting, each with its source, so a budget can check that some setting fits the case. Storing the worst case per rail mixes two settings into a draw neither one has. Until then these rails stay unknown, as spec 003 FR-022 requires.
 
-## 2. Retiring a bogus catalog row (TLM "ST MODULAR")
+## 2. Retiring a bogus catalog row (TLM "ST MODULAR") — settled
+
+**Settled 2026-10-28 (#116).** `module_catalog` gained `tombstoned_at` and `tombstone_reason`; `modules` uses `status = 'tombstoned'`. The loader tombstones rows named in `overlays/catalog-retirements-v*.json` (each with evidence), never deletes. Browse, search, counts and batch materialize skip them; a slug lookup still answers; materializing one is 409. First use: the TLM row and 262 rows the crawl filed under the wrong brand (seven brands were given another maker's homepage). Rack validation does not yet warn on existing placements of a tombstoned module (no prod racks use them).
+
+The research below is kept for the record.
+
 
 - `modules` already has `status` (active, deprecated, tombstoned) and a soft delete; `module_catalog` has only `is_available`.
 - Catalog browse shows every row by default, materialize returns a tombstoned module, and rack validation ignores `Module.status`.
@@ -24,7 +32,10 @@ Fix: per-rail unknowns (a rail with any unknown draw is `incomplete`, "≥ X mA 
 
 **Recommendation:** a `retire` loader action that archives the old values and sets `status = tombstoned`, `is_available = retired`; browse hides retired rows by default, materialize skips them, validation warns on existing placements.
 
-## 3. Correcting a wrong `modules.hp` (Sovage CHICANE: stored 14, true 4)
+## 3. Correcting a wrong `modules.hp` (Sovage CHICANE: stored 14, true 4) — decided
+
+**Decided 2026-10-29 (spec 003 D4, FR-038; #125).** A `correct` provenance action archives the old value and writes a new one cited to a maker page, only while the stored value is `only_if_value`. An HP correction lifts the FR-035 block. First use: CHICANE 14 → 4. The research below is kept for the record.
+
 
 Nothing in the loader or admin tools can change `modules.hp` after insert. The FR-035 placement block lifts only when `needs_reverify` is false, and nothing sets it back.
 
@@ -36,7 +47,9 @@ Nothing in the loader or admin tools can change `modules.hp` after insert. The F
 - The registry match is circular: device slugs derive from the same seed (376 of 376 match by slug).
 - The update path overwrites HP, category and source unconditionally, and it fills a missing HP with 10 and a missing type with VCO, against spec 003.
 
-**Recommendation:** delete both copies; have the loader fill `registry_manufacturer_slug` (empty only); leave the device slug empty until `device_models` is populated. Separately, `backend/registry/services.py` reads the registry snapshot from outside `backend/`, which the Dockerfiles do not copy, so `/api/registry/search` is probably empty in containers (inferred; a Ready card checks it).
+**Recommendation:** delete both copies; have the loader fill `registry_manufacturer_slug` (empty only); leave the device slug empty until `device_models` is populated.
+
+**Registry half settled 2026-10-28 (#114).** Confirmed: the snapshot was not in the API image, so search and every maker's models were empty in production. The registry now reads a maker's models from `module_catalog` (brand name or alias), so it no longer needs the snapshot or the slug fill. Seed scripts deleted 2026-10-29 (spec 003 D5, T032). Decision 3 (the HP correction) is spec 003 D4 / FR-038, implemented in T033.
 
 ## 5. Scraping policy
 
@@ -47,6 +60,10 @@ Settled: maker pages and manuals only, no ModularGrid fetching, robots.txt respe
 - **Blocked sites.** One rule for Frap (drops connections) and Tiptop (CAPTCHA): never route around a block; ask the maker for data or access.
 
 ## 6. Budget approvals (spec 003 FR-003)
+
+**Update 2026-10-29:** Frap needs no paid pass: its host refuses connections from the crawl network, so it's excluded like Tiptop (spec 003 D7). The one paid run left is T035, a scoped re-fetch of about 45 jumper-dependent pages (estimated 20–50 context.dev credits), which feeds `power_configs` (D8, T034). It waits on an owner cap.
+
+Two runs now wait on a cap: the Frap listing adapter (T026) and rebuilding the maker-crawl page cache, which was deleted on 2026-10-28 with a worktree (T031). The committed crawl results are intact; the cache is only needed to re-parse pages.
 
 Paid runs need a recorded budget approval; caps so far are written into `data/synth-catalog/SCRAPING_ARCHITECTURE.md` by hand. Recommendation: an approvals receipt (who, cap, date) the crawler checks before any paid fetch.
 

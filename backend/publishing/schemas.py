@@ -37,7 +37,7 @@ class PublicationCreate(BaseModel):
     export_id: int
     title: str = Field(..., min_length=1, max_length=200)
     description: Optional[str] = Field(default=None, max_length=2000)
-    visibility: Literal["unlisted", "public"]
+    visibility: Literal["unlisted", "public"] = "unlisted"
     allow_download: bool
     allow_remix: bool
     cover_image_url: Optional[str] = None

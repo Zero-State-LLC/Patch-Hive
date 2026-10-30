@@ -9,7 +9,7 @@ import json
 import os
 import zipfile
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import FileResponse
@@ -271,6 +271,9 @@ def update_publication(
         raise HTTPException(status_code=404, detail="Publication not found")
 
     update_data = payload.model_dump(exclude_unset=True)
+    # A removed publication is closed: no status change and no metadata edit (spec 002).
+    if publication.status == "removed":
+        raise HTTPException(status_code=409, detail="PUBLICATION_UNDER_MODERATION")
     if "status" in update_data:
         status_value = update_data["status"]
         if status_value not in {"published", "hidden"}:
@@ -281,6 +284,9 @@ def update_publication(
             raise HTTPException(status_code=409, detail="PUBLICATION_UNDER_MODERATION")
         if (publication.status, status_value) not in OWNER_TRANSITIONS:
             raise HTTPException(status_code=409, detail="INVALID_TRANSITION")
+        if (publication.status, status_value) == ("draft", "published"):
+            if not _bound_to_validated_book(publication.export):
+                raise HTTPException(status_code=409, detail="PUBLICATION_BOOK_NOT_VALIDATED")
         publication.status = status_value
         if status_value == "published" and publication.published_at is None:
             publication.published_at = datetime.utcnow()
@@ -292,6 +298,14 @@ def update_publication(
     db.commit()
     db.refresh(publication)
     return publication
+
+
+def _bound_to_validated_book(export: Export | None) -> bool:
+    """Spec 002 FR-048: publishing a draft needs an export bound to a PatchBookManifest
+    that passed `validate_book`. Publication exports are legacy PDFs with no link to a
+    Design Engine pack, so none qualifies yet (research R2 option 3). Binding them to a
+    validated canon export is T033 and waits on the owner (OQ-6)."""
+    return False
 
 
 # Owner status changes allowed by the spec 002 publication lifecycle (from, to). Any
@@ -397,7 +411,7 @@ def download_publication_artifact(
 def list_gallery(
     limit: int = Query(20, ge=1, le=50),
     cursor: Optional[str] = None,
-    export_type: Optional[str] = None,
+    export_type: Optional[Literal["patch", "rack"]] = None,
     recent_days: Optional[int] = Query(None, ge=1, le=365),
     db: Session = Depends(get_db),
 ):

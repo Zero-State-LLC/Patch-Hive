@@ -348,7 +348,7 @@ docker compose -f docker-compose.prod.yml exec db psql -U patchhive -d patchhive
 | `APP_VERSION` | Application version | 1.0.0 | No |
 | `ABX_CORE_VERSION` | ABX-Core compliance version | 1.2 | No |
 | `ENFORCE_SEED_TRACEABILITY` | Enforce SEED provenance | true | No |
-| `RUN_MIGRATIONS` | Run DB migrations on startup | false | No |
+| `RUN_MIGRATIONS` | Run DB migrations on startup; only `true` or `1` enable it (local compose opts in; Cloudflare Workers do not, use the db-migrate workflow) | false | No |
 
 #### Frontend Environment Variables
 

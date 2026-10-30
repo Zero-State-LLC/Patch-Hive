@@ -360,6 +360,7 @@ def _side_effect_counts(db_session) -> tuple[int, int]:
 
 def _run(db_session, http, seeded, **kwargs):
     result, user, admin = seeded
+    kwargs.setdefault("expected_environment", "staging")
     return run_staging_walkthrough(
         http,
         seed_auth=check_seed_auth(db_session, (user, admin)),
@@ -444,10 +445,43 @@ def test_production_environment_server_aborts(db_session, client, seeded, design
     assert "PRODUCTION_ENVIRONMENT" in exc.value.detail
 
 
-def test_server_environment_must_match_expected(db_session, client, seeded, design_flags) -> None:
+@pytest.mark.parametrize("expected", ["qa", "production", "", None])
+def test_expected_environment_must_be_staging(db_session, client, seeded, design_flags, expected) -> None:
+    before = _side_effect_counts(db_session)
     with pytest.raises(CutoverError) as exc:
-        _run(db_session, client, seeded, expected_environment="qa")
-    assert exc.value.code == "SERVER_ENVIRONMENT_MISMATCH"
+        _run(db_session, client, seeded, expected_environment=expected)
+    assert exc.value.code == "EXPECTED_ENVIRONMENT_NOT_STAGING"
+    assert _side_effect_counts(db_session) == before
+
+
+def test_expected_environment_is_required(db_session, client, seeded, design_flags) -> None:
+    result, user, admin = seeded
+    with pytest.raises(TypeError):
+        run_staging_walkthrough(  # type: ignore[call-arg]
+            client,
+            seed_auth=check_seed_auth(db_session, (user, admin)),
+            user=user,
+            admin=admin,
+            user_id=result.user_id,
+            rig_id=result.rig_id,
+            sources=_bridge_sources(db_session, result.run_id),
+            fe_sources=_fe_sources(),
+            source_commit_sha=WALKTHROUGH_SHA,
+        )
+
+
+@pytest.mark.parametrize("environment", ["development", "dev", "test", "Staging", " staging", "stagng", "prod"])
+def test_server_not_reporting_staging_is_refused(
+    db_session, client, seeded, design_flags, monkeypatch, environment
+) -> None:
+    monkeypatch.setattr(settings, "environment", environment)
+    before = _side_effect_counts(db_session)
+    with pytest.raises(CutoverError) as exc:
+        _run(db_session, client, seeded)
+    # Production-named servers keep the more specific flags failure; the rest are not-staging.
+    assert exc.value.code in {"SERVER_ENVIRONMENT_NOT_STAGING", "FLAGS_NOT_TEST_MODE"}
+    assert "NOT_STAGING" in (exc.value.code + exc.value.detail)
+    assert _side_effect_counts(db_session) == before
 
 
 _GOOD_PAYLOAD = {

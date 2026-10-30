@@ -34,7 +34,7 @@ from canon.models import (  # noqa: F401
 from community.models import Comment, User, Vote  # noqa: F401
 from core import get_db, init_db, settings
 from gallery.models import GalleryRevision  # noqa: F401
-from intelligence.models import DecisionReceiptRecord  # noqa: F401
+from intelligence.models import DecisionReceiptKeyRecord, DecisionReceiptRecord  # noqa: F401
 from modules.catalog import ModuleCatalog  # noqa: F401
 
 # Import all models to register them with SQLAlchemy before init_db()
@@ -61,9 +61,15 @@ async def lifespan(app: FastAPI):
     # Startup
     from canon.routes import validate_payment_startup_policy
     from core.security import validate_secret_policy
+    from core.startup_policy import (
+        validate_decision_startup_policy,
+        validate_stripe_mode_startup_policy,
+    )
 
     validate_secret_policy(settings)
     validate_payment_startup_policy(settings)
+    validate_stripe_mode_startup_policy(settings)
+    validate_decision_startup_policy(settings)
     print(f"Starting {settings.app_name} v{settings.app_version}")
     print(f"ABX-Core version: {settings.abx_core_version}")
     # Schema: alembic upgrade head (entrypoint / release job). create_all only if explicitly allowed.

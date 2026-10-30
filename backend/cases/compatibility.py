@@ -380,27 +380,31 @@ def _power_checks(
     draw_n12 = sum(m.power_neg12v_ma or 0 for m in modules)
     draw5 = sum(m.power_5v_ma or 0 for m in modules)
     any_draw = draw12 > 0 or draw_n12 > 0 or draw5 > 0
-    any_unknown_draw = any(
-        m.power_12v_ma is None and m.power_neg12v_ma is None and m.power_5v_ma is None for m in modules
-    )
+    # A rail a module does not state is unknown, never 0 (spec 003 FR-022), +5V included:
+    # a jumper-set 4ms module may draw from +5V without the page saying so.
+    unknown12 = [m.name for m in modules if m.power_12v_ma is None]
+    unknown_n12 = [m.name for m in modules if m.power_neg12v_ma is None]
+    unknown5 = [m.name for m in modules if m.power_5v_ma is None]
+    any_unknown_draw = bool(unknown12 or unknown_n12 or unknown5)
 
     rails: list[PowerRailResult] = []
 
-    def rail_result(name: str, capacity: Optional[int], draw: int) -> PowerRailResult:
+    def rail_result(name: str, capacity: Optional[int], draw: int, unknown: list[str]) -> PowerRailResult:
+        n = len(unknown)
+        plus_unknown = f" plus {n} unknown" if n else ""
+        common = {"rail": name, "module_draw_ma": draw, "unknown_draw_count": n, "unknown_modules": unknown}
         if capacity is None:
-            if draw > 0:
+            if draw > 0 or n:
                 return PowerRailResult(
-                    rail=name,
+                    **common,
                     case_capacity_ma=None,
-                    module_draw_ma=draw,
                     headroom_ma=None,
                     status="incomplete",
                     message=f"{name}: case capacity unspecified; cannot compute headroom",
                 )
             return PowerRailResult(
-                rail=name,
+                **common,
                 case_capacity_ma=None,
-                module_draw_ma=draw,
                 headroom_ma=None,
                 status="incomplete",
                 message=f"{name}: case capacity unspecified",
@@ -408,17 +412,26 @@ def _power_checks(
         headroom = capacity - draw
         if headroom < 0:
             return PowerRailResult(
-                rail=name,
+                **common,
                 case_capacity_ma=capacity,
-                module_draw_ma=draw,
                 headroom_ma=headroom,
                 status="conflict",
-                message=f"{name}: draw {draw}mA exceeds capacity {capacity}mA",
+                message=f"{name}: draw {draw}mA{plus_unknown} exceeds capacity {capacity}mA",
+            )
+        if n:
+            return PowerRailResult(
+                **common,
+                case_capacity_ma=capacity,
+                headroom_ma=headroom,
+                status="incomplete",
+                message=(
+                    f"{name}: at least {draw}mA of {capacity}mA{plus_unknown}; "
+                    f"at most {headroom}mA headroom"
+                ),
             )
         return PowerRailResult(
-            rail=name,
+            **common,
             case_capacity_ma=capacity,
-            module_draw_ma=draw,
             headroom_ma=headroom,
             status="verified",
             message=f"{name}: {headroom}mA headroom ({draw}/{capacity}mA)",
@@ -455,9 +468,9 @@ def _power_checks(
 
     rails.extend(
         [
-            rail_result("+12V", cap12, draw12),
-            rail_result("-12V", cap_n12, draw_n12),
-            rail_result("+5V", cap5, draw5),
+            rail_result("+12V", cap12, draw12, unknown12),
+            rail_result("-12V", cap_n12, draw_n12, unknown_n12),
+            rail_result("+5V", cap5, draw5, unknown5),
         ]
     )
 
@@ -467,7 +480,13 @@ def _power_checks(
                 status="incomplete",
                 code="MODULE_POWER_UNKNOWN",
                 message="One or more modules lack power specs; draw totals may be understated",
-                details={},
+                details={
+                    "unknown_draw_count": {
+                        "+12V": len(unknown12),
+                        "-12V": len(unknown_n12),
+                        "+5V": len(unknown5),
+                    },
+                },
             )
         )
 
@@ -497,6 +516,16 @@ def _power_checks(
             message=f"+5V draw {draw5}mA exceeds case capacity {cap5}mA",
             details={"draw_ma": draw5, "capacity_ma": cap5},
         )
+    elif needs_5 and unknown5:
+        pos5 = CheckResult(
+            status="incomplete",
+            code="POS5_INCOMPLETE",
+            message=(
+                f"+5V: at least {draw5}/{cap5}mA, plus {len(unknown5)} module"
+                f"{'' if len(unknown5) == 1 else 's'} with unknown +5V draw"
+            ),
+            details={"draw_ma": draw5, "capacity_ma": cap5, "unknown_modules": unknown5},
+        )
     elif needs_5:
         pos5 = CheckResult(
             status="verified",
@@ -504,11 +533,21 @@ def _power_checks(
             message=f"+5V requirement within capacity ({draw5}/{cap5}mA)",
             details={"draw_ma": draw5, "capacity_ma": cap5},
         )
+    elif unknown5:
+        pos5 = CheckResult(
+            status="incomplete",
+            code="POS5_UNKNOWN",
+            message=(
+                f"+5V draw unknown for {len(unknown5)} module"
+                f"{'' if len(unknown5) == 1 else 's'}; +5V need not confirmed"
+            ),
+            details={"modules": unknown5, "capacity_ma": cap5},
+        )
     else:
         pos5 = CheckResult(
             status="verified",
             code="POS5_NOT_REQUIRED",
-            message="No module +5V draw declared",
+            message="Every module states +5V draw, and none needs it",
             details={},
         )
 

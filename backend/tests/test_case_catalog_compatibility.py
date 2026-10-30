@@ -251,3 +251,56 @@ def test_compatibility_not_found(client: TestClient) -> None:
         json={"modules": []},
     )
     assert resp.status_code == 404
+
+
+def _module(db: Session, name: str, **power) -> Module:
+    m = Module(brand="Test", name=name, hp=4, module_type="UTIL", io_ports=[], tags=[], source="test", **power)
+    db.add(m)
+    db.commit()
+    db.refresh(m)
+    return m
+
+
+def _check(client: TestClient, *mods: Module) -> dict:
+    resp = client.post(
+        "/api/cases/catalog/fit-co-skiff-84/compatibility",
+        json={"modules": [
+            {"module_id": m.id, "row_index": 0, "start_hp": i * 4, "depth_mm": 30} for i, m in enumerate(mods)
+        ]},
+    )
+    assert resp.status_code == 200
+    return resp.json()
+
+
+def test_a_missing_rail_is_unknown_not_zero(client: TestClient, catalog_case: None, db_session: Session) -> None:
+    """A jumper-set module that states +-12V but not +5V is not assumed to need no +5V."""
+    jumper = _module(db_session, "Jumper Module", power_12v_ma=60, power_neg12v_ma=20, power_5v_ma=None)
+    body = _check(client, jumper)
+    rails = {r["rail"]: r for r in body["power_headroom"]}
+    assert rails["+12V"]["status"] == "verified" and rails["+12V"]["unknown_draw_count"] == 0
+    assert rails["+5V"]["status"] == "incomplete"
+    assert rails["+5V"]["unknown_modules"] == ["Jumper Module"]
+    assert body["pos5_compatibility"]["code"] == "POS5_UNKNOWN"
+    assert body["overall_status"] != "verified"
+    warning = next(w for w in body["warnings"] if w["code"] == "MODULE_POWER_UNKNOWN")
+    assert warning["details"]["unknown_draw_count"] == {"+12V": 0, "-12V": 0, "+5V": 1}
+
+
+def test_unknown_draws_make_a_rail_a_lower_bound(client: TestClient, catalog_case: None, db_session: Session) -> None:
+    known = _module(db_session, "Known", power_12v_ma=300, power_neg12v_ma=30, power_5v_ma=0)
+    blank = _module(db_session, "Blank")
+    rails = {r["rail"]: r for r in _check(client, known, blank)["power_headroom"]}
+    plus = rails["+12V"]
+    assert plus["status"] == "incomplete"
+    assert (plus["module_draw_ma"], plus["headroom_ma"], plus["unknown_draw_count"]) == (300, 700, 1)
+    assert plus["message"] == "+12V: at least 300mA of 1000mA plus 1 unknown; at most 700mA headroom"
+
+
+def test_known_draws_over_capacity_conflict_even_with_unknowns(
+    client: TestClient, catalog_case: None, db_session: Session
+) -> None:
+    hungry = _module(db_session, "Hungry", power_12v_ma=1200, power_neg12v_ma=10, power_5v_ma=0)
+    blank = _module(db_session, "Blank")
+    rails = {r["rail"]: r for r in _check(client, hungry, blank)["power_headroom"]}
+    assert rails["+12V"]["status"] == "conflict"
+    assert "plus 1 unknown" in rails["+12V"]["message"]

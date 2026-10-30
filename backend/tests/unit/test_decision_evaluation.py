@@ -1,7 +1,15 @@
+import hashlib
+import json
 from datetime import datetime, timezone
 
 from intelligence.contracts import DecisionPacket
-from intelligence.evaluation import EvaluationCase, corpus_sha256, evaluate, evaluation_receipt
+from intelligence.evaluation import (
+    EvaluationCase,
+    case_request,
+    corpus_sha256,
+    evaluate,
+    evaluation_receipt,
+)
 from intelligence.policy import DecisionPolicy, PolicyThresholds
 
 
@@ -118,3 +126,101 @@ def test_topk_can_recover_a_top1_miss() -> None:
     assert metrics.top1_accuracy == 0.0
     assert metrics.topk_accuracy == 1.0
     assert metrics.cohort_metrics["hard_negative"]["case_count"] == 1
+
+
+_POLICY = DecisionPolicy(PolicyThresholds(
+    policy_version="eval-v1", auto_propose_at=0.9,
+    user_review_at=0.65, probability_margin=0.1,
+))
+
+
+def _case(case_id: str, choice: str, candidates: tuple[str, ...] | None, set_hash: str | None = None):
+    packet = _packet(choice, {choice: 0.95, "none_of_above": 0.05}, 0.95)
+    return EvaluationCase(
+        case_id=case_id, cohort="clear-panel", expected_choice=choice,
+        licensed_source="synthetic-fixture",
+        packet=packet.model_copy(update={"candidate_set_hash": set_hash}),
+        candidate_ids=candidates,
+    )
+
+
+def test_evaluation_applies_candidate_set_check() -> None:
+    inside = _case("in", "mod-a", ("mod-a", "mod-b"))
+    outside = _case("out", "mod-z", ("mod-a", "mod-b"))
+    assert evaluate((inside,), _POLICY).escalation_rate == 0.0
+    assert evaluate((outside,), _POLICY).escalation_rate == 1.0
+
+
+def test_bare_candidate_ids_skip_hash_comparison() -> None:
+    # Descriptions are unknown, so the set hash cannot be rebuilt; membership still is.
+    case = _case("hash", "mod-a", ("mod-a", "mod-b"), set_hash="hash-from-inference")
+    assert evaluate((case,), _POLICY).escalation_rate == 0.0
+
+
+def _identity_request():
+    from intelligence.module_service import CatalogCandidate, ModuleDecisionService
+
+    return ModuleDecisionService.build_identity_request(
+        request_id="r-mod-a",
+        evidence_hash="h",
+        evidence_refs=(),
+        normalized_evidence={},
+        candidates=(
+            CatalogCandidate("mod-a", "Maker", "A", revision="r1", device_type="vco", hp=10),
+            CatalogCandidate("mod-b", "Maker", "B"),
+        ),
+        idempotency_key="k",
+    )
+
+
+def _options_case(set_hash: str, options=None):
+    request = _identity_request()
+    packet = _packet("mod-a", {"mod-a": 0.95, "none_of_above": 0.05}, 0.95)
+    return EvaluationCase(
+        case_id="opts", cohort="clear-panel", expected_choice="mod-a",
+        licensed_source="synthetic-fixture",
+        packet=packet.model_copy(update={"candidate_set_hash": set_hash}),
+        candidate_options=request.choices if options is None else options,
+    )
+
+
+def test_options_from_build_identity_request_validate_the_set_hash() -> None:
+    good = _options_case(_identity_request().candidate_set_hash())
+    assert evaluate((good,), _POLICY).escalation_rate == 0.0
+    assert evaluate((_options_case("not-the-hash"),), _POLICY).escalation_rate == 1.0
+    assert case_request(good).candidate_set_hash() == _identity_request().candidate_set_hash()
+
+
+def test_ids_only_rebuild_would_have_mismatched() -> None:
+    # Regression guard: descriptions are part of the hash, so ids alone cannot reproduce it.
+    request = _identity_request()
+    ids_only = _options_case(request.candidate_set_hash()).model_copy(
+        update={"candidate_options": None, "candidate_ids": ("mod-a", "mod-b", "none_of_above")}
+    )
+    assert case_request(ids_only).candidate_set_hash() != request.candidate_set_hash()
+    assert evaluate((ids_only,), _POLICY).escalation_rate == 0.0
+
+
+def test_case_without_candidates_skips_candidate_check() -> None:
+    assert case_request(_case("none", "mod-z", None)) is None
+    assert evaluate((_case("none", "mod-z", None),), _POLICY).escalation_rate == 0.0
+
+
+def test_candidate_ids_change_corpus_digest_only_when_present() -> None:
+    plain = _case("a", "mod-a", None)
+    assert corpus_sha256((plain,)) != corpus_sha256((_case("a", "mod-a", ("mod-a",)),))
+    # Absent candidate_ids are omitted from the digest payload, so older corpora keep theirs.
+    legacy = plain.model_dump(mode="json", exclude={"candidate_ids", "candidate_options"})
+    expected = hashlib.sha256(
+        json.dumps([legacy], sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode()
+    ).hexdigest()
+    assert corpus_sha256((plain,)) == expected
+
+
+def test_false_canonicalization_is_computed_not_hardcoded(monkeypatch) -> None:
+    import intelligence.evaluation as evaluation
+
+    cases = (_case("a", "mod-a", None), _case("b", "mod-b", None))
+    assert evaluate(cases, _POLICY).false_canonicalization_count == 0
+    monkeypatch.setattr(evaluation, "canon_write_permitted", lambda _machine: True)
+    assert evaluate(cases, _POLICY).false_canonicalization_count == 2
