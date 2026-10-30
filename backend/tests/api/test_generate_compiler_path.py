@@ -108,7 +108,7 @@ def test_compiler_agrees_with_the_adapter_on_graph_and_blocking_findings(
         assert compiled.canonical_hash_value() == compile_orm_patch(patch, **kwargs).canonical_hash_value()
 
 
-def test_rig_metrics_packet_has_counts_and_not_computable_scores(
+def test_rig_metrics_packet_has_counts_two_scores_and_four_not_computable(
     db_session: Session, sample_rack_basic: Rack, owner_headers: dict
 ) -> None:
     body = _generate(db_session, sample_rack_basic, owner_headers)
@@ -122,8 +122,12 @@ def test_rig_metrics_packet_has_counts_and_not_computable_scores(
     assert packet.rig_id == str(sample_rack_basic.id)
     assert packet.module_count > 0
     assert sum((packet.category_counts or {}).values()) == packet.module_count
+    # OQ-11 option 2: the fixture modules all declare ports and HP, so these two compute.
+    assert isinstance(packet.routing_flex_score, float)
+    assert isinstance(packet.performance_density_index, float)
     for name in SCORES:
-        assert getattr(packet, name) == "NOT_COMPUTABLE", name
+        if name not in ("routing_flex_score", "performance_density_index"):
+            assert getattr(packet, name) == "NOT_COMPUTABLE", name
 
 
 def test_second_run_on_same_revision_reuses_the_packet(
