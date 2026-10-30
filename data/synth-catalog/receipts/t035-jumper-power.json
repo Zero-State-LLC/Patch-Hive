@@ -1824,7 +1824,7 @@
       "+12V": {
        "status": "stated",
        "ma": 80,
-       "unit_stated": true,
+       "unit_stated": false,
        "qualifier": "max",
        "quote": "+12V rail:\n80 max with jumper selecting external 5V"
       },

@@ -116,6 +116,48 @@ def test_every_value_has_a_verbatim_quote(receipt: dict) -> None:
     assert checked > 0
 
 
+def _unit_shown(ma: int, quote: str) -> bool:
+    """True when the quote's value line prints the unit right after the number ("80mA", "170 mA", "10ma").
+
+    "max" must not count as the unit: "80 max" states no unit.
+    """
+    line = quote.split("\n")[-1]
+    return re.search(rf"(?<!\d){ma}\s*ma(?![a-z])", line, re.IGNORECASE) is not None
+
+
+@pytest.mark.parametrize(
+    ("ma", "quote", "expected"),
+    [
+        (80, "+12V rail:\n80 max with jumper selecting external 5V", False),
+        (110, "110mA max with jumper selecting internal 5V.", True),
+        (170, "+5v = 170 mA", True),
+        (10, "+12v rail: 10ma", True),
+        (40, "40 maximum", False),
+    ],
+)
+def test_unit_rule(ma: int, quote: str, expected: bool) -> None:
+    assert _unit_shown(ma, quote) is expected
+
+
+def test_unit_stated_matches_each_quote(receipt: dict) -> None:
+    checked = 0
+    for page in receipt["pages"]:
+        for setting in page["settings"]:
+            for rail, value in setting["rails"].items():
+                if value["ma"] is None:
+                    assert value["unit_stated"] is None, (page["name"], setting["label"], rail)
+                    continue
+                expected = _unit_shown(value["ma"], value["quote"])
+                assert value["unit_stated"] is expected, (
+                    page["name"],
+                    setting["label"],
+                    rail,
+                    value["quote"],
+                )
+                checked += 1
+    assert checked > 0
+
+
 def test_jumper_flag_and_counts_agree(receipt: dict) -> None:
     pages = receipt["pages"]
     for page in pages:
