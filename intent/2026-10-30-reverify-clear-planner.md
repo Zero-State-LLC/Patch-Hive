@@ -2,7 +2,7 @@
 
 ## Problem
 
-The catalog loader plans a `needs_reverify` clear for every flagged row that has a `correct` entry, but the clear's SQL only applies once every flagged field is fixed and no nulled field is still empty. When a row still has an open field, the plan promises a write the database refuses on every run, so a dry run is never empty. Seen on staging on 2026-10-30 after #153: the Doepfer A-101-3 `modules` row had its HP corrected, but its power and depth fields, nulled by `modulargrid-reverify-v1`, are still empty, so it stays flagged and every rerun plans `modules_reverify_cleared` 1.
+The catalog loader plans a `needs_reverify` clear for every flagged row that has a `correct` entry, but the clear's SQL only applies once every flagged field is fixed and no nulled field is still empty. When a row still has an open field, the plan promises a write the database refuses on every run, so a dry run is never empty. Seen on staging on 2026-10-30 after #153: the Doepfer A-101-3 `modules` row had its HP corrected, but `power_5v_ma`, nulled by `modulargrid-reverify-v1`, is still empty (the maker states no +5V draw), so it stays flagged and every rerun plans `modules_reverify_cleared` 1.
 
 ## Proposed outcome
 
@@ -26,7 +26,7 @@ None.
 |---|---|---|
 | Staging run 41005403304 planned 5 clears and module flags fell by 1 instead of 2 | `OBSERVED` | db-load receipts 41005403304 and 41005862481 |
 | A-101-3's `modules` row was flagged for hp and had four power and depth fields nulled | `OBSERVED` | `provenance/modulargrid-reverify-v1.json` |
-| Those fields are still empty on staging | `INFERRED` | the clear refused in the apply and is planned again in the next dry run |
+| Only `power_5v_ma` is still empty on staging; +12V, -12V and depth hold 50 / 50 / 65 from `module-power-depth-v10` | `INFERRED` | the clear refused in the apply and no dry run plans a power fill; a replica of the row fills the other three in one run. Corrected 2026-10-30: an earlier version of this note said all four fields were empty |
 | The planner now mirrors the clear's condition | `OBSERVED` | `backend/tests/test_catalog_corrections.py`, 84 catalog tests and 1311 backend tests green |
 
 ## Author / date
