@@ -82,6 +82,28 @@ class ModuleResponse(ModuleBase):
         from_attributes = True
 
 
+class PowerConfigResponse(BaseModel):
+    """One jumper setting's draws, with the maker page that states them (spec 003 D8).
+
+    A rail with no number on the page is null (unknown), never 0.
+    """
+
+    id: int
+    module_id: int
+    label: str
+    kind: str
+    is_recommended: bool
+    power_12v_ma: Optional[int]
+    power_neg12v_ma: Optional[int]
+    power_5v_ma: Optional[int]
+    unit_stated: bool
+    source_url: str
+    quote: str
+
+    class Config:
+        from_attributes = True
+
+
 class ModuleListResponse(BaseModel):
     """Schema for paginated module list."""
 

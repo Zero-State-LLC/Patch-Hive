@@ -1,5 +1,36 @@
 import { describe, expect, it } from "vitest";
-import { railMeter, summarizePower } from "./powerBudget";
+import { placementPower, railMeter, summarizePower } from "./powerBudget";
+
+describe("placementPower", () => {
+  const qcd = {
+    power_12v_ma: null,
+    power_neg12v_ma: 40,
+    power_5v_ma: null,
+    power_configs: [
+      { id: 7, power_12v_ma: 48, power_neg12v_ma: 40, power_5v_ma: 41 },
+      { id: 8, power_12v_ma: 88, power_neg12v_ma: 40, power_5v_ma: 0 },
+    ],
+  };
+
+  it("uses the chosen setting's draws", () => {
+    const s = summarizePower([placementPower(qcd, 8)]);
+    expect([s.p12, s.n12, s.p5]).toEqual([
+      { known: 88, unknown: 0 },
+      { known: 40, unknown: 0 },
+      { known: 0, unknown: 0 },
+    ]);
+  });
+
+  it("leaves the jumper rails unknown when no setting is chosen", () => {
+    const s = summarizePower([placementPower(qcd, null)]);
+    expect([s.p12.unknown, s.n12.unknown, s.p5.unknown]).toEqual([1, 0, 1]);
+  });
+
+  it("falls back to the module when the setting is not its own", () => {
+    expect(placementPower(qcd, 99)).toBe(qcd);
+    expect(placementPower(undefined, 7)).toBeUndefined();
+  });
+});
 
 describe("summarizePower", () => {
   it("keeps a module's known rails when another rail is missing", () => {

@@ -249,6 +249,23 @@ export interface RackModuleSpec {
   module_id: number;
   row_index: number;
   start_hp: number;
+  /** The module's jumper setting (spec 003 D8); null/omitted = not chosen. */
+  power_config_id?: number | null;
+}
+
+/** One jumper setting's draws from the maker page; a rail with no number is null (unknown). */
+export interface PowerConfig {
+  id: number;
+  module_id: number;
+  label: string;
+  kind: string;
+  is_recommended: boolean;
+  power_12v_ma: number | null;
+  power_neg12v_ma: number | null;
+  power_5v_ma: number | null;
+  unit_stated: boolean;
+  source_url: string;
+  quote: string;
 }
 
 export interface RackModule extends RackModuleSpec {
@@ -268,6 +285,8 @@ export interface RackModule extends RackModuleSpec {
     tombstone_reason?: string | null;
     /** Live modules with the same name under other brands. */
     alternatives?: { id: number; brand: string; name: string }[];
+    /** Jumper settings to choose from; empty when the draw does not depend on one. */
+    power_configs?: PowerConfig[];
   };
 }
 

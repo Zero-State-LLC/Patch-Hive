@@ -32,6 +32,7 @@ AFFECTED_TABLES = (
     "manufacturers",
     "module_catalog",
     "modules",
+    "power_configs",
     "case_catalog",
     "case_revisions",
     "case_rows",
@@ -135,6 +136,7 @@ class Plan:
     unmatched: dict[str, int] = field(default_factory=dict)
     verification: dict[str, int] = field(default_factory=dict)
     provenance: dict[str, dict[str, Any]] = field(default_factory=dict)
+    power_configs: dict[str, Any] = field(default_factory=dict)
 
     def add_insert(self, kind: str, op: Op) -> None:
         self.ops.append(op)
@@ -300,6 +302,11 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     for retirement_path in sorted((CATALOG / "overlays").glob("catalog-retirements-v*.json")):
         for entry in _load_optional(retirement_path).get("rows") or []:
             _schedule_retirement(plan, catalog, modules, entry)
+
+    # Jumper settings attach to module rows, so they run after every module insert and
+    # retirement above (spec 003 D8, T034).
+    if POWER_CONFIG_RECEIPT.is_file():
+        _schedule_power_configs(plan, modules, _load(POWER_CONFIG_RECEIPT), _power_config_state(conn))
 
     for row in modules.values():
         if row.get("_planned"):
@@ -851,7 +858,8 @@ def _module_state(conn: Connection) -> dict[tuple[str, str], dict[str, Any]]:
     rows = conn.execute(
         text(
             "SELECT brand, name, hp, power_12v_ma, power_neg12v_ma, power_5v_ma, depth_mm, "
-            "verification_status, verification_source_url, status, needs_reverify FROM modules"
+            "verification_status, verification_source_url, status, needs_reverify, source_reference "
+            "FROM modules"
         )
     ).mappings()
     state: dict[tuple[str, str], dict[str, Any]] = {}
@@ -1320,6 +1328,7 @@ def _schedule_module(plan: Plan, modules: dict[tuple[str, str], dict[str, Any]],
         "depth_mm": row.get("depth_mm"),
         "verification_status": status,
         "verification_source_url": row.get("verification_source_url"),
+        "source_reference": (row.get("source_reference") or "")[:500] or None,
         "_planned": True,
         "_duplicate": False,
     }
@@ -1524,6 +1533,209 @@ def _schedule_power(
     )
 
 
+# Jumper-dependent power (spec 003 D8, research R5, task T034): one row per setting,
+# read from the T035 receipt, which recorded each maker page's draws verbatim.
+POWER_CONFIG_RECEIPT = CATALOG / "receipts" / "t035-jumper-power.json"
+POWER_CONFIG_RAILS = (("+12V", "power_12v_ma"), ("-12V", "power_neg12v_ma"), ("+5V", "power_5v_ma"))
+RAIL_STATUSES = {"stated", "not_used", "not_stated"}
+
+
+def power_setting_key(label: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")[:120]
+
+
+def power_setting_problem(setting: dict[str, Any]) -> str | None:
+    """Why a receipt setting cannot be loaded as it stands, or None.
+
+    These are the T035 receipt's open questions for T034; the owner has not answered
+    them, so nothing is guessed: an unlabelled setting (no neutral label is invented),
+    a number the page gives without a unit, and a draw the page gives without a rail.
+    """
+    if not setting.get("label_on_page") or not (setting.get("label") or "").strip():
+        return "label_not_on_page"
+    if setting.get("unattributed_draw"):
+        return "draw_without_rail"
+    rails = setting.get("rails") or {}
+    for rail, _ in POWER_CONFIG_RAILS:
+        value = rails.get(rail) or {}
+        status = value.get("status")
+        if status not in RAIL_STATUSES:
+            return "rail_status_unknown"
+        if value.get("unit_stated") is False:
+            return "unit_not_stated"
+        ma = value.get("ma")
+        if status == "stated" and (not isinstance(ma, int) or ma < 0 or not value.get("quote")):
+            return "stated_rail_without_value"
+        if status == "not_used" and ma not in (None, 0):
+            return "not_used_rail_with_value"
+        if status == "not_stated" and ma is not None:
+            return "not_stated_rail_with_value"
+    return None
+
+
+def _power_config_state(conn: Connection | None) -> set[tuple[str, str, str]]:
+    """(brand, name, setting_key) of every stored setting, read through its module row."""
+    if conn is None:
+        return set()
+    rows = conn.execute(
+        text(
+            "SELECT m.brand, m.name, p.setting_key FROM power_configs p "
+            "JOIN modules m ON m.id = p.module_id"
+        )
+    ).all()
+    return {(row[0], row[1], row[2]) for row in rows}
+
+
+def _schedule_power_configs(
+    plan: Plan,
+    modules: dict[tuple[str, str], dict[str, Any]],
+    receipt: dict[str, Any],
+    stored: set[tuple[str, str, str]],
+) -> None:
+    """Insert each clean jumper setting from the T035 receipt as a ``power_configs`` row.
+
+    Fill-only and idempotent: a setting already stored is counted, never rewritten, and
+    nothing is deleted. Only pages the receipt marks jumper-dependent load; a page is
+    matched to its module by brand and source URL. The single draw columns are left as
+    they are (D8: they stay unknown); a single value that differs from a stated setting
+    value is reported as a conflict for review, not changed.
+    """
+    batch = str(receipt.get("receipt") or "t035-jumper-power")[:64]
+    stats = plan.power_configs.setdefault(
+        batch,
+        {
+            "jumper_pages": 0,
+            "settings_seen": 0,
+            "settings_loadable": 0,
+            "already_stored": 0,
+            "planned_inserts": 0,
+            "pages_unmatched": 0,
+            "pages_tombstoned": 0,
+            "pages_ambiguous": 0,
+            "pages_without_clean_setting": 0,
+            "single_column_conflicts": 0,
+            "skipped_by_reason": {},
+            "skipped": [],
+        },
+    )
+    for page in receipt.get("pages") or []:
+        if not page.get("jumper_dependent"):
+            continue
+        stats["jumper_pages"] += 1
+        brand = (page.get("brand") or "").strip()
+        url = (page.get("url") or "").strip()
+        page_name = (page.get("name") or "").strip()
+        settings = page.get("settings") or []
+        stats["settings_seen"] += len(settings)
+        clean: list[dict[str, Any]] = []
+        for index, setting in enumerate(settings):
+            problem = power_setting_problem(setting)
+            if problem:
+                _bump(stats["skipped_by_reason"], problem)
+                stats["skipped"].append(
+                    {"brand": brand, "name": page_name, "setting": index, "label": setting.get("label"), "reason": problem}
+                )
+            else:
+                clean.append(setting)
+        if not clean:
+            stats["pages_without_clean_setting"] += 1
+            continue
+        keys = [power_setting_key(setting["label"]) for setting in clean]
+        if len(set(keys)) != len(keys):
+            plan.conflict(table="power_configs", brand=brand, name=page_name, reason="duplicate_setting_label")
+            continue
+        matches = [
+            state
+            for (row_brand, _), state in modules.items()
+            if row_brand == brand and url and (state.get("source_reference") or "") == url
+        ]
+        if not matches:
+            stats["pages_unmatched"] += 1
+            _bump(plan.unmatched, "power_configs")
+            continue
+        if len(matches) > 1 or matches[0].get("_duplicate"):
+            stats["pages_ambiguous"] += 1
+            plan.conflict(table="power_configs", brand=brand, url=url, reason="source_url_matches_several_modules")
+            continue
+        module = matches[0]
+        if module.get("status") == "tombstoned":
+            stats["pages_tombstoned"] += 1
+            continue
+        name = module["name"]
+        stats["settings_loadable"] += len(clean)
+        for setting, key in zip(clean, keys):
+            rails = setting["rails"]
+            values = {
+                column: (rails[rail].get("ma") if rails[rail]["status"] != "not_stated" else None)
+                for rail, column in POWER_CONFIG_RAILS
+            }
+            for rail, column in POWER_CONFIG_RAILS:
+                single = module.get(column)
+                if single is not None and rails[rail]["status"] == "stated" and int(single) != values[column]:
+                    stats["single_column_conflicts"] += 1
+                    plan.conflict(
+                        table="modules", brand=brand, name=name, field=column,
+                        setting=setting["label"], reason="single_draw_differs_from_setting",
+                    )
+            if (brand, name, key) in stored:
+                stats["already_stored"] += 1
+                continue
+            stored.add((brand, name, key))
+            stats["planned_inserts"] += 1
+            plan.add_insert(
+                "power_configs",
+                Op(
+                    "insert_power_config",
+                    """
+                    INSERT INTO power_configs (
+                        module_id, brand, name, setting_key, label, kind, is_recommended,
+                        power_12v_ma, power_neg12v_ma, power_5v_ma, unit_stated, rails,
+                        source_url, quote, source_batch, content_sha256, fetched_at,
+                        created_at, updated_at
+                    )
+                    SELECT m.id, m.brand, m.name, :setting_key, :label, :kind, :is_recommended,
+                           :power_12v_ma, :power_neg12v_ma, :power_5v_ma, TRUE, CAST(:rails AS json),
+                           :source_url, :quote, :source_batch, :content_sha256,
+                           CAST(:fetched_at AS TIMESTAMP), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+                    FROM modules m
+                    WHERE m.brand = :brand AND m.name = :name AND m.source_reference = :source_url
+                      AND m.status <> 'tombstoned'
+                      AND NOT EXISTS (
+                        SELECT 1 FROM power_configs p
+                        WHERE p.module_id = m.id AND p.setting_key = :setting_key
+                      )
+                    """,
+                    {
+                        "brand": brand,
+                        "name": name,
+                        "setting_key": key,
+                        "label": setting["label"].strip()[:300],
+                        "kind": (setting.get("kind") or "jumper")[:40],
+                        # Only a page that marks a setting recommended sets this; none is inferred.
+                        "is_recommended": "(recommended)" in setting["label"].lower(),
+                        **values,
+                        "rails": json.dumps(
+                            {
+                                rail: {
+                                    "status": rails[rail]["status"],
+                                    "ma": rails[rail].get("ma"),
+                                    "qualifier": rails[rail].get("qualifier"),
+                                    "quote": rails[rail].get("quote"),
+                                }
+                                for rail, _ in POWER_CONFIG_RAILS
+                            },
+                            sort_keys=True,
+                        ),
+                        "source_url": url,
+                        "quote": page.get("quote") or "",
+                        "source_batch": batch,
+                        "content_sha256": page.get("content_sha256"),
+                        "fetched_at": (page.get("fetched_at") or "").rstrip("Z") or None,
+                    },
+                ),
+            )
+
+
 def render_plan(plan: Plan) -> str:
     lines = [
         "-- Idempotent catalog population.",
@@ -1647,7 +1859,8 @@ def inputs_hash() -> str:
     digest = hashlib.sha256()
     files = sorted(
         [*CATALOG.glob("seed-*.json"), *(CATALOG / "overlays").glob("*.json"),
-         *(CATALOG / "provenance").glob("*.json"), ROOT / "data" / "cases" / "seed-v1.json"]
+         *(CATALOG / "provenance").glob("*.json"), POWER_CONFIG_RECEIPT,
+         ROOT / "data" / "cases" / "seed-v1.json"]
     )
     for path in files:
         if path.is_file():
@@ -1667,6 +1880,7 @@ def receipt_for(plan: Plan, *, database_url: str, apply: bool, cases: dict[str, 
         "unmatched": plan.unmatched,
         "verification_on_planned_modules": plan.verification,
         "provenance": plan.provenance,
+        "power_configs": plan.power_configs,
         "cases": cases,
         "destructive_sql": False,
     }

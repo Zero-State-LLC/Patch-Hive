@@ -15,6 +15,7 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
 
@@ -87,3 +88,51 @@ class Module(Base):
 
     # Relationships
     rack_modules = relationship("RackModule", back_populates="module", cascade="all, delete-orphan")
+    power_configs = relationship("PowerConfig", back_populates="module", order_by="PowerConfig.id")
+
+
+class PowerConfig(Base):
+    """One jumper setting's draws for a module (spec 003 D8, T034).
+
+    Filled by the catalog loader from a maker page; a rail the page gives no number
+    for stays NULL (unknown), never 0. The loader inserts missing rows only.
+    """
+
+    __tablename__ = "power_configs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    module_id = Column(Integer, ForeignKey("modules.id"), nullable=False, index=True)
+    brand = Column(String(100), nullable=False)
+    name = Column(String(200), nullable=False)
+    setting_key = Column(String(120), nullable=False)
+    # The setting's label as printed on the maker page.
+    label = Column(String(300), nullable=False)
+    kind = Column(String(40), nullable=False)
+    # True only where the page itself marks the setting recommended.
+    is_recommended = Column(Boolean, nullable=False, default=False, server_default="false")
+    power_12v_ma = Column(Integer, nullable=True)
+    power_neg12v_ma = Column(Integer, nullable=True)
+    power_5v_ma = Column(Integer, nullable=True)
+    unit_stated = Column(Boolean, nullable=False)
+    # Per rail: status (stated / not_used / not_stated), qualifier and the verbatim quote.
+    rails = Column(JSON, nullable=False, default=dict)
+    source_url = Column(String(500), nullable=False)
+    # The page's power block, verbatim.
+    quote = Column(Text, nullable=False)
+    source_batch = Column(String(64), nullable=False)
+    content_sha256 = Column(String(64), nullable=True)
+    fetched_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("module_id", "setting_key", name="uq_power_configs_module_setting"),
+        CheckConstraint(
+            "(power_12v_ma IS NULL OR power_12v_ma >= 0) AND "
+            "(power_neg12v_ma IS NULL OR power_neg12v_ma >= 0) AND "
+            "(power_5v_ma IS NULL OR power_5v_ma >= 0)",
+            name="ck_power_configs_rails_non_negative",
+        ),
+    )
+
+    module = relationship("Module", back_populates="power_configs")
