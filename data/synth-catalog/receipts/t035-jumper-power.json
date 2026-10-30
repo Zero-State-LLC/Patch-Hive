@@ -1,0 +1,2531 @@
+{
+ "receipt": "t035-jumper-power",
+ "task": "spec 003 T035: scoped re-fetch of the jumper-dependent pages; each setting's draws recorded verbatim",
+ "decision": "Decision 10 (docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md): run T035 free, no paid cap",
+ "generated_at": "2026-10-30T07:41:00Z",
+ "mode": "free",
+ "fetch": {
+  "method": "free_http",
+  "client": "Python urllib.request GET, no renderer, no proxy",
+  "user_agent": "PatchHiveCatalogBot/1.0 (+https://github.com/Zero-State-LLC/Patch-Hive; catalog research; respects robots.txt)",
+  "min_spacing_s": 2,
+  "host_spacing_s": {
+   "4mscompany.com": 2,
+   "www.jonesvideo.com": 3,
+   "www.velectronic.net": 2
+  },
+  "paid_credits": 0,
+  "paid_backends_used": [],
+  "raw_html_committed": false,
+  "raw_html_note": "Raw HTML stayed in the session scratchpad; content_sha256 identifies each fetched body."
+ },
+ "page_list": {
+  "source": "data/synth-catalog/hermes-research/maker-crawl-v2.json",
+  "rule": "Every 4ms Company row except the Row Power rows, plus every Dave Jones Design row and every Velectronic row. No 4ms row is marked retired in committed data (no status field on the rows, and none in overlays/catalog-retirements-v1.json), so none was dropped for retirement.",
+  "fourms_rows_in_crawl": 44,
+  "fourms_row_power_excluded": [
+   {
+    "name": "Row Power 45",
+    "url": "https://4mscompany.com/p.php?p=989&c=5"
+   },
+   {
+    "name": "4ms Row Power 35",
+    "url": "https://4mscompany.com/p.php?p=887&c=5"
+   },
+   {
+    "name": "4ms Row Power 25",
+    "url": "https://4mscompany.com/p.php?p=968&c=5"
+   },
+   {
+    "name": "4ms Row Power 30",
+    "url": "https://4mscompany.com/p.php?p=628&c=21"
+   },
+   {
+    "name": "4ms Row Power",
+    "url": "https://4mscompany.com/p.php?p=624&c=21"
+   }
+  ],
+  "fourms_retired_excluded": [],
+  "counts": {
+   "4ms Company": 39,
+   "Dave Jones Design": 2,
+   "Velectronic": 1,
+   "total": 42
+  },
+  "estimate_note": "tasks.md and research.md R5 estimated 42 live 4ms modules; committed data gives 39 4ms pages (44 rows minus 5 Row Power), 42 pages in all."
+ },
+ "robots": [
+  {
+   "host": "4mscompany.com",
+   "url": "https://4mscompany.com/robots.txt",
+   "http_status": 200,
+   "fetched_at": "2026-10-30T07:37:48Z",
+   "content_sha256": "e1532ee89a227acdcdadc1b3bcf8f93879c25e54c34bfbfe332beb4c67a557da",
+   "crawl_delay_s": null,
+   "disallow_for_all_agents": [
+    "/showcart.php",
+    "/cart_confirm.php"
+   ],
+   "target_pages_allowed": true
+  },
+  {
+   "host": "www.jonesvideo.com",
+   "url": "https://www.jonesvideo.com/robots.txt",
+   "http_status": 200,
+   "fetched_at": "2026-10-30T07:37:50Z",
+   "content_sha256": "65eae8e00975721d5f964ad9900510e9a9013a841f63a91d029ab5f11312ca6b",
+   "crawl_delay_s": 3,
+   "disallow_for_all_agents": [
+    "/tmp",
+    "/images",
+    "/teletechno"
+   ],
+   "target_pages_allowed": true
+  },
+  {
+   "host": "www.velectronic.net",
+   "url": "https://www.velectronic.net/robots.txt",
+   "http_status": 200,
+   "fetched_at": "2026-10-30T07:37:53Z",
+   "content_sha256": "dc8267b5a46bd19a2b725d075db230a9a571dc18d6eb8255c1b6173fde8b7a14",
+   "crawl_delay_s": null,
+   "disallow_for_all_agents": [
+    "/admin",
+    "/cart/",
+    "/checkout",
+    "/checkouts/",
+    "/orders",
+    "/account",
+    "/services",
+    "/sf_*",
+    "(and locale variants)"
+   ],
+   "target_pages_allowed": true
+  }
+ ],
+ "blocks": [],
+ "counts": {
+  "pages_listed": 42,
+  "pages_fetched": 42,
+  "http_200": 42,
+  "blocked_or_challenged": 0,
+  "jumper_dependent_pages": 11,
+  "jumper_pages_with_two_or_more_settings": 10,
+  "jumper_pages_with_one_setting_only": [
+   "Dual Looping Delay"
+  ],
+  "other_multi_setting_pages": [
+   "Percussion Interface + Expander",
+   "Listen Four",
+   "Listen Four Quarters"
+  ],
+  "single_setting_pages": 28,
+  "pages_with_a_rail_not_stated": 15,
+  "rails_not_stated": 20
+ },
+ "schema": {
+  "pages[].quote": "The page's power block, verbatim from the visible text (HTML tags removed, entities decoded, runs of spaces collapsed; line breaks kept as \\n).",
+  "pages[].settings[].kind": "jumper (a power-source jumper or switch), configuration (with/without an expander), load_condition (stated measurement conditions), or single.",
+  "pages[].settings[].label": "The setting's label as printed on the page when label_on_page is true; null or a descriptive name otherwise.",
+  "pages[].settings[].rails[rail].status": "stated (a number given), not_used (the page says not used or none), or not_stated (the page gives nothing for this rail and this setting).",
+  "pages[].settings[].rails[rail].ma": "Integer read from the quote; null when not given. Never filled from another source.",
+  "pages[].settings[].rails[rail].quote": "Substring of pages[].quote that states this value; null only when status is not_stated.",
+  "pages[].settings[].rails[rail].unit_stated": "false when the page gives the number without 'mA' (4ms VCA Matrix '80 max').",
+  "pages[].settings[].unattributed_draw": "A draw the page gives without naming a rail; never assigned to a rail."
+ },
+ "for_t034": [
+  "Load only pages with jumper_dependent true into power_configs; single-setting pages need no setting picker.",
+  "Match rows by brand and source url (pages[].url equals the crawl row's source_url).",
+  "Otool's two alternatives are not labelled on the page; the picker needs neutral labels or an owner mapping.",
+  "Spectral Multiband Resonator's base setting is unlabelled on the page; only 'when jumper set to +12V' is named.",
+  "Dual Looping Delay states only 'jumper set to 5V'; the other setting is not stated, so it has one config.",
+  "4ms VCA Matrix +12V external-5V value has no unit on the page (unit_stated false); decide before loading.",
+  "No page names a factory default except Velectronic A-Envelope ('Recommended' on the +5V jumper)."
+ ],
+ "pages": [
+  {
+   "brand": "4ms Company",
+   "name": "Mesa",
+   "url": "https://4mscompany.com/p.php?p=1112&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1112&c=5",
+   "fetched_at": "2026-10-30T07:38:54Z",
+   "http_status": 200,
+   "bytes": 16984,
+   "content_sha256": "66fa6653579841855ac14678fea64bd982f23804db281906102903843a528532",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power Consumption\n+12V: 180mA max\n-12V: 36mA max\n+5V: not used",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 180,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V: 180mA max"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 36,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V: 36mA max"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V: not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Leveling EQ Amplifier",
+   "url": "https://4mscompany.com/p.php?p=1109&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1109&c=5",
+   "fetched_at": "2026-10-30T07:38:58Z",
+   "http_status": 200,
+   "bytes": 17430,
+   "content_sha256": "7fcf7b51638aee2575cccc961c5ad1285fdf0ee554a9c716b00f39dc4827adac",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power Consumption\n+12V: 120mA max\n-12V: 10mA max\n+5V: not used",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 120,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V: 120mA max"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 10,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V: 10mA max"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V: not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "MetaModule",
+   "url": "https://4mscompany.com/p.php?p=990&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=990&c=5",
+   "fetched_at": "2026-10-30T07:39:01Z",
+   "http_status": 200,
+   "bytes": 24364,
+   "content_sha256": "cf49e83b9940c32bec51a5265aeb34eb0435429abd483ef99307c640a4c0a7f8",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption\n+12V: 290mA maximum\n-12V: 40mA maximum\n+5V: (not used)",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 290,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V: 290mA maximum"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 40,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V: 40mA maximum"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V: (not used)"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "MetaModule Audio Expander",
+   "url": "https://4mscompany.com/p.php?p=1079&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1079&c=5",
+   "fetched_at": "2026-10-30T07:39:04Z",
+   "http_status": 200,
+   "bytes": 15327,
+   "content_sha256": "b53a5a78c3822dcd926a4e690104a69f6886ef02ea551ed816ab2cc2de81b719",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption\n+12V: 140mA maximum\n-12V: 25mA maximum\n+5V: (not used)",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 140,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V: 140mA maximum"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 25,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V: 25mA maximum"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V: (not used)"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "MetaModule Wi-Fi Expander",
+   "url": "https://4mscompany.com/p.php?p=1070&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1070&c=5",
+   "fetched_at": "2026-10-30T07:39:06Z",
+   "http_status": 200,
+   "bytes": 15247,
+   "content_sha256": "4a018327561330dafaa29b4ff74208e40acd236068299db625f22397952b023f",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption: +12V max 50mA. -12V: none. -5V: none.",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 50,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V max 50mA"
+      },
+      "-12V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "-12V: none"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": "The page says '-5V: none.'; a -5V rail is not a Eurorack bus rail, so +5V is recorded as not stated rather than read as a typo."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "MetaModule Button Expander",
+   "url": "https://4mscompany.com/p.php?p=1089&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1089&c=5",
+   "fetched_at": "2026-10-30T07:39:09Z",
+   "http_status": 200,
+   "bytes": 16126,
+   "content_sha256": "1470e129a9c70d1ff87bfbfc69a7a3acabc5c016ef4c4d422d45ac032f23c5d8",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power Consumption:\n+12v rail: 10ma\n+5v rail: not used\n-12v rail: not used",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 10,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12v rail: 10ma"
+      },
+      "-12V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "-12v rail: not used"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5v rail: not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Catalyst Sequencer",
+   "url": "https://4mscompany.com/p.php?p=1068&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1068&c=5",
+   "fetched_at": "2026-10-30T07:39:12Z",
+   "http_status": 200,
+   "bytes": 40395,
+   "content_sha256": "d6b28024800d56de6d122b1b4236e8a7e2453af9002bc819775d1964b7d54733",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power\n+12V: max 60mA\n-12V: max 25mA\n+5V not used",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 60,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V: max 60mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 25,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V: max 25mA"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Catalyst Controller",
+   "url": "https://4mscompany.com/p.php?p=1069&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1069&c=5",
+   "fetched_at": "2026-10-30T07:39:14Z",
+   "http_status": 200,
+   "bytes": 16936,
+   "content_sha256": "0dd01b67f81bdc05d712092cd7a127f3497b99b60745bcd39d69da26395b997b",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power\n+12V: max 60mA\n-12V: max 25mA\n+5V not used",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 60,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V: max 60mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 25,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V: max 25mA"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Sampler",
+   "url": "https://4mscompany.com/p.php?p=1062&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1062&c=5",
+   "fetched_at": "2026-10-30T07:39:17Z",
+   "http_status": 200,
+   "bytes": 22310,
+   "content_sha256": "d2e0dc73e3616398c65a2a7d5a9becfed64ac7ac92a54e82752c3e4d7753060f",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V: 145mA\n-12V: 41mA\n+5V rail: not used",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 145,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V: 145mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 41,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V: 41mA"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V rail: not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Looping Delay",
+   "url": "https://4mscompany.com/p.php?p=1063&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1063&c=5",
+   "fetched_at": "2026-10-30T07:39:20Z",
+   "http_status": 200,
+   "bytes": 16964,
+   "content_sha256": "e42a0da9c633628502bfff6fd2efbc03d79e9516cb02ba36892816415810423c",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "1.1\" (28mm) maximum depth with power cable\n+12V: 125mA\n-12V: 45mA",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 125,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V: 125mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 45,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V: 45mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": "No 'Power consumption' heading; the two rail lines follow the depth line."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Shaped Dual EnvVCA",
+   "url": "https://4mscompany.com/p.php?p=1040&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1040&c=5",
+   "fetched_at": "2026-10-30T07:39:23Z",
+   "http_status": 200,
+   "bytes": 20784,
+   "content_sha256": "ea10fa1f5406b80194e10d8a3f3a15dfc039802bf42d8705c7ec2ae8fb1f49c2",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption\n+12V: 255mA\n-12V: 230mA",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 255,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V: 255mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 230,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V: 230mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "EnvVCA",
+   "url": "https://4mscompany.com/p.php?p=1038&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1038&c=5",
+   "fetched_at": "2026-10-30T07:39:25Z",
+   "http_status": 200,
+   "bytes": 19894,
+   "content_sha256": "a2a430300ce206f1548d605fba256053aef6d8152306c3bccc9ff3ae5ce6476f",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption\n+12V: 83mA, -12V: 81mA",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 83,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V: 83mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 81,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V: 81mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Dual EnvVCA",
+   "url": "https://4mscompany.com/p.php?p=1043&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1043&c=5",
+   "fetched_at": "2026-10-30T07:39:29Z",
+   "http_status": 200,
+   "bytes": 20380,
+   "content_sha256": "88f9b1354f7c0f06db6d21e1e0bb37a25957319f62addad0ae46a2078c8b351e",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption\n+12V: 156mA\n-12V: 131mA",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 156,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V: 156mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 131,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V: 131mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Mini PEG",
+   "url": "https://4mscompany.com/p.php?p=1049&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1049&c=5",
+   "fetched_at": "2026-10-30T07:39:31Z",
+   "http_status": 200,
+   "bytes": 58629,
+   "content_sha256": "fd051aefb44896b752281dae7186cf40ae281952bf346bcb3814a0ffc2dda9dd",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption\n+12V: 55mA\n-12V: 30mA",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 55,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V: 55mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 30,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V: 30mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "SCM Plus",
+   "url": "https://4mscompany.com/p.php?p=1050&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=1050&c=5",
+   "fetched_at": "2026-10-30T07:39:34Z",
+   "http_status": 200,
+   "bytes": 72646,
+   "content_sha256": "5a08ffa71c37a667562c4fe156a6b1ebb60c9b3530cb78bb0a4a6beeb0d7d815",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption\n+12V: 52mA max\n-12V: 15mA",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 52,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V: 52mA max"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 15,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V: 15mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Ensemble Oscillator",
+   "url": "https://4mscompany.com/p.php?p=984&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=984&c=5",
+   "fetched_at": "2026-10-30T07:39:37Z",
+   "http_status": 200,
+   "bytes": 31072,
+   "content_sha256": "b128cdd1cbc0f46c1d6a29d70ecf9a93824c0f03f94249bb5f099a5f5f2ad3d9",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption\n+12V: 114mA maximum\n-12V: 45mA maximum\n+5V: 0mA (not used)",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 114,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V: 114mA maximum"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 45,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V: 45mA maximum"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": 0,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+5V: 0mA (not used)"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Percussion Interface + Expander",
+   "url": "https://4mscompany.com/p.php?p=992&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=992&c=5",
+   "fetched_at": "2026-10-30T07:39:42Z",
+   "http_status": 200,
+   "bytes": 27719,
+   "content_sha256": "7453c8898510914b79e2e37a89408b37885f094a38c07ec98039d23b85823f8a",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\nwith PI Expander\n+12V: 104mA\n-12V: 65mA\nwithout PI Expander\n+12V: 69mA\n-12V: 56mA",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": "with PI Expander",
+     "label_on_page": true,
+     "kind": "configuration",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 104,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "with PI Expander\n+12V: 104mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 65,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "with PI Expander\n+12V: 104mA\n-12V: 65mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    },
+    {
+     "label": "without PI Expander",
+     "label_on_page": true,
+     "kind": "configuration",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 69,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "without PI Expander\n+12V: 69mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 56,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "without PI Expander\n+12V: 69mA\n-12V: 56mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Spherical Wavetable Navigator",
+   "url": "https://4mscompany.com/p.php?p=820&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=820&c=5",
+   "fetched_at": "2026-10-30T07:39:45Z",
+   "http_status": 200,
+   "bytes": 49599,
+   "content_sha256": "aa9b0aff09964e3d75a1ec4ead96cc0a07091f55efb882006c51b38a817cb311",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V: 185mA with LED PWR jumper set to 12V; 107mA with LED PWR jumper set to 5V\n-12V: 30mA\n+5V: not used with LED PWR jumper set to 12V; 60mA with LED PWR jumper set to 5V",
+   "supporting_quotes": [],
+   "jumper_dependent": true,
+   "settings": [
+    {
+     "label": "with LED PWR jumper set to 12V",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 185,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "185mA with LED PWR jumper set to 12V"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 30,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V: 30mA"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V: not used with LED PWR jumper set to 12V"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    },
+    {
+     "label": "with LED PWR jumper set to 5V",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 107,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "107mA with LED PWR jumper set to 5V"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 30,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V: 30mA"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 60,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "60mA with LED PWR jumper set to 5V"
+      }
+     },
+     "unattributed_draw": null,
+     "note": "-12V is stated once for the page, without a jumper qualifier."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Listen Four",
+   "url": "https://4mscompany.com/p.php?p=813&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=813&c=5",
+   "fetched_at": "2026-10-30T07:39:47Z",
+   "http_status": 200,
+   "bytes": 19749,
+   "content_sha256": "7071b37d8b095236feaffd63802d3c61c1892ce3b21b2170e0567619d0b41031",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\nMaximum values without using headphones jack: Main outputs shorted to ground, headphones jack not used, maximum signal levels on all channels\n+12V: 70mA\n-12V: 62mA\nMaximum values in worst-case conditions: All outputs including headphone jack shorted to ground, maximum signal levels on all channels\n+12V: 200mA\n-12V: 62mA",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": "Maximum values without using headphones jack",
+     "label_on_page": true,
+     "kind": "load_condition",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 70,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "Maximum values without using headphones jack: Main outputs shorted to ground, headphones jack not used, maximum signal levels on all channels\n+12V: 70mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 62,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V: 70mA\n-12V: 62mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    },
+    {
+     "label": "Maximum values in worst-case conditions",
+     "label_on_page": true,
+     "kind": "load_condition",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 200,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "Maximum values in worst-case conditions: All outputs including headphone jack shorted to ground, maximum signal levels on all channels\n+12V: 200mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 62,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V: 200mA\n-12V: 62mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Listen Four Quarters",
+   "url": "https://4mscompany.com/p.php?p=818&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=818&c=5",
+   "fetched_at": "2026-10-30T07:39:50Z",
+   "http_status": 200,
+   "bytes": 19239,
+   "content_sha256": "0b71bc256897f77bb82123e592d3aeb4c451044f9971c8ca90dc89f902aa044a",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\nMaximum values without using headphones jack: Main outputs shorted to ground, headphones jack not used, maximum signal levels on all channels\n+12V: 107mA\n-12V: 101mA\nMaximum values in worst-case conditions: All outputs including headphone jack shorted to ground, maximum signal levels on all channels\n+12V: 290mA\n-12V: 101mA",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": "Maximum values without using headphones jack",
+     "label_on_page": true,
+     "kind": "load_condition",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 107,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "Maximum values without using headphones jack: Main outputs shorted to ground, headphones jack not used, maximum signal levels on all channels\n+12V: 107mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 101,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V: 107mA\n-12V: 101mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    },
+    {
+     "label": "Maximum values in worst-case conditions",
+     "label_on_page": true,
+     "kind": "load_condition",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 290,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "Maximum values in worst-case conditions: All outputs including headphone jack shorted to ground, maximum signal levels on all channels\n+12V: 290mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 101,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V: 290mA\n-12V: 101mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Listen IO",
+   "url": "https://4mscompany.com/p.php?p=889&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=889&c=5",
+   "fetched_at": "2026-10-30T07:39:53Z",
+   "http_status": 200,
+   "bytes": 18388,
+   "content_sha256": "d9493685d5bb79cc77926704ab9091cff01ed64acb997bfa6538d14a01dca140",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\nMaximum values: All output jacks shorted to ground, 22Vpp signal on all input jacks, knobs at 100%\n+12V: 62mA\n-12V: 55mA",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 62,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V: 62mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 55,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V: 55mA"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": "Stated as maximum values: all output jacks shorted to ground, 22Vpp on all inputs, knobs at 100%."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Dual Looping Delay",
+   "url": "https://4mscompany.com/p.php?p=709&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=709&c=5",
+   "fetched_at": "2026-10-30T07:39:55Z",
+   "http_status": 200,
+   "bytes": 34696,
+   "content_sha256": "65ab4ce16649aeee154915e5846fd243e3ecef252dff61efb1722d67d043ad6c",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V rail: 188mA max (jumper set to 5V)\n-12V rail: 48mA max\n+5V rail: not used",
+   "supporting_quotes": [],
+   "jumper_dependent": true,
+   "settings": [
+    {
+     "label": "jumper set to 5V",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 188,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V rail: 188mA max (jumper set to 5V)"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 48,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V rail: 48mA max"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V rail: not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": "Odd phrasing: only one jumper setting is given, and '+5V rail: not used' sits beside 'jumper set to 5V'. The other setting's draws are not stated. The page also names a 24-bit audio jumper and a DC/AC coupling jumper; which one this is, the page does not say."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Spectral Multiband Resonator",
+   "url": "https://4mscompany.com/p.php?p=707&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=707&c=5",
+   "fetched_at": "2026-10-30T07:39:59Z",
+   "http_status": 200,
+   "bytes": 37134,
+   "content_sha256": "4931e211a93fb404e90239318f5300a713e00bf0766bba9e1f91ce26be1d5681",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V rail: 86mA maximum (110mA max when jumper set to +12V)\n-12V rail: 28mA maximum\n+5V rail: 25mA maximum (0mA [not used] when jumper set to +12V)",
+   "supporting_quotes": [],
+   "jumper_dependent": true,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 86,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V rail: 86mA maximum"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 28,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V rail: 28mA maximum"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 25,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+5V rail: 25mA maximum"
+      }
+     },
+     "unattributed_draw": null,
+     "note": "The base values carry no setting label on the page; only the alternative is named ('when jumper set to +12V')."
+    },
+    {
+     "label": "when jumper set to +12V",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 110,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "110mA max when jumper set to +12V"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 28,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V rail: 28mA maximum"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": 0,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "0mA [not used] when jumper set to +12V"
+      }
+     },
+     "unattributed_draw": null,
+     "note": "-12V is stated once for the page, without a jumper qualifier."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Tapographic Delay",
+   "url": "https://4mscompany.com/p.php?p=790&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=790&c=5",
+   "fetched_at": "2026-10-30T07:40:02Z",
+   "http_status": 200,
+   "bytes": 22987,
+   "content_sha256": "b3ce8ae8943b7f29613d25fa6a7693947fa7691fd83038b96d577c6f67c4bbbc",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V rail: 125mA\n-12V rail: 32mA\n+5V rail: not used",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 125,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V rail: 125mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 32,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V rail: 32mA"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V rail: not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Stereo Triggered Sampler",
+   "url": "https://4mscompany.com/p.php?p=783&c=5",
+   "final_url": "https://4mscompany.com/sts.php?c=5",
+   "fetched_at": "2026-10-30T07:40:04Z",
+   "http_status": 200,
+   "bytes": 26782,
+   "content_sha256": "c84a9f50e34e36e822bb1ceecbd2fc3adaa0a558cccbc11aefeab87df2402543",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V rail: 145mA\n-12V rail: 39mA\n+5V rail: not used",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 145,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V rail: 145mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 39,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V rail: 39mA"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V rail: not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "WAV Recorder",
+   "url": "https://4mscompany.com/p.php?p=811&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=811&c=5",
+   "fetched_at": "2026-10-30T07:40:08Z",
+   "http_status": 200,
+   "bytes": 18481,
+   "content_sha256": "025b84739184f8f8554aacd768464caa55bfa3e01b16c1a79fecfbbd1242256f",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V rail: 112mA\n-12V rail: 12mA\n+5V rail: not used",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 112,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V rail: 112mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 12,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V rail: 12mA"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V rail: not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms QCD",
+   "url": "https://4mscompany.com/p.php?p=620&c=5",
+   "final_url": "https://4mscompany.com/qcd.php?c=5",
+   "fetched_at": "2026-10-30T07:40:10Z",
+   "http_status": 200,
+   "bytes": 20314,
+   "content_sha256": "a8f17b90914c159c1ef2c9ae18d1ff342b9125bc11ef3f78673911538a0ba6d4",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\nA jumper selects using +5V from the power supply, or generating +5V on-board from the +12V rail\n+12V rail:\n48mA with jumper selecting external 5V\n88mA with jumper selecting internal 5V\n+5V rail:\n41mA with jumper selecting external 5V\nnot used (0mA) with jumper selecting internal 5V\n-12V rail:\n40mA",
+   "supporting_quotes": [
+    "A jumper selects using +5V from the power supply, or generating +5V on-board from the +12V rail"
+   ],
+   "jumper_dependent": true,
+   "settings": [
+    {
+     "label": "with jumper selecting external 5V",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 48,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V rail:\n48mA with jumper selecting external 5V"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 40,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V rail:\n40mA"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 41,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+5V rail:\n41mA with jumper selecting external 5V"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    },
+    {
+     "label": "with jumper selecting internal 5V",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 88,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "88mA with jumper selecting internal 5V"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 40,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V rail:\n40mA"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": 0,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "not used (0mA) with jumper selecting internal 5V"
+      }
+     },
+     "unattributed_draw": null,
+     "note": "-12V is stated once for the page, without a jumper qualifier."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms QCD Expander",
+   "url": "https://4mscompany.com/p.php?p=621&c=5",
+   "final_url": "https://4mscompany.com/qcdexp.php?c=5",
+   "fetched_at": "2026-10-30T07:40:13Z",
+   "http_status": 200,
+   "bytes": 19343,
+   "content_sha256": "3f5074194f90f89fe8565530695ff5f2f48504f64d18d0eab4e02df55b81ebef",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V rail: 44mA max\n+5V rail: not used\n-12V rail: 30mA max",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 44,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V rail: 44mA max"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 30,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V rail: 30mA max"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V rail: not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms QPLFO",
+   "url": "https://4mscompany.com/p.php?p=600&c=5",
+   "final_url": "https://4mscompany.com/qplfo.php?c=5",
+   "fetched_at": "2026-10-30T07:40:17Z",
+   "http_status": 200,
+   "bytes": 22286,
+   "content_sha256": "f7cd06c95cf226f12987704cfba416ee4bad4f6cbac38b3a1742d5b0e95bdb61",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\nA jumper selects using +5V from the power supply, or generating +5V on-board from the +12V rail\n+12V rail:\n89mA max with jumper selecting external 5V\n154mA max with jumper selecting internal 5V.\n+5V rail:\n65mA max with jumper selecting external 5V\nnot used (0mA) with jumper selecting internal 5V.\n-12V rail:\n73mA max",
+   "supporting_quotes": [
+    "A jumper selects using +5V from the power supply, or generating +5V on-board from the +12V rail"
+   ],
+   "jumper_dependent": true,
+   "settings": [
+    {
+     "label": "with jumper selecting external 5V",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 89,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V rail:\n89mA max with jumper selecting external 5V"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 73,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V rail:\n73mA max"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 65,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+5V rail:\n65mA max with jumper selecting external 5V"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    },
+    {
+     "label": "with jumper selecting internal 5V",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 154,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "154mA max with jumper selecting internal 5V."
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 73,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V rail:\n73mA max"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": 0,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "not used (0mA) with jumper selecting internal 5V."
+      }
+     },
+     "unattributed_draw": null,
+     "note": "-12V is stated once for the page, without a jumper qualifier."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms PEG",
+   "url": "https://4mscompany.com/p.php?p=541&c=5",
+   "final_url": "https://4mscompany.com/peg.php?c=5",
+   "fetched_at": "2026-10-30T07:40:20Z",
+   "http_status": 200,
+   "bytes": 22014,
+   "content_sha256": "65cb8c095bd379c5d544e08630691cd4d984b99cb6197b5bb0274da45fa96e52",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V rail:\n60mA max with jumper selecting external 5V\n105mA max with jumper selecting internal 5V.\n+5V rail:\n40mA max with jumper selecting external 5V\nnot used (0mA) with jumper selecting internal 5V.\n-12V rail:\n35mA max\nA jumper selects using +5V from the power supply, or generating +5V on-board from the +12V rail.",
+   "supporting_quotes": [
+    "A jumper selects using +5V from the power supply, or generating +5V on-board from the +12V rail."
+   ],
+   "jumper_dependent": true,
+   "settings": [
+    {
+     "label": "with jumper selecting external 5V",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 60,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V rail:\n60mA max with jumper selecting external 5V"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 35,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V rail:\n35mA max"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 40,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+5V rail:\n40mA max with jumper selecting external 5V"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    },
+    {
+     "label": "with jumper selecting internal 5V",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 105,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "105mA max with jumper selecting internal 5V."
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 35,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V rail:\n35mA max"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": 0,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "not used (0mA) with jumper selecting internal 5V."
+      }
+     },
+     "unattributed_draw": null,
+     "note": "-12V is stated once for the page, without a jumper qualifier."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms VCA Matrix",
+   "url": "https://4mscompany.com/p.php?p=543&c=5",
+   "final_url": "https://4mscompany.com/vcam.php?c=5",
+   "fetched_at": "2026-10-30T07:40:23Z",
+   "http_status": 200,
+   "bytes": 20574,
+   "content_sha256": "22760da4f294185eb9702ac9552236804da49937542de075b9d63dcec09f4a32",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\nA jumper selects using +5V from the power supply, or generating +5V on-board from the +12V rail.\n-12V rail: 110mA max\n+12V rail:\n80 max with jumper selecting external 5V\n110mA max with jumper selecting internal 5V.\n+5V rail:\n40mA max with jumper selecting external 5V\nnot used (0mA) with jumper selecting internal 5V.",
+   "supporting_quotes": [
+    "A jumper selects using +5V from the power supply, or generating +5V on-board from the +12V rail."
+   ],
+   "jumper_dependent": true,
+   "settings": [
+    {
+     "label": "with jumper selecting external 5V",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 80,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V rail:\n80 max with jumper selecting external 5V"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 110,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V rail: 110mA max"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 40,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+5V rail:\n40mA max with jumper selecting external 5V"
+      }
+     },
+     "unattributed_draw": null,
+     "note": "Odd phrasing: the page writes '80 max' with no unit for +12V; every other draw on the page is in mA. Recorded as stated, with unit_stated false."
+    },
+    {
+     "label": "with jumper selecting internal 5V",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 110,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "110mA max with jumper selecting internal 5V."
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 110,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V rail: 110mA max"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": 0,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "not used (0mA) with jumper selecting internal 5V."
+      }
+     },
+     "unattributed_draw": null,
+     "note": "-12V is stated once for the page, without a jumper qualifier."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms Rotating Clock Divider",
+   "url": "https://4mscompany.com/p.php?p=567&c=5",
+   "final_url": "https://4mscompany.com/rcd.php?c=5",
+   "fetched_at": "2026-10-30T07:40:27Z",
+   "http_status": 200,
+   "bytes": 21797,
+   "content_sha256": "dc318e29450cfefa6da09f2f3a5f37745c87e179835368415d31f18554fd12e6",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n5VSEL Jumper set to INT:\n33mA maximum power draw from +12V rail\n0mA max on the +5V rail\n4mA maximum power draw on the -12V rail\n5VSEL Jumper set to EXT:\n19mA maximum power draw on the +12V rail\n14mA max on the +5V rail\n4mA maximum power draw on the -12V rail",
+   "supporting_quotes": [],
+   "jumper_dependent": true,
+   "settings": [
+    {
+     "label": "5VSEL Jumper set to INT",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 33,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "5VSEL Jumper set to INT:\n33mA maximum power draw from +12V rail"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 4,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "0mA max on the +5V rail\n4mA maximum power draw on the -12V rail"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 0,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "33mA maximum power draw from +12V rail\n0mA max on the +5V rail"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    },
+    {
+     "label": "5VSEL Jumper set to EXT",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 19,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "5VSEL Jumper set to EXT:\n19mA maximum power draw on the +12V rail"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 4,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "14mA max on the +5V rail\n4mA maximum power draw on the -12V rail"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 14,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "19mA maximum power draw on the +12V rail\n14mA max on the +5V rail"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms RCD Breakout",
+   "url": "https://4mscompany.com/p.php?p=514&c=5",
+   "final_url": "https://4mscompany.com/rcdbo.php?c=5",
+   "fetched_at": "2026-10-30T07:40:31Z",
+   "http_status": 200,
+   "bytes": 19097,
+   "content_sha256": "195223862283b1f75c891d5965ba8a77a7a1598f276958ce806bcad60ef83b32",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V rail: not used\n+5V rail: not used\n-12V rail: not used",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+12V rail: not used"
+      },
+      "-12V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "-12V rail: not used"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V rail: not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms Shuffling Clock Multiplier",
+   "url": "https://4mscompany.com/p.php?p=568&c=5",
+   "final_url": "https://4mscompany.com/scm.php?c=5",
+   "fetched_at": "2026-10-30T07:40:34Z",
+   "http_status": 200,
+   "bytes": 76958,
+   "content_sha256": "4c45ed8d92924c9ad2715a345db3e0d880d0c27a5bf647d7097b9d5961b90439",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n5VSEL Jumper set to INT:\n33mA maximum power draw from +12V rail\n0mA max on the +5V rail\n4mA maximum power draw on the -12V rail\n5VSEL Jumper set to EXT:\n19mA maximum power draw on the +12V rail\n14mA max on the +5V rail\n4mA maximum power draw on the -12V rail",
+   "supporting_quotes": [],
+   "jumper_dependent": true,
+   "settings": [
+    {
+     "label": "5VSEL Jumper set to INT",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 33,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "5VSEL Jumper set to INT:\n33mA maximum power draw from +12V rail"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 4,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "0mA max on the +5V rail\n4mA maximum power draw on the -12V rail"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 0,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "33mA maximum power draw from +12V rail\n0mA max on the +5V rail"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    },
+    {
+     "label": "5VSEL Jumper set to EXT",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 19,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "5VSEL Jumper set to EXT:\n19mA maximum power draw on the +12V rail"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 4,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "14mA max on the +5V rail\n4mA maximum power draw on the -12V rail"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 14,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "19mA maximum power draw on the +12V rail\n14mA max on the +5V rail"
+      }
+     },
+     "unattributed_draw": null,
+     "note": "The SCM page states the same figures as the Rotating Clock Divider page."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Listen Up",
+   "url": "https://4mscompany.com/p.php?p=933&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=933&c=5",
+   "fetched_at": "2026-10-30T07:40:37Z",
+   "http_status": 200,
+   "bytes": 16226,
+   "content_sha256": "21293dc4a040cddf7b361153d375ee49c49b0a8cc3e7d9738ed16651be5c6ca9",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\nNone",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "Power consumption:\nNone"
+      },
+      "-12V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "Power consumption:\nNone"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "Power consumption:\nNone"
+      }
+     },
+     "unattributed_draw": null,
+     "note": "The page states 'None' for the whole module (passive); recorded as not used on every rail."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms SCM Breakout",
+   "url": "https://4mscompany.com/p.php?p=576&c=5",
+   "final_url": "https://4mscompany.com/scmbo.php?c=5",
+   "fetched_at": "2026-10-30T07:40:40Z",
+   "http_status": 200,
+   "bytes": 75232,
+   "content_sha256": "235020381b1d23b64c7fe38f10f2f78440dce3c96253a3f1745e4f84c81cb275",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V rail: 14mA\n+5V rail: not used\n-12V rail: not used",
+   "supporting_quotes": [
+    "Power draw maximum 14mA extra from the +12V (no -12V or +5V draw).Power is taken from the main SCM module"
+   ],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 14,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V rail: 14mA"
+      },
+      "-12V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "-12V rail: not used"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": "+5V rail: not used"
+      }
+     },
+     "unattributed_draw": null,
+     "note": "A second line on the page says 'Power draw maximum 14mA extra from the +12V (no -12V or +5V draw).Power is taken from the main SCM module'."
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms BUFF MULT",
+   "url": "https://4mscompany.com/p.php?p=597&c=5",
+   "final_url": "https://4mscompany.com/buffmult.php?c=5",
+   "fetched_at": "2026-10-30T07:40:44Z",
+   "http_status": 200,
+   "bytes": 16410,
+   "content_sha256": "eefc2d80845715734b7e908418168031020c9cb2237ac416d124cd33cd033347",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V rail: 13mA\n-12V rail: 13mA\n+5V rail: Not used (0mA)",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 13,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12V rail: 13mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 13,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-12V rail: 13mA"
+      },
+      "+5V": {
+       "status": "not_used",
+       "ma": 0,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+5V rail: Not used (0mA)"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "Shifting Inverting Signal Mingler",
+   "url": "https://4mscompany.com/p.php?p=679&c=5",
+   "final_url": "https://4mscompany.com/p.php?p=679&c=5",
+   "fetched_at": "2026-10-30T07:40:48Z",
+   "http_status": 200,
+   "bytes": 18483,
+   "content_sha256": "547578bbde18adda6cae090b18279d994bf9d63565a275531bf0d74c6c6e3c0b",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power consumption:\n+12V rail: 51mA max\n-12V rail: 51mA max",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 51,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "+12V rail: 51mA max"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 51,
+       "unit_stated": true,
+       "qualifier": "max",
+       "quote": "-12V rail: 51mA max"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  },
+  {
+   "brand": "4ms Company",
+   "name": "4ms Eurorack Swash",
+   "url": "https://4mscompany.com/p.php?p=562&c=21",
+   "final_url": "https://4mscompany.com/euroswash.php?c=21",
+   "fetched_at": "2026-10-30T07:40:50Z",
+   "http_status": 200,
+   "bytes": 15744,
+   "content_sha256": "ce8c85f454e6be55a7eea2714194c0f8ee55fe60cf9a3babcdd2679a993dc6be",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "The Eurorack Noise Swash consumes about 40mA of power and occupies 16 HP of space.",
+   "supporting_quotes": [],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      },
+      "-12V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": {
+      "ma": 40,
+      "qualifier": "about",
+      "quote": "consumes about 40mA of power"
+     },
+     "note": "Odd phrasing: one draw with no rail named. Not assigned to a rail."
+    }
+   ]
+  },
+  {
+   "brand": "Dave Jones Design",
+   "name": "Otool Scope and Audio Tools",
+   "url": "https://www.jonesvideo.com/prod_otool.html",
+   "final_url": "https://www.jonesvideo.com/prod_otool.html",
+   "fetched_at": "2026-10-30T07:40:51Z",
+   "http_status": 200,
+   "bytes": 6529,
+   "content_sha256": "6b9a8e68b789d26f1a0c2fa5158c6b128abf3568aa3074b5c56ef4a3ff0b6866",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power requirements:\n80ma +12v\n22ma -12v\n-or-\n12ma +12v\n70ma +5v\n22ma -12v",
+   "supporting_quotes": [
+    "It has a jumper for internal or external 5 volt source."
+   ],
+   "jumper_dependent": true,
+   "settings": [
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 80,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "80ma +12v"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 22,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "80ma +12v\n22ma -12v"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": "First of two alternatives separated by '-or-'. The page names a jumper for internal or external 5 volt source but does not say which alternative goes with which position. No +5V figure is listed for this alternative."
+    },
+    {
+     "label": null,
+     "label_on_page": false,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 12,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "-or-\n12ma +12v"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 22,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "70ma +5v\n22ma -12v"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 70,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "70ma +5v"
+      }
+     },
+     "unattributed_draw": null,
+     "note": "Second of two alternatives separated by '-or-'."
+    }
+   ]
+  },
+  {
+   "brand": "Dave Jones Design",
+   "name": "Jones MVIP",
+   "url": "https://www.jonesvideo.com/prod_mvip.html",
+   "final_url": "https://www.jonesvideo.com/prod_mvip.html",
+   "fetched_at": "2026-10-30T07:40:55Z",
+   "http_status": 200,
+   "bytes": 9430,
+   "content_sha256": "4369f9d636dceaf49143d007dac25ed2fc3ce8fb7b7ad3b04e54c0cf7cc838f7",
+   "fetch_method": "free_http",
+   "challenge_check": "none",
+   "quote": "Power: 200ma of +12 and 75ma of -12 volts",
+   "supporting_quotes": [
+    "Power: 140ma of +12 and 140ma of -12 volts"
+   ],
+   "jumper_dependent": false,
+   "settings": [
+    {
+     "label": "current version",
+     "label_on_page": false,
+     "kind": "single",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 200,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "200ma of +12"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 75,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "75ma of -12 volts"
+      },
+      "+5V": {
+       "status": "not_stated",
+       "ma": null,
+       "unit_stated": null,
+       "qualifier": null,
+       "quote": null
+      }
+     },
+     "unattributed_draw": null,
+     "note": "The page also lists 'Specs (original version)' with 'Power: 140ma of +12 and 140ma of -12 volts'; that is an earlier hardware revision, not a setting, and is kept out of the settings. The page's only jumper selects video format, not power."
+    }
+   ]
+  },
+  {
+   "brand": "Velectronic",
+   "name": "A-Envelope",
+   "url": "https://www.velectronic.net/products/associative-quadruple-envelope",
+   "final_url": "https://www.velectronic.net/products/associative-quadruple-envelope",
+   "fetched_at": "2026-10-30T07:40:55Z",
+   "http_status": 200,
+   "bytes": 289025,
+   "content_sha256": "0f3e5284df698979e4a6ac9eca4f725e2198fc637371a07a4a9a23a700725107",
+   "fetch_method": "free_http",
+   "challenge_check": "hand-checked: the automatic marker matched Shopify's storefront-forms hCaptcha loader script (for contact forms); the product page and its spec table were served, so this is not a block",
+   "quote": "Power consumption\nThe power consumption it is been measured with all LEDs on.\nThe +5V jumper selected (Recommended)\n+5v = 170 mA\n+12v = 35 mA\n-12v = 23 mA\nThe +12V jumper selected\n+5v = 0 mA\n+12v = 245 mA\n-12v = 23 mA",
+   "supporting_quotes": [
+    "When the +5 V switch is active, only 35 mA is consumed from the +12 V rail and 170 ma from the + 5 V rail (the current consumption on the -12 V rail is constant)."
+   ],
+   "jumper_dependent": true,
+   "settings": [
+    {
+     "label": "The +5V jumper selected (Recommended)",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 35,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+5v = 170 mA\n+12v = 35 mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 23,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12v = 35 mA\n-12v = 23 mA"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 170,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "The +5V jumper selected (Recommended)\n+5v = 170 mA"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    },
+    {
+     "label": "The +12V jumper selected",
+     "label_on_page": true,
+     "kind": "jumper",
+     "rails": {
+      "+12V": {
+       "status": "stated",
+       "ma": 245,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+5v = 0 mA\n+12v = 245 mA"
+      },
+      "-12V": {
+       "status": "stated",
+       "ma": 23,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "+12v = 245 mA\n-12v = 23 mA"
+      },
+      "+5V": {
+       "status": "stated",
+       "ma": 0,
+       "unit_stated": true,
+       "qualifier": null,
+       "quote": "The +12V jumper selected\n+5v = 0 mA"
+      }
+     },
+     "unattributed_draw": null,
+     "note": null
+    }
+   ]
+  }
+ ]
+}
