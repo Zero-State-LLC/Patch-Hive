@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from community.auth import get_current_user, require_auth
+from canon.rig_metrics import ensure_rig_metrics_packet
 from community.models import User
 from core import get_db, settings
 from racks.access import owned_patch, owned_rack, readable_patch, readable_patches
@@ -307,6 +308,10 @@ def run_generation(db: Session, rack: Rack, request: GeneratePatchesRequest) -> 
         from export.patchbook.design.dual_write import dual_write_generated_patches
 
         dual_write_generated_patches(db, bridge=bridge, patches=saved_patches)
+        if bridge.export_bridge_ready:
+            ensure_rig_metrics_packet(
+                db, rig_revision_id=bridge.rig_revision_id, source_run_id=bridge.source_run_id
+            )
         db.commit()
     except Exception:
         db.rollback()

@@ -26,6 +26,7 @@ from canon.contracts import (
     canonical_json,
     canonical_sha256,
 )
+from canon.compiler import compile_patch
 from canon.models import GeneratedPatchRecord, PatchLibraryRecord, RigRevisionRecord
 from patches.models import Patch
 from runs.bridge import native_artifact_manifest_hash
@@ -229,34 +230,14 @@ def _content_hash_from_revision(revision: RigRevisionRecord) -> str:
     raise ContentSpineError("EXPORT_RIG_SNAPSHOT_INVALID", "canonical_rig missing")
 
 
-def seal_orm_patch_to_compilation(
-    patch: Patch,
-    *,
-    source_run_id: str,
-    source_rig_revision_id: str,
-    rig_snapshot: dict[str, Any],
-    position: int = 0,
-) -> PatchCompilation:
-    """Deterministic pure seal from immutable run-bound patch JSON (Path B)."""
-    # Fixed timestamp for determinism (Layer A seal must not depend on wall clock)
-    now = datetime(1970, 1, 1, tzinfo=timezone.utc)
-    seed = int(patch.generation_seed or 0)
-    gen_version = str(patch.generation_version or "1.0.0")
-    artifact_base = f"patch-{patch.id}-{position}"
+def orm_patch_nodes_and_edges(
+    connections: list[dict[str, Any]],
+) -> tuple[tuple[PatchNode, ...], tuple[PatchEdge, ...]]:
+    """Normalized nodes and edges from a patch's sorted cable list.
 
-    connections = list(patch.connections or [])
-    # Stable sort connections
-    connections = sorted(
-        connections,
-        key=lambda c: (
-            str(c.get("from_module_id", "")),
-            str(c.get("from_port", "")),
-            str(c.get("to_module_id", "")),
-            str(c.get("to_port", "")),
-            str(c.get("cable_type", "")),
-        ),
-    )
-
+    Shared by the dual-write adapter and the canonical compiler path so both read the
+    same graph (spec 001 T030).
+    """
     module_ids: set[str] = set()
     for conn in connections:
         module_ids.add(str(conn.get("from_module_id", "UNKNOWN")))
@@ -264,19 +245,10 @@ def seal_orm_patch_to_compilation(
     if not module_ids:
         module_ids.add("UNKNOWN")
 
-    # Labels from snapshot when available
-    snapshot_modules = {
-        str(m.get("module_id")): m
-        for m in (rig_snapshot.get("modules") or [])
-        if isinstance(m, dict)
-    }
-
     nodes: list[PatchNode] = []
     ports_by_key: dict[str, PatchPort] = {}
     for mid in sorted(module_ids):
         label = f"Module {mid}"
-        if mid in snapshot_modules:
-            label = f"Module {mid}"
         node_ports: list[PatchPort] = []
         # Collect ports used by this module
         used: set[tuple[str, str]] = set()
@@ -335,6 +307,67 @@ def seal_orm_patch_to_compilation(
                 signal_type=_map_signal(conn.get("cable_type")),  # type: ignore[arg-type]
             )
         )
+    return tuple(nodes), tuple(edges)
+
+
+def _sorted_connections(patch: Patch) -> list[dict[str, Any]]:
+    return sorted(
+        list(patch.connections or []),
+        key=lambda c: (
+            str(c.get("from_module_id", "")),
+            str(c.get("from_port", "")),
+            str(c.get("to_module_id", "")),
+            str(c.get("to_port", "")),
+            str(c.get("cable_type", "")),
+        ),
+    )
+
+
+def compile_orm_patch(
+    patch: Patch,
+    *,
+    source_run_id: str,
+    source_rig_revision_id: str,
+    intent_suffix: str = "",
+) -> PatchCompilation:
+    """Run the canonical compiler on a validated patch (spec 001 FR-004, T030).
+
+    Same nodes and edges as ``seal_orm_patch_to_compilation``, but the plan, report and
+    stage receipts come from ``canon.compiler.compile_patch``. The timestamp is fixed so the
+    result does not depend on the wall clock. ``intent_suffix`` tells apart two patches in
+    one run that have the same cables and description, whose ids would otherwise collide.
+    """
+    nodes, edges = orm_patch_nodes_and_edges(_sorted_connections(patch))
+    return compile_patch(
+        run_id=source_run_id,
+        rig_revision_id=source_rig_revision_id,
+        seed=int(patch.generation_seed or 0),
+        intent=str(patch.description or patch.name or "NOT_COMPUTABLE") + intent_suffix,
+        nodes=nodes,
+        edges=edges,
+        created_at=datetime(1970, 1, 1, tzinfo=timezone.utc),
+        title=str(patch.name) if patch.name else None,
+    )
+
+
+def seal_orm_patch_to_compilation(
+    patch: Patch,
+    *,
+    source_run_id: str,
+    source_rig_revision_id: str,
+    rig_snapshot: dict[str, Any],
+    position: int = 0,
+) -> PatchCompilation:
+    """Deterministic pure seal from immutable run-bound patch JSON (Path B)."""
+    # Fixed timestamp for determinism (Layer A seal must not depend on wall clock)
+    now = datetime(1970, 1, 1, tzinfo=timezone.utc)
+    seed = int(patch.generation_seed or 0)
+    gen_version = str(patch.generation_version or "1.0.0")
+    artifact_base = f"patch-{patch.id}-{position}"
+
+    connections = _sorted_connections(patch)
+
+    nodes, edges = orm_patch_nodes_and_edges(connections)
 
     graph = PatchGraph(
         artifact_id=f"{artifact_base}-graph",
@@ -344,8 +377,8 @@ def seal_orm_patch_to_compilation(
         source_run_id=source_run_id,
         source_rig_revision_id=source_rig_revision_id,
         created_at=now,
-        nodes=tuple(nodes),
-        edges=tuple(edges),
+        nodes=nodes,
+        edges=edges,
     ).seal()
 
     steps = _plan_steps_from_connections(connections)

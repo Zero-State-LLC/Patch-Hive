@@ -1,13 +1,22 @@
-"""Path A producer: dual-write sealed GeneratedPatchRecord rows at generate time."""
+"""Path A producer: dual-write sealed GeneratedPatchRecord rows at generate time.
+
+Each patch that passed validation goes through ``canon.compiler.compile_patch`` (spec 001
+FR-004, T030). The compiler's graph, plan and report are stored on the row and its stage
+receipts in ``stage_receipts``. The older adapter stays as the Path B fallback.
+"""
 
 from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
-from canon.models import GeneratedPatchRecord, PatchLibraryRecord, RigRevisionRecord
+from canon.models import (
+    GeneratedPatchRecord,
+    PatchLibraryRecord,
+    StageReceiptRecord,
+)
 from export.patchbook.design.content_spine import (
     library_content_hash,
-    seal_orm_patch_to_compilation,
+    compile_orm_patch,
     LoadedLibraryItem,
 )
 from patches.models import Patch
@@ -48,20 +57,23 @@ def dual_write_generated_patches(
         )
         return _hash_from_generated_rows(rows)
 
-    revision = session.get(RigRevisionRecord, bridge.rig_revision_id)
-    snapshot = (
-        revision.canonical_rig if revision and isinstance(revision.canonical_rig, dict) else {}
-    )
-
     items: list[LoadedLibraryItem] = []
+    seen_hashes: set[str] = set()
     for position, patch in enumerate(patches):
-        compilation = seal_orm_patch_to_compilation(
+        compilation = compile_orm_patch(
             patch,
             source_run_id=bridge.source_run_id,
             source_rig_revision_id=bridge.rig_revision_id,
-            rig_snapshot=snapshot,
-            position=position,
         )
+        if compilation.canonical_hash_value() in seen_hashes:
+            # Same cables and description as an earlier patch in this run.
+            compilation = compile_orm_patch(
+                patch,
+                source_run_id=bridge.source_run_id,
+                source_rig_revision_id=bridge.rig_revision_id,
+                intent_suffix=f" (patch {position})",
+            )
+        seen_hashes.add(compilation.canonical_hash_value())
         row_id = f"gen-patch-{bridge.source_run_id}-{position}"
         session.add(
             GeneratedPatchRecord(
@@ -72,10 +84,24 @@ def dual_write_generated_patches(
                 patch_graph=compilation.patch_graph.canonical_dict(),
                 patch_plan=compilation.patch_plan.canonical_dict(),
                 validation_report=compilation.validation_report.canonical_dict(),
-                variations=[],
+                variations=[v.canonical_dict() for v in compilation.variations],
                 canonical_hash=compilation.canonical_hash_value(),
             )
         )
+        for receipt in compilation.stage_receipts:
+            session.add(
+                StageReceiptRecord(
+                    id=receipt.artifact_id,
+                    run_id=bridge.source_run_id,
+                    stage=receipt.stage,
+                    operation=receipt.operation,
+                    operation_version=receipt.operation_version,
+                    determinism_class=receipt.determinism_class,
+                    input_hash=receipt.input_hash,
+                    output_hash=receipt.output_hash,
+                    receipt=receipt.canonical_dict(),
+                )
+            )
         items.append(
             LoadedLibraryItem(
                 position=position,

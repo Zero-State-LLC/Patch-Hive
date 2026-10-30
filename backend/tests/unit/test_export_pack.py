@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from canon.export_pack import export_compilation_pack
-from canon.pipeline import run_canon_pipeline
+from tests.canon_demo_pipeline import run_canon_pipeline
 
 
 def test_export_pack_writes_files(tmp_path: Path) -> None:
