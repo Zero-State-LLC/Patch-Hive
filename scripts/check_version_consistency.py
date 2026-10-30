@@ -25,6 +25,10 @@ fe = json.loads((ROOT / "frontend/package.json").read_text())["version"]
 found = {"backend/pyproject.toml": py, "frontend/package.json": fe}
 if len(sys.argv) > 1:
     found["tag"] = sys.argv[1].removeprefix("refs/tags/").removeprefix("v")
+# The API must report the pyproject version (backend/core/version.py), never a literal.
+config = (ROOT / "backend/core/config.py").read_text()
+if re.search(r"app_version\s*:\s*str\s*=\s*[\"']", config) or "read_package_version" not in config:
+    sys.exit("backend/core/config.py: app_version must come from core.version.read_package_version()")
 if len(set(found.values())) != 1:
     sys.exit("version mismatch: " + ", ".join(f"{k}={v}" for k, v in found.items()))
 print(f"OK {py}")

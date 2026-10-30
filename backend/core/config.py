@@ -12,6 +12,8 @@ from typing import Annotated, Any
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
+from core.version import read_package_version
+
 logger = logging.getLogger(__name__)
 _warned_legacy_referrals = False
 
@@ -27,7 +29,7 @@ class Settings(BaseSettings):
 
     # Application
     app_name: str = "PatchHive"
-    app_version: str = "0.1.0"
+    app_version: str = read_package_version()
     debug: bool = False
     environment: str = "development"
 

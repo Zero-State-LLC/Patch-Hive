@@ -45,7 +45,7 @@
   - depends_on: []
 - [x] T033 Add the `correct` provenance action (FR-038): archive, then write the new value while the stored value is `only_if_value`, with a maker-page citation; the FR-035 guard lifts on an `hp` correction. Ship `provenance/maker-corrections-v1.json` for Sovage CHICANE (hp 14 → 4, verification URL to the Eurorack page) and load it to staging and prod (D4, research R1). Done 2026-10-29 (#125): CHICANE holds 4 HP and the Eurorack page on staging and prod; 14 and the 1U URL are archived.
   - depends_on: [T029]
-- [ ] T035 Scoped re-fetch of the jumper-dependent pages (about 45: the 42 live 4ms modules, the 2 Dave Jones Design modules and Velectronic A-Envelope), under an approved cap of about 50 context.dev credits; record each setting's draws verbatim (research R4).
+- [x] T035 Scoped re-fetch of the jumper-dependent pages (about 45: the 42 live 4ms modules, the 2 Dave Jones Design modules and Velectronic A-Envelope), under an approved cap of about 50 context.dev credits; record each setting's draws verbatim (research R4). Done 2026-10-30: free run (Decision 10, 0 credits), 42 pages (39 4ms: the 44 crawl rows minus 5 Row Power, none marked retired; 2 Dave Jones Design; Velectronic A-Envelope), all HTTP 200 with robots.txt allowing them. 11 state jumper-dependent draws (10 with two settings; the Dual Looping Delay gives only one), 0 blocked; 15 pages leave at least one rail not stated (20 rails, recorded as not stated). Receipt: `data/synth-catalog/receipts/t035-jumper-power.json`.
   - depends_on: [T030]
 - [ ] T034 Jumper-dependent power as `power_configs` (D8, research R5): migration, a loader action filling settings from T035's receipt, and a setting picker in rack budgets.
   - depends_on: [T033, T035]
