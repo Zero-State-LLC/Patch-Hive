@@ -72,6 +72,10 @@ class RackModule(Base):
     # Position in rack
     row_index = Column(Integer, nullable=False)  # 0-indexed row number
     start_hp = Column(Integer, nullable=False)  # Starting HP position (0-indexed)
+    # The jumper setting this placement's module is set to (spec 003 D8); NULL = not chosen.
+    power_config_id = Column(
+        Integer, ForeignKey("power_configs.id", ondelete="SET NULL"), nullable=True
+    )
 
     # Relationships
     rack = relationship("Rack", back_populates="modules")

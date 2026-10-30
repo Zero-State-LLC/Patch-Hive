@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from cases.models import Case
 from modules.catalog import ModuleCatalog
-from modules.models import Module
+from modules.models import Module, PowerConfig
 
 from .schemas import RackModuleSpec, RackValidationError
 
@@ -102,6 +102,26 @@ def hp_needs_reverify(db: Session, module: Module) -> bool:
     return row is not None
 
 
+def placement_draws(
+    db: Session, module: Module, power_config_id: int | None
+) -> tuple[dict[str, int | None], PowerConfig | None]:
+    """The draws a placement adds to the budget, per module column.
+
+    With a chosen jumper setting (spec 003 D8), that setting's draws; a rail the maker
+    page gives no number for stays None (unknown). Without one, the module's own
+    columns, where a rail that depends on the setting is unknown (FR-022; the catalog
+    loader reports any single value that differs from a stated setting). Never a guess.
+
+    Raises LookupError when the setting does not exist or belongs to another module.
+    """
+    if power_config_id is None:
+        return {field: getattr(module, field) for field, _, _ in RAILS}, None
+    config = db.query(PowerConfig).filter(PowerConfig.id == power_config_id).first()
+    if config is None or config.module_id != module.id:
+        raise LookupError(power_config_id)
+    return {field: getattr(config, field) for field, _, _ in RAILS}, config
+
+
 def validate_rack_configuration(
     db: Session, case_id: int, modules: List[RackModuleSpec]
 ) -> Tuple[bool, List[RackValidationError], List[RackValidationError]]:
@@ -117,6 +137,9 @@ def validate_rack_configuration(
     - A module rail that is None is unknown, never 0 (spec 003 FR-022). A rail whose
       known draws fit but which has unknown draws is a ``POWER_RAIL_INCOMPLETE``
       warning: the budget is "at least X mA", not confirmed.
+    - A placement that names a jumper setting (``power_config_id``, spec 003 D8) adds
+      that setting's draws instead of the module's; a setting of another module is a
+      ``POWER_CONFIG_NOT_FOR_MODULE`` error.
     - powered is False and modules draw power → hard error.
     - Non-Eurorack format with any module placement → hard error (MVP placement is Eurorack-only).
     """
@@ -239,14 +262,32 @@ def validate_rack_configuration(
                 break
             hp_usage[module_spec.row_index][hp] = True
 
-        if module.power_12v_ma:
-            total_power_12v += module.power_12v_ma
-        if module.power_neg12v_ma:
-            total_power_neg12v += module.power_neg12v_ma
-        if module.power_5v_ma:
-            total_power_5v += module.power_5v_ma
+        try:
+            draws, _ = placement_draws(db, module, module_spec.power_config_id)
+        except LookupError:
+            errors.append(
+                RackValidationError(
+                    field=f"modules[{idx}].power_config_id",
+                    message=(
+                        f"Power setting {module_spec.power_config_id} is not a setting of "
+                        f"{module.brand} {module.name}"
+                    ),
+                    details={
+                        "code": "POWER_CONFIG_NOT_FOR_MODULE",
+                        "module_id": module.id,
+                        "power_config_id": module_spec.power_config_id,
+                    },
+                )
+            )
+            continue
+        if draws["power_12v_ma"]:
+            total_power_12v += draws["power_12v_ma"]
+        if draws["power_neg12v_ma"]:
+            total_power_neg12v += draws["power_neg12v_ma"]
+        if draws["power_5v_ma"]:
+            total_power_5v += draws["power_5v_ma"]
         for module_field, _, label in RAILS:
-            if getattr(module, module_field) is None:
+            if draws[module_field] is None:
                 unknown_draw[label].append(module.name)
 
     any_draw = total_power_12v > 0 or total_power_neg12v > 0 or total_power_5v > 0

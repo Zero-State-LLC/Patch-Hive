@@ -14,6 +14,7 @@ from cases.compatibility_schemas import (
     CompatibilityStatus,
 )
 from cases.models import Case
+from modules.models import PowerConfig
 from racks.models import Rack, RackModule
 from racks.schemas import RackValidationError
 
@@ -22,6 +23,7 @@ class _ModulePlacement(Protocol):
     module_id: int
     row_index: int
     start_hp: int
+    power_config_id: Optional[int]
 
 
 def catalog_slug_for_case(case: Case) -> Optional[str]:
@@ -40,15 +42,36 @@ def revision_key_for_case(case: Case) -> Optional[str]:
     return None
 
 
-def _placements_to_compat_modules(placements: Sequence[_ModulePlacement]) -> list[CompatibilityModuleIn]:
-    return [
-        CompatibilityModuleIn(
-            module_id=p.module_id,
-            row_index=p.row_index,
-            start_hp=p.start_hp,
+def _placements_to_compat_modules(
+    db: Session, placements: Sequence[_ModulePlacement]
+) -> list[CompatibilityModuleIn]:
+    """Placements as compatibility inputs; a chosen jumper setting supplies the draws.
+
+    A setting that does not belong to the placed module is ignored here; rack
+    validation reports it as ``POWER_CONFIG_NOT_FOR_MODULE``. A rail the setting leaves
+    NULL falls back to the module's column, as every inline override does.
+    """
+    modules = []
+    for p in placements:
+        draws: dict[str, Optional[int]] = {}
+        config_id = getattr(p, "power_config_id", None)
+        if config_id is not None:
+            config = db.query(PowerConfig).filter(PowerConfig.id == config_id).first()
+            if config is not None and config.module_id == p.module_id:
+                draws = {
+                    "power_12v_ma": config.power_12v_ma,
+                    "power_neg12v_ma": config.power_neg12v_ma,
+                    "power_5v_ma": config.power_5v_ma,
+                }
+        modules.append(
+            CompatibilityModuleIn(
+                module_id=p.module_id,
+                row_index=p.row_index,
+                start_hp=p.start_hp,
+                **draws,
+            )
         )
-        for p in placements
-    ]
+    return modules
 
 
 def evaluate_case_module_catalog_compatibility(
@@ -82,7 +105,7 @@ def evaluate_case_module_catalog_compatibility(
             "compatibility": None,
         }
 
-    modules = _placements_to_compat_modules(placements)
+    modules = _placements_to_compat_modules(db, placements)
     request = CompatibilityRequest(
         revision_key=revision_key_for_case(case),
         modules=modules,
