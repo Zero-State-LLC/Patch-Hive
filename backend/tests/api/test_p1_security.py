@@ -21,7 +21,7 @@ from community import login_guard
 from community.models import User
 from core.security import get_password_hash, verify_and_update_password
 from main import app
-from monetization.models import Referral
+from monetization.models import CreditsLedger, Referral
 from tests.conftest import bearer_headers, make_user
 from tests.unit.test_canon_contracts import _persist_hierarchy
 
@@ -183,18 +183,21 @@ def test_a_referred_user_is_rewarded_at_most_once(db_session: Session) -> None:
     db_session.rollback()
 
 
-def test_legacy_purchases_stay_off_by_default(
-    client: TestClient, db_session: Session, monkeypatch: pytest.MonkeyPatch
+@pytest.mark.parametrize("flag", [False, True])
+def test_legacy_purchase_route_is_gone(
+    client: TestClient, db_session: Session, monkeypatch: pytest.MonkeyPatch, flag: bool
 ) -> None:
-    """A user-chosen credits_delta must never mint credits on a default deployment."""
+    """POST /api/monetization/purchases was deleted (spec 004 T043); no flag brings it back."""
     from core import settings
     from core.config import Settings
 
-    assert Settings.model_fields["enable_legacy_referrals"].default is False
-    monkeypatch.setattr(settings, "enable_legacy_referrals", False)
+    assert Settings.model_fields["enable_referrals"].default is False
+    assert "enable_legacy_referrals" not in Settings.model_fields
+    monkeypatch.setattr(settings, "enable_referrals", flag)
     buyer = bearer_headers(make_user(db_session, "buyer"))
     resp = client.post("/api/monetization/purchases", json={"credits_delta": 1000}, headers=buyer)
-    assert resp.status_code == 404
+    assert resp.status_code in (404, 405)
+    assert db_session.query(CreditsLedger).filter(CreditsLedger.change_type == "Purchase").count() == 0
 
 
 def test_racing_failures_each_count(db_session: Session) -> None:

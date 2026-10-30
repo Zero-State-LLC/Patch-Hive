@@ -76,7 +76,7 @@ Already fixed and not researched again: per-user export idempotency, admin-only 
 
 **Evidence**
 
-- The route takes `credits_delta` and `notes` from the client and calls `record_purchase` without `payment_verified`. It is off unless `enable_legacy_referrals` is set [OBSERVED: monetization/routes.py, core/config.py].
+- The route takes `credits_delta` and `notes` from the client and calls `record_purchase` without `payment_verified`. It was off unless `enable_legacy_referrals` was set (now `enable_referrals`; the route is deleted, T043) [OBSERVED: monetization/routes.py, core/config.py].
 - Since #131 it mints no spendable credit [OBSERVED: monetization/referrals.py].
 - It still writes a legacy `Purchase` row. FR-027 counts those rows. So a self-reported purchase can use up the referred user's first-purchase slot, and a later real purchase then never rewards the referrer (EC-3) [INFERRED from monetization/referrals.py].
 - No frontend code calls it [OBSERVED: frontend/src/lib/api.ts].

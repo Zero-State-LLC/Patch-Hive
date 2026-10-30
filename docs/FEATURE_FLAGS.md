@@ -7,7 +7,7 @@ All flags are environment variables parsed case-insensitively by backend setting
 | `ENABLE_LEGACY_SOCIAL` | `false` | Compatibility feed/comment/vote endpoints only (login/register/profile stay always-on under `/api/community`) |
 | `ENABLE_LEGACY_PUBLISHING` | `false` | Compatibility public publication endpoints |
 | `ENABLE_LEGACY_LEADERBOARDS` | `false` | Compatibility leaderboard endpoints |
-| `ENABLE_LEGACY_REFERRALS` | `false` | Gates `/api/me/referrals`, community referral summary, referral signup capture, and monetization purchase-for-referral recording |
+| `ENABLE_REFERRALS` | `false` | Gates `/api/me/referrals`, the community referral summary, and referral-code capture at signup. Replaces `ENABLE_LEGACY_REFERRALS`, which is no longer read. `POST /api/monetization/purchases` was deleted (spec 004 T043) |
 | `ENABLE_LEGACY_PATCHBOOK_DEBIT` | `false` | When `false`, `POST /api/export/runs/{id}/patchbook` returns **410** (use `/api/canon/exports`) |
 | `STRIPE_TEST_MODE` | `true` | Reject livemode webhook events in the canonical Stripe adapter and `/api/canon/webhooks/stripe` |
 | `ALLOW_PRODUCTION_PAYMENTS` | `false` | Kill switch. When false, production webhook intake returns 403. Startup fails closed if production sets this false while `STRIPE_TEST_MODE=false`, or sets this true without reviewed secrets. |

@@ -12,7 +12,7 @@ PatchHive remains a modular monolith. Apply the single Alembic head before appli
 4. Run PostgreSQL integration and migration tests (`alembic upgrade head` against Postgres 15). Deployed databases (Cloudflare staging and production) are migrated only by the manual `db-migrate.yml` workflow, run before deploying code that adds a migration. Container startup migrations are opt-in (`RUN_MIGRATIONS` exactly `true` or `1`; default off) and are not enabled on either Cloudflare Worker, so a cold start never mutates the database. Never use `init_db()`/`create_all()` as the production schema path.
 5. Generate and retain Python/npm CycloneDX SBOMs and build provenance (Security workflow artifacts).
 6. Run ledger reconciliation (`reconcile_ledger` or equivalent admin path) and require no anomalies.
-7. Verify all legacy feature flags are false (`ENABLE_LEGACY_SOCIAL`, `ENABLE_LEGACY_PUBLISHING`, `ENABLE_LEGACY_LEADERBOARDS`, `ENABLE_LEGACY_REFERRALS`).
+7. Verify all legacy feature flags are false (`ENABLE_LEGACY_SOCIAL`, `ENABLE_LEGACY_PUBLISHING`, `ENABLE_LEGACY_LEADERBOARDS`) and `ENABLE_REFERRALS` is false unless referrals are intended.
 8. Verify `STRIPE_TEST_MODE=true` and `ALLOW_PRODUCTION_PAYMENTS=false`.
 9. Perform the manual accessibility protocol ([ACCESSIBILITY.md](ACCESSIBILITY.md)).
 10. Confirm CORS, `SECRET_KEY`, and DB networking meet [SECURITY.md](SECURITY.md).

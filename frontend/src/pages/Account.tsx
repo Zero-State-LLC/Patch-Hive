@@ -268,7 +268,7 @@ export default function AccountPage() {
           ) : (
             <p className="muted">
               Referrals are feature-flagged off in the default MVP (
-              <code>ENABLE_LEGACY_REFERRALS=false</code>).
+              <code>ENABLE_REFERRALS=false</code>).
             </p>
           )}
         </section>

@@ -55,7 +55,7 @@ class Settings(BaseSettings):
     enable_legacy_social: bool = False
     enable_legacy_publishing: bool = False
     enable_legacy_leaderboards: bool = False
-    enable_legacy_referrals: bool = False
+    enable_referrals: bool = False
 
     # Decision Intelligence. Provider integration remains fail-closed by default.
     enable_decision_intelligence: bool = False

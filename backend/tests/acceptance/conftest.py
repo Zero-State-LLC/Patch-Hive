@@ -62,7 +62,6 @@ _REBOUND_MODULES = (
     "main",
     "export.routes",
     "patches.routes",
-    "monetization.routes",
     "canon.routes",
 )
 
@@ -85,7 +84,6 @@ def _rebind_settings() -> None:
     import core.database
     import export.routes
     import main
-    import monetization.routes
     import patches.routes
 
     importlib.reload(core.config)
@@ -94,7 +92,6 @@ def _rebind_settings() -> None:
     core.settings = core.config.settings
     export.routes.settings = core.config.settings
     patches.routes.settings = core.config.settings
-    monetization.routes.settings = core.config.settings
     canon.routes.settings = core.config.settings
     importlib.reload(main)
 

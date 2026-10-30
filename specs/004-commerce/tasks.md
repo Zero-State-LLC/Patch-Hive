@@ -16,7 +16,7 @@ From [research.md](research.md) R1–R8. Machine B (T046) lands before any refer
   - depends_on: []
 - [x] T042 Append-only trigger on `canonical_credit_ledger` that rejects `UPDATE` and `DELETE`, mirroring `20260925_decision_receipts`, with a Postgres test (FR-008, research R2). Effort S. Done 2026-10-29: migration `20261029_ledger_append_only`; Postgres test `tests/acceptance/test_ledger_append_only.py`.
   - depends_on: []
-- [ ] T043 Delete `POST /api/monetization/purchases` and `PurchaseCreate`; move referral signup and the referral summary to their own flag (FR-033, OQ-11, research R5). Needs owner sign-off on OQ-11. Effort S.
+- [x] T043 Delete `POST /api/monetization/purchases` and `PurchaseCreate`; move referral signup and the referral summary to their own flag (FR-033, OQ-11, research R5). Needs owner sign-off on OQ-11. Effort S. Done 2026-10-30: owner chose option A; route, `PurchaseCreate` and the `monetization` router mount deleted; referral signup and summaries now use `enable_referrals` (`ENABLE_LEGACY_REFERRALS` removed); tests in `tests/api/test_p1_security.py`.
   - depends_on: []
 - [x] T044 Delete `GET /api/monetization/credits/balance`, and make the referral summary's `earned_credits` count canonical referral grants (FR-009, FR-031, research R6). Effort S. Done 2026-10-29: route removed from `monetization/routes.py` (no frontend caller; `getBalance` already reads `/canon/credits/balance`); `get_referral_summary` sums canonical `referral-reward:<id>` grants; tests in `tests/unit/test_referrals.py` and `tests/api/test_canon_export_api.py`.
   - depends_on: []
