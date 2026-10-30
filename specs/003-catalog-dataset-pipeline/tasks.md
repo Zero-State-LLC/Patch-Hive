@@ -56,9 +56,9 @@
   - depends_on: [T033]
 - [x] T037 Refuse archive, flag and correct entries on tombstoned rows (`tombstoned_at IS NULL` / `status <> 'tombstoned'` in every statement); count each as `refused: row_tombstoned` in the receipt (research R9). Done 2026-10-29 (#135): every statement carries the filter, and the scheduler counts each refusal as `refused_row_tombstoned`.
   - depends_on: [T029, T033]
-- [ ] T038 Owner decision on the 221 unsourced v1 HP values (research R7: keep, flag, or triage).
+- [x] T038 Owner decision on the 221 unsourced v1 HP values (research R7: keep, flag, or triage). Decided 2026-10-30 by the owner: triage (decision 9, `docs/evidence/OPEN_DECISIONS_2026-10-30.md`).
   - depends_on: []
-- [ ] T039 If triage is chosen: a v3 HP manifest re-sourcing the 45 maker-confirmed values, a hand check of the 7 disagreements with `correct` entries for the wrong ones, an `hp_source = legacy_unsourced` marker on the rest, then a free maker-page lookup of the 169 and removal of `UNSOURCED_HP_OVERLAYS` once empty.
+- [ ] T039 If triage is chosen: a v3 HP manifest re-sourcing the 45 maker-confirmed values, a hand check of the 7 disagreements with `correct` entries for the wrong ones, an `hp_source = legacy_unsourced` marker on the rest, then a free maker-page lookup of the 169 and removal of `UNSOURCED_HP_OVERLAYS` once empty. Partly done 2026-10-30 for the 218 values left after #153: every official citation was checked against its own page (plain GET, robots.txt respected); `overlays/module-catalog-hp-v3.json` keeps 106 that the page confirms, each with a quote; `provenance/maker-corrections-v3.json` corrects DPO 30 to 28, Morphagene 18 to 20, Knit Rider 2 to 16 and MEMS Mic 1U 2 to 10 in `module_catalog` and `modules`; migration `20261030_catalog_hp_source` adds `module_catalog.hp_source`, which the loader sets to `legacy_unsourced` (88 rows on a staging replica) and clears once a value is sourced, and the catalog API returns it. 52 citations could not be confirmed (ADDAC and Befaco hosts blocked, Instruō timed out, 7 pages name another product or version or contradict themselves) and stay marked. Still open: the free maker-page lookup of the 112 v1 values not in v3, then removal of `UNSOURCED_HP_OVERLAYS` once empty.
   - depends_on: [T038, T037]
 
 ## Foundational

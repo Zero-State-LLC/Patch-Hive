@@ -233,3 +233,43 @@ def test_the_v2_manifest_corrects_the_v1_overlay_hp_in_every_table() -> None:
     for (_, brand, name), (old, new) in corrections.items():
         slug = P.create_slug(brand, name)
         assert (v1[slug], v2[slug]) == (old, new)
+
+
+def test_the_v3_manifest_corrects_the_hand_checked_v1_hp_in_every_table() -> None:
+    """Spec 003 T039: rows holding a v1 value their maker page contradicts take the page value."""
+    path = ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v3.json"
+    manifest = json.loads(path.read_text())
+    assert manifest["batch"] == "maker-corrections-v3" and manifest["flag_reverify"] is False
+    assert P.PROVENANCE_MANIFESTS[-1] == path
+    corrections = {}
+    for row in manifest["rows"]:
+        (item,) = row["fields"]
+        assert item["field"] == "hp" and item["action"] == "correct"
+        assert P._correction_problem(row["table"], item) is None
+        assert "?" not in item["evidence_url"] and item["evidence_url"] in item["source_tag"]
+        assert len(item["source_tag"]) <= 200
+        assert item["maker_check"] == "maker_page_reviewed"
+        if row["table"] == "module_catalog":
+            assert row["slug"] == P.create_slug(row["brand"], row["name"])
+        corrections[(row["table"], row["brand"], row["name"])] = (item["only_if_value"], item["value"])
+    assert corrections == {
+        ("module_catalog", "Make Noise", "DPO"): (30, 28),
+        ("module_catalog", "Make Noise", "Morphagene"): (18, 20),
+        ("modules", "Make Noise", "DPO"): (30, 28),
+        ("modules", "Make Noise", "Morphagene"): (18, 20),
+        ("module_catalog", "Bastl Instruments", "Knit Rider"): (2, 16),
+        ("module_catalog", "Intellijel", "MEMS Mic 1U"): (2, 10),
+        ("modules", "Bastl Instruments", "Knit Rider"): (2, 16),
+        ("modules", "Intellijel", "MEMS Mic 1U"): (2, 10),
+    }
+    # Each old value is the unsourced v1 overlay's; each new value is the maker-cited v3 one,
+    # so a fresh load and a corrected database agree.
+    overlays = ROOT / "data" / "synth-catalog" / "overlays"
+    v1 = {e["slug"]: e["hp"] for e in json.loads((overlays / "module-catalog-hp-v1.json").read_text())["entries"]}
+    v3 = {e["slug"]: e for e in json.loads((overlays / "module-catalog-hp-v3.json").read_text())["entries"]}
+    for (_, brand, name), (old, new) in corrections.items():
+        slug = P.create_slug(brand, name)
+        assert (v1[slug], v3[slug]["hp"]) == (old, new)
+    for row in manifest["rows"]:
+        slug = P.create_slug(row["brand"], row["name"])
+        assert v3[slug]["source_url"] == row["fields"][0]["evidence_url"]

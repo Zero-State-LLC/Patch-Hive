@@ -208,14 +208,18 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
         _schedule_catalog(plan, catalog, row, modulargrid_url=row.get("modulargrid_url"))
 
     review = _load_optional(MAKER_REVIEW)
+    # Catalog rows checked against maker pages; an HP one of them carries is not legacy.
+    maker_rows: list[dict[str, Any]] = []
     for version in range(1, CATALOG_ADDITIONS_LATEST + 1):
         additions = CATALOG / "overlays" / f"catalog-additions-v{version}.json"
         if additions.is_file():
             for row in _load(additions).get("rows") or []:
                 if (reviewed := _reviewed(row, review)) is not None:
                     _schedule_catalog(plan, catalog, reviewed, modulargrid_url=None)
+                    maker_rows.append(reviewed)
     for row in review.get("catalog_rows") or []:
         _schedule_catalog(plan, catalog, row, modulargrid_url=None)
+        maker_rows.append(row)
 
     for row in phase2.get("full_spec_modules") or []:
         _schedule_module(
@@ -242,11 +246,21 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
             kind="modules_full_spec",
         )
 
-    _schedule_hp_overlays(
+    # v1 maker/retail (unsourced); v2+ maker re-verify (2026-10-17); v3 T039 triage (2026-10-30)
+    hp_overlays = [
+        (hp_path.name, _load_optional(hp_path))
+        for hp_path in sorted((CATALOG / "overlays").glob("module-catalog-hp-v*.json"))
+    ]
+    _schedule_hp_overlays(plan, catalog, hp_overlays)
+    _schedule_hp_source_markers(
         plan,
         catalog,
-        # v1 maker/retail (unsourced); v2+ maker re-verify (2026-10-17)
-        [(hp_path.name, _load_optional(hp_path)) for hp_path in sorted((CATALOG / "overlays").glob("module-catalog-hp-v*.json"))],
+        hp_overlays,
+        maker_hp_slugs={
+            (row.get("slug") or create_slug(row["brand"].strip(), row["name"].strip()))[:200]
+            for row in maker_rows
+            if row.get("hp") is not None and row.get("brand") and row.get("name")
+        },
     )
 
     for category_path in sorted((CATALOG / "overlays").glob("module-catalog-category-v*.json")):
@@ -320,6 +334,7 @@ PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "maker-crawl-v2-jumper-fix-v1.json",
     CATALOG / "provenance" / "maker-corrections-v1.json",
     CATALOG / "provenance" / "maker-corrections-v2.json",
+    CATALOG / "provenance" / "maker-corrections-v3.json",
 )
 ARCHIVE_FIELDS = {
     "modules": {
@@ -813,13 +828,14 @@ def _verification_index(path: Path | None) -> dict[str, dict[str, Any]]:
 
 def _catalog_state(conn: Connection) -> dict[str, dict[str, Any]]:
     rows = conn.execute(
-        text("SELECT slug, brand, name, hp, category, tombstoned_at, needs_reverify FROM module_catalog")
+        text("SELECT slug, brand, name, hp, hp_source, category, tombstoned_at, needs_reverify FROM module_catalog")
     ).mappings()
     return {
         row["slug"]: {
             "brand": row["brand"],
             "name": row["name"],
             "hp": row["hp"],
+            "hp_source": row["hp_source"],
             "category": row["category"],
             "tombstoned": row["tombstoned_at"] is not None,
             "needs_reverify": bool(row["needs_reverify"]),
@@ -999,6 +1015,87 @@ def _schedule_hp_overlays(
             if legacy and not _hp_entry_sourced(entry) and _hp_entry_keys(entry) & sourced_slugs:
                 continue
             _schedule_hp(plan, catalog, entry, legacy_unsourced=legacy)
+
+
+HP_SOURCE_LEGACY = "legacy_unsourced"
+
+
+def _schedule_hp_source_markers(
+    plan: Plan,
+    catalog: dict[str, dict[str, Any]],
+    overlays: list[tuple[str, dict[str, Any]]],
+    *,
+    maker_hp_slugs: set[str] | frozenset[str] = frozenset(),
+) -> None:
+    """Keep ``module_catalog.hp_source = 'legacy_unsourced'`` on exactly the rows whose
+    stored HP is an unsourced legacy overlay value (spec 003 T039).
+
+    A row is marked when an entry of an ``UNSOURCED_HP_OVERLAYS`` file names it, the
+    stored HP equals that entry's HP, and no maker source carries an HP for the slug
+    (a maker-cited HP overlay entry, or a maker-checked catalog row in
+    ``maker_hp_slugs``). A marked row that no longer qualifies (re-sourced, or its HP
+    corrected) is cleared. Runs after the HP fills, so it sees this plan's values.
+    Only the marker changes; HP is never written here.
+    """
+    sourced = set(maker_hp_slugs)
+    for overlay_name, overlay in overlays:
+        if overlay_name in UNSOURCED_HP_OVERLAYS:
+            continue
+        for entry in overlay.get("entries") or []:
+            if entry.get("hp") is not None and _hp_entry_sourced(entry):
+                sourced |= _hp_entry_keys(entry)
+    legacy: set[str] = set()
+    for overlay_name, overlay in overlays:
+        if overlay_name not in UNSOURCED_HP_OVERLAYS:
+            continue
+        for entry in overlay.get("entries") or []:
+            hp = entry.get("hp")
+            if hp is None or _hp_entry_sourced(entry) or _hp_entry_keys(entry) & sourced:
+                continue
+            brand = (entry.get("brand") or "").strip()
+            name = (entry.get("name") or "").strip()
+            slug = entry.get("slug")
+            row = catalog.get(slug) if slug else None
+            if row is None and brand and name:
+                slug = create_slug(brand, name)
+                row = catalog.get(slug)
+            if row is None or row["brand"] != brand or row["name"] != name:
+                continue
+            if row.get("hp") is not None and int(row["hp"]) == int(hp):
+                legacy.add(slug)
+    for slug in sorted(catalog):
+        row = catalog[slug]
+        current = row.get("hp_source")
+        if slug in legacy and current is None:
+            row["hp_source"] = HP_SOURCE_LEGACY
+            plan.add_update(
+                "hp_source_legacy_marked",
+                Op(
+                    "mark_hp_source",
+                    """
+                    UPDATE module_catalog
+                    SET hp_source = :hp_source, updated_at = :updated_at
+                    WHERE slug = :slug AND brand = :brand AND name = :name AND hp = :hp AND hp_source IS NULL
+                    """,
+                    {"slug": slug, "brand": row["brand"], "name": row["name"], "hp": int(row["hp"]),
+                     "hp_source": HP_SOURCE_LEGACY, "updated_at": _stamp()},
+                ),
+            )
+        elif slug not in legacy and current == HP_SOURCE_LEGACY:
+            row["hp_source"] = None
+            plan.add_update(
+                "hp_source_legacy_cleared",
+                Op(
+                    "clear_hp_source",
+                    """
+                    UPDATE module_catalog
+                    SET hp_source = NULL, updated_at = :updated_at
+                    WHERE slug = :slug AND brand = :brand AND name = :name AND hp_source = :hp_source
+                    """,
+                    {"slug": slug, "brand": row["brand"], "name": row["name"],
+                     "hp_source": HP_SOURCE_LEGACY, "updated_at": _stamp()},
+                ),
+            )
 
 
 def _schedule_hp(

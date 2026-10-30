@@ -38,6 +38,9 @@ class ModuleCatalog(Base):
 
     # Essential specs for filtering
     hp = Column(Integer, nullable=True, index=True)  # Width
+    # "legacy_unsourced" when the HP is an unsourced legacy overlay value no maker page
+    # backs yet (spec 003 T039); set and cleared only by the catalog loader. NULL otherwise.
+    hp_source = Column(String(40), nullable=True)
     category = Column(String(50), nullable=True, index=True)  # VCO, VCF, VCA, etc.
 
     # Visual
@@ -95,6 +98,7 @@ class ModuleCatalog(Base):
             "brand": self.brand,
             "name": self.name,
             "hp": self.hp,
+            "hp_source": self.hp_source,
             "category": self.category,
             "image_url": self.image_url,
             "modulargrid_url": self.modulargrid_url,
