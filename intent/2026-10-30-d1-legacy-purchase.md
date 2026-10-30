@@ -7,7 +7,7 @@
 ## Proposed outcome
 
 - Delete the route, `PurchaseCreate` and the now-empty `monetization` router mount (owner chose option A, decision 2 in `docs/evidence/OPEN_DECISIONS_2026-10-30.md` on PR #148).
-- Replace `enable_legacy_referrals` with `enable_referrals` (default false) for referral signup, `/api/community/users/me/referrals` and `/api/me/referrals`. The old flag is removed.
+- Replace `enable_legacy_referrals` with `enable_referrals` (default false) for referral signup, `/api/community/users/me/referrals` and `/api/me/referrals`. The old key stays declared as a deprecated, ignored field so an existing `.env` still loads.
 - Replace the negative test with one that asserts the route is gone whatever the flag.
 
 Out of scope: dropping tables, migrations, and `record_purchase` (its `payment_verified` path is the future provider caller, T046).

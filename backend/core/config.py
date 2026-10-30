@@ -6,10 +6,14 @@ Uses pydantic-settings for environment-based configuration.
 from __future__ import annotations
 
 import json
+import logging
 from typing import Annotated, Any
 
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
+
+logger = logging.getLogger(__name__)
+_warned_legacy_referrals = False
 
 
 class Settings(BaseSettings):
@@ -56,6 +60,9 @@ class Settings(BaseSettings):
     enable_legacy_publishing: bool = False
     enable_legacy_leaderboards: bool = False
     enable_referrals: bool = False
+    # Deprecated, ignored. Declared only so an existing .env that still names
+    # ENABLE_LEGACY_REFERRALS loads instead of failing extra_forbidden. Nothing reads it.
+    enable_legacy_referrals: bool = False
 
     # Decision Intelligence. Provider integration remains fail-closed by default.
     enable_decision_intelligence: bool = False
@@ -149,6 +156,16 @@ class Settings(BaseSettings):
         if normalized not in {"clef", "clef-flash"}:
             raise ValueError("clef_model must be 'clef' or 'clef-flash'")
         return normalized
+
+    @model_validator(mode="after")
+    def _warn_deprecated_referral_flag(self) -> "Settings":
+        global _warned_legacy_referrals
+        if self.enable_legacy_referrals and not _warned_legacy_referrals:
+            _warned_legacy_referrals = True
+            logger.warning(
+                "ENABLE_LEGACY_REFERRALS is deprecated and ignored; set ENABLE_REFERRALS to enable referrals."
+            )
+        return self
 
     @field_validator("cors_origins", mode="before")
     @classmethod

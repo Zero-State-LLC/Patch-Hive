@@ -192,7 +192,6 @@ def test_legacy_purchase_route_is_gone(
     from core.config import Settings
 
     assert Settings.model_fields["enable_referrals"].default is False
-    assert "enable_legacy_referrals" not in Settings.model_fields
     monkeypatch.setattr(settings, "enable_referrals", flag)
     buyer = bearer_headers(make_user(db_session, "buyer"))
     resp = client.post("/api/monetization/purchases", json={"credits_delta": 1000}, headers=buyer)
