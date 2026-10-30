@@ -1,16 +1,34 @@
 # CURRENT_STATE
 
-**Authoritative as of:** 2026-10-29  
+**Authoritative as of:** 2026-10-30  
 **Branch pin:** `main` on `Zero-State-LLC/Patch-Hive`  
-**HEAD:** `95ca9ee` (#133); gap-analysis fixes #129–#133 merged and deployed to staging and production  
-**Recent work (2026-10-28):** gap-analysis fixes for specs 001–005 and P0/P1 security (#82–#105); Cloudflare edge for staging and production (#83–#87, #107); short-lived tokens, refresh cookie and an enforced CSP (#99, #100, #113); prod catalog load, Products page, category fill and catalog tombstones (#112–#116). 2026-10-29: slices A1–A5 (#118, #119, #121–#123) and a second retirement (#120). Staging and production both run main.  
+**HEAD:** `4d5bfe9` (#146); #134–#146 merged 2026-10-29. Database migrations are applied to staging and production. The API and frontend deploys for #134–#146 are manual and have not been verified (the last confirmed deploy is #133)  
+**Recent work (2026-10-28):** gap-analysis fixes for specs 001–005 and P0/P1 security (#82–#105); Cloudflare edge for staging and production (#83–#87, #107); short-lived tokens, refresh cookie and an enforced CSP (#99, #100, #113); prod catalog load, Products page, category fill and catalog tombstones (#112–#116). 2026-10-29: slices A1–A5 (#118, #119, #121–#123) and a second retirement (#120); spec research (#134); lifecycle and decision fixes (#135); slices B1–B5 (#136–#140) and C1–C5 (#142–#146).  
 **Open PRs:** [#109](https://github.com/Zero-State-LLC/Patch-Hive/pull/109) release 0.3.0-alpha.4, [#111](https://github.com/Zero-State-LLC/Patch-Hive/pull/111) CODEOWNERS, [#106](https://github.com/Zero-State-LLC/Patch-Hive/pull/106) zod bump.  
 **Board:** [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8), mirrored in [docs/KANBAN.md](docs/KANBAN.md).  
 **Open owner decisions:** [docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md](docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md).  
 **Next slices:** [docs/evidence/NEXT_SLICES_2026-10-28.md](docs/evidence/NEXT_SLICES_2026-10-28.md) (A1–A5 done; status updated 2026-10-29).  
-**Decision research (2026-10-29):** one `research.md` per spec, 001–008, each with an "Implementation status (2026-10-29)" table in its `spec.md` and gap-closure tasks in its `tasks.md`. The decisions awaiting the owner: receipt signing (007 R1), the provider purchase machines (004 R1), the 221 unsourced v1 HP values (003 R7), deleting the legacy purchase route (004 R5) and GitHub environment protection for prod workflows (006 R2).  
+**Decision research (2026-10-29):** one `research.md` per spec, 001–008, each with an "Implementation status (2026-10-29)" table in its `spec.md` and gap-closure tasks in its `tasks.md`. Receipt signing (007 R1) is built (#144); the approver key is an operator step (007 T082). The decisions awaiting the owner: the provider purchase machines (004 R1), the 221 unsourced v1 HP values (003 R7), deleting the legacy purchase route (004 R5, OQ-11), whether publishing comes back (002 OQ-6, T033), the rig score formulas (001 OQ-11) and GitHub environment protection for prod workflows (006 R2).  
 
 **Alpha tag lineage:** `v0.3.0-alpha` (late alpha — **not** production)
+
+### Recent merges (OBSERVED, 2026-10-29)
+
+| PR | Result |
+|----|--------|
+| [#134](https://github.com/Zero-State-LLC/Patch-Hive/pull/134) | Research for every open decision; specs 001–008 reconciled with the code; gap-closure tasks added |
+| [#135](https://github.com/Zero-State-LLC/Patch-Hive/pull/135) | Catalog lifecycle: tombstoned rows refused, `needs_reverify` cleared once every flagged field is corrected (CHICANE cleared on staging and prod). Decisions: invalid packets escalate or stay unresolved; every provider goes through the guarded flow |
+| [#136](https://github.com/Zero-State-LLC/Patch-Hive/pull/136) | Workflows: foreign pin-PR workflow removed, `actions: write` dropped, orphan R2 token revoked on failure |
+| [#137](https://github.com/Zero-State-LLC/Patch-Hive/pull/137) | Rig: `allow_feedback` and `prefer_simple` honoured; the full IR is hashed |
+| [#138](https://github.com/Zero-State-LLC/Patch-Hive/pull/138) | Book: unlisted by default, bounded gallery filter, wrapped cover disclaimer, manifest warnings |
+| [#139](https://github.com/Zero-State-LLC/Patch-Hive/pull/139) | Commerce: append-only credit ledger (database trigger), live-mode gate, webhook secret rotation and race handling |
+| [#140](https://github.com/Zero-State-LLC/Patch-Hive/pull/140) | Decision evaluation runs the candidate check; the walkthrough accepts staging only |
+| [#141](https://github.com/Zero-State-LLC/Patch-Hive/pull/141) | Spec ticks for work shipped in #135 (003 T036/T037, 005 T081/T082) |
+| [#142](https://github.com/Zero-State-LLC/Patch-Hive/pull/142) | Rig: the canon compiler runs on the generation path; one `RigMetricsPacket` per rig revision (scores `NOT_COMPUTABLE` until OQ-11) |
+| [#143](https://github.com/Zero-State-LLC/Patch-Hive/pull/143) | Book: `validate_book` stage, plate page-count check, warnings in the stage receipt; publishing a draft refused until it is bound to a validated book |
+| [#144](https://github.com/Zero-State-LLC/Patch-Hive/pull/144) | Evaluation receipts verified by replay and signed (Ed25519, committed allowlist, empty until the operator adds a key); readiness gates verify the receipt |
+| [#145](https://github.com/Zero-State-LLC/Patch-Hive/pull/145) | Commerce: legacy balance route removed; every webhook event ends `processed`, `duplicate`, `unresolved` or `ignored` |
+| [#146](https://github.com/Zero-State-LLC/Patch-Hive/pull/146) | Decisions: idempotency checked before the provider call (advisory lock, key bindings that replay their own outcome); `human_review` routing target |
 
 ### Recent merges (OBSERVED, 2026-10-28)
 
@@ -42,15 +60,17 @@
 | Product identity | Deterministic Eurorack **rig + patch documentation** |
 | Canonical domain | `backend/canon/` (+ design recipes, export fulfillment) |
 | Design Engine flags | **Default off** — staging overlay + walkthrough PASS (#147) |
-| Alembic | Single head through `20261028_catalog_tombstones`; staging and prod migrated 2026-10-28 |
+| Alembic | Single head through `20261029_decision_receipt_idempotency`; staging and prod migrated 2026-10-30 |
 | Rig validation | Unknown draws are per rail (`POWER_RAIL_INCOMPLETE`, lower bounds); retired placements warn (`MODULE_TOMBSTONED`) on every rack read |
 | Health | `/health` liveness; `/health/ready` includes DB |
 | Local Compose staging | `docker-compose.staging.yml` + `scripts/staging/*` + `scripts/test/run.*` |
 | Test automation | `scripts/test/run.sh\|ps1` · CI `acceptance-tests.yml` · 11 acceptance PASS |
 | Dual-path inventory | F0/F1/F3/F2 done; F4/F5 residual; Z deferred |
 | Named staging host | Plan only — **NOT_PERFORMED** |
-| Payments | Test-mode only |
-| Module catalog (staging = prod) | 4,184 catalog rows and 4,154 modules, of which 448 each are tombstoned; 3,736 visible from 355 brands, 0 conflicts. 855 rows have no category. Sovage CHICANE corrected to 4 HP (#125). Sources: Phase 2 seed (ModularGrid leads, tagged `unknown`/`CATALOG_OBSERVED`) plus maker pages (`official_publication`). Maker-crawl page cache deleted 2026-10-28; committed crawl results intact |
+| Payments | Test-mode only. Payment webhook events are recorded `unresolved` (`HANDLER_NOT_IMPLEMENTED`) until 004 T046/T049 |
+| Publishing | Drafts cannot be published (`PUBLICATION_BOOK_NOT_VALIDATED`) until the owner decides OQ-6 (002 T033) |
+| Readiness gates | Refuse every evaluation receipt (`APPROVER_KEY_UNKNOWN`) until the operator commits an approver public key (007 T082) |
+| Module catalog (staging = prod) | 4,184 catalog rows and 4,154 modules, of which 448 each are tombstoned; 3,736 visible from 355 brands, 0 conflicts. 855 rows have no category. Sovage CHICANE corrected to 4 HP (#125) and unflagged (#135, loads of 2026-10-29). Sources: Phase 2 seed (ModularGrid leads, tagged `unknown`/`CATALOG_OBSERVED`) plus maker pages (`official_publication`). Maker-crawl page cache deleted 2026-10-28; committed crawl results intact |
 | API access | Module and case writes admin-only (#79). Racks owner-scoped (#80): owner reads/writes, admin read roles read all, public racks readable by anyone, others 404. Catalog materialize and stateless layout recommendation stay public |
 | Accounts | Sign-in open on staging and production (#113). No account yet created on production; a real sign-up is still to be tried |
 | Production deploy | Frontend (`patch-hive.com`) and API (`api.patch-hive.com`) on Cloudflare, both from main; CSP enforced; CORS limited to the exact origin |
