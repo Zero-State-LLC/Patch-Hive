@@ -431,6 +431,7 @@ These criteria are pass or fail. They contain no invented thresholds.
 - **OQ-10** (NOT_COMPUTABLE): What are the privacy, retention, and access rules for evidence such as rig photos and OCR output, and for the user overlay?
   - Still open (owner). Image evidence already expires at `retention_expires_at` (`backend/evidence/retention.py`); the period and the overlay rules are not set.
 - **OQ-11** (NOT_COMPUTABLE): What are the computation rules for `modulation_budget`, `routing_flex_score`, `clock_coherence_score`, `chaos_headroom`, `learning_gradient_index`, and `performance_density_index`? None are defined in the sources.
+  - Decided 2026-10-30 by the owner (option 2): define `routing_flex_score` and `performance_density_index` (T035, `canon/rig_scores.py`); the other four stay `NOT_COMPUTABLE`.
 - **OQ-12** (NOT_COMPUTABLE): The read handlers in `backend/runs/routes.py` commit the database session. Can reading a run or listing runs mutate state? If yes, how does that comply with the append-only rule?
   - Resolved 2026-10-27: no. Run reads no longer commit or mint canon rows; a run with no recorded generation reports `export_bridge_ready=false` (`runs.bridge.recorded_run_bridge`).
 - **OQ-13** (NOT_COMPUTABLE): Does this spec need an ADVERSARY threat model for the provider evidence boundary? The Workflows section currently lists none, and this draft does not add one.

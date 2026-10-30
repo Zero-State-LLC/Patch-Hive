@@ -7,6 +7,7 @@ from difflib import SequenceMatcher
 from datetime import datetime
 from typing import Any, Callable, Iterable, Mapping
 
+from canon.rig_scores import METRICS_GENERATOR_VERSION, compute_rig_scores
 from canon.contracts import (
     CanonicalRig,
     DetectedModule,
@@ -142,29 +143,36 @@ def map_metrics(
         if all(width is not None for width in widths)
         else None
     )
-    port_count = sum(len(revisions[module.module_revision_id].ports) for module in rig.modules)
+    # A module with no declared ports is unknown, not zero: the shared rule makes both
+    # scores NOT_COMPUTABLE instead of averaging it in as 0.
+    port_counts = [len(revisions[module.module_revision_id].ports) for module in rig.modules]
+    flex, density, score_notes = compute_rig_scores(port_counts, widths)
     payload = {
         "rig": rig,
         "module_count": len(rig.modules),
         "total_hp": total_hp,
-        "ports": port_count,
+        "ports": port_counts,
     }
     artifact_id = f"metrics-{canonical_sha256(payload)[:24]}"
     return RigMetricsPacket(
         artifact_id=artifact_id,
         entity_id=rig.rig_revision_id,
-        generator_version="canon-metrics.1.0.0",
+        generator_version=METRICS_GENERATOR_VERSION,
         generation_seed=seed,
         source_run_id=run_id,
         source_rig_revision_id=rig.rig_revision_id,
         created_at=created_at,
         module_count=len(rig.modules),
         total_hp=total_hp,
-        routing_flex_score=round(port_count / max(len(rig.modules), 1), 6),
+        routing_flex_score=flex,
+        performance_density_index=density,
         confidence_notes=(
-            ("total_hp is missing because one or more module widths are missing",)
-            if total_hp is None
-            else ()
+            *score_notes,
+            *(
+                ("total_hp is missing because one or more module widths are missing",)
+                if total_hp is None
+                else ()
+            ),
         ),
     ).seal()
 
