@@ -121,7 +121,7 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
 
 From [research.md](research.md). Effort in brackets.
 
-- [ ] T100 Make `gates_pass` verify the evaluation receipt itself: carry it in `ReadinessEvidence`, call the signed 007 verifier, and require its `receipt_sha256` to match (R1) [S].
+- [x] T100 Make `gates_pass` verify the evaluation receipt itself: carry it in `ReadinessEvidence`, call the signed 007 verifier, and require its `receipt_sha256` to match (R1) [S]. Done 2026-10-29: `evaluation_receipt` and `evaluation_receipt_signature` are checked against the committed allowlist.
   - depends_on: [T070, 007:T081]
 - [ ] T101 Put production deploy workflows behind a GitHub environment with required reviewers (R2).
   - depends_on: [T001]

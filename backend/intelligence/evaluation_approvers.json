@@ -1,0 +1,5 @@
+{
+  "schema_version": "patchhive.eval-approver-allowlist.v1",
+  "description": "Approver Ed25519 public keys for Spec 007 evaluation receipts. Public keys only; add or revoke through a reviewed PR (007 T082). Empty until an operator commits a key, so every signed-receipt check refuses.",
+  "approvers": []
+}
