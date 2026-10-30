@@ -5,7 +5,7 @@
     "firecrawl": 33.0
   },
   "calls_by_method": {
-    "free_http": 1507,
+    "free_http": 1549,
     "skipped_no_key": 2475,
     "robots_unavailable": 3025,
     "cache": 31879,
@@ -15,5 +15,5 @@
     "skipped_paid_cap": 1036,
     "blocked_url": 10
   },
-  "updated_at": "2026-10-28T00:15:15Z"
+  "updated_at": "2026-10-30T07:40:55Z"
 }
