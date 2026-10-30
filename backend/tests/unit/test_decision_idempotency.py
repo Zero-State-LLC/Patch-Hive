@@ -344,3 +344,63 @@ def test_each_key_replays_the_policy_outcome_it_was_first_given() -> None:
         assert retry.replayed_outcome.disposition == first.proposal.policy.disposition.value
         assert retry.replayed_outcome.reason_codes == first.proposal.policy.reason_codes
         assert retry.machine.state is first.machine.state
+
+
+def _policy_v(version: str) -> DecisionPolicy:
+    return DecisionPolicy(PolicyThresholds(
+        policy_version=version, auto_propose_at=0.9, user_review_at=0.65,
+        probability_margin=0.1,
+    ))
+
+
+def _resolve_v(db, provider, version: str, **kwargs):
+    return resolve_module_identity_guarded(
+        db, evidence_id="ev-1", provider=provider, policy=_policy_v(version), enabled=True,
+        idempotency_key="idem", expected_policy_version=version, **kwargs,
+    )
+
+
+def test_replay_after_policy_version_change_reaches_the_original_final_state() -> None:
+    from intelligence.clef_resolution import archive, confirm_via_existing_path
+
+    db = _db()
+    _seed(db)
+    first = _resolve_v(db, CountingProvider(), "policy-a", routing_targets=frozenset({"human_review"}))
+    assert first.state is ResolutionState.AUTO_PROPOSE
+
+    provider = CountingProvider()
+    replay = _resolve_v(db, provider, "policy-b", routing_targets=frozenset({"human_review"}))
+    assert provider.calls == 0
+    assert replay.replayed_outcome.disposition == "AUTO_PROPOSE"
+    assert replay.replayed_outcome.policy_version == "policy-a"
+    assert replay.state is first.state
+    assert all(event.accepted for event in replay.machine.history)
+
+    confirmed = confirm_via_existing_path(replay, confirmation_path_used=True)
+    assert confirmed.state is ResolutionState.CONFIRMED
+    assert archive(replay).state is ResolutionState.ARCHIVED
+
+
+def test_replay_keeps_the_escalate_state_when_the_routing_target_is_removed() -> None:
+    # A policy ESCALATE needs a packet the schema check also rejects, so the stored
+    # binding of an ESCALATE outcome is written directly.
+    db = _db()
+    _seed(db)
+    _resolve(db, CountingProvider(), key="seed")
+    receipt = db.query(DecisionReceiptRecord).one()
+    for key, state in (("routed", "ESCALATE"), ("unrouted", "UNRESOLVED")):
+        db.add(DecisionReceiptKeyRecord(
+            request_id=receipt.request_id, idempotency_key=key,
+            evidence_hash=receipt.evidence_hash, receipt_id=receipt.id,
+            policy_version="test-v1", disposition="ESCALATE",
+            reason_codes=["UNSUPPORTED_SCHEMA"], resolution_state=state,
+        ))
+    db.flush()
+
+    # "routed" was accepted with a target; replay it with none configured, and vice versa.
+    routed = _resolve(db, CountingProvider(), key="routed", routing_targets=frozenset())
+    unrouted = _resolve(
+        db, CountingProvider(), key="unrouted", routing_targets=frozenset({"human_review"})
+    )
+    assert routed.state is ResolutionState.ESCALATE
+    assert unrouted.state is ResolutionState.UNRESOLVED

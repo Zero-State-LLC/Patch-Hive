@@ -60,6 +60,9 @@ class DecisionReceiptKeyRecord(Base):
     policy_version = Column(String(100), nullable=False)
     disposition = Column(String(32), nullable=False)
     reason_codes = Column(JSON, nullable=False)
+    # Final machine state of the first response. Replays reach it whatever the routing
+    # target is configured to now. NULL when no machine ran (the unguarded path).
+    resolution_state = Column(String(32), nullable=True)
     receipt_id = Column(
         String(64),
         ForeignKey("decision_receipts.id", ondelete="RESTRICT"),

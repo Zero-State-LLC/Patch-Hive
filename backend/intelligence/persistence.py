@@ -28,6 +28,7 @@ class StoredOutcome:
     policy_version: str
     disposition: str
     reason_codes: tuple[str, ...]
+    resolution_state: str | None
 
 
 class IdempotencyKeyTaken(Exception):
@@ -78,6 +79,7 @@ def find_idempotent_outcome(
         policy_version=binding.policy_version,
         disposition=binding.disposition,
         reason_codes=tuple(binding.reason_codes or ()),
+        resolution_state=binding.resolution_state,
     )
 
 
@@ -86,6 +88,7 @@ def persist_decision_proposal(
     proposal: DecisionProposal,
     *,
     raise_if_bound: bool = False,
+    resolution_state: str | None = None,
 ) -> DecisionReceiptRecord:
     """Persist one proposal idempotently by immutable packet hash.
 
@@ -118,6 +121,7 @@ def persist_decision_proposal(
                     policy_version=proposal.policy.policy_version,
                     disposition=proposal.policy.disposition.value,
                     reason_codes=list(proposal.policy.reason_codes),
+                    resolution_state=resolution_state,
                     receipt_id=record.id,
                 )
             )

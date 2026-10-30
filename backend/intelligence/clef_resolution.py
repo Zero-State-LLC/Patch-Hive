@@ -171,7 +171,6 @@ def _replayed_resolution(
     outcome: StoredOutcome,
     *,
     candidate_count: int,
-    policy_pinned: bool,
     routing_target_exists: bool,
 ) -> GuardedResolution:
     stored = outcome.receipt
@@ -182,7 +181,11 @@ def _replayed_resolution(
         reason_codes=outcome.reason_codes,
     )
     # Replay the stored outcome through the machine so it ends in a real final state.
-    # The stored receipt only exists for a packet that passed the schema check.
+    # The stored receipt only exists for a packet that passed the schema check. The
+    # replay is pinned to the policy version that produced the outcome, and to the
+    # routing decision the first response made, not to today's settings.
+    if outcome.resolution_state is not None:
+        routing_target_exists = outcome.resolution_state == ResolutionState.ESCALATE.value
     request_id = machine.request_id
     machine = _transition(
         machine,
@@ -203,7 +206,7 @@ def _replayed_resolution(
         machine,
         request_id=request_id,
         event_type=ResolutionEventType.APPLY_POLICY,
-        guard=ResolutionGuard(policy_version_pinned=policy_pinned),
+        guard=ResolutionGuard(policy_version_pinned=True),
     )
     machine = _transition(
         machine,
@@ -295,7 +298,6 @@ def resolve_module_identity_guarded(
             machine,
             stored,
             candidate_count=len(inputs.candidates),
-            policy_pinned=stored.policy_version == expected_policy_version,
             routing_target_exists=bool(routing_targets),
         )
 
@@ -428,14 +430,15 @@ def resolve_module_identity_guarded(
     )
 
     try:
-        record = persist_decision_proposal(db, proposal, raise_if_bound=True)
+        record = persist_decision_proposal(
+            db, proposal, raise_if_bound=True, resolution_state=machine.state.value
+        )
     except IdempotencyKeyTaken as taken:
         # Lost a race (no advisory lock, e.g. SQLite): answer from the committed outcome.
         return _replayed_resolution(
             new_machine(request_id),
             taken.outcome,
             candidate_count=len(inputs.candidates),
-            policy_pinned=taken.outcome.policy_version == expected_policy_version,
             routing_target_exists=bool(routing_targets),
         )
     receipt_id = record.id

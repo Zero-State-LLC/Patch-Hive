@@ -31,6 +31,7 @@ def upgrade() -> None:
         sa.Column("policy_version", sa.String(length=100), nullable=False),
         sa.Column("disposition", sa.String(length=32), nullable=False),
         sa.Column("reason_codes", sa.JSON(), nullable=False),
+        sa.Column("resolution_state", sa.String(length=32), nullable=True),
         sa.Column(
             "receipt_id",
             sa.String(length=64),
