@@ -240,7 +240,8 @@ def test_the_v3_manifest_corrects_the_hand_checked_v1_hp_in_every_table() -> Non
     path = ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v3.json"
     manifest = json.loads(path.read_text())
     assert manifest["batch"] == "maker-corrections-v3" and manifest["flag_reverify"] is False
-    assert P.PROVENANCE_MANIFESTS[-1] == path
+    # v4 (the T039 remainder) is read right after v3.
+    assert P.PROVENANCE_MANIFESTS[-2] == path
     corrections = {}
     for row in manifest["rows"]:
         (item,) = row["fields"]
@@ -273,3 +274,39 @@ def test_the_v3_manifest_corrects_the_hand_checked_v1_hp_in_every_table() -> Non
     for row in manifest["rows"]:
         slug = P.create_slug(row["brand"], row["name"])
         assert v3[slug]["source_url"] == row["fields"][0]["evidence_url"]
+
+
+def test_the_v4_manifest_corrects_the_page_checked_v1_hp() -> None:
+    """Spec 003 T039 remainder: Doepfer's own pages state A-106-1 14 HP and A-138m 20 HP.
+
+    Neither module has a ``modules`` row, so only ``module_catalog`` is corrected.
+    """
+    path = ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v4.json"
+    manifest = json.loads(path.read_text())
+    assert manifest["batch"] == "maker-corrections-v4" and manifest["flag_reverify"] is False
+    assert P.PROVENANCE_MANIFESTS[-1] == path
+    corrections = {}
+    for row in manifest["rows"]:
+        (item,) = row["fields"]
+        assert item["field"] == "hp" and item["action"] == "correct"
+        assert P._correction_problem(row["table"], item) is None
+        assert "?" not in item["evidence_url"] and item["evidence_url"] in item["source_tag"]
+        assert len(item["source_tag"]) <= 200
+        assert item["maker_check"] == "maker_page_reviewed"
+        assert row["slug"] == P.create_slug(row["brand"], row["name"])
+        corrections[(row["table"], row["brand"], row["name"])] = (item["only_if_value"], item["value"])
+    assert corrections == {
+        ("module_catalog", "Doepfer", "A-106-1"): (8, 14),
+        ("module_catalog", "Doepfer", "A-138m"): (8, 20),
+    }
+    overlays = ROOT / "data" / "synth-catalog" / "overlays"
+    v1 = {e["slug"]: e["hp"] for e in json.loads((overlays / "module-catalog-hp-v1.json").read_text())["entries"]}
+    v4 = {e["slug"]: e for e in json.loads((overlays / "module-catalog-hp-v4.json").read_text())["entries"]}
+    for row in manifest["rows"]:
+        (item,) = row["fields"]
+        slug = row["slug"]
+        assert (v1[slug], v4[slug]["hp"]) == (item["only_if_value"], item["value"])
+        assert v4[slug]["source_url"] == item["evidence_url"]
+    # Doepfer A-155's page states 50 HP; FR-038 forbids correcting HP outside the FR-007 band.
+    assert P._correction_problem("module_catalog", {"field": "hp", "only_if_value": 4, "value": 50,
+                                                    "evidence_url": "https://doepfer.de/a155.htm"}) == "correction_hp_outside_band"

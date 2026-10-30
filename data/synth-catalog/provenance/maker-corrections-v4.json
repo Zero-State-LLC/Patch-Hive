@@ -1,0 +1,42 @@
+{
+ "batch": "maker-corrections-v4",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted.",
+ "decided": "2026-10-30 (spec 003 T039 remainder: maker pages read with a plain GET 2026-10-30; the modules table holds no row for either module)",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "doepfer-a-106-1",
+   "brand": "Doepfer",
+   "name": "A-106-1",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 8,
+     "value": 14,
+     "evidence_url": "https://doepfer.de/A106.htm",
+     "source_tag": "maker-corrections-v4: 14 HP (\"Breite/Width: 14 TE / 14HP\") on https://doepfer.de/A106.htm; 8 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "doepfer-a-138m",
+   "brand": "Doepfer",
+   "name": "A-138m",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 8,
+     "value": 20,
+     "evidence_url": "https://doepfer.de/A138m.htm",
+     "source_tag": "maker-corrections-v4: 20 HP (\"Breite/Width: 20 TE/HP\") on https://doepfer.de/A138m.htm; 8 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}
