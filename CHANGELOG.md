@@ -4,6 +4,80 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.4](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.3...v0.3.0-alpha.4) (2026-10-30)
+
+
+### Added
+
+* 001 canonical compiler on the generation path + RigMetricsPacket (T030, T031) ([#142](https://github.com/Zero-State-LLC/Patch-Hive/issues/142)) ([34f227a](https://github.com/Zero-State-LLC/Patch-Hive/commit/34f227a3ef236f818d93a47b41afc57995b34d9a))
+* **catalog:** add the six crawled modules no overlay held (slice A3) ([#121](https://github.com/Zero-State-LLC/Patch-Hive/issues/121)) ([beea608](https://github.com/Zero-State-LLC/Patch-Hive/commit/beea608befb74eda3abe97f44a5d575df8831fbb))
+* **catalog:** fill missing categories from maker crawl tags ([#115](https://github.com/Zero-State-LLC/Patch-Hive/issues/115)) ([c879b76](https://github.com/Zero-State-LLC/Patch-Hive/commit/c879b76010ba898fe73da496cbbe43f0de0bf312))
+* **catalog:** retire the ten misattributed brands the crawl guard found ([#120](https://github.com/Zero-State-LLC/Patch-Hive/issues/120)) ([03c7da0](https://github.com/Zero-State-LLC/Patch-Hive/commit/03c7da023dccdabd8adf343a6daba131fb1d9ec3))
+* **catalog:** reviewed corrections; fix Sovage CHICANE's HP (003 T033) ([#125](https://github.com/Zero-State-LLC/Patch-Hive/issues/125)) ([284d5a5](https://github.com/Zero-State-LLC/Patch-Hive/commit/284d5a507a50c67a5a52beaba522627b958611fe))
+* **catalog:** tombstone misattributed rows and re-add what only they held ([#116](https://github.com/Zero-State-LLC/Patch-Hive/issues/116)) ([c59b2db](https://github.com/Zero-State-LLC/Patch-Hive/commit/c59b2db508af9fc587cd2c2facd9d55478aa55cf))
+* **commerce:** webhook event processor and one canonical balance (004 T044, T045) ([#145](https://github.com/Zero-State-LLC/Patch-Hive/issues/145)) ([de734eb](https://github.com/Zero-State-LLC/Patch-Hive/commit/de734eb28e2db14285068d709427e33360f59362))
+* **crawl:** refuse a homepage another brand holds before crawling (003 T030) ([#119](https://github.com/Zero-State-LLC/Patch-Hive/issues/119)) ([8cd8f8e](https://github.com/Zero-State-LLC/Patch-Hive/commit/8cd8f8e7ad9913def1037cddbf823af6b8bcca45))
+* **decision:** idempotency before provider call and a routing target (005 T083, T085) ([#146](https://github.com/Zero-State-LLC/Patch-Hive/issues/146)) ([4d5bfe9](https://github.com/Zero-State-LLC/Patch-Hive/commit/4d5bfe9cc8aae662758404f08b40dc94f23da057))
+* **eval:** verify 007 receipts by replay, sign them with Ed25519, gate 006 gates_pass on them ([#144](https://github.com/Zero-State-LLC/Patch-Hive/issues/144)) ([fd42710](https://github.com/Zero-State-LLC/Patch-Hive/commit/fd4271063cc086f44cd7942f536a08ed262e1ffe))
+* **frontend:** enforce the CSP and open sign-in ([#113](https://github.com/Zero-State-LLC/Patch-Hive/issues/113)) ([1d2d21e](https://github.com/Zero-State-LLC/Patch-Hive/commit/1d2d21ee6614dfd187b98948436878ced074d400))
+* **patchbook:** validate_book stage, warning receipt, and FR-048 publish guard ([#143](https://github.com/Zero-State-LLC/Patch-Hive/issues/143)) ([80a9c1e](https://github.com/Zero-State-LLC/Patch-Hive/commit/80a9c1ee50d7efd742c7402fe0b7b9dbae216c00))
+* **racks:** warn when a rack holds a retired module (slice A4) ([#122](https://github.com/Zero-State-LLC/Patch-Hive/issues/122)) ([1e19430](https://github.com/Zero-State-LLC/Patch-Hive/commit/1e1943056c54cda01c9216b6a24d9e9df874671c))
+
+
+### Fixed
+
+* **api:** make container startup migrations opt-in ([#110](https://github.com/Zero-State-LLC/Patch-Hive/issues/110)) ([a02da37](https://github.com/Zero-State-LLC/Patch-Hive/commit/a02da3799a9879f90efd7a314c6ec31209ee5c2c))
+* **book:** unlisted by default, bounded gallery filter, wrapped cover disclaimer, manifest warnings ([#138](https://github.com/Zero-State-LLC/Patch-Hive/issues/138)) ([bc16194](https://github.com/Zero-State-LLC/Patch-Hive/commit/bc1619436f084390c7fa12949905c3aee65232b2))
+* **catalog:** maker-cited HP overlays take precedence over unsourced v1 (D3) ([#152](https://github.com/Zero-State-LLC/Patch-Hive/issues/152)) ([63c5f7d](https://github.com/Zero-State-LLC/Patch-Hive/commit/63c5f7d64ef7a6c3e74be94cfb0e7f09a3e92607))
+* **catalog:** plan a reverify clear only when the database would apply it ([#154](https://github.com/Zero-State-LLC/Patch-Hive/issues/154)) ([4338fc4](https://github.com/Zero-State-LLC/Patch-Hive/commit/4338fc46b4c2944c4e677657d0789c689d0e6da8))
+* **ci:** edge-secrets writes production secrets to the production Worker ([#107](https://github.com/Zero-State-LLC/Patch-Hive/issues/107)) ([69adf16](https://github.com/Zero-State-LLC/Patch-Hive/commit/69adf1677cc2c9fb2d87ea0fc343f969961ea33c))
+* close the catalog and decision lifecycle gaps the specs already define ([#135](https://github.com/Zero-State-LLC/Patch-Hive/issues/135)) ([b253c0e](https://github.com/Zero-State-LLC/Patch-Hive/commit/b253c0e3f91da1d8e9fc5a581c8eec4b0acf46c9))
+* **commerce:** append-only canonical ledger, live-mode gate, webhook rotation and race ([#139](https://github.com/Zero-State-LLC/Patch-Hive/issues/139)) ([064b2fe](https://github.com/Zero-State-LLC/Patch-Hive/commit/064b2fec94fb09dd482f1461e0dc0e707939e281))
+* **commerce:** delete legacy purchase route; referrals get their own flag (004 T043) ([#150](https://github.com/Zero-State-LLC/Patch-Hive/issues/150)) ([0abb283](https://github.com/Zero-State-LLC/Patch-Hive/commit/0abb283f2837417d2c1d9898436488b868361458))
+* **decision:** default decision_routing_target to empty until ESCALATE has a consumer ([#151](https://github.com/Zero-State-LLC/Patch-Hive/issues/151)) ([b341a0b](https://github.com/Zero-State-LLC/Patch-Hive/commit/b341a0b1b12f553b91193db9f6158088b400a44e))
+* **decision:** evaluation runs the candidate check; the walkthrough accepts staging only ([#140](https://github.com/Zero-State-LLC/Patch-Hive/issues/140)) ([3faaa63](https://github.com/Zero-State-LLC/Patch-Hive/commit/3faaa63b5733b406a1c7a65a8312d70469efd3ed))
+* **export:** wrap legacy PDF text; switch off the legacy patch book ([#133](https://github.com/Zero-State-LLC/Patch-Hive/issues/133)) ([95ca9ee](https://github.com/Zero-State-LLC/Patch-Hive/commit/95ca9ee374c1cbcd3df526515329406463438e64))
+* **frontend:** skip the refresh call on a signed-out page load (slice A5) ([#123](https://github.com/Zero-State-LLC/Patch-Hive/issues/123)) ([ff73657](https://github.com/Zero-State-LLC/Patch-Hive/commit/ff7365761693a4f2cf3fbedd698315726e42568d))
+* HP overlays must cite a maker page; production refuses decision providers ([#132](https://github.com/Zero-State-LLC/Patch-Hive/issues/132)) ([65f4e10](https://github.com/Zero-State-LLC/Patch-Hive/commit/65f4e103b6d73e212cb2d64d81437de71257228f))
+* never debit an export nothing will fulfill; guard the demo seeder ([#129](https://github.com/Zero-State-LLC/Patch-Hive/issues/129)) ([76dce4a](https://github.com/Zero-State-LLC/Patch-Hive/commit/76dce4a05dc358b5e51456a24a69355388b37d33))
+* **power:** count unknown module draws per rail instead of as 0 mA ([#118](https://github.com/Zero-State-LLC/Patch-Hive/issues/118)) ([31ded5b](https://github.com/Zero-State-LLC/Patch-Hive/commit/31ded5bc415fb6d7bdc44bb748d71497bd8b0062))
+* **registry:** read a manufacturer's models from the module catalog ([#114](https://github.com/Zero-State-LLC/Patch-Hive/issues/114)) ([3c95f64](https://github.com/Zero-State-LLC/Patch-Hive/commit/3c95f64b764308030a85efb4d4c609f52749f8f6))
+* **rig:** honor allow_feedback and prefer_simple, hash the full IR, show blocking findings ([#137](https://github.com/Zero-State-LLC/Patch-Hive/issues/137)) ([14c647f](https://github.com/Zero-State-LLC/Patch-Hive/commit/14c647f7a1da6e95eb72e3978d9841ef003265ba))
+* **runs:** every run ends terminal, rerun is gated, referral rewards are spendable ([#131](https://github.com/Zero-State-LLC/Patch-Hive/issues/131)) ([b091ab5](https://github.com/Zero-State-LLC/Patch-Hive/commit/b091ab51f7ea19ff184686c857c2cb46ba9558e3))
+* **security:** limit sign-up, send HSTS, own confirmations, close removed publications ([#130](https://github.com/Zero-State-LLC/Patch-Hive/issues/130)) ([750c63d](https://github.com/Zero-State-LLC/Patch-Hive/commit/750c63d80c3a1e05999dfa120ba85a6cf35dd973))
+
+
+### Specifications
+
+* **003:** decide Frap (D7) and jumper power (D8); close answerable questions ([#128](https://github.com/Zero-State-LLC/Patch-Hive/issues/128)) ([f0c4dc9](https://github.com/Zero-State-LLC/Patch-Hive/commit/f0c4dc942e983c81bed7efee5d6cc004ed24b3f2))
+* **003:** record D3-D6, a row lifecycle and FR-036-038; delete the seed scripts ([#124](https://github.com/Zero-State-LLC/Patch-Hive/issues/124)) ([db61faa](https://github.com/Zero-State-LLC/Patch-Hive/commit/db61faaf292dc7dd8ae5c8255b34414be53eb2df))
+* research open decisions and reconcile specs 001–008 with the code ([#134](https://github.com/Zero-State-LLC/Patch-Hive/issues/134)) ([3725590](https://github.com/Zero-State-LLC/Patch-Hive/commit/3725590e5bc15c6a7869a451ba95b6ce4fb241db))
+* tick 003 T036/T037 and 005 T081/T082 (shipped in [#135](https://github.com/Zero-State-LLC/Patch-Hive/issues/135)) ([#141](https://github.com/Zero-State-LLC/Patch-Hive/issues/141)) ([2c1ab42](https://github.com/Zero-State-LLC/Patch-Hive/commit/2c1ab42a051bbba6231b9824ab5d7ea878857c72))
+
+
+### Data
+
+* **catalog:** correct the HP values the v1 overlay filled before [#152](https://github.com/Zero-State-LLC/Patch-Hive/issues/152) (D4) ([#153](https://github.com/Zero-State-LLC/Patch-Hive/issues/153)) ([ba6f73c](https://github.com/Zero-State-LLC/Patch-Hive/commit/ba6f73c784d4a7e08772832756ae1b9c000956b6))
+
+
+### Operations
+
+* remove foreign pin-pr workflow, drop actions:write, revoke orphan R2 token ([#136](https://github.com/Zero-State-LLC/Patch-Hive/issues/136)) ([d636637](https://github.com/Zero-State-LLC/Patch-Hive/commit/d63663730ef7accb942bfc082e071570581878ba))
+
+
+### Documentation
+
+* **003:** mark T033 done after the staging and prod loads ([#127](https://github.com/Zero-State-LLC/Patch-Hive/issues/127)) ([23dd1b1](https://github.com/Zero-State-LLC/Patch-Hive/commit/23dd1b18747445744a68e2e67d6a2d6d169c8063))
+* **003:** mark the prod catalog load (T027) done ([#112](https://github.com/Zero-State-LLC/Patch-Hive/issues/112)) ([2c98ada](https://github.com/Zero-State-LLC/Patch-Hive/commit/2c98ada3f09d89ff9ed3fa79d9b2757072f49c8a))
+* **007:** describe the strict key revocation rule the verifier enforces ([#149](https://github.com/Zero-State-LLC/Patch-Hive/issues/149)) ([8e8f0b1](https://github.com/Zero-State-LLC/Patch-Hive/commit/8e8f0b1b3a6b2a3fe27259c831af324de9f775a2))
+* A-101-3 stays flagged for +5V only, not power and depth ([#156](https://github.com/Zero-State-LLC/Patch-Hive/issues/156)) ([9b94d1e](https://github.com/Zero-State-LLC/Patch-Hive/commit/9b94d1e078e06cd413bb46e2bb9f6c027dcb1d01))
+* follow-up research for the open decisions; record the staging deploy ([#157](https://github.com/Zero-State-LLC/Patch-Hive/issues/157)) ([eb212e8](https://github.com/Zero-State-LLC/Patch-Hive/commit/eb212e80a77c6219fa8846b8dbb1807c596606d8))
+* refresh CURRENT_STATE for [#134](https://github.com/Zero-State-LLC/Patch-Hive/issues/134)-[#146](https://github.com/Zero-State-LLC/Patch-Hive/issues/146) and the 2026-10-30 migrations ([#147](https://github.com/Zero-State-LLC/Patch-Hive/issues/147)) ([9198aa2](https://github.com/Zero-State-LLC/Patch-Hive/commit/9198aa22cbbc5f52cb5e509a0242b69a3b5bbb7b))
+* refresh CURRENT_STATE for [#147](https://github.com/Zero-State-LLC/Patch-Hive/issues/147)-[#154](https://github.com/Zero-State-LLC/Patch-Hive/issues/154) and the 2026-10-30 HP loads ([#155](https://github.com/Zero-State-LLC/Patch-Hive/issues/155)) ([555fa20](https://github.com/Zero-State-LLC/Patch-Hive/commit/555fa205b737ac25a77ff7532ce6411797df399b))
+* refresh state, board mirror and decisions after [#116](https://github.com/Zero-State-LLC/Patch-Hive/issues/116); plan next slices ([#117](https://github.com/Zero-State-LLC/Patch-Hive/issues/117)) ([788e397](https://github.com/Zero-State-LLC/Patch-Hive/commit/788e397f8090f2d152b88f4b68adcf50fa2a326c))
+* refresh state, slices, decisions and the board mirror for 2026-10-29 ([#126](https://github.com/Zero-State-LLC/Patch-Hive/issues/126)) ([66e34a3](https://github.com/Zero-State-LLC/Patch-Hive/commit/66e34a350234d9a08d2ba236ec662d1f2943d7d6))
+* research brief for the open owner decisions (2026-10-30) ([#148](https://github.com/Zero-State-LLC/Patch-Hive/issues/148)) ([c1ad03a](https://github.com/Zero-State-LLC/Patch-Hive/commit/c1ad03a9f4c1c0037854457cd93fcf66e69f8c41))
+
 ## [0.3.0-alpha.3](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.2...v0.3.0-alpha.3) (2026-10-28)
 
 
