@@ -15,6 +15,7 @@ from canon.contracts import (
     CanonicalRig,
     EpistemicStatus,
     LayoutPlacement,
+    ModulePort,
     ModuleRevision,
     PatchEdge,
     PatchNode,
@@ -52,7 +53,12 @@ def _revision(
         manufacturer=manufacturer,
         name=name,
         hp=hp,
-        ports=(),
+        # Declared ports: a module with none makes routing_flex_score NOT_COMPUTABLE, and
+        # the demo layouts scale that score.
+        ports=(
+            ModulePort(port_id="in", label="IN", direction="input", signal_type="audio"),
+            ModulePort(port_id="out", label="OUT", direction="output", signal_type="audio"),
+        ),
         status=EpistemicStatus.confirmed,
         created_at=created_at,
     )
