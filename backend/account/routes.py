@@ -54,7 +54,7 @@ def get_exports(current_user: User = Depends(require_auth), db: Session = Depend
 @router.get("/referrals", response_model=ReferralSummaryResponse)
 def get_referrals(current_user: User = Depends(require_auth), db: Session = Depends(get_db)):
     """Get referral summary for the current user."""
-    if not settings.enable_legacy_referrals:
+    if not settings.enable_referrals:
         raise HTTPException(status_code=404, detail="Referrals are not enabled")
     referral_code = ensure_referral_code(db, current_user)
     referrals = (

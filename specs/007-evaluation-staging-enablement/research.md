@@ -27,8 +27,9 @@ Key management:
 
 - One key pair per approver. The private key stays offline with the operator (a hardware key or the OS keychain). It is never a repo, CI or Worker secret.
 - The allowlist (`key_id`, public key, `valid_from`, `revoked_at`) is a committed file. Adding or revoking a key is a reviewed PR. CODEOWNERS should cover it (#111 is open).
-- A verifier rejects a key revoked before the receipt's `approved_at`.
+- A verifier rejects a revoked key from its `revoked_at` onward, whatever the receipt's `approved_at` says, and also when `revoked_at <= approved_at`. `approved_at` is chosen by the signer, so a stolen key could backdate receipts; a revocation must cut the key off regardless of the claimed approval time.
 - A lost key is revoked and the receipt re-signed with a new key. Records are append-only, so re-signing adds a signature; it changes no metric.
+- The revocation reason (`compromised` strict, `rotated` lenient) is not modelled today: every revocation is strict. Revisit this if key rotation becomes routine.
 - The signature covers the receipt SHA, which covers `source_commit_sha`, so a signed receipt cannot be moved to another commit.
 - New dependency: `cryptography` (Ed25519). An alternative with no Python dependency is `ssh-keygen -Y sign/verify` with an `allowed_signers` file, but the container would then need OpenSSH at verify time [INFERRED].
 

@@ -161,7 +161,6 @@ from modules.catalog_routes import router as catalog_router  # noqa: E402
 
 # Import and register routers  # noqa: E402
 from modules.routes import router as modules_router  # noqa: E402
-from monetization.routes import router as monetization_router  # noqa: E402
 from patches.routes import router as patches_router  # noqa: E402
 from racks.routes import router as racks_router  # noqa: E402
 from racks.recommendation.routes import router as rack_recommendation_router  # noqa: E402
@@ -187,7 +186,6 @@ app.include_router(evidence_router, prefix="/api", tags=["evidence"])
 app.include_router(registry_router, prefix="/api/registry", tags=["registry"])
 app.include_router(integrations_router, prefix="/api", tags=["integrations"])
 app.include_router(synth_catalog_router, prefix="/api", tags=["synth-catalog"])
-app.include_router(monetization_router, prefix="/api/monetization", tags=["monetization"])
 app.include_router(admin_router, prefix="/api/admin", tags=["admin"])
 app.include_router(account_router, prefix="/api/me", tags=["account"])
 # Auth stays available regardless of legacy-social flags.
