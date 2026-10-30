@@ -52,7 +52,7 @@ Checked against `main` at `95ca9ee`. Paths are under `backend/` unless shown oth
 | FR-020 | Missing | No provider customer link. T046. |
 | FR-021 | Partial | `users.referral_code` is unique and random, and `ensure_referral_code` sets it only when empty (`community/models.py`, `account/services.py`); nothing at the database blocks a change. |
 | FR-022 | Implemented | `/signup?ref=<code>` (`monetization/referrals.py`). |
-| FR-023 | Implemented | Behind `enable_legacy_referrals` (`community/auth_routes.py`). |
+| FR-023 | Implemented | Behind `enable_referrals` (`community/auth_routes.py`). |
 | FR-024 | Implemented | `create_referral` and `apply_referral_reward` (`monetization/referrals.py`). |
 | FR-025 | Implemented | `create_referral` rejects pending and rewarded users (`monetization/referrals.py`). |
 | FR-026 | Implemented | 3-credit `Grant` with the note and `referral_id`; the spendable canonical copy only for a provider-verified purchase (#131). |
@@ -62,7 +62,7 @@ Checked against `main` at `95ca9ee`. Paths are under `backend/` unless shown oth
 | FR-030 | Implemented | No refund path exists, so nothing revokes a reward. |
 | FR-031 | Implemented | `get_referral_summary` behind the flag (`community/routes.py`); `earned_credits` reads the legacy ledger (research R6, T044). |
 | FR-032 | Implemented | Row lock on the `Pending` row plus `uq_referrals_one_reward` (#98). |
-| FR-033 | Partial | The legacy route still takes a client `credits_delta` behind `enable_legacy_referrals`, but mints no spendable credit (#131). T043. |
+| FR-033 | Implemented | The legacy `POST /api/monetization/purchases` route and `PurchaseCreate` are deleted; no client can record a purchase (T043). |
 | FR-034 | Implemented | No generation module imports `monetization` or `canon.entitlements` (repo grep of `patchhive/`, `intelligence/`, `runs/`). |
 | FR-035 | Implemented | The tier is read only at export, to choose a template family (`canon/routes.py`); it is not a generation input. |
 | FR-036 | Implemented | Codes come from `secrets.token_urlsafe`, not the email (`monetization/referrals.py`, `account/services.py`). |

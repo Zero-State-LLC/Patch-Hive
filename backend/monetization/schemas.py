@@ -30,10 +30,3 @@ class ReferralSummary(BaseModel):
     earned_credits: int
     pending_referrals: list[ReferralDetail]
     rewarded_referrals: list[ReferralDetail]
-
-
-class PurchaseCreate(BaseModel):
-    """Schema for recording a paid purchase event."""
-
-    credits_delta: int = 0
-    notes: Optional[str] = None

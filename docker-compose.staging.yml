@@ -52,7 +52,7 @@ services:
       ENABLE_LEGACY_SOCIAL: "false"
       ENABLE_LEGACY_PUBLISHING: "false"
       ENABLE_LEGACY_LEADERBOARDS: "false"
-      ENABLE_LEGACY_REFERRALS: "false"
+      ENABLE_REFERRALS: "false"
       ENABLE_LEGACY_PATCHBOOK_DEBIT: "false"
       # PatchBook Design Engine (off by default; see docs/design/PATCHBOOK_STAGING_ENABLEMENT.md)
       ENABLE_PATCHBOOK_DESIGN_ENGINE: ${ENABLE_PATCHBOOK_DESIGN_ENGINE:-false}

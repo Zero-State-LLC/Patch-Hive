@@ -44,7 +44,7 @@ def register_user(user: UserCreate, http_request: Request, db: Session = Depends
         raise HTTPException(status_code=400, detail="USERNAME_OR_EMAIL_TAKEN")
 
     referrer = None
-    if settings.enable_legacy_referrals and user.referral_code:
+    if settings.enable_referrals and user.referral_code:
         referrer = db.query(User).filter(User.referral_code == user.referral_code).first()
         if not referrer:
             raise HTTPException(status_code=400, detail="Invalid referral code")
@@ -73,7 +73,7 @@ def register_user(user: UserCreate, http_request: Request, db: Session = Depends
 
     ensure_referral_code(db, db_user)
 
-    if settings.enable_legacy_referrals and user.referral_code:
+    if settings.enable_referrals and user.referral_code:
         referrer = db.query(User).filter(User.referral_code == user.referral_code).first()
         if referrer and referrer.id != db_user.id:
             existing_referral = (
