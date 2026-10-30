@@ -239,11 +239,12 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
             kind="modules_full_spec",
         )
 
-    for hp_path in sorted((CATALOG / "overlays").glob("module-catalog-hp-v*.json")):
-        hp_overlay = _load_optional(hp_path)  # v1 maker/retail; v2+ maker re-verify (2026-10-17)
-        legacy = hp_path.name in UNSOURCED_HP_OVERLAYS
-        for entry in hp_overlay.get("entries") or []:
-            _schedule_hp(plan, catalog, entry, legacy_unsourced=legacy)
+    _schedule_hp_overlays(
+        plan,
+        catalog,
+        # v1 maker/retail (unsourced); v2+ maker re-verify (2026-10-17)
+        [(hp_path.name, _load_optional(hp_path)) for hp_path in sorted((CATALOG / "overlays").glob("module-catalog-hp-v*.json"))],
+    )
 
     for category_path in sorted((CATALOG / "overlays").glob("module-catalog-category-v*.json")):
         for entry in _load_optional(category_path).get("entries") or []:
@@ -900,6 +901,49 @@ def _schedule_catalog(plan: Plan, catalog: dict[str, dict[str, Any]], row: dict[
 UNSOURCED_HP_OVERLAYS = frozenset({"module-catalog-hp-v1.json"})
 
 
+def _hp_entry_sourced(entry: dict[str, Any]) -> bool:
+    """HP decides placement, so only a maker page may supply it (FR-024, FR-027)."""
+    return entry.get("source_class") == "maker" and str(entry.get("source_url") or "").startswith("https://")
+
+
+def _hp_entry_keys(entry: dict[str, Any]) -> set[str]:
+    """Every catalog slug ``_schedule_hp`` could resolve this entry to."""
+    keys = {entry["slug"]} if entry.get("slug") else set()
+    brand = (entry.get("brand") or "").strip()
+    name = (entry.get("name") or "").strip()
+    if brand and name:
+        keys.add(create_slug(brand, name))
+    return keys
+
+
+def _schedule_hp_overlays(
+    plan: Plan,
+    catalog: dict[str, dict[str, Any]],
+    overlays: list[tuple[str, dict[str, Any]]],
+) -> None:
+    """Fill empty HP from every HP overlay, in the given (sorted) order.
+
+    A maker-cited entry takes precedence over an unsourced legacy entry for the
+    same module: a legacy entry is skipped wherever any sourced overlay carries an
+    HP for that slug, so the maker value lands on an empty row whichever file
+    sorts first. Fill-null is unchanged: a stored HP is never overwritten (a
+    stored wrong value is fixed only by a reviewed ``correct`` entry, D4).
+    """
+    sourced_slugs: set[str] = set()
+    for overlay_name, overlay in overlays:
+        if overlay_name in UNSOURCED_HP_OVERLAYS:
+            continue
+        for entry in overlay.get("entries") or []:
+            if entry.get("hp") is not None and _hp_entry_sourced(entry):
+                sourced_slugs |= _hp_entry_keys(entry)
+    for overlay_name, overlay in overlays:
+        legacy = overlay_name in UNSOURCED_HP_OVERLAYS
+        for entry in overlay.get("entries") or []:
+            if legacy and not _hp_entry_sourced(entry) and _hp_entry_keys(entry) & sourced_slugs:
+                continue
+            _schedule_hp(plan, catalog, entry, legacy_unsourced=legacy)
+
+
 def _schedule_hp(
     plan: Plan,
     catalog: dict[str, dict[str, Any]],
@@ -913,8 +957,7 @@ def _schedule_hp(
     hp = entry.get("hp")
     if hp is None:
         return
-    # HP decides placement, so only a maker page may supply it (FR-024, FR-027).
-    sourced = entry.get("source_class") == "maker" and str(entry.get("source_url") or "").startswith("https://")
+    sourced = _hp_entry_sourced(entry)
     if not sourced and not legacy_unsourced:
         plan.conflict(table="module_catalog", slug=slug, reason="hp_overlay_unsourced")
         return

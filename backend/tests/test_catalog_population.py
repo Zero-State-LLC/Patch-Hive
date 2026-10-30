@@ -145,6 +145,12 @@ def test_population_dry_run_then_apply_is_idempotent(population_url: str, tmp_pa
                 text("SELECT hp FROM module_catalog WHERE brand = :brand AND name = :name"),
                 {"brand": "Acid Rain Technology", "name": "Chainsaw"},
             ).scalar_one()
+            # Both HP overlays carry these; the maker-cited v2 value wins over v1 (D3).
+            overlap_hp = dict(
+                conn.execute(
+                    text("SELECT slug, hp FROM module_catalog WHERE slug IN ('acid-rain-technology-junction', 'doepfer-a-101-3', 'doepfer-a-137-2')")
+                ).all()
+            )
             bitbox = conn.execute(
                 text(
                     "SELECT verification_status, power_12v_ma, power_neg12v_ma, power_5v_ma, depth_mm "
@@ -155,6 +161,7 @@ def test_population_dry_run_then_apply_is_idempotent(population_url: str, tmp_pa
     finally:
         engine.dispose()
     assert chainsaw == 4
+    assert overlap_hp == {"acid-rain-technology-junction": 4, "doepfer-a-101-3": 30, "doepfer-a-137-2": 14}
     # Bitbox 2.0 power came from ModularGrid overlays (removed 2026-10-17); a fresh
     # load may only carry manufacturer-sourced values for it.
     assert bitbox is None or bitbox["verification_status"] in {"unverified", "verified", "flagged", "corrected"}
