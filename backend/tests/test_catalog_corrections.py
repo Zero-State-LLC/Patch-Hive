@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -114,6 +115,60 @@ def test_a_correction_schedules_the_flag_check_after_the_write() -> None:
 
 def test_a_correction_applied_earlier_still_gets_the_flag_check() -> None:
     plan = _plan(_manifest(), _flagged(), archived={("modules", "Acme::Chicane", P.ROW_MARKER)})
+    assert [op.kind for op in plan.ops] == ["clear_reverify"]
+
+
+FLAGGED_AT = datetime(2026, 10, 17, tzinfo=timezone.utc)
+
+
+def _with_history(manifest: dict, modules: dict, history: dict, archived=frozenset()) -> P.Plan:
+    plan = P.Plan()
+    P._schedule_provenance(plan, {}, modules, manifest, set(archived), history)
+    return plan
+
+
+def _clears(plan: P.Plan) -> int:
+    return sum(op.kind == "clear_reverify" for op in plan.ops)
+
+
+def test_a_row_with_a_nulled_field_still_empty_is_not_planned_for_a_clear() -> None:
+    # The Doepfer A-101-3 case: hp flagged and power nulled; the hp correction alone can't clear it,
+    # so the plan must not promise a clear the database refuses on every run.
+    modules = _flagged()
+    modules[("Acme", "Chicane")]["power_12v_ma"] = None
+    history = {("modules", "Acme::Chicane"): [("hp", "flag", FLAGGED_AT), ("power_12v_ma", "null", FLAGGED_AT)]}
+    plan = _with_history(_manifest(), modules, history)
+    assert [op.kind for op in plan.ops] == ["archive_values", "correct_values", "archive_markers"]
+    assert plan.provenance["test-corrections"]["reverify_clear_scheduled"] == 0
+    # A rerun after the correction plans nothing at all.
+    history[("modules", "Acme::Chicane")].append(("hp", "correct", datetime(2026, 10, 30, tzinfo=timezone.utc)))
+    rerun = _with_history(_manifest(), modules, history, archived={("modules", "Acme::Chicane", P.ROW_MARKER)})
+    assert rerun.ops == []
+
+
+def test_a_nulled_field_filled_again_lets_the_clear_through() -> None:
+    modules = _flagged()
+    modules[("Acme", "Chicane")]["power_12v_ma"] = 80
+    history = {("modules", "Acme::Chicane"): [("hp", "flag", FLAGGED_AT), ("power_12v_ma", "null", FLAGGED_AT)]}
+    assert _clears(_with_history(_manifest(), modules, history)) == 1
+
+
+def test_another_flagged_field_without_a_correction_blocks_the_clear() -> None:
+    history = {("modules", "Acme::Chicane"): [("hp", "flag", FLAGGED_AT), ("depth_mm", "flag", FLAGGED_AT)]}
+    assert _clears(_with_history(_manifest(), _flagged(), history)) == 0
+
+
+def test_a_correction_older_than_the_flag_does_not_count() -> None:
+    corrected = datetime(2026, 10, 1, tzinfo=timezone.utc)
+    history = {("modules", "Acme::Chicane"): [("hp", "correct", corrected), ("hp", "flag", FLAGGED_AT)]}
+    plan = _with_history(_manifest(), _flagged(), history, archived={("modules", "Acme::Chicane", P.ROW_MARKER)})
+    assert _clears(plan) == 0
+
+
+def test_a_correction_applied_earlier_with_nothing_open_is_still_cleared() -> None:
+    corrected = datetime(2026, 10, 29, tzinfo=timezone.utc)
+    history = {("modules", "Acme::Chicane"): [("hp", "flag", FLAGGED_AT), ("hp", "correct", corrected)]}
+    plan = _with_history(_manifest(), _flagged(), history, archived={("modules", "Acme::Chicane", P.ROW_MARKER)})
     assert [op.kind for op in plan.ops] == ["clear_reverify"]
 
 

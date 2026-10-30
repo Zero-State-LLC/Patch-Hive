@@ -191,12 +191,15 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     catalog = _catalog_state(conn)
     modules = _module_state(conn)
     manufacturers = _manufacturer_state(conn)
+    history = _reverify_history(conn)
 
     # Archive-then-null runs first, so later fills from manufacturer overlays
     # can fill a field this run just cleared.
     for manifest_path in PROVENANCE_MANIFESTS:
         if manifest_path.is_file():
-            _schedule_provenance(plan, catalog, modules, _load(manifest_path), _archive_state(conn, manifest_path))
+            _schedule_provenance(
+                plan, catalog, modules, _load(manifest_path), _archive_state(conn, manifest_path), history
+            )
 
     for brand in phase2.get("brands") or []:
         _schedule_manufacturer(plan, manufacturers, brand)
@@ -366,12 +369,58 @@ def _archive_state(conn: Connection, manifest_path: Path) -> set[tuple[str, str,
     return {(row["table_name"], row["row_key"], row["field"]) for row in rows}
 
 
+def _reverify_history(conn: Connection) -> dict[tuple[str, str], list[tuple[str, str, Any]]]:
+    """Every archived flag, relabel, null and correct, by row: what the reverify clear reads."""
+    if conn is None:
+        return {}
+    rows = conn.execute(
+        text(
+            "SELECT table_name, row_key, field, action, archived_at FROM catalog_value_archive "
+            "WHERE action IN ('flag', 'relabel', 'null', 'correct')"
+        )
+    ).mappings()
+    history: dict[tuple[str, str], list[tuple[str, str, Any]]] = {}
+    for row in rows:
+        history.setdefault((row["table_name"], row["row_key"]), []).append(
+            (row["field"], row["action"], row["archived_at"])
+        )
+    return history
+
+
+def _reverify_open(
+    table: str,
+    state: dict[str, Any],
+    entries: list[tuple[str, str, Any]],
+    corrected_now: set[str],
+) -> bool:
+    """True while the clear in ``_clear_reverify_if_resolved`` would leave the row flagged.
+
+    Mirrors its SQL: a correction must exist, every flagged or relabelled field needs a later
+    correction of that field, and every nulled field must hold a value again. A field this run
+    corrects counts as fixed, since its archive row is written before the clear runs.
+    """
+    if not corrected_now and not any(action == "correct" for _, action, _ in entries):
+        return True
+    for field_name, action, archived_at in entries:
+        if action not in {"flag", "relabel"} or field_name == "*" or field_name in corrected_now:
+            continue
+        if not any(
+            other == field_name and kind == "correct" and when >= archived_at for other, kind, when in entries
+        ):
+            return True
+    return any(
+        action == "null" and field_name in NULLABLE[table] and state.get(field_name) is None
+        for field_name, action, _ in entries
+    )
+
+
 def _schedule_provenance(
     plan: Plan,
     catalog: dict[str, dict[str, Any]],
     modules: dict[tuple[str, str], dict[str, Any]],
     manifest: dict[str, Any],
     archived: set[tuple[str, str, str]],
+    history: dict[tuple[str, str], list[tuple[str, str, Any]]] | None = None,
 ) -> None:
     """Archive listed values with their source tag, then null, flag, relabel or correct.
 
@@ -401,7 +450,8 @@ def _schedule_provenance(
     stats.setdefault("refused_row_tombstoned", 0)
     stats.setdefault("reverify_clear_scheduled", 0)
     markers: list[tuple[str, str, str, str]] = []
-    resolved: list[tuple[str, str, str, str]] = []
+    resolved: list[tuple[str, str, str, str, dict[str, Any]]] = []
+    corrected_now: dict[tuple[str, str], set[str]] = {}
     for row in manifest.get("rows") or []:
         table = row.get("table")
         if table not in ARCHIVE_FIELDS:
@@ -429,7 +479,7 @@ def _schedule_provenance(
         if state is not None and state.get("needs_reverify") and any(
             item.get("action") == "correct" for item in row.get("fields") or []
         ):
-            resolved.append((table, row_key, brand, name))
+            resolved.append((table, row_key, brand, name, state))
         # A row is processed once per batch. Rows inserted later (or fields filled
         # later from manufacturer overlays) are never touched by this batch.
         if (table, row_key, ROW_MARKER) in archived:
@@ -477,6 +527,7 @@ def _schedule_provenance(
             _correct_row(plan, batch, table, row_key, brand, name, corrections)
             for item in corrections:
                 state[item["field"]] = item["value"]
+            corrected_now.setdefault((table, row_key), set()).update(item["field"] for item in corrections)
             stats["corrected_values"] += len(corrections)
         todo = [item for item in todo if item["action"] != "correct"]
         if not todo:
@@ -498,7 +549,12 @@ def _schedule_provenance(
             stats["flagged_rows"] += 1
     if markers:
         _archive_markers(plan, batch, markers)
-    for table, row_key, brand, name in resolved:
+    for table, row_key, brand, name, state in resolved:
+        # Without the archive history (a test calling this directly) the database decides alone.
+        if history is not None and _reverify_open(
+            table, state, history.get((table, row_key), []), corrected_now.get((table, row_key), set())
+        ):
+            continue
         _clear_reverify_if_resolved(plan, table, row_key, brand, name)
         stats["reverify_clear_scheduled"] += 1
 
