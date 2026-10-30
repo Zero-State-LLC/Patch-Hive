@@ -246,7 +246,8 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
             kind="modules_full_spec",
         )
 
-    # v1 maker/retail (unsourced); v2+ maker re-verify (2026-10-17); v3 T039 triage (2026-10-30)
+    # v1 maker/retail (unsourced); v2+ maker re-verify (2026-10-17); v3 T039 triage and
+    # v4 T039 remainder (2026-10-30)
     hp_overlays = [
         (hp_path.name, _load_optional(hp_path))
         for hp_path in sorted((CATALOG / "overlays").glob("module-catalog-hp-v*.json"))
@@ -335,6 +336,7 @@ PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "maker-corrections-v1.json",
     CATALOG / "provenance" / "maker-corrections-v2.json",
     CATALOG / "provenance" / "maker-corrections-v3.json",
+    CATALOG / "provenance" / "maker-corrections-v4.json",
 )
 ARCHIVE_FIELDS = {
     "modules": {

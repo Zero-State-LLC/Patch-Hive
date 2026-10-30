@@ -1,0 +1,269 @@
+{
+ "dataset_version": "module-catalog-hp-overlay-v4",
+ "generated_from": "spec 003 T039 remainder (2026-10-30). Candidates: the rows still marked hp_source = legacy_unsourced after #164, except ADDAC System and Befaco (their sites answered with a bot challenge and a CAPTCHA). Each maker page was read with a plain GET (robots.txt read and honoured, 2 s apart per host, a host stopped at its first block) on 2026-10-30; an entry is kept only where the page names that exact product and states its width, and the verification field quotes the page. Two values differ from v1 because the page states another width (Doepfer A-106-1 and A-138m); maker-corrections-v4 fixes databases that hold the v1 value. Values the check could not confirm stay legacy_unsourced.",
+ "policy": "fill-null only; maker page values only, each quoted from its page; supersedes the unsourced module-catalog-hp-v1 entry for the same slug.",
+ "generated_at": "2026-10-30T02:40:00-0700",
+ "count": 26,
+ "entries": [
+  {
+   "slug": "acid-rain-technology-chainsaw",
+   "brand": "Acid Rain Technology",
+   "name": "Chainsaw",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://cdn.shopify.com/s/files/1/0053/9151/5766/files/Chainsaw_Manual_1.1.pdf",
+   "verification": "maker-page-checked-2026-10-30: \"chainsaw stereo super-oscillator 110mA +12 / 10mA -12 4 HP\""
+  },
+  {
+   "slug": "acid-rain-technology-constellation",
+   "brand": "Acid Rain Technology",
+   "name": "Constellation",
+   "hp": 28,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://acidraintechnology.com/products/constellation",
+   "verification": "maker-page-checked-2026-10-30: \"about constellation specifications 28hp\""
+  },
+  {
+   "slug": "acid-rain-technology-maestro",
+   "brand": "Acid Rain Technology",
+   "name": "Maestro",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://acidraintechnology.com/products/maestro",
+   "verification": "maker-page-checked-2026-10-30: \"about maestro specifications 20hp\""
+  },
+  {
+   "slug": "acid-rain-technology-navigator",
+   "brand": "Acid Rain Technology",
+   "name": "Navigator",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://acidraintechnology.com/products/navigator",
+   "verification": "maker-page-checked-2026-10-30: \"about navigator specifications 4hp\""
+  },
+  {
+   "slug": "acid-rain-technology-ripsaw",
+   "brand": "Acid Rain Technology",
+   "name": "Ripsaw",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://acidraintechnology.com/products/ripsaw",
+   "verification": "maker-page-checked-2026-10-30: \"about ripsaw specifications 6hp\""
+  },
+  {
+   "slug": "acid-rain-technology-switchblade",
+   "brand": "Acid Rain Technology",
+   "name": "Switchblade",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://cdn.shopify.com/s/files/1/0053/9151/5766/files/Switchblade_Manual.pdf",
+   "verification": "maker-page-checked-2026-10-30: \"switchblade switch + mixer + mute 50mA +12 / 10mA -12 4 HP\""
+  },
+  {
+   "slug": "acid-rain-technology-ziggurat",
+   "brand": "Acid Rain Technology",
+   "name": "Ziggurat",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://acidraintechnology.com/products/ziggurat",
+   "verification": "maker-page-checked-2026-10-30: \"about ziggurat specifications 14hp\""
+  },
+  {
+   "slug": "bastl-instruments-knit-rider-expander",
+   "brand": "Bastl Instruments",
+   "name": "Knit Rider Expander",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/knit-rider",
+   "verification": "maker-page-checked-2026-10-30: \"with a 2hp Knit Rider Expander\""
+  },
+  {
+   "slug": "doepfer-a-106-1",
+   "brand": "Doepfer",
+   "name": "A-106-1",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/A106.htm",
+   "verification": "maker-page-checked-2026-10-30: \"Breite/Width: 14 TE / 14HP / 70.8 mm\""
+  },
+  {
+   "slug": "doepfer-a-138m",
+   "brand": "Doepfer",
+   "name": "A-138m",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/A138m.htm",
+   "verification": "maker-page-checked-2026-10-30: \"Breite/Width: 20 TE/HP, 101.3 mm\""
+  },
+  {
+   "slug": "doepfer-a-140",
+   "brand": "Doepfer",
+   "name": "A-140",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a140.htm",
+   "verification": "maker-page-checked-2026-10-30: \"Breite/Width: 8 TE / 8 HP / 40.3 mm\""
+  },
+  {
+   "slug": "doepfer-a-180-2-multiples",
+   "brand": "Doepfer",
+   "name": "A-180-2 Multiples",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a180.htm",
+   "verification": "maker-page-checked-2026-10-30: \"A-180-2 2 TE / 2 HP / 10.0 mm\""
+  },
+  {
+   "slug": "doepfer-a-182-1",
+   "brand": "Doepfer",
+   "name": "A-182-1",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a182.htm",
+   "verification": "maker-page-checked-2026-10-30: \"Breite/Width: 6 TE / 6 HP / 30.0 mm\""
+  },
+  {
+   "slug": "erica-synths-midi-to-clock-v2",
+   "brand": "Erica Synths",
+   "name": "Midi to Clock V2",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/midi-to-clock-v2-76/",
+   "verification": "maker-page-checked-2026-10-30: \"Module width 6HP\""
+  },
+  {
+   "slug": "erica-synths-pico-dsp",
+   "brand": "Erica Synths",
+   "name": "Pico DSP",
+   "hp": 3,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/pico-dsp-21/",
+   "verification": "maker-page-checked-2026-10-30: \"Module width 3HP\""
+  },
+  {
+   "slug": "erica-synths-pico-out",
+   "brand": "Erica Synths",
+   "name": "Pico OUT",
+   "hp": 3,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/pico-output-24/",
+   "verification": "maker-page-checked-2026-10-30: \"Module width 3HP\""
+  },
+  {
+   "slug": "expert-sleepers-disting-mk4",
+   "brand": "Expert Sleepers",
+   "name": "Disting mk4",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/disting.html",
+   "verification": "maker-page-checked-2026-10-30: \"The disting mk4's specifications are as follows: Panel width: 4HP\""
+  },
+  {
+   "slug": "expert-sleepers-es-8",
+   "brand": "Expert Sleepers",
+   "name": "ES-8",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/es8.html",
+   "verification": "maker-page-checked-2026-10-30: \"The ES-8's specifications are as follows: Panel width: 8HP\""
+  },
+  {
+   "slug": "expert-sleepers-es-9",
+   "brand": "Expert Sleepers",
+   "name": "ES-9",
+   "hp": 16,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/es9.html",
+   "verification": "maker-page-checked-2026-10-30: \"The ES-9's specifications are as follows: Panel width: 16HP\""
+  },
+  {
+   "slug": "expert-sleepers-esx-8gt-mk3",
+   "brand": "Expert Sleepers",
+   "name": "ESX-8GT mk3",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/esx8gt.html",
+   "verification": "maker-page-checked-2026-10-30: \"The ESX-8GT's specifications are as follows: Panel width: 4HP\""
+  },
+  {
+   "slug": "intellijel-quad-vca",
+   "brand": "Intellijel",
+   "name": "Quad VCA",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/quad-vca/",
+   "verification": "maker-page-checked-2026-10-30: \"Specs + Downloads Width 12HP\""
+  },
+  {
+   "slug": "intellijel-stereo-i-o-1u",
+   "brand": "Intellijel",
+   "name": "Stereo I/O 1U",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/1u/stereo-i-o-1u/",
+   "verification": "maker-page-checked-2026-10-30: \"Specs + Downloads Width 20HP\""
+  },
+  {
+   "slug": "make-noise-maths",
+   "brand": "Make Noise",
+   "name": "Maths",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/maths/",
+   "verification": "maker-page-checked-2026-10-30: \"SPECIFICATIONS Width: 20hp\""
+  },
+  {
+   "slug": "make-noise-rene",
+   "brand": "Make Noise",
+   "name": "Rene",
+   "hp": 34,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/retired/retired-modules/rene-classic/",
+   "verification": "maker-page-checked-2026-10-30: \"SPECIFICATIONS Width: 34hp\""
+  },
+  {
+   "slug": "mutable-instruments-ripples",
+   "brand": "Mutable Instruments",
+   "name": "Ripples",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_original/",
+   "verification": "maker-page-checked-2026-10-30: \"Key data Liquid filter Parameter Value Width 8HP\""
+  },
+  {
+   "slug": "mutable-instruments-tides-2014-version",
+   "brand": "Mutable Instruments",
+   "name": "Tides (2014 version)",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_original/",
+   "verification": "maker-page-checked-2026-10-30: \"Revisions and variants 2014 2015 Key data Tidal modulator Parameter Value Width 14HP\""
+  }
+ ]
+}
