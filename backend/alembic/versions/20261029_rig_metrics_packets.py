@@ -6,8 +6,7 @@ Create Date: 2026-10-29
 
 Spec 001 FR-027, T031. The packet holds ``rig_id``, ``module_count`` and
 ``category_counts``; the six scores are ``NOT_COMPUTABLE`` until OQ-11 defines them.
-Additive only. Another slice may also add a revision after ``20261029_ledger_append_only``;
-if so, a merge-order head fix is needed.
+Additive only.
 """
 
 from __future__ import annotations
