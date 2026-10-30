@@ -51,6 +51,22 @@ export function summarizePower(modules: (PowerSpec | undefined)[]): PowerSummary
   return summary;
 }
 
+export interface PowerConfigDraw extends PowerSpec {
+  id: number;
+}
+
+/**
+ * The draws a placement adds: its chosen jumper setting's (spec 003 D8) when it names
+ * one the module has, else the module's own columns, where a jumper rail is unknown.
+ */
+export function placementPower(
+  module: (PowerSpec & { power_configs?: PowerConfigDraw[] }) | undefined,
+  powerConfigId: number | null | undefined,
+): PowerSpec | undefined {
+  if (!module || powerConfigId == null) return module;
+  return module.power_configs?.find((c) => c.id === powerConfigId) ?? module;
+}
+
 export type RailTone = "success" | "warning" | "danger" | "neutral";
 
 export interface RailMeter {
@@ -80,9 +96,9 @@ export function railMeter(total: RailTotal, capacity: number | null | undefined)
     };
   }
   const headroom = capacity - draw;
-  const pct = capacity > 0 ? Math.min(100, Math.round((draw / capacity) * 100)) : draw > 0 ? 100 : 0;
-  const tone: RailTone =
-    headroom < 0 ? "danger" : unknown > 0 || pct >= 85 ? "warning" : "success";
+  const pct =
+    capacity > 0 ? Math.min(100, Math.round((draw / capacity) * 100)) : draw > 0 ? 100 : 0;
+  const tone: RailTone = headroom < 0 ? "danger" : unknown > 0 || pct >= 85 ? "warning" : "success";
   const label = unknown
     ? `at least ${draw}/${capacity}mA${plus} · at most ${headroom}mA headroom`
     : `${draw}/${capacity}mA · headroom ${headroom}mA`;

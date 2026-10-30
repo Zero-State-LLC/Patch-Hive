@@ -13,6 +13,7 @@ from community.auth import get_current_user, require_auth
 from community.models import User
 from core import generate_rig_suggested_name, get_db, hash_string_to_seed
 from modules.models import Module
+from modules.schemas import PowerConfigResponse
 
 from .access import owned_rack, readable_rack, readable_racks
 from .catalog_compatibility import (
@@ -90,6 +91,7 @@ def create_rack(
             module_id=module_spec.module_id,
             row_index=module_spec.row_index,
             start_hp=module_spec.start_hp,
+            power_config_id=module_spec.power_config_id,
         )
         db.add(db_rack_module)
         module = db.query(Module).filter(Module.id == module_spec.module_id).first()
@@ -194,6 +196,7 @@ def update_rack(
                 module_id=module_spec.module_id,
                 row_index=module_spec.row_index,
                 start_hp=module_spec.start_hp,
+                power_config_id=module_spec.power_config_id,
             )
             db.add(db_rack_module)
             module = db.query(Module).filter(Module.id == module_spec.module_id).first()
@@ -252,6 +255,7 @@ def build_rack_response(
                 "module_id": rm.module_id,
                 "row_index": rm.row_index,
                 "start_hp": rm.start_hp,
+                "power_config_id": rm.power_config_id,
                 "module": (
                     {
                         "id": module.id,
@@ -266,6 +270,11 @@ def build_rack_response(
                         "status": module.status,
                         "tombstone_reason": note["reason"] if note else None,
                         "alternatives": note["alternatives"] if note else [],
+                        # Jumper settings to choose from (spec 003 D8); empty for most modules.
+                        "power_configs": [
+                            PowerConfigResponse.model_validate(config).model_dump()
+                            for config in module.power_configs
+                        ],
                     }
                     if module
                     else None

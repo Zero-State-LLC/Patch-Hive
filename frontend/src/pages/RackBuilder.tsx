@@ -10,7 +10,13 @@ import {
 } from "@/lib/api";
 import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 import { firstFreeStartHp, packModulesOntoRows } from "@/lib/placementPack";
-import { railMeter, summarizePower, type RailKey, type RailTone } from "@/lib/powerBudget";
+import {
+  placementPower,
+  railMeter,
+  summarizePower,
+  type RailKey,
+  type RailTone,
+} from "@/lib/powerBudget";
 import { useAuthStore } from "@/lib/store";
 import type {
   Case,
@@ -258,10 +264,12 @@ export default function RackBuilderPage() {
   const placementPowerSummary = useMemo(
     () =>
       summarizePower(
-        placementModules.map(
-          (spec) =>
+        placementModules.map((spec) =>
+          placementPower(
             liveRack?.modules?.find((m) => m.module_id === spec.module_id)?.module ??
-            galleryModules.find((m) => m.id === spec.module_id),
+              galleryModules.find((m) => m.id === spec.module_id),
+            spec.power_config_id,
+          ),
         ),
       ),
     [placementModules, liveRack, galleryModules],
@@ -513,6 +521,7 @@ export default function RackBuilderPage() {
         module_id: m.module_id,
         row_index: m.row_index,
         start_hp: m.start_hp,
+        power_config_id: m.power_config_id ?? null,
       })),
     );
     try {
@@ -651,6 +660,14 @@ export default function RackBuilderPage() {
       `Batch placed ${result.added.length} module${result.added.length === 1 ? "" : "s"}${unMsg}.`,
     );
     setBatchSelectedIds([]);
+  };
+
+  /** Choose the jumper setting a placed module is set to; empty = not chosen (draw unknown). */
+  const choosePowerConfig = async (index: number, powerConfigId: number | null) => {
+    const next = placementModules.map((spec, i) =>
+      i === index ? { ...spec, power_config_id: powerConfigId } : spec,
+    );
+    await savePlacements(next);
   };
 
   const removePlacement = async (index: number) => {
@@ -1699,6 +1716,30 @@ export default function RackBuilderPage() {
                       · row {spec.row_index} · HP {spec.start_hp}
                       {mod?.hp != null ? `–${spec.start_hp + mod.hp - 1}` : ""}
                     </span>
+                    {mod && "power_configs" in mod && mod.power_configs?.length ? (
+                      <label className="field" style={{ marginTop: "var(--space-2)" }}>
+                        Jumper setting
+                        <select
+                          value={spec.power_config_id ?? ""}
+                          disabled={placementSaving}
+                          aria-label={`Jumper setting for ${mod.brand} ${mod.name}`}
+                          onChange={(e) =>
+                            void choosePowerConfig(
+                              index,
+                              e.target.value ? Number(e.target.value) : null,
+                            )
+                          }
+                        >
+                          <option value="">Not chosen (jumper-dependent draw unknown)</option>
+                          {mod.power_configs.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.label} · +12 {c.power_12v_ma ?? "?"} / −12{" "}
+                              {c.power_neg12v_ma ?? "?"} / +5 {c.power_5v_ma ?? "?"} mA
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    ) : null}
                     <button
                       type="button"
                       className="button button-quiet"

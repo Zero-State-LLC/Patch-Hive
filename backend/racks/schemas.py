@@ -14,6 +14,9 @@ class RackModuleSpec(BaseModel):
     module_id: int
     row_index: int = Field(..., ge=0)
     start_hp: int = Field(..., ge=0)
+    # The module's jumper setting (spec 003 D8). None = not chosen: the budget then
+    # counts only the module's own stated draws and the rest stays unknown.
+    power_config_id: Optional[int] = Field(None, ge=1)
 
 
 class SuggestedPlacement(BaseModel):

@@ -14,8 +14,14 @@ from admin.utils import log_admin_action
 from community.models import User
 from core import get_db
 
-from .models import Module
-from .schemas import ModuleCreate, ModuleListResponse, ModuleResponse, ModuleUpdate
+from .models import Module, PowerConfig
+from .schemas import (
+    ModuleCreate,
+    ModuleListResponse,
+    ModuleResponse,
+    ModuleUpdate,
+    PowerConfigResponse,
+)
 
 router = APIRouter()
 
@@ -102,6 +108,23 @@ def get_module(module_id: int, db: Session = Depends(get_db)):
     if not module:
         raise HTTPException(status_code=404, detail="Module not found")
     return module
+
+
+@router.get("/{module_id}/power-configs", response_model=list[PowerConfigResponse])
+def list_power_configs(module_id: int, db: Session = Depends(get_db)):
+    """The module's jumper settings, each with its own draws (spec 003 D8).
+
+    Empty for a module whose draw does not depend on a jumper, or whose settings the
+    maker page does not state clearly enough to load.
+    """
+    if db.query(Module.id).filter(Module.id == module_id).first() is None:
+        raise HTTPException(status_code=404, detail="Module not found")
+    return (
+        db.query(PowerConfig)
+        .filter(PowerConfig.module_id == module_id)
+        .order_by(PowerConfig.id)
+        .all()
+    )
 
 
 @router.patch("/{module_id}", response_model=ModuleResponse)
