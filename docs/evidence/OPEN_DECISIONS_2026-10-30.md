@@ -1,5 +1,7 @@
 # Open owner decisions (2026-10-30)
 
+**Follow-up research:** [OPEN_DECISIONS_2026-10-30_RESEARCH.md](OPEN_DECISIONS_2026-10-30_RESEARCH.md) updates decisions 1, 6, 9, 10, 11 and 12 with numbers, prices and drafts.
+
 Research against `main` at `4d5bfe9` (#146), after #134–#146 merged and the migrations reached staging and prod. It supersedes the open items in [OPEN_DESIGN_DECISIONS_2026-10-28.md](OPEN_DESIGN_DECISIONS_2026-10-28.md); the per-spec background is in each `specs/NNN-*/research.md`. OBSERVED means read in the checkout or on GitHub; INFERRED means reasoned from it. Nothing here queried production data.
 
 ## Summary
