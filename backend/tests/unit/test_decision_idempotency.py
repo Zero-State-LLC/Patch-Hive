@@ -12,7 +12,7 @@ from core import get_db, settings
 from core.database import Base
 from intelligence.clef_resolution import resolve_module_identity_guarded
 from intelligence.contracts import DecisionPacket, stable_sha256
-from intelligence.models import DecisionReceiptRecord
+from intelligence.models import DecisionReceiptKeyRecord, DecisionReceiptRecord
 from intelligence.persistence import IdempotencyConflict
 from intelligence.policy import DecisionPolicy, PolicyThresholds
 from intelligence.resolution_machine import ResolutionState
@@ -102,9 +102,9 @@ def test_repeat_with_same_key_returns_stored_outcome_without_provider_call() -> 
 
 def _store_with_other_hash(db) -> None:
     # Retained evidence is append-only, so a different payload under the same
-    # (request, key) is simulated by changing the stored receipt's hash. Receipts are
-    # append-only too, so the row is replaced through the table directly.
-    table = DecisionReceiptRecord.__table__
+    # (request, key) is simulated by changing the stored key binding's hash (written
+    # through the table, since the ORM rejects updates).
+    table = DecisionReceiptKeyRecord.__table__
     db.execute(table.update().values(evidence_hash="0" * 64))
     db.flush()
     db.expire_all()
@@ -133,7 +133,7 @@ def test_evidence_hash_covers_packet_and_image_sha() -> None:
         {"evidence_packet": packet, "image_sha256": "a" * 64}
     )
     assert receipt.evidence_hash != "ev-1"
-    assert receipt.idempotency_key == "idem"
+    assert db.get(DecisionReceiptKeyRecord, (receipt.request_id, "idem")).receipt_id == receipt.id
 
 
 def test_different_image_sha_changes_evidence_hash() -> None:
@@ -148,17 +148,15 @@ def test_different_image_sha_changes_evidence_hash() -> None:
     )
 
 
-def test_unique_index_rejects_duplicate_request_and_key() -> None:
+def test_key_table_rejects_duplicate_request_and_key() -> None:
     db = _db()
     _seed(db)
     _resolve(db, CountingProvider())
-    row = db.query(DecisionReceiptRecord).one()
-    db.expunge(row)
-    from sqlalchemy.orm import make_transient
-    make_transient(row)
-    row.id = "another-id"
-    row.packet_hash = "f" * 64
-    db.add(row)
+    receipt = db.query(DecisionReceiptRecord).one()
+    db.add(DecisionReceiptKeyRecord(
+        request_id=receipt.request_id, idempotency_key="idem",
+        evidence_hash=receipt.evidence_hash, receipt_id=receipt.id,
+    ))
     with pytest.raises(IntegrityError):
         db.flush()
 
@@ -252,3 +250,55 @@ def test_replay_ends_in_the_stored_disposition_state() -> None:
     replay = _resolve(db, CountingProvider())
     assert replay.replayed_receipt is not None
     assert replay.machine.state is first.machine.state is ResolutionState.AUTO_PROPOSE
+
+
+def test_deduplicated_decision_still_binds_the_new_key() -> None:
+    # The provider returns the same decision id under a second key. The older receipt
+    # is reused, but the new key must be bound so a retry does not call the provider.
+    db = _db()
+    _seed(db)
+    first = CountingProvider()
+    _resolve(db, first, key="k1")
+
+    class SameDecision(CountingProvider):
+        def choose(self, request):
+            packet = super().choose(request)
+            return packet.model_copy(update={"decision_id": "decision-1"})
+
+    second = SameDecision()
+    _resolve(db, second, key="k2")
+    assert second.calls == 1
+    assert db.query(DecisionReceiptRecord).count() == 1
+    assert db.query(DecisionReceiptKeyRecord).count() == 2
+
+    retry = SameDecision()
+    replay = _resolve(db, retry, key="k2")
+    assert retry.calls == 0
+    assert replay.replayed_receipt is not None
+
+
+def test_lost_race_replays_the_winner_instead_of_failing(monkeypatch) -> None:
+    # Simulate an overlapping request that bound the key between our lookup and our
+    # insert: the first lookup misses, then the winner commits its binding.
+    import intelligence.clef_resolution as resolution_module
+
+    db = _db()
+    _seed(db)
+    winner_provider = CountingProvider()
+    real_find = resolution_module.find_idempotent_receipt
+    state = {"first": True}
+
+    def racing_find(*args, **kwargs):
+        if state["first"]:
+            state["first"] = False
+            _resolve(db, winner_provider)  # the other request wins the key
+            return None
+        return real_find(*args, **kwargs)
+
+    monkeypatch.setattr(resolution_module, "find_idempotent_receipt", racing_find)
+    loser_provider = CountingProvider(choice="none_of_above", confidence=0.1)
+    loser = _resolve(db, loser_provider)
+    assert loser_provider.calls == 1  # it did not see the winner before calling
+    assert loser.replayed_receipt is not None
+    assert loser.replayed_receipt.selected_choice == "module-a"
+    assert db.query(DecisionReceiptRecord).count() == 1

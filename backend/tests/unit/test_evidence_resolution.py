@@ -13,7 +13,7 @@ from intelligence.evidence_resolution import (
     resolve_module_identity,
 )
 from intelligence.fixture_provider import FixtureDecisionProvider
-from intelligence.models import DecisionReceiptRecord
+from intelligence.models import DecisionReceiptKeyRecord, DecisionReceiptRecord
 from intelligence.policy import DecisionPolicy, PolicyThresholds
 
 
@@ -114,7 +114,7 @@ def test_fixture_resolution_persists_advisory_only() -> None:
             "image_sha256": "a" * 64,
         }
     )
-    assert receipt.idempotency_key == "idem"
+    assert db.get(DecisionReceiptKeyRecord, ("module-identity:ev-1", "idem")).receipt_id == receipt.id
     assert receipt.disposition == "AUTO_PROPOSE"
     # This orchestration module has no inventory model dependency/write path.
 

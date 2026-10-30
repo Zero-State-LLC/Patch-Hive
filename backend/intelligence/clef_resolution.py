@@ -34,7 +34,12 @@ from intelligence.evidence_resolution import (
 )
 from intelligence.module_service import DecisionProposal, ModuleDecisionService
 from intelligence.models import DecisionReceiptRecord
-from intelligence.persistence import find_idempotent_receipt, persist_decision_proposal
+from intelligence.persistence import (
+    IdempotencyKeyTaken,
+    find_idempotent_receipt,
+    lock_idempotency_key,
+    persist_decision_proposal,
+)
 from intelligence.policy import DecisionDisposition, DecisionPolicy, PolicyResult
 from intelligence.provider import DecisionProvider
 from intelligence.resolution_machine import (
@@ -274,6 +279,9 @@ def resolve_module_identity_guarded(
 
     # Idempotency is checked before any provider call (research R5). A reused key with
     # different evidence raises IdempotencyConflict.
+    # Overlapping requests with one key queue here, so the second one finds the first
+    # one's binding instead of calling the provider again.
+    lock_idempotency_key(db, request_id=request_id, idempotency_key=idempotency_key)
     stored = find_idempotent_receipt(
         db,
         request_id=request_id,
@@ -417,7 +425,17 @@ def resolve_module_identity_guarded(
         ),
     )
 
-    record = persist_decision_proposal(db, proposal)
+    try:
+        record = persist_decision_proposal(db, proposal, raise_if_bound=True)
+    except IdempotencyKeyTaken as taken:
+        # Lost a race (no advisory lock, e.g. SQLite): answer from the committed outcome.
+        return _replayed_resolution(
+            new_machine(request_id),
+            taken.receipt,
+            candidate_count=len(inputs.candidates),
+            policy_pinned=taken.receipt.policy_version == expected_policy_version,
+            routing_target_exists=bool(routing_targets),
+        )
     receipt_id = record.id
 
     telemetry = telemetry_for_policy_result(
