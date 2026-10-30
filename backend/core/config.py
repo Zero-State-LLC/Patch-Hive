@@ -77,8 +77,11 @@ class Settings(BaseSettings):
     clef_timeout_seconds: float = 10.0
     decision_policy_version: str = "decision-policy-v1"
     # The one bounded routing target (spec 005 R6): the existing confirmation UI. Empty
-    # means no target, so a failed provider or a policy ESCALATE ends UNRESOLVED.
-    decision_routing_target: str = "human_review"
+    # means no target, so a failed provider or a policy ESCALATE ends UNRESOLVED. The
+    # default is empty because nothing lists or reads ESCALATE records yet, so an
+    # ESCALATE would be a silent dead end. Set it (for example "human_review") once a
+    # review queue consumes ESCALATE.
+    decision_routing_target: str = ""
 
     # Patch Engine
     patch_engine_version: str = "1.0.0"
