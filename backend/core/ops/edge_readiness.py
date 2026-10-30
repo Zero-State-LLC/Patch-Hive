@@ -16,11 +16,16 @@ live-payments / D1 stay forbidden even then (out of scope for 006).
 
 from __future__ import annotations
 
+import hmac
 import re
 from dataclasses import dataclass
 from enum import Enum
 from types import MappingProxyType
-from typing import Any, Callable, Iterable, Mapping
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping
+
+if TYPE_CHECKING:  # evaluation_enablement imports this module; import lazily at runtime.
+    from intelligence.evaluation_enablement import EvaluationEnablementReceipt
+    from intelligence.receipt_signing import ReceiptSignature
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
@@ -68,7 +73,8 @@ class ReadinessEvent(str, Enum):
 class ReadinessEvidence:
     """Operator-supplied and receipted facts about the deployment.
 
-    Every field is a caller assertion; nothing here is probed live.
+    Every field is a caller assertion; nothing here is probed live. The
+    evaluation receipt and its approver signature are verified, not trusted.
     """
 
     frontend_build_output_present: bool = False
@@ -82,6 +88,8 @@ class ReadinessEvidence:
     clef_flag_default_off: bool = False
     staging_host_plan_passed: bool = False
     evaluation_receipt_sha256: str = ""
+    evaluation_receipt: EvaluationEnablementReceipt | None = None
+    evaluation_receipt_signature: ReceiptSignature | None = None
     operator_approved: bool = False
     checklist_receipts: tuple[str, ...] = ()
 
@@ -146,7 +154,32 @@ def _guard_gates_pass(ev: ReadinessEvidence) -> tuple[str, ...]:
         failed.append("STAGING_HOST_PLAN_NOT_PASSED")
     if not is_valid_receipt_sha(ev.evaluation_receipt_sha256):
         failed.append("EVALUATION_RECEIPT_SHA_INVALID")
+    failed.extend(_evaluation_receipt_failures(ev))
     return tuple(failed)
+
+
+def _evaluation_receipt_failures(ev: ReadinessEvidence) -> list[str]:
+    """Verify the signed 007 receipt itself and bind it to the evidence SHA (006 T100)."""
+    from intelligence.evaluation_enablement import (
+        EvaluationEnablementReceipt,
+        signed_enablement_receipt_failures,
+    )
+
+    receipt = ev.evaluation_receipt
+    if not isinstance(receipt, EvaluationEnablementReceipt):
+        return ["EVALUATION_RECEIPT_MISSING"]
+    failed = [
+        f"EVALUATION_RECEIPT_UNVERIFIED:{code}"
+        for code in signed_enablement_receipt_failures(receipt, ev.evaluation_receipt_signature)
+    ]
+    claimed = ev.evaluation_receipt_sha256
+    if not (
+        isinstance(claimed, str)
+        and isinstance(receipt.receipt_sha256, str)
+        and hmac.compare_digest(claimed.encode("utf-8"), receipt.receipt_sha256.encode("utf-8"))
+    ):
+        failed.append("EVALUATION_RECEIPT_SHA_MISMATCH")
+    return failed
 
 
 def _guard_operator_approve(ev: ReadinessEvidence) -> tuple[str, ...]:

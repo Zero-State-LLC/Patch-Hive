@@ -366,7 +366,8 @@ class TestPublishingAPI:
     def test_publication_lifecycle_follows_the_spec(
         self, client: TestClient, db_session: Session, sample_user: User, sample_case
     ):
-        """Spec 002: create -> draft; owner publishes; unlisted pairs are 409 and change nothing."""
+        """Spec 002: create -> draft; unlisted pairs are 409 and change nothing. Publishing a
+        draft needs a validated book (FR-048), which no legacy export has."""
         rack = Rack(user_id=sample_user.id, name="Rack", case_id=sample_case.id)
         db_session.add(rack)
         db_session.commit()
@@ -384,7 +385,17 @@ class TestPublishingAPI:
         assert client.get(f"/api/p/{pub['slug']}").status_code == 404  # drafts are not public
         url = f"/api/me/publications/{pub['id']}"
         assert client.patch(url, json={"status": "hidden"}, headers=owner).status_code == 409
-        assert client.patch(url, json={"status": "published"}, headers=owner).json()["status"] == "published"
+        refused = client.patch(url, json={"status": "published"}, headers=owner)
+        assert refused.status_code == 409
+        assert refused.json()["detail"] == "PUBLICATION_BOOK_NOT_VALIDATED"
+        stored = db_session.get(Publication, pub["id"])
+        db_session.refresh(stored)
+        assert stored.status == "draft" and stored.published_at is None
+
+        # The moderation path runs on a publication published before FR-048.
+        stored.status = "published"
+        stored.published_at = datetime.utcnow()
+        db_session.commit()
 
         admin = User(username="mod", email="mod@example.com", password_hash="h", is_admin=True)
         db_session.add(admin)

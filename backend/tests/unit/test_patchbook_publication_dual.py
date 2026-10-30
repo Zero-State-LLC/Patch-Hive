@@ -103,9 +103,28 @@ def test_preflight_warnings_are_recorded_in_the_manifest(
     assert "INK_COVERAGE_HIGH" in manifest["warnings"]
     assert "BODY_SIZE_RAISED_TO_FLOOR" in manifest["warnings"]
     assert manifest["warnings"] == sorted(set(manifest["warnings"]))
+    # The stage receipt keeps each warning with its message (T036).
+    receipt = json.loads((tmp_path / "pack" / "validation" / "book.json").read_text())
+    assert receipt["stage"] == "validate_book" and receipt["status"] == "pass"
+    assert {"code": "INK_COVERAGE_HIGH", "severity": "warning", "message": "x"} in receipt["warnings"]
+    assert {
+        "code": "BODY_SIZE_RAISED_TO_FLOOR",
+        "severity": "warning",
+        "message": "y",
+    } in receipt["warnings"]
+    assert {w["code"] for w in receipt["warnings"]} == set(manifest["warnings"])
 
 
-def test_plate_family_publication_emits_plate_and_appendix(tmp_path: Path) -> None:
+def test_plate_family_publication_fails_page_count_until_plates_are_drawn(
+    tmp_path: Path,
+) -> None:
+    """Plate mode lays out 2N+2 pages but draws N+2, so validate_book refuses it
+    (spec 002 FR-016, research R1, T031). The pages written before validation and the
+    failed receipt stay in the pack."""
+    import json
+
+    from export.patchbook.design.engine import BookValidationFailed
+
     recipe = ResolvedStyleRecipe(
         mode=PatchBookMode.GALLERY,
         template_family=TemplateFamilyId.IMPOSSIBLE_INSTRUMENT,
@@ -122,13 +141,25 @@ def test_plate_family_publication_emits_plate_and_appendix(tmp_path: Path) -> No
         zero_state_brand_cap=6,
     )
     library = _minimal_library()
-    result = compose_design_export_pack(
-        library, recipe, out_dir=tmp_path / "pack", export_id="export-art-1"
-    )
-    kinds = [p.page_kind for p in result.layout_irs]
-    assert PageKind.PLATE in kinds
-    assert PageKind.APPENDIX_EXECUTION in kinds
-    assert (tmp_path / "pack" / "technical" / "PatchBook-execution.pdf").exists()
-    assert (tmp_path / "pack" / "PatchBook.pdf").exists()
-    assert any((tmp_path / "pack" / "pages" / "json").glob("*-plate.json"))
-    assert any((tmp_path / "pack" / "pages" / "json").glob("*-appendix.json"))
+    pack = tmp_path / "pack"
+    with pytest.raises(BookValidationFailed) as exc:
+        compose_design_export_pack(library, recipe, out_dir=pack, export_id="export-art-1")
+    assert exc.value.code == "PATCH_BOOK_PAGE_COUNT_MISMATCH"
+
+    n = len(library.items)
+    receipt = json.loads((pack / "validation" / "book.json").read_text())
+    assert receipt["status"] == "fail"
+    assert receipt["error_code"] == "PATCH_BOOK_PAGE_COUNT_MISMATCH"
+    assert receipt["remediation"]
+    assert receipt["manifest_page_count"] == 2 * n + 2
+    assert receipt["pdf_page_count"] == n + 2
+    kinds = [page["kind"] for page in receipt["pages"]]
+    assert PageKind.PLATE.value in kinds
+    assert PageKind.APPENDIX_EXECUTION.value in kinds
+    # A failed book never gets a manifest or checksums.
+    assert not (pack / "manifest" / "patch-book.json").exists()
+    assert not (pack / "manifest" / "checksums.json").exists()
+    assert (pack / "PatchBook.pdf").exists()
+    assert (pack / "technical" / "PatchBook-execution.pdf").exists()
+    assert any((pack / "pages" / "json").glob("*-plate.json"))
+    assert any((pack / "pages" / "json").glob("*-appendix.json"))
