@@ -52,9 +52,9 @@
 
 ## Lifecycle gaps and legacy HP (2026-10-29)
 
-- [ ] T036 Clear `needs_reverify` in the correction UPDATE once every field the row was flagged for has a `correct` archive row; keep it set while another flagged field is open. Test on a staging replica: CHICANE ends unflagged (research R8).
+- [x] T036 Clear `needs_reverify` in the correction UPDATE once every field the row was flagged for has a `correct` archive row; keep it set while another flagged field is open. Test on a staging replica: CHICANE ends unflagged (research R8). Done 2026-10-29 (#135): on a staging replica (staging's load history replayed through #71, #125 and main), the dry run plans one `modules_reverify_cleared` update and 0 conflicts; the apply leaves CHICANE at 4 HP and unflagged, and a rerun changes nothing. TLM ST MODULAR stays flagged, as nothing corrects it. Staging and prod clear on their next db-load.
   - depends_on: [T033]
-- [ ] T037 Refuse archive, flag and correct entries on tombstoned rows (`tombstoned_at IS NULL` / `status <> 'tombstoned'` in every statement); count each as `refused: row_tombstoned` in the receipt (research R9).
+- [x] T037 Refuse archive, flag and correct entries on tombstoned rows (`tombstoned_at IS NULL` / `status <> 'tombstoned'` in every statement); count each as `refused: row_tombstoned` in the receipt (research R9). Done 2026-10-29 (#135): every statement carries the filter, and the scheduler counts each refusal as `refused_row_tombstoned`.
   - depends_on: [T029, T033]
 - [ ] T038 Owner decision on the 221 unsourced v1 HP values (research R7: keep, flag, or triage).
   - depends_on: []
