@@ -125,10 +125,10 @@ From [research.md](research.md). Effort in brackets.
   - depends_on: [T070, 007:T081]
 - [ ] T101 Put production deploy workflows behind a GitHub environment with required reviewers (R2).
   - depends_on: [T001]
-  - [ ] T101b Create `staging` and `production` environments; give `production` required reviewers and a `main`-only branch rule; move `PATCHHIVE_DATABASE_URL_PROD` and the Cloudflare token into it (operator, repo admin) [S].
+  - [x] T101a Set the job `environment:` in `db-migrate.yml`, `db-load.yml` and `edge-secrets.yml` from the target input, mapping `prod` to `production`, and read secrets from the environment (code) [S]. Done 2026-10-30: job-level `environment:` expression added to `migrate`, `load` and `secrets` (`production` for prod runs, `staging` otherwise); workflow tests assert it; no runtime change until T101b moves the secrets; operator steps in DEPLOY_NOTES.md.
     - depends_on: [T001]
-  - [ ] T101a Set the job `environment:` in `db-migrate.yml`, `db-load.yml` and `edge-secrets.yml` from the target input, mapping `prod` to `production`, and read secrets from the environment (code) [S].
-    - depends_on: [T101b]
+  - [ ] T101b Create `staging` and `production` environments; give `production` required reviewers and a `main`-only branch rule; move `PATCHHIVE_DATABASE_URL_PROD` and the Cloudflare token into it (operator, repo admin) [S].
+    - depends_on: [T101a]
 - [x] T102 Delete `.github/workflows/deploy-worker-pin-pr.yml`; it deploys the Noema project, not PatchHive (R3) [S]. Done 2026-10-29.
   - depends_on: [T001]
 - [x] T103 Drop `actions: write` from `db-load.yml` (R4) [S]. Done 2026-10-29.

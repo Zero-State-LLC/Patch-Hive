@@ -63,3 +63,20 @@ def test_edge_secrets_revokes_new_token_when_write_fails() -> None:
 
 def test_pin_pr_workflow_removed() -> None:
     assert not (ROOT / ".github" / "workflows" / "deploy-worker-pin-pr.yml").exists()
+
+
+def test_prod_workflows_set_job_environment() -> None:
+    """Prod runs of all three workflows must go through the `production` environment."""
+    import yaml
+
+    expected = {
+        "db-migrate.yml": ("migrate", "inputs.target == 'prod'"),
+        "db-load.yml": ("load", "inputs.env == 'prod'"),
+        "edge-secrets.yml": ("secrets", "inputs.env == 'production'"),
+    }
+    for name, (job, condition) in expected.items():
+        doc = yaml.safe_load((ROOT / ".github" / "workflows" / name).read_text(encoding="utf-8"))
+        assert list(doc["jobs"]) == [job], name
+        assert doc["jobs"][job]["environment"] == (
+            "${{ " + condition + " && 'production' || 'staging' }}"
+        ), name
