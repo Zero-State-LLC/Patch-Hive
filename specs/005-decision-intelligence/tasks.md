@@ -49,7 +49,7 @@ From [research.md](research.md). Effort in brackets.
   - depends_on: [T082]
 - [x] T084 Pass the choice request into evaluation so the candidate check runs, and replace the hardcoded `false_canonicalization_count = 0` with the structural count (R4) [S–M]. Done 2026-10-29: cases carry optional `candidate_ids`; `evaluate` builds the request and counts the resolution-machine replay. Cases without `candidate_ids` skip the candidate check.
   - depends_on: [T060]
-- [x] T085 Name one bounded routing target (human review) in settings and pass it to the guarded resolution (R6) [S]. Done 2026-10-29: `settings.decision_routing_target` (default `human_review`, empty disables) is passed as `routing_targets` from the route, so `routing_target_exists` is true when configured.
+- [x] T085 Name one bounded routing target (human review) in settings and pass it to the guarded resolution (R6) [S]. Done 2026-10-29: `settings.decision_routing_target` (default empty until something consumes ESCALATE, so failed decisions end UNRESOLVED with `ESCALATE_NO_ROUTING_TARGET`; set `human_review` once a review queue exists) is passed as `routing_targets` from the route, so `routing_target_exists` is true when configured.
   - depends_on: [T082]
 - [ ] T080 Gate the runtime on a verified 007 receipt: outside development, refuse to start (and answer 409 `ENABLEMENT_RECEIPT_REQUIRED`) unless a signed receipt names the configured provider and policy version (R1) [M].
   - depends_on: [T082, 007:T081]

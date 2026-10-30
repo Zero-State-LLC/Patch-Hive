@@ -181,6 +181,26 @@ def test_routing_target_makes_policy_escalate_reach_escalate_state() -> None:
         assert result.machine.state is expected
 
 
+def test_routing_target_defaults_to_empty_so_failed_decisions_end_unresolved() -> None:
+    # Nothing consumes ESCALATE yet, so the default has no target (decision 7).
+    from core.config import Settings
+
+    assert Settings.model_fields["decision_routing_target"].default == ""
+
+    class Failing:
+        def choose(self, request):
+            raise RuntimeError("PROVIDER_DOWN")
+        def score(self, request): raise AssertionError
+        def probability(self, request): raise AssertionError
+
+    db = _db()
+    _seed(db)
+    default = Settings.model_fields["decision_routing_target"].default
+    default_targets = frozenset({default}) if default else frozenset()
+    result = _resolve(db, Failing(), routing_targets=default_targets)
+    assert result.machine.state is ResolutionState.UNRESOLVED
+
+
 def test_route_passes_configured_routing_target_and_replays(db_session, sample_rack_basic, monkeypatch):
     now = datetime.now(timezone.utc)
     db_session.add(ImageAssetRecord(
@@ -206,6 +226,7 @@ def test_route_passes_configured_routing_target_and_replays(db_session, sample_r
     import evidence.routes as routes
     monkeypatch.setattr(routes, "_configured_decision_provider", lambda **_: provider)
     monkeypatch.setattr(settings, "enable_decision_intelligence", True)
+    monkeypatch.setattr(settings, "decision_routing_target", "human_review")
 
     seen = {}
     import intelligence.clef_resolution as clef_resolution
