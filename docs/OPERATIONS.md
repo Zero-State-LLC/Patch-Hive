@@ -120,7 +120,7 @@ python -m evidence.expire --apply   # soft-delete expired image_assets rows and 
 
 Output is one JSON line: `mode`, `as_of`, `soft_deleted`, `purged_files`, `purge_deferred`. In a dry run the counts are what `--apply` would do, assuming storage deletes succeed. The command uses `DATABASE_URL` and the configured storage backend, so point it at the intended environment first. Run the dry run first and compare. Exit code 1 means some storage deletes failed (`purge_deferred > 0`); those rows stay undeleted and the next run retries them.
 
-It writes only `image_assets.deleted_at` and deletes the stored image object. Bytes still referenced by a live asset with the same hash are kept. Append-only tables (classification evidence, receipts, ledgers) are not touched.
+The database change is flushed before any stored bytes are deleted, so a failed flush never leaves deleted bytes behind. It writes only `image_assets.deleted_at` and deletes the stored image object. Bytes still referenced by a live asset with the same hash are kept. Append-only tables (classification evidence, receipts, ledgers) are not touched.
 
 ## Failure recovery
 
