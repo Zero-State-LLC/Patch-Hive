@@ -1,7 +1,7 @@
 """Add decision_receipt_keys: one accepted idempotency key per (request, key).
 
 Revision ID: 20261029_decision_receipt_idempotency
-Revises: 20261029_ledger_append_only
+Revises: 20261029_rig_metrics_packets
 Create Date: 2026-10-29
 
 Spec 005 T083, research R5: the evidence decision-resolution path looks a key up before
@@ -17,7 +17,7 @@ import sqlalchemy as sa
 from alembic import op
 
 revision = "20261029_decision_receipt_idempotency"
-down_revision = "20261029_ledger_append_only"
+down_revision = "20261029_rig_metrics_packets"
 branch_labels = None
 depends_on = None
 
