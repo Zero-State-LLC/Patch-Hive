@@ -54,6 +54,12 @@ class DecisionReceiptKeyRecord(Base):
     request_id = Column(String(128), primary_key=True)
     idempotency_key = Column(String(128), primary_key=True)
     evidence_hash = Column(String(64), nullable=False)
+    # The policy outcome this key was answered with. It can differ from the shared
+    # receipt's when thresholds changed between two keys with the same raw response, so
+    # replays read it from here.
+    policy_version = Column(String(100), nullable=False)
+    disposition = Column(String(32), nullable=False)
+    reason_codes = Column(JSON, nullable=False)
     receipt_id = Column(
         String(64),
         ForeignKey("decision_receipts.id", ondelete="RESTRICT"),

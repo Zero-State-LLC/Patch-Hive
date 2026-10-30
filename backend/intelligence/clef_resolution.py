@@ -33,10 +33,10 @@ from intelligence.evidence_resolution import (
     load_identity_inputs,
 )
 from intelligence.module_service import DecisionProposal, ModuleDecisionService
-from intelligence.models import DecisionReceiptRecord
 from intelligence.persistence import (
     IdempotencyKeyTaken,
-    find_idempotent_receipt,
+    StoredOutcome,
+    find_idempotent_outcome,
     lock_idempotency_key,
     persist_decision_proposal,
 )
@@ -80,7 +80,7 @@ class GuardedResolution:
     telemetry: ResolutionTelemetry
     # Set when the idempotency key matched a stored receipt: the provider was not
     # called and the machine is replayed from the stored disposition.
-    replayed_receipt: DecisionReceiptRecord | None = None
+    replayed_outcome: StoredOutcome | None = None
 
     @property
     def state(self) -> ResolutionState:
@@ -168,16 +168,18 @@ def _provider_failure_result(
 
 def _replayed_resolution(
     machine: ResolutionMachine,
-    stored: DecisionReceiptRecord,
+    outcome: StoredOutcome,
     *,
     candidate_count: int,
     policy_pinned: bool,
     routing_target_exists: bool,
 ) -> GuardedResolution:
+    stored = outcome.receipt
+    # Disposition and policy come from the key's binding, not the shared receipt.
     result = PolicyResult(
-        policy_version=stored.policy_version,
-        disposition=DecisionDisposition(stored.disposition),
-        reason_codes=tuple(stored.reason_codes or ()),
+        policy_version=outcome.policy_version,
+        disposition=DecisionDisposition(outcome.disposition),
+        reason_codes=outcome.reason_codes,
     )
     # Replay the stored outcome through the machine so it ends in a real final state.
     # The stored receipt only exists for a packet that passed the schema check.
@@ -229,7 +231,7 @@ def _replayed_resolution(
         receipt_id=stored.id,
         error_code=None,
         telemetry=telemetry,
-        replayed_receipt=stored,
+        replayed_outcome=outcome,
     )
 
 
@@ -282,7 +284,7 @@ def resolve_module_identity_guarded(
     # Overlapping requests with one key queue here, so the second one finds the first
     # one's binding instead of calling the provider again.
     lock_idempotency_key(db, request_id=request_id, idempotency_key=idempotency_key)
-    stored = find_idempotent_receipt(
+    stored = find_idempotent_outcome(
         db,
         request_id=request_id,
         idempotency_key=idempotency_key,
@@ -431,9 +433,9 @@ def resolve_module_identity_guarded(
         # Lost a race (no advisory lock, e.g. SQLite): answer from the committed outcome.
         return _replayed_resolution(
             new_machine(request_id),
-            taken.receipt,
+            taken.outcome,
             candidate_count=len(inputs.candidates),
-            policy_pinned=taken.receipt.policy_version == expected_policy_version,
+            policy_pinned=taken.outcome.policy_version == expected_policy_version,
             routing_target_exists=bool(routing_targets),
         )
     receipt_id = record.id

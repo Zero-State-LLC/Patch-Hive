@@ -870,13 +870,15 @@ def _resolve_with_guarded_flow(
     except (EvidenceResolutionError, RuntimeError, ValueError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    stored = resolution.replayed_receipt
-    if stored is not None:
-        # Same key, same evidence: answer from the stored receipt, no provider call.
+    replayed = resolution.replayed_outcome
+    if replayed is not None:
+        # Same key, same evidence: answer from the stored outcome, no provider call.
+        # The disposition is the one bound to this key, not the shared receipt's.
+        stored = replayed.receipt
         return DecisionResolutionResponse(
             evidence_id=body.evidence_id,
             selected_choice=stored.selected_choice,
-            disposition=stored.disposition,
+            disposition=replayed.disposition,
             provider=stored.provider,
             confidence=stored.confidence,
             canonical_authority=False,

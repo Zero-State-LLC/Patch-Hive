@@ -94,9 +94,9 @@ def test_repeat_with_same_key_returns_stored_outcome_without_provider_call() -> 
     other = CountingProvider(choice="none_of_above", confidence=0.1)
     second = _resolve(db, other)
     assert other.calls == 0
-    assert second.replayed_receipt is not None
+    assert second.replayed_outcome is not None
     assert second.receipt_id == first.receipt_id
-    assert second.replayed_receipt.selected_choice == "module-a"
+    assert second.replayed_outcome.receipt.selected_choice == "module-a"
     assert db.query(DecisionReceiptRecord).count() == 1
 
 
@@ -156,6 +156,8 @@ def test_key_table_rejects_duplicate_request_and_key() -> None:
     db.add(DecisionReceiptKeyRecord(
         request_id=receipt.request_id, idempotency_key="idem",
         evidence_hash=receipt.evidence_hash, receipt_id=receipt.id,
+        policy_version=receipt.policy_version, disposition=receipt.disposition,
+        reason_codes=list(receipt.reason_codes),
     ))
     with pytest.raises(IntegrityError):
         db.flush()
@@ -248,7 +250,7 @@ def test_replay_ends_in_the_stored_disposition_state() -> None:
     _seed(db)
     first = _resolve(db, CountingProvider())
     replay = _resolve(db, CountingProvider())
-    assert replay.replayed_receipt is not None
+    assert replay.replayed_outcome is not None
     assert replay.machine.state is first.machine.state is ResolutionState.AUTO_PROPOSE
 
 
@@ -274,7 +276,7 @@ def test_deduplicated_decision_still_binds_the_new_key() -> None:
     retry = SameDecision()
     replay = _resolve(db, retry, key="k2")
     assert retry.calls == 0
-    assert replay.replayed_receipt is not None
+    assert replay.replayed_outcome is not None
 
 
 def test_lost_race_replays_the_winner_instead_of_failing(monkeypatch) -> None:
@@ -285,7 +287,7 @@ def test_lost_race_replays_the_winner_instead_of_failing(monkeypatch) -> None:
     db = _db()
     _seed(db)
     winner_provider = CountingProvider()
-    real_find = resolution_module.find_idempotent_receipt
+    real_find = resolution_module.find_idempotent_outcome
     state = {"first": True}
 
     def racing_find(*args, **kwargs):
@@ -295,10 +297,50 @@ def test_lost_race_replays_the_winner_instead_of_failing(monkeypatch) -> None:
             return None
         return real_find(*args, **kwargs)
 
-    monkeypatch.setattr(resolution_module, "find_idempotent_receipt", racing_find)
+    monkeypatch.setattr(resolution_module, "find_idempotent_outcome", racing_find)
     loser_provider = CountingProvider(choice="none_of_above", confidence=0.1)
     loser = _resolve(db, loser_provider)
     assert loser_provider.calls == 1  # it did not see the winner before calling
-    assert loser.replayed_receipt is not None
-    assert loser.replayed_receipt.selected_choice == "module-a"
+    assert loser.replayed_outcome is not None
+    assert loser.replayed_outcome.receipt.selected_choice == "module-a"
     assert db.query(DecisionReceiptRecord).count() == 1
+
+
+def test_each_key_replays_the_policy_outcome_it_was_first_given() -> None:
+    # Same raw provider response (same decision id) under two keys while the thresholds
+    # change in between. The second key reuses the first receipt, yet each key must
+    # answer with the disposition the policy produced for it, on first call and retry.
+    db = _db()
+    _seed(db)
+
+    class Fixed(CountingProvider):
+        def choose(self, request):
+            packet = super().choose(request)
+            return packet.model_copy(update={"decision_id": "same-decision"})
+
+    def policy(auto_at: float) -> DecisionPolicy:
+        return DecisionPolicy(PolicyThresholds(
+            policy_version="test-v1", auto_propose_at=auto_at, user_review_at=0.65,
+            probability_margin=0.1,
+        ))
+
+    def run(key: str, auto_at: float, provider: CountingProvider):
+        return resolve_module_identity_guarded(
+            db, evidence_id="ev-1", provider=provider, policy=policy(auto_at),
+            enabled=True, idempotency_key=key, expected_policy_version="test-v1",
+        )
+
+    first_a = run("key-a", 0.90, Fixed(confidence=0.95))
+    first_b = run("key-b", 0.99, Fixed(confidence=0.95))
+    assert first_a.proposal.policy.disposition.value == "AUTO_PROPOSE"
+    assert first_b.proposal.policy.disposition.value == "USER_REVIEW"
+    assert db.query(DecisionReceiptRecord).count() == 1
+
+    # Retries run under the latest thresholds yet must match each key's first answer.
+    for key, first in (("key-a", first_a), ("key-b", first_b)):
+        retry_provider = Fixed()
+        retry = run(key, 0.99, retry_provider)
+        assert retry_provider.calls == 0
+        assert retry.replayed_outcome.disposition == first.proposal.policy.disposition.value
+        assert retry.replayed_outcome.reason_codes == first.proposal.policy.reason_codes
+        assert retry.machine.state is first.machine.state

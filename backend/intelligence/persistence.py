@@ -6,6 +6,7 @@ inventory dependency and performs no confirmation transition.
 from __future__ import annotations
 
 import hashlib
+from dataclasses import dataclass
 
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
@@ -19,12 +20,22 @@ class IdempotencyConflict(ValueError):
     """The same idempotency key was reused for a different evidence payload."""
 
 
-class IdempotencyKeyTaken(Exception):
-    """A concurrent request bound this key first; `receipt` is its committed outcome."""
+@dataclass(frozen=True)
+class StoredOutcome:
+    """What a key was answered with: the shared receipt plus the policy outcome bound to the key."""
 
-    def __init__(self, receipt: DecisionReceiptRecord) -> None:
+    receipt: DecisionReceiptRecord
+    policy_version: str
+    disposition: str
+    reason_codes: tuple[str, ...]
+
+
+class IdempotencyKeyTaken(Exception):
+    """A concurrent request bound this key first; `outcome` is its committed answer."""
+
+    def __init__(self, outcome: StoredOutcome) -> None:
         super().__init__("IDEMPOTENCY_KEY_TAKEN")
-        self.receipt = receipt
+        self.outcome = outcome
 
 
 def lock_idempotency_key(db: Session, *, request_id: str, idempotency_key: str) -> None:
@@ -44,14 +55,14 @@ def lock_idempotency_key(db: Session, *, request_id: str, idempotency_key: str) 
     )
 
 
-def find_idempotent_receipt(
+def find_idempotent_outcome(
     db: Session,
     *,
     request_id: str,
     idempotency_key: str,
     evidence_hash: str,
-) -> DecisionReceiptRecord | None:
-    """Return the stored receipt for this key, or None when the key is unused.
+) -> StoredOutcome | None:
+    """Return the stored outcome for this key, or None when the key is unused.
 
     Raises IdempotencyConflict when the key was used with a different evidence hash.
     Performs no provider call.
@@ -61,7 +72,13 @@ def find_idempotent_receipt(
         return None
     if binding.evidence_hash != evidence_hash:
         raise IdempotencyConflict("IDEMPOTENCY_KEY_CONFLICT")
-    return db.get(DecisionReceiptRecord, binding.receipt_id)
+    receipt = db.get(DecisionReceiptRecord, binding.receipt_id)
+    return StoredOutcome(
+        receipt=receipt,
+        policy_version=binding.policy_version,
+        disposition=binding.disposition,
+        reason_codes=tuple(binding.reason_codes or ()),
+    )
 
 
 def persist_decision_proposal(
@@ -78,7 +95,7 @@ def persist_decision_proposal(
     losing the insert race; otherwise an already-bound key returns its receipt.
     """
     request = proposal.request
-    existing = find_idempotent_receipt(
+    existing = find_idempotent_outcome(
         db,
         request_id=request.request_id,
         idempotency_key=request.idempotency_key,
@@ -87,7 +104,7 @@ def persist_decision_proposal(
     if existing is not None:
         if raise_if_bound:
             raise IdempotencyKeyTaken(existing)
-        return existing
+        return existing.receipt
 
     try:
         # A savepoint keeps a lost race from discarding the caller's other work.
@@ -98,13 +115,16 @@ def persist_decision_proposal(
                     request_id=request.request_id,
                     idempotency_key=request.idempotency_key,
                     evidence_hash=request.evidence_hash,
+                    policy_version=proposal.policy.policy_version,
+                    disposition=proposal.policy.disposition.value,
+                    reason_codes=list(proposal.policy.reason_codes),
                     receipt_id=record.id,
                 )
             )
             db.flush()
     except IntegrityError:
         # Lost the insert race to a concurrent request.
-        winner = find_idempotent_receipt(
+        winner = find_idempotent_outcome(
             db,
             request_id=request.request_id,
             idempotency_key=request.idempotency_key,
@@ -114,7 +134,7 @@ def persist_decision_proposal(
             raise
         if raise_if_bound:
             raise IdempotencyKeyTaken(winner) from None
-        return winner
+        return winner.receipt
     return record
 
 

@@ -28,6 +28,9 @@ def upgrade() -> None:
         sa.Column("request_id", sa.String(length=128), nullable=False),
         sa.Column("idempotency_key", sa.String(length=128), nullable=False),
         sa.Column("evidence_hash", sa.String(length=64), nullable=False),
+        sa.Column("policy_version", sa.String(length=100), nullable=False),
+        sa.Column("disposition", sa.String(length=32), nullable=False),
+        sa.Column("reason_codes", sa.JSON(), nullable=False),
         sa.Column(
             "receipt_id",
             sa.String(length=64),

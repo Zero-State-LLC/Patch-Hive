@@ -112,7 +112,7 @@ def test_overlapping_requests_with_one_key_call_the_provider_once() -> None:
 
         assert errors == []
         assert provider.calls == 1
-        assert sorted(r.replayed_receipt is not None for r in outcomes) == [False, True]
+        assert sorted(r.replayed_outcome is not None for r in outcomes) == [False, True]
         with Session() as check:
             assert check.query(DecisionReceiptRecord).count() == 1
             assert check.query(DecisionReceiptKeyRecord).count() == 1
