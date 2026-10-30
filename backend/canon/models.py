@@ -286,9 +286,12 @@ class StripeEventRecordModel(Base):
     event_type = Column(String(100), nullable=False)
     payload_hash = Column(String(64), nullable=False)
     livemode = Column(Boolean, nullable=False)
+    # received (inside the intake transaction only), then processed, duplicate,
+    # unresolved or ignored (canon.webhook_events, spec 004 FR-014).
     status = Column(String(20), nullable=False, default="received")
     received_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
     processed_at = Column(DateTime(timezone=True), nullable=True)
+    reason_code = Column(String(64), nullable=True)
 
 
 class CanonicalAdminAuditEventRecord(Base):

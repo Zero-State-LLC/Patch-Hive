@@ -20,6 +20,7 @@ from canon.models import (
     CanonicalExportRecord,
     StripeEventRecordModel,
 )
+from canon.webhook_events import process_stripe_event
 
 
 class ExportBoundaryError(ValueError):
@@ -256,7 +257,7 @@ def receive_stripe_webhook(
     tolerance_seconds: int = 300,
 ) -> StripeWebhookIntake:
     """Verify Stripe-style signatures, reject live-mode events outside production and
-    replay conflicts, and record the event once.
+    replay conflicts, record the event once and process it (``canon.webhook_events``).
 
     A live-mode event is accepted only when ``production`` is true and ``test_mode`` is
     false. A concurrent delivery that loses the insert race answers as a duplicate.
@@ -314,6 +315,8 @@ def receive_stripe_webhook(
         if winner.payload_hash != payload_hash:
             raise ExportBoundaryError("WEBHOOK_REPLAY_CONFLICT") from None
         return StripeWebhookIntake(record=winner, event=event, duplicate=True)
+    # Dispatch in this transaction; the record leaves here with a final status.
+    process_stripe_event(session, record, event)
     return StripeWebhookIntake(record=record, event=event, duplicate=False)
 
 

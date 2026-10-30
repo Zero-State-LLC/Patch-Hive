@@ -266,9 +266,10 @@ export interface StripeEventRecord {
   event_type: string;
   payload_hash: string;
   livemode: boolean;
-  status: "received" | "processed" | "rejected";
+  status: "received" | "processed" | "duplicate" | "unresolved" | "ignored" | "rejected";
   received_at: string;
   processed_at?: string | null;
+  reason_code?: string | null;
 }
 export interface AdminAuditEvent {
   schema_version: typeof CANON_SCHEMA_VERSION;

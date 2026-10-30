@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from hashlib import sha256
 from typing import Optional
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from community.models import User
@@ -195,17 +196,24 @@ def get_referral_summary(db: Session, *, user: User) -> dict:
         if referral.status == "Pending" and referral.referred_user_id not in rewarded_ids
     ]
     rewarded_referrals = [referral for referral in referrals if referral.status == "Rewarded"]
-    earned_credits = (
-        db.query(CreditsLedger)
-        .filter(
-            CreditsLedger.user_id == user.id,
-            CreditsLedger.change_type == "Grant",
-            CreditsLedger.referral_id.isnot(None),
+    # Count only spendable credit: the canonical referral grants keyed by this user's own
+    # referrals (spec 004 FR-009, FR-031, research R6). Legacy-ledger rewards for a
+    # self-reported purchase are not spendable, so they are not earned credit.
+    from canon.models import CanonicalCreditLedgerEntryRecord
+
+    reward_keys = [f"referral-reward:{referral.id}" for referral in referrals]
+    earned_total = 0
+    if reward_keys:
+        earned_total = int(
+            db.query(func.coalesce(func.sum(CanonicalCreditLedgerEntryRecord.delta), 0))
+            .filter(
+                CanonicalCreditLedgerEntryRecord.user_id == user.id,
+                CanonicalCreditLedgerEntryRecord.entry_type == "grant",
+                CanonicalCreditLedgerEntryRecord.idempotency_key.in_(reward_keys),
+            )
+            .scalar()
+            or 0
         )
-        .with_entities(CreditsLedger.credits_delta)
-        .all()
-    )
-    earned_total = sum(entry.credits_delta for entry in earned_credits)
     return {
         "referral_code": user.referral_code,
         "referral_link": f"/signup?ref={user.referral_code}",

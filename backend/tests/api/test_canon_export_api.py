@@ -412,3 +412,51 @@ def test_stripe_webhook_concurrent_duplicate_answers_200_duplicate(
     assert resp.json()["duplicate"] is True
     assert resp.json()["stripe_event_id"] == "evt_race"
     assert lookups == ["evt_race", "evt_race"]
+
+
+@pytest.mark.parametrize(
+    "event_type,status,reason_code",
+    [
+        ("charge.succeeded", "ignored", None),
+        ("checkout.session.completed", "unresolved", "HANDLER_NOT_IMPLEMENTED"),
+    ],
+)
+def test_stripe_webhook_answers_with_the_event_disposition(
+    client: TestClient,
+    db_session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+    event_type: str,
+    status: str,
+    reason_code: str | None,
+) -> None:
+    """Spec 004 T045: no event stays ``received``; the reply carries the disposition."""
+    import time
+
+    from canon.models import StripeEventRecordModel
+
+    secret = _webhook_settings(monkeypatch, environment="development", test_mode=True)
+    payload = json.dumps(
+        {"id": "evt_disp", "type": event_type, "livemode": False, "data": {"object": {}}}
+    ).encode()
+    resp = client.post(
+        "/api/canon/webhooks/stripe",
+        content=payload,
+        headers={"Stripe-Signature": _signature(payload, secret, int(time.time()))},
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert (body["status"], body["reason_code"], body["duplicate"]) == (status, reason_code, False)
+    record = db_session.get(StripeEventRecordModel, "evt_disp")
+    assert record.status == status
+    assert record.processed_at is not None
+    assert db_session.query(CanonicalCreditLedgerEntryRecord).count() == 0
+
+
+def test_the_legacy_balance_route_is_gone(client: TestClient, db_session: Session) -> None:
+    """Spec 004 T044, FR-009: the canonical balance is the only balance."""
+    user, _patch = _persist_hierarchy(db_session)
+    _grant(db_session, user.id, 7)
+    legacy = client.get("/api/monetization/credits/balance", headers=_auth_headers(user))
+    assert legacy.status_code == 404
+    canonical = client.get("/api/canon/credits/balance", headers=_auth_headers(user))
+    assert canonical.json()["balance"] == 7

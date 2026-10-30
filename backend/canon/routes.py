@@ -167,6 +167,7 @@ class StripeWebhookResponse(BaseModel):
     status: str
     event_type: str
     duplicate: bool
+    reason_code: str | None = None
 
 
 def _download_secret() -> str:
@@ -1141,6 +1142,7 @@ async def stripe_webhook(
         status=record.status,
         event_type=str(event.get("type", record.event_type)),
         duplicate=intake.duplicate,
+        reason_code=record.reason_code,
     )
 
 
