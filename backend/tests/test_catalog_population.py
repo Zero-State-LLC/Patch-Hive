@@ -384,3 +384,90 @@ def test_maker_corrections_v2_replace_the_v1_overlay_hp(fresh_population_url, tm
             )).scalar_one() == 12
     finally:
         engine.dispose()
+
+
+V3_PAGES = {
+    "make-noise-dpo": "https://www.makenoisemusic.com/modules/dpo/",
+    "make-noise-morphagene": "https://www.makenoisemusic.com/modules/morphagene/",
+}
+
+
+def test_maker_corrections_v3_and_the_legacy_hp_marker(fresh_population_url, tmp_path):
+    """Spec 003 T039 on Postgres: the hand-checked v1 values are corrected once, and
+    hp_source marks exactly the rows whose HP is still an uncited v1 value."""
+    missing = tmp_path / "none.json"
+    first = populate(fresh_population_url, apply=True, verification_path=missing)
+    assert first["updates"]["hp_source_legacy_marked"] == 36
+    engine = create_engine(fresh_population_url)
+    try:
+        with engine.connect() as conn:
+            marked = dict(conn.execute(text(
+                "SELECT slug, hp FROM module_catalog WHERE hp_source = 'legacy_unsourced'"
+            )).all())
+            fresh = dict(conn.execute(text(
+                "SELECT slug, hp FROM module_catalog WHERE slug IN ('make-noise-dpo', 'make-noise-morphagene')"
+            )).all())
+        # A fresh load takes the maker value from v3; no re-sourced value is marked.
+        assert fresh == {"make-noise-dpo": 28, "make-noise-morphagene": 20}
+        assert len(marked) == 36 and marked["make-noise-maths"] == 20
+        assert marked["addac-system-addac200pi"] == 2
+        assert not set(marked) & {"make-noise-dpo", "doepfer-a-110", "mutable-instruments-grids"}
+
+        with engine.begin() as conn:
+            # The values a database loaded before v3 holds (v1 filled DPO and Morphagene),
+            # with no marker yet on Maths, and a stale marker on a re-sourced row.
+            conn.execute(text(
+                "UPDATE module_catalog SET hp = CASE slug WHEN 'make-noise-dpo' THEN 30 "
+                "WHEN 'make-noise-morphagene' THEN 18 END "
+                "WHERE slug IN ('make-noise-dpo', 'make-noise-morphagene')"
+            ))
+            conn.execute(text(
+                "UPDATE modules SET hp = CASE name WHEN 'DPO' THEN 30 WHEN 'Morphagene' THEN 18 END "
+                "WHERE brand = 'Make Noise' AND name IN ('DPO', 'Morphagene')"
+            ))
+            conn.execute(text("UPDATE module_catalog SET hp_source = NULL WHERE slug = 'make-noise-maths'"))
+            conn.execute(text(
+                "UPDATE module_catalog SET hp_source = 'legacy_unsourced' WHERE slug = 'doepfer-a-110'"
+            ))
+            conn.execute(text("DELETE FROM catalog_value_archive WHERE batch = 'maker-corrections-v3'"))
+        receipt = populate(fresh_population_url, apply=True, verification_path=missing)
+        assert receipt["updates"] == {
+            "module_catalog_correct": 2,
+            "modules_correct": 2,
+            "hp_source_legacy_marked": 1,
+            "hp_source_legacy_cleared": 1,
+        }
+        assert receipt["conflicts_total"] == 0
+        with engine.connect() as conn:
+            catalog = dict(conn.execute(text(
+                "SELECT slug, hp FROM module_catalog WHERE slug IN ('make-noise-dpo', 'make-noise-morphagene')"
+            )).all())
+            modules = dict(conn.execute(text(
+                "SELECT name, hp FROM modules WHERE brand = 'Make Noise' AND name IN ('DPO', 'Morphagene')"
+            )).all())
+            sources = dict(conn.execute(text(
+                "SELECT slug, hp_source FROM module_catalog WHERE slug IN "
+                "('make-noise-dpo', 'make-noise-maths', 'doepfer-a-110')"
+            )).all())
+            archived = conn.execute(text(
+                "SELECT table_name, row_key, old_value, source_tag FROM catalog_value_archive "
+                "WHERE batch = 'maker-corrections-v3' AND field = 'hp' AND action = 'correct' "
+                "ORDER BY table_name, row_key"
+            )).all()
+        assert catalog == {"make-noise-dpo": 28, "make-noise-morphagene": 20}
+        assert modules == {"DPO": 28, "Morphagene": 20}
+        assert sources == {"make-noise-dpo": None, "make-noise-maths": "legacy_unsourced", "doepfer-a-110": None}
+        assert [(a.table_name, a.row_key, a.old_value) for a in archived] == [
+            ("module_catalog", "make-noise-dpo", "30"),
+            ("module_catalog", "make-noise-morphagene", "18"),
+            ("modules", "Make Noise::DPO", "30"),
+            ("modules", "Make Noise::Morphagene", "18"),
+        ]
+        pages = {**V3_PAGES, "Make Noise::DPO": V3_PAGES["make-noise-dpo"],
+                 "Make Noise::Morphagene": V3_PAGES["make-noise-morphagene"]}
+        assert all(pages[a.row_key] in a.source_tag for a in archived)
+
+        again = populate(fresh_population_url, apply=True, verification_path=missing)
+        assert again["inserts"] == {} and again["updates"] == {}
+    finally:
+        engine.dispose()

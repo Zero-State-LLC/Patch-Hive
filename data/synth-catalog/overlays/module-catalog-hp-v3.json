@@ -1,0 +1,1589 @@
+{
+ "dataset_version": "module-catalog-hp-overlay-v3",
+ "generated_from": "spec 003 T039 triage (owner decision 9, 2026-10-30): v1 values whose hp-enrichment result (hermes-research/hp-enrichment-batch*-results.filtered.json) cites the official maker page, plus two values hand-checked on the maker page. Plain GETs 2026-10-30: of ten spot checks nine agree and one timed out (Instruo Lubadh); Doepfer A-110 also agrees (its page was fetched for A-110-1). None disagree.",
+ "policy": "fill-null only; maker page values only; supersedes the unsourced module-catalog-hp-v1 entry for the same slug. ADDAC200PI is left out (its citation is the ADDAC200 page and the maker site answered with a bot challenge).",
+ "generated_at": "2026-10-30T00:50:00-0700",
+ "count": 158,
+ "entries": [
+  {
+   "slug": "addac-system-addac001-vcc-voltage-controlled-computer",
+   "brand": "ADDAC System",
+   "name": "ADDAC001 VCC (Voltage Controlled Computer)",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac001",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac003-vcc-manual-inputs",
+   "brand": "ADDAC System",
+   "name": "ADDAC003 VCC Manual Inputs",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac003",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac005-vcc-gate-outputs",
+   "brand": "ADDAC System",
+   "name": "ADDAC005 VCC Gate Outputs",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac005",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac101-wav-player",
+   "brand": "ADDAC System",
+   "name": "ADDAC101 .WAV Player",
+   "hp": 11,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac100-series/addac101",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac102-vc-fm-radio",
+   "brand": "ADDAC System",
+   "name": "ADDAC102 VC FM Radio",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac100-series/addac102",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac200-multiples",
+   "brand": "ADDAC System",
+   "name": "ADDAC200 Multiples",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac200s-size-matter-black",
+   "brand": "ADDAC System",
+   "name": "ADDAC200S Size Matter black",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac203-cv-mapping",
+   "brand": "ADDAC System",
+   "name": "ADDAC203 CV Mapping",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac203",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac204-vc-cv-mapping",
+   "brand": "ADDAC System",
+   "name": "ADDAC204 VC CV Mapping",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac204",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac205-dual-oscilloscope-awg",
+   "brand": "ADDAC System",
+   "name": "ADDAC205 Dual Oscilloscope & AWG",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac205",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac207",
+   "brand": "ADDAC System",
+   "name": "ADDAC207",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac207",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac207-intuitive-quantizer-black",
+   "brand": "ADDAC System",
+   "name": "ADDAC207 Intuitive Quantizer (black)",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac207",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac215",
+   "brand": "ADDAC System",
+   "name": "ADDAC215",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac215",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac302-nchunk-control",
+   "brand": "ADDAC System",
+   "name": "ADDAC302 Nchunk Control",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac300-series/addac302",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac306",
+   "brand": "ADDAC System",
+   "name": "ADDAC306",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac300-series/addac306",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac501-complex-random",
+   "brand": "ADDAC System",
+   "name": "ADDAC501 Complex Random",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac500-series/addac501",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac501b-complex-random-expansion",
+   "brand": "ADDAC System",
+   "name": "ADDAC501B Complex Random Expansion",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac500-series/addac501",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac502-ultra-lissajous",
+   "brand": "ADDAC System",
+   "name": "ADDAC502 Ultra Lissajous",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac500-series/addac502",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac503-marble-physics",
+   "brand": "ADDAC System",
+   "name": "ADDAC503 Marble Physics",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac500-series/addac503",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac601-vc-fixed-filterbank",
+   "brand": "ADDAC System",
+   "name": "ADDAC601 VC Fixed Filterbank",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac600-series/addac601",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac602-passive-ring-modulator",
+   "brand": "ADDAC System",
+   "name": "ADDAC602 Passive Ring Modulator",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac600-series/addac602",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac801-simple-mixer",
+   "brand": "ADDAC System",
+   "name": "ADDAC801 Simple Mixer",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac800-series/addac801",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac802-vc-mixer",
+   "brand": "ADDAC System",
+   "name": "ADDAC802 VC Mixer",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac800-series/addac802",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac803",
+   "brand": "ADDAC System",
+   "name": "ADDAC803",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac800-series/addac803",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "addac-system-addac804-audio-integrator",
+   "brand": "ADDAC System",
+   "name": "ADDAC804 AUDIO iNTEGRATOR",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac800-series/addac804",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-abc",
+   "brand": "Bastl Instruments",
+   "name": "ABC",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/abc",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-ciao",
+   "brand": "Bastl Instruments",
+   "name": "Ciao!",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/ciao",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-cinnamon",
+   "brand": "Bastl Instruments",
+   "name": "Cinnamon",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/cinnamon",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-clutch",
+   "brand": "Bastl Instruments",
+   "name": "Clutch",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/clutch",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-cv-trinity",
+   "brand": "Bastl Instruments",
+   "name": "CV TRINITY",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/cv-trinity",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-dark-matter",
+   "brand": "Bastl Instruments",
+   "name": "Dark Matter",
+   "hp": 13,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/dark-matter",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-dc-motor",
+   "brand": "Bastl Instruments",
+   "name": "DC MOTOR",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/dc-motor",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-grandpa",
+   "brand": "Bastl Instruments",
+   "name": "GrandPa",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/grandpa",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-ikarie",
+   "brand": "Bastl Instruments",
+   "name": "Ikarie",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/ikarie",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-knit-rider",
+   "brand": "Bastl Instruments",
+   "name": "Knit Rider",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/knit-rider",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-little-nerd",
+   "brand": "Bastl Instruments",
+   "name": "Little Nerd",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/little-nerd",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-multiple",
+   "brand": "Bastl Instruments",
+   "name": "Multiple",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/multiple",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-neo-trinity",
+   "brand": "Bastl Instruments",
+   "name": "Neo Trinity",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/neo-trinity",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-noise-square",
+   "brand": "Bastl Instruments",
+   "name": "Noise Square",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/noise-square",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-pizza",
+   "brand": "Bastl Instruments",
+   "name": "Pizza",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/pizza",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-propust",
+   "brand": "Bastl Instruments",
+   "name": "Propust",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/propust",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-quattro-figaro",
+   "brand": "Bastl Instruments",
+   "name": "Quattro Figaro",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/quattro-figaro",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-sense",
+   "brand": "Bastl Instruments",
+   "name": "Sense",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/sense",
+   "verification": "maker-page-spot-check-2026-10-30"
+  },
+  {
+   "slug": "bastl-instruments-servo",
+   "brand": "Bastl Instruments",
+   "name": "SERVO",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/servo",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-skis",
+   "brand": "Bastl Instruments",
+   "name": "Skis",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/skis",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-solenoid",
+   "brand": "Bastl Instruments",
+   "name": "SOLENOID",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/solenoid",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-spa",
+   "brand": "Bastl Instruments",
+   "name": "SPA",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/spa",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-spaghetti",
+   "brand": "Bastl Instruments",
+   "name": "Spaghetti",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/spaghetti",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-tea-kick",
+   "brand": "Bastl Instruments",
+   "name": "Tea Kick",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/tea-kick",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-wackel-kontakt",
+   "brand": "Bastl Instruments",
+   "name": "Wackel Kontakt",
+   "hp": 1,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/wackel-kontakt",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "bastl-instruments-waver",
+   "brand": "Bastl Instruments",
+   "name": "Waver",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/waver",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-bandit",
+   "brand": "Befaco",
+   "name": "Bandit",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/bandit/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-chopping-kinky",
+   "brand": "Befaco",
+   "name": "Chopping Kinky",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/chopping-kinky/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-crush-delay",
+   "brand": "Befaco",
+   "name": "Crush Delay",
+   "hp": 11,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/crush-delay/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-dual-atenuverter",
+   "brand": "Befaco",
+   "name": "Dual Atenuverter",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/dual-atenuverter/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-even-vco",
+   "brand": "Befaco",
+   "name": "Even VCO",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/even-vco/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-lich",
+   "brand": "Befaco",
+   "name": "Lich",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/lich/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-midi-thing-v2",
+   "brand": "Befaco",
+   "name": "MIDI Thing V2",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/midi-thing-v2/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-mixer",
+   "brand": "Befaco",
+   "name": "Mixer",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/mixer/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-muxlicer",
+   "brand": "Befaco",
+   "name": "Muxlicer",
+   "hp": 16,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/muxlicer/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-noise-plethora",
+   "brand": "Befaco",
+   "name": "Noise Plethora",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/noise-plethora/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-octaves-vco",
+   "brand": "Befaco",
+   "name": "Octaves VCO",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/octaves-vco/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-out",
+   "brand": "Befaco",
+   "name": "Out",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/out/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-slew",
+   "brand": "Befaco",
+   "name": "Slew",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/slew/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "befaco-stmix",
+   "brand": "Befaco",
+   "name": "STmix",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/en/stmix/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "cwejman-d-lfo",
+   "brand": "Cwejman",
+   "name": "D-LFO",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.cwejmanmusic.com/d-lfo",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "cwejman-mmf-2",
+   "brand": "Cwejman",
+   "name": "MMF-2",
+   "hp": 26,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.cwejmanmusic.com/mmf-2",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "cwejman-ph-4",
+   "brand": "Cwejman",
+   "name": "PH-4",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.cwejmanmusic.com/ph-4",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "cwejman-res-4",
+   "brand": "Cwejman",
+   "name": "RES-4",
+   "hp": 24,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.cwejmanmusic.com/res-4",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "cwejman-sph-2",
+   "brand": "Cwejman",
+   "name": "SPH-2",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.cwejmanmusic.com/sph-2",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "cwejman-vca-4mx",
+   "brand": "Cwejman",
+   "name": "VCA-4MX",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.cwejmanmusic.com/vca-4mx",
+   "verification": "maker-page-spot-check-2026-10-30"
+  },
+  {
+   "slug": "cwejman-vco-2rm",
+   "brand": "Cwejman",
+   "name": "VCO-2RM",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.cwejmanmusic.com/vco-2rm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-101-1",
+   "brand": "Doepfer",
+   "name": "A-101-1",
+   "hp": 16,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1011.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-101-2",
+   "brand": "Doepfer",
+   "name": "A-101-2",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1012.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-101-4",
+   "brand": "Doepfer",
+   "name": "A-101-4",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1014.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-101-6",
+   "brand": "Doepfer",
+   "name": "A-101-6",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1016.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-102",
+   "brand": "Doepfer",
+   "name": "A-102",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a102.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-103",
+   "brand": "Doepfer",
+   "name": "A-103",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a103.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-104",
+   "brand": "Doepfer",
+   "name": "A-104",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a104.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-105",
+   "brand": "Doepfer",
+   "name": "A-105",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a105.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-106-1",
+   "brand": "Doepfer",
+   "name": "A-106-1",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1061.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-106-5-sem",
+   "brand": "Doepfer",
+   "name": "A-106-5 SEM",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1065.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-106-6",
+   "brand": "Doepfer",
+   "name": "A-106-6",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1066.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-107",
+   "brand": "Doepfer",
+   "name": "A-107",
+   "hp": 26,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a107.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-108",
+   "brand": "Doepfer",
+   "name": "A-108",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a108.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-109-discontinued",
+   "brand": "Doepfer",
+   "name": "A-109 (Discontinued)",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a109.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-110",
+   "brand": "Doepfer",
+   "name": "A-110",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a110.htm",
+   "verification": "maker-page-spot-check-2026-10-30"
+  },
+  {
+   "slug": "doepfer-a-111-1",
+   "brand": "Doepfer",
+   "name": "A-111-1",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1111.htm",
+   "verification": "maker-page-spot-check-2026-10-30"
+  },
+  {
+   "slug": "doepfer-a-111-5",
+   "brand": "Doepfer",
+   "name": "A-111-5",
+   "hp": 24,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1115.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-112",
+   "brand": "Doepfer",
+   "name": "A-112",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a112.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-113",
+   "brand": "Doepfer",
+   "name": "A-113",
+   "hp": 26,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a113.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-114",
+   "brand": "Doepfer",
+   "name": "A-114",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a114.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-115",
+   "brand": "Doepfer",
+   "name": "A-115",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a115.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-116",
+   "brand": "Doepfer",
+   "name": "A-116",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a116.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-117",
+   "brand": "Doepfer",
+   "name": "A-117",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a117.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-119",
+   "brand": "Doepfer",
+   "name": "A-119",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a119.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-124-se",
+   "brand": "Doepfer",
+   "name": "A-124 SE",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a124.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-138m",
+   "brand": "Doepfer",
+   "name": "A-138m",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a138.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-141-4",
+   "brand": "Doepfer",
+   "name": "A-141-4",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1414.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-151",
+   "brand": "Doepfer",
+   "name": "A-151",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a151.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-156",
+   "brand": "Doepfer",
+   "name": "A-156",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a156.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-160-2",
+   "brand": "Doepfer",
+   "name": "A-160-2",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1602.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-161",
+   "brand": "Doepfer",
+   "name": "A-161",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a161.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-162",
+   "brand": "Doepfer",
+   "name": "A-162",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a162.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-163",
+   "brand": "Doepfer",
+   "name": "A-163",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a163.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-180-3",
+   "brand": "Doepfer",
+   "name": "A-180-3",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1803.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-181",
+   "brand": "Doepfer",
+   "name": "A-181",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a181.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-182-2",
+   "brand": "Doepfer",
+   "name": "A-182-2",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1822.htm",
+   "verification": "maker-page-spot-check-2026-10-30"
+  },
+  {
+   "slug": "doepfer-a-183-1",
+   "brand": "Doepfer",
+   "name": "A-183-1",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1831.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-183-2",
+   "brand": "Doepfer",
+   "name": "A-183-2",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1832.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-184-1",
+   "brand": "Doepfer",
+   "name": "A-184-1",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1841.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-184-2",
+   "brand": "Doepfer",
+   "name": "A-184-2",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1842.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "doepfer-a-185-2",
+   "brand": "Doepfer",
+   "name": "A-185-2",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1852.htm",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "erica-synths-black-vc-eg-expander",
+   "brand": "Erica Synths",
+   "name": "Black VC EG Expander",
+   "hp": 5,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/black-vc-eg-expander/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "erica-synths-black-xfade",
+   "brand": "Erica Synths",
+   "name": "Black XFade",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/black-xfade/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "erica-synths-graphic-vco",
+   "brand": "Erica Synths",
+   "name": "Graphic VCO",
+   "hp": 16,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/graphic-vco/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "erica-synths-modulator",
+   "brand": "Erica Synths",
+   "name": "Modulator",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/modulator/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "erica-synths-pico-drums",
+   "brand": "Erica Synths",
+   "name": "Pico DRUMS",
+   "hp": 3,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/pico-drums/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "erica-synths-sample-drum",
+   "brand": "Erica Synths",
+   "name": "Sample Drum",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/sample-drum/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "erica-synths-toms",
+   "brand": "Erica Synths",
+   "name": "TOMS",
+   "hp": 16,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/toms/",
+   "verification": "maker-page-spot-check-2026-10-30"
+  },
+  {
+   "slug": "expert-sleepers-disting-ex",
+   "brand": "Expert Sleepers",
+   "name": "disting EX",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/distingEX.html",
+   "verification": "maker-page-spot-check-2026-10-30"
+  },
+  {
+   "slug": "instruo-arbhar",
+   "brand": "Instruo",
+   "name": "arbhar",
+   "hp": 18,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.instruomodular.com/product/arbhar/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "instruo-chd",
+   "brand": "Instruo",
+   "name": "øchd",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.instruomodular.com/product/ochd/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "instruo-d-il",
+   "brand": "Instruo",
+   "name": "dàil",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.instruomodular.com/product/dail/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "instruo-dh",
+   "brand": "Instruo",
+   "name": "dhà",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.instruomodular.com/product/dh/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "instruo-l-badh",
+   "brand": "Instruo",
+   "name": "Lúbadh",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.instruomodular.com/product/lubadh/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "instruo-re",
+   "brand": "Instruo",
+   "name": "íre",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.instruomodular.com/product/ire/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "intellijel-att",
+   "brand": "Intellijel",
+   "name": "μAtt",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/att/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "intellijel-buff-mult",
+   "brand": "Intellijel",
+   "name": "Buff Mult",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/buff-mult/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "intellijel-buff-mult-1u",
+   "brand": "Intellijel",
+   "name": "Buff Mult 1U",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/buff-mult-1u/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "intellijel-mems-mic",
+   "brand": "Intellijel",
+   "name": "MEMS Mic",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/mems-mic/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "intellijel-mems-mic-1u",
+   "brand": "Intellijel",
+   "name": "MEMS Mic 1U",
+   "hp": 2,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/mems-mic-1u/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "intellijel-multigrain",
+   "brand": "Intellijel",
+   "name": "Multigrain",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/multigrain/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "intellijel-quadratt-1u",
+   "brand": "Intellijel",
+   "name": "Quadratt 1U",
+   "hp": 28,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/quadratt-1u/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "intellijel-swells",
+   "brand": "Intellijel",
+   "name": "Swells",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/swells/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "intellijel-xfade-1u",
+   "brand": "Intellijel",
+   "name": "Xfade 1U",
+   "hp": 26,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/xfade-1u/",
+   "verification": "maker-page-spot-check-2026-10-30"
+  },
+  {
+   "slug": "make-noise-brains",
+   "brand": "Make Noise",
+   "name": "Brains",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/brains",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "make-noise-dpo",
+   "brand": "Make Noise",
+   "name": "DPO",
+   "hp": 28,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/dpo/",
+   "verification": "maker-page-reviewed-2026-10-30"
+  },
+  {
+   "slug": "make-noise-echophon",
+   "brand": "Make Noise",
+   "name": "Echophon",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/echophon",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "make-noise-erbe-verb",
+   "brand": "Make Noise",
+   "name": "Erbe-Verb",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/erbe-verb",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "make-noise-function",
+   "brand": "Make Noise",
+   "name": "Function",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/function",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "make-noise-fxdf",
+   "brand": "Make Noise",
+   "name": "FXDf",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/fxdf",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "make-noise-mimeophon",
+   "brand": "Make Noise",
+   "name": "Mimeophon",
+   "hp": 16,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/mimeophon",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "make-noise-moddemix",
+   "brand": "Make Noise",
+   "name": "modDemix",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/moddemix",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "make-noise-morphagene",
+   "brand": "Make Noise",
+   "name": "Morphagene",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/morphagene/",
+   "verification": "maker-page-reviewed-2026-10-30"
+  },
+  {
+   "slug": "make-noise-optomix",
+   "brand": "Make Noise",
+   "name": "Optomix",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/optomix",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "make-noise-phonogene",
+   "brand": "Make Noise",
+   "name": "Phonogene",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/phonogene",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "make-noise-pressure-points",
+   "brand": "Make Noise",
+   "name": "Pressure Points",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/pressure-points",
+   "verification": "maker-page-spot-check-2026-10-30"
+  },
+  {
+   "slug": "make-noise-qmmg",
+   "brand": "Make Noise",
+   "name": "QMMG",
+   "hp": 24,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/qmmg",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "make-noise-rene",
+   "brand": "Make Noise",
+   "name": "Rene",
+   "hp": 34,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/rene",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "make-noise-rxmx",
+   "brand": "Make Noise",
+   "name": "RxMx",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/rxmx",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "make-noise-wogglebug",
+   "brand": "Make Noise",
+   "name": "Wogglebug",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.makenoisemusic.com/modules/wogglebug",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "mutable-instruments-edges",
+   "brand": "Mutable Instruments",
+   "name": "Edges",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://mutable-instruments.net/modules/edges/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "mutable-instruments-frames",
+   "brand": "Mutable Instruments",
+   "name": "Frames",
+   "hp": 18,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://mutable-instruments.net/modules/frames/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "mutable-instruments-grids",
+   "brand": "Mutable Instruments",
+   "name": "Grids",
+   "hp": 16,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://mutable-instruments.net/modules/grids/",
+   "verification": "maker-page-spot-check-2026-10-30"
+  },
+  {
+   "slug": "mutable-instruments-links",
+   "brand": "Mutable Instruments",
+   "name": "Links",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://mutable-instruments.net/modules/links/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "mutable-instruments-tides-2014-version",
+   "brand": "Mutable Instruments",
+   "name": "Tides (2014 version)",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://mutable-instruments.net/modules/tides/",
+   "verification": "hp-enrichment-official-v1"
+  },
+  {
+   "slug": "mutable-instruments-yarns",
+   "brand": "Mutable Instruments",
+   "name": "Yarns",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://mutable-instruments.net/modules/yarns/",
+   "verification": "hp-enrichment-official-v1"
+  }
+ ]
+}

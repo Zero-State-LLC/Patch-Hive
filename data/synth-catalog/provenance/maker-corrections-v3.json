@@ -1,0 +1,74 @@
+{
+ "batch": "maker-corrections-v3",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted.",
+ "decided": "2026-10-30 (owner decision 9: triage the unsourced v1 HP values, spec 003 T038/T039; maker pages read with a plain GET 2026-10-30)",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "make-noise-dpo",
+   "brand": "Make Noise",
+   "name": "DPO",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 30,
+     "value": 28,
+     "evidence_url": "https://www.makenoisemusic.com/modules/dpo/",
+     "source_tag": "maker-corrections-v3: 28 HP (\"Width: 28hp\") on https://www.makenoisemusic.com/modules/dpo/; 30 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "make-noise-morphagene",
+   "brand": "Make Noise",
+   "name": "Morphagene",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 18,
+     "value": 20,
+     "evidence_url": "https://www.makenoisemusic.com/modules/morphagene/",
+     "source_tag": "maker-corrections-v3: 20 HP (\"Width: 20hp\") on https://www.makenoisemusic.com/modules/morphagene/; 18 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Make Noise",
+   "name": "DPO",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 30,
+     "value": 28,
+     "evidence_url": "https://www.makenoisemusic.com/modules/dpo/",
+     "source_tag": "maker-corrections-v3: 28 HP (\"Width: 28hp\") on https://www.makenoisemusic.com/modules/dpo/; 30 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Make Noise",
+   "name": "Morphagene",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 18,
+     "value": 20,
+     "evidence_url": "https://www.makenoisemusic.com/modules/morphagene/",
+     "source_tag": "maker-corrections-v3: 20 HP (\"Width: 20hp\") on https://www.makenoisemusic.com/modules/morphagene/; 18 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}
