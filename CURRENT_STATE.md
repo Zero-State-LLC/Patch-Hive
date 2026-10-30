@@ -2,15 +2,15 @@
 
 **Authoritative as of:** 2026-10-30  
 **Branch pin:** `main` on `Zero-State-LLC/Patch-Hive`  
-**HEAD:** `9b94d1e` (#156); #134–#156 merged 2026-10-29/30. Database migrations and catalog loads are applied to staging and production. **Staging is deployed at `9b94d1e`** (2026-10-30: API Worker version `5336f994`, frontend `900c66fa`; smoke-tested). Production still runs the #133-era build; its deploy is pending (steps in [OPEN_DECISIONS_2026-10-30.md](docs/evidence/OPEN_DECISIONS_2026-10-30.md) decision 13)  
+**HEAD:** `62203c9` (#106); #134–#157 plus the 0.3.0-alpha.4 release (#109) and the zod bump (#106) merged 2026-10-29/30. Database migrations and catalog loads are applied to staging and production. **Staging and production both run `62203c9`** (deployed and smoke-tested 2026-10-30): staging API Worker `0702308d` and frontend `8ef50f79`; production API Worker `98cff8e5` and frontend `026bcb53`. Payments stay in test mode on both.  
 **Recent work (2026-10-28):** gap-analysis fixes for specs 001–005 and P0/P1 security (#82–#105); Cloudflare edge for staging and production (#83–#87, #107); short-lived tokens, refresh cookie and an enforced CSP (#99, #100, #113); prod catalog load, Products page, category fill and catalog tombstones (#112–#116). 2026-10-29: slices A1–A5 (#118, #119, #121–#123) and a second retirement (#120); spec research (#134); lifecycle and decision fixes (#135); slices B1–B5 (#136–#140) and C1–C5 (#142–#146).  
-**Open PRs:** [#109](https://github.com/Zero-State-LLC/Patch-Hive/pull/109) release 0.3.0-alpha.4, [#106](https://github.com/Zero-State-LLC/Patch-Hive/pull/106) zod bump.  
+**Open PRs:** none.  
 **Board:** [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8), mirrored in [docs/KANBAN.md](docs/KANBAN.md).  
 **Open owner decisions:** [docs/evidence/OPEN_DECISIONS_2026-10-30.md](docs/evidence/OPEN_DECISIONS_2026-10-30.md) (13 decisions with recommendations, plus [follow-up research](docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md); supersedes [the 2026-10-28 note](docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md)). Decided and done 2026-10-30: legacy purchase route deleted (#150), routing target empty by default (#151), strict key revocation kept (#149), HP overlay precedence fixed (#152).  
 **Next slices:** [docs/evidence/NEXT_SLICES_2026-10-28.md](docs/evidence/NEXT_SLICES_2026-10-28.md) (A1–A5 done; status updated 2026-10-29).  
 **Decision research (2026-10-29):** one `research.md` per spec, 001–008, each with an "Implementation status (2026-10-29)" table in its `spec.md` and gap-closure tasks in its `tasks.md`. Receipt signing (007 R1) is built (#144); the approver key is an operator step (007 T082). The decisions awaiting the owner: the provider purchase machines (004 R1), the 221 unsourced v1 HP values (003 R7), deleting the legacy purchase route (004 R5, OQ-11), whether publishing comes back (002 OQ-6, T033), the rig score formulas (001 OQ-11) and GitHub environment protection for prod workflows (006 R2).  
 
-**Alpha tag lineage:** `v0.3.0-alpha` (late alpha — **not** production)
+**Alpha tag lineage:** `v0.3.0-alpha` (late alpha — **not** production); latest pre-release `v0.3.0-alpha.4` (2026-10-30)
 
 ### Recent merges (OBSERVED, 2026-10-30)
 
@@ -86,7 +86,7 @@
 | Module catalog (staging = prod) | 4,184 catalog rows and 4,154 modules, of which 448 each are tombstoned; 3,736 visible from 355 brands, 0 conflicts. 855 rows have no category. Sovage CHICANE corrected to 4 HP (#125) and unflagged (#135, loads of 2026-10-29). HP corrected for Acid Rain Junction, Doepfer A-101-3 and A-137-2 (#153, loads of 2026-10-30); A-101-3's module stays flagged because its +5V draw is unstated: doepfer.de gives +12V 50 mA, -12V 50 mA and 65 mm depth (already loaded from `module-power-depth-v10`), but neither the product page nor either manual states +5V. Sources: Phase 2 seed (ModularGrid leads, tagged `unknown`/`CATALOG_OBSERVED`) plus maker pages (`official_publication`). Maker-crawl page cache deleted 2026-10-28; committed crawl results intact |
 | API access | Module and case writes admin-only (#79). Racks owner-scoped (#80): owner reads/writes, admin read roles read all, public racks readable by anyone, others 404. Catalog materialize and stateless layout recommendation stay public |
 | Accounts | Sign-in open on staging and production (#113). No account yet created on production; a real sign-up is still to be tried |
-| Production deploy | Frontend (`patch-hive.com`) and API (`api.patch-hive.com`) on Cloudflare, both from main; CSP enforced; CORS limited to the exact origin |
+| Production deploy | Frontend (`patch-hive.com`) and API (`api.patch-hive.com`) on Cloudflare, deployed manually with `wrangler deploy` from a checkout of main (no deploy workflow); last deployed at `62203c9` on 2026-10-30. CSP enforced; CORS limited to the exact origin. `/health` still reports `version` 0.1.0, not the release version |
 | CI | Repo is public so GitHub Actions runs on free minutes; with the repo private the Actions budget blocks every job |
 | Production readiness | **Not ready** (beta-staging engineering) — [assessment](docs/evidence/PRODUCTION_READINESS_ASSESSMENT_2026-07-21.md) · [matrix](docs/evidence/PRODUCTION_READINESS_MATRIX.md) · [delta](docs/evidence/PRODUCTION_READINESS_DELTA_2026-07-26.md) |
 
