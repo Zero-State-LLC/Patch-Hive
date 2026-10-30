@@ -1,0 +1,91 @@
+{
+ "batch": "maker-corrections-v2",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted.",
+ "decided": "2026-10-30 (owner: correct the four HP values the v1 overlay shadowed; PR #152)",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "acid-rain-technology-junction",
+   "brand": "Acid Rain Technology",
+   "name": "Junction",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 6,
+     "value": 4,
+     "evidence_url": "https://acidraintechnology.com/products/junction",
+     "source_tag": "maker-corrections-v2: 4 HP (\"4hp 25mm deep\") on https://acidraintechnology.com/products/junction; 6 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "doepfer-a-101-3",
+   "brand": "Doepfer",
+   "name": "A-101-3",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 10,
+     "value": 30,
+     "evidence_url": "https://doepfer.de/A1013.htm",
+     "source_tag": "maker-corrections-v2: 30 HP (\"30TE / 30HP\") on https://doepfer.de/A1013.htm; 10 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "doepfer-a-137-2",
+   "brand": "Doepfer",
+   "name": "A-137-2",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 10,
+     "value": 14,
+     "evidence_url": "https://doepfer.de/a1372.htm",
+     "source_tag": "maker-corrections-v2: 14 HP (\"14TE / 14HP\") on https://doepfer.de/a1372.htm; 10 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Acid Rain Technology",
+   "name": "Junction",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 6,
+     "value": 4,
+     "evidence_url": "https://acidraintechnology.com/products/junction",
+     "source_tag": "maker-corrections-v2: 4 HP (\"4hp 25mm deep\") on https://acidraintechnology.com/products/junction; 6 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Doepfer",
+   "name": "A-101-3",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 10,
+     "value": 30,
+     "evidence_url": "https://doepfer.de/A1013.htm",
+     "source_tag": "maker-corrections-v2: 30 HP (\"30TE / 30HP\") on https://doepfer.de/A1013.htm; 10 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}

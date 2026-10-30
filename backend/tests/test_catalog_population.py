@@ -317,3 +317,70 @@ def test_a_reviewed_correction_fixes_a_stored_value_once(fresh_population_url, t
         assert "modules_correct" not in again["updates"]
     finally:
         engine.dispose()
+
+
+V2_PAGES = {
+    "acid-rain-technology-junction": "https://acidraintechnology.com/products/junction",
+    "doepfer-a-101-3": "https://doepfer.de/A1013.htm",
+    "doepfer-a-137-2": "https://doepfer.de/a1372.htm",
+}
+
+
+def test_maker_corrections_v2_replace_the_v1_overlay_hp(fresh_population_url, tmp_path):
+    """Spec 003 FR-038: rows still holding the unsourced v1 HP take the maker value once."""
+    missing = tmp_path / "none.json"
+    populate(fresh_population_url, apply=True, verification_path=missing)
+    engine = create_engine(fresh_population_url)
+    try:
+        with engine.begin() as conn:
+            # The values a database loaded before #152 holds (v1 filled before v2).
+            conn.execute(text(
+                "UPDATE module_catalog SET hp = CASE slug "
+                "WHEN 'acid-rain-technology-junction' THEN 6 WHEN 'doepfer-a-101-3' THEN 10 "
+                "WHEN 'doepfer-a-137-2' THEN 12 END "
+                "WHERE slug IN ('acid-rain-technology-junction', 'doepfer-a-101-3', 'doepfer-a-137-2')"
+            ))
+            conn.execute(text(
+                "UPDATE modules SET hp = CASE name WHEN 'Junction' THEN 6 WHEN 'A-101-3' THEN 10 END "
+                "WHERE (brand, name) IN (('Acid Rain Technology', 'Junction'), ('Doepfer', 'A-101-3'))"
+            ))
+            # The fresh load marked these rows processed while they were still missing.
+            conn.execute(text("DELETE FROM catalog_value_archive WHERE batch = 'maker-corrections-v2'"))
+        receipt = populate(fresh_population_url, apply=True, verification_path=missing)
+        # A-137-2 holds 12, not the reviewed 10, so it is left alone.
+        assert receipt["updates"] == {"module_catalog_correct": 2, "modules_correct": 2}
+        assert receipt["provenance"]["maker-corrections-v2"]["value_not_matched"] == 1
+        with engine.connect() as conn:
+            catalog = dict(conn.execute(text(
+                "SELECT slug, hp FROM module_catalog WHERE slug IN "
+                "('acid-rain-technology-junction', 'doepfer-a-101-3', 'doepfer-a-137-2')"
+            )).all())
+            modules = dict(conn.execute(text(
+                "SELECT name, hp FROM modules WHERE (brand, name) IN "
+                "(('Acid Rain Technology', 'Junction'), ('Doepfer', 'A-101-3'))"
+            )).all())
+            archived = conn.execute(text(
+                "SELECT table_name, row_key, old_value, source_tag FROM catalog_value_archive "
+                "WHERE batch = 'maker-corrections-v2' AND field = 'hp' AND action = 'correct' "
+                "ORDER BY table_name, row_key"
+            )).all()
+        assert catalog == {"acid-rain-technology-junction": 4, "doepfer-a-101-3": 30, "doepfer-a-137-2": 12}
+        assert modules == {"Junction": 4, "A-101-3": 30}
+        assert [(a.table_name, a.row_key, a.old_value) for a in archived] == [
+            ("module_catalog", "acid-rain-technology-junction", "6"),
+            ("module_catalog", "doepfer-a-101-3", "10"),
+            ("modules", "Acid Rain Technology::Junction", "6"),
+            ("modules", "Doepfer::A-101-3", "10"),
+        ]
+        pages = {**V2_PAGES, "Acid Rain Technology::Junction": V2_PAGES["acid-rain-technology-junction"],
+                 "Doepfer::A-101-3": V2_PAGES["doepfer-a-101-3"]}
+        assert all(pages[a.row_key] in a.source_tag for a in archived)
+
+        again = populate(fresh_population_url, apply=True, verification_path=missing)
+        assert again["inserts"] == {} and again["updates"] == {}
+        with engine.connect() as conn:
+            assert conn.execute(text(
+                "SELECT hp FROM module_catalog WHERE slug = 'doepfer-a-137-2'"
+            )).scalar_one() == 12
+    finally:
+        engine.dispose()

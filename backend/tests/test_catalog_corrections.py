@@ -147,3 +147,34 @@ def test_every_row_statement_skips_retired_rows() -> None:
     plan = _plan(_manifest(), _modules())
     archive = plan.ops[0].sql
     assert "t.status <> 'tombstoned'" in archive
+
+
+def test_the_v2_manifest_corrects_the_v1_overlay_hp_in_every_table() -> None:
+    path = ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v2.json"
+    manifest = json.loads(path.read_text())
+    assert manifest["batch"] == "maker-corrections-v2" and manifest["flag_reverify"] is False
+    assert path in P.PROVENANCE_MANIFESTS
+    corrections = {}
+    for row in manifest["rows"]:
+        (item,) = row["fields"]
+        assert item["field"] == "hp" and item["action"] == "correct"
+        assert P._correction_problem(row["table"], item) is None
+        assert "?" not in item["evidence_url"] and item["evidence_url"] in item["source_tag"]
+        assert item["maker_check"] == "maker_page_reviewed"
+        if row["table"] == "module_catalog":
+            assert row["slug"] == P.create_slug(row["brand"], row["name"])
+        corrections[(row["table"], row["brand"], row["name"])] = (item["only_if_value"], item["value"])
+    assert corrections == {
+        ("module_catalog", "Acid Rain Technology", "Junction"): (6, 4),
+        ("module_catalog", "Doepfer", "A-101-3"): (10, 30),
+        ("module_catalog", "Doepfer", "A-137-2"): (10, 14),
+        ("modules", "Acid Rain Technology", "Junction"): (6, 4),
+        ("modules", "Doepfer", "A-101-3"): (10, 30),
+    }
+    # Each old value is the unsourced v1 overlay's; each new value is the maker-cited v2 one.
+    overlays = ROOT / "data" / "synth-catalog" / "overlays"
+    v1 = {e["slug"]: e["hp"] for e in json.loads((overlays / "module-catalog-hp-v1.json").read_text())["entries"]}
+    v2 = {e["slug"]: e["hp"] for e in json.loads((overlays / "module-catalog-hp-v2.json").read_text())["entries"]}
+    for (_, brand, name), (old, new) in corrections.items():
+        slug = P.create_slug(brand, name)
+        assert (v1[slug], v2[slug]) == (old, new)
