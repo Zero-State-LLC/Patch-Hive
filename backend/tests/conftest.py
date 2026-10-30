@@ -13,7 +13,7 @@ from sqlalchemy.pool import StaticPool
 os.environ.setdefault("ENABLE_LEGACY_SOCIAL", "true")
 os.environ.setdefault("ENABLE_LEGACY_PUBLISHING", "true")
 os.environ.setdefault("ENABLE_LEGACY_LEADERBOARDS", "true")
-os.environ.setdefault("ENABLE_LEGACY_REFERRALS", "true")
+os.environ.setdefault("ENABLE_REFERRALS", "true")
 
 from account.models import CreditLedgerEntry, ExportRecord  # noqa: F401
 from admin.models import AdminAuditLog  # Import to ensure tables are created

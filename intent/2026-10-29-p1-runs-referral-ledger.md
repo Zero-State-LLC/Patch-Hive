@@ -15,7 +15,7 @@ From the 2026-10-29 gap analysis (P1):
 
 ## Affected users / systems
 
-Patch generation, admin runs API and page, referral rewards (off by default: `enable_legacy_referrals`).
+Patch generation, admin runs API and page, referral rewards (off by default: `enable_referrals`).
 
 ## Constraints / non-goals
 
