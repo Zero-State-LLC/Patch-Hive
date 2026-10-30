@@ -4,6 +4,37 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.5](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.4...v0.3.0-alpha.5) (2026-10-30)
+
+
+### Added
+
+* **catalog:** jumper-dependent power as power_configs (spec 003 T034) ([#166](https://github.com/Zero-State-LLC/Patch-Hive/issues/166)) ([fd9fc44](https://github.com/Zero-State-LLC/Patch-Hive/commit/fd9fc4402bafd3e9744b86c3791bbd429d7f0353))
+* define routing_flex_score and performance_density_index (spec 001 OQ-11 option 2) ([#161](https://github.com/Zero-State-LLC/Patch-Hive/issues/161)) ([873acb9](https://github.com/Zero-State-LLC/Patch-Hive/commit/873acb957d1fb8bdaaa2677e77519b99f1533cd3))
+
+
+### Fixed
+
+* report real package version in /health and add evidence-expiry CLI ([#162](https://github.com/Zero-State-LLC/Patch-Hive/issues/162)) ([af60a86](https://github.com/Zero-State-LLC/Patch-Hive/commit/af60a86e1b67d787e73f7f174863e44b630f00f3))
+
+
+### Data
+
+* **catalog:** re-source 26 more legacy HP values from maker pages (spec 003 T039) ([#167](https://github.com/Zero-State-LLC/Patch-Hive/issues/167)) ([4bd5ca6](https://github.com/Zero-State-LLC/Patch-Hive/commit/4bd5ca627c7ef6442e4610828fdbe2eb687a4198))
+* **catalog:** triage the unsourced v1 HP values (spec 003 T038/T039) ([#164](https://github.com/Zero-State-LLC/Patch-Hive/issues/164)) ([694a84f](https://github.com/Zero-State-LLC/Patch-Hive/commit/694a84f6ad3c34e04d9ca7684476ab0fc4910618))
+* T035 jumper-power receipt (free re-fetch, 42 pages) ([#163](https://github.com/Zero-State-LLC/Patch-Hive/issues/163)) ([c02b177](https://github.com/Zero-State-LLC/Patch-Hive/commit/c02b1777be17e3f46beb21292ddc813c4ccce201))
+
+
+### Operations
+
+* run prod DB and edge-secret workflows in the production environment (006 T101a) ([#160](https://github.com/Zero-State-LLC/Patch-Hive/issues/160)) ([442bd47](https://github.com/Zero-State-LLC/Patch-Hive/commit/442bd47e8e72203abb1827ba3e9493ab5664e377))
+
+
+### Documentation
+
+* record [#160](https://github.com/Zero-State-LLC/Patch-Hive/issues/160)-[#164](https://github.com/Zero-State-LLC/Patch-Hive/issues/164), the hp_source migration and the 2026-10-30 API redeploy ([#165](https://github.com/Zero-State-LLC/Patch-Hive/issues/165)) ([2e3c90d](https://github.com/Zero-State-LLC/Patch-Hive/commit/2e3c90dcbc4cf66cdfdfd2b6328b19a815965734))
+* record the 2026-10-30 staging and production deploys at 62203c9 ([#158](https://github.com/Zero-State-LLC/Patch-Hive/issues/158)) ([b5d683c](https://github.com/Zero-State-LLC/Patch-Hive/commit/b5d683cacd6e40b73947d5f094c90382feccd453))
+
 ## [0.3.0-alpha.4](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.3...v0.3.0-alpha.4) (2026-10-30)
 
 
