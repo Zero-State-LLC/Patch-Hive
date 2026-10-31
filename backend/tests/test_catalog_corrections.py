@@ -70,7 +70,7 @@ def test_a_processed_row_is_never_corrected_twice() -> None:
         ({"only_if_value": None}, "correction_needs_old_and_new_value"),
         ({"evidence_url": ""}, "correction_needs_maker_page"),
         ({"evidence_url": "http://maker.example"}, "correction_needs_maker_page"),
-        ({"value": 52}, "correction_hp_outside_band"),
+        ({"value": 85}, "correction_hp_outside_band"),
         ({"value": "4"}, "correction_hp_outside_band"),
         ({"field": "verification_source_url", "only_if_value": "x", "value": "ftp://x"}, "correction_bad_url"),
     ],
@@ -240,8 +240,8 @@ def test_the_v3_manifest_corrects_the_hand_checked_v1_hp_in_every_table() -> Non
     path = ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v3.json"
     manifest = json.loads(path.read_text())
     assert manifest["batch"] == "maker-corrections-v3" and manifest["flag_reverify"] is False
-    # v4 (the T039 remainder) is read right after v3.
-    assert P.PROVENANCE_MANIFESTS[-2] == path
+    # v4 (the T039 remainder) is read right after v3, then v5 (the A-155 width).
+    assert P.PROVENANCE_MANIFESTS[-3] == path
     corrections = {}
     for row in manifest["rows"]:
         (item,) = row["fields"]
@@ -284,7 +284,7 @@ def test_the_v4_manifest_corrects_the_page_checked_v1_hp() -> None:
     path = ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v4.json"
     manifest = json.loads(path.read_text())
     assert manifest["batch"] == "maker-corrections-v4" and manifest["flag_reverify"] is False
-    assert P.PROVENANCE_MANIFESTS[-1] == path
+    assert P.PROVENANCE_MANIFESTS[-2] == path
     corrections = {}
     for row in manifest["rows"]:
         (item,) = row["fields"]
@@ -307,6 +307,25 @@ def test_the_v4_manifest_corrects_the_page_checked_v1_hp() -> None:
         slug = row["slug"]
         assert (v1[slug], v4[slug]["hp"]) == (item["only_if_value"], item["value"])
         assert v4[slug]["source_url"] == item["evidence_url"]
-    # Doepfer A-155's page states 50 HP; FR-038 forbids correcting HP outside the FR-007 band.
+    # Doepfer A-155's page states 50 HP: a reviewed correction may go to 84 HP (FR-038), past
+    # the FR-007 extraction band; maker-corrections-v5 makes it.
     assert P._correction_problem("module_catalog", {"field": "hp", "only_if_value": 4, "value": 50,
+                                                    "evidence_url": "https://doepfer.de/a155.htm"}) is None
+    assert P._correction_problem("module_catalog", {"field": "hp", "only_if_value": 4, "value": 85,
                                                     "evidence_url": "https://doepfer.de/a155.htm"}) == "correction_hp_outside_band"
+    assert P.HP_BAND == (1, 42) and P.CORRECTION_HP_BAND == (1, 84)
+
+
+def test_maker_corrections_v5_sets_the_a155_to_its_stated_width() -> None:
+    manifest = json.loads((ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v5.json").read_text())
+    assert manifest["batch"] == "maker-corrections-v5" and manifest["flag_reverify"] is False
+    assert P.PROVENANCE_MANIFESTS[-1] == ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v5.json"
+    assert {(row["table"], row["brand"], row["name"]) for row in manifest["rows"]} == {
+        ("module_catalog", "Doepfer", "A-155"), ("modules", "Doepfer", "A-155"),
+    }
+    for row in manifest["rows"]:
+        (item,) = row["fields"]
+        assert (item["field"], item["action"], item["only_if_value"], item["value"]) == ("hp", "correct", 4, 50)
+        assert item["evidence_url"] == "https://doepfer.de/a155.htm"
+        assert "50 TE / 50 HP" in item["source_tag"]
+        assert P._correction_problem(row["table"], item) is None

@@ -307,7 +307,8 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     # retirement above (spec 003 D8, T034).
     if POWER_CONFIG_RECEIPT.is_file():
         _schedule_power_configs(
-            plan, modules, _load(POWER_CONFIG_RECEIPT), _power_config_state(conn), _load(POWER_CONFIG_LABELS)
+            plan, modules, _load(POWER_CONFIG_RECEIPT), _power_config_state(conn), _load(POWER_CONFIG_LABELS),
+            _load(POWER_CONFIG_DECISIONS),
         )
 
     for row in modules.values():
@@ -346,6 +347,7 @@ PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "maker-corrections-v2.json",
     CATALOG / "provenance" / "maker-corrections-v3.json",
     CATALOG / "provenance" / "maker-corrections-v4.json",
+    CATALOG / "provenance" / "maker-corrections-v5.json",
 )
 ARCHIVE_FIELDS = {
     "modules": {
@@ -362,6 +364,7 @@ ARCHIVE_FIELDS = {
 NULLABLE = {"modules": set(POWER_FIELDS) | {"verification_source_url"}, "module_catalog": {"hp"}}
 ARCHIVE_ACTIONS = {"null", "keep", "flag", "relabel", "correct"}
 HP_BAND = (1, 42)  # FR-007
+CORRECTION_HP_BAND = (1, 84)  # FR-038: a reviewed maker quote may state a wide module, up to the widest case row
 
 
 def _correction_problem(table: str, item: dict[str, Any]) -> str | None:
@@ -372,7 +375,7 @@ def _correction_problem(table: str, item: dict[str, Any]) -> str | None:
         return "correction_needs_maker_page"
     if item["field"] == "hp":
         value = item["value"]
-        if not isinstance(value, int) or not HP_BAND[0] <= value <= HP_BAND[1]:
+        if not isinstance(value, int) or not CORRECTION_HP_BAND[0] <= value <= CORRECTION_HP_BAND[1]:
             return "correction_hp_outside_band"
     if item["field"] == "verification_source_url" and not str(item["value"]).startswith("https://"):
         return "correction_bad_url"
@@ -1540,6 +1543,8 @@ def _schedule_power(
 POWER_CONFIG_RECEIPT = CATALOG / "receipts" / "t035-jumper-power.json"
 # Labels for settings the product page leaves unnamed, quoted from the maker's own manual.
 POWER_CONFIG_LABELS = CATALOG / "receipts" / "t034-manual-labels.json"
+# The owner's answers to the receipt's remaining questions (a page-worded label, a rail left unknown).
+POWER_CONFIG_DECISIONS = CATALOG / "receipts" / "t034-owner-decisions.json"
 POWER_CONFIG_RAILS = (("+12V", "power_12v_ma"), ("-12V", "power_neg12v_ma"), ("+5V", "power_5v_ma"))
 RAIL_STATUSES = {"stated", "not_used", "not_stated"}
 
@@ -1551,8 +1556,8 @@ def power_setting_key(label: str) -> str:
 def power_setting_problem(setting: dict[str, Any]) -> str | None:
     """Why a receipt setting cannot be loaded as it stands, or None.
 
-    These are the T035 receipt's open questions for T034; the owner has not answered
-    them, so nothing is guessed: an unlabelled setting (no neutral label is invented),
+    These are the T035 receipt's open questions for T034. Nothing is guessed here; a
+    setting passes only once a manual label or an owner decision has answered it: an unlabelled setting (no neutral label is invented),
     a number the page gives without a unit, and a draw the page gives without a rail.
     """
     if not setting.get("label_on_page") or not (setting.get("label") or "").strip():
@@ -1596,13 +1601,15 @@ def _schedule_power_configs(
     receipt: dict[str, Any],
     stored: set[tuple[str, str, str]],
     manual_labels: dict[str, Any] | None = None,
+    owner_decisions: dict[str, Any] | None = None,
 ) -> None:
     """Insert each clean jumper setting from the T035 receipt as a ``power_configs`` row.
 
     Fill-only and idempotent: a setting already stored is counted, never rewritten, and
     nothing is deleted. Only pages the receipt marks jumper-dependent load; a page is
     matched to its module by brand and source URL. A setting the page leaves unlabelled
-    takes a label only from ``manual_labels``, quoted from the maker's manual. The single draw columns are left as
+    takes a label only from ``manual_labels``, quoted from the maker's manual, or from
+    ``owner_decisions``, which may also leave a unit-less rail unknown. The single draw columns are left as
     they are (D8: they stay unknown); a single value that differs from a stated setting
     value is reported as a conflict for review, not changed.
     """
@@ -1631,7 +1638,7 @@ def _schedule_power_configs(
         brand = (page.get("brand") or "").strip()
         url = (page.get("url") or "").strip()
         page_name = (page.get("name") or "").strip()
-        settings = _with_manual_labels(page, manual_labels)
+        settings = _with_owner_decisions(page, _with_manual_labels(page, manual_labels), owner_decisions)
         stats["settings_seen"] += len(settings)
         clean: list[dict[str, Any]] = []
         for index, setting in enumerate(settings):
@@ -1762,11 +1769,44 @@ def _with_manual_labels(page: dict[str, Any], manual_labels: dict[str, Any] | No
     return settings
 
 
+def _with_owner_decisions(
+    page: dict[str, Any], settings: list[dict[str, Any]], owner_decisions: dict[str, Any] | None
+) -> list[dict[str, Any]]:
+    """Apply the owner's T034 answers: a label worded from the page, or a rail left unknown."""
+    settings = list(settings)
+    for entry in (owner_decisions or {}).get("decisions") or []:
+        index = entry.get("setting")
+        if (
+            entry.get("brand") != page.get("brand")
+            or entry.get("page_url") != page.get("url")
+            or not isinstance(index, int)
+            or not 0 <= index < len(settings)
+            or not entry.get("quote")
+            or not entry.get("reason")
+        ):
+            continue
+        setting = dict(settings[index])
+        label = (entry.get("label") or "").strip()
+        if label and not setting.get("label_on_page"):
+            setting.update(label=label, label_on_page=True, owner_decision=entry)
+        rail = entry.get("rail_unknown")
+        rails = setting.get("rails") or {}
+        if rail in rails and rails[rail].get("unit_stated") is False:
+            rails = {**rails, rail: {"status": "not_stated", "ma": None, "unit_stated": None, "qualifier": None, "quote": None}}
+            setting.update(rails=rails, owner_decision=entry)
+        settings[index] = setting
+    return settings
+
+
 def _setting_quote(page: dict[str, Any], setting: dict[str, Any]) -> str:
+    quote = page.get("quote") or ""
     source = setting.get("label_source")
-    if not source:
-        return page.get("quote") or ""
-    return f"{page.get('quote') or ''}\n\nLabel from {source['source_url']}: {source['quote']}"
+    if source:
+        quote += f"\n\nLabel from {source['source_url']}: {source['quote']}"
+    decision = setting.get("owner_decision")
+    if decision:
+        quote += f"\n\nOwner decision (t034-owner-decisions): {decision['reason']}"
+    return quote
 
 
 def render_plan(plan: Plan) -> str:
@@ -1893,6 +1933,7 @@ def inputs_hash() -> str:
     files = sorted(
         [*CATALOG.glob("seed-*.json"), *(CATALOG / "overlays").glob("*.json"),
          *(CATALOG / "provenance").glob("*.json"), POWER_CONFIG_RECEIPT, POWER_CONFIG_LABELS,
+         POWER_CONFIG_DECISIONS,
          ROOT / "data" / "cases" / "seed-v1.json"]
     )
     for path in files:
