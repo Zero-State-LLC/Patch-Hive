@@ -1,0 +1,48 @@
+{
+  "receipt": "t034-manual-labels",
+  "task": "spec 003 T034",
+  "decision": "A jumper setting the product page leaves unlabelled takes its label only from the maker's own manual, linked from that page, when the manual states the same draws under a named jumper position. Nothing is inferred.",
+  "generated_at": "2026-10-30T19:05:00Z",
+  "fetch": {
+    "method": "free_http",
+    "robots": "www.jonesvideo.com/robots.txt allows /otool/ (Crawl-delay 3 honoured)"
+  },
+  "labels": [
+    {
+      "brand": "Dave Jones Design",
+      "name": "Otool Scope and Audio Tools",
+      "page_url": "https://www.jonesvideo.com/prod_otool.html",
+      "setting": 0,
+      "label": "With rear jumper set to Internal 5v",
+      "source_url": "https://www.jonesvideo.com/otool/Otool_Plus_UserManual.pdf",
+      "page": 1,
+      "quote": "With rear jumper set to Internal 5v you supply no external five volts. Power: 80ma +12v 22ma -12v",
+      "content_sha256": "7299592c0b72e6a67baa226d2cad10ef9b18e252580a0d872ec52e1c04ce3746",
+      "fetched_at": "2026-10-30T19:05:00Z"
+    },
+    {
+      "brand": "Dave Jones Design",
+      "name": "Otool Scope and Audio Tools",
+      "page_url": "https://www.jonesvideo.com/prod_otool.html",
+      "setting": 1,
+      "label": "With rear jumper set to External 5v",
+      "source_url": "https://www.jonesvideo.com/otool/Otool_Plus_UserManual.pdf",
+      "page": 1,
+      "quote": "With rear jumper set to External 5v you supply five volts on the power ribbon, as well as +/-12v. Power: 12ma +12v 70ma +5v 22ma -12v",
+      "content_sha256": "7299592c0b72e6a67baa226d2cad10ef9b18e252580a0d872ec52e1c04ce3746",
+      "fetched_at": "2026-10-30T19:05:00Z"
+    }
+  ],
+  "not_settled": [
+    {
+      "brand": "4ms Company",
+      "name": "Spectral Multiband Resonator",
+      "reason": "Neither the product page nor the linked firmware-v5 notes name the base jumper position; only 'when jumper set to +12V' is named."
+    },
+    {
+      "brand": "4ms Company",
+      "name": "4ms VCA Matrix",
+      "reason": "The page still gives '80 max' for +12V with jumper selecting external 5V, with no unit, and links no manual."
+    }
+  ]
+}
