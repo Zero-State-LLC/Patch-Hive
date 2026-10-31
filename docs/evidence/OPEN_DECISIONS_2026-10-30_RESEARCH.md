@@ -217,3 +217,34 @@ Account deletion: delete overlays and evidence; null `user_id` where the schema 
 - Frontend: re-route the quarantined publish pages, mount with `ENABLE_LEGACY_PUBLISHING` (rename the flag) and a moderation check.
 - Tests for ownership, unvalidated refusal and takedown; a content-retention rule for published books (see section 2).
 - Recommendation unchanged: leave it off until someone asks for a gallery.
+
+## Second round (2026-10-30 evening): the three decisions left after #167
+
+Free GETs only, robots.txt respected (jonesvideo.com asks for a 3 s crawl delay; doepfer.de has no robots.txt), 2–3 s spacing. Nothing paid.
+
+### 5. Skipped T034 power settings
+
+| Module | Found | Status |
+|---|---|---|
+| Dave Jones Otool | The maker's manual, linked from the product page (`otool/Otool_Plus_UserManual.pdf`, page 1), names both alternatives with the same draws: "With rear jumper set to Internal 5v … 80ma +12v 22ma -12v" and "With rear jumper set to External 5v … 12ma +12v 70ma +5v 22ma -12v" (OBSERVED). | **Settled by the maker; loaded in this PR** (`receipts/t034-manual-labels.json`) |
+| 4ms Spectral Multiband Resonator | The page names only "when jumper set to +12V"; it links only the firmware-v5 notes, which say nothing about the jumper (OBSERVED). The base setting draws +5V from the bus, so it is the external-5V position (INFERRED, not stated). | Owner: load the base as "jumper not set to +12V" (the page's own words, negated), or leave it out |
+| 4ms VCA Matrix | Both product URLs still read "80 max with jumper selecting external 5V" with no unit; every other figure on the page is mA; no manual is linked (OBSERVED). | Owner: load 80 mA as `unit_stated = false`, store +12V as unknown for that setting, or ask 4ms |
+
+**Recommendation:** SMR, load with the negated label (it adds no number the page doesn't give). VCA Matrix, store +12V as unknown for the external-5V setting: the budget then shows that rail as unknown when that setting is picked, which is the fail-closed reading. Neither needs a schema change.
+
+### 6. Doepfer A-155 width
+
+- doepfer.de/a155.htm: "Breite/Width: 50 TE / 50 HP / 253.7 mm", depth 40 mm, +80 mA / -20 mA (OBSERVED).
+- The catalog holds 4 HP from a retailer page (thomann.de) in the unsourced v1 overlay (OBSERVED). A rig placing it gets 46 HP of free space that does not exist.
+- FR-007's 1–42 band is a guard against bad extraction. FR-038 reuses it for reviewed corrections, so no manifest can write 50 (OBSERVED: `HP_BAND` in `population.py`; also `scripts/build_maker_overlays.py`, `scripts/catalog_maker_crawl.py`).
+
+**Options:** (a) keep 4 HP, marked `legacy_unsourced` (today); (b) a reviewed `null` correction, so placement is blocked (FR-035) rather than wrong; (c) let reviewed corrections go up to the widest case row (84 HP) while extraction keeps 1–42.
+**Recommendation:** (c). Extraction stays strict, a human-reviewed maker quote can state a real wide module, and the A-155 gets 50. (b) is the safe stop-gap if you would rather not touch FR-038.
+
+### 7. Scheduling `evidence.expire`
+
+- The default Neon branch has 0 `image_assets` rows (OBSERVED, read-only count, 2026-10-30), so nothing is waiting to expire.
+- The command needs the API's database URL and, for byte purges, the S3/R2 storage settings (OBSERVED: `backend/evidence/expire.py`, `core/config.py`). It exits 1 when a purge is deferred.
+- Options: a daily GitHub Actions cron in the `production` environment (needs storage secrets in that environment, i.e. after T101b); or a Cloudflare cron trigger on the API Worker calling an internal admin route (new code and a new authenticated endpoint).
+
+**Recommendation:** not now. Add the daily Actions job after T101b moves the secrets, before the first real uploads; until then expiry is still enforced at read time.

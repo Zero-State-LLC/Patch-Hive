@@ -306,7 +306,9 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     # Jumper settings attach to module rows, so they run after every module insert and
     # retirement above (spec 003 D8, T034).
     if POWER_CONFIG_RECEIPT.is_file():
-        _schedule_power_configs(plan, modules, _load(POWER_CONFIG_RECEIPT), _power_config_state(conn))
+        _schedule_power_configs(
+            plan, modules, _load(POWER_CONFIG_RECEIPT), _power_config_state(conn), _load(POWER_CONFIG_LABELS)
+        )
 
     for row in modules.values():
         if row.get("_planned"):
@@ -1536,6 +1538,8 @@ def _schedule_power(
 # Jumper-dependent power (spec 003 D8, research R5, task T034): one row per setting,
 # read from the T035 receipt, which recorded each maker page's draws verbatim.
 POWER_CONFIG_RECEIPT = CATALOG / "receipts" / "t035-jumper-power.json"
+# Labels for settings the product page leaves unnamed, quoted from the maker's own manual.
+POWER_CONFIG_LABELS = CATALOG / "receipts" / "t034-manual-labels.json"
 POWER_CONFIG_RAILS = (("+12V", "power_12v_ma"), ("-12V", "power_neg12v_ma"), ("+5V", "power_5v_ma"))
 RAIL_STATUSES = {"stated", "not_used", "not_stated"}
 
@@ -1591,12 +1595,14 @@ def _schedule_power_configs(
     modules: dict[tuple[str, str], dict[str, Any]],
     receipt: dict[str, Any],
     stored: set[tuple[str, str, str]],
+    manual_labels: dict[str, Any] | None = None,
 ) -> None:
     """Insert each clean jumper setting from the T035 receipt as a ``power_configs`` row.
 
     Fill-only and idempotent: a setting already stored is counted, never rewritten, and
     nothing is deleted. Only pages the receipt marks jumper-dependent load; a page is
-    matched to its module by brand and source URL. The single draw columns are left as
+    matched to its module by brand and source URL. A setting the page leaves unlabelled
+    takes a label only from ``manual_labels``, quoted from the maker's manual. The single draw columns are left as
     they are (D8: they stay unknown); a single value that differs from a stated setting
     value is reported as a conflict for review, not changed.
     """
@@ -1625,7 +1631,7 @@ def _schedule_power_configs(
         brand = (page.get("brand") or "").strip()
         url = (page.get("url") or "").strip()
         page_name = (page.get("name") or "").strip()
-        settings = page.get("settings") or []
+        settings = _with_manual_labels(page, manual_labels)
         stats["settings_seen"] += len(settings)
         clean: list[dict[str, Any]] = []
         for index, setting in enumerate(settings):
@@ -1727,13 +1733,40 @@ def _schedule_power_configs(
                             sort_keys=True,
                         ),
                         "source_url": url,
-                        "quote": page.get("quote") or "",
+                        "quote": _setting_quote(page, setting),
                         "source_batch": batch,
                         "content_sha256": page.get("content_sha256"),
                         "fetched_at": (page.get("fetched_at") or "").rstrip("Z") or None,
                     },
                 ),
             )
+
+
+def _with_manual_labels(page: dict[str, Any], manual_labels: dict[str, Any] | None) -> list[dict[str, Any]]:
+    """The page's settings, each unlabelled one named from a matching manual-label entry."""
+    settings = list(page.get("settings") or [])
+    for entry in (manual_labels or {}).get("labels") or []:
+        index = entry.get("setting")
+        if (
+            entry.get("brand") != page.get("brand")
+            or entry.get("page_url") != page.get("url")
+            or not isinstance(index, int)
+            or not 0 <= index < len(settings)
+            or settings[index].get("label_on_page")
+            or not str(entry.get("source_url") or "").startswith("https://")
+            or not (entry.get("label") or "").strip()
+            or not entry.get("quote")
+        ):
+            continue
+        settings[index] = {**settings[index], "label": entry["label"], "label_on_page": True, "label_source": entry}
+    return settings
+
+
+def _setting_quote(page: dict[str, Any], setting: dict[str, Any]) -> str:
+    source = setting.get("label_source")
+    if not source:
+        return page.get("quote") or ""
+    return f"{page.get('quote') or ''}\n\nLabel from {source['source_url']}: {source['quote']}"
 
 
 def render_plan(plan: Plan) -> str:

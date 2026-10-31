@@ -537,9 +537,9 @@ def test_jumper_settings_load_once_as_power_configs(fresh_population_url, tmp_pa
     """Spec 003 D8 / T034 on Postgres: the clean T035 settings load once; the rest wait."""
     missing = tmp_path / "none.json"
     applied = populate(fresh_population_url, apply=True, verification_path=missing)
-    assert applied["inserts"].get("power_configs") == 17
+    assert applied["inserts"].get("power_configs") == 19
     stats = applied["power_configs"]["t035-jumper-power"]
-    assert stats["skipped_by_reason"] == {"label_not_on_page": 3, "unit_not_stated": 1}
+    assert stats["skipped_by_reason"] == {"label_not_on_page": 1, "unit_not_stated": 1}
     engine = create_engine(fresh_population_url)
     try:
         with engine.connect() as conn:
@@ -551,6 +551,10 @@ def test_jumper_settings_load_once_as_power_configs(fresh_population_url, tmp_pa
                 "SELECT p.label, p.power_12v_ma, p.power_neg12v_ma, p.power_5v_ma FROM power_configs p "
                 "JOIN modules m ON m.id = p.module_id WHERE m.name = '4ms VCA Matrix'"
             )).all()
+            otool = conn.execute(text(
+                "SELECT p.label, p.power_12v_ma, p.power_neg12v_ma, p.power_5v_ma, p.quote FROM power_configs p "
+                "JOIN modules m ON m.id = p.module_id WHERE m.name = 'Otool Scope and Audio Tools' ORDER BY p.label"
+            )).all()
             recommended = conn.execute(text("SELECT name, label FROM power_configs WHERE is_recommended")).all()
             singles_before = conn.execute(text(
                 "SELECT name, power_12v_ma, power_neg12v_ma, power_5v_ma FROM modules "
@@ -558,19 +562,24 @@ def test_jumper_settings_load_once_as_power_configs(fresh_population_url, tmp_pa
             )).all()
     finally:
         engine.dispose()
-    assert "Otool Scope and Audio Tools" not in per_module
+    # Otool's page leaves both settings unnamed; the maker's manual names them (t034-manual-labels).
+    assert [tuple(row[:4]) for row in otool] == [
+        ("With rear jumper set to External 5v", 12, 22, 70),
+        ("With rear jumper set to Internal 5v", 80, 22, None),
+    ]
+    assert all("Otool_Plus_UserManual.pdf" in row[4] for row in otool)
     assert per_module["4ms VCA Matrix"] == per_module["Spectral Multiband Resonator"] == 1
-    assert sum(per_module.values()) == 17 and len(per_module) == 10
+    assert sum(per_module.values()) == 19 and len(per_module) == 11
     assert [tuple(row) for row in vca] == [("with jumper selecting internal 5V", 110, 110, 0)]
     assert [tuple(row) for row in recommended] == [("A-Envelope", "The +5V jumper selected (Recommended)")]
 
     again = populate(fresh_population_url, apply=True, verification_path=missing)
     assert "power_configs" not in again["inserts"]
-    assert again["power_configs"]["t035-jumper-power"]["already_stored"] == 17
+    assert again["power_configs"]["t035-jumper-power"]["already_stored"] == 19
     engine = create_engine(fresh_population_url)
     try:
         with engine.connect() as conn:
-            assert conn.execute(text("SELECT COUNT(*) FROM power_configs")).scalar_one() == 17
+            assert conn.execute(text("SELECT COUNT(*) FROM power_configs")).scalar_one() == 19
             singles_after = conn.execute(text(
                 "SELECT name, power_12v_ma, power_neg12v_ma, power_5v_ma FROM modules "
                 "WHERE id IN (SELECT module_id FROM power_configs) ORDER BY name"
