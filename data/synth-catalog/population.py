@@ -1892,7 +1892,7 @@ def inputs_hash() -> str:
     digest = hashlib.sha256()
     files = sorted(
         [*CATALOG.glob("seed-*.json"), *(CATALOG / "overlays").glob("*.json"),
-         *(CATALOG / "provenance").glob("*.json"), POWER_CONFIG_RECEIPT,
+         *(CATALOG / "provenance").glob("*.json"), POWER_CONFIG_RECEIPT, POWER_CONFIG_LABELS,
          ROOT / "data" / "cases" / "seed-v1.json"]
     )
     for path in files:

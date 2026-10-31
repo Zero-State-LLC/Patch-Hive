@@ -588,3 +588,18 @@ def test_jumper_settings_load_once_as_power_configs(fresh_population_url, tmp_pa
         engine.dispose()
     # The single draw columns are never written by this action (D8: they stay unknown).
     assert singles_after == singles_before
+
+
+def test_inputs_hash_covers_the_manual_label_receipt(tmp_path, monkeypatch):
+    """The fingerprint changes when a T034 manual label changes (it changes the plan)."""
+    import population
+
+    copy = tmp_path / "t034-manual-labels.json"
+    copy.write_bytes(population.POWER_CONFIG_LABELS.read_bytes())
+    monkeypatch.setattr(population, "ROOT", tmp_path.parent)
+    monkeypatch.setattr(population, "CATALOG", tmp_path / "none")
+    monkeypatch.setattr(population, "POWER_CONFIG_RECEIPT", tmp_path / "missing.json")
+    monkeypatch.setattr(population, "POWER_CONFIG_LABELS", copy)
+    before = population.inputs_hash()
+    copy.write_text(copy.read_text().replace("Internal 5v", "Internal 5V"))
+    assert population.inputs_hash() != before
