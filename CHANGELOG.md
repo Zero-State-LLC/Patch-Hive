@@ -4,6 +4,26 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.6](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.5...v0.3.0-alpha.6) (2026-10-31)
+
+
+### Data
+
+* **catalog:** apply the owner's T034 and A-155 decisions ([#172](https://github.com/Zero-State-LLC/Patch-Hive/issues/172)) ([414d96a](https://github.com/Zero-State-LLC/Patch-Hive/commit/414d96a39f45c9fb4e2133365738b1972340d095))
+* **catalog:** fill Cockpit (golden) HP from the maker's COCKPIT MK1 page ([#176](https://github.com/Zero-State-LLC/Patch-Hive/issues/176)) ([927a086](https://github.com/Zero-State-LLC/Patch-Hive/commit/927a086a772cc91f0fa9a90ef0d57828a64453d2))
+* **catalog:** fill Cockpit power and depth from the maker's COCKPIT MK1 page ([#178](https://github.com/Zero-State-LLC/Patch-Hive/issues/178)) ([5b46781](https://github.com/Zero-State-LLC/Patch-Hive/commit/5b46781b62bd7bc3c3cf4657a1e2abe6cbf11020))
+* **catalog:** label Otool's jumper settings from its manual (spec 003 T034) ([#170](https://github.com/Zero-State-LLC/Patch-Hive/issues/170)) ([eabc044](https://github.com/Zero-State-LLC/Patch-Hive/commit/eabc044b0744a418bdb05eb6cf6e38e49788c588))
+* **catalog:** re-source 4 more legacy HP values, correct Dixie II to 6 HP (spec 003 T039) ([#174](https://github.com/Zero-State-LLC/Patch-Hive/issues/174)) ([4baf206](https://github.com/Zero-State-LLC/Patch-Hive/commit/4baf206f498cda93794656d3918332c8a1f54ebf))
+
+
+### Documentation
+
+* record [#166](https://github.com/Zero-State-LLC/Patch-Hive/issues/166), [#167](https://github.com/Zero-State-LLC/Patch-Hive/issues/167), [#159](https://github.com/Zero-State-LLC/Patch-Hive/issues/159), the power_configs migration and the 9dbb5ba redeploy ([#168](https://github.com/Zero-State-LLC/Patch-Hive/issues/168)) ([4943db1](https://github.com/Zero-State-LLC/Patch-Hive/commit/4943db17e4ec9c938a1f1405e616f01353e76dcc))
+* record [#168](https://github.com/Zero-State-LLC/Patch-Hive/issues/168), [#170](https://github.com/Zero-State-LLC/Patch-Hive/issues/170) and the Otool power_configs load ([#171](https://github.com/Zero-State-LLC/Patch-Hive/issues/171)) ([5c69e5d](https://github.com/Zero-State-LLC/Patch-Hive/commit/5c69e5d91c8819702c95d5050d78d4039c4b86db))
+* record [#171](https://github.com/Zero-State-LLC/Patch-Hive/issues/171), [#172](https://github.com/Zero-State-LLC/Patch-Hive/issues/172) and the owner-decision loads ([#173](https://github.com/Zero-State-LLC/Patch-Hive/issues/173)) ([fb0139a](https://github.com/Zero-State-LLC/Patch-Hive/commit/fb0139a658a309efdfbbb0cbf1a21a8f442371ca))
+* record [#173](https://github.com/Zero-State-LLC/Patch-Hive/issues/173), [#174](https://github.com/Zero-State-LLC/Patch-Hive/issues/174) and the HP v5 load ([#175](https://github.com/Zero-State-LLC/Patch-Hive/issues/175)) ([486e72f](https://github.com/Zero-State-LLC/Patch-Hive/commit/486e72f17691ef333c6b8c1fd76f70dc74f6c97c))
+* record [#175](https://github.com/Zero-State-LLC/Patch-Hive/issues/175), [#176](https://github.com/Zero-State-LLC/Patch-Hive/issues/176) and the Cockpit (golden) load ([#177](https://github.com/Zero-State-LLC/Patch-Hive/issues/177)) ([81904b6](https://github.com/Zero-State-LLC/Patch-Hive/commit/81904b6b9c4db876a5d4ec4c923a1325c90cbbd0))
+
 ## [0.3.0-alpha.5](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.4...v0.3.0-alpha.5) (2026-10-30)
 
 
