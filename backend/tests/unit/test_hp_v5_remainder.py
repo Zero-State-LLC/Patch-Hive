@@ -90,3 +90,25 @@ def test_v5_slugs_lose_their_marker_once() -> None:
     again = P.Plan()
     P._schedule_hp_source_markers(again, catalog, overlays)
     assert again.ops == []
+
+
+def test_v6_fills_the_golden_cockpit_from_the_same_maker_page() -> None:
+    v5 = {e["slug"]: e for e in _load("module-catalog-hp-v5.json")["entries"]}
+    v6 = _load("module-catalog-hp-v6.json")
+    assert v6["count"] == len(v6["entries"]) == 1 and set(v6) == set(_load("module-catalog-hp-v5.json"))
+    (entry,) = v6["entries"]
+    black = v5["endorphin-es-cockpit-black"]
+    assert set(entry) == set(black)
+    assert (entry["slug"], entry["hp"]) == ("endorphin-es-cockpit-golden", 6)
+    assert entry["slug"] == P.create_slug(entry["brand"], entry["name"])
+    # One maker page offers both colours and states the width once.
+    assert entry["source_url"] == black["source_url"] and entry["verification"] == black["verification"]
+    assert "GOLDEN" in entry["verification"] and P._hp_entry_sourced(entry)
+    # The golden row is not a v1 value: modulargrid-provenance-v1 nulled it and nothing refilled it.
+    v1 = {e["slug"] for e in _load("module-catalog-hp-v1.json")["entries"]}
+    assert entry["slug"] not in v1
+    overlays = [(p.name, json.loads(p.read_text())) for p in sorted(OVERLAYS.glob("module-catalog-hp-v*.json"))]
+    catalog = {entry["slug"]: {"brand": entry["brand"], "name": entry["name"], "hp": None}}
+    plan = P.Plan()
+    P._schedule_hp_overlays(plan, catalog, overlays)
+    assert [(op.params["slug"], op.params["hp"]) for op in plan.ops] == [("endorphin-es-cockpit-golden", 6)]
