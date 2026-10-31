@@ -1,0 +1,49 @@
+{
+ "dataset_version": "module-catalog-hp-overlay-v5",
+ "generated_from": "spec 003 T039 remainder (2026-10-30, evening). Candidates: the 61 rows still marked hp_source = legacy_unsourced after #172. Each maker host was read with a plain GET (robots.txt read and honoured, at least 2 s apart, a host dropped at its first block or failure); maker manuals on the maker's own domain count as maker sources. Kept only where the source names that exact product and states its width; the verification field quotes it (whitespace collapsed; '...' joins the product name and the width where they are apart on the page). Dixie II differs from v1 (6, not 8); maker-corrections-v6 fixes databases that hold v1's value. Not found: ADDAC System (26, bot challenge, not fetched), Befaco (15, CAPTCHA; its GitHub repos state no widths), Instruo (6) and Dreadbox Utopia (bot challenge), Cwejman D-LFO (host down, HTTP 522), Doepfer A-101-4 (no page), Intellijel uAtt (no page or manual) and Quadra Expander (the shared Quadra & Expander manual gives one 'Width 6 hp' without saying which module), Make Noise Mysteron and the 1, 4 and 6 HP blanks (no page) and Strega (desktop instrument, inches only).",
+ "policy": "fill-null only; maker page or maker manual values only, each quoted; supersedes the unsourced module-catalog-hp-v1 entry for the same slug.",
+ "generated_at": "2026-10-30T22:30:00-0700",
+ "count": 4,
+ "entries": [
+  {
+   "slug": "endorphin-es-cockpit-black",
+   "brand": "Endorphin.es",
+   "name": "Cockpit (black)",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.endorphin.es/discontinued/p/cockpit",
+   "verification": "maker-page-checked-2026-10-30: \"COCKPIT MK1 ... Dimensions: 6 HP 38 mm deep ... BLACK / GOLDEN\""
+  },
+  {
+   "slug": "intellijel-dixie-ii",
+   "brand": "Intellijel",
+   "name": "Dixie II",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/downloads/manuals/dixie-2_manual_2018.09.13.pdf",
+   "verification": "maker-page-checked-2026-10-30: \"Dixie II Manual Technical Specifications Width 6 hp\""
+  },
+  {
+   "slug": "intellijel-metropolis",
+   "brand": "Intellijel",
+   "name": "Metropolis",
+   "hp": 34,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/downloads/manuals/metropolis_manual_1.30_2020.05.12.pdf",
+   "verification": "maker-page-checked-2026-10-30: \"Metropolis Manual v1.30 Technical Specifications Width 34 hp\""
+  },
+  {
+   "slug": "intellijel-mutamix",
+   "brand": "Intellijel",
+   "name": "Mutamix",
+   "hp": 18,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/downloads/manuals/mutamix_manual_2018.09.13.pdf",
+   "verification": "maker-page-checked-2026-10-30: \"Mutamix Manual Technical Specifications Width 18 hp\""
+  }
+ ]
+}

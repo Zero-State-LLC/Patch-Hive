@@ -348,6 +348,7 @@ PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "maker-corrections-v3.json",
     CATALOG / "provenance" / "maker-corrections-v4.json",
     CATALOG / "provenance" / "maker-corrections-v5.json",
+    CATALOG / "provenance" / "maker-corrections-v6.json",
 )
 ARCHIVE_FIELDS = {
     "modules": {
