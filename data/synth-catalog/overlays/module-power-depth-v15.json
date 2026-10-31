@@ -1,0 +1,50 @@
+{
+ "dataset_version": "module-power-depth-overlay-v15",
+ "generated_from": "Endorphin.es discontinued COCKPIT MK1 page (plain GET 2026-10-30, robots.txt honoured), which offers the module in BLACK and GOLDEN and states power and depth once for both. modulargrid-provenance-v1 had nulled these fields on both rows.",
+ "policy": "maker's own pages only; values verbatim; no ModularGrid; insert-if-absent / fill-null; disagreements are flagged by the loader",
+ "count": 2,
+ "entries": [
+  {
+   "brand": "Endorphin.es",
+   "name": "Cockpit (black)",
+   "power_12v_ma": 75,
+   "power_neg12v_ma": 4,
+   "power_5v_ma": 0,
+   "depth_mm": 38,
+   "source_url": "https://www.endorphin.es/discontinued/p/cockpit",
+   "sources": {
+    "power_12v_ma": "https://www.endorphin.es/discontinued/p/cockpit",
+    "power_neg12v_ma": "https://www.endorphin.es/discontinued/p/cockpit",
+    "power_5v_ma": "https://www.endorphin.es/discontinued/p/cockpit",
+    "depth_mm": "https://www.endorphin.es/discontinued/p/cockpit"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "verbatim",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.endorphin.es/discontinued/p/cockpit",
+   "quote": "COCKPIT MK1 ... Power consumption: 75 mA +12V 4 mA -12V 0 mA 5V Dimensions: 6 HP 38 mm deep ... BLACK / GOLDEN"
+  },
+  {
+   "brand": "Endorphin.es",
+   "name": "Cockpit (golden)",
+   "power_12v_ma": 75,
+   "power_neg12v_ma": 4,
+   "power_5v_ma": 0,
+   "depth_mm": 38,
+   "source_url": "https://www.endorphin.es/discontinued/p/cockpit",
+   "sources": {
+    "power_12v_ma": "https://www.endorphin.es/discontinued/p/cockpit",
+    "power_neg12v_ma": "https://www.endorphin.es/discontinued/p/cockpit",
+    "power_5v_ma": "https://www.endorphin.es/discontinued/p/cockpit",
+    "depth_mm": "https://www.endorphin.es/discontinued/p/cockpit"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "verbatim",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.endorphin.es/discontinued/p/cockpit",
+   "quote": "COCKPIT MK1 ... Power consumption: 75 mA +12V 4 mA -12V 0 mA 5V Dimensions: 6 HP 38 mm deep ... BLACK / GOLDEN"
+  }
+ ]
+}
