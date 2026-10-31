@@ -397,8 +397,9 @@ def test_maker_corrections_v3_and_the_legacy_hp_marker(fresh_population_url, tmp
     hp_source marks exactly the rows whose HP is still an uncited v1 value."""
     missing = tmp_path / "none.json"
     first = populate(fresh_population_url, apply=True, verification_path=missing)
-    # 88 after v3; v4 (the T039 remainder) re-sources 26 more.
-    assert first["updates"]["hp_source_legacy_marked"] == 62
+    # 88 after v3; v4 (the T039 remainder) re-sources 26 more and v5 4 more. On a fresh
+    # load the A-155 stays marked at v1's 4 (maker-corrections-v5 needs a stored value).
+    assert first["updates"]["hp_source_legacy_marked"] == 58
     engine = create_engine(fresh_population_url)
     try:
         with engine.connect() as conn:
@@ -412,7 +413,7 @@ def test_maker_corrections_v3_and_the_legacy_hp_marker(fresh_population_url, tmp
         # A fresh load takes the maker value from v3; no re-sourced value is marked.
         assert fresh == {"make-noise-dpo": 28, "make-noise-morphagene": 20,
                          "bastl-instruments-knit-rider": 16, "intellijel-mems-mic-1u": 10}
-        assert len(marked) == 62 and marked["make-noise-mysteron"] == 14
+        assert len(marked) == 58 and marked["make-noise-mysteron"] == 14
         assert marked["addac-system-addac200pi"] == 2
         # A citation the page check could not confirm stays marked.
         assert marked["cwejman-d-lfo"] == 12 and marked["befaco-bandit"] == 8

@@ -240,8 +240,8 @@ def test_the_v3_manifest_corrects_the_hand_checked_v1_hp_in_every_table() -> Non
     path = ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v3.json"
     manifest = json.loads(path.read_text())
     assert manifest["batch"] == "maker-corrections-v3" and manifest["flag_reverify"] is False
-    # v4 (the T039 remainder) is read right after v3, then v5 (the A-155 width).
-    assert P.PROVENANCE_MANIFESTS[-3] == path
+    # v4 (the T039 remainder) is read right after v3, then v5 (the A-155 width) and v6.
+    assert P.PROVENANCE_MANIFESTS[-4] == path
     corrections = {}
     for row in manifest["rows"]:
         (item,) = row["fields"]
@@ -284,7 +284,7 @@ def test_the_v4_manifest_corrects_the_page_checked_v1_hp() -> None:
     path = ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v4.json"
     manifest = json.loads(path.read_text())
     assert manifest["batch"] == "maker-corrections-v4" and manifest["flag_reverify"] is False
-    assert P.PROVENANCE_MANIFESTS[-2] == path
+    assert P.PROVENANCE_MANIFESTS[-3] == path
     corrections = {}
     for row in manifest["rows"]:
         (item,) = row["fields"]
@@ -319,7 +319,7 @@ def test_the_v4_manifest_corrects_the_page_checked_v1_hp() -> None:
 def test_maker_corrections_v5_sets_the_a155_to_its_stated_width() -> None:
     manifest = json.loads((ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v5.json").read_text())
     assert manifest["batch"] == "maker-corrections-v5" and manifest["flag_reverify"] is False
-    assert P.PROVENANCE_MANIFESTS[-1] == ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v5.json"
+    assert P.PROVENANCE_MANIFESTS[-2] == ROOT / "data" / "synth-catalog" / "provenance" / "maker-corrections-v5.json"
     assert {(row["table"], row["brand"], row["name"]) for row in manifest["rows"]} == {
         ("module_catalog", "Doepfer", "A-155"), ("modules", "Doepfer", "A-155"),
     }
