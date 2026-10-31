@@ -1,0 +1,19 @@
+{
+ "dataset_version": "module-catalog-hp-overlay-v6",
+ "generated_from": "spec 003 T039 follow-up (2026-10-30). Endorphin.es Cockpit (golden): its HP was nulled by modulargrid-provenance-v1 (no maker match then) and never re-sourced. The maker's discontinued COCKPIT MK1 page, read with a plain GET on 2026-10-30 for module-catalog-hp-v5, offers the module in BLACK and GOLDEN and states its width once for both.",
+ "policy": "fill-null only; maker page values only, each quoted.",
+ "generated_at": "2026-10-30T23:30:00-0700",
+ "count": 1,
+ "entries": [
+  {
+   "slug": "endorphin-es-cockpit-golden",
+   "brand": "Endorphin.es",
+   "name": "Cockpit (golden)",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.endorphin.es/discontinued/p/cockpit",
+   "verification": "maker-page-checked-2026-10-30: \"COCKPIT MK1 ... Dimensions: 6 HP 38 mm deep ... BLACK / GOLDEN\""
+  }
+ ]
+}
