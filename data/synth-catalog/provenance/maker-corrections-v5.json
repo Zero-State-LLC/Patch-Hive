@@ -1,0 +1,41 @@
+{
+ "batch": "maker-corrections-v5",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted.",
+ "decided": "2026-10-30 (owner: reviewed HP corrections may run to 84 HP, the widest case row, while extraction keeps 1-42 (FR-038); doepfer.de/a155.htm read with a plain GET 2026-10-30)",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "doepfer-a-155",
+   "brand": "Doepfer",
+   "name": "A-155",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 4,
+     "value": 50,
+     "evidence_url": "https://doepfer.de/a155.htm",
+     "source_tag": "maker-corrections-v5: 50 HP (\"Breite/Width: 50 TE / 50 HP / 253.7 mm\") on https://doepfer.de/a155.htm; 4 came from a retailer page (thomann.de) via the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Doepfer",
+   "name": "A-155",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 4,
+     "value": 50,
+     "evidence_url": "https://doepfer.de/a155.htm",
+     "source_tag": "maker-corrections-v5: 50 HP (\"Breite/Width: 50 TE / 50 HP / 253.7 mm\") on https://doepfer.de/a155.htm; 4 came from a retailer page (thomann.de) via the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}

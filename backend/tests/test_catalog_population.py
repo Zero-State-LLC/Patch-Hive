@@ -537,9 +537,9 @@ def test_jumper_settings_load_once_as_power_configs(fresh_population_url, tmp_pa
     """Spec 003 D8 / T034 on Postgres: the clean T035 settings load once; the rest wait."""
     missing = tmp_path / "none.json"
     applied = populate(fresh_population_url, apply=True, verification_path=missing)
-    assert applied["inserts"].get("power_configs") == 19
+    assert applied["inserts"].get("power_configs") == 21
     stats = applied["power_configs"]["t035-jumper-power"]
-    assert stats["skipped_by_reason"] == {"label_not_on_page": 1, "unit_not_stated": 1}
+    assert stats["skipped_by_reason"] == {}
     engine = create_engine(fresh_population_url)
     try:
         with engine.connect() as conn:
@@ -550,6 +550,10 @@ def test_jumper_settings_load_once_as_power_configs(fresh_population_url, tmp_pa
             vca = conn.execute(text(
                 "SELECT p.label, p.power_12v_ma, p.power_neg12v_ma, p.power_5v_ma FROM power_configs p "
                 "JOIN modules m ON m.id = p.module_id WHERE m.name = '4ms VCA Matrix'"
+            )).all()
+            smr = conn.execute(text(
+                "SELECT p.label, p.power_12v_ma, p.power_neg12v_ma, p.power_5v_ma FROM power_configs p "
+                "JOIN modules m ON m.id = p.module_id WHERE m.name = 'Spectral Multiband Resonator' ORDER BY p.label"
             )).all()
             otool = conn.execute(text(
                 "SELECT p.label, p.power_12v_ma, p.power_neg12v_ma, p.power_5v_ma, p.quote FROM power_configs p "
@@ -568,18 +572,24 @@ def test_jumper_settings_load_once_as_power_configs(fresh_population_url, tmp_pa
         ("With rear jumper set to Internal 5v", 80, 22, None),
     ]
     assert all("Otool_Plus_UserManual.pdf" in row[4] for row in otool)
-    assert per_module["4ms VCA Matrix"] == per_module["Spectral Multiband Resonator"] == 1
-    assert sum(per_module.values()) == 19 and len(per_module) == 11
-    assert [tuple(row) for row in vca] == [("with jumper selecting internal 5V", 110, 110, 0)]
+    assert per_module["4ms VCA Matrix"] == per_module["Spectral Multiband Resonator"] == 2
+    assert sum(per_module.values()) == 21 and len(per_module) == 11
+    # Owner decisions (t034-owner-decisions): the VCA Matrix's unit-less "80 max" is left unknown,
+    # and the SMR base setting takes the negation of the page's own label.
+    assert sorted(tuple(row) for row in vca) == [
+        ("with jumper selecting external 5V", None, 110, 40),
+        ("with jumper selecting internal 5V", 110, 110, 0),
+    ]
+    assert [tuple(row) for row in smr] == [("jumper not set to +12V", 86, 28, 25), ("when jumper set to +12V", 110, 28, 0)]
     assert [tuple(row) for row in recommended] == [("A-Envelope", "The +5V jumper selected (Recommended)")]
 
     again = populate(fresh_population_url, apply=True, verification_path=missing)
     assert "power_configs" not in again["inserts"]
-    assert again["power_configs"]["t035-jumper-power"]["already_stored"] == 19
+    assert again["power_configs"]["t035-jumper-power"]["already_stored"] == 21
     engine = create_engine(fresh_population_url)
     try:
         with engine.connect() as conn:
-            assert conn.execute(text("SELECT COUNT(*) FROM power_configs")).scalar_one() == 19
+            assert conn.execute(text("SELECT COUNT(*) FROM power_configs")).scalar_one() == 21
             singles_after = conn.execute(text(
                 "SELECT name, power_12v_ma, power_neg12v_ma, power_5v_ma FROM modules "
                 "WHERE id IN (SELECT module_id FROM power_configs) ORDER BY name"
@@ -600,6 +610,7 @@ def test_inputs_hash_covers_the_manual_label_receipt(tmp_path, monkeypatch):
     monkeypatch.setattr(population, "CATALOG", tmp_path / "none")
     monkeypatch.setattr(population, "POWER_CONFIG_RECEIPT", tmp_path / "missing.json")
     monkeypatch.setattr(population, "POWER_CONFIG_LABELS", copy)
+    monkeypatch.setattr(population, "POWER_CONFIG_DECISIONS", tmp_path / "missing-decisions.json")
     before = population.inputs_hash()
     copy.write_text(copy.read_text().replace("Internal 5v", "Internal 5V"))
     assert population.inputs_hash() != before

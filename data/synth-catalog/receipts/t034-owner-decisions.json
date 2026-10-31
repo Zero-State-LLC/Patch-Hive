@@ -1,0 +1,26 @@
+{
+  "receipt": "t034-owner-decisions",
+  "task": "spec 003 T034",
+  "decided": "2026-10-30 by the owner, adopting the recommendations in docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md section 5",
+  "policy": "Each entry changes one setting of one T035 page and quotes the page it rests on. A label may only restate or negate the page's own words; no number is added.",
+  "decisions": [
+    {
+      "brand": "4ms Company",
+      "name": "Spectral Multiband Resonator",
+      "page_url": "https://4mscompany.com/p.php?p=707&c=5",
+      "setting": 0,
+      "label": "jumper not set to +12V",
+      "reason": "The page names only the alternative ('when jumper set to +12V'); the base values are the other position, so the label negates the page's own words.",
+      "quote": "+12V rail: 86mA maximum (110mA max when jumper set to +12V)"
+    },
+    {
+      "brand": "4ms Company",
+      "name": "4ms VCA Matrix",
+      "page_url": "https://4mscompany.com/p.php?p=543&c=5",
+      "setting": 0,
+      "rail_unknown": "+12V",
+      "reason": "The page gives '80 max' with no unit for this rail and setting; it is stored as unknown, so a budget using this setting shows +12V as unknown.",
+      "quote": "+12V rail:\n80 max with jumper selecting external 5V"
+    }
+  ]
+}

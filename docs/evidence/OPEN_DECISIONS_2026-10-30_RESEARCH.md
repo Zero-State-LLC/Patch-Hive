@@ -232,6 +232,8 @@ Free GETs only, robots.txt respected (jonesvideo.com asks for a 3 s crawl delay;
 
 **Recommendation:** SMR, load with the negated label (it adds no number the page doesn't give). VCA Matrix, store +12V as unknown for the external-5V setting: the budget then shows that rail as unknown when that setting is picked, which is the fail-closed reading. Neither needs a schema change.
 
+**Decided 2026-10-30 (owner): as recommended.** `receipts/t034-owner-decisions.json`.
+
 ### 6. Doepfer A-155 width
 
 - doepfer.de/a155.htm: "Breite/Width: 50 TE / 50 HP / 253.7 mm", depth 40 mm, +80 mA / -20 mA (OBSERVED).
@@ -241,6 +243,8 @@ Free GETs only, robots.txt respected (jonesvideo.com asks for a 3 s crawl delay;
 **Options:** (a) keep 4 HP, marked `legacy_unsourced` (today); (b) a reviewed `null` correction, so placement is blocked (FR-035) rather than wrong; (c) let reviewed corrections go up to the widest case row (84 HP) while extraction keeps 1–42.
 **Recommendation:** (c). Extraction stays strict, a human-reviewed maker quote can state a real wide module, and the A-155 gets 50. (b) is the safe stop-gap if you would rather not touch FR-038.
 
+**Decided 2026-10-30 (owner): (c).** FR-038 now allows reviewed corrections from 1 to 84 HP; `provenance/maker-corrections-v5.json` corrects the A-155 4 → 50 in `module_catalog` and `modules`.
+
 ### 7. Scheduling `evidence.expire`
 
 - The default Neon branch has 0 `image_assets` rows (OBSERVED, read-only count, 2026-10-30), so nothing is waiting to expire.
@@ -248,3 +252,5 @@ Free GETs only, robots.txt respected (jonesvideo.com asks for a 3 s crawl delay;
 - Options: a daily GitHub Actions cron in the `production` environment (needs storage secrets in that environment, i.e. after T101b); or a Cloudflare cron trigger on the API Worker calling an internal admin route (new code and a new authenticated endpoint).
 
 **Recommendation:** not now. Add the daily Actions job after T101b moves the secrets, before the first real uploads; until then expiry is still enforced at read time.
+
+**Decided 2026-10-30 (owner): as recommended.** Tracked as spec 006 T101c, blocked on T101b.
