@@ -86,7 +86,7 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
   - [x] T055a Mirror durable files to R2 through its S3 API and restore them on read (`backend/core/storage.py`, `STORAGE_BACKEND=s3`); `edge/api` passes the R2 settings and fails closed without them (code).
     - depends_on: [T001]
     - acceptance: `tests/unit/test_durable_storage.py`: evidence and a design pack are restored and served after the local copy is deleted; an unpersisted upload is rejected, not recorded.
-  - [ ] T055b Create the R2 bucket and bucket-scoped credentials, and set them as `edge/api` secrets (operator). Open 2026-11-01: the Worker serves only with its R2 secrets set, but bucket existence and the T055 restart-persistence check cannot be shown read-only; the operator must list the buckets and run the upload, restart, fetch check.
+  - [ ] T055b Create the R2 bucket and bucket-scoped credentials, and set them as `edge/api` secrets (operator). Open 2026-11-01: the Worker serves only with its R2 secrets set, but bucket existence and the T055 restart-persistence check cannot be shown read-only; the operator must list the buckets and run the upload, restart, fetch check. Receipt 2026-11-02: both buckets exist (read-only listing); the restart-persistence check is still not run (`docs/evidence/OPERATOR_RECEIPTS_2026-11-02.md`).
     - depends_on: [T055a]
 
 - [ ] T040 Publish API hostname and restrict CORS. Operator chose Cloudflare Containers at `api.patch-hive.com` (2026-10-26).
@@ -95,7 +95,7 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
   - [x] T040a Add the `edge/api` Containers Worker serving FastAPI (`backend/Dockerfile`) at `api.patch-hive.com`, with exact-origin CORS and fail-closed payment flags in its config (code).
     - depends_on: [T001]
     - acceptance: `wrangler deploy --dry-run` builds the image; locally the image serves `/health` 200 and CORS allows only `https://patch-hive.com`.
-  - [ ] T040b Set the `edge/api` secrets, deploy it, and record `GET /health/ready` through the edge (operator). Open 2026-11-01: `/health/ready` is 200 on `api-staging.patch-hive.com` and `api.patch-hive.com`, but this stays open until T055b is closed.
+  - [ ] T040b Set the `edge/api` secrets, deploy it, and record `GET /health/ready` through the edge (operator). Open 2026-11-01: `/health/ready` is 200 on `api-staging.patch-hive.com` and `api.patch-hive.com`, but this stays open until T055b is closed. Receipt 2026-11-02: still 200 with `database: ok` on both at `ee5326e`; open on T055b (`docs/evidence/OPERATOR_RECEIPTS_2026-11-02.md`).
     - depends_on: [T040a, T050b, T055b]
 
 - [ ] T060 Wire ClefProvider into evidence-resolution path behind Spec 005 policy.

@@ -104,6 +104,14 @@ FLICKR_IMAGE = re.compile(
 )
 RACK_WORDS = re.compile(r"\b(rack|racks|case|skiff|setup|rig)\b", re.I)
 PANEL_WORDS = re.compile(r"\b(front panel|faceplate|panel)\b", re.I)
+# Words in maker names that do not identify the maker on their own.
+GENERIC_BRAND_WORDS = frozenset(
+    {
+        "audio", "busy", "circuits", "company", "design", "devices", "electronics",
+        "electronix", "industries", "instruments", "labs", "modular", "modules",
+        "music", "synthesis", "synths", "systems", "the",
+    }
+)
 
 
 # --------------------------------------------------------------------------- rights
@@ -591,14 +599,46 @@ def _tokens(text: str) -> list[str]:
     return [t for t in re.findall(r"[a-z0-9]+", text.lower()) if len(t) > 1]
 
 
+def _compact(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", text.lower())
+
+
+def _names_module(name: str, text: str, brand: str = "") -> bool:
+    """True when ``text`` names the module as a phrase: its words in order, nothing glued on.
+
+    "A-101-1" matches "A-101-1" or "A101-1" but not "A-101-2, A-106-1"; "C-is-2" matches
+    "Cis2" but not a stray "is". A name under three characters ("Gx", "EG") matches only
+    right after the full maker name ("Intellijel Gx", "Super Synthesis EG").
+    """
+    words = re.findall(r"[a-z0-9]+", name.lower())
+    if not words:
+        return False
+    if sum(len(w) for w in words) < 3:
+        brand_words = re.findall(r"[a-z0-9]+", brand.lower())
+        if not brand_words:
+            return False
+        words = brand_words + words
+    phrase = r"[^a-z0-9]*".join(re.escape(w) for w in words)
+    return re.search(rf"(?<![a-z0-9]){phrase}(?![a-z0-9])", text.lower()) is not None
+
+
 def identity_match(identity: dict, page: PhotoPage) -> str | None:
-    """Which page field names the searched module ("title" / "description"), else None."""
-    wanted = _tokens(identity["name"])
-    if not wanted:
+    """Which page field names the searched module ("title" / "description"), else None.
+
+    The page must also name the maker (a brand token other than a generic word such as
+    "Electronics"), so "Kraken Supercomputer" is not WMD Kraken and "Europe Square, Batumi"
+    is not Xaoc Batumi.
+    """
+    title, description = unquote(page.title), page.description
+    brand = [t for t in _tokens(identity["brand"]) if t not in GENERIC_BRAND_WORDS]
+    if not brand:
+        brand = _tokens(identity["brand"])
+    page_tokens = set(_tokens(f"{title} {description}"))
+    page_compact = _compact(f"{title} {description}")
+    if not any(t in page_tokens for t in brand) and _compact(identity["brand"]) not in page_compact:
         return None
-    for field_name, text in (("title", unquote(page.title)), ("description", page.description)):
-        have = set(_tokens(text))
-        if all(token in have for token in wanted):
+    for field_name, text in (("title", title), ("description", description)):
+        if _names_module(identity["name"], text, identity["brand"]):
             return field_name
     return None
 
@@ -622,6 +662,7 @@ class Counts:
     page_fetch_failed: int = 0
     license_accepted: int = 0
     license_excluded: dict[str, int] = field(default_factory=dict)
+    identity_not_named: int = 0
     downloaded: int = 0
     download_failed: dict[str, int] = field(default_factory=dict)
 
@@ -635,6 +676,7 @@ class Counts:
             "page_fetch_failed": self.page_fetch_failed,
             "license_accepted": self.license_accepted,
             "license_excluded": dict(sorted(self.license_excluded.items())),
+            "identity_not_named": self.identity_not_named,
             "downloaded": self.downloaded,
             "download_failed": dict(sorted(self.download_failed.items())),
         }
@@ -663,6 +705,7 @@ def rights_verdict(page: PhotoPage) -> tuple[bool, str | None]:
 def build_row(identity: dict, page: PhotoPage, download: dict | None, retrieved_at: str) -> dict:
     lic = page.license
     rights_ok, reason = rights_verdict(page)
+    match = identity_match(identity, page)
     if rights_ok:
         rights_status = "RIGHTS_CONFIRMED"
     elif reason in {
@@ -676,8 +719,10 @@ def build_row(identity: dict, page: PhotoPage, download: dict | None, retrieved_
         rights_status = "RIGHTS_AMBIGUOUS"
     else:
         rights_status = "RIGHTS_UNKNOWN"
-    downloaded = bool(download and download.get("ok"))
-    match = identity_match(identity, page)
+    # A page that does not name the searched module is no candidate for it: search engines
+    # answer "<maker> <module>" with generic rack photos, so the identity would be a guess.
+    named = match is not None
+    downloaded = bool(named and download and download.get("ok"))
     sources = [
         {
             "kind": "photo_page_text",
@@ -691,7 +736,7 @@ def build_row(identity: dict, page: PhotoPage, download: dict | None, retrieved_
         sources.append({"kind": "manufacturer_page", "url": identity["manufacturer_url"]})
     return {
         # Only retained, rights-confirmed bytes are an image_asset the promotion queue will import.
-        "kind": "image_asset" if (rights_ok and downloaded) else "image_reference",
+        "kind": "image_asset" if (rights_ok and named and downloaded) else "image_reference",
         "discovery_id": _discovery_id(identity["slug"], page.url),
         "source_url": page.url,
         "source_host": "commons.wikimedia.org" if page.host == "commons" else "flickr.com",
@@ -701,18 +746,18 @@ def build_row(identity: dict, page: PhotoPage, download: dict | None, retrieved_
         "manufacturer": identity["brand"],
         "model": identity["name"],
         "revision": None,
-        "proposed_expected_choice": identity["slug"],
+        "proposed_expected_choice": identity["slug"] if named else None,
         "identity_sources": sources,
         "rights_status": rights_status,
         "rights_basis": (
             f"{lic.name} ({lic.url or 'license named on source page'}); author: {page.author}; source: {page.url}"
-            if rights_ok
+            if rights_ok and named
             else None
         ),
         "license": lic.name,
         "license_url": lic.url,
         "author": page.author,
-        "exclusion_reason": None if rights_ok else reason,
+        "exclusion_reason": (reason if not rights_ok else None if named else "identity_not_named"),
         "image_sha256": f"sha256:{download['sha256']}" if downloaded and download else None,
         "image_path": download.get("path") if downloaded and download else None,
         "image_bytes": download.get("bytes") if downloaded and download else None,
@@ -720,7 +765,7 @@ def build_row(identity: dict, page: PhotoPage, download: dict | None, retrieved_
         "download_status": (
             "downloaded"
             if downloaded
-            else (f"failed:{download['reason']}" if download else "not_attempted")
+            else (f"failed:{download['reason']}" if named and download else "not_attempted")
         ),
         "ground_truth_status": "UNVERIFIED",
         "annotation_status": "DISCOVERED",
@@ -832,8 +877,12 @@ def run_search(
                     continue
                 download = None
                 accepted, _ = rights_verdict(page)
+                named = identity_match(identity, page) is not None
                 if accepted:
                     counts.license_accepted += 1
+                if accepted and not named:
+                    counts.identity_not_named += 1
+                elif accepted:
                     if page.image_url:
                         download = fetcher.download(page.image_url)
                     else:
@@ -873,6 +922,55 @@ def run_search(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     return summary
+
+
+def refilter_rows(rows: list[dict]) -> tuple[list[dict], dict[str, int]]:
+    """Re-apply the identity check to rows an earlier run wrote, with no network call.
+
+    The page title and description stored in each row's ``photo_page_text`` source are what
+    ``identity_match`` reads, so a run made before the check (or under an older rule) can be
+    brought up to date without spending searches again. A row that no longer names its module
+    becomes an excluded ``image_reference``; its downloaded file is left on disk but leaves the
+    promotion queue.
+    """
+    out: list[dict] = []
+    counts = {"rows": 0, "named": 0, "identity_not_named": 0}
+    for row in rows:
+        row = dict(row)
+        counts["rows"] += 1
+        source = next(
+            (s for s in row.get("identity_sources") or [] if s.get("kind") == "photo_page_text"),
+            None,
+        )
+        identity = {"brand": row.get("manufacturer") or "", "name": row.get("model") or ""}
+        match = None
+        if source is not None and identity["brand"] and identity["name"]:
+            page = PhotoPage(
+                url=source.get("url") or row.get("source_url") or "",
+                host="commons" if row.get("source_host") == "commons.wikimedia.org" else "flickr",
+                title=source.get("title") or "",
+                description=source.get("description") or "",
+                license=License(accepted=False, name=None, url=None, reason=None),
+                author=None,
+                image_url=None,
+            )
+            match = identity_match(identity, page)
+        if source is not None:
+            row["identity_sources"] = [
+                {**s, "matched_field": match} if s is source else s
+                for s in row["identity_sources"]
+            ]
+        if match is None:
+            counts["identity_not_named"] += 1
+            if row.get("exclusion_reason") is None:
+                row["exclusion_reason"] = "identity_not_named"
+            row["kind"] = "image_reference"
+            row["proposed_expected_choice"] = None
+            row["rights_basis"] = None
+        else:
+            counts["named"] += 1
+        out.append(row)
+    return out, counts
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
@@ -951,6 +1049,11 @@ def main(argv: list[str] | None = None) -> int:
     search.add_argument("--identities", required=True, type=Path)
     search.add_argument("--out-dir", required=True, type=Path)
     search.add_argument("--max-searches", type=int, default=MAX_SEARCHES)
+    refilter = sub.add_parser(
+        "refilter", help="re-apply the identity check to an earlier candidates.jsonl (no network)"
+    )
+    refilter.add_argument("--candidates", required=True, type=Path)
+    refilter.add_argument("--out", required=True, type=Path)
     args = parser.parse_args(argv)
 
     try:
@@ -963,6 +1066,16 @@ def main(argv: list[str] | None = None) -> int:
             picked, missing = write_starter(slugs, args.out)
             print(json.dumps({"written": len(picked), "missing": missing, "out": str(args.out)}))
             return 1 if missing else 0
+        if args.command == "refilter":
+            rows = [
+                json.loads(line)
+                for line in args.candidates.read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            ]
+            kept, counts = refilter_rows(rows)
+            _write_jsonl(args.out, kept)
+            print(json.dumps({**counts, "out": str(args.out)}, sort_keys=True))
+            return 0
         summary = run_search(
             load_identities(args.identities), args.out_dir, max_searches=args.max_searches
         )

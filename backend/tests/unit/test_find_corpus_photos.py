@@ -402,7 +402,9 @@ def test_run_end_to_end_counts_rows_and_queue_shape(tmp_path, keys):
     counts = summary["counts"]
     assert counts["searched"] == 1 and counts["paid_searches"] == 1
     assert counts["results"] == 6 and counts["allowed_host_results"] == 4
-    assert counts["license_accepted"] == 2 and counts["downloaded"] == 2
+    assert counts["license_accepted"] == 2 and counts["downloaded"] == 1
+    # The accepted Flickr page is titled "Make Noise Maths in rack": it does not name Plaits.
+    assert counts["identity_not_named"] == 1
     assert counts["license_excluded"] == {"license_not_allowed": 1, "non_commercial": 1}
     assert json.loads((out / "summary.json").read_text())["counts"] == counts
 
@@ -424,6 +426,12 @@ def test_run_end_to_end_counts_rows_and_queue_shape(tmp_path, keys):
     assert rows[FLICKR_NC]["rights_status"] == "RIGHTS_RESTRICTED"
     assert rows[FLICKR_NC]["kind"] == "image_reference" and rows[FLICKR_NC]["image_sha256"] is None
     assert rows[COMMONS_GFDL]["exclusion_reason"] == "license_not_allowed"
+    other = rows[FLICKR_OK]
+    assert other["rights_status"] == "RIGHTS_CONFIRMED"
+    assert other["exclusion_reason"] == "identity_not_named"
+    assert other["kind"] == "image_reference" and other["proposed_expected_choice"] is None
+    assert other["download_status"] == "not_attempted" and other["image_path"] is None
+    assert other["identity_sources"][0]["matched_field"] is None
     for row in rows.values():
         assert row["ground_truth_status"] not in {"OPERATOR_VERIFIED", "TWO_SOURCE_VERIFIED"}
         assert row["annotation_status"] != "REVIEWED"
@@ -431,13 +439,13 @@ def test_run_end_to_end_counts_rows_and_queue_shape(tmp_path, keys):
     # The promotion queue reads these files as they are.
     modules = [json.loads(line) for line in (out / "modules.jsonl").read_text().splitlines()]
     result = queue.build_queue(_rows(out), modules)
-    assert result["rights_cleared"] == 2 and result["admitted"] == 0
+    assert result["rights_cleared"] == 1 and result["admitted"] == 0
     for item in result["items"]:
         assert item["asset_hash"].startswith("sha256:") and len(item["asset_hash"]) == 71
         assert item["identity_ref"] == "mutable-instruments-plaits"
         assert item["proposed_identity"] == "mutable-instruments-plaits"
         assert item["manufacturer"] == "Mutable Instruments"
-        assert item["license"] in {"CC-BY-SA-4.0", "CC-BY-2.0"}
+        assert item["license"] == "CC-BY-SA-4.0"
         assert item["ground_truth_status"] == "UNVERIFIED"
 
 
@@ -521,6 +529,75 @@ def test_image_bytes_land_only_in_the_out_dir(tmp_path, keys):
     )
     assert written and all(p.parent == out / "images" for p in written)
     assert not any(str(p).startswith(str(ROOT)) for p in written)
+
+
+# --------------------------------------------------------------------------- identity check
+
+
+def _page(title: str, description: str = ""):
+    return photos.PhotoPage(
+        host="commons",
+        url="https://commons.wikimedia.org/wiki/File:x.jpg",
+        title=title,
+        description=description,
+        license=photos.License(accepted=True, name="CC0-1.0", url=None, reason=None),
+        author="A",
+        image_url=None,
+    )
+
+
+@pytest.mark.parametrize(
+    "brand, name, title, description, expected",
+    [
+        ("Mutable Instruments", "Plaits", "File:Mutable Instruments Plaits.jpg", "", "title"),
+        ("Mutable Instruments", "Plaits", "File:Plaits.jpg", "Mutable module", "title"),
+        ("Verbos Electronics", "Complex Oscillator",
+         "File:Verbos Electronics - Complex Oscillator - 2014 NAMM Show.jpg", "", "title"),
+        ("Doepfer", "A-102", "File:Doepfer Eurorack (A-101-2,A-102,A-103).jpg", "", "title"),
+        ("Instruo", "C-is-2", "File:Instruo Cis2.jpg", "", "title"),
+        # Names under three characters match right after the full maker name only.
+        ("Super Synthesis", "EG", "File:Super Synthesis EG.jpg", "", "title"),
+        ("Intellijel", "Gx", "File:Intellijel Gx in a rack.jpg", "", "title"),
+        ("Intellijel", "Gx", "File:Intellijel rack, gx module.jpg", "", None),
+        # Live false positives from the 2026-11-02 run: the module name alone, no maker.
+        ("WMD", "Kraken", "File:Kraken Supercomputer (4100442871).jpg", "", None),
+        ("Xaoc Devices", "Batumi", "File:Europe Square, Batumi.jpg", "", None),
+        ("2hp", "Arp", "File:ARP 2601 v2.0 black-on-orange.jpg", "", None),
+        # A generic word of the maker's name does not stand for the maker.
+        ("Verbos Electronics", "Noise Filter", "File:Noise Filter.svg", "electronics", None),
+        # Part of a model number, or short words scattered in a description, are not the module.
+        ("Doepfer", "A-101-1", "File:Doepfer Eurorack (A-101-2,A-106-1).jpg", "", None),
+        ("Instruo", "C-is-2", "File:Instruo.png", "this is a case with 2 rows", None),
+        ("Make Noise", "Maths", "File:Eurorack Modular Synthesizer.jpg", "a rack", None),
+    ],
+)
+def test_identity_match_needs_the_maker_and_the_module_phrase(brand, name, title, description, expected):
+    identity = {"brand": brand, "name": name}
+    assert photos.identity_match(identity, _page(title, description)) == expected
+
+
+def test_refilter_drops_rows_that_do_not_name_their_module(tmp_path, keys, capsys):
+    world = World(tmp_path)
+    out = tmp_path / "out"
+    world.run([IDENTITY], out)
+    rows = _rows(out)
+    # Rewrite one row as an older run would have left it: kept as an asset for Plaits.
+    stale = next(r for r in rows if r["source_url"] == FLICKR_OK)
+    stale.update(kind="image_asset", exclusion_reason=None,
+                 proposed_expected_choice=IDENTITY["slug"], rights_basis="x")
+    src = tmp_path / "old.jsonl"
+    src.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    dst = tmp_path / "new.jsonl"
+    assert photos.main(["refilter", "--candidates", str(src), "--out", str(dst)]) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["rows"] == len(rows) and report["named"] == 2
+    new = {r["source_url"]: r for r in map(json.loads, dst.read_text().splitlines())}
+    assert new[FLICKR_OK]["kind"] == "image_reference"
+    assert new[FLICKR_OK]["exclusion_reason"] == "identity_not_named"
+    assert new[FLICKR_OK]["proposed_expected_choice"] is None
+    assert new[COMMONS_OK]["kind"] == "image_asset"
+    assert new[COMMONS_GFDL]["exclusion_reason"] == "license_not_allowed"
+    assert queue.build_queue(list(new.values()), [])["rights_cleared"] == 1
 
 
 # --------------------------------------------------------------------------- starter
