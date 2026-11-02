@@ -1,0 +1,16 @@
+{
+  "schema": "fetch-approvals/v1",
+  "note": "Spec 003 FR-003. A non-dry-run paid fetch needs an unexpired entry here that covers the run's brands and whose caps the spend ledger has not reached. Add an entry in a reviewed commit; ledger_baseline_* is receipts/scrape-ledger.json at approval time, so caps count spend since then.",
+  "entry_format": {
+    "id": "short-name",
+    "approver": "who approved",
+    "approved_at": "ISO 8601",
+    "expires_at": "ISO 8601",
+    "brands": ["Brand name", "or * for all brands"],
+    "cap_fetches": 0,
+    "cap_credits": 0,
+    "ledger_baseline_fetches": 0,
+    "ledger_baseline_credits": 0
+  },
+  "entries": []
+}
