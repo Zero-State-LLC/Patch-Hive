@@ -603,15 +603,21 @@ def _compact(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "", text.lower())
 
 
-def _names_module(name: str, text: str) -> bool:
+def _names_module(name: str, text: str, brand: str = "") -> bool:
     """True when ``text`` names the module as a phrase: its words in order, nothing glued on.
 
     "A-101-1" matches "A-101-1" or "A101-1" but not "A-101-2, A-106-1"; "C-is-2" matches
-    "Cis2" but not a stray "is".
+    "Cis2" but not a stray "is". A name under three characters ("Gx", "EG") matches only
+    right after the full maker name ("Intellijel Gx", "Super Synthesis EG").
     """
     words = re.findall(r"[a-z0-9]+", name.lower())
-    if sum(len(w) for w in words) < 3:
+    if not words:
         return False
+    if sum(len(w) for w in words) < 3:
+        brand_words = re.findall(r"[a-z0-9]+", brand.lower())
+        if not brand_words:
+            return False
+        words = brand_words + words
     phrase = r"[^a-z0-9]*".join(re.escape(w) for w in words)
     return re.search(rf"(?<![a-z0-9]){phrase}(?![a-z0-9])", text.lower()) is not None
 
@@ -632,7 +638,7 @@ def identity_match(identity: dict, page: PhotoPage) -> str | None:
     if not any(t in page_tokens for t in brand) and _compact(identity["brand"]) not in page_compact:
         return None
     for field_name, text in (("title", title), ("description", description)):
-        if _names_module(identity["name"], text):
+        if _names_module(identity["name"], text, identity["brand"]):
             return field_name
     return None
 

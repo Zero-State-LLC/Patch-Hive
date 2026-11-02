@@ -555,6 +555,10 @@ def _page(title: str, description: str = ""):
          "File:Verbos Electronics - Complex Oscillator - 2014 NAMM Show.jpg", "", "title"),
         ("Doepfer", "A-102", "File:Doepfer Eurorack (A-101-2,A-102,A-103).jpg", "", "title"),
         ("Instruo", "C-is-2", "File:Instruo Cis2.jpg", "", "title"),
+        # Names under three characters match right after the full maker name only.
+        ("Super Synthesis", "EG", "File:Super Synthesis EG.jpg", "", "title"),
+        ("Intellijel", "Gx", "File:Intellijel Gx in a rack.jpg", "", "title"),
+        ("Intellijel", "Gx", "File:Intellijel rack, gx module.jpg", "", None),
         # Live false positives from the 2026-11-02 run: the module name alone, no maker.
         ("WMD", "Kraken", "File:Kraken Supercomputer (4100442871).jpg", "", None),
         ("Xaoc Devices", "Batumi", "File:Europe Square, Batumi.jpg", "", None),
