@@ -259,6 +259,7 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
         plan,
         catalog,
         hp_overlays,
+        retailer_hp=_retailer_hp_index(_load_optional(HP_RETAILER_OVERLAY)),
         maker_hp_slugs={
             (row.get("slug") or create_slug(row["brand"].strip(), row["name"].strip()))[:200]
             for row in maker_rows
@@ -1034,6 +1035,28 @@ def _schedule_hp_overlays(
 
 
 HP_SOURCE_LEGACY = "legacy_unsourced"
+HP_SOURCE_RETAILER = "retailer_observed"
+# One-off manual retailer lookups of the marked rows (spec 003 D2, FR-006). They never
+# fill or change HP; a retailer page that states the stored value moves the row's
+# marker from legacy_unsourced to retailer_observed (owner decision 2026-11-01).
+HP_RETAILER_OVERLAY = CATALOG / "overlays" / "module-catalog-hp-retailer-v1.json"
+
+
+def _retailer_hp_index(overlay: dict[str, Any]) -> dict[str, int]:
+    """slug -> HP for every quoted retailer entry (``RETAILER_OBSERVED``, https only)."""
+    index: dict[str, int] = {}
+    for entry in overlay.get("entries") or []:
+        if (
+            entry.get("hp") is None
+            or entry.get("source_class") != "retailer"
+            or entry.get("evidence_status") != "RETAILER_OBSERVED"
+            or not str(entry.get("source_url") or "").startswith("https://")
+            or not entry.get("quote")
+        ):
+            continue
+        for key in _hp_entry_keys(entry):
+            index[key] = int(entry["hp"])
+    return index
 
 
 def _schedule_hp_source_markers(
@@ -1042,6 +1065,7 @@ def _schedule_hp_source_markers(
     overlays: list[tuple[str, dict[str, Any]]],
     *,
     maker_hp_slugs: set[str] | frozenset[str] = frozenset(),
+    retailer_hp: dict[str, int] | None = None,
 ) -> None:
     """Keep ``module_catalog.hp_source = 'legacy_unsourced'`` on exactly the rows whose
     stored HP is an unsourced legacy overlay value (spec 003 T039).
@@ -1050,9 +1074,12 @@ def _schedule_hp_source_markers(
     stored HP equals that entry's HP, and no maker source carries an HP for the slug
     (a maker-cited HP overlay entry, or a maker-checked catalog row in
     ``maker_hp_slugs``). A marked row that no longer qualifies (re-sourced, or its HP
-    corrected) is cleared. Runs after the HP fills, so it sees this plan's values.
-    Only the marker changes; HP is never written here.
+    corrected) is cleared. A marked row whose stored HP a quoted retailer page also
+    states reads ``retailer_observed`` instead (owner decision 2026-11-01); a retailer
+    page that disagrees leaves ``legacy_unsourced``. Runs after the HP fills, so it
+    sees this plan's values. Only the marker changes; HP is never written here.
     """
+    retailer_hp = retailer_hp or {}
     sourced = set(maker_hp_slugs)
     for overlay_name, overlay in overlays:
         if overlay_name in UNSOURCED_HP_OVERLAYS:
@@ -1082,25 +1109,17 @@ def _schedule_hp_source_markers(
     for slug in sorted(catalog):
         row = catalog[slug]
         current = row.get("hp_source")
-        if slug in legacy and current is None:
-            row["hp_source"] = HP_SOURCE_LEGACY
+        target = None
+        if slug in legacy:
+            agrees = retailer_hp.get(slug) is not None and int(retailer_hp[slug]) == int(row["hp"])
+            target = HP_SOURCE_RETAILER if agrees else HP_SOURCE_LEGACY
+        if current == target or current not in {None, HP_SOURCE_LEGACY, HP_SOURCE_RETAILER}:
+            continue
+        row["hp_source"] = target
+        if target is None:
+            bucket = "hp_source_legacy_cleared" if current == HP_SOURCE_LEGACY else "hp_source_retailer_cleared"
             plan.add_update(
-                "hp_source_legacy_marked",
-                Op(
-                    "mark_hp_source",
-                    """
-                    UPDATE module_catalog
-                    SET hp_source = :hp_source, updated_at = :updated_at
-                    WHERE slug = :slug AND brand = :brand AND name = :name AND hp = :hp AND hp_source IS NULL
-                    """,
-                    {"slug": slug, "brand": row["brand"], "name": row["name"], "hp": int(row["hp"]),
-                     "hp_source": HP_SOURCE_LEGACY, "updated_at": _stamp()},
-                ),
-            )
-        elif slug not in legacy and current == HP_SOURCE_LEGACY:
-            row["hp_source"] = None
-            plan.add_update(
-                "hp_source_legacy_cleared",
+                bucket,
                 Op(
                     "clear_hp_source",
                     """
@@ -1109,9 +1128,25 @@ def _schedule_hp_source_markers(
                     WHERE slug = :slug AND brand = :brand AND name = :name AND hp_source = :hp_source
                     """,
                     {"slug": slug, "brand": row["brand"], "name": row["name"],
-                     "hp_source": HP_SOURCE_LEGACY, "updated_at": _stamp()},
+                     "hp_source": current, "updated_at": _stamp()},
                 ),
             )
+            continue
+        bucket = "hp_source_legacy_marked" if target == HP_SOURCE_LEGACY else "hp_source_retailer_marked"
+        plan.add_update(
+            bucket,
+            Op(
+                "mark_hp_source",
+                """
+                UPDATE module_catalog
+                SET hp_source = :hp_source, updated_at = :updated_at
+                WHERE slug = :slug AND brand = :brand AND name = :name AND hp = :hp
+                  AND hp_source IS NOT DISTINCT FROM CAST(:previous AS VARCHAR)
+                """,
+                {"slug": slug, "brand": row["brand"], "name": row["name"], "hp": int(row["hp"]),
+                 "hp_source": target, "previous": current, "updated_at": _stamp()},
+            ),
+        )
 
 
 def _schedule_hp(
