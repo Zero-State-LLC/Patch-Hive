@@ -23,6 +23,9 @@ def test_db_load_workflow_contract() -> None:
     assert "population-upsert.sql" not in upload
     assert "test -s load-artifacts/pre-apply.dump" in text
     assert "catalog_actions_load.py --allow-nonlocal" in text
+    # Apply names both hashes of the reviewed dry run (spec 003 FR-020, OQ-9).
+    assert "PATCHHIVE_PLAN_HASH: ${{ inputs.plan_hash }}" in text
+    assert "PATCHHIVE_INPUTS_HASH: ${{ inputs.inputs_hash }}" in text
     assert "set -x" not in text
     assert "echo " not in text
     permissions = text[text.index("\npermissions:"):text.index("\nconcurrency:")]
@@ -45,6 +48,45 @@ def test_actions_summary_shape(tmp_path: Path) -> None:
     assert "staging" in summary
     early = loader._summary({"modules": 0}, None, "apply", "prod")
     assert "stopped early" in early
+    receipt = {"plan_hash": "a" * 64, "inputs_hash": "b" * 64, "conflicts_total": 0, "run_id": "1"}
+    dry = loader._summary({"modules": 1}, {"modules": 1}, "dry-run", "staging", receipt)
+    assert f"plan_hash: `{'a' * 64}`" in dry
+    assert f"inputs_hash: `{'b' * 64}`" in dry
+
+
+def test_actions_apply_requires_both_reviewed_hashes(monkeypatch, tmp_path: Path) -> None:
+    """The Actions loader asks populate to check plan_hash and inputs_hash on apply only."""
+    import sys
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import catalog_actions_load as loader
+
+    seen: dict = {}
+
+    def fake_populate(database_url, **kwargs):
+        seen.update(kwargs)
+        raise SystemExit("stop")
+
+    monkeypatch.setattr(loader, "assert_at_head", lambda url: "head")
+    monkeypatch.setattr(loader, "table_counts", lambda url: {"modules": 0})
+    monkeypatch.setattr(loader, "dump_affected_tables", lambda url, path: None)
+    monkeypatch.setattr(loader, "populate", fake_populate)
+    monkeypatch.setattr(loader, "_write_summary", lambda text: None)
+    monkeypatch.setattr(loader, "ARTIFACTS", tmp_path)
+    monkeypatch.setattr(sys, "argv", ["catalog_actions_load.py", "--allow-nonlocal"])
+    monkeypatch.setenv("DATABASE_URL", "postgresql://u:p@db.example/x")
+    monkeypatch.setenv("PATCHHIVE_DB_ENV", "staging")
+    for mode, required in (("apply", True), ("dry-run", False)):
+        seen.clear()
+        monkeypatch.setenv("PATCHHIVE_LOAD_MODE", mode)
+        monkeypatch.setenv("PATCHHIVE_PLAN_HASH", "a" * 64)
+        monkeypatch.setenv("PATCHHIVE_INPUTS_HASH", " " + "b" * 64 + " ")
+        try:
+            loader.main()
+        except SystemExit:
+            pass
+        assert seen["require_plan_hash"] is required and seen["require_inputs_hash"] is required
+        assert seen["expected_plan_hash"] == "a" * 64 and seen["expected_inputs_hash"] == "b" * 64
 
 
 def test_edge_secrets_revokes_new_token_when_write_fails() -> None:
