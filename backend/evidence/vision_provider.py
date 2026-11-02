@@ -333,3 +333,19 @@ def collect_evidence_packet(
         "model": provider.model_name,
         "model_version": provider.model_version,
     }
+
+
+def bind_packet_to_evidence(packet: Mapping[str, Any], evidence_id: str) -> dict[str, Any]:
+    """Point every candidate in a packet at the evidence record that will retain it.
+
+    Providers label candidates with their own evidence id (the mock derives one from
+    the image hash). The stored ClassificationEvidenceRecord id is the one clients
+    and Decision Intelligence address, so candidates must carry that id.
+    """
+
+    bound = dict(packet)
+    for key in ("devices", "ports", "controls"):
+        items = packet.get(key)
+        if items:
+            bound[key] = [{**item, "evidence_id": evidence_id} for item in items]
+    return bound
