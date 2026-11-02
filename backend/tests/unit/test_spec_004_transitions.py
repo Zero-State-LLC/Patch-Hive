@@ -2,7 +2,8 @@
 
 Source: specs/004-commerce/spec.md, "## Stateful behavior", "### Machine A: Referral" and
 "### Machine B: One-time credit purchase". Machine B (T046) lives in canon/checkout.py;
-its ``Unresolved --operator_resolves--> Credited`` row waits for T048b. Machine C
+its ``Unresolved --operator_resolves--> Credited`` row is ``resolve_unresolved_event``
+(T048b). Machine C
 (subscription) is not encoded: its handlers are still ``_machine_not_built`` in
 canon/webhook_events.py (T049 open). Machine A purchases here are provider-verified
 (``payment_verified=True``); an unverified one is refused before anything is written
@@ -16,9 +17,15 @@ import json
 import pytest
 from sqlalchemy.orm import Session
 
-from canon.checkout import CheckoutUnavailableError, start_credit_checkout
+from canon.checkout import (
+    CheckoutUnavailableError,
+    PaymentProviderError,
+    resolve_unresolved_event,
+    start_credit_checkout,
+)
 from canon.exports import ExportBoundaryError, receive_stripe_webhook
 from canon.models import (
+    CanonicalAdminAuditEventRecord,
     CanonicalCreditLedgerEntryRecord,
     ProviderPaymentRecord,
     StripeEventRecordModel,
@@ -326,6 +333,78 @@ def test_b_unresolved_operator_rejects_grants_nothing(db_session: Session, pair)
     assert record.status == "rejected"
     assert _b_state(db_session, payment) == CHECKOUT_OPEN
     assert _purchase_entries(db_session) == 0
+
+
+class _Retriever:
+    def __init__(self, obj=None) -> None:
+        self.obj = obj
+
+    def retrieve_checkout_session(self, session_id: str):
+        if self.obj is None:
+            raise PaymentProviderError("provider answered 404")
+        return self.obj
+
+
+def _unresolved_b_event(db: Session, payment: ProviderPaymentRecord, event_id: str):
+    _deliver(
+        db,
+        event_id,
+        "checkout.session.completed",
+        _session_object(payment, metadata={"user_id": "999"}),
+    )
+    record = db.get(StripeEventRecordModel, event_id)
+    assert record.status == "unresolved"
+    return record
+
+
+def test_b_unresolved_operator_resolves_credits_through_machine_a(db_session: Session, pair):
+    """Same effect as the verified completion, from the session the provider reports."""
+    referrer, buyer = pair
+    create_referral(db_session, referrer=referrer, referred=buyer)
+    db_session.commit()
+    payment = _open_checkout(db_session, buyer)
+    record = _unresolved_b_event(db_session, payment, "evt_b_res")
+
+    resolve_unresolved_event(
+        db_session,
+        record.stripe_event_id,
+        provider=_Retriever(_session_object(payment)),
+        app_settings=_settings(),
+        actor_user_id=referrer.id,
+        actor_role="Admin",
+        reason="provider shows it paid",
+    )
+    db_session.commit()
+
+    assert record.status == "processed"
+    assert _b_state(db_session, payment) == CREDITED
+    assert _purchase_entries(db_session) == 1
+    assert _state(db_session, buyer) == REWARDED
+    assert db_session.query(CanonicalAdminAuditEventRecord).count() == 1
+
+
+def test_b_unresolved_operator_resolves_needs_the_provider_session(db_session: Session, pair):
+    """Guard: the operator verifies identity and payment. Unretrievable stays Unresolved."""
+    admin, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    record = _unresolved_b_event(db_session, payment, "evt_b_res_gone")
+
+    with pytest.raises(PaymentProviderError):
+        resolve_unresolved_event(
+            db_session,
+            record.stripe_event_id,
+            provider=_Retriever(),
+            app_settings=_settings(),
+            actor_user_id=admin.id,
+            actor_role="Admin",
+            reason="try again",
+        )
+    db_session.rollback()
+
+    assert db_session.get(StripeEventRecordModel, "evt_b_res_gone").status == "unresolved"
+    assert _b_state(db_session, payment) == CHECKOUT_OPEN
+    assert _purchase_entries(db_session) == 0
+    assert db_session.query(CanonicalAdminAuditEventRecord).count() == 0
 
 
 def test_b_abandoned_to_credited_is_illegal(db_session: Session, pair):
