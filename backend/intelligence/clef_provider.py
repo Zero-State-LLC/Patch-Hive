@@ -231,7 +231,15 @@ def _decision_id(request_id: str, raw_hash: str) -> str:
 
 
 class ClefDecisionProvider:
-    """Spec 005 DecisionProvider backed by Cloudflare Workers AI Clef."""
+    """Spec 005 DecisionProvider backed by Cloudflare Workers AI Clef.
+
+    Subclasses that call another vision endpoint (``intelligence.nvidia_provider``)
+    keep this adapter machine, image checks and answer mapping and override
+    ``PROVIDER_NAME``, ``ERROR_PREFIX``, ``_post`` and ``_build_packet``.
+    """
+
+    PROVIDER_NAME = "clef"
+    ERROR_PREFIX = "CLEF"
 
     def __init__(
         self,
@@ -263,8 +271,15 @@ class ClefDecisionProvider:
         self._state_trace: list[ClefAdapterState] = []
 
     @property
+    def provider_name(self) -> str:
+        return self.PROVIDER_NAME
+
+    @property
     def provider_version(self) -> str:
         return f"@cf/cloudflare/{self._model}"
+
+    def _code(self, suffix: str) -> str:
+        return f"{self.ERROR_PREFIX}_{suffix}"
 
     @property
     def last_state(self) -> ClefAdapterState:
@@ -361,32 +376,32 @@ class ClefDecisionProvider:
         self._last_state = invoked
         if invoked != ClefAdapterState.INVOKING:
             if not self._enabled:
-                raise ClefProviderError("CLEF_DISABLED", state=invoked)
-            raise ClefProviderError("CLEF_INVALID_REQUEST", state=invoked)
+                raise ClefProviderError(self._code("DISABLED"), state=invoked)
+            raise ClefProviderError(self._code("INVALID_REQUEST"), state=invoked)
         self._state_trace.append(invoked)
 
         if loader_failed:
             self._fail(
                 ClefAdapterEvent.UNAVAILABLE,
-                "CLEF_UNAVAILABLE",
+                self._code("UNAVAILABLE"),
                 RuntimeError("image loader failed"),
             )
 
         try:
             body = self._post(request=request, question=question, images=images)
         except httpx.TimeoutException as exc:
-            self._fail(ClefAdapterEvent.TIMEOUT, "CLEF_TIMEOUT", exc)
+            self._fail(ClefAdapterEvent.TIMEOUT, self._code("TIMEOUT"), exc)
         except httpx.HTTPError as exc:
-            self._fail(ClefAdapterEvent.UNAVAILABLE, "CLEF_UNAVAILABLE", exc)
+            self._fail(ClefAdapterEvent.UNAVAILABLE, self._code("UNAVAILABLE"), exc)
         except _ClefMalformed as exc:
-            self._fail(ClefAdapterEvent.MALFORMED, "CLEF_MALFORMED", exc)
+            self._fail(ClefAdapterEvent.MALFORMED, self._code("MALFORMED"), exc)
 
         try:
             packet = self._build_packet(body=body, mapper=mapper)
         except _ClefMalformed as exc:
-            self._fail(ClefAdapterEvent.MALFORMED, "CLEF_MALFORMED", exc)
+            self._fail(ClefAdapterEvent.MALFORMED, self._code("MALFORMED"), exc)
         except (ValueError, TypeError, KeyError, ValidationError) as exc:
-            self._fail(ClefAdapterEvent.MALFORMED, "CLEF_MALFORMED", exc)
+            self._fail(ClefAdapterEvent.MALFORMED, self._code("MALFORMED"), exc)
 
         succeeded = adapter_transition(
             ClefAdapterState.INVOKING,
@@ -504,7 +519,7 @@ class ClefDecisionProvider:
         return DecisionPacket(
             decision_id=_decision_id(request.request_id, raw_hash),
             request_id=request.request_id,
-            provider="clef",
+            provider=self.provider_name,
             provider_version=self.provider_version,
             evidence_hash=request.evidence_hash,
             answer_type="choice",
@@ -545,7 +560,7 @@ class ClefDecisionProvider:
         return DecisionPacket(
             decision_id=_decision_id(request.request_id, raw_hash),
             request_id=request.request_id,
-            provider="clef",
+            provider=self.provider_name,
             provider_version=self.provider_version,
             evidence_hash=request.evidence_hash,
             answer_type="score",
@@ -571,7 +586,7 @@ class ClefDecisionProvider:
         return DecisionPacket(
             decision_id=_decision_id(request.request_id, raw_hash),
             request_id=request.request_id,
-            provider="clef",
+            provider=self.provider_name,
             provider_version=self.provider_version,
             evidence_hash=request.evidence_hash,
             answer_type="probability",

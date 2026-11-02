@@ -27,7 +27,7 @@ from intelligence.evaluation_enablement import (
 from intelligence.receipt_signing import ApproverAllowlist, ReceiptSignature
 
 UNGATED_ENVIRONMENTS = frozenset({"development", "dev", "test", "testing"})
-DECISION_FLAGS = ("enable_decision_intelligence", "enable_clef_provider")
+DECISION_FLAGS = ("enable_decision_intelligence", "enable_clef_provider", "enable_nvidia_provider")
 
 
 def decision_runtime_requested(app_settings: Any) -> bool:

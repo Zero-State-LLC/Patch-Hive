@@ -64,7 +64,7 @@ ENABLEMENT_RECEIPT_SCHEMA = "patchhive.eval-enablement-receipt.v1"
 
 PROPOSAL_RULE = "non_regression_vs_baseline.v1"
 STAGING_ENVIRONMENT = "staging"
-ENABLEABLE_PROVIDERS = frozenset({"clef", "jev"})
+ENABLEABLE_PROVIDERS = frozenset({"clef", "jev", "nvidia"})
 CALIBRATION_BINS = 10
 
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
