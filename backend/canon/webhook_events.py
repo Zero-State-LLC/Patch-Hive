@@ -11,18 +11,23 @@ and leaves the record in a final disposition with ``processed_at`` set:
   operator review, and any writes the handler made are rolled back, so it grants nothing.
 - ``ignored``: no handler exists for the event type.
 
-No event stays ``received``.
+No event stays ``received``. An operator may then move an ``unresolved`` event to
+``rejected`` (spec 004 Machine B ``operator_rejects``, T048): it grants nothing and
+writes one ``CanonicalAdminAuditEventRecord``.
 """
 
 from __future__ import annotations
 
+import json
+import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from hashlib import sha256
 from typing import Any, Callable, Literal
 
 from sqlalchemy.orm import Session
 
-from canon.models import StripeEventRecordModel
+from canon.models import CanonicalAdminAuditEventRecord, StripeEventRecordModel
 
 EventStatus = Literal["processed", "duplicate", "unresolved", "ignored"]
 FINAL_EVENT_STATUSES: frozenset[str] = frozenset(
@@ -114,3 +119,73 @@ def process_stripe_event(
     record.processed_at = datetime.now(timezone.utc)
     session.flush()
     return disposition
+
+
+# Spec 004 OQ-5 (recommendation, T048): only the Admin role may dispose of a commerce
+# event an operator reviews, and every action needs a reason.
+COMMERCE_OPERATOR_ROLES: frozenset[str] = frozenset({"Admin"})
+REJECTED = "rejected"
+
+
+class InvalidEventTransitionError(Exception):
+    """The event is not in a state the requested operator action may leave."""
+
+
+def _hash_state(state: dict[str, Any]) -> str:
+    return sha256(json.dumps(state, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def _state_hash(record: StripeEventRecordModel) -> str:
+    return _hash_state({"status": record.status, "reason_code": record.reason_code})
+
+
+def reject_unresolved_event(
+    session: Session,
+    record: StripeEventRecordModel,
+    *,
+    actor_user_id: int,
+    actor_role: str,
+    reason: str,
+) -> CanonicalAdminAuditEventRecord:
+    """Machine B ``Unresolved --operator_rejects--> Abandoned``: grant nothing.
+
+    Only an ``unresolved`` event may be rejected, checked and written in one conditional
+    update; any other status (including a concurrent reject that won) raises
+    ``InvalidEventTransitionError`` and changes nothing. The record keeps its
+    ``reason_code`` so the original failure stays visible.
+    """
+
+    if actor_role not in COMMERCE_OPERATOR_ROLES:
+        raise PermissionError("only an Admin may reject a commerce event")
+    reason = (reason or "").strip()
+    if not reason:
+        raise ValueError("a reason is required")
+    before = {"status": "unresolved", "reason_code": record.reason_code}
+    # A conditional update makes the check and the write one step, so of two overlapping
+    # rejects only one changes the row and writes an audit record; the other sees 0 rows.
+    changed = (
+        session.query(StripeEventRecordModel)
+        .filter(
+            StripeEventRecordModel.stripe_event_id == record.stripe_event_id,
+            StripeEventRecordModel.status == "unresolved",
+        )
+        .update({StripeEventRecordModel.status: REJECTED}, synchronize_session=False)
+    )
+    session.refresh(record)
+    if changed != 1:
+        raise InvalidEventTransitionError(record.status)
+    audit = CanonicalAdminAuditEventRecord(
+        id=f"audit-{uuid.uuid4().hex}",
+        actor_user_id=actor_user_id,
+        actor_role=actor_role,
+        action="commerce.event.reject",
+        target_type="stripe_event",
+        target_id=record.stripe_event_id,
+        before_hash=_hash_state(before),
+        after_hash=_state_hash(record),
+        reason=reason,
+        created_at=datetime.now(timezone.utc),
+    )
+    session.add(audit)
+    session.flush()
+    return audit

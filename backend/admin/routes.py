@@ -34,7 +34,12 @@ from admin.schemas import (
     AdminUserResponse,
 )
 from admin.utils import log_admin_action
-from canon.models import CanonicalCreditLedgerEntryRecord
+from canon.models import CanonicalCreditLedgerEntryRecord, StripeEventRecordModel
+from canon.webhook_events import (
+    COMMERCE_OPERATOR_ROLES,
+    InvalidEventTransitionError,
+    reject_unresolved_event,
+)
 from community.models import User
 from core import get_db
 from gallery.models import GalleryRevision
@@ -226,6 +231,68 @@ def grant_user_credits(
     )
     db.commit()
     return {"status": "granted", "canonical_ledger_entry_id": grant_id}
+
+
+@router.get("/commerce/unresolved-events")
+def list_unresolved_commerce_events(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_read),
+):
+    """Provider events held for operator review (spec 004 FR-014, T048)."""
+    records = (
+        db.query(StripeEventRecordModel)
+        .filter(StripeEventRecordModel.status == "unresolved")
+        .order_by(StripeEventRecordModel.received_at.asc())
+        .all()
+    )
+    return {
+        "total": len(records),
+        "events": [
+            {
+                "stripe_event_id": r.stripe_event_id,
+                "event_type": r.event_type,
+                "reason_code": r.reason_code,
+                "livemode": r.livemode,
+                "received_at": r.received_at,
+                "processed_at": r.processed_at,
+            }
+            for r in records
+        ],
+    }
+
+
+@router.post("/commerce/events/{stripe_event_id}/reject")
+def reject_commerce_event(
+    stripe_event_id: str,
+    payload: AdminActionReason,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_mutate),
+):
+    """Spec 004 Machine B ``operator_rejects``: an unresolved event is closed with no
+    grant, by an Admin, with a reason and one canonical audit record (OQ-5, T048)."""
+    if current_user.role not in COMMERCE_OPERATOR_ROLES:
+        raise HTTPException(status_code=403, detail="Only an Admin can reject a commerce event")
+    if not (payload.reason or "").strip():
+        raise HTTPException(status_code=422, detail="A reason is required")
+    record = db.get(StripeEventRecordModel, stripe_event_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Event not found")
+    try:
+        audit = reject_unresolved_event(
+            db,
+            record,
+            actor_user_id=current_user.id,
+            actor_role=current_user.role,
+            reason=payload.reason,
+        )
+    except InvalidEventTransitionError as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail={"code": "INVALID_TRANSITION", "status": str(exc)},
+        ) from exc
+    db.commit()
+    return {"stripe_event_id": stripe_event_id, "status": record.status, "audit_event_id": audit.id}
 
 
 @router.post("/modules", status_code=201)
