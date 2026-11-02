@@ -36,6 +36,8 @@ From [research.md](research.md) R1–R8. Machine B (T046) lands before any refer
   - depends_on: [T049]
 - [ ] T051 Payment activation review: ADVERSARY review of the provider path, owner sign-off, then `ALLOW_PRODUCTION_PAYMENTS=true` with `STRIPE_TEST_MODE=false` in production only (FR-019, docs/SECURITY.md). Operator-run.
   - depends_on: [T044, T047, T048, T049]
+- [x] T052 Account deletion by anonymization (OQ-12, EC-8, decided `A_anonymize_keep`). Effort M. Done 2026-11-01: signed-in `DELETE /api/me` re-confirms the current password (wrong password 403 `PASSWORD_INCORRECT`, counted by the sign-in lockout), revokes every session and token, and in one transaction strips the user's personal fields, deletes or detaches their personal content, and writes one `admin_audit_log` row (`account_deleted`, counts only); canonical and legacy ledger, export and referral rows are kept. `anonymize_user` in `backend/account/deletion.py`; migration `20261101_user_deleted_at` adds `users.deleted_at`; tests in `backend/tests/api/test_account_deletion.py`. Retention periods for kept rows: a lawyer must confirm. Gaps listed under OQ-12.
+  - depends_on: [T042]
 
 ## Foundational
 

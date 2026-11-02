@@ -54,3 +54,9 @@ class LeaderboardEntryResponse(BaseModel):
     module_name: str
     manufacturer: str
     count: int
+
+
+class AccountDeleteRequest(BaseModel):
+    """Deleting the account re-confirms the current password."""
+
+    password: str = Field(..., max_length=128)
