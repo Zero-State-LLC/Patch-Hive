@@ -44,6 +44,9 @@ class User(Base):
     # Carried in every access token as "tv"; bumping it revokes every outstanding token
     # (sign out everywhere, role change).
     token_version = Column(Integer, nullable=False, default=0, server_default="0")
+    # Set when the account is deleted (spec 004 OQ-12): the row stays, anonymized,
+    # because the append-only ledger and referral rows reference it.
+    deleted_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
