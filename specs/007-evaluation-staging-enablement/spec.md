@@ -102,6 +102,11 @@ Counts: 5 Implemented, 1 Partial, 0 Missing.
 
 ## Open questions (2026-10-29)
 
+Decisions and checks 2026-11-01 ([record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md)):
+
+- OQ-007-1 (Rollback by ENABLE_CLEF_PROVIDER=false: does it hold?): **Answered (checked 2026-11-01):** RESOLVED: adapter inert with flag off (CLEF_DISABLED, no network call); failed provider persists no receipt.
+- OQ-007-2 (How is an approval bound to a person?): **Answered (checked 2026-11-01):** Built: Ed25519 signature over receipt_sha256 against a committed approver allowlist with strict revocation, plus chain replay (T080, T081 done); approved_by is a key id. Only operator tasks remain: generate the key pair offline and commit the public key (T082), sign the receipt (T083). The spec text still says 'open'; stale.
+
 This spec had no open-questions list. The `[INFERRED]` items and research questions:
 
 - **Rollback by `ENABLE_CLEF_PROVIDER=false`.** RESOLVED: the adapter is inert with the flag off and a failed provider persists no receipt (R2).

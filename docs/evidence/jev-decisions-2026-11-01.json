@@ -1,0 +1,1854 @@
+[
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-01",
+  "question": "How does the persisted Rack/rack_id relate to Rig and RigRevision?",
+  "status": "already_answered",
+  "answer_if_answered": "A Rack is the mutable rig; a rig revision is the immutable snapshot (id rig-rev-{content_hash[:32]}) that a run binds to. Implemented (FR-026). Decisions doc item 12 asks only for a one-word owner confirmation.",
+  "evidence": [
+   "specs/001-rig-intelligence/spec.md:69",
+   "specs/001-rig-intelligence/research.md:76-80",
+   "backend/runs/bridge.py",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30.md:163"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-02",
+  "question": "runs.rack_id CASCADE vs append-only runs: which wins, and what is the retention policy?",
+  "status": "already_answered",
+  "answer_if_answered": "Append-only wins. Racks are soft-deleted; runs.rack_id and patches.rack_id are RESTRICT (T022, #93). Account-level deletion policy for legacy CASCADE tables is a separate piece of OQ-10.",
+  "evidence": [
+   "specs/001-rig-intelligence/spec.md:406",
+   "specs/001-rig-intelligence/tasks.md:22",
+   "specs/001-rig-intelligence/spec.md:219"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-03",
+  "question": "Which category set is canonical (5 vs 9) and are subtypes separate?",
+  "status": "already_answered",
+  "answer_if_answered": "Five canonical categories only (Voice, Clock-Rhythm, Generative, Texture-FX, Utility); no Study padding (T023, #94, FR-012).",
+  "evidence": [
+   "specs/001-rig-intelligence/spec.md:208",
+   "specs/001-rig-intelligence/tasks.md:24"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-04",
+  "question": "Can generic port names be used in canonical patches?",
+  "status": "already_answered",
+  "answer_if_answered": "Generic jacks are resolved to declared ones; unmapped ones are marked unresolved; contradictions fail the run with a validation report (T025, #97).",
+  "evidence": [
+   "specs/001-rig-intelligence/tasks.md:26",
+   "specs/001-rig-intelligence/spec.md:404"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-05",
+  "question": "How is the seed chosen when omitted and how is it recorded?",
+  "status": "already_answered",
+  "answer_if_answered": "Default is settings.default_generation_seed = 42 when the request omits seed; the seed is stored on every patch (generation_seed) and in the IR and its hash (T033, FR-024).",
+  "evidence": [
+   "backend/core/config.py:104",
+   "backend/patches/routes.py:193",
+   "backend/patches/routes.py:229",
+   "specs/001-rig-intelligence/tasks.md:38 (T033)",
+   "specs/001-rig-intelligence/spec.md:71"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-06",
+  "question": "What is CHANGELOG F3 and what are the NOT_COMPUTABLE dual-write targets?",
+  "status": "already_answered",
+  "answer_if_answered": "Resolved 2026-10-27: F3 is the legacy-to-canon generate dual-write; a NOT_COMPUTABLE attempt writes no run/record/library, only the inventory revision.",
+  "evidence": [
+   "specs/001-rig-intelligence/spec.md:422-423",
+   "docs/evidence/F3_GENERATE_DUAL_WRITE_AUDIT.md"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-07",
+  "question": "Full run status set and the state when generation yields zero patches?",
+  "status": "already_answered",
+  "answer_if_answered": "queued, running, succeeded, failed, validation_failed, all terminal; zero patches from a computable rack ends succeeded (UI says no rule fits, T034).",
+  "evidence": [
+   "specs/001-rig-intelligence/spec.md:424-425",
+   "specs/001-rig-intelligence/tasks.md:32"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-08",
+  "question": "Which validation findings block SUCCEEDED vs only flag?",
+  "status": "already_answered",
+  "answer_if_answered": "Blocking findings (contradictions) fail the run as validation_failed with report; non-blocking (e.g. FEEDBACK_LOOP flag, MODULE_TOMBSTONED warning) are flagged. Resolved 2026-10-28 (#97).",
+  "evidence": [
+   "specs/001-rig-intelligence/spec.md:425",
+   "specs/001-rig-intelligence/tasks.md:26"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-09",
+  "question": "What are the readiness conditions?",
+  "status": "already_answered",
+  "answer_if_answered": "Built: at least one USER_CONFIRMED module and one confirmed catalog module id. Research R5 recommends recording this as the answer. Residual optional owner choice: also require a case (nothing in the engine needs one); decisions doc item 12 asks to ratify.",
+  "evidence": [
+   "specs/001-rig-intelligence/research.md:70-74",
+   "backend/canon/inventory.py",
+   "backend/patches/inventory_gate.py",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30.md:162"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-10",
+  "question": "What are the retention, privacy and access rules for evidence (rig photos, OCR output) and user overlays?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "backend/evidence/routes.py:130 (retention_days 1-365, default 30)",
+   "backend/evidence/retention.py",
+   "backend/evidence/expire.py:1-9 (manual CLI, nothing schedules it)",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md:143-169 (PROPOSED table)",
+   "specs/001-rig-intelligence/spec.md:264,431",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30.md:165"
+  ],
+  "options": {
+   "adopt_proposed_table": "Adopt the proposed table: images and their OCR text 30 days default, cap form at 90, user-initiated delete; exports bytes 1 year; ledger/audit 7 years (confirm with an accountant); overlays until user deletes or account closes; refresh tokens purged 30 days after expiry; logs 30 days; account deletion removes overlays and evidence and nulls user_id. Needs: schedule expire_image_assets (Worker cron or CI), cap the form, deletion route, migration changing legacy CASCADE ledger FKs to RESTRICT/SET NULL. Most complete; largest build.",
+   "minimal_images_only": "Fix only the evidence gap: keep the 30-day default, cap at 90 (or leave 365), schedule expire_image_assets, add user-initiated image delete. Leave overlays, ledger and account deletion undefined for now. Smallest build; leaves account-deletion and GDPR-style erasure open.",
+   "shorter_images_strict": "Stricter privacy posture: images and OCR 7 days default, 30 max, delete raw OCR text at expiry, plus the minimal scheduling and delete route. Lower exposure for photos of homes/people; users may lose evidence needed to re-confirm inventory.",
+   "status_quo_document": "Document current behaviour only (30-day default, 1-365, manual CLI, expiry enforced at access time) and defer the policy. No build, but photos are never purged automatically."
+  },
+  "existing_recommendation": "adopt_proposed_table",
+  "risk": [
+   "privacy",
+   "legal"
+  ],
+  "reversible": "easy (periods are config); hard once data is deleted or FK migration runs. Retention periods for financial records and erasure duties need a lawyer/accountant to confirm; not settled here.",
+  "unblocks": "Tasks to schedule expire_image_assets, cap the upload form, add a deletion route, ledger FK migration (not yet numbered in tasks.md); T001/T002 spec confirmation",
+  "jev": {
+   "choice": "minimal_images_only",
+   "probabilities": {
+    "adopt_proposed_table": 0.45,
+    "minimal_images_only": 0.47,
+    "shorter_images_strict": 0.03,
+    "status_quo_document": 0.05
+   },
+   "confidence": 0.29,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-11",
+  "question": "Computation rules for the six rig scores?",
+  "status": "already_answered",
+  "answer_if_answered": "Owner decided 2026-10-30 (option 2): routing_flex_score = round(1-exp(-(total_ports/module_count)/8),4) and performance_density_index = round(total_ports/total_hp,4); other four stay NOT_COMPUTABLE. Implemented in canon/rig_scores.py (T035). Caveat: only ~3 catalog modules carry io_ports, so most real rigs stay NOT_COMPUTABLE until a port-data pass.",
+  "evidence": [
+   "specs/001-rig-intelligence/tasks.md:45",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30.md:147-158",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md:38"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-12",
+  "question": "Do read handlers commit/mutate state?",
+  "status": "already_answered",
+  "answer_if_answered": "No. backend/runs/routes.py has no commit; get_db only closes the session. Reads write nothing (T021, #92, FR-020) with a test.",
+  "evidence": [
+   "backend/runs/routes.py:23-60",
+   "backend/core/database.py:34-40",
+   "specs/001-rig-intelligence/tasks.md:20",
+   "backend/tests/unit/test_spec_001_transitions.py"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "001-rig-intelligence",
+  "id": "OQ-13",
+  "question": "Does the provider evidence boundary need an ADVERSARY threat model in spec 001?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/001-rig-intelligence/spec.md:435",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md:171-184 (PROPOSED outline)",
+   "docs/SECURITY.md (mitigations: size/pixel limits, scanner adapter, re-encode, EXIF strip, provider cannot claim USER_CONFIRMED)",
+   "backend/evidence/vision_provider.py (FR-006)"
+  ],
+  "options": {
+   "scoped_adversary_section": "Add an ADVERSARY section to spec 001 limited to the provider/evidence boundary (malicious uploader, hostile or poisoned provider output, OCR injection, decompression bombs), listing mitigations and gaps (production scanner not selected). Focused; matches the spec's Workflows gap.",
+   "repo_wide_threat_model": "Adopt the one-page repo-wide outline (8 risks: CI secrets, webhooks, credit abuse, signing key, photo privacy, tenant isolation, supply chain) as docs/ threat model and link it from 001, without an ADVERSARY section in the spec. Broader coverage; the evidence boundary gets less detail.",
+   "both": "Do both: repo-wide document plus a short 001 ADVERSARY section referencing it. Most complete, most to maintain.",
+   "defer_no_model": "Declare it out of scope until a live cloud vision provider is enabled (currently mock only), keeping SECURITY.md as the control list. No work now; the boundary is unreviewed once a live provider is turned on."
+  },
+  "existing_recommendation": null,
+  "risk": [
+   "security",
+   "privacy"
+  ],
+  "reversible": "easy (documentation), but deferring is risky if a live provider is enabled first",
+  "unblocks": "T001 spec confirmation; T090 convergence; a gate before enabling live cloud vision (no task id)",
+  "jev": {
+   "choice": "scoped_adversary_section",
+   "probabilities": {
+    "scoped_adversary_section": 0.98,
+    "repo_wide_threat_model": 0.0,
+    "both": 0.02,
+    "defer_no_model": 0.0
+   },
+   "confidence": 0.97,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-1",
+  "question": "Does POST /me/publications publish immediately or create a draft?",
+  "status": "already_answered",
+  "answer_if_answered": "Creates a draft; owner publishes via PATCH (#101).",
+  "evidence": [
+   "specs/002-patch-book-publishing/spec.md:495-496",
+   "specs/002-patch-book-publishing/research.md:72",
+   "backend/publishing/routes.py:221-252"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": "none",
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-2",
+  "question": "Can an owner unhide a publication an admin hid?",
+  "status": "already_answered",
+  "answer_if_answered": "No. Admin hide sets moderation_audit_id; owner status change then gets 409 PUBLICATION_UNDER_MODERATION.",
+  "evidence": [
+   "backend/publishing/routes.py:277-283",
+   "backend/publishing/routes.py:520-544",
+   "specs/002-patch-book-publishing/research.md:73"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": "none",
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-3",
+  "question": "Can an admin remove a draft?",
+  "status": "already_answered",
+  "answer_if_answered": "No. Admin remove accepts only published/hidden; draft gets 409 INVALID_TRANSITION.",
+  "evidence": [
+   "backend/publishing/routes.py:549-562",
+   "specs/002-patch-book-publishing/research.md:74"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": "none",
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-4",
+  "question": "Which fields are mutable after publish given 'immutable records'?",
+  "status": "already_answered",
+  "answer_if_answered": "FR-037 fields stay editable in draft/published/hidden; a removed publication refuses any PATCH (#130).",
+  "evidence": [
+   "backend/publishing/routes.py:271-273",
+   "specs/002-patch-book-publishing/spec.md:501-502"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": "none",
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-5",
+  "question": "Which response code do publishing endpoints return when the flag is off?",
+  "status": "already_answered",
+  "answer_if_answered": "404: router not mounted when ENABLE_LEGACY_PUBLISHING is false (flag-off 404 untested per T010).",
+  "evidence": [
+   "specs/002-patch-book-publishing/research.md:76",
+   "specs/002-patch-book-publishing/tasks.md:10",
+   "backend/main.py"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": "none",
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-6",
+  "question": "Must a publication export bind to a validated PatchBookManifest?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/002-patch-book-publishing/research.md:23-37",
+   "backend/publishing/routes.py:303-308",
+   "specs/002-patch-book-publishing/tasks.md:35",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30.md:73-86",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md:209-218"
+  ],
+  "options": {
+   "keep_off": "Leave _bound_to_validated_book()=False; publish always 409 PUBLICATION_BOOK_NOT_VALIDATED (current state, T032 done). Cost 0; no gallery. Repo recommendation now.",
+   "reference_canon_export": "Add nullable publication_exports.canonical_export_id FK plus a stored 'book validated' flag/hash on canonical_exports; check ownership, fulfilled, validated at publish. Effort M; needs migration; unblocks gallery. Repo recommendation when a gallery is scheduled.",
+   "bind_t033": "T033 as written: full binding of each publication export to a canon export whose pack passed validate_book; replaces legacy PDF path. Effort L; migration plus public content.",
+   "exempt_legacy": "Exempt legacy exports from FR-048 while behind flag. Effort S but reopens the bypass; repo says not advised."
+  },
+  "existing_recommendation": "keep_off",
+  "risk": [
+   "legal"
+  ],
+  "reversible": "easy",
+  "unblocks": "T033 (T001 also required)",
+  "jev": {
+   "choice": "keep_off",
+   "probabilities": {
+    "keep_off": 0.85,
+    "reference_canon_export": 0.12,
+    "bind_t033": 0.03,
+    "exempt_legacy": 0.0
+   },
+   "confidence": 0.8,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-7",
+  "question": "Does a PageFitReport/preflight warning ever allow acceptance?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/002-patch-book-publishing/research.md:64-68",
+   "specs/002-patch-book-publishing/tasks.md:31",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30.md:88-90"
+  ],
+  "options": {
+   "non_blocking_recorded": "Warnings pass but are recorded in manifest and validation/book.json (already built, T036). No code change.",
+   "block_named_severe": "Block on an allow-list of severe codes (e.g. INK_COVERAGE_HIGH) once real warning data exists; others stay recorded. Small change in preflight.py.",
+   "block_all": "Any warning fails acceptance (strict reading of 'warnings never silently pass' plus FR state-machine row treating warning as not passing). Likely blocks many valid books; may need waiver flow."
+  },
+  "existing_recommendation": "non_blocking_recorded",
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "",
+  "jev": {
+   "choice": "non_blocking_recorded",
+   "probabilities": {
+    "non_blocking_recorded": 0.92,
+    "block_named_severe": 0.06,
+    "block_all": 0.02
+   },
+   "confidence": 0.88,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-8",
+  "question": "Is a book with zero accepted patch pages valid?",
+  "status": "already_answered",
+  "answer_if_answered": "No. Design Engine fails EXPORT_NO_PATCHES; legacy route returns 404.",
+  "evidence": [
+   "specs/002-patch-book-publishing/research.md:77",
+   "backend/export/patchbook/design/content_spine.py",
+   "backend/export/routes.py"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": "none",
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-9",
+  "question": "What are the cable-crossing, ambiguity and visual-diff thresholds?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/002-patch-book-publishing/spec.md:44",
+   "specs/002-patch-book-publishing/spec.md:222",
+   "specs/002-patch-book-publishing/spec.md:476",
+   "specs/002-patch-book-publishing/spec.md:511",
+   "specs/002-patch-book-publishing/research.md:82"
+  ],
+  "options": {
+   "defer_unchecked": "Keep FR-015/SC-004 as Partial; no collision/crossing check, goldens compared by exact hash only. Cost 0; known gap documented.",
+   "exact_golden_only": "Define visual diff as byte/hash-exact goldens for the nine fixture cases (deterministic compiler); no tolerance. Cheap; brittle on font/library upgrades.",
+   "measured_thresholds": "Implement crossing count and label-box overlap checks, set thresholds from measurement over existing fixtures (e.g. max crossings per page, zero label overlaps) and a pixel-diff tolerance. Needs owner to approve numbers; effort M."
+  },
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "T090 (convergence)",
+  "jev": {
+   "choice": "measured_thresholds",
+   "probabilities": {
+    "defer_unchecked": 0.05,
+    "exact_golden_only": 0.02,
+    "measured_thresholds": 0.93
+   },
+   "confidence": 0.89,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-10",
+  "question": "How are concurrent owner and admin transitions ordered?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "backend/publishing/routes.py:258-299",
+   "backend/publishing/routes.py:520-574",
+   "specs/002-patch-book-publishing/research.md:83",
+   "specs/002-patch-book-publishing/spec.md:489"
+  ],
+  "options": {
+   "last_write_wins": "Leave as built: no lock, no version; last commit wins, so a stale owner write can undo an admin hide. Effort 0; moderation hole.",
+   "row_lock": "SELECT ... FOR UPDATE on the publication row in owner and admin handlers; admin then wins by ordering, and the owner path re-checks moderation_audit_id after the lock. Effort S, no migration; needs Postgres (no-op on SQLite).",
+   "version_column": "Add integer version column checked on every write (optimistic concurrency); stale request gets 409. Effort S plus migration; works on any DB."
+  },
+  "existing_recommendation": null,
+  "risk": [
+   "security"
+  ],
+  "reversible": "easy",
+  "unblocks": "spec edge case (spec.md:489)",
+  "jev": {
+   "choice": "row_lock",
+   "probabilities": {
+    "last_write_wins": 0.02,
+    "row_lock": 0.77,
+    "version_column": 0.21
+   },
+   "confidence": 0.66,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-11",
+  "question": "How does ENABLE_PATCHBOOK_PUBLICATION_PROFILE reconcile with the one-page law?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/002-patch-book-publishing/research.md:84",
+   "specs/002-patch-book-publishing/spec.md:189",
+   "specs/002-patch-book-publishing/spec.md:89",
+   "specs/002-patch-book-publishing/tasks.md:30"
+  ],
+  "options": {
+   "plate_plus_appendix_ok": "Accept as built: plate is non-executable; each patch's one-page execution page lives in the appendix, so FR-001 holds per executable page. Requires drawing plates (today manifest 2N+2 vs PDF N+2 fails PAGE_COUNT_MISMATCH) and amending FR-001 wording.",
+   "retire_profile": "Drop the publication profile and its flag; keep standalone one-page books only. Removes the fail case; loses artistic dual-artifact packs.",
+   "keep_off_deferred": "Leave flag off, plates undrawn, validation failing by design (T031). Decision postponed; zero cost."
+  },
+  "existing_recommendation": "keep_off_deferred",
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "",
+  "jev": {
+   "choice": "keep_off_deferred",
+   "probabilities": {
+    "plate_plus_appendix_ok": 0.12,
+    "retire_profile": 0.03,
+    "keep_off_deferred": 0.85
+   },
+   "confidence": 0.77,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-12",
+  "question": "What is the legal effect and enforcement of the CC BY-NC 4.0 default license and allow_remix? (A lawyer must confirm.)",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "backend/publishing/models.py:40",
+   "backend/publishing/models.py:75",
+   "backend/publishing/routes.py:116",
+   "backend/publishing/routes.py:165",
+   "backend/publishing/routes.py:368",
+   "https://creativecommons.org/licenses/by-nc/4.0/legalcode (not fetched this pass)"
+  ],
+  "options": {
+   "keep_ccbync_default": "Keep CC BY-NC 4.0 hard-coded; allow_remix becomes a UI hint only, not a licence term (CC BY-NC already permits adaptations with attribution). Cheapest; NonCommercial is ambiguous and CC licences are irrevocable once granted.",
+   "owner_picks_license": "Add a license choice (e.g. CC BY-NC, CC BY-NC-ND, all-rights-reserved) mapped from allow_remix (remix=false -> ND). Medium effort; schema change; clearer intent.",
+   "all_rights_reserved": "Publish with no open licence (view/download only per allow_download); no remix concept. Simplest legally; contradicts current default.",
+   "no_public_sharing": "Do not offer licences until publishing returns (flag is off); defer. Zero exposure while off."
+  },
+  "existing_recommendation": null,
+  "risk": [
+   "legal"
+  ],
+  "reversible": "hard",
+  "unblocks": "T001 (before publishing returns)",
+  "jev": {
+   "choice": "owner_picks_license",
+   "probabilities": {
+    "keep_ccbync_default": 0.33,
+    "owner_picks_license": 0.54,
+    "all_rights_reserved": 0.03,
+    "no_public_sharing": 0.1
+   },
+   "confidence": 0.39,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-13",
+  "question": "What are report rate limits, anonymous-report rules and retention for reports/audit logs?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "backend/publishing/routes.py:462-482",
+   "backend/publishing/models.py:99-113",
+   "specs/002-patch-book-publishing/research.md:78",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md:143-175"
+  ],
+  "options": {
+   "as_built": "Anonymous allowed, no rate limit, reports kept forever. Open to spam and unbounded growth; fine only while flag is off.",
+   "limit_and_require_dedupe": "Keep anonymous reports but add per-IP/per-user rate limit and dedupe per (publication, reporter); retention still undecided. Effort S-M.",
+   "auth_only_with_retention": "Require login to report, rate limit per user, retain reports 1 year after resolution and keep admin audit events 7 years (the 001 PROPOSED table value; accountant/lawyer to confirm). Effort M; privacy: reporter_user_id is personal data."
+  },
+  "existing_recommendation": null,
+  "risk": [
+   "privacy",
+   "security",
+   "legal"
+  ],
+  "reversible": "easy",
+  "unblocks": "needed before publishing returns",
+  "jev": {
+   "choice": "limit_and_require_dedupe",
+   "probabilities": {
+    "as_built": 0.02,
+    "limit_and_require_dedupe": 0.56,
+    "auth_only_with_retention": 0.42
+   },
+   "confidence": 0.34,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-14",
+  "question": "What do the truncated source extracts contain that the spec lacks?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/002-patch-book-publishing/spec.md:14",
+   "specs/002-patch-book-publishing/spec.md:518",
+   "specs/002-patch-book-publishing/research.md:82"
+  ],
+  "options": {
+   "operator_supplies": "Operator supplies the missing source text; spec is revised against it. Only path that truly answers it.",
+   "accept_as_inferred": "Operator confirms the INFERRED spec as the source of truth and closes the question (also satisfies T001). Risk: unknown missed requirements.",
+   "defer_with_flag_off": "Leave open while publishing is off and legacy; nothing depends on the missing text today."
+  },
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "T001",
+  "jev": {
+   "choice": "operator_supplies",
+   "probabilities": {
+    "operator_supplies": 0.89,
+    "accept_as_inferred": 0.01,
+    "defer_with_flag_off": 0.1
+   },
+   "confidence": 0.83,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "002-patch-book-publishing",
+  "id": "OQ-15",
+  "question": "Should an ADVERSARY threat model cover the public read, download and report surfaces?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/002-patch-book-publishing/spec.md:275-281",
+   "specs/002-patch-book-publishing/spec.md:520",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md:161-175",
+   "backend/publishing/routes.py:338-460"
+  ],
+  "options": {
+   "threat_model_now": "Write a one-page threat model for /p/{slug}, download, gallery and report (enumeration of slugs, unlisted leakage, report spam, hotlinked downloads, malicious uploaded content). Effort S; doc only.",
+   "when_flag_returns": "Require the threat model as a gate in T033/OQ-6 before enabling ENABLE_LEGACY_PUBLISHING anywhere; nothing now.",
+   "skip": "Treat publishing as legacy and exclude it from ADVERSARY scope; accept risk while off."
+  },
+  "existing_recommendation": "when_flag_returns",
+  "risk": [
+   "security",
+   "privacy"
+  ],
+  "reversible": "easy",
+  "unblocks": "T001/T033 gate",
+  "jev": {
+   "choice": "threat_model_now",
+   "probabilities": {
+    "threat_model_now": 0.62,
+    "when_flag_returns": 0.37,
+    "skip": 0.01
+   },
+   "confidence": 0.43,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-1",
+  "question": "What should happen to the 57 legacy HP values that no maker page confirms (now 40 retailer_observed, 17 still legacy_unsourced), so UNSOURCED_HP_OVERLAYS can be retired?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/003-catalog-dataset-pipeline/spec.md:440 and :389 (FR-039)",
+   "specs/003-catalog-dataset-pipeline/tasks.md T039 (open, last note 2026-11-01)",
+   "CURRENT_STATE.md priority 2 (17 rows: ADDAC200PI 2 vs 4, ADDAC200S black 2 vs 4, ADDAC501B 8 vs 4, Befaco Mixer 5 vs 4, Cwejman D-LFO 12 vs 14, Instruo dail 4 vs 6; 11 on no allowed retailer)",
+   "data/synth-catalog/population.py:991 (UNSOURCED_HP_OVERLAYS) and :1066-1150 (marker logic)",
+   "spec.md FR-027 (retailer-only values are not confirmed for patch-validity fields)"
+  ],
+  "options": {
+   "ask_makers": "Email ADDAC, Befaco, Instruo, Cwejman, Make Noise, Intellijel, Doepfer for spec sheets; keep the rows marked until a maker source arrives, then re-source via a new hp overlay. Slow, no data risk, T039 stays open indefinitely.",
+   "owner_correct_from_retailer": "Owner reviews the 6 retailer disagreements and approves reviewed `correct` entries (FR-038) using the retailer quote. Closes the 6 quickly but writes retailer-only HP into rows that gate rack placement, against the spirit of FR-027 (needs an explicit FR-039 amendment).",
+   "flag_unresolved": "Set needs_reverify on the 17 rows so rack placement is blocked until verified. Honest, but blocks 17 modules for no new information (decision 9 option 2 reasoning).",
+   "accept_marked_and_close": "Declare `legacy_unsourced`/`retailer_observed` a permanent visible end state, close T039, replace the UNSOURCED_HP_OVERLAYS name allow-list with an explicit marker class. Cheapest; leaves the 17 unverified but visibly labelled."
+  },
+  "existing_recommendation": "ask_makers",
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "T039, removal of UNSOURCED_HP_OVERLAYS",
+  "jev": {
+   "choice": "ask_makers",
+   "probabilities": {
+    "ask_makers": 0.62,
+    "owner_correct_from_retailer": 0.02,
+    "flag_unresolved": 0.15,
+    "accept_marked_and_close": 0.21
+   },
+   "confidence": 0.49,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-2",
+  "question": "Which value is correct for the nine maker-vs-v1 HP disagreements nobody has hand-checked: Akemie's Castle (18 vs 38), Befaco Hexmix VCA (12 vs 14), Intellijel Quadrax (12 vs 14), Rubicon 2 (14 vs 20), Erica Fusion VCO (16 vs 24), Doepfer A-110-1 (8 vs 10), Joranalogue Generate 3 (16 vs 12), Qu-Bit Chord V2 and Data Bender (12 vs 14)?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md (the twelve further disagreements; DPO, Morphagene, Junction, A-101-3, A-137-2 already corrected)",
+   "data/synth-catalog/overlays/module-catalog-hp-v2.json (Akemie's Castle 38 from busycircuits.com) vs module-catalog-hp-v1.json (18)",
+   "specs/003-catalog-dataset-pipeline/research.md:79 (38 suspected extraction error, INFERRED)",
+   "git grep of provenance/maker-corrections-v*.json finds no entry for these modules",
+   "I tried a plain GET of busycircuits.com/pages/alm011: HP not visible in static HTML, so not verified here"
+  ],
+  "options": {
+   "hand_check_then_correct": "Read each maker page or manual (free, robots respected), then add `correct` entries (FR-038) for any wrong stored value, with a quote. Slowest (1-2 h) but resolves each properly.",
+   "trust_maker_crawl": "Accept the maker-crawl values now stored (the #152 precedence fix made them win) and record the decision. Fast; Akemie's Castle at 38 HP is suspect, and a wrong HP corrupts rack space calculations.",
+   "flag_until_checked": "Set needs_reverify on the nine so placement is blocked until someone checks. Safe but blocks common modules."
+  },
+  "existing_recommendation": "hand_check_then_correct",
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "T039 (hand-check half)",
+  "jev": {
+   "choice": "hand_check_then_correct",
+   "probabilities": {
+    "hand_check_then_correct": 0.95,
+    "trust_maker_crawl": 0.0,
+    "flag_until_checked": 0.05
+   },
+   "confidence": 0.92,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-3",
+  "question": "How is a paid-fetch budget approval recorded and enforced so the crawler cannot start or resume without it (FR-003)?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/003-catalog-dataset-pipeline/spec.md:342 (FR-003) and :442",
+   "scripts/catalog_maker_crawl.py:896-898 (only requires --max-paid-fetches on the CLI; no approval file read)",
+   "data/synth-catalog/SCRAPING_ARCHITECTURE.md:91-99,203 (caps written as prose)",
+   "data/synth-catalog/receipts/scrape-ledger.json (spend ledger, about 1,116 context.dev credits)"
+  ],
+  "options": {
+   "approvals_file": "Commit `data/synth-catalog/receipts/fetch-approvals.json` (cap in credits and fetches, brands, expiry, approver). The crawler refuses any non-dry-run paid fetch without a matching unexpired entry and checks the ledger against it. Small code change, auditable in git.",
+   "signed_approval": "Same as approvals_file but signed with the 007 approver key (receipt_signing). Strong tamper evidence, but depends on 007 T082/T083 key setup.",
+   "cli_flags_only": "Keep the current required --max-paid-fetches/--cap flags and prose caps. No work, but nothing machine-checks that the owner approved the number."
+  },
+  "existing_recommendation": "approvals_file",
+  "risk": [
+   "money"
+  ],
+  "reversible": "easy",
+  "unblocks": "FR-003 conformance; future paid passes (T031)",
+  "jev": {
+   "choice": "approvals_file",
+   "probabilities": {
+    "approvals_file": 0.95,
+    "signed_approval": 0.03,
+    "cli_flags_only": 0.02
+   },
+   "confidence": 0.92,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-4",
+  "question": "Does the sealed Synth Catalog Research seed enter the lifecycle at OVERLAY, or at its own entry state?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/003-catalog-dataset-pipeline/spec.md:304 and :461",
+   "data/synth-catalog/population.py:188-189 (loader reads seed-phase2/3 directly; no OVERLAY state exists in code)",
+   "data/synth-catalog/population.py:979 (seed rows tagged as leads, D1)",
+   "specs/003-catalog-dataset-pipeline/tasks.md T010 note (batch machine exists only as scripts)"
+  ],
+  "options": {
+   "enter_at_overlay": "Treat each seed file as an overlay: same dry-run receipt, plan_hash and operator-approve path as every other input. This is what the loader already does de facto; spec wording only.",
+   "separate_seed_state": "Add SEEDED/SEALED state with its own guard (seed files immutable, hash pinned) and no FETCHING/FILTERED upstream. More precise, adds a state to implement and test.",
+   "retire_seed_path": "Stop loading the ModularGrid-derived seed at all (leads only per D1), keeping only overlays. Removes a licensing-sensitive input; loses the 703 brand / 376 identity leads on fresh databases."
+  },
+  "existing_recommendation": "enter_at_overlay",
+  "risk": [
+   "legal"
+  ],
+  "reversible": "hard",
+  "unblocks": "T002, T010, T090. Dropping the seed (option 3) is a legal-exposure call a lawyer should confirm.",
+  "jev": {
+   "choice": "separate_seed_state",
+   "probabilities": {
+    "enter_at_overlay": 0.18,
+    "separate_seed_state": 0.79,
+    "retire_seed_path": 0.03
+   },
+   "confidence": 0.68,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-5",
+  "question": "Does the '3 consecutive scrubbed runs' verification apply to every admission?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "data/synth-catalog/PATCHHIVE_INTEGRATION.md:66; master-catalog.md:41; phase3-mid-tier.md:50 (all describe the external research campaign, hermes-verify scripts in /tmp)",
+   "git grep: no repo code, CI job or workflow implements it",
+   "Current admission gate: db-load.yml plan_hash bound dry run then apply (specs 003 FR-020, implemented)"
+  ],
+  "options": {
+   "replace_with_plan_hash": "Declare the existing dry-run, plan_hash-bound apply (plus a rerun-changes-nothing check) the verification ritual; mark the 3-run text as research-campaign history. No code.",
+   "require_3_dry_runs": "Add a CI/Actions check that three consecutive dry runs produce an identical plan_hash before apply is allowed. Catches nondeterminism (FR-028); small workflow change, 3x dry-run time.",
+   "rerun_zero_check": "Require that after apply a rerun plans zero changes (already done by hand for T036); automate it in db-load.yml."
+  },
+  "existing_recommendation": "replace_with_plan_hash",
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "T002, T090",
+  "jev": {
+   "choice": "replace_with_plan_hash",
+   "probabilities": {
+    "replace_with_plan_hash": 0.91,
+    "require_3_dry_runs": 0.09,
+    "rerun_zero_check": 0.0
+   },
+   "confidence": 0.86,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-6",
+  "question": "Should catalog dedupe change from slug to (brand, slug) to avoid cross-brand collisions?",
+  "status": "already_answered",
+  "answer_if_answered": "No change needed. The slug is built from brand plus name, and module_catalog.slug is globally unique; a second row whose normalized brand+name matches but whose brand or name differs is reported as an `identity_mismatch` conflict, not merged. The committed dry-run receipts show no such conflict. The spec's INFERRED slug-collision edge case is the only text to update (FR-021 wording).",
+  "evidence": [
+   "data/synth-catalog/population.py:47 (create_slug uses brand-name)",
+   "data/synth-catalog/population.py:934-937 (identity_mismatch conflict)",
+   "backend/modules/catalog.py:35 (slug unique, 'brand-name normalized')",
+   "grep of data/synth-catalog/receipts: no identity_mismatch"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-7",
+  "question": "What are the catalog coverage targets (roadmap targets were NOT_COMPUTABLE)?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "docs/PRODUCT_DATABASE_COMPLETENESS_ROADMAP.md:9 (now readable: no numeric target; coverage NOT_COMPUTABLE until a reference universe and registry snapshot are defined)",
+   "specs/003-catalog-dataset-pipeline/spec.md:415 (SC-007) and :459",
+   "Observed counts: 703 registry manufacturers; 355 brands with live rows; crawl found 3,429 modules from 315 brands (tasks.md T024)"
+  ],
+  "options": {
+   "keep_not_computable": "Report raw counts only and keep percentages NOT_COMPUTABLE until a universe is chosen. Matches SC-007 and the roadmap wording; no new claim risk.",
+   "brand_universe_only": "Define the universe as the registry's 703 manufacturers at a pinned snapshot and publish brand coverage only; module coverage stays NOT_COMPUTABLE.",
+   "maker_listing_universe": "Define the universe as the module counts each maker's own listing page shows (needs per-maker listing adapters, some makers block); gives module coverage with a defensible denominator at crawl cost."
+  },
+  "existing_recommendation": "keep_not_computable",
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "SC-007 closure",
+  "jev": {
+   "choice": "keep_not_computable",
+   "probabilities": {
+    "keep_not_computable": 1.0,
+    "brand_universe_only": 0.0,
+    "maker_listing_universe": 0.0
+   },
+   "confidence": 1.0,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-8",
+  "question": "Does the operator confirm the remaining [INFERRED] claims in spec 003 so T001/T002 (plan.md) can close?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/003-catalog-dataset-pipeline/spec.md:7 and :22 (D1-D8 confirmed; other INFERRED text still unconfirmed)",
+   "specs/003-catalog-dataset-pipeline/research.md:70 (R6)",
+   "specs/003-catalog-dataset-pipeline/plan.md:3 (plan body still TODO)",
+   "specs/003-catalog-dataset-pipeline/tasks.md T001, T002 (both unchecked)"
+  ],
+  "options": {
+   "one_sitting": "Walk the remaining INFERRED items in one owner session (R6 recommendation), then write plan.md from the confirmed spec and tick T001/T002.",
+   "adopt_by_default": "Owner states that all INFERRED items not contradicted by D1-D8 are confirmed, as already done for D4/D5/D7/D8 on 2026-10-29; fastest, but confirms unreviewed claims.",
+   "leave_draft": "Keep DRAFT status and let implementation proceed against D1-D8 only; T010 and T090 stay blocked."
+  },
+  "existing_recommendation": "one_sitting",
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "T001, T002, T010, T090",
+  "jev": {
+   "choice": "one_sitting",
+   "probabilities": {
+    "one_sitting": 0.96,
+    "adopt_by_default": 0.0,
+    "leave_draft": 0.04
+   },
+   "confidence": 0.94,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-9",
+  "question": "Should the batch lifecycle (TARGETED to ADMITTED) be implemented as a code state machine, or should the spec be amended to describe the scripts as they are?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/003-catalog-dataset-pipeline/tasks.md T010 note (no states, no BLOCKED preflight exit, no RETRY_QUEUED, no REJECTED; admit checks only plan_hash; inputs_hash recorded, never compared; retirement needs no evidence)",
+   "data/synth-catalog/population.py:1966 and :2123 (inputs_hash only recorded)",
+   "backend/tests/unit/test_spec_003_transitions.py (admitted-row lifecycle only)"
+  ],
+  "options": {
+   "amend_spec_to_scripts": "Rewrite the batch machine in the spec to what exists (script stages, plan_hash gate); drop illegal-transition rows that cannot occur. Cheap; weakens guarantees written in the spec.",
+   "enforce_inputs_hash": "Minimum code: make apply compare the dry-run's inputs_hash as well as plan_hash and require evidence on retirements. Closes the two real gaps without a full machine.",
+   "full_state_machine": "Implement batch states, REJECTED/RETRY_QUEUED, BLOCKED preflight in code with tests. Largest effort; matches the spec as written."
+  },
+  "existing_recommendation": "enforce_inputs_hash",
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "T010, T090",
+  "jev": {
+   "choice": "enforce_inputs_hash",
+   "probabilities": {
+    "amend_spec_to_scripts": 0.07,
+    "enforce_inputs_hash": 0.85,
+    "full_state_machine": 0.08
+   },
+   "confidence": 0.77,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-10",
+  "question": "Is retailer scraping permitted?",
+  "status": "already_answered",
+  "answer_if_answered": "RESOLVED by D2: no automated retailer crawling; retailer values only from one-off manual lookups (FR-006, FR-039).",
+  "evidence": [
+   "specs/003-catalog-dataset-pipeline/spec.md:9-12, :443"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-11",
+  "question": "Which document wins on ModularGrid-derived data and what access basis do scraped rows carry?",
+  "status": "already_answered",
+  "answer_if_answered": "RESOLVED by D1/D2: the seed is a discovery lead (access_basis = unknown), maker-page rows carry official_publication (FR-033). Thomann coverage likewise: manual lookups only.",
+  "evidence": [
+   "specs/003-catalog-dataset-pipeline/spec.md:7-12, :444-446"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-12",
+  "question": "What file conventions do overlays, provenance manifests and receipts follow?",
+  "status": "already_answered",
+  "answer_if_answered": "RESOLVED 2026-10-29: versioned files under overlays/, provenance/, receipts/; an applied version is never rewritten (FR-018, FR-036).",
+  "evidence": [
+   "specs/003-catalog-dataset-pipeline/spec.md:447-457"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "003-catalog-dataset-pipeline",
+  "id": "OQ-13",
+  "question": "How does the case seed pipeline behave and how many brands exist?",
+  "status": "already_answered",
+  "answer_if_answered": "RESOLVED 2026-10-29: case seed imports via case_catalog_populator.import_records (insert-if-absent, fill-null; plan hash covers it, #103). Observed 703 registry manufacturers and 355 brands with live rows.",
+  "evidence": [
+   "specs/003-catalog-dataset-pipeline/spec.md:458-460"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "005-decision-intelligence",
+  "id": "OQ-1",
+  "question": "Should an unsupported packet schema REJECT?",
+  "status": "already_answered",
+  "answer_if_answered": "No. Treated as a provider failure: ESCALATE when a routing target exists, else UNRESOLVED, reason codes kept (T081, #135).",
+  "evidence": [
+   "/Users/appliedalchemylabs/Patch-Hive-state-rec/backend/intelligence/policy.py:56 (UNSUPPORTED_SCHEMA returns ESCALATE)",
+   "specs/005-decision-intelligence/tasks.md T081 [x]"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "005-decision-intelligence",
+  "id": "OQ-2",
+  "question": "Does the Jev path have to use the guarded machine?",
+  "status": "already_answered",
+  "answer_if_answered": "Yes. Every provider goes through the guarded flow with settings.decision_policy_version (T082, #135).",
+  "evidence": [
+   "/Users/appliedalchemylabs/Patch-Hive-state-rec/backend/evidence/routes.py:821,856,868",
+   "specs/005-decision-intelligence/tasks.md T082 [x]"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "005-decision-intelligence",
+  "id": "OQ-3",
+  "question": "Is false_canonicalization_count = 0 measured?",
+  "status": "already_answered",
+  "answer_if_answered": "It was hardcoded; T084 replaced it with the structural resolution-machine replay count and the candidate check now runs in evaluation.",
+  "evidence": [
+   "/Users/appliedalchemylabs/Patch-Hive-state-rec/backend/intelligence/evaluation.py:43,63,210",
+   "specs/005-decision-intelligence/tasks.md T084 [x]"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "005-decision-intelligence",
+  "id": "OQ-4",
+  "question": "Should a review queue for ESCALATE records be built so decision_routing_target can be set to human_review, or should ESCALATE stay unrouted?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "backend/core/config.py:93-97 (default empty; nothing lists or reads ESCALATE records)",
+   "specs/005-decision-intelligence/tasks.md T085 and research.md R6",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30.md decision 7 (#151 set the default empty)",
+   "grep: frontend only types the 'escalate' disposition (frontend/src/lib/api.ts:307); no list route or UI"
+  ],
+  "options": {
+   "keep_empty_until_provider_on": "Leave the default empty (current). Failed or escalated decisions end UNRESOLVED with ESCALATE_NO_ROUTING_TARGET. No work; acceptable while no provider is enabled in any environment.",
+   "admin_escalate_list": "Build an admin API and small UI listing ESCALATE receipts, then default decision_routing_target to human_review. Effort M; needed before any provider is enabled for real users.",
+   "reuse_confirmation_ui": "Route ESCALATE into the existing USER_REVIEW confirmation UI (same screen, flagged). Smaller than a new queue, but mixes two dispositions and needs spec 005 FR-008 wording changed."
+  },
+  "existing_recommendation": "keep_empty_until_provider_on",
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "T085 follow-up; any 007 T050 staging enablement drill",
+  "jev": {
+   "choice": "keep_empty_until_provider_on",
+   "probabilities": {
+    "keep_empty_until_provider_on": 0.83,
+    "admin_escalate_list": 0.11,
+    "reuse_confirmation_ui": 0.06
+   },
+   "confidence": 0.74,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "005-decision-intelligence",
+  "id": "OQ-5",
+  "question": "Which thresholds does the operator approve as the enablement gate (T061)?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/005-decision-intelligence/tasks.md T061, T061c, T061d, T062, T070 (open; tracked as 007 T010b/T020b/T030b/T050b/T060b)",
+   "backend/intelligence/evaluation_enablement.py:65 (PROPOSAL_RULE = non_regression_vs_baseline.v1)",
+   "specs/007-evaluation-staging-enablement/spec.md:36 (thresholds equal baseline; false_canonicalization_max = 0)",
+   "docs/evidence/DECISION_INTELLIGENCE_EVALUATION.md:36-44,78 (do not invent thresholds; production thresholds NOT_COMPUTABLE until a representative corpus is admitted)",
+   "Blocked on data: corpus has 0 cases (spec 006 FR-007 row)"
+  ],
+  "options": {
+   "baseline_equal": "Use the coded rule: each threshold equals the measured baseline metric, false-canonicalization max 0. No invented numbers; the assisted run must at least not regress.",
+   "baseline_plus_margin": "Baseline-equal plus an owner-set improvement margin per metric (e.g. top-1 gain), so enabling must show benefit. Adds numbers someone must justify from the distributions.",
+   "absolute_floors": "Owner sets absolute floors (e.g. top-1, abstention) independent of baseline. Conflicts with the 'do not invent thresholds' policy until a representative corpus exists."
+  },
+  "existing_recommendation": "baseline_equal",
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "T061, T062, T070, 007 T030b/T040b/T050b",
+  "jev": {
+   "choice": "baseline_equal",
+   "probabilities": {
+    "baseline_equal": 1.0,
+    "baseline_plus_margin": 0.0,
+    "absolute_floors": 0.0
+   },
+   "confidence": 1.0,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "006-cloudflare-edge-clef",
+  "id": "OQ-1",
+  "question": "How is the GitHub `production` environment protected for db-migrate, db-load and edge-secrets (T101b)?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/006-cloudflare-edge-clef/tasks.md T101b (open); T101a done",
+   "specs/006-cloudflare-edge-clef/DEPLOY_NOTES.md:40-71 (operator steps)",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30.md decision 6 and OPEN_DECISIONS_2026-10-30_RESEARCH.md section 3",
+   "GitHub docs, Managing environments for deployment (https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments): required reviewers, branch rules and 'Prevent self-review' confirmed; with self-review prevention a solo dispatcher cannot approve their own run",
+   "Per OPEN_DECISIONS research: repo is public, two admin collaborators exist"
+  ],
+  "options": {
+   "owner_reviewer_main_only": "production environment: owner as required reviewer, deployment branch main only, admin bypass off, prevent-self-review OFF while solo, prod secrets moved into it. One extra approval click per prod run; stops branch workflows reaching prod secrets. (Matches DEPLOY_NOTES and decision 6 rec.)",
+   "two_reviewers": "Same, with a second reviewer and prevent-self-review ON. True four-eyes; needs a second person with repo access.",
+   "main_only_no_reviewer": "Main-only branch rule and moved secrets but no reviewer. Blocks other branches; no confirmation step before prod.",
+   "leave_as_is": "No environment protection. Prod DB and Cloudflare secrets stay reachable from any dispatched branch run."
+  },
+  "existing_recommendation": "owner_reviewer_main_only",
+  "risk": [
+   "security"
+  ],
+  "reversible": "easy",
+  "unblocks": "T101b, then T101c (evidence-expire cron)",
+  "jev": {
+   "choice": "owner_reviewer_main_only",
+   "probabilities": {
+    "owner_reviewer_main_only": 0.52,
+    "two_reviewers": 0.46,
+    "main_only_no_reviewer": 0.01,
+    "leave_as_is": 0.01
+   },
+   "confidence": 0.36,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "006-cloudflare-edge-clef",
+  "id": "OQ-2",
+  "question": "Do staging runs get their own gated `staging` environment and a separate staging-scoped Cloudflare token when the prod token moves into `production`?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/006-cloudflare-edge-clef/DEPLOY_NOTES.md:49-70 (steps 4 and 6)",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md section 3 gotchas (CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID shared by staging and prod runs of edge-secrets.yml)"
+  ],
+  "options": {
+   "separate_staging_token": "Issue a second, staging-scoped Cloudflare token; put prod token in `production` and staging token in `staging` (account id as variable in each). Recommended in the repo; also stops one token reaching both. Needs one more token to rotate.",
+   "keep_repo_level_copy": "Leave one token at repo level for both. Simple, but it defeats the protection because any job without environment can use it.",
+   "gate_staging_too": "As separate_staging_token, plus require a reviewer on `staging`. Extra safety, extra friction for routine staging drills."
+  },
+  "existing_recommendation": "separate_staging_token",
+  "risk": [
+   "security"
+  ],
+  "reversible": "easy",
+  "unblocks": "T101b",
+  "jev": {
+   "choice": "separate_staging_token",
+   "probabilities": {
+    "separate_staging_token": 0.98,
+    "keep_repo_level_copy": 0.0,
+    "gate_staging_too": 0.02
+   },
+   "confidence": 0.97,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "006-cloudflare-edge-clef",
+  "id": "OQ-3",
+  "question": "Should the operator-owned tasks T030, T040b, T050b and T055b be closed now that staging and production are live?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/006-cloudflare-edge-clef/tasks.md (T030, T040b, T050b, T055b unchecked)",
+   "specs/006-cloudflare-edge-clef/spec.md:101 (T050b stays open: no receipt in the tree)",
+   "CURRENT_STATE.md lines 5 and 113 (frontend and API deployed on Cloudflare at 9dbb5ba, migrations applied, R2 buckets in DEPLOY_NOTES table)"
+  ],
+  "options": {
+   "record_receipts_and_close": "Add a short evidence receipt per task (health/ready output, migration run ids, R2 persistence check) and tick them. Honest closure; some work.",
+   "close_on_state_doc": "Tick them citing CURRENT_STATE.md only. Fast; no machine-checkable proof (spec itself says no receipt in the tree).",
+   "leave_open": "Keep open until receipts exist. T060b remains blocked anyway (Clef cannot be enabled until 007 signing)."
+  },
+  "existing_recommendation": "record_receipts_and_close",
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": "T030, T040b, T050b, T055b; spec 006 status",
+  "jev": {
+   "choice": "record_receipts_and_close",
+   "probabilities": {
+    "record_receipts_and_close": 0.73,
+    "close_on_state_doc": 0.01,
+    "leave_open": 0.26
+   },
+   "confidence": 0.6,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "006-cloudflare-edge-clef",
+  "id": "OQ-4",
+  "question": "Does gates_pass verify the evaluation receipt itself (R1)?",
+  "status": "already_answered",
+  "answer_if_answered": "Yes, T100 done: evaluation_receipt and signature are checked against the committed allowlist.",
+  "evidence": [
+   "specs/006-cloudflare-edge-clef/tasks.md T100 [x]"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "006-cloudflare-edge-clef",
+  "id": "OQ-5",
+  "question": "When is evidence expiry scheduled (T101c)?",
+  "status": "already_answered",
+  "answer_if_answered": "Decided 2026-10-30: a daily evidence-expire.yml job after T101b, not now (0 image_assets rows; expiry still enforced at read time). Not built.",
+  "evidence": [
+   "specs/006-cloudflare-edge-clef/tasks.md T101c",
+   "docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md section 7"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "006-cloudflare-edge-clef",
+  "id": "OQ-6",
+  "question": "Pages/Hyperdrive wording, foreign pin-PR workflow, actions: write, orphan R2 token, production provider before BETA_READY, who creates the environment?",
+  "status": "already_answered",
+  "answer_if_answered": "All resolved: acceptance summary amended (R6); T102, T103, T104 done; startup refuses production providers (#132); a repo admin creates the environment in settings.",
+  "evidence": [
+   "specs/006-cloudflare-edge-clef/spec.md:113-119",
+   "specs/006-cloudflare-edge-clef/tasks.md T102-T104 [x]"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "decisions-2026-10-30",
+  "id": "D13",
+  "question": "Do #183-#186 (and release PR #169) get deployed to staging and production now, and should deploys move into CI?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "docs/evidence/OPEN_DECISIONS_2026-10-30.md decision 13",
+   "CURRENT_STATE.md lines 5, 113, 125-130 (staging and prod run 9dbb5ba; #183-#186 on main, not deployed; no deploy workflow; Authority boundary: no production deploy without separate operator authorization)",
+   "docs/OPERATIONS.md:129 (no workflow deploys the app)",
+   "Decided/done already: decisions 2, 7, 8, 10, 11 (CURRENT_STATE.md line 9); 1, 3 deferred to 004; 4, 5 to 002; 6 to 006; 9 to 003; 12 to 001",
+   "Stale note: CURRENT_STATE.md priority 1 says review #110, but #110 is merged (backend/docker-entrypoint.sh:56-79; edge/api/wrangler.jsonc:23)"
+  ],
+  "options": {
+   "staging_then_prod_manual": "wrangler deploy to staging, smoke test, then production from a main checkout (build the frontend per target). Matches decision 13 rec; depends on one laptop and Docker.",
+   "batch_with_release": "Merge release PR #169 first, then deploy once from the tagged commit. Fewer deploys, labelled versions, longer wait.",
+   "deploy_workflow_after_T101b": "Build a deploy workflow behind the `production` environment (needs T101b), then deploy through it. Auditable, removes the laptop dependency; M effort and delays the deploy.",
+   "hold": "Do not deploy yet; #183-#186 change no running behaviour for users (no decision flags on staging, purchase route off)."
+  },
+  "existing_recommendation": "staging_then_prod_manual",
+  "risk": [
+   "security"
+  ],
+  "reversible": "easy",
+  "unblocks": "Running code matching main; 004 T048 reject half and 005 T080 gate become live",
+  "jev": {
+   "choice": "staging_then_prod_manual",
+   "probabilities": {
+    "staging_then_prod_manual": 0.86,
+    "batch_with_release": 0.01,
+    "deploy_workflow_after_T101b": 0.04,
+    "hold": 0.09
+   },
+   "confidence": 0.81,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-1",
+  "question": "Are tier prices ($4.99/$14.99/$29.99), monthly credits (25/100/unlimited), the one-time rule ($0.20/credit, $5 min) and currency/tax ratified?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/004-commerce/spec.md:440",
+   "specs/004-commerce/spec.md:167-170",
+   "STRIPE_INTEGRATION_PROMPT.md:14-16",
+   "backend/core/config.py:105 (patchbook_export_cost=3)",
+   "https://stripe.com/pricing (fetched 2026-11-01: 2.9%+30c domestic card; +1.5% international; +1% currency conversion; Stripe Tax Basic 0.5% or $0.50/txn via API; Billing 0.7% pay-as-you-go; dispute $15, countered $15; refunds free but original fees not returned)",
+   "https://www.splice.com/plans (Creator $4.99 first month then $19.99/mo, ~200 downloads/mo credit-based; Sounds $12.99/mo annual, ~100 downloads)",
+   "https://www.notion.com/pricing (Plus $10, Business $20 per member/mo)",
+   "https://www.canva.com/pricing/ (Pro $144/yr, Business $250/yr per person, AI allowance multiples)",
+   "Own arithmetic: 3 credits/export = $0.60 at $0.20/credit. CORE 25 credits = $5.00 at pay-as-you-go vs $4.99 (no discount, no reason to subscribe); PRO 100 credits = $20 vs $14.99 (25% off). Stripe fee on $4.99 = $0.445 (8.9%); $14.99 = $0.735 (4.9%); $29.99 = $1.17 (3.9%); $5.00 minimum = $0.445 (8.9%) domestic, +1.5% intl."
+  ],
+  "options": {
+   "A_ratify_as_is": "Keep $4.99/$14.99/$29.99, 25/100/unlimited, $0.20/credit, $5 min, USD only. Fastest; but CORE has no discount vs credit packs, STUDIO unlimited is open-ended cost, and Stripe fees are ~9% on CORE/min pack. Matches 'ratify' recommendation in spec.",
+   "B_adjust_ladder": "Keep prices, change quantities (e.g. CORE 30 credits ~ $0.166/credit, PRO 100, STUDIO capped) so each tier is cheaper per credit than packs; USD only. Gives subscription incentive; owner must pick numbers.",
+   "C_credits_first": "Launch only one-time credit packs (min raised to ~$10 to cut fee share to ~6%); defer tiers and prices for them. Matches OPEN_DECISIONS 'A first once launch date'. Less recurring revenue, fewer open questions.",
+   "D_regional_tax": "Ratify A or B plus Stripe Tax (0.5% or $0.50/txn) and multi-currency pricing. Most compliant, adds fee (+1% conversion) and tax registration work; heavy for pre-launch."
+  },
+  "existing_recommendation": "A_ratify_as_is",
+  "risk": [
+   "money",
+   "legal"
+  ],
+  "reversible": "easy",
+  "unblocks": "T046 (Machine B), T049, T050; also needs T001",
+  "jev": {
+   "choice": "A_ratify_as_is",
+   "probabilities": {
+    "A_ratify_as_is": 0.47,
+    "B_adjust_ladder": 0.19,
+    "C_credits_first": 0.17,
+    "D_regional_tax": 0.17
+   },
+   "confidence": 0.29,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-2",
+  "question": "What is the refund/chargeback/dispute flow, and can a balance go negative?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/004-commerce/spec.md:441",
+   "docs/evidence/COMMERCE_BLOCKERS_RESEARCH_2026-11-01.md",
+   "https://stripe.com/pricing (fetched 2026-11-01: 2.9%+30c domestic card; +1.5% international; +1% currency conversion; Stripe Tax Basic 0.5% or $0.50/txn via API; Billing 0.7% pay-as-you-go; dispute $15, countered $15; refunds free but original fees not returned)",
+   "backend/canon/exports.py (failed export reversal; never below zero, per research R7)"
+  ],
+  "options": {
+   "A_reverse_unspent": "On provider refund reverse only unspent credits, record remainder unresolved for operator, never negative, never revoke referral reward. Matches spec recommendation; simple, may leave small loss.",
+   "B_allow_negative": "Refund claws back full credits; balance may go negative and blocks spending until topped up. Fair to merchant, but requires new ledger rule and support handling.",
+   "C_manual_only": "All refunds/chargebacks become unresolved events handled by operator via admin tool (T048b). Safest initially, no automation; operator load and delay.",
+   "D_no_refund_auto": "Refund in Stripe does nothing to credits; chargebacks flagged only. Simplest, but leaves credits spendable after money returned."
+  },
+  "existing_recommendation": "A_reverse_unspent",
+  "risk": [
+   "money",
+   "legal"
+  ],
+  "reversible": "easy",
+  "unblocks": "T046-T051 refund handling",
+  "jev": {
+   "choice": "A_reverse_unspent",
+   "probabilities": {
+    "A_reverse_unspent": 0.97,
+    "B_allow_negative": 0.0,
+    "C_manual_only": 0.03,
+    "D_no_refund_auto": 0.0
+   },
+   "confidence": 0.96,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-3",
+  "question": "Does a subscription payment count as the referral 'first paid purchase', and is it recorded as Purchase, Grant or both?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/004-commerce/spec.md:442",
+   "specs/004-commerce/spec.md:209",
+   "docs/evidence/COMMERCE_BLOCKERS_RESEARCH_2026-11-01.md section 4"
+  ],
+  "options": {
+   "A_both": "First paid invoice records a provider-verified Purchase via record_purchase(payment_verified=True) and the period credits are a separate Grant. Matches spec recommendation; referral rewards work for subscribers.",
+   "B_grant_only": "Subscriptions never count; only one-time packs qualify. Simpler; subscribers never trigger referral rewards.",
+   "C_purchase_only": "Record Purchase for invoices and derive credits from it, no Grant. Conflates money and entitlement; conflicts with period-grant key design."
+  },
+  "existing_recommendation": "A_both",
+  "risk": [
+   "money"
+  ],
+  "reversible": "hard",
+  "unblocks": "T049",
+  "jev": {
+   "choice": "A_both",
+   "probabilities": {
+    "A_both": 0.97,
+    "B_grant_only": 0.02,
+    "C_purchase_only": 0.01
+   },
+   "confidence": 0.96,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-4",
+  "question": "Which provider subscription statuses must be distinguished and what entitlement does each give?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/004-commerce/spec.md:443",
+   "docs/evidence/COMMERCE_BLOCKERS_RESEARCH_2026-11-01.md section 3",
+   "https://docs.stripe.com/billing/subscriptions/overview (via research note)"
+  ],
+  "options": {
+   "A_stripe_mapping": "Per research table: active/trialing -> paid tier; past_due -> keep tier during retries, no new grant; unpaid/incomplete/incomplete_expired/canceled/paused -> FREE; grant only on invoice.paid. Matches spec recommendation and Stripe guidance.",
+   "B_strict": "past_due also drops to FREE immediately. Less exposure to non-payers, harsher on card-retry cases.",
+   "C_two_state": "Only active vs not active (current spec baseline). Simplest; ignores past_due grace and trialing."
+  },
+  "existing_recommendation": "A_stripe_mapping",
+  "risk": [
+   "money"
+  ],
+  "reversible": "easy",
+  "unblocks": "T049",
+  "jev": {
+   "choice": "A_stripe_mapping",
+   "probabilities": {
+    "A_stripe_mapping": 0.99,
+    "B_strict": 0.0,
+    "C_two_state": 0.01
+   },
+   "confidence": 0.98,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-5",
+  "question": "What operator action resolves or rejects an Unresolved commerce event, who may do it, and what audit record results?",
+  "status": "open",
+  "answer_if_answered": "Reject half is implemented: admin-only, reason required, one CanonicalAdminAuditEventRecord. Resolve (T048b) still waits for Machine B; research recommends storing data.object.id at intake and re-retrieving the Checkout Session (Stripe events only retrievable for 30 days), failing closed.",
+  "evidence": [
+   "docs/evidence/COMMERCE_BLOCKERS_RESEARCH_2026-11-01.md section 1",
+   "specs/004-commerce/tasks.md:29 (T048 reject done)"
+  ],
+  "options": {
+   "A_refetch_session": "Implement resolve by retrieving the Checkout Session by stored object id and running idempotent fulfillment; audit record; unresolved if not retrievable. Matches research recommendation.",
+   "B_reject_only": "Never build resolve; operators fix by admin credit grant plus reject. No money-path code, but manual ledger edits.",
+   "C_store_payload": "Store the full event payload at intake and replay it. Works beyond 30 days; stores more provider data (privacy review)."
+  },
+  "existing_recommendation": "A_refetch_session",
+  "risk": [
+   "money",
+   "security"
+  ],
+  "reversible": "easy",
+  "unblocks": "T048b",
+  "jev": {
+   "choice": "A_refetch_session",
+   "probabilities": {
+    "A_refetch_session": 0.9,
+    "B_reject_only": 0.09,
+    "C_store_payload": 0.01
+   },
+   "confidence": 0.85,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-6",
+  "question": "Does signup fail, succeed or warn when the referral code does not resolve?",
+  "status": "already_answered",
+  "answer_if_answered": "RESOLVED 2026-10-29: with referrals on, unresolved code fails signup with 400 Invalid referral code; with referrals off, code ignored.",
+  "evidence": [
+   "specs/004-commerce/spec.md:445",
+   "specs/004-commerce/research.md:115",
+   "backend/community/auth_routes.py"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-7",
+  "question": "How do upgrades/downgrades/proration affect stored tier and per-period grant?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/004-commerce/spec.md:446",
+   "specs/004-commerce/spec.md:432"
+  ],
+  "options": {
+   "A_next_period_no_proration": "Store tier from the provider price on every update; new tier credits granted at next period; no proration. Matches spec recommendation; simplest, mid-period upgrade gets no extra credits.",
+   "B_immediate_upgrade_prorated": "Upgrade grants the credit difference immediately, downgrade applies at period end. Better UX, needs proration math and grant keys per change.",
+   "C_block_midperiod": "Plan changes only at renewal (Stripe schedule). Simple ledger, worse UX."
+  },
+  "existing_recommendation": "A_next_period_no_proration",
+  "risk": [
+   "money"
+  ],
+  "reversible": "easy",
+  "unblocks": "T049, T050",
+  "jev": {
+   "choice": "A_next_period_no_proration",
+   "probabilities": {
+    "A_next_period_no_proration": 0.99,
+    "B_immediate_upgrade_prorated": 0.0,
+    "C_block_midperiod": 0.01
+   },
+   "confidence": 0.98,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-8",
+  "question": "What does 'unlimited' mean for STUDIO?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/004-commerce/spec.md:447",
+   "STRIPE_INTEGRATION_PROMPT.md:15-16"
+  ],
+  "options": {
+   "A_flag_with_fair_use": "Explicit entitlement flag with owner-set fair-use cap (e.g. monthly export ceiling). Matches spec recommendation; bounded cost.",
+   "B_truly_unlimited": "No spend check at all. Simple, unbounded cost and abuse exposure.",
+   "C_large_grant": "Give a large fixed monthly grant (e.g. 500). Uses existing ledger, no new flag; not literally unlimited, marketing wording must change."
+  },
+  "existing_recommendation": "A_flag_with_fair_use",
+  "risk": [
+   "money"
+  ],
+  "reversible": "easy",
+  "unblocks": "T049",
+  "jev": {
+   "choice": "A_flag_with_fair_use",
+   "probabilities": {
+    "A_flag_with_fair_use": 1.0,
+    "B_truly_unlimited": 0.0,
+    "C_large_grant": 0.0
+   },
+   "confidence": 1.0,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-9",
+  "question": "Which features does each tier gate beyond credits?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/004-commerce/spec.md:448",
+   "backend/canon/entitlements.py:18-26 (_FAMILY_TIER_FLOOR: three families free, four core, museum-of-signal pro)"
+  ],
+  "options": {
+   "A_templates_only": "Gate only Design Engine template families (already coded) plus credits. No new work; tiers differ little beyond credits.",
+   "B_add_named_list": "Owner writes an explicit feature matrix (e.g. export formats, rig size, history) and entitlements add flags. More differentiation, more code.",
+   "C_credits_only": "Remove feature gating, tiers differ only in credits. Simplest; unlocks lose existing family floors."
+  },
+  "existing_recommendation": "A_templates_only",
+  "risk": [
+   "money"
+  ],
+  "reversible": "easy",
+  "unblocks": "T050",
+  "jev": {
+   "choice": "A_templates_only",
+   "probabilities": {
+    "A_templates_only": 0.86,
+    "B_add_named_list": 0.13,
+    "C_credits_only": 0.01
+   },
+   "confidence": 0.79,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-10",
+  "question": "What does docs/SECURITY.md require for payment secrets, webhooks and personal data?",
+  "status": "already_answered",
+  "answer_if_answered": "RESOLVED 2026-10-29: append-only credit entries; constant-time HMAC, timestamp tolerance, unique event ids, replay-conflict detection, livemode gate; STRIPE_TEST_MODE=true and ALLOW_PRODUCTION_PAYMENTS=false until activation review.",
+  "evidence": [
+   "specs/004-commerce/spec.md:449",
+   "docs/SECURITY.md"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-11",
+  "question": "Is the legacy /purchases endpoint retired, restricted or kept?",
+  "status": "already_answered",
+  "answer_if_answered": "Retired: owner chose option A; route, PurchaseCreate and monetization router deleted; referrals use enable_referrals (T043 done 2026-10-30).",
+  "evidence": [
+   "specs/004-commerce/tasks.md:19"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-12",
+  "question": "How does account deletion interact with the append-only ledger and referral rows?",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/004-commerce/spec.md:451",
+   "backend/canon/models.py (ON DELETE RESTRICT for canonical ledger)",
+   "backend/monetization/models.py (legacy cascades)",
+   "privacy law (GDPR erasure vs financial record retention) -- lawyer to confirm"
+  ],
+  "options": {
+   "A_anonymize_keep": "Anonymize the user (strip PII), keep ledger and referral rows. Matches spec recommendation; preserves financial records, needs an anonymization routine and account-deletion route. Lawyer to confirm retention periods.",
+   "B_hard_delete_cascade": "Delete user and cascade ledger. Cleanest for privacy, destroys financial/audit records and conflicts with RESTRICT; likely inappropriate once money is involved.",
+   "C_deactivate_only": "No deletion; deactivate and retain all data. Easiest; may not satisfy erasure requests."
+  },
+  "existing_recommendation": "A_anonymize_keep",
+  "risk": [
+   "privacy",
+   "legal",
+   "money"
+  ],
+  "reversible": "hard",
+  "unblocks": "none yet (no deletion route exists)",
+  "jev": {
+   "choice": "A_anonymize_keep",
+   "probabilities": {
+    "A_anonymize_keep": 1.0,
+    "B_hard_delete_cascade": 0.0,
+    "C_deactivate_only": 0.0
+   },
+   "confidence": 1.0,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "004-commerce",
+  "id": "OQ-13",
+  "question": "What legal terms, refund policy and consumer-protection obligations apply to selling credits and subscriptions? (LAWYER MUST CONFIRM ALL OPTIONS; this is not legal advice.)",
+  "status": "open",
+  "answer_if_answered": null,
+  "evidence": [
+   "specs/004-commerce/spec.md:452",
+   "https://europa.eu/youreurope/citizens/consumers/shopping/guarantees-returns/index_en.htm (fetched; did not cover the 14-day withdrawal right, so EU withdrawal/digital-content exception not verified here)",
+   "https://stripe.com/pricing (fetched 2026-11-01: 2.9%+30c domestic card; +1.5% international; +1% currency conversion; Stripe Tax Basic 0.5% or $0.50/txn via API; Billing 0.7% pay-as-you-go; dispute $15, countered $15; refunds free but original fees not returned)"
+  ],
+  "options": {
+   "A_us_only_no_refund_terms": "Sell US-only, ToS says credits are non-refundable once purchased and unused credits expire/never; disclose auto-renewal and cancel-anytime. Cheapest; enforceability varies by state auto-renewal law and any consumer protection claims; lawyer must confirm.",
+   "B_limited_refund_window": "Publish a short refund window (e.g. 14 days, unspent credits only) for packs and subscriptions, plus clear auto-renew disclosure. Reduces chargebacks and aligns with EU 14-day norm; lawyer must confirm wording and EU applicability.",
+   "C_merchant_of_record": "Use a merchant-of-record (e.g. Paddle/Lemon Squeezy type) that handles tax, terms of sale and refunds. Offloads tax and consumer-law exposure, changes provider away from Stripe and adds ~5%+ fee; lawyer/tax review still advised.",
+   "D_defer_sales": "Launch with admin grants only (no sales) until counsel drafts terms. Zero legal exposure now; delays revenue. Matches OPEN_DECISIONS 'D now'."
+  },
+  "existing_recommendation": "D_defer_sales",
+  "risk": [
+   "legal",
+   "money",
+   "privacy"
+  ],
+  "reversible": "hard",
+  "unblocks": "T046, T049, T051 (production payments)",
+  "jev": {
+   "choice": "D_defer_sales",
+   "probabilities": {
+    "A_us_only_no_refund_terms": 0.0,
+    "B_limited_refund_window": 0.03,
+    "C_merchant_of_record": 0.01,
+    "D_defer_sales": 0.96
+   },
+   "confidence": 0.95,
+   "jev_model": "jev-1.14.0"
+  }
+ },
+ {
+  "spec": "007-evaluation-staging-enablement",
+  "id": "OQ-007-1",
+  "question": "Rollback by ENABLE_CLEF_PROVIDER=false: does it hold?",
+  "status": "already_answered",
+  "answer_if_answered": "RESOLVED: adapter inert with flag off (CLEF_DISABLED, no network call); failed provider persists no receipt.",
+  "evidence": [
+   "specs/007-evaluation-staging-enablement/spec.md:107",
+   "specs/007-evaluation-staging-enablement/research.md R2"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "007-evaluation-staging-enablement",
+  "id": "OQ-007-2",
+  "question": "How is an approval bound to a person?",
+  "status": "already_answered",
+  "answer_if_answered": "Built: Ed25519 signature over receipt_sha256 against a committed approver allowlist with strict revocation, plus chain replay (T080, T081 done); approved_by is a key id. Only operator tasks remain: generate the key pair offline and commit the public key (T082), sign the receipt (T083). The spec text still says 'open'; stale.",
+  "evidence": [
+   "specs/007-evaluation-staging-enablement/tasks.md:87-94",
+   "backend/intelligence/receipt_signing.py:1-46,88-118",
+   "specs/008-dual-path-f5-design-receipts/spec.md (FR-005 Implemented)"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "security"
+  ],
+  "reversible": "easy",
+  "unblocks": "T082, T083 are operator actions, not decisions"
+ },
+ {
+  "spec": "008-dual-path-f5-design-receipts",
+  "id": "OQ-008-1",
+  "question": "Rollback by reverting the two list pages: does it hold?",
+  "status": "already_answered",
+  "answer_if_answered": "RESOLVED: alias routes predate this feature (R3).",
+  "evidence": [
+   "specs/008-dual-path-f5-design-receipts/spec.md:106",
+   "specs/008-dual-path-f5-design-receipts/research.md R3"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ },
+ {
+  "spec": "008-dual-path-f5-design-receipts",
+  "id": "OQ-008-2",
+  "question": "Must the walkthrough run against staging only?",
+  "status": "already_answered",
+  "answer_if_answered": "Yes: allowlist of exactly 'staging'. T070 done 2026-10-29; flags_test_mode_failures fails with SERVER_ENVIRONMENT_NOT_STAGING and expected_environment is Literal['staging']. Spec status table row SC-001 'Partial' is stale.",
+  "evidence": [
+   "specs/008-dual-path-f5-design-receipts/tasks.md:71",
+   "backend/core/ops/f5_cutover.py:471-476",
+   "backend/core/ops/design_walkthrough.py:263,279,315",
+   "backend/tests/unit/test_f5_cutover.py:202-203"
+  ],
+  "options": {},
+  "existing_recommendation": null,
+  "risk": [
+   "none"
+  ],
+  "reversible": "easy",
+  "unblocks": ""
+ }
+]

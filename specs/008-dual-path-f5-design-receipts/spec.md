@@ -101,6 +101,11 @@ Counts (FRs): 5 Implemented, 1 Partial, 0 Missing.
 
 ## Open questions (2026-10-29)
 
+Decisions and checks 2026-11-01 ([record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md)):
+
+- OQ-008-1 (Rollback by reverting the two list pages: does it hold?): **Answered (checked 2026-11-01):** RESOLVED: alias routes predate this feature (R3).
+- OQ-008-2 (Must the walkthrough run against staging only?): **Answered (checked 2026-11-01):** Yes: allowlist of exactly 'staging'. T070 done 2026-10-29; flags_test_mode_failures fails with SERVER_ENVIRONMENT_NOT_STAGING and expected_environment is Literal['staging']. Spec status table row SC-001 'Partial' is stale.
+
 This spec had no open-questions list. The `[INFERRED]` items and research questions:
 
 - **Rollback by reverting the two list pages.** RESOLVED: the alias routes predate this feature (R3).
