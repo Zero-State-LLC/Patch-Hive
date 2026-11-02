@@ -300,11 +300,14 @@ def test_tampered_signature_model_copy_is_revalidated(chain, approver) -> None:
 # --- allowlist format and loader ------------------------------------------------
 
 
-def test_committed_allowlist_loads_and_holds_no_keys() -> None:
+def test_committed_allowlist_holds_only_the_reviewed_public_key() -> None:
     allowlist = load_approver_allowlist(APPROVER_ALLOWLIST_PATH)
     assert allowlist.schema_version == APPROVER_ALLOWLIST_SCHEMA
-    # T082 (operator) adds the first reviewed public key. Until then nothing verifies.
-    assert allowlist.approvers == ()
+    # T082 (2026-11-02): one reviewed public key; any other key still refuses (next test).
+    assert [key.key_id for key in allowlist.approvers] == ["approver-2026-11"]
+    (key,) = allowlist.approvers
+    assert key.algorithm == "ed25519" and key.revoked_at is None
+    assert len(base64.b64decode(key.public_key, validate=True)) == 32
     text = APPROVER_ALLOWLIST_PATH.read_text(encoding="utf-8")
     assert "PRIVATE KEY" not in text
 
