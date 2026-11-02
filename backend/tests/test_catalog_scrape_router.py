@@ -381,3 +381,25 @@ def test_the_corpus_photo_approval_admits_only_its_own_scope(tmp_path):
     assert cs.check_paid_approval(approvals, ledger, ("corpus-photos-2026-11",), now=now)[0]
     assert not cs.check_paid_approval(approvals, ledger, ("Make Noise",), now=now)[0]
     assert not cs.check_paid_approval(approvals, ledger, (), now=now)[0]
+
+
+def test_a_blocked_free_search_is_not_scraped_through_a_paid_backend(tmp_path, monkeypatch):
+    """Codex review: a DuckDuckGo 403 must not spend a paid scrape of the results page; the only
+    paid call is the paid search API itself."""
+    import catalog_scrape as cs
+
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    import urllib.parse
+
+    query = "acme vco eurorack"
+    transport = FakeTransport()
+    transport.routes[cs.DDG_LITE + "?" + urllib.parse.urlencode({"q": query})] = (403, b"blocked")
+    transport.routes[cs.CONTEXT_SEARCH_URL] = (
+        200, json.dumps({"results": [{"url": "https://commons.wikimedia.org/wiki/File:X.jpg"}]})
+    )
+    scraper = _scraper(tmp_path, transport, max_paid_fetches=1)
+    scraper.search(query, limit=3)
+    paid = [c.url for c in transport.calls if "api.context.dev" in c.url]
+    assert paid == [cs.CONTEXT_SEARCH_URL]
+    assert cs.CONTEXT_SCRAPE_URL not in paid
