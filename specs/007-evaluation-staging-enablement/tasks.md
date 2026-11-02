@@ -90,5 +90,5 @@ From [research.md](research.md). Effort in brackets.
   - depends_on: [T080]
 - [ ] T082 Generate the approver key pair offline and commit only the public key to the allowlist through a reviewed PR (operator) [S].
   - depends_on: [T081]
-- [ ] T083 Sign the receipt pinned in T060b with the approver key and retain the signature beside it (operator) [S].
+- [ ] T083 Sign the receipt pinned in T060b with the approver key and retain the signature beside it (operator) [S]. To enable a provider in staging, point `DECISION_ENABLEMENT_RECEIPT_PATH` and `DECISION_ENABLEMENT_SIGNATURE_PATH` at those two JSON files (005 T080).
   - depends_on: [T060b, T082]

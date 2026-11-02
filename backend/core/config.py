@@ -85,6 +85,10 @@ class Settings(BaseSettings):
     clef_base_url: str = "https://api.cloudflare.com/client/v4"
     clef_timeout_seconds: float = 10.0
     decision_policy_version: str = "decision-policy-v1"
+    # Spec 005 T080: outside development a decision provider runs only with a signed
+    # spec 007 enablement receipt and its signature, read from these JSON files.
+    decision_enablement_receipt_path: str = ""
+    decision_enablement_signature_path: str = ""
     # The one bounded routing target (spec 005 R6): the existing confirmation UI. Empty
     # means no target, so a failed provider or a policy ESCALATE ends UNRESOLVED. The
     # default is empty because nothing lists or reads ESCALATE records yet, so an

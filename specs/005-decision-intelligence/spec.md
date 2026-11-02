@@ -57,7 +57,7 @@ Provider failure handling implemented 2026-10-28 (#105): a failed provider is UN
 ### FR-010 Evaluation gate
 Jev MUST remain behind a feature flag until a retained labeled evaluation corpus demonstrates approved thresholds for candidate ranking, calibration, abstention/review behavior, and false-canonicalization protection.
 
-Production refuses to start with a decision provider on, implemented 2026-10-29 (#132). Staging still enables on flags alone; no runtime code checks the 007 receipt (research R1, R2).
+Production refuses to start with a decision provider on, implemented 2026-10-29 (#132). Since 2026-11-01 (T080) every other non-development environment refuses to start, and the decision route answers 409 `ENABLEMENT_RECEIPT_REQUIRED`, unless a signed 007 receipt names the configured provider and policy version (research R1).
 
 ## Non-functional requirements
 
@@ -106,7 +106,7 @@ Checked against `main` at 95ca9ee. Decision research is in [research.md](researc
 | FR-007 Conflict detection | Implemented | `detect_conflict` probability decision (T043) [OBSERVED: module_service.py]. Source preservation was not re-checked here [INFERRED from T043] |
 | FR-008 Routing | Partial | ESCALATE exists, but the route never sets `routing_targets` and no router exists (R6) [OBSERVED: evidence/routes.py, clef_resolution.py] |
 | FR-009 Failure semantics | Partial | Provider failures fail closed to UNRESOLVED/ESCALATE (#105). Unsupported schema and invalid packets return REJECT (R3) [OBSERVED: policy.py, resolution_machine.py] |
-| FR-010 Evaluation gate | Partial | Flags default off; production refuses providers (#132) [OBSERVED: backend/core/startup_policy.py]. No runtime receipt check; the Jev path bypasses the guarded machine and hardcodes `decision-policy-v1` (R1, R2) |
+| FR-010 Evaluation gate | Implemented (no provider can run until 007 T082/T083 supply a real key and signature) | Flags default off; production refuses providers (#132) [OBSERVED: backend/core/startup_policy.py]. Runtime receipt check added 2026-11-01 (T080, `intelligence/enablement_gate.py`); the Jev path bypass and the hardcoded policy version were fixed by T082 (R1, R2) |
 
 Counts: 6 Implemented, 4 Partial, 0 Missing.
 
