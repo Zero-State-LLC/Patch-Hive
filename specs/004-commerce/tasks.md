@@ -37,7 +37,7 @@ From [research.md](research.md) R1–R8. Machine B (T046) lands before any refer
 
 ## Foundational
 
-- [ ] T010 Encode the transitions table as tests (workflows: anti-slop-code, production-systems). Tests written 2026-11-01 in `backend/tests/unit/test_spec_004_transitions.py` for Machine A (`monetization/referrals.py`): 7 of 9 rows. Drift, not encoded: Machines B and C have no handlers (`_machine_not_built`, T046, T049); no refund handler; nothing enforces append-only Referral and ledger rows; `record_purchase(payment_verified=False)` still writes the legacy Grant and a Rewarded row, which the spec lists as illegal (client-submitted purchase); unknown-code signup is a route-level 400. Stays open until T002.
+- [ ] T010 Encode the transitions table as tests (workflows: anti-slop-code, production-systems). Tests written 2026-11-01 in `backend/tests/unit/test_spec_004_transitions.py` for Machine A (`monetization/referrals.py`): 7 of 9 rows, plus the client-submitted-purchase illegal row (fixed 2026-11-01: `record_purchase` refuses an unverified purchase before writing, FR-033). Drift, not encoded: Machines B and C have no handlers (`_machine_not_built`, T046, T049); no refund handler; nothing enforces append-only Referral and ledger rows; unknown-code signup is a route-level 400. Stays open until T002.
   - depends_on: [T002]
 
 ## Polish

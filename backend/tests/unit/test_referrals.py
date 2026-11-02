@@ -2,6 +2,7 @@
 Tests for referral credit rewards.
 """
 
+import pytest
 from sqlalchemy.orm import Session
 
 from community.models import User
@@ -32,7 +33,7 @@ def test_referral_reward_on_first_purchase(db_session: Session):
 
     assert db_session.query(CreditsLedger).filter(CreditsLedger.change_type == "Grant").count() == 0
 
-    record_purchase(db_session, user=referred, credits_delta=5, notes="Credits purchase")
+    record_purchase(db_session, user=referred, credits_delta=5, notes="Credits purchase", payment_verified=True)
     db_session.commit()
 
     assert db_session.query(Export).count() == 0
@@ -73,8 +74,8 @@ def test_referral_reward_only_once(db_session: Session):
     create_referral(db_session, referrer=referrer, referred=referred)
     db_session.commit()
 
-    record_purchase(db_session, user=referred, credits_delta=5)
-    record_purchase(db_session, user=referred, credits_delta=2)
+    record_purchase(db_session, user=referred, credits_delta=5, payment_verified=True)
+    record_purchase(db_session, user=referred, credits_delta=2, payment_verified=True)
     db_session.commit()
 
     rewards = (
@@ -87,7 +88,7 @@ def test_referral_reward_only_once(db_session: Session):
 
 def test_purchase_without_referral_no_reward(db_session: Session):
     user = _create_user(db_session, "solo", "solo@example.com", "solocode")
-    record_purchase(db_session, user=user, credits_delta=3)
+    record_purchase(db_session, user=user, credits_delta=3, payment_verified=True)
     db_session.commit()
 
     rewards = db_session.query(CreditsLedger).filter(CreditsLedger.change_type == "Grant").all()
@@ -118,8 +119,9 @@ def test_a_referral_reward_is_spendable_once(db_session: Session):
     assert credit_balance(db_session, referrer.id) == REFERRAL_REWARD_CREDITS
 
 
-def test_a_self_reported_purchase_earns_no_spendable_reward(db_session: Session):
-    """The legacy purchase route is user-callable, so its rewards stay unspendable."""
+def test_a_self_reported_purchase_is_refused_and_rewards_nothing(db_session: Session):
+    """Spec 004 FR-033 and Machine A: an unverified purchase writes nothing and rewards
+    nothing, so the referral stays Pending and a later verified purchase still counts."""
     from canon.exports import credit_balance
 
     referrer = _create_user(db_session, "referrer4", "referrer4@example.com", "refcode4")
@@ -127,10 +129,17 @@ def test_a_self_reported_purchase_earns_no_spendable_reward(db_session: Session)
     create_referral(db_session, referrer=referrer, referred=referred)
     db_session.commit()
 
-    record_purchase(db_session, user=referred, credits_delta=0)
-    db_session.commit()
+    with pytest.raises(ValueError, match="FR-033"):
+        record_purchase(db_session, user=referred, credits_delta=0)
+    db_session.rollback()
 
+    assert db_session.query(CreditsLedger).count() == 0
+    assert {r.status for r in db_session.query(Referral)} == {"Pending"}
     assert credit_balance(db_session, referrer.id) == 0
+
+    record_purchase(db_session, user=referred, credits_delta=5, payment_verified=True)
+    db_session.commit()
+    assert credit_balance(db_session, referrer.id) == REFERRAL_REWARD_CREDITS
 
 
 def test_referral_summary_counts_only_spendable_referral_credit(db_session: Session):
@@ -145,9 +154,10 @@ def test_referral_summary_counts_only_spendable_referral_credit(db_session: Sess
     create_referral(db_session, referrer=referrer, referred=reported)
     db_session.commit()
 
-    # A self-reported purchase writes a legacy reward that is not spendable.
-    record_purchase(db_session, user=reported, credits_delta=0)
-    db_session.commit()
+    # A self-reported purchase is refused (FR-033) and rewards nothing.
+    with pytest.raises(ValueError, match="FR-033"):
+        record_purchase(db_session, user=reported, credits_delta=0)
+    db_session.rollback()
     assert get_referral_summary(db_session, user=referrer)["earned_credits"] == 0
 
     record_purchase(db_session, user=verified, credits_delta=5, payment_verified=True)
