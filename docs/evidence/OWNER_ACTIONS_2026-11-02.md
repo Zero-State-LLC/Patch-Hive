@@ -26,6 +26,7 @@ Open PRs to decide on: #169 (release), #191 (live NVIDIA smoke test, docs and te
 - **After T001:** plan.md for specs 001–004 (T002), then closing T010.
 - **After a maker reply:** the reviewed correction or overlay entry for each width.
 - **After a signed receipt:** committing it under `backend/`, wiring the receipt paths for staging, and verifying the provider path (006 T060b).
+- **Now, before T060b:** fix the evidence id mismatch that stops an uploaded image from reaching the decision route (the candidate id `evidence-<hash>` vs the stored `ev-<uuid>`; Enablement §3).
 
 ---
 
@@ -287,7 +288,7 @@ cd ~/Patch-Hive/edge/api && npx wrangler secret list --env staging
 gh secret set PROJECT_TOKEN -R Zero-State-LLC/Patch-Hive
 ```
   If the org restricts PATs you may have to approve the token under the org's personal access token settings.
-- **Repo visibility vs Actions budget.** The repo is PUBLIC (verified), so Actions use free minutes. `CURRENT_STATE.md` says that while it was private the Actions budget blocked every job. The org plan is Team (verified); I cannot see the spending budget (Settings > Billing and plans > Budgets). Recommendation: stay public while you depend on free Actions; the workflows are already built for public logs (masking, counts-only receipts). If you go private, check the budget first. Environment protection works either way on Team.
+- **Repo visibility vs Actions budget.** The repo is PUBLIC (verified), so Actions use free minutes. `CURRENT_STATE.md` says that while it was private the Actions budget blocked every job. The org plan is Team (verified); I cannot see the spending budget (Settings > Billing and plans > Budgets). Recommendation: stay public while you depend on free Actions; the workflows are already built for public logs (masking, counts-only receipts). If you go private, check the budget first. Environment protection works either way on Team. **Keep it public while you rely on the production approval gate:** on the Team plan GitHub offers required reviewers on environments only for public repositories ("required reviewers are only available for public repositories"). Environment secrets and the `main`-only branch rule still work in a private repo, but the approval click in Operations §3 would disappear, and `db-migrate.yml`, `db-load.yml` and `edge-secrets.yml` would run against production without it.
 - **Rotate the context.dev and OpenRouter keys.** Per the notes they live in `~/.zshenv` (not opened). In each provider dashboard create a new key, replace the line in `~/.zshenv`, open a new shell, confirm it works, then delete the old key. Neither name is in the repo's secret list.
 - **Stale PRs.** #106, #109 and #111 are already MERGED. Open now: #169 (release; see item 2), #191 and #192 (item 5), #199 (Dependabot, follow-redirects 1.16.1 to 1.16.2 in `/frontend`; a patch bump, safe to merge once CI is green). Nothing is stale.
 - `main` branch protection requires 5 checks and 1 code-owner review, with admins enforced; you are on the PR-bypass list.
@@ -563,7 +564,9 @@ Expect HTTP 200 `status: healthy`. If startup refuses, the container does not be
 
 **Current state.** Code done (T060a). Staging `/health/ready` is 200 with `database: ok` (`docs/evidence/006_OPERATOR_TASK_RECEIPTS_2026-11-01.md`). T060b depends on 006 T050 (closed). In practice it also depends on Item 2 (finding 4). Nothing in the repo currently uploads a test evidence record to staging.
 
-**Steps.** (After Item 2 step 18.)
+**Blocked by a code gap (found in review, 2026-11-02).** The steps below cannot reach the provider today: the mock vision provider gives candidates an `evidence-<hash>` id (`backend/evidence/vision_provider.py:166`), while the upload stores the classification evidence under a separate `ev-<uuid>` id (`backend/evidence/routes.py:211`). The candidates endpoint returns the former, so the resolution request below answers 404, and the stored record id fails the binding check in `load_identity_inputs`. Claude can fix this (bind the candidate to the stored record, or add a staging fixture that creates a correctly bound record) before you run T060b.
+
+**Steps.** (After Item 2 step 18, and after the fix above.)
 
 1. Log in to staging as a staging user you own (the seeded `golden_demo` account from Item 4 works; its password is in your shell env `PATCHHIVE_DEMO_USER_PASSWORD`). Login route: `POST /api/community/auth/login` (as used by `backend/core/ops/design_walkthrough.py`). Do not paste the password into notes.
 2. Upload one test image you own to a private rack with provider consent: `POST /api/racks/{rack_id}/evidence/images` (multipart: `files`, `consent_provider_processing=true`). The response lists the image asset; classification evidence records are created with it.
