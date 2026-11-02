@@ -28,6 +28,7 @@ from evidence.images import (
 from evidence.cloud_provider import select_vision_provider
 from evidence.vision_provider import (
     VisionProviderContext,
+    bind_packet_to_evidence,
     collect_evidence_packet,
 )
 from community.auth import require_auth
@@ -206,9 +207,13 @@ async def upload_rack_evidence_images(
                     ),
                 )
                 evidence_status = str(packet.get("status"))
+                # The stored record id is the one authoritative evidence id: the
+                # candidates endpoint shows it and decision resolution binds to it.
+                evidence_id = f"ev-{uuid.uuid4().hex[:20]}"
+                packet = bind_packet_to_evidence(packet, evidence_id)
                 db.add(
                     ClassificationEvidenceRecord(
-                        id=f"ev-{uuid.uuid4().hex[:20]}",
+                        id=evidence_id,
                         image_asset_id=asset_id,
                         inventory_revision_id=None,
                         evidence_packet=packet,
