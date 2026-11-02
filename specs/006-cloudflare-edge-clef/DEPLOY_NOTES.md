@@ -172,6 +172,8 @@ A second vision provider beside Clef (2026-11-01): an NVIDIA vision-language mod
 | `NVIDIA_BASE_URL` | `https://integrate.api.nvidia.com/v1` | API catalog base |
 | `NVIDIA_TIMEOUT_SECONDS` | `20` | bounded request timeout |
 
+Status (2026-11-01): `NVIDIA_API_KEY` is set as a secret on the `patchhive-api-staging` Worker only; `ENABLE_NVIDIA_PROVIDER` is not set there, so the provider stays inert. A live wire check of both pinned models with one synthetic image passed (`RUN_NVIDIA_LIVE=1 pytest tests/integration/test_nvidia_live.py`, skipped otherwise). No 007 evaluation has been run with `nvidia`, so nothing about its accuracy on rig photos is known yet. A cold first call once took longer than the 20 s default timeout and failed closed as `NVIDIA_TIMEOUT`.
+
 The hosted API catalog endpoint is governed by NVIDIA's API trial terms; production use needs the account's paid or program entitlement (NVIDIA Inception) confirmed first. The models are licensed for commercial use (NVIDIA Open Model License; OpenMDW-1.1 for the 3.5 Super VL).
 
 Fail-closed behavior:
