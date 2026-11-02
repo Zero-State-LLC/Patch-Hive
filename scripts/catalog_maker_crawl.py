@@ -45,7 +45,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import build_maker_overlays  # noqa: E402
 import maker_adapters  # noqa: E402
-from catalog_scrape import CatalogScraper  # noqa: E402
+from catalog_scrape import CatalogScraper, check_paid_approval  # noqa: E402
 
 WORK = CATALOG / ".cache" / "maker-crawl"
 OUT = CATALOG / "hermes-research"
@@ -900,6 +900,13 @@ def main(argv: list[str] | None = None) -> int:
         print("paid run needs OPENROUTER_API_KEY for the generic path's model checks (or --no-model)", file=sys.stderr)
         return 2
     DRY_RUN, NO_MODEL = args.dry_run, args.no_model and not args.dry_run
+    approved_brands = tuple(b.strip() for b in args.brands.split(",")) if args.brands else ()
+    if not DRY_RUN:
+        # FR-003: a paid run cannot start or resume without an unexpired approval for these brands.
+        ok, why = check_paid_approval(RECEIPTS / "fetch-approvals.json", RECEIPTS / "scrape-ledger.json", approved_brands)
+        if not ok:
+            print(f"paid run refused (no matching fetch approval): {why}", file=sys.stderr)
+            return 2
     BUDGET = Budget(args.cap, args.ctx_start, args.fc_start)
     WORK.mkdir(parents=True, exist_ok=True)
     SCRAPER = CatalogScraper(
@@ -911,6 +918,8 @@ def main(argv: list[str] | None = None) -> int:
         max_age_s=7 * 86400,
         max_retries=2,
         on_receipt=_account,
+        approvals_path=None if DRY_RUN else RECEIPTS / "fetch-approvals.json",
+        brands=approved_brands,
     )
     SOURCES = maker_adapters.load_sources()
     if PRIOR_CRAWL.is_file():
