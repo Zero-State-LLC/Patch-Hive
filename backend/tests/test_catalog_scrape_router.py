@@ -316,9 +316,23 @@ def test_free_fetch_unaffected_by_approval_gate(tmp_path):
     assert _paid_calls(transport) == []
 
 
-def test_committed_approvals_file_has_no_active_entries():
+def test_committed_approvals_file_has_only_the_owner_approved_corpus_photo_entry():
+    """The committed file holds exactly the owner's 2026-11-02 approval (300 context.dev searches
+    for 007 corpus photos), with its baseline at the ledger totals of that day."""
     doc = json.loads((ROOT / "data" / "synth-catalog" / "receipts" / "fetch-approvals.json").read_text())
-    assert doc["entries"] == []
+    assert doc["entries"] == [
+        {
+            "id": "corpus-photos-2026-11",
+            "approver": "Daniel Meyer (owner; approved in chat 2026-11-02: 300 searches, context.dev)",
+            "approved_at": "2026-11-02T11:00:00Z",
+            "expires_at": "2026-11-30T23:59:59Z",
+            "brands": ["*"],
+            "cap_fetches": 300,
+            "cap_credits": 300,
+            "ledger_baseline_fetches": 2569,
+            "ledger_baseline_credits": 1149,
+        }
+    ]
 
 
 def test_parallel_reservations_cannot_overspend_the_approval(tmp_path):

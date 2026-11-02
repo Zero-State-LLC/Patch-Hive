@@ -35,6 +35,7 @@ parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
     - depends_on: [T001]
   - [ ] T010b Promote reviewed cases into `fixtures/vision_eval/pilot-manifest.json` and freeze the corpus SHA (operator; manifest has 0 cases today).
     - depends_on: [T010a, 005:T061b2]
+    - Note (2026-11-02): candidate photos can now be found with `scripts/vision/find_corpus_photos.py` (owner-approved 300 context.dev searches, approval `corpus-photos-2026-11`; Commons and Flickr only; CC0, public domain, CC BY, CC BY-SA only; images stay outside the repo). Its rows are UNVERIFIED candidates for `scripts/build_vision_promotion_queue.py`; identity verification and review remain this operator task. Commands in `docs/evidence/PILOT_CASE_PROMOTION.md`.
 
 - [ ] T020 Run baseline vs Clef-assisted evaluation on the frozen corpus.
   - depends_on: [T010]

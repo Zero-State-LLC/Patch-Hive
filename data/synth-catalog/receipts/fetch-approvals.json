@@ -12,5 +12,17 @@
     "ledger_baseline_fetches": 0,
     "ledger_baseline_credits": 0
   },
-  "entries": []
+  "entries": [
+    {
+      "id": "corpus-photos-2026-11",
+      "approver": "Daniel Meyer (owner; approved in chat 2026-11-02: 300 searches, context.dev)",
+      "approved_at": "2026-11-02T11:00:00Z",
+      "expires_at": "2026-11-30T23:59:59Z",
+      "brands": ["*"],
+      "cap_fetches": 300,
+      "cap_credits": 300,
+      "ledger_baseline_fetches": 2569,
+      "ledger_baseline_credits": 1149
+    }
+  ]
 }
