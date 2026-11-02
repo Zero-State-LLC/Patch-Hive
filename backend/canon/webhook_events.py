@@ -13,7 +13,8 @@ and leaves the record in a final disposition with ``processed_at`` set:
 
 No event stays ``received``. An operator may then move an ``unresolved`` event to
 ``rejected`` (spec 004 Machine B ``operator_rejects``, T048): it grants nothing and
-writes one ``CanonicalAdminAuditEventRecord``.
+writes one ``CanonicalAdminAuditEventRecord``. ``operator_resolves`` (T048b) is
+``canon.checkout.resolve_unresolved_event``.
 """
 
 from __future__ import annotations

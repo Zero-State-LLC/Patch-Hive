@@ -33,7 +33,16 @@ from admin.schemas import (
     AdminUserList,
     AdminUserResponse,
 )
+import core
 from admin.utils import log_admin_action
+from canon.checkout import (
+    CheckoutSessionRetriever,
+    CheckoutUnavailableError,
+    PaymentProviderError,
+    ResolveRefusedError,
+    StripeCheckoutProvider,
+    resolve_unresolved_event,
+)
 from canon.models import CanonicalCreditLedgerEntryRecord, StripeEventRecordModel
 from canon.webhook_events import (
     COMMERCE_OPERATOR_ROLES,
@@ -293,6 +302,75 @@ def reject_commerce_event(
         ) from exc
     db.commit()
     return {"stripe_event_id": stripe_event_id, "status": record.status, "audit_event_id": audit.id}
+
+
+def get_commerce_provider() -> CheckoutSessionRetriever:
+    """The provider client for operator resolve; tests override this with a fake.
+
+    Building it makes no provider call; ``resolve_unresolved_event`` runs the payments
+    gate before it retrieves anything.
+    """
+
+    app_settings = core.settings
+    return StripeCheckoutProvider(
+        (app_settings.stripe_secret_key or "").strip(), api_base=app_settings.stripe_api_base
+    )
+
+
+@router.post("/commerce/events/{stripe_event_id}/resolve")
+def resolve_commerce_event(
+    stripe_event_id: str,
+    payload: AdminActionReason,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_mutate),
+    provider: CheckoutSessionRetriever = Depends(get_commerce_provider),
+):
+    """Spec 004 Machine B ``operator_resolves`` (OQ-5 ``A_refetch_session``, T048b).
+
+    The Checkout Session is retrieved from the provider by the stored object id and
+    Machine B's fulfillment runs once. The event becomes ``processed`` (or ``duplicate``
+    when the payment was already credited) or stays ``unresolved`` with a reason code;
+    either way one canonical audit record is written. A refusal writes nothing.
+    """
+    if current_user.role not in COMMERCE_OPERATOR_ROLES:
+        raise HTTPException(status_code=403, detail="Only an Admin can resolve a commerce event")
+    if not (payload.reason or "").strip():
+        raise HTTPException(status_code=422, detail="A reason is required")
+    try:
+        outcome = resolve_unresolved_event(
+            db,
+            stripe_event_id,
+            provider=provider,
+            app_settings=core.settings,
+            actor_user_id=current_user.id,
+            actor_role=current_user.role,
+            reason=payload.reason,
+        )
+    except LookupError as exc:
+        db.rollback()
+        raise HTTPException(status_code=404, detail="Event not found") from exc
+    except InvalidEventTransitionError as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=409, detail={"code": "INVALID_TRANSITION", "status": str(exc)}
+        ) from exc
+    except (ResolveRefusedError, CheckoutUnavailableError) as exc:
+        db.rollback()
+        raise HTTPException(status_code=exc.status_code, detail={"code": exc.code}) from exc
+    except PaymentProviderError as exc:
+        db.rollback()
+        raise HTTPException(status_code=502, detail={"code": "PAYMENT_PROVIDER_ERROR"}) from exc
+    except Exception:
+        db.rollback()
+        raise
+    db.commit()
+    record = outcome.record
+    return {
+        "stripe_event_id": stripe_event_id,
+        "status": record.status,
+        "reason_code": record.reason_code,
+        "audit_event_id": outcome.audit.id,
+    }
 
 
 @router.post("/modules", status_code=201)

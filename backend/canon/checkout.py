@@ -31,17 +31,27 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from hashlib import sha256
 from typing import Any, Protocol
+from urllib.parse import quote
 
 import httpx
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from canon.models import (
+    CanonicalAdminAuditEventRecord,
     CanonicalCreditLedgerEntryRecord,
     ProviderCustomerRecord,
     ProviderPaymentRecord,
+    StripeEventRecordModel,
 )
-from canon.webhook_events import EventDisposition, UnresolvedEventError
+from canon.webhook_events import (
+    COMMERCE_OPERATOR_ROLES,
+    FINAL_EVENT_STATUSES,
+    EventDisposition,
+    InvalidEventTransitionError,
+    UnresolvedEventError,
+    _hash_state,
+)
 from community.models import User
 from monetization.referrals import record_purchase
 
@@ -99,8 +109,12 @@ class CheckoutProvider(Protocol):
     ) -> ProviderCheckoutSession: ...
 
 
+class CheckoutSessionRetriever(Protocol):
+    def retrieve_checkout_session(self, session_id: str) -> dict[str, Any]: ...
+
+
 class StripeCheckoutProvider:
-    """Minimal Stripe REST client for the two calls Machine B makes.
+    """Minimal Stripe REST client for the calls Machine B makes.
 
     The customer carries only the PatchHive user id (no email or name): disclosure to
     the provider is NOT_COMPUTABLE in the spec, so the least is sent.
@@ -124,9 +138,21 @@ class StripeCheckoutProvider:
             "Authorization": f"Bearer {self._secret_key}",
             "Idempotency-Key": idempotency_key,
         }
+        return self._request("POST", path, headers=headers, form=form)
+
+    def _request(
+        self,
+        method: str,
+        path: str,
+        *,
+        headers: dict[str, str],
+        form: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
         try:
             with httpx.Client(timeout=self._timeout, transport=self._transport) as client:
-                response = client.post(f"{self._api_base}{path}", data=form, headers=headers)
+                response = client.request(
+                    method, f"{self._api_base}{path}", data=form, headers=headers
+                )
         except httpx.HTTPError as exc:
             raise PaymentProviderError(f"provider request failed: {type(exc).__name__}") from None
         if response.status_code >= 400:
@@ -179,6 +205,12 @@ class StripeCheckoutProvider:
         if not isinstance(session_id, str) or not session_id or not isinstance(url, str) or not url:
             raise PaymentProviderError("provider returned no checkout session")
         return ProviderCheckoutSession(id=session_id, url=url)
+
+    def retrieve_checkout_session(self, session_id: str) -> dict[str, Any]:
+        """``GET /v1/checkout/sessions/{id}``: the session as the provider has it now."""
+
+        path = f"/v1/checkout/sessions/{quote(session_id, safe='')}"
+        return self._request("GET", path, headers={"Authorization": f"Bearer {self._secret_key}"})
 
 
 def credit_charge_cents(credits: int, *, price_cents: int, minimum_cents: int) -> int:
@@ -464,3 +496,141 @@ def handle_checkout_session_event(session: Session, event: dict[str, Any]) -> Ev
         return EventDisposition("duplicate", "CHECKOUT_ALREADY_CLOSED")
     # Credited and then reported failed or expired: an operator must look.
     raise UnresolvedEventError("PAYMENT_STATE_CONFLICT")
+
+
+# --- Operator resolve (T048b) ------------------------------------------------------------
+
+RESOLVE_ACTION = "commerce.event.resolve"
+
+
+class ResolveRefusedError(Exception):
+    """Resolve is refused before any write. ``code`` is safe to return."""
+
+    def __init__(self, code: str, *, status_code: int = 409) -> None:
+        super().__init__(code)
+        self.code = code
+        self.status_code = status_code
+
+
+@dataclass(frozen=True)
+class ResolveOutcome:
+    record: StripeEventRecordModel
+    audit: CanonicalAdminAuditEventRecord
+
+
+def _event_state(record: StripeEventRecordModel) -> dict[str, Any]:
+    return {"status": record.status, "reason_code": record.reason_code}
+
+
+def _apply_retrieved_session(
+    session: Session, record: StripeEventRecordModel, obj: dict[str, Any]
+) -> EventDisposition:
+    """Run Machine B fulfillment once on the retrieved session, in a savepoint."""
+
+    if obj.get("payment_status") != "paid":
+        # Resolve only credits: a session the provider does not report paid stays with
+        # the operator, who may reject it.
+        return EventDisposition("unresolved", "SESSION_NOT_PAID")
+    event = {"id": record.stripe_event_id, "type": CHECKOUT_COMPLETED, "data": {"object": obj}}
+    savepoint = session.begin_nested()
+    try:
+        disposition = handle_checkout_session_event(session, event)
+    except UnresolvedEventError as exc:
+        savepoint.rollback()
+        return EventDisposition("unresolved", exc.reason_code)
+    except Exception:
+        savepoint.rollback()
+        raise
+    if disposition.status not in FINAL_EVENT_STATUSES or disposition.status == "ignored":
+        savepoint.rollback()
+        raise ValueError(f"handler returned invalid status {disposition.status!r}")
+    if disposition.status == "unresolved":
+        savepoint.rollback()
+    else:
+        savepoint.commit()
+    return disposition
+
+
+def resolve_unresolved_event(
+    session: Session,
+    stripe_event_id: str,
+    *,
+    provider: CheckoutSessionRetriever,
+    app_settings: Any,
+    actor_user_id: int,
+    actor_role: str,
+    reason: str,
+) -> ResolveOutcome:
+    """Machine B ``Unresolved --operator_resolves--> Credited`` (OQ-5 ``A_refetch_session``).
+
+    PatchHive keeps only the payload hash of an event, so the Checkout Session is
+    retrieved from the provider by the ``object_id`` stored at intake, and Machine B's
+    idempotent fulfillment runs once on what the provider reports. The event leaves
+    ``unresolved`` only if that credits (``processed``) or finds the payment already
+    credited (``duplicate``); otherwise it stays ``unresolved`` with the new reason code.
+    Either way one ``CanonicalAdminAuditEventRecord`` is written. The caller commits.
+
+    Refused with no write at all (the caller rolls back):
+
+    - ``LookupError``: no such event.
+    - ``InvalidEventTransitionError``: the event is not ``unresolved``.
+    - ``ResolveRefusedError``: not a Machine B event, or no stored object id (409); the
+      provider returned a different object (502).
+    - ``CheckoutUnavailableError``: the payments flags or key refuse, as for checkout.
+    - ``PaymentProviderError``: the session could not be retrieved.
+    """
+
+    if actor_role not in COMMERCE_OPERATOR_ROLES:
+        raise PermissionError("only an Admin may resolve a commerce event")
+    reason = (reason or "").strip()
+    if not reason:
+        raise ValueError("a reason is required")
+    # The row lock makes two overlapping resolves (or a resolve and a reject) take turns:
+    # the second sees the first's final status and is refused.
+    record = (
+        session.query(StripeEventRecordModel)
+        .filter(StripeEventRecordModel.stripe_event_id == stripe_event_id)
+        .with_for_update()
+        .populate_existing()
+        .one_or_none()
+    )
+    if record is None:
+        raise LookupError(stripe_event_id)
+    if record.status != "unresolved":
+        raise InvalidEventTransitionError(record.status)
+    if record.event_type not in CHECKOUT_EVENT_TYPES:
+        raise ResolveRefusedError("RESOLVE_NOT_SUPPORTED")
+    object_id = record.object_id
+    if not object_id:
+        raise ResolveRefusedError("OBJECT_ID_MISSING")
+    checkout_gate(app_settings)
+
+    obj = provider.retrieve_checkout_session(object_id)
+    if (
+        not isinstance(obj, dict)
+        or obj.get("id") != object_id
+        or obj.get("object", "checkout.session") != "checkout.session"
+        or bool(obj.get("livemode", record.livemode)) != bool(record.livemode)
+    ):
+        raise ResolveRefusedError("PROVIDER_OBJECT_MISMATCH", status_code=502)
+
+    before = _event_state(record)
+    disposition = _apply_retrieved_session(session, record, obj)
+    record.status = disposition.status
+    record.reason_code = disposition.reason_code
+    record.processed_at = datetime.now(timezone.utc)
+    audit = CanonicalAdminAuditEventRecord(
+        id=f"audit-{uuid.uuid4().hex}",
+        actor_user_id=actor_user_id,
+        actor_role=actor_role,
+        action=RESOLVE_ACTION,
+        target_type="stripe_event",
+        target_id=record.stripe_event_id,
+        before_hash=_hash_state(before),
+        after_hash=_hash_state(_event_state(record)),
+        reason=reason,
+        created_at=datetime.now(timezone.utc),
+    )
+    session.add(audit)
+    session.flush()
+    return ResolveOutcome(record=record, audit=audit)
