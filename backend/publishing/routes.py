@@ -11,12 +11,13 @@ import zipfile
 from datetime import datetime, timedelta
 from typing import Literal, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from admin.models import AdminAuditLog
+from community import login_guard
 from community.auth import get_current_user, require_admin, require_auth
 from community.models import User
 from core import Provenance, get_db, settings
@@ -45,6 +46,10 @@ router = APIRouter()
 
 
 ARTIFACT_TYPES = {"pdf", "svg", "zip"}
+
+# Spec 002 OQ-13: reports stay open to anonymous readers, so cap them per client address.
+REPORT_ATTEMPTS = 10
+REPORT_WINDOW_SECONDS = 3600
 
 
 def _ensure_export_dir() -> None:
@@ -262,9 +267,13 @@ def update_publication(
     db: Session = Depends(get_db),
 ):
     """Update a publication owned by the current user."""
+    # Spec 002 OQ-10: lock the row so an admin hide or remove in flight finishes first;
+    # populate_existing makes the moderation checks below read the row after that lock.
     publication = (
         db.query(Publication)
         .filter(Publication.id == publication_id, Publication.publisher_user_id == current_user.id)
+        .populate_existing()
+        .with_for_update()
         .first()
     )
     if not publication:
@@ -462,14 +471,44 @@ def list_gallery(
 def report_publication(
     slug: str,
     payload: ReportCreate,
+    request: Request,
     current_user: Optional[User] = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Report a publication."""
-    publication = db.query(Publication).filter(Publication.slug == slug).first()
+    if not login_guard.allow_attempt(
+        login_guard.client_address(request),
+        bucket="report",
+        limit=REPORT_ATTEMPTS,
+        window_seconds=REPORT_WINDOW_SECONDS,
+    ):
+        raise HTTPException(status_code=429, detail="REPORT_RATE_LIMIT")
+
+    # Locked so two reports from one reporter cannot both pass the duplicate check.
+    publication = (
+        db.query(Publication)
+        .filter(Publication.slug == slug)
+        .populate_existing()
+        .with_for_update()
+        .first()
+    )
     # Only a published publication is publicly readable, so only it can be reported.
     if not publication or publication.status != "published":
         raise HTTPException(status_code=404, detail="Publication not found")
+
+    # One report per (publication, reporter). An anonymous report has no reporter to
+    # match, so only the rate limit bounds those (OQ-13).
+    if current_user is not None:
+        already = (
+            db.query(PublicationReport.id)
+            .filter(
+                PublicationReport.publication_id == publication.id,
+                PublicationReport.reporter_user_id == current_user.id,
+            )
+            .first()
+        )
+        if already:
+            return JSONResponse(status_code=200, content={"status": "already_reported"})
 
     report = PublicationReport(
         publication_id=publication.id,
@@ -524,7 +563,13 @@ def hide_publication(
     db: Session = Depends(get_db),
 ):
     """Admin hide a publication."""
-    publication = db.query(Publication).filter(Publication.id == publication_id).first()
+    publication = (
+        db.query(Publication)
+        .filter(Publication.id == publication_id)
+        .populate_existing()
+        .with_for_update()
+        .first()
+    )
     if not publication:
         raise HTTPException(status_code=404, detail="Publication not found")
     if publication.status not in ("published",):
@@ -553,7 +598,13 @@ def remove_publication(
     db: Session = Depends(get_db),
 ):
     """Admin remove a publication."""
-    publication = db.query(Publication).filter(Publication.id == publication_id).first()
+    publication = (
+        db.query(Publication)
+        .filter(Publication.id == publication_id)
+        .populate_existing()
+        .with_for_update()
+        .first()
+    )
     if not publication:
         raise HTTPException(status_code=404, detail="Publication not found")
     if publication.status not in ("published", "hidden"):
