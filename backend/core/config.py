@@ -122,6 +122,16 @@ class Settings(BaseSettings):
     # Empty defaults: development may derive local secrets; production policy enforces real ones.
     stripe_webhook_secret: str = ""
     download_token_secret: str = ""
+    # Spec 004 Machine B (T046): one-time credit checkout. Off by default (FR-019); sales
+    # stay deferred until counsel drafts terms (OQ-13). The secret key must be a test key
+    # (sk_test_/rk_test_) unless production payments are activated (T051).
+    enable_credit_checkout: bool = False
+    stripe_secret_key: str = ""
+    stripe_api_base: str = "https://api.stripe.com"
+    # OQ-1, ratified provisionally 2026-11-01: $0.20 per credit, $5.00 minimum charge, USD.
+    credit_price_cents: int = 20
+    credit_minimum_charge_cents: int = 500
+    credit_currency: str = "usd"
 
     # File Storage
     export_dir: str = "./exports"

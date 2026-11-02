@@ -54,14 +54,26 @@ EventHandler = Callable[[Session, dict[str, Any]], EventDisposition]
 
 def _machine_not_built(_session: Session, _event: dict[str, Any]) -> EventDisposition:
     # Fail closed (FR-014): these events move money or tiers, so an operator must see
-    # them until their machine exists. Machine B (T046) and Machine C (T049) replace
-    # these entries with real handlers.
+    # them until their machine exists. Machine C (T049) replaces these entries with
+    # real handlers.
     return EventDisposition("unresolved", "HANDLER_NOT_IMPLEMENTED")
 
 
-# The four event types the observed integration handled (STRIPE_INTEGRATION_PROMPT.md).
+def _machine_b(session: Session, event: dict[str, Any]) -> EventDisposition:
+    # Machine B (T046), one-time credit checkout. Imported here because canon.checkout
+    # imports this module.
+    from canon.checkout import handle_checkout_session_event
+
+    return handle_checkout_session_event(session, event)
+
+
+# The event types the observed integration handled (STRIPE_INTEGRATION_PROMPT.md), plus
+# the delayed-payment and expiry outcomes of a Checkout Session (research 2026-11-01 §2).
 EVENT_HANDLERS: dict[str, EventHandler] = {
-    "checkout.session.completed": _machine_not_built,
+    "checkout.session.completed": _machine_b,
+    "checkout.session.async_payment_succeeded": _machine_b,
+    "checkout.session.async_payment_failed": _machine_b,
+    "checkout.session.expired": _machine_b,
     "customer.subscription.created": _machine_not_built,
     "customer.subscription.updated": _machine_not_built,
     "customer.subscription.deleted": _machine_not_built,
