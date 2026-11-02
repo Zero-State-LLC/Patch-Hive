@@ -66,6 +66,9 @@ from catalog_scrape import (  # noqa: E402
 )
 
 APPROVAL_ID = "corpus-photos-2026-11"
+# The approval entry lists this scope as its only "brand", so it admits this tool's searches
+# and nothing else: catalog crawls pass real brand names (or none) and are refused by it.
+APPROVAL_SCOPE = (APPROVAL_ID,)
 MAX_SEARCHES = 300
 RESULTS_PER_SEARCH = 10
 HOST_INTERVAL_S = 2.0
@@ -762,7 +765,7 @@ def run_search(
     out_dir = check_out_dir(out_dir)
     if max_searches < 1 or max_searches > MAX_SEARCHES:
         raise Refused(f"--max-searches must be 1..{MAX_SEARCHES}")
-    brands = tuple(sorted({identity["brand"] for identity in identities}))
+    brands = APPROVAL_SCOPE
     search_factory = search_scraper_factory or CatalogScraper.for_repo
     page_factory = page_scraper_factory or CatalogScraper.for_repo
 

@@ -16,7 +16,7 @@ Out of scope: running the search, admitting or reviewing any case, changing the 
 
 ## Affected users / systems
 
-The operator collecting the 007 corpus. The FR-003 approval gate: the new entry has `brands: ["*"]`, so until it expires (2026-11-30) or its caps are reached it also covers other paid catalog runs (for example `scripts/catalog_maker_crawl.py`) that share the same ledger. The test that pinned the empty approvals file now pins exactly this entry.
+The operator collecting the 007 corpus. The FR-003 approval gate: the new entry's only brand is its own scope (`corpus-photos-2026-11`), which this tool passes, so it admits these searches and nothing else; catalog crawls pass real brand names (or none) and are refused by it. The test that pinned the empty approvals file now pins exactly this entry.
 
 ## Constraints / non-goals
 
@@ -25,7 +25,7 @@ Vision cannot self-confirm: rows stay `UNVERIFIED` / `DISCOVERED`, the searched 
 ## Open questions
 
 - Flickr page markup was not observed live in this work; parsing relies on the `rel="license"` link and the `live.staticflickr.com` size suffixes. If Flickr no longer serves those in plain HTML, Flickr rows fall back to `no_license_found` (excluded), which is safe but finds less.
-- The `*` brand scope of the approval also opens other paid runs. The owner may prefer a narrower entry; that needs a gate change (approval per tool) and is not made here.
+- The approval is scoped to this tool by using its id as the only brand, with no gate change; a test checks that a catalog crawl is refused by it.
 
 ## Verified / assumed claims
 

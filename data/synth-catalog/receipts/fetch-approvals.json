@@ -6,7 +6,10 @@
     "approver": "who approved",
     "approved_at": "ISO 8601",
     "expires_at": "ISO 8601",
-    "brands": ["Brand name", "or * for all brands"],
+    "brands": [
+      "Brand name",
+      "or * for all brands"
+    ],
     "cap_fetches": 0,
     "cap_credits": 0,
     "ledger_baseline_fetches": 0,
@@ -18,7 +21,9 @@
       "approver": "Daniel Meyer (owner; approved in chat 2026-11-02: 300 searches, context.dev)",
       "approved_at": "2026-11-02T11:00:00Z",
       "expires_at": "2026-11-30T23:59:59Z",
-      "brands": ["*"],
+      "brands": [
+        "corpus-photos-2026-11"
+      ],
       "cap_fetches": 300,
       "cap_credits": 300,
       "ledger_baseline_fetches": 2569,

@@ -283,7 +283,7 @@ def _entry(**over):
         "id": photos.APPROVAL_ID,
         "approver": "owner",
         "expires_at": FUTURE,
-        "brands": ["*"],
+        "brands": [photos.APPROVAL_ID],
         "cap_fetches": 300,
         "cap_credits": 300,
         "ledger_baseline_fetches": 2569,

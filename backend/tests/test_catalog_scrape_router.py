@@ -326,7 +326,7 @@ def test_committed_approvals_file_has_only_the_owner_approved_corpus_photo_entry
             "approver": "Daniel Meyer (owner; approved in chat 2026-11-02: 300 searches, context.dev)",
             "approved_at": "2026-11-02T11:00:00Z",
             "expires_at": "2026-11-30T23:59:59Z",
-            "brands": ["*"],
+            "brands": ["corpus-photos-2026-11"],
             "cap_fetches": 300,
             "cap_credits": 300,
             "ledger_baseline_fetches": 2569,
@@ -365,3 +365,19 @@ def test_unknown_spend_refuses_instead_of_counting_as_zero(tmp_path):
     ledger.unlink()
     approvals.write_text(json.dumps({"entries": [_approval(brands=["*"])]}))
     assert cs.check_paid_approval(approvals, ledger)[0]
+
+
+def test_the_corpus_photo_approval_admits_only_its_own_scope(tmp_path):
+    """The owner approved 300 searches for corpus photos, not catalog crawls: the entry's only
+    brand is its scope, so a crawl with real brands or no brands is refused by it."""
+    import catalog_scrape as cs
+
+    approvals = ROOT / "data" / "synth-catalog" / "receipts" / "fetch-approvals.json"
+    ledger = tmp_path / "ledger.json"
+    ledger.write_text(json.dumps({"paid_fetches": 2569, "credits_by_backend": {"context_dev": 1149}}))
+    from datetime import datetime, timezone
+
+    now = datetime(2026, 11, 15, tzinfo=timezone.utc).timestamp()  # inside the approval window
+    assert cs.check_paid_approval(approvals, ledger, ("corpus-photos-2026-11",), now=now)[0]
+    assert not cs.check_paid_approval(approvals, ledger, ("Make Noise",), now=now)[0]
+    assert not cs.check_paid_approval(approvals, ledger, (), now=now)[0]
