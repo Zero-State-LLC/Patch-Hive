@@ -3,6 +3,9 @@
 Source: specs/004-commerce/spec.md, "## Stateful behavior", "### Machine A: Referral".
 Machine B (one-time credit purchase) and Machine C (subscription) are not encoded: their
 handlers are still ``_machine_not_built`` in canon/webhook_events.py (T046, T049 open).
+Purchases here are provider-verified (``payment_verified=True``): the spec forbids a
+reward for a client-submitted purchase, which ``record_purchase`` still grants on the
+legacy ledger (drift recorded in tasks.md T010), so that path is not encoded.
 """
 
 from __future__ import annotations
@@ -10,6 +13,7 @@ from __future__ import annotations
 import pytest
 from sqlalchemy.orm import Session
 
+from canon.models import CanonicalCreditLedgerEntryRecord
 from community.models import User
 from monetization.models import CreditsLedger, Referral
 from monetization.referrals import REFERRAL_REWARD_CREDITS, create_referral, record_purchase
@@ -45,6 +49,10 @@ def _grants(db: Session) -> int:
     return db.query(CreditsLedger).filter(CreditsLedger.change_type == "Grant").count()
 
 
+def _canonical_grants(db: Session) -> list[CanonicalCreditLedgerEntryRecord]:
+    return db.query(CanonicalCreditLedgerEntryRecord).filter_by(entry_type="grant").all()
+
+
 def _snapshot(db: Session) -> tuple[int, int]:
     return db.query(Referral).count(), db.query(CreditsLedger).count()
 
@@ -59,7 +67,7 @@ def _in_state(db: Session, state: str, referrer: User, referred: User) -> None:
         create_referral(db, referrer=referrer, referred=referred)
         db.commit()
     if state == REWARDED:
-        record_purchase(db, user=referred, credits_delta=5)
+        record_purchase(db, user=referred, credits_delta=5, payment_verified=True)
         db.commit()
     assert _state(db, referred) == state
 
@@ -109,7 +117,7 @@ def test_pending_first_purchase_rewards_once_atomically(db_session: Session, pai
     _in_state(db_session, PENDING, referrer, referred)
     pending = db_session.query(Referral).one()
 
-    purchase = record_purchase(db_session, user=referred, credits_delta=5)
+    purchase = record_purchase(db_session, user=referred, credits_delta=5, payment_verified=True)
     db_session.commit()
 
     assert _state(db_session, referred) == REWARDED
@@ -121,6 +129,9 @@ def test_pending_first_purchase_rewards_once_atomically(db_session: Session, pai
     rewarded = db_session.query(Referral).filter_by(status=REWARDED).one()
     assert rewarded.first_purchase_id == purchase.id
     assert rewarded.rewarded_at is not None
+    # The spendable reward lands on the canonical ledger once (FR-009).
+    (canonical,) = _canonical_grants(db_session)
+    assert (canonical.user_id, canonical.delta) == (referrer.id, REFERRAL_REWARD_CREDITS)
 
 
 def test_pending_non_first_purchase_stays_pending_without_reward(db_session: Session, pair):
@@ -129,7 +140,8 @@ def test_pending_non_first_purchase_stays_pending_without_reward(db_session: Ses
     db_session.add(CreditsLedger(user_id=referred.id, change_type="Purchase", credits_delta=5))
     db_session.commit()
 
-    record_purchase(db_session, user=referred, credits_delta=5)  # purchase count is now 2
+    # The purchase count is now 2.
+    record_purchase(db_session, user=referred, credits_delta=5, payment_verified=True)
     db_session.commit()
 
     assert _state(db_session, referred) == PENDING
@@ -142,18 +154,19 @@ def test_rewarded_further_purchases_are_no_ops(db_session: Session, pair):
     _in_state(db_session, REWARDED, referrer, referred)
     before = (_grants(db_session), db_session.query(Referral).count())
 
-    record_purchase(db_session, user=referred, credits_delta=5)
-    record_purchase(db_session, user=referred, credits_delta=5)
+    record_purchase(db_session, user=referred, credits_delta=5, payment_verified=True)
+    record_purchase(db_session, user=referred, credits_delta=5, payment_verified=True)
     db_session.commit()
 
     assert _state(db_session, referred) == REWARDED
     assert (_grants(db_session), db_session.query(Referral).count()) == before
     assert _grants(db_session) == 1  # illegal: Rewarded -> Rewarded with a second Grant
+    assert len(_canonical_grants(db_session)) == 1
 
 
 def test_none_purchase_creates_no_referral_or_grant(db_session: Session, pair):
     _, referred = pair
-    record_purchase(db_session, user=referred, credits_delta=5)
+    record_purchase(db_session, user=referred, credits_delta=5, payment_verified=True)
     db_session.commit()
     assert _state(db_session, referred) == NONE
     assert _grants(db_session) == 0
