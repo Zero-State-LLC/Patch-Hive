@@ -88,7 +88,7 @@ From [research.md](research.md). Effort in brackets.
   - depends_on: [T060a]
 - [x] T081 Sign receipts: an Ed25519 signature over `receipt_sha256` against a committed approver allowlist (`key_id`, public key, `valid_from`, `revoked_at`); `approved_by` becomes the key id; reject unknown or revoked keys (R1) [M]. Done 2026-10-29: `intelligence/receipt_signing.py` and `verify_signed_enablement_receipt`; `intelligence/evaluation_approvers.json` is committed with no keys (T082 adds one).
   - depends_on: [T080]
-- [ ] T082 Generate the approver key pair offline and commit only the public key to the allowlist through a reviewed PR (operator) [S].
+- [x] T082 Generate the approver key pair offline and commit only the public key to the allowlist through a reviewed PR (operator) [S]. Done 2026-11-02 at the owner's direction: key id `approver-2026-11`, `valid_from` 2026-11-02T10:00:00Z, public key in `backend/intelligence/evaluation_approvers.json`; the private key stays in `~/patchhive-approver/` on the owner's machine (mode 0600), never in the repo, CI or Cloudflare. Receipts must use `approved_by = approver-2026-11`.
   - depends_on: [T081]
 - [ ] T083 Sign the receipt pinned in T060b with the approver key and retain the signature beside it (operator) [S]. To enable a provider in staging, point `DECISION_ENABLEMENT_RECEIPT_PATH` and `DECISION_ENABLEMENT_SIGNATURE_PATH` at those two JSON files (005 T080).
   - depends_on: [T060b, T082]
