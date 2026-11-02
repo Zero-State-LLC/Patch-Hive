@@ -27,6 +27,7 @@ from core.ops.f5_cutover import (
     scan_fe_list_callers,
     start_walkthrough,
 )
+from tests.f5008_helpers import f5008_approver_allowlist  # noqa: F401  (autouse)
 from tests.f5008_helpers import (
     FE_SOURCES_OK,
     GOOD_GENERATE,
@@ -39,6 +40,7 @@ from tests.f5008_helpers import (
     full_routes,
     health,
     outcome,
+    pin_signing,
     seed_auth,
 )
 
@@ -290,7 +292,7 @@ def test_receipt_contains_hashes_not_secrets(art) -> None:
 def _pin(art, enablement, **overrides):
     kwargs = dict(
         receipt=art["receipt"], documents=docs(), unresolved_p0=(), enablement_receipt=enablement,
-        pinned_by="operator-1",
+        **pin_signing(enablement),
     )
     kwargs.update(overrides)
     return pin_readiness_docs(**kwargs)
@@ -441,3 +443,89 @@ def test_flags_from_server_payload_rejects_non_objects(payload) -> None:
     with pytest.raises(CutoverError) as exc:
         flags_from_server_payload(payload)
     assert exc.value.code == "SERVER_FLAGS_UNVERIFIABLE"
+
+
+# --- T071: signed 007 receipt and signed pin (research R1) ------------------------
+
+
+def test_pin_is_signed_by_the_approver_key_it_names(art) -> None:
+    from core.ops.f5_cutover import readiness_pin_signature_failures
+    from tests.f5008_helpers import APPROVER_ID
+
+    pin = art["pin"]
+    assert pin.pinned_by == APPROVER_ID
+    assert pin.pin_signature is not None and pin.pin_signature.key_id == APPROVER_ID
+    assert pin.pin_signature.receipt_sha256 == pin.record_sha256
+    assert pin.intact()
+    assert readiness_pin_signature_failures(pin) == ()
+
+
+def test_pin_refuses_an_unsigned_or_wrongly_signed_007_receipt(art, enablement) -> None:
+    from intelligence.receipt_signing import sign_receipt_sha256
+    from tests.eval007_helpers import throwaway_approver
+
+    with pytest.raises(CutoverError) as exc:
+        _pin(art, enablement, enablement_signature=None)
+    assert exc.value.code == "ENABLEMENT_RECEIPT_INVALID"
+    assert "RECEIPT_SIGNATURE_MISSING" in exc.value.detail
+
+    stranger, _ = throwaway_approver("operator-1")
+    forged = sign_receipt_sha256(stranger, key_id="operator-1", receipt_sha256=enablement.receipt_sha256)
+    with pytest.raises(CutoverError) as exc:
+        _pin(art, enablement, enablement_signature=forged)
+    assert exc.value.code == "ENABLEMENT_RECEIPT_INVALID"
+    assert "SIGNATURE_INVALID" in exc.value.detail
+
+
+def test_pin_refuses_a_signer_who_is_not_the_named_key(art, enablement) -> None:
+    from tests.eval007_helpers import throwaway_approver
+
+    stranger, _ = throwaway_approver("operator-1")
+    with pytest.raises(CutoverError) as exc:
+        _pin(art, enablement, signing_key=stranger)
+    assert exc.value.code == "PIN_SIGNATURE_INVALID"
+    with pytest.raises(CutoverError) as exc:
+        _pin(art, enablement, pinned_by="operator-9")
+    assert exc.value.code == "PIN_SIGNATURE_INVALID"
+    assert "PIN_APPROVER_KEY_UNKNOWN" in exc.value.detail
+
+
+def test_a_pin_signature_is_not_a_receipt_signature(art) -> None:
+    """Domain separation: the pin's signature over its SHA does not verify as a
+    receipt approval of the same SHA, and a receipt-domain signature does not
+    verify as a pin."""
+    from core.ops.f5_cutover import readiness_pin_signature_failures
+    from intelligence.receipt_signing import sign_receipt_sha256, signature_failures, load_approver_allowlist
+    from tests.f5008_helpers import APPROVER_ID, APPROVER_KEY
+
+    pin = art["pin"]
+    allowlist = load_approver_allowlist()
+    as_receipt = signature_failures(
+        pin.pin_signature, receipt_sha256=pin.record_sha256, approved_by=APPROVER_ID,
+        approved_at=pin.pinned_at, allowlist=allowlist,
+    )
+    assert "SIGNATURE_INVALID" in as_receipt
+    receipt_domain = sign_receipt_sha256(APPROVER_KEY, key_id=APPROVER_ID, receipt_sha256=pin.record_sha256)
+    swapped = pin.model_copy(update={"pin_signature": receipt_domain})
+    assert "PIN_SIGNATURE_INVALID" in readiness_pin_signature_failures(swapped)
+
+
+def test_the_pin_guard_refuses_a_missing_or_stale_pin_signature(art) -> None:
+    from core.ops.f5_cutover import CutoverEvent, CutoverEventType as E, CutoverState, replay
+
+    events = [
+        CutoverEvent(E.EXPOSE_CANON_ALIAS, alias=art["alias"]),
+        CutoverEvent(E.SWITCH_FE_LIST, fe_cutover=art["fe"]),
+        CutoverEvent(E.RUN_WALKTHROUGH, start=art["start"]),
+        CutoverEvent(E.CAPTURE_RECEIPT, receipt=art["receipt"]),
+    ]
+    unsigned = art["pin"].model_copy(update={"pin_signature": None})
+    machine = replay(events + [CutoverEvent(E.OPERATOR_PIN, pin=unsigned)])
+    assert machine.state is CutoverState.RECEIPT_CAPTURED
+    assert "PIN_SIGNATURE_INVALID" in machine.history[-1].reasons
+    # Re-sealed after an edit: the seal is intact, the signature covers the old SHA.
+    edited = art["pin"].model_copy(update={"pinned_at": "2026-12-01T00:00:00Z"}).sealed()
+    assert edited.intact()
+    machine = replay(events + [CutoverEvent(E.OPERATOR_PIN, pin=edited)])
+    assert machine.state is CutoverState.RECEIPT_CAPTURED
+    assert "PIN_SIGNATURE_INVALID" in machine.history[-1].reasons

@@ -7,6 +7,8 @@ chain (tests/eval007_helpers.py).
 
 from __future__ import annotations
 
+import pytest
+
 from core.ops.f5_cutover import (
     CANON_LIST_ROUTE,
     LEGACY_LIST_ROUTE,
@@ -43,7 +45,39 @@ from tests.eval007_helpers import (
     baseline_cases,
     staging_settings,
 )
+from intelligence.receipt_signing import sign_receipt_sha256
 from tests.eval007_helpers import SOURCE_SHA as SOURCE_SHA_007
+from tests.eval007_helpers import install_allowlist, throwaway_approver
+
+# The approver key that signs the 007 receipt and the readiness pin (008 T071):
+# a throwaway generated in memory, installed as the only allowlisted key.
+APPROVER_ID = "operator-1"
+APPROVER_KEY, APPROVER_ENTRY = throwaway_approver(APPROVER_ID)
+
+
+@pytest.fixture(scope="module", autouse=True)
+def f5008_approver_allowlist(tmp_path_factory):
+    """Allowlist holding only the throwaway approver, for the whole module.
+
+    Module scoped so module-scoped artifact fixtures see it; import it into each
+    test module that builds pins.
+    """
+    with pytest.MonkeyPatch.context() as patch:
+        install_allowlist(patch, tmp_path_factory.mktemp("approvers"), APPROVER_ENTRY)
+        yield
+
+
+def enablement_signature(receipt):
+    return sign_receipt_sha256(APPROVER_KEY, key_id=APPROVER_ID, receipt_sha256=receipt.receipt_sha256)
+
+
+def pin_signing(enablement) -> dict:
+    """The signing arguments ``pin_readiness_docs`` needs for ``enablement``."""
+    return {
+        "enablement_signature": enablement_signature(enablement),
+        "pinned_by": APPROVER_ID,
+        "signing_key": APPROVER_KEY,
+    }
 
 WALKTHROUGH_SHA = "8" * 40
 IDS = (1, 2, 3)
@@ -169,11 +203,12 @@ def chain(enablement=None) -> dict:
         start=start, seed_auth=seed_auth(), health=health(), outcome=outcome(),
         source_commit_sha=WALKTHROUGH_SHA,
     )
+    enablement = enablement if enablement is not None else enablement_receipt()
     pin = pin_readiness_docs(
         receipt=receipt,
         documents=docs(),
         unresolved_p0=(),
-        enablement_receipt=enablement if enablement is not None else enablement_receipt(),
-        pinned_by="operator-1",
+        enablement_receipt=enablement,
+        **pin_signing(enablement),
     )
     return {"alias": alias, "fe": fe, "start": start, "receipt": receipt, "pin": pin}

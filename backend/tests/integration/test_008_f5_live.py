@@ -50,7 +50,8 @@ from core.security import get_password_hash
 from main import app
 from runs.bridge import ensure_legacy_run_export_bridge
 from runs.models import Run
-from tests.f5008_helpers import WALKTHROUGH_SHA, docs, enablement_receipt
+from tests.f5008_helpers import WALKTHROUGH_SHA, docs, enablement_receipt, pin_signing
+from tests.f5008_helpers import f5008_approver_allowlist  # noqa: F401  (autouse)
 
 REPO = Path(__file__).resolve().parents[3]
 FE_PAGES = REPO / "frontend" / "src" / "pages"
@@ -232,9 +233,10 @@ def test_in_process_walkthrough_receipt_reaches_beta_eligible(
     for forbidden in (user.password, admin.password, "access_token", "Bearer ", "PK\\u0003"):
         assert forbidden not in text
 
+    enablement = enablement_receipt()
     pin = pin_readiness_docs(
         receipt=receipt, documents=docs(), unresolved_p0=(),
-        enablement_receipt=enablement_receipt(), pinned_by="operator-1",
+        enablement_receipt=enablement, **pin_signing(enablement),
     )
     machine = replay(
         [
@@ -291,9 +293,10 @@ def test_repo_readiness_docs_are_not_pinned_to_an_invented_sha() -> None:
 
     art = chain()
     with pytest.raises(CutoverError) as exc:
+        enablement = enablement_receipt()
         pin_readiness_docs(
             receipt=art["receipt"], documents=documents, unresolved_p0=(),
-            enablement_receipt=enablement_receipt(), pinned_by="operator-1",
+            enablement_receipt=enablement, **pin_signing(enablement),
         )
     assert exc.value.code == "DOCUMENT_NOT_PINNED_TO_SHA"
 

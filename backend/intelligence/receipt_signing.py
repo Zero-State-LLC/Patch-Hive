@@ -35,6 +35,9 @@ from pydantic import BaseModel, ConfigDict, ValidationError, field_validator, mo
 APPROVER_ALLOWLIST_SCHEMA = "patchhive.eval-approver-allowlist.v1"
 RECEIPT_SIGNATURE_SCHEMA = "patchhive.eval-receipt-signature.v1"
 SIGNING_DOMAIN = b"patchhive.eval-enablement-receipt.v1\n"
+# Spec 008 T071: the same approver key signs a ReadinessPin's record SHA under its own
+# domain, so a pin signature can never pass as a receipt approval or the reverse.
+READINESS_PIN_SIGNING_DOMAIN = b"patchhive.readiness-pin.v1\n"
 APPROVER_ALLOWLIST_PATH = Path(__file__).with_name("evaluation_approvers.json")
 
 _KEY_ID = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
@@ -193,18 +196,22 @@ class ReceiptSignature(BaseModel):
         return value
 
 
-def signing_message(receipt_sha256: str) -> bytes:
-    """The exact bytes an approver signs for ``receipt_sha256``."""
+def signing_message(receipt_sha256: str, *, domain: bytes = SIGNING_DOMAIN) -> bytes:
+    """The exact bytes an approver signs for ``receipt_sha256`` under ``domain``."""
     if not isinstance(receipt_sha256, str) or not _HEX64.match(receipt_sha256):
         raise SignatureError("RECEIPT_SHA_INVALID")
-    return SIGNING_DOMAIN + receipt_sha256.encode("ascii")
+    return domain + receipt_sha256.encode("ascii")
 
 
 def sign_receipt_sha256(
-    private_key: Ed25519PrivateKey, *, key_id: str, receipt_sha256: str
+    private_key: Ed25519PrivateKey,
+    *,
+    key_id: str,
+    receipt_sha256: str,
+    domain: bytes = SIGNING_DOMAIN,
 ) -> ReceiptSignature:
     """Sign a receipt SHA. For the operator's offline machine and for tests."""
-    signature = private_key.sign(signing_message(receipt_sha256))
+    signature = private_key.sign(signing_message(receipt_sha256, domain=domain))
     return ReceiptSignature(
         key_id=key_id,
         receipt_sha256=receipt_sha256,
@@ -220,6 +227,7 @@ def signature_failures(
     approved_at: str,
     allowlist: ApproverAllowlist | None,
     now: datetime | None = None,
+    domain: bytes = SIGNING_DOMAIN,
 ) -> tuple[str, ...]:
     """Failure codes for a receipt signature; empty means the signature is valid.
 
@@ -268,7 +276,7 @@ def signature_failures(
     try:
         key.public_key_obj().verify(
             _b64_exact(signature.signature, _ED25519_SIGNATURE_BYTES),
-            signing_message(receipt_sha256),
+            signing_message(receipt_sha256, domain=domain),
         )
     except (InvalidSignature, ValueError, SignatureError):
         failed.append("SIGNATURE_INVALID")
