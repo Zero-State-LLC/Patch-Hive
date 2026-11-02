@@ -6,6 +6,7 @@ Environment:
   PATCHHIVE_DB_ENV      staging or prod, stored in the receipt instead of the URL
   PATCHHIVE_LOAD_MODE   dry-run (default) or apply
   PATCHHIVE_PLAN_HASH   apply only: the plan_hash of the reviewed dry run (required)
+  PATCHHIVE_INPUTS_HASH apply only: the inputs_hash of the reviewed dry run (required)
   GITHUB_STEP_SUMMARY   optional path for the job summary
 """
 
@@ -41,6 +42,8 @@ def _summary(
         lines += [
             f"- plan_hash: `{receipt['plan_hash']}`"
             + (" (apply with this to write exactly this plan)" if mode == "dry-run" else ""),
+            f"- inputs_hash: `{receipt['inputs_hash']}`"
+            + (" (apply with this too: the catalog inputs this plan was built from)" if mode == "dry-run" else ""),
             f"- conflicts: {receipt['conflicts_total']}",
             f"- run_id: {receipt['run_id']}",
             "",
@@ -96,6 +99,8 @@ def main() -> int:
             sql_path=ARTIFACTS / "population-upsert.sql",
             expected_plan_hash=os.environ.get("PATCHHIVE_PLAN_HASH", "").strip() or None,
             require_plan_hash=mode == "apply",
+            expected_inputs_hash=os.environ.get("PATCHHIVE_INPUTS_HASH", "").strip() or None,
+            require_inputs_hash=mode == "apply",
         )
         receipt["alembic_head"] = head
         (ARTIFACTS / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")

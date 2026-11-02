@@ -1213,6 +1213,8 @@ def _schedule_retirement(
 
     Never deletes: module_catalog gets tombstoned_at and a reason, modules gets
     status 'tombstoned' (the admin convention). Rows already tombstoned are left alone.
+    An entry must cite the page that shows why (``evidence_url``, https), as the row
+    lifecycle's retire guard requires (spec 003 OQ-9).
     """
     brand = (entry.get("brand") or "").strip()
     name = (entry.get("name") or "").strip()
@@ -1221,6 +1223,9 @@ def _schedule_retirement(
         plan.conflict(table="module_catalog", reason="retirement_missing_identity_or_reason")
         return
     slug = (entry.get("slug") or create_slug(brand, name))[:200]
+    if not str(entry.get("evidence_url") or "").startswith("https://"):
+        plan.conflict(table="module_catalog", slug=slug, reason="retirement_needs_evidence")
+        return
     row = catalog.get(slug)
     if row is None:
         _bump(plan.unmatched, "retire_catalog")
@@ -2083,16 +2088,22 @@ def populate(
     verification_path: Path | None = None,
     expected_plan_hash: str | None = None,
     require_plan_hash: bool = False,
+    expected_inputs_hash: str | None = None,
+    require_inputs_hash: bool = False,
 ) -> dict[str, Any]:
     """Plan, and with ``apply`` write, the catalog load.
 
     With ``require_plan_hash`` (the Actions load), an apply must name the
     ``plan_hash`` of a dry run the operator reviewed; if the plan has changed since,
-    nothing is written (spec 003 FR-020).
+    nothing is written (spec 003 FR-020). With ``require_inputs_hash`` it must also
+    name that dry run's ``inputs_hash``, so an apply refuses when the committed
+    seeds, overlays or provenance changed even if the planned writes did not
+    (spec 003 OQ-9).
     """
     assert_local_database(database_url, allow_nonlocal)
     run_id = os.environ.get("GITHUB_RUN_ID") or uuid.uuid4().hex
     started_at = _stamp()
+    current_inputs = inputs_hash()
     engine = create_engine(database_url)
     try:
         try:
@@ -2112,6 +2123,12 @@ def populate(
                 f"(expected {expected_plan_hash or 'none'}, planned {current_hash}). "
                 "Run a dry run, review it, and apply with its plan_hash."
             )
+        if apply and require_inputs_hash and expected_inputs_hash != current_inputs:
+            raise SystemExit(
+                "refusing to apply: the catalog inputs differ from the reviewed dry run "
+                f"(expected {expected_inputs_hash or 'none'}, current {current_inputs}). "
+                "Run a dry run, review it, and apply with its inputs_hash."
+            )
         cases = case_receipt(engine, case_plan, apply=apply)
         if apply:
             with engine.begin() as conn:
@@ -2120,7 +2137,7 @@ def populate(
         receipt["run_id"] = run_id
         receipt["started_at"] = started_at
         receipt["plan_hash"] = current_hash
-        receipt["inputs_hash"] = inputs_hash()
+        receipt["inputs_hash"] = current_inputs
         receipt["provenance_counts_before"] = counts_before
         if apply:
             with engine.connect() as conn:
