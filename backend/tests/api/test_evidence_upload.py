@@ -123,3 +123,152 @@ def test_retention_expiry(db_session: Session, sample_rack_basic: Rack, tmp_path
     assert refreshed is not None
     assert refreshed.deleted_at is not None
     app.dependency_overrides.clear()
+
+
+def _upload(client: TestClient, rack: Rack, **data: str) -> dict:
+    resp = client.post(
+        f"/api/racks/{rack.id}/evidence/images",
+        files=[("files", ("a.jpg", _jpeg_bytes(), "image/jpeg"))],
+        data={"consent_provider_processing": "false", **data},
+    )
+    assert resp.status_code == 201, resp.text
+    return resp.json()["uploaded"][0]
+
+
+def test_retention_defaults_to_30_days_and_is_capped_at_90(
+    db_session: Session, sample_rack_basic: Rack, tmp_path
+) -> None:
+    from core import settings
+
+    settings.export_dir = str(tmp_path)
+    client = _client(db_session)
+    url = f"/api/racks/{sample_rack_basic.id}/evidence/images"
+    assert _upload(client, sample_rack_basic)["retention_days"] == 30
+    assert _upload(client, sample_rack_basic, retention_days="90")["retention_days"] == 90
+    for days in ("91", "365", "0"):
+        refused = client.post(
+            url,
+            files=[("files", ("a.jpg", _jpeg_bytes(), "image/jpeg"))],
+            data={"retention_days": days},
+        )
+        assert refused.status_code == 400, days
+        assert refused.json()["detail"] == "RETENTION_DAYS_INVALID"
+    app.dependency_overrides.clear()
+
+
+def test_owner_delete_removes_the_stored_file(
+    db_session: Session, sample_rack_basic: Rack, tmp_path
+) -> None:
+    from pathlib import Path
+
+    from core import settings
+
+    settings.export_dir = str(tmp_path)
+    client = _client(db_session)
+    asset = _upload(client, sample_rack_basic)
+    record = db_session.get(ImageAssetRecord, asset["id"])
+    stored = Path(str(record.storage_path))
+    assert stored.exists()
+
+    # Default delete (no flags) soft-deletes the row and removes the bytes.
+    resp = client.delete(f"/api/racks/{sample_rack_basic.id}/evidence/images/{asset['id']}")
+    assert resp.status_code == 200, resp.text
+    db_session.refresh(record)
+    assert record.deleted_at is not None
+    assert not stored.exists()
+    again = client.delete(f"/api/racks/{sample_rack_basic.id}/evidence/images/{asset['id']}")
+    assert again.status_code == 200
+    app.dependency_overrides.clear()
+
+
+def test_delete_keeps_bytes_shared_with_a_live_asset(
+    db_session: Session, sample_rack_basic: Rack, tmp_path
+) -> None:
+    from pathlib import Path
+
+    from core import settings
+
+    settings.export_dir = str(tmp_path)
+    client = _client(db_session)
+    first = _upload(client, sample_rack_basic)
+    second = _upload(client, sample_rack_basic)  # same bytes, same content hash
+    stored = Path(str(db_session.get(ImageAssetRecord, first["id"]).storage_path))
+    client.delete(f"/api/racks/{sample_rack_basic.id}/evidence/images/{first['id']}")
+    assert stored.exists()
+    client.delete(f"/api/racks/{sample_rack_basic.id}/evidence/images/{second['id']}")
+    assert not stored.exists()
+    app.dependency_overrides.clear()
+
+
+def test_only_the_owner_can_delete_an_evidence_image(
+    db_session: Session, sample_rack_basic: Rack, tmp_path
+) -> None:
+    from core import settings
+    from tests.conftest import bearer_headers, make_user
+
+    settings.export_dir = str(tmp_path)
+    client = _client(db_session)
+    asset = _upload(client, sample_rack_basic)
+    url = f"/api/racks/{sample_rack_basic.id}/evidence/images/{asset['id']}"
+
+    stranger = make_user(db_session, "stranger")
+    assert client.delete(url, headers=bearer_headers(stranger)).status_code == 404
+    assert db_session.get(ImageAssetRecord, asset["id"]).deleted_at is None
+    missing = client.delete(f"/api/racks/{sample_rack_basic.id}/evidence/images/img-nope")
+    assert missing.status_code == 404
+    app.dependency_overrides.clear()
+
+
+def test_reads_survive_deleting_an_image_with_linked_evidence_and_decisions(
+    db_session: Session, sample_rack_basic: Rack, tmp_path, monkeypatch
+) -> None:
+    from canon.models import ClassificationEvidenceRecord
+    from core import settings
+    from intelligence.models import DecisionReceiptRecord
+
+    settings.export_dir = str(tmp_path)
+    client = _client(db_session)
+    asset = _upload(client, sample_rack_basic)
+    base = f"/api/racks/{sample_rack_basic.id}/evidence"
+    evidence = (
+        db_session.query(ClassificationEvidenceRecord)
+        .filter(ClassificationEvidenceRecord.image_asset_id == asset["id"])
+        .first()
+    )
+    assert evidence is not None
+    evidence_id = evidence.id
+    now = datetime.now(timezone.utc)
+    db_session.add(
+        DecisionReceiptRecord(
+            id="rcpt-del", request_id="req-del", schema_version="1", purpose="module_identity",
+            provider="fixture", provider_version="1", provider_status="succeeded",
+            answer_type="choice", selected_choice="module-a", evidence_hash=evidence_id,
+            policy_version="p1", disposition="AUTO_PROPOSE", reason_codes=[],
+            packet_hash="b" * 64, created_at=now,
+        )
+    )
+    db_session.commit()
+
+    assert client.delete(f"{base}/images/{asset['id']}").status_code == 200
+
+    # Append-only history stays; reads answer instead of erroring.
+    assert db_session.get(ClassificationEvidenceRecord, evidence_id) is not None
+    assert db_session.get(DecisionReceiptRecord, "rcpt-del") is not None
+    candidates = client.get(f"{base}/candidates")
+    assert candidates.status_code == 200, candidates.text
+    assert candidates.json()["total"] == 0
+    assert client.get(f"{base}/images").json()["total"] == 0
+    kept = client.get(f"{base}/images", params={"include_deleted": "true"}).json()
+    assert [a["id"] for a in kept["assets"]] == [asset["id"]]
+    assert kept["assets"][0]["deleted_at"] is not None
+    assert client.get(f"{base}/inventory").status_code == 200
+    assert client.get(f"{base}/reconcile").status_code == 200
+
+    # A new decision on the deleted image is refused, not a server error.
+    monkeypatch.setattr(settings, "enable_decision_intelligence", True)
+    refused = client.post(
+        f"{base}/decision-resolution", json={"evidence_id": evidence_id, "idempotency_key": "k"}
+    )
+    assert refused.status_code == 400
+    assert refused.json()["detail"] == "EVIDENCE_NOT_BOUND_TO_RACK"
+    app.dependency_overrides.clear()

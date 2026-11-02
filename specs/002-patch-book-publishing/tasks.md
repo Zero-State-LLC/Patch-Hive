@@ -38,8 +38,10 @@
   - depends_on: []
 - [x] T035 Draw the cover's patent disclaimer at `body_size_pt()` with `_draw_wrapped`, and start the metadata block at the returned y, with a test that the two never overlap (FR-004; research R4). Done 2026-10-29.
   - depends_on: []
+- [x] T037 Lock the publication row (`SELECT ... FOR UPDATE`) in the owner PATCH and the admin hide and remove handlers (OQ-10 `row_lock`), and add the report rate limit and per-(publication, reporter) dedupe (OQ-13 `limit_and_require_dedupe`; FR-044). Done 2026-11-01: tests in test_spec_002_report_limits_and_locks.py. Report retention stays undecided.
+  - depends_on: []
 
 ## Polish
 
 - [ ] T090 Converge the code against the spec
-  - depends_on: [T010, T030, T031, T032, T034, T035, T036]
+  - depends_on: [T010, T030, T031, T032, T034, T035, T036, T037]
