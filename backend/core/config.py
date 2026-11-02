@@ -84,6 +84,14 @@ class Settings(BaseSettings):
     cloudflare_ai_api_token: str = ""
     clef_base_url: str = "https://api.cloudflare.com/client/v4"
     clef_timeout_seconds: float = 10.0
+    # NVIDIA vision provider (API catalog), beside Clef. DEFAULT OFF and fail-closed like
+    # Clef: decision_provider="nvidia" with the flag off answers NVIDIA_DISABLED without
+    # a network call. The key comes from env only (staging secret NVIDIA_API_KEY).
+    enable_nvidia_provider: bool = False
+    nvidia_api_key: str = ""
+    nvidia_model: str = "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    nvidia_base_url: str = "https://integrate.api.nvidia.com/v1"
+    nvidia_timeout_seconds: float = 20.0
     decision_policy_version: str = "decision-policy-v1"
     # Spec 005 T080: outside development a decision provider runs only with a signed
     # spec 007 enablement receipt and its signature, read from these JSON files.
@@ -154,8 +162,19 @@ class Settings(BaseSettings):
     @classmethod
     def _validate_decision_provider(cls, value: str) -> str:
         normalized = value.strip().lower()
-        if normalized not in {"disabled", "jev", "clef"}:
-            raise ValueError("decision_provider must be 'disabled', 'jev', or 'clef'")
+        if normalized not in {"disabled", "jev", "clef", "nvidia"}:
+            raise ValueError("decision_provider must be 'disabled', 'jev', 'clef', or 'nvidia'")
+        return normalized
+
+    @field_validator("nvidia_model")
+    @classmethod
+    def _validate_nvidia_model(cls, value: str) -> str:
+        # Mirrors intelligence.nvidia_provider.NVIDIA_MODELS (a test keeps them equal);
+        # importing it here would cycle through core.database.
+        allowed = ("nvidia/nemotron-3.5-super-vl-120b-a12b", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning")
+        normalized = value.strip()
+        if normalized not in allowed:
+            raise ValueError("nvidia_model must be one of " + ", ".join(allowed))
         return normalized
 
     @field_validator("clef_model")

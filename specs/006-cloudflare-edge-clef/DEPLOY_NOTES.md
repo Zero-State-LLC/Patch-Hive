@@ -152,13 +152,27 @@ T040b depends on T055b in `tasks.md`.
 | Variable | Default | Notes |
 | --- | --- | --- |
 | `ENABLE_DECISION_INTELLIGENCE` | `false` | Spec 005 master flag; route returns 409 when off |
-| `DECISION_PROVIDER` | `disabled` | `disabled`, `jev`, or `clef` |
+| `DECISION_PROVIDER` | `disabled` | `disabled`, `jev`, `clef`, or `nvidia` |
 | `ENABLE_CLEF_PROVIDER` | `false` | Clef feature flag; DEFAULT OFF |
 | `CLEF_MODEL` | `clef` | `clef` or `clef-flash` |
 | `CLOUDFLARE_ACCOUNT_ID` | empty | operator secret |
 | `CLOUDFLARE_AI_API_TOKEN` | empty | operator secret |
 | `CLEF_BASE_URL` | `https://api.cloudflare.com/client/v4` | Workers AI REST base |
 | `CLEF_TIMEOUT_SECONDS` | `10` | bounded request timeout |
+
+## NVIDIA vision provider configuration
+
+A second vision provider beside Clef (2026-11-01): an NVIDIA vision-language model on the NVIDIA API catalog, called through the OpenAI-compatible chat endpoint with a JSON schema that admits only the request's candidates. Clef stays the default for image classification; `nvidia` is an alternative selected with `DECISION_PROVIDER=nvidia`. It reuses the Clef adapter machine and fails closed the same way, with `NVIDIA_*` codes (`NVIDIA_DISABLED` 409, `NVIDIA_INVALID_REQUEST` 422, `NVIDIA_TIMEOUT` 504, `NVIDIA_UNAVAILABLE` and `NVIDIA_MALFORMED` 502). Production refuses the flag (`core/startup_policy.py`), and outside development it needs the signed 007 receipt naming `nvidia` (005 T080).
+
+| Variable | Default | Notes |
+| --- | --- | --- |
+| `ENABLE_NVIDIA_PROVIDER` | `false` | NVIDIA feature flag; DEFAULT OFF |
+| `NVIDIA_MODEL` | `nvidia/nemotron-3.5-super-vl-120b-a12b` | or `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` |
+| `NVIDIA_API_KEY` | empty | operator secret (staging only; the edge Worker forwards it outside production) |
+| `NVIDIA_BASE_URL` | `https://integrate.api.nvidia.com/v1` | API catalog base |
+| `NVIDIA_TIMEOUT_SECONDS` | `20` | bounded request timeout |
+
+The hosted API catalog endpoint is governed by NVIDIA's API trial terms; production use needs the account's paid or program entitlement (NVIDIA Inception) confirmed first. The models are licensed for commercial use (NVIDIA Open Model License; OpenMDW-1.1 for the 3.5 Super VL).
 
 Fail-closed behavior:
 

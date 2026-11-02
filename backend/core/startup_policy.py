@@ -7,7 +7,7 @@ from typing import Any
 # Decision providers write proposals that people confirm into canon. They are enabled
 # only in staging, after an approved, receipt-bound evaluation (specs 005, 007); nothing
 # yet gates them in production, so production refuses to start with any of them on.
-DECISION_FLAGS = ("enable_decision_intelligence", "enable_clef_provider")
+DECISION_FLAGS = ("enable_decision_intelligence", "enable_clef_provider", "enable_nvidia_provider")
 
 
 def validate_decision_startup_policy(app_settings: Any) -> None:

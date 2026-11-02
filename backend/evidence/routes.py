@@ -766,12 +766,29 @@ def _configured_decision_provider(*, image_loader: Callable[..., Any] | None = N
             timeout_seconds=settings.clef_timeout_seconds,
             image_loader=image_loader,
         )
+    if settings.decision_provider == "nvidia":
+        from intelligence.nvidia_provider import NvidiaVisionProvider
+
+        # Fail-closed like Clef: with enable_nvidia_provider off every call returns
+        # NVIDIA_DISABLED without a network call.
+        if settings.enable_nvidia_provider and not settings.nvidia_api_key:
+            raise RuntimeError("NVIDIA_API_KEY_NOT_CONFIGURED")
+        return NvidiaVisionProvider(
+            enabled=settings.enable_nvidia_provider,
+            api_key=settings.nvidia_api_key,
+            model=settings.nvidia_model,
+            base_url=settings.nvidia_base_url,
+            timeout_seconds=settings.nvidia_timeout_seconds,
+            image_loader=image_loader,
+        )
     raise RuntimeError("DECISION_PROVIDER_NOT_CONFIGURED")
 
 
 _GUARDED_FAILURE_STATUS = {
     "CLEF_DISABLED": 409,
     "CLEF_INVALID_REQUEST": 422,
+    "NVIDIA_DISABLED": 409,
+    "NVIDIA_INVALID_REQUEST": 422,
     "PACKET_SCHEMA_INVALID": 502,
 }
 
@@ -840,10 +857,11 @@ def _resolve_with_guarded_flow(
     from intelligence.policy import DecisionPolicy, PolicyThresholds
 
     # Retention- and consent-aware loader for the image asset bound to this evidence.
-    # It is lazy and only constructed when the Clef flag is on; a disabled adapter never
-    # invokes it, so the flag-off path performs no image load and no network call.
+    # It is lazy and only constructed when a vision provider's flag is on (Clef or
+    # NVIDIA); a disabled adapter never invokes it, so the flag-off path performs no
+    # image load and no network call.
     image_loader = None
-    if settings.enable_clef_provider:
+    if settings.enable_clef_provider or settings.enable_nvidia_provider:
         from intelligence.evidence_images import BoundEvidenceImageLoader
 
         image_loader = BoundEvidenceImageLoader(
