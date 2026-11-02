@@ -125,14 +125,13 @@
 1. **Review #110 first.** Today `edge/api/src/index.ts` sends `RUN_MIGRATIONS: "true"`, so every API container cold start runs `alembic upgrade head` on its database, production included. Deploying a branch with a new migration migrates that database without `db-migrate.yml`. #110 makes startup migrations opt-in and warns when the schema is behind. Its CI is green, but it needs updating with main (it is behind), and that is the owner's branch.
 2. Catalog: 17 HP values stay `legacy_unsourced` (T039, #180). 6 have a retailer page that disagrees: ADDAC200PI 2 vs 4, ADDAC200S black 2 vs 4, ADDAC501B 8 vs 4, Befaco Mixer 5 vs 4, Cwejman D-LFO 12 vs 14, Instruō dàil 4 vs 6 (that page bundles a 2 HP expander); each needs a maker source or an owner correction. 11 are on no retailer we may use: ADDAC001, 003, 005, 101 and 203, Befaco Dual Atenuverter, Doepfer A-101-4, Intellijel Quadra Expander and μAtt, Make Noise Mysteron and Strega. The 40 `retailer_observed` rows still lack maker confirmation (FR-027). Asking the makers for spec sheets remains the route to confirm them; cwejman.net now redirects to an unrelated site. `evidence.expire` gets a daily job once T101b is done (006 T101c; 0 evidence images today). T035 needed no paid pass (#163); Frap needs none either (D7).
 3. Deploy: #183–#186 change backend code on main that staging and production do not run yet (they run `9dbb5ba`); release PR #169 is open.
-4. Operator:
+4. Operator (step-by-step guide: [docs/evidence/OWNER_ACTIONS_2026-11-02.md](docs/evidence/OWNER_ACTIONS_2026-11-02.md)):
    - real sign-up on production;
    - verify seeded demo auth on staging (008 T030b);
    - VirusTotal reanalysis;
    - rotate the context.dev and OpenRouter keys;
-   - add `PROJECT_TOKEN` and `RELEASE_PLEASE_TOKEN`;
+   - add `PROJECT_TOKEN` (`RELEASE_PLEASE_TOKEN` exists, checked 2026-11-02);
    - decide repo visibility versus the Actions budget;
-   - #106 (zod; its CodeQL failures came from the private-repo period, so rerun it), #109 (release), #111 (CODEOWNERS);
    - confirm specs 001–004 (R6).
 
 **Local test automation:**
