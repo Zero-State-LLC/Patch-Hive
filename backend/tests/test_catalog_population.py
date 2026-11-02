@@ -245,6 +245,37 @@ def test_an_apply_must_name_the_reviewed_plan(fresh_population_url, tmp_path):
     assert _counts(population_url) != before
 
 
+def test_an_apply_must_name_the_reviewed_inputs(fresh_population_url, tmp_path, monkeypatch):
+    """Spec 003 OQ-9: with require_inputs_hash, the reviewed dry run's inputs_hash must match too,
+    so an apply refuses when the committed inputs changed even though the planned writes did not."""
+    import population
+
+    population_url = fresh_population_url
+    missing = tmp_path / "none.json"
+    dry = populate(population_url, apply=False, verification_path=missing)
+    before = _counts(population_url)
+    reviewed = {"expected_plan_hash": dry["plan_hash"], "require_plan_hash": True, "require_inputs_hash": True}
+
+    with pytest.raises(SystemExit, match="catalog inputs differ from the reviewed dry run"):
+        populate(population_url, apply=True, verification_path=missing, **reviewed)
+    with pytest.raises(SystemExit, match="catalog inputs differ from the reviewed dry run"):
+        populate(population_url, apply=True, verification_path=missing,
+                 expected_inputs_hash="0" * 64, **reviewed)
+    # A committed input that changes without changing a single planned write still refuses.
+    real_inputs_hash = population.inputs_hash
+    monkeypatch.setattr(population, "inputs_hash", lambda: "f" * 64)
+    with pytest.raises(SystemExit, match="catalog inputs differ from the reviewed dry run"):
+        populate(population_url, apply=True, verification_path=missing,
+                 expected_inputs_hash=dry["inputs_hash"], **reviewed)
+    monkeypatch.setattr(population, "inputs_hash", real_inputs_hash)
+    assert _counts(population_url) == before  # nothing written
+
+    applied = populate(population_url, apply=True, verification_path=missing,
+                       expected_inputs_hash=dry["inputs_hash"], **reviewed)
+    assert (applied["plan_hash"], applied["inputs_hash"]) == (dry["plan_hash"], dry["inputs_hash"])
+    assert _counts(population_url) != before
+
+
 def test_the_plan_hash_covers_the_case_writes():
     """Spec 003 FR-020: a changed case seed, or a changed case write, is a new plan."""
     plan = Plan(ops=[Op("insert", "INSERT INTO t (a) VALUES (:a)", {"a": 1})])

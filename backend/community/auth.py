@@ -32,6 +32,8 @@ def get_current_user(
     # role change) no longer counts. Tokens from before versions existed read as 0.
     if user is None or int(payload.get("tv", 0)) != int(user.token_version or 0):
         return None
+    if user.deleted_at is not None:
+        return None
     return user
 
 

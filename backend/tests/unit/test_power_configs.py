@@ -98,7 +98,9 @@ def test_the_migration_extends_the_single_head() -> None:
     assert len(module.revision) <= 32  # alembic_version.version_num is VARCHAR(32)
     script = ScriptDirectory.from_config(Config(str(BACKEND / "alembic.ini")))
     heads = script.get_heads()
-    assert heads == [module.revision]
+    assert len(heads) == 1
+    # Later migrations may extend the head; this revision must stay on its single line.
+    assert module.revision in {rev.revision for rev in script.iterate_revisions(heads[0], "base")}
 
 
 def test_upgrade_adds_the_table_and_the_placement_choice(monkeypatch: pytest.MonkeyPatch) -> None:
