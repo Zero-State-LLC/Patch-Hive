@@ -316,9 +316,23 @@ def test_free_fetch_unaffected_by_approval_gate(tmp_path):
     assert _paid_calls(transport) == []
 
 
-def test_committed_approvals_file_has_no_active_entries():
+def test_committed_approvals_file_has_only_the_owner_approved_corpus_photo_entry():
+    """The committed file holds exactly the owner's 2026-11-02 approval (300 context.dev searches
+    for 007 corpus photos), with its baseline at the ledger totals of that day."""
     doc = json.loads((ROOT / "data" / "synth-catalog" / "receipts" / "fetch-approvals.json").read_text())
-    assert doc["entries"] == []
+    assert doc["entries"] == [
+        {
+            "id": "corpus-photos-2026-11",
+            "approver": "Daniel Meyer (owner; approved in chat 2026-11-02: 300 searches, context.dev)",
+            "approved_at": "2026-11-02T11:00:00Z",
+            "expires_at": "2026-11-30T23:59:59Z",
+            "brands": ["corpus-photos-2026-11"],
+            "cap_fetches": 300,
+            "cap_credits": 300,
+            "ledger_baseline_fetches": 2569,
+            "ledger_baseline_credits": 1149,
+        }
+    ]
 
 
 def test_parallel_reservations_cannot_overspend_the_approval(tmp_path):
@@ -351,3 +365,41 @@ def test_unknown_spend_refuses_instead_of_counting_as_zero(tmp_path):
     ledger.unlink()
     approvals.write_text(json.dumps({"entries": [_approval(brands=["*"])]}))
     assert cs.check_paid_approval(approvals, ledger)[0]
+
+
+def test_the_corpus_photo_approval_admits_only_its_own_scope(tmp_path):
+    """The owner approved 300 searches for corpus photos, not catalog crawls: the entry's only
+    brand is its scope, so a crawl with real brands or no brands is refused by it."""
+    import catalog_scrape as cs
+
+    approvals = ROOT / "data" / "synth-catalog" / "receipts" / "fetch-approvals.json"
+    ledger = tmp_path / "ledger.json"
+    ledger.write_text(json.dumps({"paid_fetches": 2569, "credits_by_backend": {"context_dev": 1149}}))
+    from datetime import datetime, timezone
+
+    now = datetime(2026, 11, 15, tzinfo=timezone.utc).timestamp()  # inside the approval window
+    assert cs.check_paid_approval(approvals, ledger, ("corpus-photos-2026-11",), now=now)[0]
+    assert not cs.check_paid_approval(approvals, ledger, ("Make Noise",), now=now)[0]
+    assert not cs.check_paid_approval(approvals, ledger, (), now=now)[0]
+
+
+def test_a_blocked_free_search_is_not_scraped_through_a_paid_backend(tmp_path, monkeypatch):
+    """Codex review: a DuckDuckGo 403 must not spend a paid scrape of the results page; the only
+    paid call is the paid search API itself."""
+    import catalog_scrape as cs
+
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    import urllib.parse
+
+    query = "acme vco eurorack"
+    transport = FakeTransport()
+    transport.routes[cs.DDG_LITE + "?" + urllib.parse.urlencode({"q": query})] = (403, b"blocked")
+    transport.routes[cs.CONTEXT_SEARCH_URL] = (
+        200, json.dumps({"results": [{"url": "https://commons.wikimedia.org/wiki/File:X.jpg"}]})
+    )
+    scraper = _scraper(tmp_path, transport, max_paid_fetches=1)
+    scraper.search(query, limit=3)
+    paid = [c.url for c in transport.calls if "api.context.dev" in c.url]
+    assert paid == [cs.CONTEXT_SEARCH_URL]
+    assert cs.CONTEXT_SCRAPE_URL not in paid

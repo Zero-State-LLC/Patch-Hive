@@ -385,9 +385,19 @@ class CatalogScraper:
             **kwargs,  # type: ignore[arg-type]
         )
 
-    def fetch(self, url: str, timeout: float = 25, *, check_robots: bool = True, render: bool = False) -> FetchResult:
+    def fetch(
+        self,
+        url: str,
+        timeout: float = 25,
+        *,
+        check_robots: bool = True,
+        render: bool = False,
+        allow_paid: bool = True,
+    ) -> FetchResult:
         """Free first, then paid. `render=True` skips the free GET (robots still apply) for script-rendered
-        pages whose plain HTML is an empty shell, and ignores a cached copy that came from a free GET."""
+        pages whose plain HTML is an empty shell, and ignores a cached copy that came from a free GET.
+        `allow_paid=False` never falls back to a paid backend (used for the free search engine, whose
+        paid counterpart is the paid search API, not a scrape of its results page)."""
         if url in self._memory and not (render and self._memory[url].receipt.get("method") == "free_http"):
             cached = self._memory[url]
             receipt = dict(cached.receipt)
@@ -414,19 +424,19 @@ class CatalogScraper:
                 # Do not free-fetch when robots.txt could not be read. A paid
                 # backend may still run when a key is set and the cap allows.
                 skipped = self._finish(url, "robots_unavailable", None, b"", ok=False, remember=False)
-                paid = self._paid_fetch(url, timeout)
+                paid = self._paid_fetch(url, timeout) if allow_paid else None
                 return paid if paid is not None else skipped
             if not allowed:
                 return self._finish(url, reason or "robots_disallowed", None, b"", ok=False)
 
         if render:
-            paid = self._paid_fetch(url, timeout)
+            paid = self._paid_fetch(url, timeout) if allow_paid else None
             return paid if paid is not None else self._finish(url, "render_unavailable", None, b"", ok=False, remember=False)
 
         status, body = self._free_get(url, timeout)
         if status == 200 and body and body.lstrip()[:1] == b"<" and CHALLENGE.search(body[:8000]):
             challenged = self._finish(url, "free_http", status, b"", ok=False, note="challenge", remember=False)
-            paid = self._paid_fetch(url, timeout)
+            paid = self._paid_fetch(url, timeout) if allow_paid else None
             return paid if paid is not None else challenged
         if status == 200 and body:
             result = self._finish(url, "free_http", status, body, ok=True)
@@ -438,13 +448,15 @@ class CatalogScraper:
             return result
 
         free_result = self._finish(url, "free_http", status, body, ok=False)
-        paid = self._paid_fetch(url, timeout)
+        paid = self._paid_fetch(url, timeout) if allow_paid else None
         return paid if paid is not None else free_result
 
     def search(self, query: str, limit: int = 5, timeout: float = 25) -> SearchResult:
         limit = max(1, min(int(limit), 10))
         ddg = DDG_LITE + "?" + urllib.parse.urlencode({"q": query})
-        free = self.fetch(ddg, timeout=timeout)
+        # A blocked or challenged free search is not scraped through a paid backend: that would
+        # spend the paid budget routing around the block. The paid search API below is the fallback.
+        free = self.fetch(ddg, timeout=timeout, allow_paid=False)
         urls = parse_duckduckgo_links(free.text or "", limit) if free.ok else []
         receipts = [free.receipt]
         if len(urls) >= limit:
