@@ -318,7 +318,7 @@ Verified against main `9dba804` of Zero-State-LLC/Patch-Hive (checkout `/Users/a
 
 ### Read this first: four findings that change the plan
 
-1. **There is no CLI for the 007 chain.** `freeze_corpus`, `run_baseline_comparison`, `propose_thresholds`, `approve_thresholds`, `enable_staging` and `pin_receipt` are Python functions in `backend/intelligence/` (called only by tests). `specs/007.../OPERATOR_NOTES.md` describes the calls but no script runs them. Nothing under `scripts/` runs an evaluation, and nothing signs. The only operator scripts in this chain are `scripts/validate_vision_pilot.py`, `scripts/build_vision_promotion_queue.py` and (008) `scripts/staging/design_engine_walkthrough.py`. **GAP: someone has to write a driver script** (suggested: `scripts/staging/run_007_evaluation.py`, a code task for an agent, not an owner-only task). Below I give exact snippets for the signing parts, which I tested with a throwaway key.
+1. **There is no CLI for the 007 chain.** `freeze_corpus`, `run_baseline_comparison`, `propose_thresholds`, `approve_thresholds`, `enable_staging` and `pin_receipt` are Python functions in `backend/intelligence/` (called only by tests). `specs/007.../OPERATOR_NOTES.md` describes the calls but no script runs them. Nothing under `scripts/` runs an evaluation, and nothing signs. The only operator scripts in this chain are `scripts/validate_vision_pilot.py`, `scripts/build_vision_promotion_queue.py` and (008) `scripts/staging/design_engine_walkthrough.py`. **Update (007 T084): the driver now exists** as `scripts/staging/run_007_evaluation.py`, with subcommands `freeze`, `candidate-hashes`, `run`, `propose`, `approve`, `enable-staging`, `pin`, `sign` and `verify`. Item 2 below gives the exact commands; `specs/007.../OPERATOR_NOTES.md` ("Driver script") documents the run-inputs file and every refusal. The hand-written signing snippets further down still work but are no longer needed.
 2. **The receipt files have no way into the staging container except the image.** `DECISION_ENABLEMENT_RECEIPT_PATH` and `DECISION_ENABLEMENT_SIGNATURE_PATH` are read from the container's disk (`backend/intelligence/enablement_gate.py`). The container disk is wiped on sleep/redeploy (`specs/006.../DEPLOY_NOTES.md`, "Durable files"), the Dockerfile does `COPY . .` from `backend/` (so `backend/x` becomes `/app/x`), and `backend/.dockerignore` does not exclude `.json`. So the receipt and signature must be committed under `backend/` (they hold hashes and aggregate metrics only, no secrets) and shipped by `npx wrangler deploy --env staging`. No other delivery path exists in code. This also explains the ordering: receipt commit, then deploy, then flip the flags.
 3. **One receipt covers exactly one provider.** `enable_staging` requires `providers == (assisted_provider_id,)`. The gate needs the configured `DECISION_PROVIDER` to be in the receipt, and only one receipt path is configured at a time. So Clef and NVIDIA each need their own run, approval, receipt and signature, and staging runs one at a time. Also the receipt names the provider, not the model: a receipt earned with `nvidia/nemotron-3.5-super-vl-120b-a12b` also admits the other pinned models (open question in PR #192). Keep `NVIDIA_MODEL` fixed to the evaluated one.
 4. **006 T060b cannot be verified for Clef until a signed Clef receipt exists.** Setting `DECISION_PROVIDER=clef` counts as "decision runtime requested", and outside development/test the container refuses to start without a valid signed receipt naming that provider (`enablement_gate.validate_decision_enablement_startup`). Even the "flag off, expect CLEF_DISABLED 409" check needs a receipt first. T060b therefore sits at the end of the 007 chain. Verifying with the NVIDIA receipt exercises the same adapter and resolution machine (NVIDIA reuses the Clef adapter) but is not literally "Clef". Decide whether to rescope T060b to "the wired provider path" (recommended) or run a Clef evaluation too.
@@ -329,7 +329,7 @@ Verified against main `9dba804` of Zero-State-LLC/Patch-Hive (checkout `/Users/a
 |---|------|-------------------|---------------|---------|
 | 1 | T082 approver key + allowlist PR | you | 30 min | PR review/merge, ~1 day |
 | 2 | T010b corpus promotion and freeze | you (photos, labels) + agent for tooling | 20 to 40 h | 2 to 4 weeks calendar |
-| 3 | Driver script for the 007 chain (gap) | agent writes, you review | 1 to 2 h review | 1 day |
+| 3 | Driver script for the 007 chain (`scripts/staging/run_007_evaluation.py`, T084; review the PR) | agent writes, you review | 1 to 2 h review | 1 day |
 | 4 | Merge #191/#192, set provider secrets, deploy staging code | you | 1 h | build/deploy ~15 min |
 | 5 | T020b live baseline vs provider run | you | 1 to 3 h | provider latency |
 | 6 | T030b, T040b, T050a(code run), T060b pin | you | 1 h | none |
@@ -454,7 +454,28 @@ python scripts/validate_vision_pilot.py fixtures/vision_eval/pilot-manifest.json
 
 6. Open a PR with the manifest (hashes and labels, no image bytes), merge. The corpus SHA is `corpus_manifest_sha256(manifest)`; it is computed and recorded in the next step.
 
-*B. Freeze and run the live evaluation (T010b freeze, T020b). Needs the driver script (GAP, finding 1).* The driver should, in order: load the manifest, call `freeze_corpus(manifest)` and save the `CorpusFreeze` JSON; for each frozen case build a `LabeledCorpusCase` for the **baseline** (a non-provider condition; `fixture_provider.py` or a deterministic abstainer, `baseline_provider_id` must differ from the assisted id and every baseline packet's `provider` must equal it) and for the **assisted** condition by calling the real provider; call `run_baseline_comparison(corpus=..., baseline_cases=..., assisted_cases=..., policy=DecisionPolicy(PolicyThresholds(policy_version=<must equal DECISION_POLICY_VERSION, default "decision-policy-v1">, ...)), harness_sha=<40 or 64 hex git SHA>, baseline_provider_id=..., assisted_provider_id="nvidia" | "clef")`; save the `BaselineRun`. Both condition sets must cover exactly the frozen case ids; vision rows carry the image hash bound to the case; text-modality rows carry none.
+*B to E with the driver (T084).* From the repo root with the backend venv. Artifacts go to `backend/intelligence/enablement/nvidia/` (override with `--dir`); nothing is ever overwritten, and any refusal prints its code and exits 1. First write a run-inputs file next to your private images (format in `specs/007.../OPERATOR_NOTES.md`, "Driver script": per case, the candidate options and the image paths) and record each case's `candidate_set_hash` in the manifest from:
+
+```bash
+python scripts/staging/run_007_evaluation.py --provider nvidia candidate-hashes --inputs ~/patchhive-corpus/run-inputs.json
+```
+
+Then, with `ENABLE_NVIDIA_PROVIDER=true` and `NVIDIA_API_KEY` exported in this shell only:
+
+```bash
+python scripts/staging/run_007_evaluation.py --provider nvidia freeze --manifest fixtures/vision_eval/pilot-manifest.json
+python scripts/staging/run_007_evaluation.py --provider nvidia run --inputs ~/patchhive-corpus/run-inputs.json --harness-sha "$(git rev-parse HEAD)" --manifest fixtures/vision_eval/pilot-manifest.json
+python scripts/staging/run_007_evaluation.py --provider nvidia propose --proposal-version thresholds-v1
+python scripts/staging/run_007_evaluation.py --provider nvidia approve --approved-by approver-2026-11 --yes-i-approve
+python scripts/staging/run_007_evaluation.py --provider nvidia enable-staging
+python scripts/staging/run_007_evaluation.py --provider nvidia pin --source-commit-sha "$(git rev-parse HEAD)"
+python scripts/staging/run_007_evaluation.py --provider nvidia sign --key ~/patchhive-approver/approver-2026-11.pem
+python scripts/staging/run_007_evaluation.py --provider nvidia verify
+```
+
+`pin` and `sign` print the `DECISION_ENABLEMENT_RECEIPT_PATH` and `DECISION_ENABLEMENT_SIGNATURE_PATH` values for step 15 (`/app/intelligence/enablement/nvidia/receipt.json` and `.../signature.json`). `verify` must print `PASS`. The baseline condition is a deterministic no-model abstainer (fixture provider, `abstain-uniform.v1`). For Clef use `--provider clef` with `ENABLE_CLEF_PROVIDER`, `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_AI_API_TOKEN`. The notes below describe what each step does and its rules.
+
+*B. Freeze and run the live evaluation (T010b freeze, T020b).* The driver does, in order: load the manifest, call `freeze_corpus(manifest)` and save the `CorpusFreeze` JSON; for each frozen case build a `LabeledCorpusCase` for the **baseline** (a non-provider condition; `fixture_provider.py` or a deterministic abstainer, `baseline_provider_id` must differ from the assisted id and every baseline packet's `provider` must equal it) and for the **assisted** condition by calling the real provider; call `run_baseline_comparison(corpus=..., baseline_cases=..., assisted_cases=..., policy=DecisionPolicy(PolicyThresholds(policy_version=<must equal DECISION_POLICY_VERSION, default "decision-policy-v1">, ...)), harness_sha=<40 or 64 hex git SHA>, baseline_provider_id=..., assisted_provider_id="nvidia" | "clef")`; save the `BaselineRun`. Both condition sets must cover exactly the frozen case ids; vision rows carry the image hash bound to the case; text-modality rows carry none.
 
 7. Before the run, make the provider reachable from your machine, not from the container. For NVIDIA: `NVIDIA_API_KEY` from your NVIDIA account in your shell (name only; never paste it anywhere). Merge #191 and #192 first (they add the live smoke test and the 60 s staging timeout; the very first 120B call timed out at 20 s). Smoke-test with the opt-in test from #191.
 
@@ -677,7 +698,7 @@ Expect no output.
 
 ### Gaps list (things the repo does not provide)
 
-1. Driver script for 007: freeze, run against a live provider, propose, approve, enable, pin, and save JSON. Needs writing and review (code task).
+1. ~~Driver script for 007~~ Closed by T084: `scripts/staging/run_007_evaluation.py` (freeze, run against a live provider or a `--dry-run` fixture, propose, approve, enable-staging, pin, sign, verify; JSON artifacts). Commands in Item 2 and `specs/007.../OPERATOR_NOTES.md`.
 2. Driver script for the 008 pin and the five-event replay. Needs writing.
 3. A reproducible location and tool for the raw corpus images (the repo holds only hashes).
 4. A mechanism to deliver receipt files to staging other than committing them under `backend/` and redeploying.

@@ -92,3 +92,5 @@ From [research.md](research.md). Effort in brackets.
   - depends_on: [T081]
 - [ ] T083 Sign the receipt pinned in T060b with the approver key and retain the signature beside it (operator) [S]. To enable a provider in staging, point `DECISION_ENABLEMENT_RECEIPT_PATH` and `DECISION_ENABLEMENT_SIGNATURE_PATH` at those two JSON files (005 T080).
   - depends_on: [T060b, T082]
+- [x] T084 Operator driver for the chain: `scripts/staging/run_007_evaluation.py` runs freeze, run (live provider or `--dry-run` fixture), propose, approve, enable-staging, pin, sign and verify as commands over sealed JSON artifacts (owner guide 2026-11-02, finding 1) [S]. Done 2026-11-02; offline end-to-end and refusal tests in `backend/tests/integration/test_007_evaluation_driver.py`. The operator actions T010b to T083 are unchanged and still open.
+  - depends_on: [T081]
