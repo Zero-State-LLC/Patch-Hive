@@ -653,8 +653,10 @@ def _read_private_key(path: Path):
 def cmd_sign(args: argparse.Namespace) -> None:
     from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
-    dry_run = _is_dry_run(args.dir)
-    _dry_run_banner(args.dir)
+    # A dry run is fixture output that names the live provider; a valid approver
+    # signature over it would authorize that provider with no live evaluation.
+    if _is_dry_run(args.dir):
+        raise Refused("DRY_RUN_NOT_SIGNABLE", "a dry-run chain is fixture output, not evidence; sign only a live run")
     receipt = _load(args.dir, RECEIPT, EvaluationEnablementReceipt)
     try:
         allowlist = load_approver_allowlist()
@@ -673,8 +675,8 @@ def cmd_sign(args: argparse.Namespace) -> None:
         raise Refused("SIGNED_RECEIPT_DOES_NOT_VERIFY", ",".join(failures))
     target = _write(args.dir, SIGNATURE, signature)
     _out(f"signed receipt_sha256={receipt.receipt_sha256} key_id={signature.key_id}")
-    _print_setting("DECISION_ENABLEMENT_RECEIPT_PATH", args.dir / RECEIPT, dry_run)
-    _print_setting("DECISION_ENABLEMENT_SIGNATURE_PATH", target, dry_run)
+    _print_setting("DECISION_ENABLEMENT_RECEIPT_PATH", args.dir / RECEIPT, False)
+    _print_setting("DECISION_ENABLEMENT_SIGNATURE_PATH", target, False)
 
 
 def _chain(directory: Path) -> EnablementChain | None:

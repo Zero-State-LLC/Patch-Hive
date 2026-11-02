@@ -111,7 +111,9 @@ python scripts/staging/run_007_evaluation.py --provider nvidia verify
   files; it prints `PASS` or the failure codes.
 - `run --dry-run --fixture-packets <file>` uses operator-supplied packets through the
   fixture provider to exercise the chain offline. It must write outside `backend/`,
-  marks the directory `DRY_RUN`, and is never evidence.
+  marks the directory `DRY_RUN`, and is never evidence. `sign` refuses a `DRY_RUN` chain
+  (`DRY_RUN_NOT_SIGNABLE`): its packets name the live provider, so a signed dry run
+  would authorize that provider with no live evaluation.
 
 ## Conservative interpretations
 
