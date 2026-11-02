@@ -171,6 +171,8 @@ Report a publication.
 }
 ```
 
+Anonymous reports are accepted. Each client address may send 10 reports an hour (429 `REPORT_RATE_LIMIT` after that). A signed-in reporter who already reported the publication gets 200 `{"status": "already_reported"}` and no new report is stored.
+
 ## Admin Moderation
 
 ### POST `/admin/publications/{publication_id}/hide`
