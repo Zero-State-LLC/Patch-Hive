@@ -76,9 +76,12 @@ def record_purchase(
 
     The ledger entry uses change_type="Purchase" and is treated as the
     canonical marker for first-paid purchase eligibility. Only a purchase the payment
-    provider verified (``payment_verified``) earns a spendable canonical reward; the
-    user-callable legacy route never does.
+    provider verified (``payment_verified``) may be recorded (spec 004 FR-033): an
+    unverified one raises before anything is written, so it can neither count as the
+    first purchase nor trigger a referral reward.
     """
+    if not payment_verified:
+        raise ValueError("Only a provider-verified purchase can be recorded (spec 004 FR-033)")
     purchase_entry = CreditsLedger(
         user_id=user.id,
         change_type="Purchase",
@@ -103,7 +106,12 @@ def apply_referral_reward(
     purchase_entry_id: int,
     payment_verified: bool = False,
 ) -> Optional[CreditsLedger]:
-    """Grant referral credits after the referred user's first paid purchase."""
+    """Grant referral credits after the referred user's first provider-verified purchase.
+
+    An unverified purchase never rewards (spec 004 Machine A, FR-033).
+    """
+    if not payment_verified:
+        return None
     purchase_count = (
         db.query(CreditsLedger)
         .filter(CreditsLedger.user_id == referred_user_id, CreditsLedger.change_type == "Purchase")
@@ -155,11 +163,8 @@ def apply_referral_reward(
     )
     db.add(reward_entry)
     db.add(rewarded_entry)
-    # Spending and the balance users see read the canonical ledger (spec 004 FR-009), so a
-    # reward for a provider-verified purchase goes there too, once per referral. A
-    # self-reported purchase (the legacy route) must never mint spendable credits.
-    if not payment_verified:
-        return reward_entry
+    # Spending and the balance users see read the canonical ledger (spec 004 FR-009), so
+    # the reward goes there too, once per referral.
     from canon.models import CanonicalCreditLedgerEntryRecord
 
     reward_key = f"referral-reward:{referral_pending.id}"

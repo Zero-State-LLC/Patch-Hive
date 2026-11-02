@@ -3,9 +3,8 @@
 Source: specs/004-commerce/spec.md, "## Stateful behavior", "### Machine A: Referral".
 Machine B (one-time credit purchase) and Machine C (subscription) are not encoded: their
 handlers are still ``_machine_not_built`` in canon/webhook_events.py (T046, T049 open).
-Purchases here are provider-verified (``payment_verified=True``): the spec forbids a
-reward for a client-submitted purchase, which ``record_purchase`` still grants on the
-legacy ledger (drift recorded in tasks.md T010), so that path is not encoded.
+Purchases here are provider-verified (``payment_verified=True``); an unverified one is
+refused before anything is written (illegal row, FR-033).
 """
 
 from __future__ import annotations
@@ -171,3 +170,18 @@ def test_none_purchase_creates_no_referral_or_grant(db_session: Session, pair):
     assert _state(db_session, referred) == NONE
     assert _grants(db_session) == 0
     assert db_session.query(Referral).count() == 0
+
+
+def test_pending_unverified_purchase_is_refused_without_reward(db_session: Session, pair):
+    """Illegal: a reward triggered by a client-submitted purchase (FR-033)."""
+    referrer, referred = pair
+    _in_state(db_session, PENDING, referrer, referred)
+    before = _snapshot(db_session)
+
+    with pytest.raises(ValueError, match="FR-033"):
+        record_purchase(db_session, user=referred, credits_delta=5)
+    db_session.rollback()
+
+    assert _state(db_session, referred) == PENDING
+    assert _snapshot(db_session) == before
+    assert _canonical_grants(db_session) == []
