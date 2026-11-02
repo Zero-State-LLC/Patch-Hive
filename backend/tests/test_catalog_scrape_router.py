@@ -319,3 +319,35 @@ def test_free_fetch_unaffected_by_approval_gate(tmp_path):
 def test_committed_approvals_file_has_no_active_entries():
     doc = json.loads((ROOT / "data" / "synth-catalog" / "receipts" / "fetch-approvals.json").read_text())
     assert doc["entries"] == []
+
+
+def test_parallel_reservations_cannot_overspend_the_approval(tmp_path):
+    """Granted-but-unbooked paid calls count against the cap, so workers sharing one
+    scraper cannot all pass on the same remaining allowance."""
+    scraper = _gated(tmp_path, [_approval(cap_fetches=2, cap_credits=100)], FakeTransport(), brands=("Acme",))
+    assert scraper._reserve_paid() is None
+    assert scraper._reserve_paid() is None
+    assert scraper._reserve_paid() == "skipped_no_approval"
+    scraper._bump_ledger("context_dev", 1)
+    scraper._bump_ledger("context_dev", 1)
+    assert scraper._paid_in_flight == 0
+    assert scraper._reserve_paid() == "skipped_no_approval"
+
+
+def test_unknown_spend_refuses_instead_of_counting_as_zero(tmp_path):
+    import catalog_scrape as cs
+
+    approvals = tmp_path / "fetch-approvals.json"
+    approvals.write_text(json.dumps({"entries": [_approval(brands=["*"])]}))
+    ledger = tmp_path / "ledger.json"
+    for broken in ("{not json", "[]", json.dumps({"paid_fetches": "lots"})):
+        ledger.write_text(broken)
+        ok, reason = cs.check_paid_approval(approvals, ledger)
+        assert not ok and "ledger" in reason
+    ledger.write_text(json.dumps({"paid_fetches": 3, "credits_by_backend": {"context_dev": 3}}))
+    approvals.write_text(json.dumps({"entries": [_approval(brands=["*"], ledger_baseline_fetches=10)]}))
+    ok, reason = cs.check_paid_approval(approvals, ledger)
+    assert not ok and "below its baseline" in reason
+    ledger.unlink()
+    approvals.write_text(json.dumps({"entries": [_approval(brands=["*"])]}))
+    assert cs.check_paid_approval(approvals, ledger)[0]

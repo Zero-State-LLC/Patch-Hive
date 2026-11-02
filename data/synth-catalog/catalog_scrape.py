@@ -365,6 +365,9 @@ class CatalogScraper:
         self._next_ok: dict[str, float] = {}
         self._robots: dict[str, str | None] = {}
         self.paid_attempts = 0
+        # Paid calls granted but not yet booked in the ledger. The approval check counts them,
+        # so parallel workers cannot all pass on the same remaining allowance.
+        self._paid_in_flight = 0
         # One scraper may be shared by worker threads: the lock guards the paid cap and the ledger file.
         self._lock = threading.RLock()
         self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -560,10 +563,15 @@ class CatalogScraper:
                 return "skipped_paid_cap"
             if self.approvals_path is not None:
                 ok, _ = check_paid_approval(
-                    self.approvals_path, self.ledger_path, self.brands, now=self.wall_clock()
+                    self.approvals_path,
+                    self.ledger_path,
+                    self.brands,
+                    now=self.wall_clock(),
+                    pending_fetches=self._paid_in_flight,
                 )
                 if not ok:
                     return "skipped_no_approval"
+                self._paid_in_flight += 1
             self.paid_attempts += 1
             return None
 
@@ -809,6 +817,7 @@ class CatalogScraper:
         calls = ledger.setdefault("calls_by_method", {})
         calls[method] = int(calls.get(method) or 0) + 1
         if method in {"context_dev", "firecrawl"}:
+            self._paid_in_flight = max(0, self._paid_in_flight - 1)
             ledger["paid_fetches"] = int(ledger.get("paid_fetches") or 0) + 1
             credits_map = ledger.setdefault("credits_by_backend", {})
             credits_map[method] = float(credits_map.get(method) or 0) + float(credits)
@@ -836,12 +845,16 @@ def check_paid_approval(
     brands: tuple[str, ...] = (),
     *,
     now: float | None = None,
+    pending_fetches: int = 0,
 ) -> tuple[bool, str]:
     """FR-003: is there an unexpired fetch-approvals entry covering `brands` with ledger headroom?
 
     An entry is {id, approver, expires_at, brands (names or "*"), cap_fetches, cap_credits}, plus
     optional ledger_baseline_fetches / ledger_baseline_credits: the ledger totals when it was approved,
-    so the caps count spend since then. Returns (ok, reason).
+    so the caps count spend since then. ``pending_fetches`` are calls already granted but not
+    yet booked; each counts as one fetch and at least one credit. A ledger that exists but
+    cannot be read, or reads below an entry's baseline, refuses: unknown spend is not zero.
+    Returns (ok, reason).
     """
     try:
         doc = json.loads(approvals_path.read_text(encoding="utf-8"))
@@ -851,14 +864,19 @@ def check_paid_approval(
     if not isinstance(entries, list):
         return False, "approvals file has no entries list"
     ledger: dict = {}
+    if ledger_path.exists():
+        try:
+            loaded = json.loads(ledger_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return False, f"spend ledger {ledger_path.name} is unreadable"
+        if not isinstance(loaded, dict):
+            return False, f"spend ledger {ledger_path.name} is not an object"
+        ledger = loaded
     try:
-        loaded = json.loads(ledger_path.read_text(encoding="utf-8"))
-        if isinstance(loaded, dict):
-            ledger = loaded
-    except (OSError, json.JSONDecodeError):
-        pass
-    fetches = int(ledger.get("paid_fetches") or 0)
-    credits = sum(float(v or 0) for v in (ledger.get("credits_by_backend") or {}).values())
+        fetches = int(ledger.get("paid_fetches") or 0)
+        credits = sum(float(v or 0) for v in (ledger.get("credits_by_backend") or {}).values())
+    except (TypeError, ValueError, AttributeError):
+        return False, f"spend ledger {ledger_path.name} has invalid totals"
     stamp = time.time() if now is None else now
     reasons: list[str] = []
     for entry in entries:
@@ -884,6 +902,11 @@ def check_paid_approval(
             continue
         used_fetches = fetches - int(entry.get("ledger_baseline_fetches") or 0)
         used_credits = credits - float(entry.get("ledger_baseline_credits") or 0)
+        if used_fetches < 0 or used_credits < 0:
+            reasons.append(f"{name}: ledger reads below its baseline")
+            continue
+        used_fetches += max(0, pending_fetches)
+        used_credits += max(0, pending_fetches)
         if used_fetches >= cap_fetches or used_credits >= cap_credits:
             reasons.append(f"{name}: cap reached ({used_fetches}/{cap_fetches} fetches, {used_credits:g}/{cap_credits:g} credits)")
             continue
