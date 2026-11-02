@@ -8,14 +8,18 @@ and nothing but a ``DecisionPacket`` or a ``ClefProviderError`` (codes ``NVIDIA_
 leaves this module. Disposition stays with the spec 005 DecisionPolicy; a model's
 self-reported probabilities are calibrated by the 007 evaluation, not trusted here.
 
-Models are pinned to NVIDIA vision models on ``integrate.api.nvidia.com``
-(``NVIDIA_MODELS``). The key comes from ``NVIDIA_API_KEY`` only.
+Models are pinned to vision models served by ``integrate.api.nvidia.com``
+(``NVIDIA_MODELS``). The default is NVIDIA's own model; Meta's Llama 3.2 90B Vision is
+pinned as a fallback that an operator selects explicitly with ``NVIDIA_MODEL``. There is no
+automatic fallback: a failed call fails closed, and every packet names the model that
+answered in ``provider_version``. The key comes from ``NVIDIA_API_KEY`` only.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from typing import Any, Callable
 
 import httpx
@@ -28,13 +32,19 @@ from intelligence.clef_provider import (
 from intelligence.contracts import DecisionPacket, DecisionRequest
 
 DEFAULT_BASE_URL = "https://integrate.api.nvidia.com/v1"
-# NVIDIA-built vision models in the API catalog (checked 2026-11-01). The first is the
+# Vision models served by the NVIDIA API catalog (checked 2026-11-01). The first is the
 # default: its model card lists structured output and function calling as supported.
+# The first two are NVIDIA-built. The last is Meta's Llama 3.2 90B Vision (Llama 3.2
+# Community License), hosted by NVIDIA; it is a fallback selected only through config.
 NVIDIA_MODELS = (
     "nvidia/nemotron-3.5-super-vl-120b-a12b",
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+    "meta/llama-3.2-90b-vision-instruct",
 )
+DEFAULT_MODEL = NVIDIA_MODELS[0]
 _MAX_TOKENS = 512
+
+logger = logging.getLogger("patchhive.decision.nvidia")
 
 SYSTEM_PROMPT = (
     "You identify Eurorack synthesizer modules from rig photos for a documentation app. "
@@ -43,7 +53,7 @@ SYSTEM_PROMPT = (
     "do not show enough to tell, spread probability rather than guess."
 )
 
-__all__ = ["NvidiaVisionProvider", "NVIDIA_MODELS", "DEFAULT_BASE_URL", "answer_schema"]
+__all__ = ["NvidiaVisionProvider", "NVIDIA_MODELS", "DEFAULT_MODEL", "DEFAULT_BASE_URL", "answer_schema"]
 
 
 def answer_schema(question: dict[str, Any]) -> dict[str, Any]:
@@ -122,18 +132,18 @@ class NvidiaVisionProvider(ClefDecisionProvider):
         *,
         enabled: bool = False,
         api_key: str = "",
-        model: str = NVIDIA_MODELS[0],
+        model: str = DEFAULT_MODEL,
         base_url: str = DEFAULT_BASE_URL,
         timeout_seconds: float = 20.0,
         client: httpx.Client | None = None,
         image_loader: ImageLoader | None = None,
     ) -> None:
         if model not in NVIDIA_MODELS:
-            raise ValueError("nvidia model must be a pinned NVIDIA vision model")
+            raise ValueError("nvidia model must be one of the pinned NVIDIA_MODELS")
         if enabled and not api_key:
             raise ValueError("nvidia requires api_key when enabled")
         # The Clef base validates a Cloudflare account and a Clef model, which NVIDIA
-        # does not have; placeholders satisfy it and the pinned NVIDIA model is set after.
+        # does not have; placeholders satisfy it and the pinned model is set after.
         super().__init__(
             enabled=enabled,
             account_id="nvidia",
@@ -145,6 +155,9 @@ class NvidiaVisionProvider(ClefDecisionProvider):
             image_loader=image_loader,
         )
         self._model = model
+        if enabled and model != DEFAULT_MODEL:
+            # A non-default model is only ever chosen by config; say which one, once.
+            logger.warning("nvidia provider enabled with non-default model %s", model)
 
     @property
     def provider_version(self) -> str:

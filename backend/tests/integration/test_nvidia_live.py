@@ -1,6 +1,7 @@
 """Opt-in live smoke test for the NVIDIA vision provider (spec 005 T086).
 
-Calls the hosted NVIDIA API catalog with one synthetic image for each pinned model, through
+Calls the hosted NVIDIA API catalog with one synthetic image for each pinned model (the
+NVIDIA default, the NVIDIA nano model, and the Meta Llama 3.2 90B Vision fallback), through
 ``NvidiaVisionProvider`` with the same request shape the decision route uses. It never runs in
 CI: it needs ``RUN_NVIDIA_LIVE=1`` and an ``NVIDIA_API_KEY`` in the environment. The key is read
 from the environment only and never printed. This is a wire check, not a 007 evaluation: it
