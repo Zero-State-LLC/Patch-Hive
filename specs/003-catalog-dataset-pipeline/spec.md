@@ -455,7 +455,7 @@ Decisions and checks 2026-11-01 ([record](../../docs/evidence/JEV_DECISIONS_2026
 
 - **OPEN (owner): the 221 unsourced v1 HP values.** Triage is recommended: re-source the 45 that match a maker page, hand-check and correct the 7 that disagree, mark the 169 unmatched as not maker-checked until looked up (research R7; tasks T038, T039).
 
-- **PARTLY RESOLVED (2026-10-29): Fetch cost and budget.** Observed cost: the full v2 maker crawl used 2,569 paid fetches, about 1,116 context.dev and 33 Firecrawl credits (`receipts/scrape-ledger.json`); the T026 pass used 10 credits. Caps so far are approved in chat and written into `SCRAPING_ARCHITECTURE.md`. Still open: an approvals receipt the crawler checks before a paid fetch (FR-003).
+- **PARTLY RESOLVED (2026-10-29): Fetch cost and budget.** Observed cost: the full v2 maker crawl used 2,569 paid fetches, about 1,116 context.dev and 33 Firecrawl credits (`receipts/scrape-ledger.json`); the T026 pass used 10 credits. Caps so far are approved in chat and written into `SCRAPING_ARCHITECTURE.md`. The approvals receipt the router checks before a paid fetch (FR-003) is `receipts/fetch-approvals.json` (T040); it ships with no active entries, so a new paid run needs an owner-approved entry committed first.
 - **RESOLVED (D2): Retailer scraping permission.** There is no automated retailer crawling. Retailer values come only from one-off manual lookups.
 - **RESOLVED (D1, D2): Conflict between documents.** Automated fetching is limited to official manufacturer pages and manuals. The ModularGrid-derived seed is a discovery lead, not curated canon.
 - **RESOLVED (D2): Access basis for scraped rows.** Maker-page rows carry `access_basis = official_publication`; ModularGrid-derived leads carry `unknown` (FR-033).
