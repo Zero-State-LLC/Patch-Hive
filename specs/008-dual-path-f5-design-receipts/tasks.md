@@ -41,7 +41,7 @@ parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
   - acceptance: seeded operator can complete a full Design Engine flow without manual credential patching.
   - [x] T030a Make `scripts/seed_golden_demo.py` the single source of demo credentials; add read-only `check_seed_auth` (code).
     - depends_on: [T001]
-  - [ ] T030b Verify seeded auth on the staging host (operator).
+  - [ ] T030b Verify seeded auth on the staging host (operator). Open 2026-11-02: no `check_seed_auth` result from staging yet (`docs/evidence/OPERATOR_RECEIPTS_2026-11-02.md`).
     - depends_on: [T030a]
 
 - [ ] T040 Execute Design Engine walkthrough with flags enabled in test mode and capture the receipt.
@@ -57,7 +57,7 @@ parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
   - acceptance: matrix and checklist reference the exact source SHA; no unresolved P0 integrity regressions.
   - [x] T050a Implement `pin_readiness_docs`; add Spec 008 sections with `PENDING_OPERATOR_WALKTHROUGH` placeholders (code).
     - depends_on: [T040a]
-  - [ ] T050b Replace the placeholders with receipt values and pin (operator).
+  - [ ] T050b Replace the placeholders with receipt values and pin (operator). Open 2026-11-02: no walkthrough receipt and 007 T060b open; placeholders unchanged (`docs/evidence/OPERATOR_RECEIPTS_2026-11-02.md`).
     - depends_on: [T040b, T050a, 007:T060b]
 
 - [x] T060 Integration tests for the cutover state machine and receipt gate.
