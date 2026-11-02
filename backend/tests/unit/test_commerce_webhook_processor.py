@@ -98,7 +98,6 @@ def test_an_event_type_with_no_handler_is_ignored(db_session: Session) -> None:
 @pytest.mark.parametrize(
     "event_type",
     [
-        "checkout.session.completed",
         "customer.subscription.created",
         "customer.subscription.updated",
         "customer.subscription.deleted",
@@ -107,7 +106,8 @@ def test_an_event_type_with_no_handler_is_ignored(db_session: Session) -> None:
 def test_a_payment_event_with_no_machine_yet_is_unresolved_and_grants_nothing(
     db_session: Session, event_type: str
 ) -> None:
-    """Fail closed (FR-014) until Machines B and C (T046, T049) exist."""
+    """Fail closed (FR-014) until Machine C (T049) exists. Machine B (T046) handles
+    checkout events: tests/unit/test_commerce_credit_checkout.py."""
     _receive(db_session, _payload("evt_pay", event_type, data={"object": {"id": "cs_1"}}))
     db_session.commit()
 

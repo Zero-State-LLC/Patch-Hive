@@ -309,6 +309,61 @@ class StripeEventRecordModel(Base):
     received_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
     processed_at = Column(DateTime(timezone=True), nullable=True)
     reason_code = Column(String(64), nullable=True)
+    # The event's ``data.object.id`` (for a checkout event, the Checkout Session id),
+    # stored at intake so an operator resolve can retrieve the object (T048b).
+    object_id = Column(String(255), nullable=True, index=True)
+
+
+class ProviderCustomerRecord(Base):
+    """Spec 004 FR-020: each user maps to at most one payment-provider customer."""
+
+    __tablename__ = "provider_customers"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, unique=True
+    )
+    provider_customer_id = Column(String(255), nullable=False, unique=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+
+# Machine B states as stored on a payment record: ``open`` and ``pending`` (completed,
+# payment not settled) are CheckoutOpen; ``credited`` is Credited; ``failed`` and
+# ``abandoned`` are Abandoned.
+PAYMENT_STATUSES = ("open", "pending", "credited", "failed", "abandoned")
+
+
+class ProviderPaymentRecord(Base):
+    """Spec 004 Machine B: one record per one-time credit checkout session.
+
+    The server writes it when it creates the session, so the user, credit count and
+    amount come from here, not from event metadata. ``provider_payment_id`` (the payment
+    intent) is unique and set once the provider reports it (FR-012).
+    """
+
+    __tablename__ = "provider_payments"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('open', 'pending', 'credited', 'failed', 'abandoned')",
+            name="ck_provider_payments_status",
+        ),
+        CheckConstraint("credits > 0", name="ck_provider_payments_credits_positive"),
+        CheckConstraint("amount_cents > 0", name="ck_provider_payments_amount_positive"),
+    )
+
+    id = Column(String(64), primary_key=True)
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    checkout_session_id = Column(String(255), nullable=False, unique=True)
+    provider_payment_id = Column(String(255), nullable=True, unique=True)
+    credits = Column(Integer, nullable=False)
+    amount_cents = Column(Integer, nullable=False)
+    currency = Column(String(3), nullable=False)
+    status = Column(String(20), nullable=False, default="open")
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+    credited_at = Column(DateTime(timezone=True), nullable=True)
 
 
 class CanonicalAdminAuditEventRecord(Base):

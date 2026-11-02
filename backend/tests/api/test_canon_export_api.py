@@ -418,7 +418,10 @@ def test_stripe_webhook_concurrent_duplicate_answers_200_duplicate(
     "event_type,status,reason_code",
     [
         ("charge.succeeded", "ignored", None),
-        ("checkout.session.completed", "unresolved", "HANDLER_NOT_IMPLEMENTED"),
+        ("customer.subscription.created", "unresolved", "HANDLER_NOT_IMPLEMENTED"),
+        # Machine B (T046) handles checkout events; an object without a session id is
+        # unmappable.
+        ("checkout.session.completed", "unresolved", "EVENT_PAYLOAD_MALFORMED"),
     ],
 )
 def test_stripe_webhook_answers_with_the_event_disposition(

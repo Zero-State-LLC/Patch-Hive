@@ -1,19 +1,37 @@
-"""Spec 004 T010: Machine A (Referral) transitions table encoded as tests.
+"""Spec 004 T010: Machine A (Referral) and Machine B transitions tables encoded as tests.
 
-Source: specs/004-commerce/spec.md, "## Stateful behavior", "### Machine A: Referral".
-Machine B (one-time credit purchase) and Machine C (subscription) are not encoded: their
-handlers are still ``_machine_not_built`` in canon/webhook_events.py (T046, T049 open).
-Purchases here are provider-verified (``payment_verified=True``); an unverified one is
-refused before anything is written (illegal row, FR-033).
+Source: specs/004-commerce/spec.md, "## Stateful behavior", "### Machine A: Referral" and
+"### Machine B: One-time credit purchase". Machine B (T046) lives in canon/checkout.py;
+its ``Unresolved --operator_resolves--> Credited`` row waits for T048b. Machine C
+(subscription) is not encoded: its handlers are still ``_machine_not_built`` in
+canon/webhook_events.py (T049 open). Machine A purchases here are provider-verified
+(``payment_verified=True``); an unverified one is refused before anything is written
+(illegal row, FR-033).
 """
 
 from __future__ import annotations
 
+import json
+
 import pytest
 from sqlalchemy.orm import Session
 
-from canon.models import CanonicalCreditLedgerEntryRecord
+from canon.checkout import CheckoutUnavailableError, start_credit_checkout
+from canon.exports import ExportBoundaryError, receive_stripe_webhook
+from canon.models import (
+    CanonicalCreditLedgerEntryRecord,
+    ProviderPaymentRecord,
+    StripeEventRecordModel,
+)
+from canon.webhook_events import reject_unresolved_event
 from community.models import User
+from tests.unit.test_commerce_credit_checkout import (
+    FakeProvider,
+    _deliver,
+    _open_checkout,
+    _session_object,
+    _settings,
+)
 from monetization.models import CreditsLedger, Referral
 from monetization.referrals import REFERRAL_REWARD_CREDITS, create_referral, record_purchase
 
@@ -185,3 +203,163 @@ def test_pending_unverified_purchase_is_refused_without_reward(db_session: Sessi
     assert _state(db_session, referred) == PENDING
     assert _snapshot(db_session) == before
     assert _canonical_grants(db_session) == []
+
+
+# --- Machine B: one-time credit purchase (T046) ----------------------------------------
+
+CHECKOUT_OPEN, CREDITED, ABANDONED = "CheckoutOpen", "Credited", "Abandoned"
+_B_STATES = {
+    "open": CHECKOUT_OPEN,
+    "pending": CHECKOUT_OPEN,
+    "credited": CREDITED,
+    "failed": ABANDONED,
+    "abandoned": ABANDONED,
+}
+
+
+def _b_state(db: Session, payment: ProviderPaymentRecord) -> str:
+    db.refresh(payment)
+    return _B_STATES[payment.status]
+
+
+def _purchase_entries(db: Session) -> int:
+    return db.query(CanonicalCreditLedgerEntryRecord).filter_by(entry_type="purchase").count()
+
+
+def test_b_none_request_credits_enabled_opens_checkout(db_session: Session, pair):
+    _, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    assert _b_state(db_session, payment) == CHECKOUT_OPEN
+    assert _purchase_entries(db_session) == 0
+
+
+def test_b_none_request_credits_disabled_is_refused(db_session: Session, pair):
+    _, buyer = pair
+    provider = FakeProvider()
+    with pytest.raises(CheckoutUnavailableError, match="PAYMENTS_DISABLED"):
+        start_credit_checkout(
+            db_session,
+            user=buyer,
+            credits=30,
+            provider=provider,
+            app_settings=_settings(enable_credit_checkout=False),
+        )
+    assert provider.sessions == []
+    assert db_session.query(ProviderPaymentRecord).count() == 0
+
+
+def test_b_checkout_completed_verified_credits_through_machine_a(db_session: Session, pair):
+    referrer, buyer = pair
+    create_referral(db_session, referrer=referrer, referred=buyer)
+    db_session.commit()
+    payment = _open_checkout(db_session, buyer)
+
+    _deliver(db_session, "evt_b_paid", "checkout.session.completed", _session_object(payment))
+
+    assert _b_state(db_session, payment) == CREDITED
+    assert _purchase_entries(db_session) == 1
+    assert db_session.query(CreditsLedger).filter_by(change_type="Purchase").count() == 1
+    assert _state(db_session, buyer) == REWARDED
+
+
+def test_b_checkout_completed_malformed_is_unresolved(db_session: Session, pair):
+    _, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+
+    intake = _deliver(
+        db_session,
+        "evt_b_bad",
+        "checkout.session.completed",
+        _session_object(payment, metadata={"user_id": "999"}),
+    )
+
+    assert intake.record.status == "unresolved" and intake.record.reason_code
+    assert _b_state(db_session, payment) == CHECKOUT_OPEN
+    assert _purchase_entries(db_session) == 0
+
+
+@pytest.mark.parametrize(
+    "event_type", ["checkout.session.expired", "checkout.session.async_payment_failed"]
+)
+def test_b_checkout_canceled_or_expired_is_abandoned(db_session: Session, pair, event_type):
+    _, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+
+    _deliver(db_session, "evt_b_end", event_type, _session_object(payment, payment_status="unpaid"))
+
+    assert _b_state(db_session, payment) == ABANDONED
+    assert _purchase_entries(db_session) == 0
+    assert db_session.query(CreditsLedger).count() == 0
+
+
+def test_b_credited_duplicate_completion_is_a_no_op(db_session: Session, pair):
+    """Also the illegal row: no second ``Purchase`` for the same payment identifier."""
+    _, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    _deliver(db_session, "evt_b_1", "checkout.session.completed", _session_object(payment))
+
+    again = _deliver(db_session, "evt_b_2", "checkout.session.completed", _session_object(payment))
+
+    assert again.record.status == "duplicate"
+    assert _b_state(db_session, payment) == CREDITED
+    assert _purchase_entries(db_session) == 1
+    assert db_session.query(CreditsLedger).filter_by(change_type="Purchase").count() == 1
+
+
+def test_b_unresolved_operator_rejects_grants_nothing(db_session: Session, pair):
+    admin, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    _deliver(
+        db_session,
+        "evt_b_rej",
+        "checkout.session.completed",
+        _session_object(payment, customer="cus_other"),
+    )
+    record = db_session.get(StripeEventRecordModel, "evt_b_rej")
+    assert record.status == "unresolved"
+
+    reject_unresolved_event(
+        db_session, record, actor_user_id=admin.id, actor_role="Admin", reason="not ours"
+    )
+    db_session.commit()
+
+    assert record.status == "rejected"
+    assert _b_state(db_session, payment) == CHECKOUT_OPEN
+    assert _purchase_entries(db_session) == 0
+
+
+def test_b_abandoned_to_credited_is_illegal(db_session: Session, pair):
+    _, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    _deliver(db_session, "evt_b_exp", "checkout.session.expired", _session_object(payment))
+
+    late = _deliver(db_session, "evt_b_late", "checkout.session.completed", _session_object(payment))
+
+    assert (late.record.status, late.record.reason_code) == ("unresolved", "PAYMENT_STATE_CONFLICT")
+    assert _b_state(db_session, payment) == ABANDONED
+    assert _purchase_entries(db_session) == 0
+
+
+def test_b_open_to_credited_needs_a_verified_provider_event(db_session: Session, pair):
+    """Illegal: crediting without a verified confirmation. A forged event is refused."""
+    _, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    payload = json.dumps(
+        {
+            "id": "evt_b_forged",
+            "type": "checkout.session.completed",
+            "livemode": False,
+            "data": {"object": _session_object(payment)},
+        }
+    ).encode()
+    with pytest.raises(ExportBoundaryError, match="WEBHOOK_SIGNATURE_INVALID"):
+        receive_stripe_webhook(
+            db_session,
+            payload=payload,
+            signature_header="t=1700000000,v1=forged",
+            secret="whsec_machine_b",
+            now=1_700_000_000,
+        )
+    db_session.rollback()
+    assert _b_state(db_session, payment) == CHECKOUT_OPEN
+    assert _purchase_entries(db_session) == 0

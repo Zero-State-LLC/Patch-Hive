@@ -245,6 +245,17 @@ def _parse_signature_header(signature_header: str) -> tuple[int, tuple[str, ...]
         raise ExportBoundaryError("WEBHOOK_SIGNATURE_INVALID") from exc
 
 
+def _event_object_id(event: dict[str, Any]) -> str | None:
+    """The event's ``data.object.id``, kept for an operator resolve (spec 004 T048b)."""
+
+    data = event.get("data")
+    obj = data.get("object") if isinstance(data, dict) else None
+    object_id = obj.get("id") if isinstance(obj, dict) else None
+    if isinstance(object_id, str) and 0 < len(object_id) <= 255:
+        return object_id
+    return None
+
+
 def receive_stripe_webhook(
     session: Session,
     *,
@@ -300,6 +311,7 @@ def receive_stripe_webhook(
         event_type=event_type,
         payload_hash=payload_hash,
         livemode=livemode,
+        object_id=_event_object_id(event),
         status="received",
         received_at=datetime.fromtimestamp(timestamp, tz=timezone.utc),
     )
