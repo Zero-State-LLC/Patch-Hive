@@ -104,7 +104,7 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
   - [x] T060a Wire ClefProvider into the evidence-resolution path against the existing database layer (code).
     - depends_on: [T010, T020]
     - acceptance: disposition policy-owned; idempotent receipts; no persistence change.
-  - [ ] T060b Verify the wired path on the Neon-backed staging API (operator).
+  - [ ] T060b Verify the wired path on the Neon-backed staging API (operator). Note 2026-11-02: the code blocker found in review is fixed; an upload now binds its candidates to the stored evidence record id, so the id `GET .../evidence/candidates` returns is the id `decision-resolution` accepts (`tests/api/test_evidence_upload.py`). Only the operator run remains. Evidence uploaded before the fix keeps the old provider id and still cannot be resolved; upload a new image.
     - depends_on: [T050, T060a]
 
 - [x] T070 Implement Edge Deployment readiness state machine and gate checks.
