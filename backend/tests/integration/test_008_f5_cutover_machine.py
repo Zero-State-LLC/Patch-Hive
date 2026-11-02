@@ -30,6 +30,7 @@ from core.ops.f5_cutover import (
     replay,
     transition,
 )
+from tests.f5008_helpers import f5008_approver_allowlist  # noqa: F401  (autouse)
 from tests.f5008_helpers import (
     GOOD_GENERATE,
     chain,
@@ -63,6 +64,7 @@ def other(enablement):
     )
     from tests.f5008_helpers import (
         FE_SOURCES_OK,
+        pin_signing,
         WALKTHROUGH_SHA,
         docs,
         health,
@@ -76,7 +78,8 @@ def other(enablement):
         start=start, seed_auth=seed_auth(), health=health(), outcome=outcome(), source_commit_sha=WALKTHROUGH_SHA
     )
     pin = pin_readiness_docs(
-        receipt=receipt, documents=docs(), unresolved_p0=(), enablement_receipt=enablement, pinned_by="op-2"
+        receipt=receipt, documents=docs(), unresolved_p0=(), enablement_receipt=enablement,
+        **pin_signing(enablement),
     )
     return {"alias": alias, "fe": fe, "start": start, "receipt": receipt, "pin": pin}
 

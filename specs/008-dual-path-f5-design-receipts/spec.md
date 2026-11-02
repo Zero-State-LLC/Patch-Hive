@@ -58,7 +58,7 @@ As the operator, I want the readiness matrix and cutover checklist pinned to the
 - **FR-003** Walkthrough flags MUST come from the running server's read-only `GET /api/admin/ops/runtime-flags`, which returns `schema_version`, `environment`, and six booleans only [OBSERVED: OPERATOR_NOTES.md T040].
 - **FR-004** Every artifact MUST be sealed by `record_sha256` and carry its predecessor's SHA; `BETA_ELIGIBLE` is terminal [OBSERVED: OPERATOR_NOTES.md].
 - **FR-005** Pinning MUST require a verified Spec 007 enablement receipt [OBSERVED: OPERATOR_NOTES.md T050].
-  The 007 verifier checks an unkeyed SHA only, so a forged receipt passes (research R1).
+  Since 2026-11-01 (T071) pinning also requires the 007 receipt's Ed25519 approver signature, and the pin itself is signed by the approver key named in `pinned_by` (research R1).
 - **FR-006** Production payments MUST remain disabled; reaching `BETA_ELIGIBLE` MUST NOT flip any flag [OBSERVED: tasks.md, OPERATOR_NOTES.md].
 
 ### Key entities
@@ -93,7 +93,7 @@ Checked against `main` at 95ca9ee. Decision research is in [research.md](researc
 | FR-002 Seed is the single credential source | Implemented | `check_seed_auth` is read-only (T030a); hosted seeding needs `ENVIRONMENT=staging` and its own passwords (#129) [OBSERVED: scripts/seed_golden_demo.py] |
 | FR-003 Flags from the server's runtime-flags endpoint | Implemented | `GET /api/admin/ops/runtime-flags` [OBSERVED: backend/admin/routes.py, backend/core/ops/design_walkthrough.py] |
 | FR-004 Sealed records; BETA_ELIGIBLE terminal | Implemented | `_Sealed` records and the cutover machine [OBSERVED: backend/core/ops/f5_cutover.py; tests/integration/test_008_f5_cutover_machine.py passed 2026-10-29]. Unkeyed SHA, so integrity only (R1) |
-| FR-005 Pin requires a verified 007 receipt | Partial | Calls `verify_enablement_receipt`, which a forged mapping passes (R1) [OBSERVED: f5_cutover.py] |
+| FR-005 Pin requires a verified 007 receipt | Implemented | Requires a signed 007 receipt and signs the pin with the approver key; the `operator_pin` guard and `beta_eligible` verify both signatures (T071, R1) [OBSERVED: f5_cutover.py, tests/unit/test_f5_cutover.py] |
 | FR-006 Production payments stay off | Implemented | `PRODUCTION_PAYMENTS_ENABLED` fails the walkthrough; the machine flips no flag [OBSERVED: f5_cutover.py `flags_test_mode_failures`] |
 | SC-001 Staging-only receipt | Partial | Only `production`/`prod` are refused, and `expected_environment` is optional (R2) [OBSERVED: f5_cutover.py, design_walkthrough.py] |
 

@@ -20,17 +20,28 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
 from types import MappingProxyType
 from typing import Any, Iterable, Literal, Mapping, TypeVar
 
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from pydantic import BaseModel, ConfigDict, Field
 
 from intelligence.contracts import stable_sha256
 from intelligence.evaluation_enablement import (
     EvaluationEnablementReceipt,
     is_pinned_sha,
-    verify_enablement_receipt,
+    signed_enablement_receipt_failures,
+)
+from intelligence.receipt_signing import (
+    READINESS_PIN_SIGNING_DOMAIN,
+    ApproverAllowlist,
+    ReceiptSignature,
+    SignatureError,
+    load_approver_allowlist,
+    sign_receipt_sha256,
+    signature_failures,
 )
 
 ALIAS_EVIDENCE_SCHEMA = "patchhive.f5-alias-evidence.v1"
@@ -609,14 +620,64 @@ class PinnedDocument(BaseModel):
 
 
 class ReadinessPin(_Sealed):
+    """Readiness docs bound to a walkthrough receipt and a signed 007 receipt (R1).
+
+    ``pinned_by`` is the approver key id; ``pin_signature`` is that key's Ed25519
+    signature over ``record_sha256`` under the readiness-pin domain. The signature
+    sits outside the seal because it signs the seal.
+    """
+
     schema_version: str = READINESS_PIN_SCHEMA
     walkthrough_receipt_sha256: str
     source_commit_sha: str
     documents: tuple[PinnedDocument, ...]
     unresolved_p0: tuple[str, ...]
     enablement_receipt: EvaluationEnablementReceipt
+    enablement_signature: ReceiptSignature
     pinned_by: str = Field(min_length=1)
+    pinned_at: str
     record_sha256: str = ""
+    pin_signature: ReceiptSignature | None = None
+
+    def content_sha256(self) -> str:
+        return stable_sha256(self.model_dump(mode="json", exclude={"record_sha256", "pin_signature"}))
+
+
+def readiness_pin_signature_failures(
+    pin: ReadinessPin,
+    *,
+    allowlist: ApproverAllowlist | None = None,
+    now: datetime | None = None,
+) -> tuple[str, ...]:
+    """Failure codes for a pin's two signatures; empty means both verify.
+
+    The 007 receipt must carry a valid allowlisted approver signature, and the pin
+    must be signed by the allowlisted key named in ``pinned_by``.
+    """
+    if allowlist is None:
+        try:
+            allowlist = load_approver_allowlist()
+        except SignatureError as exc:
+            return (exc.code,)
+    failed = [
+        f"ENABLEMENT_{code}"
+        for code in signed_enablement_receipt_failures(
+            pin.enablement_receipt, pin.enablement_signature, allowlist=allowlist, now=now
+        )
+    ]
+    failed.extend(
+        f"PIN_{code}"
+        for code in signature_failures(
+            pin.pin_signature,
+            receipt_sha256=pin.record_sha256,
+            approved_by=pin.pinned_by,
+            approved_at=pin.pinned_at,
+            allowlist=allowlist,
+            now=now,
+            domain=READINESS_PIN_SIGNING_DOMAIN,
+        )
+    )
+    return tuple(failed)
 
 
 REQUIRED_PIN_DOCUMENTS: tuple[str, ...] = (
@@ -631,19 +692,37 @@ def pin_readiness_docs(
     documents: Mapping[str, str],
     unresolved_p0: Iterable[str],
     enablement_receipt: EvaluationEnablementReceipt | None,
+    enablement_signature: ReceiptSignature | None,
     pinned_by: str,
+    signing_key: Ed25519PrivateKey,
+    pinned_at: str | None = None,
+    allowlist: ApproverAllowlist | None = None,
 ) -> ReadinessPin:
     """Bind the readiness matrix and cutover checklist to the walkthrough SHA.
 
     ``documents`` maps repo-relative path to file text. Each required document
     must reference the receipt's exact ``source_commit_sha``. ``unresolved_p0``
     lists open P0 integrity regressions; any entry fails closed. The Spec 007
-    staging enablement receipt is the upstream dependency and must verify.
+    staging enablement receipt is the upstream dependency and must carry a valid
+    approver signature (R1). ``pinned_by`` is the operator's approver key id and
+    ``signing_key`` its private key, used on the operator's machine to sign the pin.
     """
     if receipt is None or not receipt.intact():
         raise CutoverError("WALKTHROUGH_RECEIPT_MISSING_OR_TAMPERED")
-    if enablement_receipt is None or not verify_enablement_receipt(enablement_receipt):
-        raise CutoverError("ENABLEMENT_RECEIPT_INVALID")
+    if allowlist is None:
+        try:
+            allowlist = load_approver_allowlist()
+        except SignatureError as exc:
+            raise CutoverError("ENABLEMENT_RECEIPT_INVALID", exc.code) from exc
+    enablement_failures = (
+        ("RECEIPT_MISSING",)
+        if enablement_receipt is None
+        else signed_enablement_receipt_failures(
+            enablement_receipt, enablement_signature, allowlist=allowlist
+        )
+    )
+    if enablement_failures:
+        raise CutoverError("ENABLEMENT_RECEIPT_INVALID", ",".join(enablement_failures))
     missing = [path for path in REQUIRED_PIN_DOCUMENTS if path not in documents]
     if missing:
         raise CutoverError("PIN_DOCUMENT_MISSING", ",".join(missing))
@@ -669,9 +748,24 @@ def pin_readiness_docs(
         documents=pinned,
         unresolved_p0=(),
         enablement_receipt=enablement_receipt,
+        enablement_signature=enablement_signature,
         pinned_by=pinned_by,
+        pinned_at=pinned_at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    ).sealed()
+    signed = record.model_copy(
+        update={
+            "pin_signature": sign_receipt_sha256(
+                signing_key,
+                key_id=pinned_by,
+                receipt_sha256=record.record_sha256,
+                domain=READINESS_PIN_SIGNING_DOMAIN,
+            )
+        }
     )
-    return record.sealed()
+    failures = readiness_pin_signature_failures(signed, allowlist=allowlist)
+    if failures:
+        raise CutoverError("PIN_SIGNATURE_INVALID", ",".join(failures))
+    return signed
 
 
 # ---------------------------------------------------------------------------
@@ -837,8 +931,13 @@ def _guard_pin(m: CutoverMachine, ev: CutoverEvent) -> tuple[str, ...]:
         failed.append("DOCUMENT_NOT_PINNED_TO_SHA")
     if pin.unresolved_p0:
         failed.append("UNRESOLVED_P0")
-    if not verify_enablement_receipt(pin.enablement_receipt):
+    signature_failures_ = readiness_pin_signature_failures(pin)
+    if any(code.startswith("ENABLEMENT_") for code in signature_failures_):
         failed.append("ENABLEMENT_RECEIPT_INVALID")
+    if any(code.startswith("PIN_") for code in signature_failures_):
+        failed.append("PIN_SIGNATURE_INVALID")
+    if any(not code.startswith(("ENABLEMENT_", "PIN_")) for code in signature_failures_):
+        failed.append("APPROVER_ALLOWLIST_INVALID")
     return tuple(failed)
 
 
@@ -910,6 +1009,7 @@ def beta_eligible(machine: CutoverMachine) -> bool:
         and receipt.intact()
         and pin.intact()
         and pin.walkthrough_receipt_sha256 == receipt.record_sha256
+        and not readiness_pin_signature_failures(pin)
         and receipt.outcome_passed
         and not receipt.flags.allow_production_payments
     )

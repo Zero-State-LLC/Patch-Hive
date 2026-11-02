@@ -68,10 +68,14 @@ its SHA-256).
 4. Pin (T050). Replace each `PENDING_OPERATOR_WALKTHROUGH` value in both docs
    with the receipt values (`receipt.source_commit_sha`, `receipt.record_sha256`,
    the Spec 007 enablement `receipt_sha256`, and the open P0 list, which must be
-   empty). Then call `pin_readiness_docs(receipt=..., documents={path: text},
-   unresolved_p0=(), enablement_receipt=<Spec 007 receipt>, pinned_by=<operator>)`.
-   It fails closed if either doc lacks the exact SHA, any P0 is open, or the
-   Spec 007 enablement receipt does not verify.
+   empty). Then, on the machine that holds the approver key (007 T082), call
+   `pin_readiness_docs(receipt=..., documents={path: text}, unresolved_p0=(),
+   enablement_receipt=<Spec 007 receipt>, enablement_signature=<its T083 signature>,
+   pinned_by=<approver key id>, signing_key=<approver private key>)`.
+   It fails closed if either doc lacks the exact SHA, any P0 is open, the Spec 007
+   receipt or its signature does not verify against the approver allowlist, or the
+   pin signature does not verify for `pinned_by` (T071). The pin carries
+   `pin_signature`; the private key never leaves that machine.
 5. Replay the five events (`expose_canon_alias`, `switch_fe_list`,
    `run_walkthrough`, `capture_receipt`, `operator_pin`) with those artifacts;
    `beta_eligible(machine)` must be true. This is an evidence decision only: it
