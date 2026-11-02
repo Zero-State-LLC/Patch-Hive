@@ -168,6 +168,8 @@ No source defines them (`specs/001-rig-intelligence/spec.md:433`; `docs/CANON.md
 
 ### 13. Deploying #134–#146
 
+**Decided 2026-11-01 by Jev (owner-delegated), for #183–#186 and release PR #169:** `staging_then_prod_manual` (confidence 0.81): `wrangler deploy` to staging, smoke test, then production from a checkout of main. Moving deploys into CI waits for T101b. The production deploy itself still waits for the owner's go-ahead. See [the decision record](JEV_DECISIONS_2026-11-01.md).
+
 No workflow deploys the application (`docs/OPERATIONS.md:129`). The API deploys with `cd edge/api && npm ci && npx wrangler deploy` (add `--env staging` for staging), which needs Docker running; the frontend uploads the existing `frontend/dist` (`frontend/wrangler.jsonc` has no build step), so build it for the target first: `cd frontend && npm ci && npm run build:staging && npx wrangler deploy --env staging` for staging, then `npm run build && npx wrangler deploy` for production. Never deploy a staging build to production: it carries the staging API URL from `frontend/.env.staging`. Startup migrations are off, so migrations must come first. They have: `db-migrate.yml` brought staging (run 40984019890) and prod (run 40986508036) to `20261029_decision_receipt_idempotency`, and a dry run on each planned no changes. The only new setting is `decision_routing_target` (decision 7). INFERRED: no new secret is needed; `edge/api/wrangler.jsonc` vars were not diffed.
 
 **Recommendation: deploy staging first, smoke test, then prod.** After T101, a deploy workflow behind the `production` environment would make deploys auditable and remove the dependency on one laptop.
