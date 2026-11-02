@@ -70,6 +70,9 @@ async def lifespan(app: FastAPI):
     validate_payment_startup_policy(settings)
     validate_stripe_mode_startup_policy(settings)
     validate_decision_startup_policy(settings)
+    from intelligence.enablement_gate import validate_decision_enablement_startup
+
+    validate_decision_enablement_startup(settings)
     print(f"Starting {settings.app_name} v{settings.app_version}")
     print(f"ABX-Core version: {settings.abx_core_version}")
     # Schema: alembic upgrade head (entrypoint / release job). create_all only if explicitly allowed.

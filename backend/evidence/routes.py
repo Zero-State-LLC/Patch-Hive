@@ -808,6 +808,15 @@ def resolve_rack_evidence_decision(
 
     if not settings.enable_decision_intelligence:
         raise HTTPException(status_code=409, detail="DECISION_INTELLIGENCE_DISABLED")
+    # Defence in depth for the startup gate (spec 005 T080, research R1).
+    from intelligence.enablement_gate import enablement_gate_failures
+
+    gate_failures = enablement_gate_failures(settings)
+    if gate_failures:
+        raise HTTPException(
+            status_code=409,
+            detail={"code": "ENABLEMENT_RECEIPT_REQUIRED", "failures": list(gate_failures)},
+        )
 
     return _resolve_with_guarded_flow(db, body)
 
