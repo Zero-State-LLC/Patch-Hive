@@ -131,9 +131,12 @@ class InvalidEventTransitionError(Exception):
     """The event is not in a state the requested operator action may leave."""
 
 
-def _state_hash(record: StripeEventRecordModel) -> str:
-    state = {"status": record.status, "reason_code": record.reason_code}
+def _hash_state(state: dict[str, Any]) -> str:
     return sha256(json.dumps(state, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def _state_hash(record: StripeEventRecordModel) -> str:
+    return _hash_state({"status": record.status, "reason_code": record.reason_code})
 
 
 def reject_unresolved_event(
@@ -146,7 +149,8 @@ def reject_unresolved_event(
 ) -> CanonicalAdminAuditEventRecord:
     """Machine B ``Unresolved --operator_rejects--> Abandoned``: grant nothing.
 
-    Only an ``unresolved`` event may be rejected; any other status raises
+    Only an ``unresolved`` event may be rejected, checked and written in one conditional
+    update; any other status (including a concurrent reject that won) raises
     ``InvalidEventTransitionError`` and changes nothing. The record keeps its
     ``reason_code`` so the original failure stays visible.
     """
@@ -156,10 +160,20 @@ def reject_unresolved_event(
     reason = (reason or "").strip()
     if not reason:
         raise ValueError("a reason is required")
-    if record.status != "unresolved":
+    before = {"status": "unresolved", "reason_code": record.reason_code}
+    # A conditional update makes the check and the write one step, so of two overlapping
+    # rejects only one changes the row and writes an audit record; the other sees 0 rows.
+    changed = (
+        session.query(StripeEventRecordModel)
+        .filter(
+            StripeEventRecordModel.stripe_event_id == record.stripe_event_id,
+            StripeEventRecordModel.status == "unresolved",
+        )
+        .update({StripeEventRecordModel.status: REJECTED}, synchronize_session=False)
+    )
+    session.refresh(record)
+    if changed != 1:
         raise InvalidEventTransitionError(record.status)
-    before = _state_hash(record)
-    record.status = REJECTED
     audit = CanonicalAdminAuditEventRecord(
         id=f"audit-{uuid.uuid4().hex}",
         actor_user_id=actor_user_id,
@@ -167,7 +181,7 @@ def reject_unresolved_event(
         action="commerce.event.reject",
         target_type="stripe_event",
         target_id=record.stripe_event_id,
-        before_hash=before,
+        before_hash=_hash_state(before),
         after_hash=_state_hash(record),
         reason=reason,
         created_at=datetime.now(timezone.utc),

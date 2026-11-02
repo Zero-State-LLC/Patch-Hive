@@ -134,3 +134,25 @@ def test_admin_readers_list_only_unresolved_events(client, db_session):
     assert body["events"][0]["reason_code"] == "HANDLER_NOT_IMPLEMENTED"
     user = make_user(db_session, "plain1")
     assert client.get("/api/admin/commerce/unresolved-events", headers=bearer_headers(user)).status_code == 403
+
+
+def test_a_stale_read_cannot_reject_twice(db_session):
+    """Two overlapping rejects: the second holds a stale ``unresolved`` copy but the
+    conditional update finds no unresolved row, so it changes nothing and audits nothing."""
+    from canon.webhook_events import InvalidEventTransitionError, reject_unresolved_event
+
+    admin = make_user(db_session, "admin5", role="Admin")
+    _event(db_session, "evt_5", "unresolved", "HANDLER_NOT_IMPLEMENTED")
+    record = db_session.get(StripeEventRecordModel, "evt_5")
+    # Another request rejects the event behind this session's back.
+    db_session.query(StripeEventRecordModel).filter_by(stripe_event_id="evt_5").update(
+        {"status": "rejected"}, synchronize_session=False
+    )
+    assert record.status == "unresolved"  # the stale in-memory copy
+
+    with pytest.raises(InvalidEventTransitionError):
+        reject_unresolved_event(
+            db_session, record, actor_user_id=admin.id, actor_role="Admin", reason="second"
+        )
+    assert record.status == "rejected"
+    assert _audits(db_session) == []
