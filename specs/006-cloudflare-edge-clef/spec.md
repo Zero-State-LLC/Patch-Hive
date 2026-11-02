@@ -112,6 +112,15 @@ Counts: 5 Implemented, 2 Partial, 0 Missing.
 
 ## Open questions (2026-10-29)
 
+Decisions and checks 2026-11-01 ([record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md)):
+
+- OQ-1 (How is the GitHub `production` environment protected for db-migrate, db-load and edge-secrets (T101b)?): **Decided 2026-11-01 by Jev (owner-delegated):** `owner_reviewer_main_only` (confidence 0.36) (provisional: low confidence, owner to confirm): production environment: owner as required reviewer, deployment branch main only, admin bypass off, prevent-self-review OFF while solo, prod secrets moved into it. One extra approval click per prod run; stops branch workflows reaching prod secrets. (Matches DEPLOY_NOTES and decision 6 rec.) See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
+- OQ-2 (Do staging runs get their own gated `staging` environment and a separate staging-scoped Cloudflare token when the prod token moves into `production`?): **Decided 2026-11-01 by Jev (owner-delegated):** `separate_staging_token` (confidence 0.97): Issue a second, staging-scoped Cloudflare token; put prod token in `production` and staging token in `staging` (account id as variable in each). Recommended in the repo; also stops one token reaching both. Needs one more token to rotate. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
+- OQ-3 (Should the operator-owned tasks T030, T040b, T050b and T055b be closed now that staging and production are live?): **Decided 2026-11-01 by Jev (owner-delegated):** `record_receipts_and_close` (confidence 0.6): Add a short evidence receipt per task (health/ready output, migration run ids, R2 persistence check) and tick them. Honest closure; some work. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
+- OQ-4 (Does gates_pass verify the evaluation receipt itself (R1)?): **Answered (checked 2026-11-01):** Yes, T100 done: evaluation_receipt and signature are checked against the committed allowlist.
+- OQ-5 (When is evidence expiry scheduled (T101c)?): **Answered (checked 2026-11-01):** Decided 2026-10-30: a daily evidence-expire.yml job after T101b, not now (0 image_assets rows; expiry still enforced at read time). Not built.
+- OQ-6 (Pages/Hyperdrive wording, foreign pin-PR workflow, actions: write, orphan R2 token, production provider before BETA_READY, who creates the environment?): **Answered (checked 2026-11-01):** All resolved: acceptance summary amended (R6); T102, T103, T104 done; startup refuses production providers (#132); a repo admin creates the environment in settings.
+
 This spec had no open-questions list. Questions raised by research:
 
 - **Does the acceptance summary still require Pages and Hyperdrive?** RESOLVED: no. FR-001 and FR-003 were amended (R6); the summary is amended above.

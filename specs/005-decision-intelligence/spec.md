@@ -112,6 +112,14 @@ Counts: 6 Implemented, 4 Partial, 0 Missing.
 
 ## Open questions (2026-10-29)
 
+Decisions and checks 2026-11-01 ([record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md)):
+
+- OQ-1 (Should an unsupported packet schema REJECT?): **Answered (checked 2026-11-01):** No. Treated as a provider failure: ESCALATE when a routing target exists, else UNRESOLVED, reason codes kept (T081, #135).
+- OQ-2 (Does the Jev path have to use the guarded machine?): **Answered (checked 2026-11-01):** Yes. Every provider goes through the guarded flow with settings.decision_policy_version (T082, #135).
+- OQ-3 (Is false_canonicalization_count = 0 measured?): **Answered (checked 2026-11-01):** It was hardcoded; T084 replaced it with the structural resolution-machine replay count and the candidate check now runs in evaluation.
+- OQ-4 (Should a review queue for ESCALATE records be built so decision_routing_target can be set to human_review, or should ESCALATE stay unrouted?): **Decided 2026-11-01 by Jev (owner-delegated):** `keep_empty_until_provider_on` (confidence 0.74): Leave the default empty (current). Failed or escalated decisions end UNRESOLVED with ESCALATE_NO_ROUTING_TARGET. No work; acceptable while no provider is enabled in any environment. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
+- OQ-5 (Which thresholds does the operator approve as the enablement gate (T061)?): **Decided 2026-11-01 by Jev (owner-delegated):** `baseline_equal` (confidence 1.0): Use the coded rule: each threshold equals the measured baseline metric, false-canonicalization max 0. No invented numbers; the assisted run must at least not regress. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
+
 This spec had no open-questions list. The questions raised by research are below.
 
 - **Should an unsupported packet schema REJECT?** Open for the owner. Recommendation: no, treat it as a provider failure (R3, T081).
