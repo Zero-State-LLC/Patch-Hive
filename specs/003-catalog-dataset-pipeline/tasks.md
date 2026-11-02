@@ -63,7 +63,7 @@
 
 ## Foundational
 
-- [ ] T010 Encode the transitions table as tests (workflows: anti-slop-code, production-systems)
+- [ ] T010 Encode the transitions table as tests (workflows: anti-slop-code, production-systems). Tests written 2026-11-01 in `backend/tests/unit/test_spec_003_transitions.py` for the admitted-row lifecycle (`population.py` provenance, retirement and corrections): all 5 transitions and the illegal rows (tombstoned rows refused, stale `only_if_value`, bad corrections, no delete or un-tombstone), plus the plan-hash binding. Drift, not encoded: the batch machine (TARGETED to ADMITTED) exists only as scripts with no states, no BLOCKED preflight exit, no RETRY_QUEUED, no REJECTED, and admit checks only the plan hash (`inputs_hash` is recorded, never compared); retirement does not require evidence; `null` on a NOT NULL field is a conflict, not a flag. Stays open until T002.
   - depends_on: [T002]
 
 ## Polish
