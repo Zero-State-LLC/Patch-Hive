@@ -185,7 +185,8 @@ def test_a_stored_v1_value_is_marked_once() -> None:
     plan = _markers(catalog, _overlays())
     assert plan.updates == {"hp_source_legacy_marked": 2}
     assert [op.params["slug"] for op in plan.ops] == ["acme-lfo", "acme-vco"]
-    assert "hp = :hp AND hp_source IS NULL" in plan.ops[0].sql
+    assert "hp = :hp\n                  AND hp_source IS NOT DISTINCT FROM CAST(:previous AS VARCHAR)" in plan.ops[0].sql
+    assert plan.ops[0].params["previous"] is None
     assert catalog["acme-vco"]["hp_source"] == P.HP_SOURCE_LEGACY
     assert _markers(catalog, _overlays()).ops == []
 

@@ -399,12 +399,17 @@ def test_maker_corrections_v3_and_the_legacy_hp_marker(fresh_population_url, tmp
     first = populate(fresh_population_url, apply=True, verification_path=missing)
     # 88 after v3; v4 (the T039 remainder) re-sources 26 more and v5 4 more. On a fresh
     # load the A-155 stays marked at v1's 4 (maker-corrections-v5 needs a stored value).
-    assert first["updates"]["hp_source_legacy_marked"] == 58
+    # Of the 58, the 40 whose HP a retailer page states read retailer_observed (FR-039).
+    assert first["updates"]["hp_source_legacy_marked"] == 18
+    assert first["updates"]["hp_source_retailer_marked"] == 40
     engine = create_engine(fresh_population_url)
     try:
         with engine.connect() as conn:
             marked = dict(conn.execute(text(
                 "SELECT slug, hp FROM module_catalog WHERE hp_source = 'legacy_unsourced'"
+            )).all())
+            retailer = dict(conn.execute(text(
+                "SELECT slug, hp FROM module_catalog WHERE hp_source = 'retailer_observed'"
             )).all())
             fresh = dict(conn.execute(text(
                 "SELECT slug, hp FROM module_catalog WHERE slug IN ('make-noise-dpo', 'make-noise-morphagene', "
@@ -413,10 +418,12 @@ def test_maker_corrections_v3_and_the_legacy_hp_marker(fresh_population_url, tmp
         # A fresh load takes the maker value from v3; no re-sourced value is marked.
         assert fresh == {"make-noise-dpo": 28, "make-noise-morphagene": 20,
                          "bastl-instruments-knit-rider": 16, "intellijel-mems-mic-1u": 10}
-        assert len(marked) == 58 and marked["make-noise-mysteron"] == 14
+        assert len(marked) == 18 and marked["make-noise-mysteron"] == 14
+        # A retailer page that disagrees (4 HP) leaves the v1 value marked.
         assert marked["addac-system-addac200pi"] == 2
         # A citation the page check could not confirm stays marked.
-        assert marked["cwejman-d-lfo"] == 12 and marked["befaco-bandit"] == 8
+        assert marked["cwejman-d-lfo"] == 12
+        assert len(retailer) == 40 and retailer["befaco-bandit"] == 8
         assert not set(marked) & {"make-noise-dpo", "doepfer-a-110", "mutable-instruments-grids",
                                   "make-noise-maths", "make-noise-rene"}
 
