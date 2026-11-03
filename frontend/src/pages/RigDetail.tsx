@@ -250,7 +250,6 @@ export default function RigDetailPage() {
       });
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- once per sign-in
   useEffect(refreshCredits, [signedIn]);
 
   const handleRevisionChange = (revisionId: string) => {
