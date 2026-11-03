@@ -58,11 +58,18 @@ class UnresolvedEventError(Exception):
 EventHandler = Callable[[Session, dict[str, Any]], EventDisposition]
 
 
-def _machine_not_built(_session: Session, _event: dict[str, Any]) -> EventDisposition:
-    # Fail closed (FR-014): these events move money or tiers, so an operator must see
-    # them until their machine exists. Machine C (T049) replaces these entries with
-    # real handlers.
-    return EventDisposition("unresolved", "HANDLER_NOT_IMPLEMENTED")
+def _machine_c(session: Session, event: dict[str, Any]) -> EventDisposition:
+    # Machine C (T049): subscription records; never grants.
+    from canon.subscriptions import handle_subscription_event
+
+    return handle_subscription_event(session, event)
+
+
+def _machine_c_invoice(session: Session, event: dict[str, Any]) -> EventDisposition:
+    # Machine C (T049): the only subscription grant trigger.
+    from canon.subscriptions import handle_invoice_paid
+
+    return handle_invoice_paid(session, event)
 
 
 def _machine_b(session: Session, event: dict[str, Any]) -> EventDisposition:
@@ -93,9 +100,12 @@ EVENT_HANDLERS: dict[str, EventHandler] = {
     "charge.refunded": _machine_b_refund,
     "refund.failed": _machine_b_refund,
     "charge.dispute.created": _machine_b_refund,
-    "customer.subscription.created": _machine_not_built,
-    "customer.subscription.updated": _machine_not_built,
-    "customer.subscription.deleted": _machine_not_built,
+    # Machine C (T049): ``customer.subscription.*`` sync the subscription record and
+    # ``invoice.paid`` grants once per billing period (research 2026-11-01 §3).
+    "customer.subscription.created": _machine_c,
+    "customer.subscription.updated": _machine_c,
+    "customer.subscription.deleted": _machine_c,
+    "invoice.paid": _machine_c_invoice,
 }
 
 

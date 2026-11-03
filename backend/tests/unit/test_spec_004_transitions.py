@@ -5,9 +5,9 @@ Source: specs/004-commerce/spec.md, "## Stateful behavior", "### Machine A: Refe
 its ``Unresolved --operator_resolves--> Credited`` row is ``resolve_unresolved_event``
 (T048b), and its refund and dispute rows (OQ-2 ``A_reverse_unspent``, T053) are
 ``handle_payment_reversal_event``, which also encodes Machine A's
-``Rewarded --refund_processed--> Rewarded``. Machine C
-(subscription) is not encoded: its handlers are still ``_machine_not_built`` in
-canon/webhook_events.py (T049 open). Machine A purchases here are provider-verified
+``Rewarded --refund_processed--> Rewarded``. Machine C (subscription, T049) lives in
+canon/subscriptions.py; see its section below for how its rows map to ``invoice.paid``
+(research 2026-11-01 §3). Machine A purchases here are provider-verified
 (``payment_verified=True``); an unverified one is refused before anything is written
 (illegal row, FR-033).
 """
@@ -31,7 +31,9 @@ from canon.models import (
     CanonicalCreditLedgerEntryRecord,
     ProviderPaymentRecord,
     StripeEventRecordModel,
+    SubscriptionPeriodGrantRecord,
 )
+from canon.subscriptions import request_subscription_cancel, start_subscription_checkout
 from canon.webhook_events import reject_unresolved_event
 from community.models import User
 from tests.unit.test_commerce_credit_checkout import (
@@ -41,6 +43,19 @@ from tests.unit.test_commerce_credit_checkout import (
     _session_object,
     _settings,
 )
+import core.config as core_config
+from tests.unit.test_commerce_subscriptions import (
+    MONTH,
+    P1,
+    TS,
+    FakeSubscriptionProvider,
+    _c_settings,
+)
+from tests.unit.test_commerce_subscriptions import _customer as _c_customer
+from tests.unit.test_commerce_subscriptions import _deliver as _c_deliver
+from tests.unit.test_commerce_subscriptions import _invoice as _c_invoice
+from tests.unit.test_commerce_subscriptions import _record as _c_record
+from tests.unit.test_commerce_subscriptions import _subscription as _c_subscription
 from monetization.models import CreditsLedger, Referral
 from monetization.referrals import REFERRAL_REWARD_CREDITS, create_referral, record_purchase
 
@@ -588,3 +603,404 @@ def test_a_rewarded_refund_processed_is_a_no_op(db_session: Session, pair):
     assert _state(db_session, buyer) == REWARDED
     assert (_grants(db_session), db_session.query(Referral).count()) == before
     assert credit_balance(db_session, referrer.id) == REFERRAL_REWARD_CREDITS
+
+
+# --- Machine C: subscription (T049) ------------------------------------------------------
+#
+# Drift from the table, by decision: the period grant is triggered by ``invoice.paid``
+# (research 2026-11-01 §3, OQ-4 ``A_stripe_mapping``), not by ``subscription_created`` or
+# ``subscription_updated``, which only sync the record. So each "grant once" row is
+# encoded as: the subscription event grants nothing, and the paid invoice for the period
+# grants exactly once. ``operator_resolves`` is not supported for Machine C.
+
+C_NONE, C_ACTIVE, C_NOT_ACTIVE = "NONE", "Active", "NotActive"
+C_CANCEL_SCHEDULED, C_CANCELED = "CancelScheduled", "Canceled"
+
+
+@pytest.fixture
+def c_prices(monkeypatch: pytest.MonkeyPatch):
+    """The webhook side reads ``core.config.settings``; point it at the test prices."""
+    app_settings = _c_settings()
+    monkeypatch.setattr(core_config, "settings", app_settings)
+    return app_settings
+
+
+def _c_state(db: Session, sub_id: str = "sub_c") -> str:
+    record = _c_record(db, sub_id)
+    if record is None:
+        return C_NONE
+    if record.status == "canceled":
+        return C_CANCELED
+    if record.status == "active":
+        return C_CANCEL_SCHEDULED if record.cancel_at_period_end else C_ACTIVE
+    return C_NOT_ACTIVE
+
+
+def _c_period_grants(db: Session) -> int:
+    return db.query(SubscriptionPeriodGrantRecord).count()
+
+
+def _c_snapshot(db: Session) -> tuple:
+    record = _c_record(db, "sub_c")
+    fields = None if record is None else (record.status, record.tier, record.cancel_at_period_end)
+    return fields, _c_period_grants(db), db.query(CanonicalCreditLedgerEntryRecord).count()
+
+
+def _c_in_state(db: Session, user: User, state: str) -> None:
+    _c_customer(db, user)
+    status = "past_due" if state == C_NOT_ACTIVE else "active"
+    _c_deliver(
+        db,
+        "evt_c_setup",
+        "customer.subscription.created",
+        _c_subscription("sub_c", user.id, status=status),
+    )
+    if state == C_CANCEL_SCHEDULED:
+        request_subscription_cancel(
+            db, user=user, provider=FakeSubscriptionProvider(), app_settings=_c_settings()
+        )
+        db.commit()
+    assert _c_state(db) == state
+
+
+def test_c_none_choose_tier_enabled_opens_checkout(db_session: Session, pair, c_prices):
+    _, buyer = pair
+    provider = FakeSubscriptionProvider()
+    started = start_subscription_checkout(
+        db_session, user=buyer, tier="core", provider=provider, app_settings=_c_settings()
+    )
+    db_session.commit()
+    assert started.checkout_url
+    assert [name for name, _ in provider.calls] == ["customer", "session"]
+    # CheckoutOpen writes no subscription record.
+    assert _c_state(db_session) == C_NONE
+
+
+@pytest.mark.parametrize(
+    ("tier", "overrides", "error"),
+    [
+        ("platinum", {}, ValueError),
+        ("core", {"enable_subscription_checkout": False}, CheckoutUnavailableError),
+    ],
+)
+def test_c_none_choose_tier_invalid_or_disabled_is_refused(
+    db_session: Session, pair, c_prices, tier, overrides, error
+):
+    _, buyer = pair
+    provider = FakeSubscriptionProvider()
+    with pytest.raises(error):
+        start_subscription_checkout(
+            db_session,
+            user=buyer,
+            tier=tier,
+            provider=provider,
+            app_settings=_c_settings(**overrides),
+        )
+    assert provider.calls == []
+    assert _c_state(db_session) == C_NONE
+
+
+def test_c_checkout_canceled_or_expired_writes_no_record(db_session: Session, pair, c_prices):
+    _, buyer = pair
+    _c_customer(db_session, buyer)
+    intake = _c_deliver(
+        db_session,
+        "evt_c_expired",
+        "checkout.session.expired",
+        {"id": "cs_c", "object": "checkout.session", "mode": "subscription"},
+    )
+    assert (intake.record.status, intake.record.reason_code) == (
+        "ignored",
+        "SUBSCRIPTION_SESSION_NO_EFFECT",
+    )
+    assert _c_state(db_session) == C_NONE
+
+
+def test_c_subscription_created_known_active_then_paid_invoice_grants_once(
+    db_session: Session, pair, c_prices
+):
+    referrer, buyer = pair
+    create_referral(db_session, referrer=referrer, referred=buyer)
+    db_session.commit()
+    _c_customer(db_session, buyer)
+
+    _c_deliver(
+        db_session,
+        "evt_c_created",
+        "customer.subscription.created",
+        _c_subscription("sub_c", buyer.id),
+    )
+    assert _c_state(db_session) == C_ACTIVE
+    assert _c_period_grants(db_session) == 0
+
+    _c_deliver(db_session, "evt_c_paid", "invoice.paid", _c_invoice("in_c", "sub_c", buyer.id))
+    assert _c_period_grants(db_session) == 1
+    assert credit_balance(db_session, buyer.id) == 25
+    # OQ-3 ``A_both``: the first paid invoice also goes through Machine A.
+    assert _state(db_session, buyer) == REWARDED
+
+
+def test_c_subscription_created_known_not_active_grants_nothing(
+    db_session: Session, pair, c_prices
+):
+    _, buyer = pair
+    _c_customer(db_session, buyer)
+    _c_deliver(
+        db_session,
+        "evt_c_incomplete",
+        "customer.subscription.created",
+        _c_subscription("sub_c", buyer.id, status="incomplete"),
+    )
+    assert _c_state(db_session) == C_NOT_ACTIVE
+    assert _c_period_grants(db_session) == 0
+    assert credit_balance(db_session, buyer.id) == 0
+
+
+@pytest.mark.parametrize("start", [C_NONE, C_ACTIVE, C_NOT_ACTIVE, C_CANCEL_SCHEDULED])
+@pytest.mark.parametrize(
+    "event_type", ["customer.subscription.created", "customer.subscription.updated"]
+)
+@pytest.mark.parametrize(
+    ("change", "reason"),
+    [
+        ({"customer": "cus_unknown"}, "CUSTOMER_NOT_FOUND"),
+        ({"items": {"data": [{"price": {"id": "price_unmapped"}}]}}, "PRICE_UNKNOWN"),
+    ],
+)
+def test_c_unknown_customer_or_price_is_unresolved(
+    db_session: Session, pair, c_prices, start, event_type, change, reason
+):
+    _, buyer = pair
+    if start == C_NONE:
+        _c_customer(db_session, buyer)
+    else:
+        _c_in_state(db_session, buyer, start)
+    before = _c_snapshot(db_session)
+    obj = _c_subscription("sub_c", buyer.id, status="unpaid")
+    obj.update(change)
+
+    intake = _c_deliver(db_session, "evt_c_unknown", event_type, obj, created=TS + 50)
+
+    assert (intake.record.status, intake.record.reason_code) == ("unresolved", reason)
+    assert _c_state(db_session) == start
+    assert _c_snapshot(db_session) == before
+
+
+def test_c_active_updated_same_period_syncs_only(db_session: Session, pair, c_prices):
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_ACTIVE)
+    _c_deliver(db_session, "evt_c_paid", "invoice.paid", _c_invoice("in_c", "sub_c", buyer.id))
+
+    intake = _c_deliver(
+        db_session,
+        "evt_c_sync",
+        "customer.subscription.updated",
+        _c_subscription("sub_c", buyer.id, cancel=False),
+        created=TS + 1,
+    )
+
+    assert (intake.record.status, intake.record.reason_code) == (
+        "duplicate",
+        "SUBSCRIPTION_UNCHANGED",
+    )
+    assert _c_state(db_session) == C_ACTIVE
+    assert _c_period_grants(db_session) == 1
+
+
+@pytest.mark.parametrize("start", [C_ACTIVE, C_NOT_ACTIVE])
+def test_c_period_renewed_grants_the_new_period_once(
+    db_session: Session, pair, c_prices, start
+):
+    _, buyer = pair
+    _c_in_state(db_session, buyer, start)
+    renewal = _c_invoice(
+        "in_c2",
+        "sub_c",
+        buyer.id,
+        start=P1 + MONTH,
+        end=P1 + 2 * MONTH,
+        billing_reason="subscription_cycle",
+    )
+
+    first = _c_deliver(db_session, "evt_c_renew", "invoice.paid", renewal)
+    again = _c_deliver(db_session, "evt_c_renew_again", "invoice.paid", renewal)
+    _c_deliver(
+        db_session,
+        "evt_c_now_active",
+        "customer.subscription.updated",
+        _c_subscription("sub_c", buyer.id, start=P1 + MONTH, end=P1 + 2 * MONTH),
+        created=TS + 10,
+    )
+
+    assert first.record.status == "processed"
+    assert (again.record.status, again.record.reason_code) == (
+        "duplicate",
+        "PERIOD_ALREADY_GRANTED",
+    )
+    assert _c_period_grants(db_session) == 1
+    assert _c_state(db_session) == C_ACTIVE
+
+
+def test_c_active_updated_not_active_becomes_not_active(db_session: Session, pair, c_prices):
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_ACTIVE)
+    _c_deliver(
+        db_session,
+        "evt_c_past_due",
+        "customer.subscription.updated",
+        _c_subscription("sub_c", buyer.id, status="past_due"),
+        created=TS + 1,
+    )
+    assert _c_state(db_session) == C_NOT_ACTIVE
+    assert _c_period_grants(db_session) == 0
+
+
+def test_c_not_active_updated_active_then_paid_period_grants_once(
+    db_session: Session, pair, c_prices
+):
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_NOT_ACTIVE)
+    _c_deliver(
+        db_session,
+        "evt_c_back",
+        "customer.subscription.updated",
+        _c_subscription("sub_c", buyer.id),
+        created=TS + 1,
+    )
+    assert _c_state(db_session) == C_ACTIVE
+    assert _c_period_grants(db_session) == 0
+    _c_deliver(db_session, "evt_c_paid", "invoice.paid", _c_invoice("in_c", "sub_c", buyer.id))
+    assert _c_period_grants(db_session) == 1
+
+
+def test_c_active_cancel_requested_becomes_cancel_scheduled(
+    db_session: Session, pair, c_prices
+):
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_ACTIVE)
+    provider = FakeSubscriptionProvider()
+    request_subscription_cancel(
+        db_session, user=buyer, provider=provider, app_settings=_c_settings()
+    )
+    db_session.commit()
+    assert _c_state(db_session) == C_CANCEL_SCHEDULED
+    assert [name for name, _ in provider.calls] == ["cancel"]
+
+
+@pytest.mark.parametrize("start", [C_ACTIVE, C_NOT_ACTIVE, C_CANCEL_SCHEDULED])
+def test_c_subscription_deleted_becomes_canceled_and_keeps_credits(
+    db_session: Session, pair, c_prices, start
+):
+    _, buyer = pair
+    _c_in_state(db_session, buyer, start)
+    _c_deliver(db_session, "evt_c_paid", "invoice.paid", _c_invoice("in_c", "sub_c", buyer.id))
+    balance = credit_balance(db_session, buyer.id)
+
+    _c_deliver(
+        db_session,
+        "evt_c_deleted",
+        "customer.subscription.deleted",
+        _c_subscription("sub_c", buyer.id, status="canceled"),
+        created=TS + 20,
+    )
+
+    assert _c_state(db_session) == C_CANCELED
+    assert credit_balance(db_session, buyer.id) == balance == 25
+
+
+def test_c_unresolved_operator_resolves_is_not_supported(db_session: Session, pair, c_prices):
+    from canon.checkout import ResolveRefusedError
+
+    _, buyer = pair
+    admin = _user(db_session, "c-admin")
+    intake = _c_deliver(
+        db_session, "evt_c_orphan", "invoice.paid", _c_invoice("in_c", "sub_c", buyer.id)
+    )
+    assert (intake.record.status, intake.record.reason_code) == (
+        "unresolved",
+        "CUSTOMER_NOT_FOUND",
+    )
+
+    with pytest.raises(ResolveRefusedError, match="RESOLVE_NOT_SUPPORTED"):
+        resolve_unresolved_event(
+            db_session,
+            "evt_c_orphan",
+            provider=None,
+            app_settings=_settings(),
+            actor_user_id=admin.id,
+            actor_role="Admin",
+            reason="mapped the customer",
+        )
+    db_session.rollback()
+    assert db_session.get(StripeEventRecordModel, "evt_c_orphan").status == "unresolved"
+    assert _c_period_grants(db_session) == 0
+
+
+def test_c_second_grant_for_the_same_period_is_illegal(db_session: Session, pair, c_prices):
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_ACTIVE)
+    _c_deliver(db_session, "evt_c_paid", "invoice.paid", _c_invoice("in_c", "sub_c", buyer.id))
+    second = _c_deliver(
+        db_session, "evt_c_paid_b", "invoice.paid", _c_invoice("in_c_b", "sub_c", buyer.id)
+    )
+    assert second.record.status == "duplicate"
+    assert _c_period_grants(db_session) == 1
+    assert credit_balance(db_session, buyer.id) == 25
+
+
+def test_c_canceled_to_active_is_illegal(db_session: Session, pair, c_prices):
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_ACTIVE)
+    _c_deliver(
+        db_session,
+        "evt_c_deleted",
+        "customer.subscription.deleted",
+        _c_subscription("sub_c", buyer.id, status="canceled"),
+        created=TS + 1,
+    )
+    _c_deliver(
+        db_session,
+        "evt_c_revive",
+        "customer.subscription.updated",
+        _c_subscription("sub_c", buyer.id),
+        created=TS + 2,
+    )
+    assert _c_state(db_session) == C_CANCELED
+
+
+def test_c_grant_for_an_unknown_tier_or_customer_is_illegal(
+    db_session: Session, pair, c_prices
+):
+    _, buyer = pair
+    unknown_customer = _c_deliver(
+        db_session, "evt_c_x1", "invoice.paid", _c_invoice("in_x1", "sub_c", buyer.id)
+    )
+    _c_customer(db_session, buyer)
+    obj = _c_invoice("in_x2", "sub_c", buyer.id)
+    obj["lines"]["data"][0]["price"] = {"id": "price_unmapped"}
+    unknown_tier = _c_deliver(db_session, "evt_c_x2", "invoice.paid", obj)
+
+    assert unknown_customer.record.reason_code == "CUSTOMER_NOT_FOUND"
+    assert unknown_tier.record.reason_code == "PRICE_UNKNOWN"
+    assert _c_period_grants(db_session) == 0
+    assert credit_balance(db_session, buyer.id) == 0
+
+
+def test_c_tier_from_client_input_is_illegal(db_session: Session, pair, c_prices):
+    """The tier chosen at checkout never becomes the stored tier; the price decides."""
+    _, buyer = pair
+    start_subscription_checkout(
+        db_session,
+        user=buyer,
+        tier="studio",
+        provider=FakeSubscriptionProvider(),
+        app_settings=_c_settings(),
+    )
+    db_session.commit()
+    obj = _c_subscription(
+        "sub_c", buyer.id, metadata={"user_id": str(buyer.id), "tier": "studio"}
+    )
+
+    _c_deliver(db_session, "evt_c_created", "customer.subscription.created", obj)
+
+    assert _c_record(db_session, "sub_c").tier == "core"
