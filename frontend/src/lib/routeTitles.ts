@@ -12,6 +12,7 @@ const ROUTE_TITLES: [pattern: string, title: string][] = [
   ["/racks/:rigId", "Rigs"],
   ["/racks", "Rigs"],
   ["/rigs/:rigId/patchbook-studio", "Patch book style"],
+  ["/rigs/:rigId/patches/:patchId", "Patch"],
   ["/rigs/:rigId", "Rig workspace"],
   ["/modules", "Modules"],
   ["/products", "Products"],

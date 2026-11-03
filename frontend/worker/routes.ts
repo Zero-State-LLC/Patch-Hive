@@ -11,6 +11,7 @@ export const APP_ROUTES = [
   "/racks/:rigId",
   "/rigs/:rigId",
   "/rigs/:rigId/patchbook-studio",
+  "/rigs/:rigId/patches/:patchId",
   "/patches",
   "/products",
   "/login",

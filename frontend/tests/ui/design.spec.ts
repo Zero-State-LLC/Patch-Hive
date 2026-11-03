@@ -176,6 +176,7 @@ async function mockApi(page: Page, { signedIn }: { signedIn: boolean }) {
     (url) => url.pathname.endsWith("/api/canon/runs"),
     (route) => route.fulfill(json({ total: 1, runs: [RUN] })),
   );
+  await page.route("**/api/patches/501", (route) => route.fulfill(json(PATCH)));
   await page.route("**/api/runs/11/patches**", (route) =>
     route.fulfill(json({ total: 1, created_at: STAMP, patches: [PATCH] })),
   );
@@ -271,6 +272,12 @@ const SCREENS: Screen[] = [
   { path: "/admin", name: "ops", signedIn: true },
   { path: "/admin/users", name: "ops users", signedIn: true },
   { path: "/rigs/1", name: "rig detail", signedIn: true, signature: ".signal-chain" },
+  {
+    path: "/rigs/1/patches/501",
+    name: "patch detail",
+    signedIn: true,
+    signature: ".patch-rail .patch-cable",
+  },
   { path: "/rigs/1/patchbook-studio", name: "style studio", signedIn: true },
   {
     path: "/racks",
