@@ -28,7 +28,9 @@ Fail closed on timeout, transport error, malformed or out-of-candidate output, u
 |---|---|---|
 | `nvidia/nemotron-3.5-super-vl-120b-a12b` and `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` are served by `integrate.api.nvidia.com` | `OBSERVED` | `GET /v1/models`, 2026-11-01 |
 | The 3.5 Super VL card lists structured output and function calling as supported, commercial use allowed | `OBSERVED` | build.nvidia.com model card, 2026-11-01 |
-| The hosted endpoint honours `response_format` json_schema for this model | `INFERRED` | NIM VLM docs; not yet called with a key (no key on this machine) |
+| The hosted endpoint honours `response_format` json_schema with thinking off, for both pinned models | `OBSERVED` | `NvidiaVisionProvider.choose` with one synthetic image, 2026-11-01: both models returned in-schema JSON in `content`, `finish_reason` `stop`, no reasoning text, within 512 tokens (`tests/integration/test_nvidia_live.py`, opt-in) |
+| A cold first call can exceed the 20 s default timeout | `OBSERVED` | One `NVIDIA_TIMEOUT` on the first call, 2026-11-01; later calls took 0.5-1.4 s. Default left at 20 s |
+| Accuracy on rig photos | `UNKNOWN` | Only a synthetic image has been sent; that needs the 007 evaluation |
 
 ## Author / date
 
