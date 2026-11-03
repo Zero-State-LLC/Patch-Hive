@@ -127,8 +127,12 @@
   --color-screw: #6b7280;
   --shadow-lift: 0 6px 18px -8px rgb(0 0 0 / 60%);
   --shadow-card: none;
+}
 
-  /* Project aliases kept for components that read them inline */
+/* Project aliases kept for components that read them inline. Declared on the shell as well as
+   :root, so they resolve against the theme block's colour overrides instead of the dark defaults. */
+:root,
+.app-shell {
   --surface-canvas: var(--color-paper);
   --surface-panel: var(--color-paper-2);
   --surface-raised: var(--color-paper-3);

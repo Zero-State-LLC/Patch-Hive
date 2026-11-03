@@ -101,19 +101,27 @@
   fill: var(--color-muted);
   font: 11px/1 var(--font-mono);
 }
-/* Cables draw themselves in, once */
+/* Cables arrive once. CV and gate cables keep the renderer's dash patterns and fade in;
+   solid audio cables draw themselves along their length. */
 .graph-edge {
   fill: none;
   stroke: var(--cable-audio);
   stroke-width: 3;
-  stroke-linecap: round;
-  stroke-dasharray: 1200;
-  stroke-dashoffset: 0;
   opacity: 0.8;
-  animation: cable-draw var(--dur-long) var(--ease-out) both;
+  animation: cable-in var(--dur-long) var(--ease-out) both;
   transition:
     opacity var(--dur-short) var(--ease-out),
     stroke-width var(--dur-short) var(--ease-out);
+}
+.graph-edge:not([stroke-dasharray]) {
+  stroke-linecap: round;
+  stroke-dasharray: 1200;
+  animation-name: cable-draw;
+}
+@keyframes cable-in {
+  from {
+    opacity: 0;
+  }
 }
 @keyframes cable-draw {
   from {
