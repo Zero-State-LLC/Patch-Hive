@@ -3,6 +3,7 @@
  */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ListSkeleton } from "@/components/Skeletons";
 import { patchApi } from "@/lib/api";
 import type { Patch } from "@/types/api";
 
@@ -73,11 +74,7 @@ export default function PatchesPage() {
         </div>
       </header>
 
-      {state === "loading" ? (
-        <p className="status" role="status">
-          Loading patches…
-        </p>
-      ) : null}
+      {state === "loading" ? <ListSkeleton label="Loading patches…" rows={5} /> : null}
 
       {state === "error" ? (
         <div className="panel" role="alert">

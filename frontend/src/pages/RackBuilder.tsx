@@ -9,6 +9,7 @@ import {
   rackApi,
   type EvidenceCandidate,
 } from "@/lib/api";
+import { RailSkeleton } from "@/components/Skeletons";
 import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 import { firstFreeStartHp, packModulesOntoRows } from "@/lib/placementPack";
 import {
@@ -209,6 +210,7 @@ export default function RackBuilderPage() {
 
   /** Live placement editor (method 01) */
   const [liveRack, setLiveRack] = useState<Rack | null>(null);
+  const [liveRackLoading, setLiveRackLoading] = useState(false);
   const [placementModules, setPlacementModules] = useState<RackModuleSpec[]>([]);
   const [galleryModules, setGalleryModules] = useState<Module[]>([]);
   const [addModuleId, setAddModuleId] = useState<number | null>(null);
@@ -540,10 +542,13 @@ export default function RackBuilderPage() {
       setRackCompat(null);
       return;
     }
-    void refreshLiveRack(rackId).catch(() => {
-      setLiveRack(null);
-      setPlacementError("Unable to load rig for placement.");
-    });
+    setLiveRackLoading(true);
+    void refreshLiveRack(rackId)
+      .catch(() => {
+        setLiveRack(null);
+        setPlacementError("Unable to load rig for placement.");
+      })
+      .finally(() => setLiveRackLoading(false));
     moduleApi
       .list({ limit: 500 })
       .then((res) => {
@@ -1253,6 +1258,10 @@ export default function RackBuilderPage() {
             Place modules by row and start HP. Saves through rack validation; catalog compatibility
             runs when the case has <code>meta.catalog_slug</code>.
           </p>
+
+          {liveRackLoading && !liveRack ? (
+            <RailSkeleton label="Loading rig for placement…" />
+          ) : null}
 
           {rowHpUsage.length > 0 ? (
             <div className="hp-usage" aria-label="Row HP usage">
