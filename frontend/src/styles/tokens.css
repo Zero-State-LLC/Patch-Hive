@@ -121,6 +121,9 @@
   --color-plate: #c9ced6;
   --color-plate-face: #2b3039;
   /* Text on the brand's carbon photo surfaces, the same in both themes */
+  /* The patch path: a lit cable and its unlit length */
+  --color-signal: var(--ph-amber);
+  --color-cable-off: var(--zs-gunmetal);
   --color-on-dark: #e8ecf0;
   --color-on-dark-2: #b4bac4;
   --color-plate-ink: #15181e;
@@ -178,6 +181,8 @@
   --color-info: #0a6f8a;
   --color-plate: #d8dce2;
   --color-plate-face: #f7f8fa;
+  --color-signal: #b8700a;
+  --color-cable-off: #c5cad3;
   --color-plate-ink: #15181e;
   --color-screw: #8b919c;
   --shadow-lift: 0 6px 18px -10px rgb(18 21 26 / 30%);
