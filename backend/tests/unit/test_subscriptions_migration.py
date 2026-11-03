@@ -18,6 +18,7 @@ from canon.models import (
     SUBSCRIPTION_GRANT_SHAPE,
     SUBSCRIPTION_STATUSES,
     ProviderSubscriptionRecord,
+    SubscriptionCheckoutRecord,
     SubscriptionPeriodGrantRecord,
 )
 
@@ -61,6 +62,10 @@ def test_the_model_and_the_migration_agree_on_the_constraints() -> None:
     )
     assert _check(subscriptions, "ck_provider_subscriptions_tier") == module._TIER_CHECK
     assert _check(grants, "ck_subscription_period_grants_shape") == _normal(module._GRANT_SHAPE)
+    assert (
+        _check(SubscriptionCheckoutRecord.__table__, "ck_subscription_checkouts_status")
+        == module._CHECKOUT_STATUS_CHECK
+    )
     assert _normal(SUBSCRIPTION_GRANT_SHAPE) == _normal(module._GRANT_SHAPE)
     assert set(SUBSCRIPTION_STATUSES) == {
         "incomplete",
@@ -93,7 +98,9 @@ def test_upgrade_and_downgrade_on_an_empty_schema(tmp_path: Path) -> None:
 
     _run(module, "upgrade", engine)
     tables = set(sa.inspect(engine).get_table_names())
-    assert {"provider_subscriptions", "subscription_period_grants"} <= tables
+    assert {"provider_subscriptions", "subscription_period_grants", "subscription_checkouts"} <= (
+        tables
+    )
 
     with engine.begin() as conn:
         conn.execute(
@@ -114,3 +121,4 @@ def test_upgrade_and_downgrade_on_an_empty_schema(tmp_path: Path) -> None:
     tables = set(sa.inspect(engine).get_table_names())
     assert "provider_subscriptions" not in tables
     assert "subscription_period_grants" not in tables
+    assert "subscription_checkouts" not in tables

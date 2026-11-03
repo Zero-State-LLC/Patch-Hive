@@ -447,6 +447,42 @@ class ProviderSubscriptionRecord(Base):
     updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
 
 
+SUBSCRIPTION_CHECKOUT_STATUSES = ("open", "completed", "expired")
+
+
+class SubscriptionCheckoutRecord(Base):
+    """Spec 004 Machine C ``CheckoutOpen``: the user's outstanding subscription checkout.
+
+    It reserves checkout per user, so a second request while one is open reuses that
+    session instead of opening another subscription (T049). ``expires_at`` is the
+    provider session's own expiry; past it the session can no longer be paid.
+    ``completed`` carries the subscription the session created, which blocks a new
+    checkout until that subscription is terminal.
+    """
+
+    __tablename__ = "subscription_checkouts"
+    __table_args__ = (
+        CheckConstraint(_TIER_CHECK, name="ck_subscription_checkouts_tier"),
+        CheckConstraint(
+            "status IN ('open', 'completed', 'expired')",
+            name="ck_subscription_checkouts_status",
+        ),
+    )
+
+    id = Column(String(64), primary_key=True)
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    checkout_session_id = Column(String(255), nullable=False, unique=True)
+    checkout_url = Column(Text, nullable=False)
+    tier = Column(String(16), nullable=False)
+    status = Column(String(16), nullable=False, default="open")
+    provider_subscription_id = Column(String(255), nullable=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+
 SUBSCRIPTION_GRANT_SHAPE = (
     "(unlimited AND credits = 0 AND fair_use_export_cap >= 1 AND ledger_entry_id IS NULL) "
     "OR (NOT unlimited AND credits > 0 AND fair_use_export_cap IS NULL "

@@ -222,6 +222,7 @@ class StripeCheckoutProvider:
         price_id: str,
         success_url: str,
         cancel_url: str,
+        expires_at: int,
         idempotency_key: str,
     ) -> ProviderCheckoutSession:
         """Machine C ``choose_tier``: a ``subscription``-mode session for one tier price."""
@@ -239,6 +240,7 @@ class StripeCheckoutProvider:
             "metadata[purchase_type]": SUBSCRIPTION_PURCHASE_TYPE,
             "subscription_data[metadata][user_id]": str(user_id),
             "subscription_data[metadata][tier]": tier,
+            "expires_at": str(expires_at),
         }
         body = self._post("/v1/checkout/sessions", form, idempotency_key)
         session_id, url = body.get("id"), body.get("url")
@@ -496,11 +498,13 @@ def handle_checkout_session_event(session: Session, event: dict[str, Any]) -> Ev
         raise UnresolvedEventError("EVENT_PAYLOAD_MALFORMED")
     mode = obj.get("mode")
     if mode == "subscription":
-        # Machine C (T049): a subscription Checkout Session writes nothing. The record
-        # comes from ``customer.subscription.*`` and the period grant from
+        # Machine C (T049): the session only settles the user's checkout reservation.
+        # The record comes from ``customer.subscription.*`` and the period grant from
         # ``invoice.paid`` (canon.subscriptions); an expired session is Abandoned with no
         # record.
-        return EventDisposition("ignored", "SUBSCRIPTION_SESSION_NO_EFFECT")
+        from canon.subscriptions import handle_subscription_checkout_session
+
+        return handle_subscription_checkout_session(session, event)
     if mode != "payment":
         raise UnresolvedEventError("CHECKOUT_MODE_UNKNOWN")
 

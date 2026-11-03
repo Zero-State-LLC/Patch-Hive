@@ -29,6 +29,7 @@ from canon.models import (
     ProviderCustomerRecord,
     ProviderSubscriptionRecord,
     StripeEventRecordModel,
+    SubscriptionCheckoutRecord,
     SubscriptionPeriodGrantRecord,
 )
 from monetization.models import CreditsLedger, Referral
@@ -206,6 +207,71 @@ def test_a_failure_after_the_grant_rolls_back_the_whole_delivery(
     assert db_session.query(ProviderSubscriptionRecord).count() == 0
     assert db_session.query(SubscriptionPeriodGrantRecord).count() == 0
     assert db_session.query(CanonicalCreditLedgerEntryRecord).count() == 0
+
+
+class _SlowProvider:
+    """Fake provider; the session call is slow so overlapping requests really overlap."""
+
+    def __init__(self) -> None:
+        self.sessions = 0
+        self._lock = threading.Lock()
+
+    def create_customer(self, *, user_id: int, idempotency_key: str) -> str:
+        return f"cus_{user_id}"
+
+    def create_subscription_checkout_session(self, **_kwargs):
+        from canon.checkout import ProviderCheckoutSession
+
+        with self._lock:
+            self.sessions += 1
+            index = self.sessions
+        threading.Event().wait(0.3)
+        return ProviderCheckoutSession(id=f"cs_pg_sub_{index}", url=f"https://co.test/{index}")
+
+
+def test_concurrent_checkout_requests_open_one_subscription_checkout(
+    migrated_db: sessionmaker, db_session: Session, create_user
+) -> None:
+    """Codex P1 on #219: two requests before either session is paid must not open two
+    independently billed subscriptions."""
+    from tests.unit.test_commerce_subscriptions import _c_settings
+
+    user = create_user("pg-mc-buyer5", "pg-pass")
+    _customer(db_session, user.id)
+    provider = _SlowProvider()
+    barrier = threading.Barrier(2)
+    urls: list[str] = []
+    errors: list[BaseException] = []
+
+    def request() -> None:
+        session = migrated_db()
+        try:
+            from community.models import User
+
+            me = session.get(User, user.id)
+            barrier.wait(timeout=10)
+            started = subscriptions.start_subscription_checkout(
+                session, user=me, tier="pro", provider=provider, app_settings=_c_settings()
+            )
+            session.commit()
+            urls.append(started.checkout_url)
+        except BaseException as exc:  # pragma: no cover - surfaced below
+            session.rollback()
+            errors.append(exc)
+        finally:
+            session.close()
+
+    threads = [threading.Thread(target=request) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=30)
+
+    assert errors == []
+    assert provider.sessions == 1
+    assert len(urls) == 2 and len(set(urls)) == 1
+    db_session.expire_all()
+    assert db_session.query(SubscriptionCheckoutRecord).count() == 1
 
 
 def _alembic(database_url: str) -> Config:

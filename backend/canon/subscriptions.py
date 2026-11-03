@@ -4,8 +4,9 @@
 its own flag (``ENABLE_SUBSCRIPTION_CHECKOUT``, off by default) and the same production
 and test-key refusals as Machine B, it gets or creates the user's one provider customer
 and creates a ``subscription``-mode Checkout Session for the tier's configured price. It
-writes no subscription record: an abandoned checkout leaves none (Machine C
-``checkout_canceled_or_expired``).
+writes no subscription record (an abandoned checkout leaves none, Machine C
+``checkout_canceled_or_expired``), only a ``SubscriptionCheckoutRecord`` that reserves
+checkout for the user: a repeated request reuses the open session until it expires.
 
 The webhook side runs inside ``process_stripe_event``'s savepoint:
 
@@ -58,6 +59,7 @@ from canon.models import (
     CanonicalCreditLedgerEntryRecord,
     ProviderCustomerRecord,
     ProviderSubscriptionRecord,
+    SubscriptionCheckoutRecord,
     SubscriptionPeriodGrantRecord,
 )
 from canon.webhook_events import EventDisposition, UnresolvedEventError
@@ -87,6 +89,8 @@ CANCELED = "canceled"
 # A user with a subscription in one of these statuses cannot open a second checkout:
 # two live subscriptions would bill and grant twice.
 TERMINAL_STATUSES = frozenset({"canceled", "incomplete_expired"})
+# Provider session lifetime (Stripe allows 30 minutes to 24 hours).
+CHECKOUT_TTL_SECONDS = 3600
 
 
 class SubscriptionRefusedError(Exception):
@@ -110,6 +114,7 @@ class SubscriptionProvider(Protocol):
         price_id: str,
         success_url: str,
         cancel_url: str,
+        expires_at: int,
         idempotency_key: str,
     ) -> ProviderCheckoutSession: ...
 
@@ -218,10 +223,28 @@ def start_subscription_checkout(
     price_id = price_id_for_tier(app_settings, tier)
     if not price_id or tier_for_price(app_settings, price_id) != tier:
         raise CheckoutUnavailableError("SUBSCRIPTION_PRICE_MISSING", status_code=503)
+    # Serialize this user's checkout requests: the row lock makes the reservation check
+    # below and the new reservation one step, so two requests cannot both open a session.
+    session.query(User).filter(User.id == user.id).with_for_update().one()
     if _live_subscription(session, user.id) is not None:
         raise SubscriptionRefusedError("SUBSCRIPTION_EXISTS")
+    now = datetime.now(timezone.utc)
+    outstanding = _outstanding_checkout(session, user.id, now)
+    if outstanding is not None:
+        if outstanding.status == "completed":
+            # Paid; its subscription event has not arrived yet.
+            raise SubscriptionRefusedError("SUBSCRIPTION_EXISTS")
+        if outstanding.tier != tier:
+            raise SubscriptionRefusedError("SUBSCRIPTION_CHECKOUT_OPEN")
+        # The same tier again: reuse the open session rather than open a second one.
+        return StartedSubscriptionCheckout(
+            tier=tier,
+            checkout_session_id=outstanding.checkout_session_id,
+            checkout_url=outstanding.checkout_url,
+        )
     customer = get_or_create_customer(session, user=user, provider=provider)
     base = str(app_settings.frontend_base_url).rstrip("/")
+    expires_at = int(now.timestamp()) + CHECKOUT_TTL_SECONDS
     created = provider.create_subscription_checkout_session(
         customer_id=customer.provider_customer_id,
         user_id=user.id,
@@ -229,12 +252,95 @@ def start_subscription_checkout(
         price_id=price_id,
         success_url=f"{base}/account?subscription=success",
         cancel_url=f"{base}/account?subscription=canceled",
+        expires_at=expires_at,
         idempotency_key=f"patchhive-subscription-checkout:{uuid.uuid4().hex}",
+    )
+    session.add(
+        SubscriptionCheckoutRecord(
+            id=f"subco-{uuid.uuid4().hex}",
+            user_id=user.id,
+            checkout_session_id=created.id,
+            checkout_url=created.url,
+            tier=tier,
+            status="open",
+            expires_at=_at(expires_at),
+            created_at=now,
+            updated_at=now,
+        )
     )
     session.flush()
     return StartedSubscriptionCheckout(
         tier=tier, checkout_session_id=created.id, checkout_url=created.url
     )
+
+
+def _outstanding_checkout(
+    session: Session, user_id: int, now: datetime
+) -> SubscriptionCheckoutRecord | None:
+    """The user's checkout that still blocks a new one, if any.
+
+    An ``open`` one blocks until its provider expiry. A ``completed`` one blocks until
+    the subscription it created is recorded (that record then decides).
+    """
+
+    rows = (
+        session.query(SubscriptionCheckoutRecord)
+        .filter(
+            SubscriptionCheckoutRecord.user_id == user_id,
+            SubscriptionCheckoutRecord.status.in_(("open", "completed")),
+        )
+        .order_by(SubscriptionCheckoutRecord.created_at.desc())
+        .all()
+    )
+    current = int(now.timestamp())
+    for row in rows:
+        if row.status == "open" and (_as_epoch(row.expires_at) or 0) > current:
+            return row
+        if row.status == "completed" and (
+            not row.provider_subscription_id
+            or session.query(ProviderSubscriptionRecord)
+            .filter_by(provider_subscription_id=row.provider_subscription_id)
+            .first()
+            is None
+        ):
+            return row
+    return None
+
+
+def handle_subscription_checkout_session(
+    session: Session, event: dict[str, Any]
+) -> EventDisposition:
+    """A ``subscription``-mode Checkout Session event: settle the user's reservation.
+
+    ``checkout.session.completed`` marks it ``completed`` with the session's
+    subscription; ``checkout.session.expired`` marks it ``expired`` (Machine C
+    ``Abandoned``: no subscription record). Nothing is granted: the record comes from
+    ``customer.subscription.*`` and the grant from ``invoice.paid``. A session with no
+    reservation, or an event that changes nothing, is ``ignored``.
+    """
+
+    obj = event["data"]["object"]
+    no_effect = EventDisposition("ignored", "SUBSCRIPTION_SESSION_NO_EFFECT")
+    reservation = (
+        session.query(SubscriptionCheckoutRecord)
+        .filter_by(checkout_session_id=obj.get("id"))
+        .with_for_update()
+        .populate_existing()
+        .one_or_none()
+    )
+    if reservation is None or reservation.status != "open":
+        return no_effect
+    event_type = event.get("type")
+    if event_type == "checkout.session.completed":
+        reservation.status = "completed"
+        reservation.provider_subscription_id = _object_id(obj.get("subscription"))
+    elif event_type == "checkout.session.expired":
+        reservation.status = "expired"
+    else:
+        return no_effect
+    reservation.updated_at = datetime.now(timezone.utc)
+    session.flush()
+    return EventDisposition("processed")
 
 
 def request_subscription_cancel(
@@ -454,8 +560,16 @@ def _subscription_fields(
 def _apply_fields(
     record: ProviderSubscriptionRecord, fields: _SubscriptionFields, event_created: int | None
 ) -> bool:
-    """Sync the record to ``fields``. Returns whether anything changed."""
+    """Sync the record to ``fields``. Returns whether any tracked field changed.
 
+    A newer event advances ``last_event_created`` even when it changes nothing, so a
+    delayed older snapshot cannot roll the record back past it.
+    """
+
+    if event_created is not None and (
+        record.last_event_created is None or event_created > record.last_event_created
+    ):
+        record.last_event_created = event_created
     before = (
         record.price_id,
         record.tier,
@@ -483,8 +597,6 @@ def _apply_fields(
     record.cancel_at_period_end = fields.cancel_at_period_end
     if fields.status == CANCELED and record.canceled_at is None:
         record.canceled_at = now
-    if event_created is not None:
-        record.last_event_created = event_created
     record.updated_at = now
     return True
 

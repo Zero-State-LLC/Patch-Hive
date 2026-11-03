@@ -30,6 +30,7 @@ from canon.models import (
     CanonicalCreditLedgerEntryRecord,
     ProviderCustomerRecord,
     ProviderSubscriptionRecord,
+    SubscriptionCheckoutRecord,
     SubscriptionPeriodGrantRecord,
 )
 from canon.subscriptions import (
@@ -90,7 +91,11 @@ class FakeSubscriptionProvider:
 
     def create_subscription_checkout_session(self, **kwargs: Any) -> ProviderCheckoutSession:
         self.calls.append(("session", kwargs))
-        return ProviderCheckoutSession(id="cs_sub_test", url="https://checkout.example.test/sub")
+        count = sum(1 for name, _ in self.calls if name == "session")
+        suffix = "" if count == 1 else f"_{count}"
+        return ProviderCheckoutSession(
+            id=f"cs_sub_test{suffix}", url=f"https://checkout.example.test/sub{suffix}"
+        )
 
     def cancel_subscription_at_period_end(self, **kwargs: Any) -> dict[str, Any]:
         self.calls.append(("cancel", kwargs))
@@ -385,9 +390,113 @@ def test_an_enabled_checkout_opens_a_subscription_session_and_writes_no_record(
     assert session_call["tier"] == tier
     assert session_call["customer_id"] == f"cus_{user.id}"
     assert session_call["idempotency_key"].startswith("patchhive-subscription-checkout:")
-    # Machine C writes no record until the provider reports the subscription.
+    # Machine C writes no record until the provider reports the subscription; only the
+    # checkout reservation.
     assert db_session.query(ProviderSubscriptionRecord).count() == 0
+    (reservation,) = db_session.query(SubscriptionCheckoutRecord).all()
+    assert (reservation.checkout_session_id, reservation.tier, reservation.status) == (
+        "cs_sub_test",
+        tier,
+        "open",
+    )
+    assert _epoch(reservation.expires_at) == session_call["expires_at"]
     assert _nothing_granted(db_session)
+
+
+def _start(db_session: Session, user: User, provider, tier: str = "pro"):
+    started = start_subscription_checkout(
+        db_session, user=user, tier=tier, provider=provider, app_settings=_c_settings()
+    )
+    db_session.commit()
+    return started
+
+
+def test_a_repeated_request_reuses_the_open_checkout(db_session: Session) -> None:
+    """Two requests before either session is paid open one subscription checkout."""
+    user = _user(db_session)
+    provider = FakeSubscriptionProvider()
+
+    first = _start(db_session, user, provider)
+    second = _start(db_session, user, provider)
+
+    assert second == first
+    assert [name for name, _ in provider.calls] == ["customer", "session"]
+    assert db_session.query(SubscriptionCheckoutRecord).count() == 1
+    with pytest.raises(SubscriptionRefusedError) as other_tier:
+        _start(db_session, user, provider, tier="studio")
+    assert (other_tier.value.code, other_tier.value.status_code) == (
+        "SUBSCRIPTION_CHECKOUT_OPEN",
+        409,
+    )
+    assert [name for name, _ in provider.calls] == ["customer", "session"]
+
+
+def test_an_expired_checkout_no_longer_blocks(db_session: Session, machine_c) -> None:
+    user = _user(db_session)
+    provider = FakeSubscriptionProvider()
+    first = _start(db_session, user, provider)
+
+    # By the provider's own expiry event ...
+    _deliver(
+        db_session,
+        "evt_expired",
+        "checkout.session.expired",
+        {"id": first.checkout_session_id, "object": "checkout.session", "mode": "subscription"},
+    )
+    second = _start(db_session, user, provider, tier="studio")
+    assert second.checkout_session_id != first.checkout_session_id
+
+    # ... or once its expiry time has passed.
+    from datetime import datetime, timezone
+
+    reservation = (
+        db_session.query(SubscriptionCheckoutRecord)
+        .filter_by(checkout_session_id=second.checkout_session_id)
+        .one()
+    )
+    reservation.expires_at = datetime(2000, 1, 1, tzinfo=timezone.utc)
+    db_session.commit()
+    third = _start(db_session, user, provider)
+    assert third.checkout_session_id not in {
+        first.checkout_session_id,
+        second.checkout_session_id,
+    }
+    statuses = sorted(r.status for r in db_session.query(SubscriptionCheckoutRecord))
+    assert statuses == ["expired", "open", "open"]
+
+
+def test_a_completed_checkout_blocks_until_its_subscription_is_terminal(
+    db_session: Session, machine_c
+) -> None:
+    user = _user(db_session)
+    _customer(db_session, user)
+    provider = FakeSubscriptionProvider()
+    first = _start(db_session, user, provider)
+
+    completed = _deliver(
+        db_session,
+        "evt_done",
+        "checkout.session.completed",
+        {
+            "id": first.checkout_session_id,
+            "object": "checkout.session",
+            "mode": "subscription",
+            "subscription": "sub_1",
+        },
+    )
+    assert _disposition(completed) == ("processed", None)
+    # Paid, but the subscription event has not arrived: still one subscription only.
+    with pytest.raises(SubscriptionRefusedError, match="SUBSCRIPTION_EXISTS"):
+        _start(db_session, user, provider)
+
+    _deliver(db_session, "evt_c1", "customer.subscription.created", _subscription("sub_1", user.id))
+    with pytest.raises(SubscriptionRefusedError, match="SUBSCRIPTION_EXISTS"):
+        _start(db_session, user, provider)
+    _deliver(db_session, "evt_c2", "customer.subscription.deleted", _subscription("sub_1", user.id))
+    _start(db_session, user, provider)
+    assert [name for name, _ in provider.calls].count("session") == 2
+    # Nothing about the session itself grants.
+    assert _ledger_grants(db_session, user) == []
 
 
 def test_a_user_with_a_live_subscription_cannot_open_another(
@@ -430,11 +539,13 @@ def test_the_stripe_client_sends_a_subscription_mode_session_without_the_key_in_
         price_id=PRICES["pro"],
         success_url="https://app.test/ok",
         cancel_url="https://app.test/no",
+        expires_at=1_700_003_600,
         idempotency_key="key-1",
     )
     assert created == ProviderCheckoutSession(id="cs_1", url="https://checkout.test/1")
     form = {k: v[0] for k, v in parse_qs(seen[0].content.decode()).items()}
     assert form["mode"] == "subscription"
+    assert form["expires_at"] == "1700003600"
     assert form["line_items[0][price]"] == PRICES["pro"]
     assert form["line_items[0][quantity]"] == "1"
     assert form["metadata[user_id]"] == "7"
@@ -526,6 +637,39 @@ def test_an_update_that_changes_nothing_is_a_duplicate(db_session: Session, mach
     )
 
     assert _disposition(again) == ("duplicate", "SUBSCRIPTION_UNCHANGED")
+
+
+def test_an_unchanged_newer_snapshot_still_advances_the_watermark(
+    db_session: Session, machine_c
+) -> None:
+    user = _user(db_session)
+    _customer(db_session, user)
+    _deliver(
+        db_session,
+        "evt_1",
+        "customer.subscription.created",
+        _subscription("sub_1", user.id),
+        created=TS,
+    )
+    unchanged = _deliver(
+        db_session,
+        "evt_2",
+        "customer.subscription.updated",
+        _subscription("sub_1", user.id),
+        created=TS + 20,
+    )
+    late = _deliver(
+        db_session,
+        "evt_3",
+        "customer.subscription.updated",
+        _subscription("sub_1", user.id, status="past_due"),
+        created=TS + 10,
+    )
+
+    assert _disposition(unchanged) == ("duplicate", "SUBSCRIPTION_UNCHANGED")
+    assert _disposition(late) == ("duplicate", "STALE_EVENT")
+    record = _record(db_session, "sub_1")
+    assert (record.status, record.last_event_created) == ("active", TS + 20)
 
 
 def test_an_older_event_delivered_late_does_not_roll_the_record_back(

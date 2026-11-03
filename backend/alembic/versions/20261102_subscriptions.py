@@ -15,8 +15,11 @@ Spec 004 Machine C (T049):
   (subscription, period start) pair. CORE and PRO rows point at their canonical
   ``grant`` entry; a STUDIO row carries the unlimited entitlement and its fair-use cap
   instead of credits (FR-004, OQ-8).
+- ``subscription_checkouts`` reserves the user's outstanding subscription checkout
+  (Machine C ``CheckoutOpen``), so a repeated request reuses it instead of opening a
+  second subscription.
 
-Additive only. Downgrade refuses while either table has rows, because they back
+Additive only. Downgrade refuses while any of the tables has rows, because they back
 canonical grants and the subscription state an operator reviews.
 """
 
@@ -35,6 +38,7 @@ _STATUS_CHECK = (
     "status IN ('incomplete', 'incomplete_expired', 'trialing', 'active', 'past_due', "
     "'canceled', 'unpaid', 'paused')"
 )
+_CHECKOUT_STATUS_CHECK = "status IN ('open', 'completed', 'expired')"
 _GRANT_SHAPE = (
     "(unlimited AND credits = 0 AND fair_use_export_cap >= 1 AND ledger_entry_id IS NULL) "
     "OR (NOT unlimited AND credits > 0 AND fair_use_export_cap IS NULL "
@@ -133,17 +137,43 @@ def upgrade() -> None:
     op.create_index(
         "ix_subscription_period_grants_user_id", "subscription_period_grants", ["user_id"]
     )
+    op.create_table(
+        "subscription_checkouts",
+        sa.Column("id", sa.String(64), primary_key=True),
+        sa.Column(
+            "user_id",
+            sa.Integer(),
+            sa.ForeignKey("users.id", ondelete="RESTRICT"),
+            nullable=False,
+        ),
+        sa.Column("checkout_session_id", sa.String(255), nullable=False),
+        sa.Column("checkout_url", sa.Text(), nullable=False),
+        sa.Column("tier", sa.String(16), nullable=False),
+        sa.Column("status", sa.String(16), nullable=False),
+        sa.Column("provider_subscription_id", sa.String(255), nullable=True),
+        sa.Column("expires_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
+        sa.UniqueConstraint(
+            "checkout_session_id", name="uq_subscription_checkouts_checkout_session_id"
+        ),
+        sa.CheckConstraint(_TIER_CHECK, name="ck_subscription_checkouts_tier"),
+        sa.CheckConstraint(_CHECKOUT_STATUS_CHECK, name="ck_subscription_checkouts_status"),
+    )
+    op.create_index("ix_subscription_checkouts_user_id", "subscription_checkouts", ["user_id"])
 
 
 def downgrade() -> None:
     bind = op.get_bind()
-    for table in ("subscription_period_grants", "provider_subscriptions"):
+    for table in ("subscription_period_grants", "provider_subscriptions", "subscription_checkouts"):
         count = bind.execute(sa.text(f"SELECT COUNT(*) FROM {table}")).scalar() or 0
         if count:
             raise RuntimeError(
                 f"refusing to downgrade 20261102_subscriptions: {table} has rows that back "
                 "canonical subscription grants"
             )
+    op.drop_index("ix_subscription_checkouts_user_id", table_name="subscription_checkouts")
+    op.drop_table("subscription_checkouts")
     op.drop_index("ix_subscription_period_grants_user_id", table_name="subscription_period_grants")
     op.drop_index(
         "ix_subscription_period_grants_subscription_record_id",
