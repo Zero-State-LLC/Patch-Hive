@@ -9,10 +9,12 @@
 /* Hallmark · reworded "3891 (96.2%)" readout into a figure with its percentage beside it · the readout splits figure and unit */
 /* Hallmark · dismissed kept onChange setPickRackId · the handler is byte-for-byte the same; Prettier wrapped it at its new nesting depth */
 /* Hallmark · dismissed kept "select a rig to begin" · the preview database now holds the seeded demo rig, so /racks opens on it instead of the empty state */
+/* Hallmark · waive 80 · div.patch-rail__stage on the home fold, 15 shapes · it is PatchRail, the workbench's own rail and cables, drawing the golden demo rig and one of its generated patches: the product built, not an illustration */
 /* Hallmark · waive 39b · button.side-item rows at 70px hold a rig name over its suggested name · each rig list row is a two-line list entry, not a control */
 /* Hallmark · dismissed 49 · every .button sets white-space: nowrap in this file, the long builder labels included */
 /* Hallmark · dismissed F7 · inputs and selects share one recipe because every field on these screens is the same kind of box */
 /* Hallmark · dismissed F17 · the home h2 "Boundaries that stay hard" renders on two lines in its 4-column track at 1440, recaptured */
+/* Hallmark · home hero-review: fix · 5 findings · 2 resolved 2 partial 1 dismissed · partial: row 1 keeps the seeded rig's 62 free HP, now crossed by two of the patch's cables; on a phone the narrowest modules lose their names under the rail's to-scale rule · dismissed: the brand at poster size over the claim, since design.md makes the brand name hero-level on marketing folds */
 /* Hallmark · finish-review: subagent · fix · 8 findings · 8 resolved · also fixed: screen styles losing to shared rules (shell.css now loads first), nav and footer aligned to the capped container at 1920 */
 @import url("./styles/tokens.css");
 @import url("./styles/base.css");

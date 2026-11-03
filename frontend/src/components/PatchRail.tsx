@@ -6,8 +6,11 @@
  */
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import RigRail from "@/components/RigRail";
-import type { Connection, Patch, Rack, RackModule } from "@/types/api";
+import RigRail, { type RailRack } from "@/components/RigRail";
+import type { Connection, Patch, RackModule } from "@/types/api";
+
+/** What the rail draws from a patch: its cables, named and keyed by the patch. */
+export type RailPatch = Pick<Patch, "id" | "name" | "connections">;
 
 type Point = { x: number; y: number };
 
@@ -76,7 +79,16 @@ function ModuleCell({
   );
 }
 
-export default function PatchRail({ rack, patch }: { rack: Rack; patch: Patch }) {
+export default function PatchRail({
+  rack,
+  patch,
+  table = true,
+}: {
+  rack: RailRack;
+  patch: RailPatch;
+  /** The cable table under the rail; off where the rail is shown, not worked (the home page). */
+  table?: boolean;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [plugs, setPlugs] = useState<Map<number, Point>>(new Map());
@@ -225,7 +237,7 @@ export default function PatchRail({ rack, patch }: { rack: Rack; patch: Patch })
         </p>
       )}
 
-      {cables.length === 0 ? (
+      {!table ? null : cables.length === 0 ? (
         <p className="muted">This patch has no cables yet.</p>
       ) : (
         <div className="patch-rail__table">
