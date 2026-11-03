@@ -22,6 +22,7 @@ from intelligence.contracts import (
 )
 from intelligence.nvidia_provider import (
     DEFAULT_BASE_URL,
+    DEFAULT_MODEL,
     NVIDIA_MODELS,
     NvidiaVisionProvider,
     answer_schema,
@@ -82,7 +83,7 @@ def test_the_model_list_matches_settings_validation() -> None:
     for model in NVIDIA_MODELS:
         assert Settings(nvidia_model=model).nvidia_model == model
     with pytest.raises(ValueError):
-        Settings(nvidia_model="meta/llama-3.2-90b-vision-instruct")
+        Settings(nvidia_model="meta/llama-3.2-11b-vision-instruct")
 
 
 def test_a_choice_is_sent_as_an_openai_chat_with_images_and_a_candidate_schema() -> None:
@@ -187,7 +188,7 @@ def test_a_failing_image_loader_sends_nothing() -> None:
 
 def test_construction_refuses_unpinned_models_and_missing_keys() -> None:
     with pytest.raises(ValueError):
-        NvidiaVisionProvider(model="meta/llama-3.2-90b-vision-instruct")
+        NvidiaVisionProvider(model="meta/llama-3.2-11b-vision-instruct")
     with pytest.raises(ValueError):
         NvidiaVisionProvider(enabled=True, api_key="")
 
@@ -233,3 +234,92 @@ def test_production_refuses_the_nvidia_flag() -> None:
 
     with pytest.raises(RuntimeError, match="enable_nvidia_provider"):
         validate_decision_startup_policy(SimpleNamespace(environment="production", enable_nvidia_provider=True))
+
+
+FALLBACK_MODEL = "meta/llama-3.2-90b-vision-instruct"
+
+
+def test_the_default_stays_nemotron_and_the_meta_fallback_is_pinned_last() -> None:
+    from core.config import Settings
+
+    assert DEFAULT_MODEL == NVIDIA_MODELS[0] == "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    assert NVIDIA_MODELS[-1] == FALLBACK_MODEL
+    assert Settings().nvidia_model == DEFAULT_MODEL
+    assert NvidiaVisionProvider().provider_version == DEFAULT_MODEL
+
+
+def test_the_fallback_is_sent_by_name_and_named_in_the_packet(caplog) -> None:
+    seen: list[httpx.Request] = []
+    with caplog.at_level("WARNING", logger="patchhive.decision.nvidia"):
+        provider = _provider(_ok_choice(seen), model=FALLBACK_MODEL)
+    assert any(FALLBACK_MODEL in r.getMessage() for r in caplog.records)
+
+    packet = provider.choose(_choice_request())
+
+    (sent,) = seen
+    assert json.loads(sent.content)["model"] == FALLBACK_MODEL
+    assert packet.provider == "nvidia"
+    assert packet.provider_version == FALLBACK_MODEL
+
+
+def test_the_default_model_logs_nothing(caplog) -> None:
+    with caplog.at_level("WARNING", logger="patchhive.decision.nvidia"):
+        _provider(_ok_choice())
+    assert not caplog.records
+
+
+def test_a_failed_default_call_never_falls_back_on_its_own() -> None:
+    seen: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(json.loads(request.content)["model"])
+        return httpx.Response(503, json={"error": "busy"})
+
+    provider = _provider(handler)
+    with pytest.raises(ClefProviderError) as exc:
+        provider.choose(_choice_request())
+    assert exc.value.code == "NVIDIA_UNAVAILABLE"
+    assert seen == [DEFAULT_MODEL]
+
+
+def test_the_route_passes_the_configured_fallback_and_timeout(monkeypatch) -> None:
+    import evidence.routes as routes
+
+    monkeypatch.setattr(routes.settings, "decision_provider", "nvidia")
+    monkeypatch.setattr(routes.settings, "enable_nvidia_provider", False)
+    monkeypatch.setattr(routes.settings, "nvidia_model", FALLBACK_MODEL)
+    monkeypatch.setattr(routes.settings, "nvidia_timeout_seconds", 60.0)
+    provider = routes._configured_decision_provider()
+    assert isinstance(provider, NvidiaVisionProvider)
+    assert provider.provider_version == FALLBACK_MODEL
+    with pytest.raises(ClefProviderError) as exc:
+        provider.choose(_choice_request())
+    assert exc.value.code == "NVIDIA_DISABLED"
+
+
+def _wrangler() -> dict:
+    """edge/api/wrangler.jsonc with its // comments removed (no comment markers in strings)."""
+    import re
+    from pathlib import Path
+
+    text = (Path(__file__).resolve().parents[3] / "edge" / "api" / "wrangler.jsonc").read_text(encoding="utf-8")
+    return json.loads(re.sub(r"^\s*//.*$|\s+//[^\"\n]*$", "", text, flags=re.MULTILINE))
+
+
+def test_staging_raises_the_nvidia_timeout_and_keeps_the_provider_off() -> None:
+    config = _wrangler()
+    staging = config["env"]["staging"]["vars"]
+    assert float(staging["NVIDIA_TIMEOUT_SECONDS"]) == 60
+    assert "ENABLE_NVIDIA_PROVIDER" not in staging
+    production = config["vars"]
+    assert production["ENVIRONMENT"] == "production"
+    assert not any(name.startswith("NVIDIA_") or name.startswith("ENABLE_") for name in production)
+
+
+def test_the_edge_forwards_the_timeout_only_outside_production() -> None:
+    from pathlib import Path
+
+    source = (Path(__file__).resolve().parents[3] / "edge" / "api" / "src" / "index.ts").read_text(encoding="utf-8")
+    flag_vars = source.split("const FLAG_VARS = [", 1)[1].split("] as const;", 1)[0]
+    assert '"NVIDIA_TIMEOUT_SECONDS"' in flag_vars
+    assert 'if (env.ENVIRONMENT !== "production") names.push(...FLAG_VARS' in source

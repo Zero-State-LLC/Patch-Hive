@@ -200,7 +200,11 @@ class Settings(BaseSettings):
     def _validate_nvidia_model(cls, value: str) -> str:
         # Mirrors intelligence.nvidia_provider.NVIDIA_MODELS (a test keeps them equal);
         # importing it here would cycle through core.database.
-        allowed = ("nvidia/nemotron-3.5-super-vl-120b-a12b", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning")
+        allowed = (
+            "nvidia/nemotron-3.5-super-vl-120b-a12b",
+            "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+            "meta/llama-3.2-90b-vision-instruct",
+        )
         normalized = value.strip()
         if normalized not in allowed:
             raise ValueError("nvidia_model must be one of " + ", ".join(allowed))
