@@ -403,3 +403,59 @@ def test_a_blocked_free_search_is_not_scraped_through_a_paid_backend(tmp_path, m
     paid = [c.url for c in transport.calls if "api.context.dev" in c.url]
     assert paid == [cs.CONTEXT_SEARCH_URL]
     assert cs.CONTEXT_SCRAPE_URL not in paid
+
+
+def _firecrawl_site() -> FakeTransport:
+    transport = _blocked_site()
+    transport.routes["https://api.firecrawl.dev/v1/scrape"] = (200, json.dumps({"data": {"html": "<p>12 HP</p>"}}))
+    return transport
+
+
+def test_a_non_basic_proxy_tier_needs_an_entry_that_names_it(tmp_path, monkeypatch):
+    """A stealth or auto Firecrawl fetch runs only under an approval that names that tier."""
+    monkeypatch.delenv("CONTEXT_DEV_API_KEY", raising=False)
+    monkeypatch.setenv("FIRECRAWL_API_KEY", "fc")
+    for entries in ([_approval()], [_approval(proxy_tier="auto")]):
+        transport = _firecrawl_site()
+        scraper = _gated(tmp_path, entries, transport, brands=("Acme",), firecrawl_proxy="stealth")
+        assert not scraper.fetch("https://ex.com/p").ok
+        assert _paid_calls(transport) == []
+        assert any(r["method"] == "skipped_no_approval" for r in scraper.receipts)
+
+    transport = _firecrawl_site()
+    scraper = _gated(tmp_path, [_approval(proxy_tier="stealth")], transport, brands=("Acme",), firecrawl_proxy="stealth")
+    assert scraper.fetch("https://ex.com/p").ok
+    assert json.loads(_paid_calls(transport)[0].body)["proxy"] == "stealth"
+
+
+def test_a_non_basic_proxy_tier_is_refused_without_an_approvals_file(tmp_path, monkeypatch):
+    monkeypatch.delenv("CONTEXT_DEV_API_KEY", raising=False)
+    monkeypatch.setenv("FIRECRAWL_API_KEY", "fc")
+    transport = _firecrawl_site()
+    scraper = _scraper(tmp_path, transport, max_paid_fetches=5, firecrawl_proxy="auto")
+    assert not scraper.fetch("https://ex.com/p").ok
+    assert _paid_calls(transport) == []
+    assert [r["note"] for r in scraper.receipts if r["method"] == "skipped_proxy_unapproved"] == ["firecrawl"]
+
+
+def test_the_basic_tier_needs_no_proxy_approval(tmp_path, monkeypatch):
+    monkeypatch.delenv("CONTEXT_DEV_API_KEY", raising=False)
+    monkeypatch.setenv("FIRECRAWL_API_KEY", "fc")
+    monkeypatch.delenv("PATCHHIVE_FIRECRAWL_PROXY", raising=False)
+    transport = _firecrawl_site()
+    scraper = _gated(tmp_path, [_approval()], transport, brands=("Acme",))
+    assert scraper.fetch("https://ex.com/p").ok
+    assert json.loads(_paid_calls(transport)[0].body)["proxy"] == "basic"
+
+
+def test_a_bot_challenge_is_never_sent_to_a_paid_backend(tmp_path, monkeypatch):
+    """Spec 003 D7: a refused site stays refused; no paid render or proxy routes around it."""
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    monkeypatch.setenv("FIRECRAWL_API_KEY", "fc")
+    transport = FakeTransport()
+    transport.routes["https://ex.com/p"] = (200, b"<html><title>Just a moment...</title>cf-chl-x</html>")
+    scraper = _gated(tmp_path, [_approval(brands=["*"], proxy_tier="stealth")], transport, firecrawl_proxy="stealth")
+    result = scraper.fetch("https://ex.com/p")
+    assert not result.ok and result.text is None
+    assert _paid_calls(transport) == []
+    assert [r.get("note") for r in scraper.receipts] == ["challenge"]

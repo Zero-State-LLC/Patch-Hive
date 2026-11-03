@@ -24,6 +24,9 @@ from urllib.parse import parse_qsl, urlencode, urljoin, urlparse, urlunparse
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ROOT / "data" / "synth-catalog" / "maker-sources.json"
 KINDS = ("shopify", "squarespace", "woocommerce", "listing")
+# EXTERNAL_SOURCE_POLICY access_basis values a maker crawl can record, plus maker_permission (the
+# maker said yes; proposed in docs/evidence/MAKER_PERMISSION_AND_PROXY_DECISION_2026-11-03.md).
+PERMISSION_BASES = ("official_publication", "maker_permission", "authorized_feed", "licensed_dataset", "unknown")
 FEED_PAGES = 20  # pages per store feed; 20 x 250 Shopify products is far beyond any maker
 HREF = re.compile(r"""href\s*=\s*["']?([^"'#\s>]+)""", re.I)
 # Merch, spares and services, by product handle or title. Modules that slip through
@@ -51,6 +54,10 @@ def load_sources(path: Path = SOURCES) -> dict:
             raise ValueError(f"{brand}: adapter kind must be one of {KINDS}")
         if cfg["kind"] == "listing" and not cfg.get("product"):
             raise ValueError(f"{brand}: listing adapter needs a product pattern")
+    basis = data.get("permission_basis") or {}
+    for brand, value in {"default": basis.get("default", "unknown"), **(basis.get("brands") or {})}.items():
+        if value not in PERMISSION_BASES:
+            raise ValueError(f"{brand}: permission basis must be one of {PERMISSION_BASES}")
     return data
 
 
@@ -217,3 +224,9 @@ def enumerate_products(scraper, cfg: dict) -> list[Candidate]:
             seen.add(cand.url)
             out.append(cand)
     return out[: int(cfg.get("max_pages") or 10_000)]
+
+
+def permission_basis(sources: dict, brand: str) -> str:
+    """The access basis recorded for a maker's crawled pages: its own entry, else the default."""
+    basis = sources.get("permission_basis") or {}
+    return (basis.get("brands") or {}).get(brand) or basis.get("default") or "unknown"

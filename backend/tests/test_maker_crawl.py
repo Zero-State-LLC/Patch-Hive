@@ -53,7 +53,8 @@ def _scraper(tmp_path: Path, site: Site, **kwargs) -> CatalogScraper:
 # --- shared router changes
 
 
-def test_challenge_page_escalates_to_paid(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_challenge_page_is_not_escalated_to_paid(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Spec 003 D7: a bot check is a refusal, not a reason to render or proxy around it."""
     monkeypatch.setenv("CONTEXT_DEV_API_KEY", "ctx-test")
     monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
     site = Site(
@@ -61,9 +62,10 @@ def test_challenge_page_escalates_to_paid(tmp_path: Path, monkeypatch: pytest.Mo
     )
     scraper = _scraper(tmp_path, site, max_paid_fetches=1)
     res = scraper.fetch("https://maker.example/p")
-    assert not res.ok  # context.dev is not routed in this fake web either
+    assert not res.ok
     assert any(r.get("note") == "challenge" for r in scraper.receipts)
-    assert catalog_scrape.CONTEXT_SCRAPE_URL in site.calls
+    assert catalog_scrape.CONTEXT_SCRAPE_URL not in site.calls
+    assert scraper.paid_attempts == 0
 
 
 def test_json_mentioning_captcha_is_not_a_challenge(tmp_path: Path) -> None:
@@ -352,6 +354,42 @@ def test_curated_sources_are_maker_sites_only() -> None:
         assert urlparse(url).scheme == "https", url
         assert not crawl.excluded(url) and not catalog_scrape.denied_host(url), url
     assert {h["status"] for h in data["homepages"].values()} <= set(data["status_meaning"])
+
+
+def test_no_maker_has_a_permission_basis_until_the_owner_signs_one_off() -> None:
+    data = maker_adapters.load_sources()
+    assert data["permission_basis"]["default"] == "unknown"
+    assert data["permission_basis"]["brands"] == {}
+    assert maker_adapters.permission_basis(data, "Make Noise") == "unknown"
+
+
+def test_an_unlisted_permission_basis_is_refused(tmp_path: Path) -> None:
+    bad = tmp_path / "s.json"
+    bad.write_text(json.dumps({"adapters": {}, "permission_basis": {"default": "unknown", "brands": {"X": "scraped"}}}))
+    with pytest.raises(ValueError, match="permission basis"):
+        maker_adapters.load_sources(bad)
+
+
+def test_crawl_rows_record_the_makers_permission_basis(monkeypatch: pytest.MonkeyPatch) -> None:
+    sources = {
+        "adapters": {"Acme": {"homepage": "https://acme.example/", "kind": "shopify"}},
+        "permission_basis": {"default": "unknown", "brands": {"Acme": "official_publication"}},
+    }
+    monkeypatch.setattr(crawl, "SOURCES", sources)
+    monkeypatch.setattr(crawl, "BUDGET", type("B", (), {"can_spend": lambda self: True})())
+    monkeypatch.setattr(crawl, "FETCH", type("F", (), {"robots_info": lambda self, url: (False, [], 0)})())
+
+    def adapter(brand, cfg, cap, rec):
+        rec["modules"].append({"brand": brand, "name": "Widget"})
+        rec["unconfirmed"].append({"brand": brand, "name": "Gadget"})
+
+    monkeypatch.setattr(crawl, "crawl_adapter", adapter)
+    monkeypatch.setattr(crawl, "crawl_generic", lambda brand, home, cap, rec: None)
+    rec = crawl.crawl_brand("Acme", 10, {"homepage": "https://acme.example/", "how": "adapter"})
+    assert rec["permission_basis"] == "official_publication"
+    assert {r["permission_basis"] for r in rec["modules"] + rec["unconfirmed"]} == {"official_publication"}
+    rec = crawl.crawl_brand("Other", 10, {"homepage": "https://other.example/", "how": "curated"})
+    assert rec["permission_basis"] == "unknown"
 
 
 def test_resolution_order(monkeypatch: pytest.MonkeyPatch) -> None:

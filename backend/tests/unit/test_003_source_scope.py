@@ -279,21 +279,26 @@ def test_firecrawl_uses_configured_proxy_tier(
     monkeypatch.delenv("CONTEXT_DEV_API_KEY", raising=False)
     monkeypatch.setenv("FIRECRAWL_API_KEY", "fc-test-secret")
     monkeypatch.setenv("PATCHHIVE_FIRECRAWL_PROXY", "stealth")
+    approvals = tmp_path / "fetch-approvals.json"
+    approvals.write_text(json.dumps({"entries": [{
+        "id": "t", "approver": "owner", "expires_at": "2099-01-01T00:00:00Z", "brands": ["*"],
+        "cap_fetches": 5, "cap_credits": 10, "proxy_tier": "stealth",
+    }]}))
     transport = _Transport()
-    result = _router(tmp_path, transport).fetch("https://maker.example/module")
+    result = _router(tmp_path, transport, approvals_path=approvals).fetch("https://maker.example/module")
     assert result.ok
     assert _firecrawl_payload(transport)["proxy"] == "stealth"
     assert result.receipt.get("note") == "proxy=stealth"
     assert "fc-test-secret" not in json.dumps(result.receipt)
 
 
-def test_firecrawl_proxy_defaults_to_auto(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_firecrawl_proxy_defaults_to_basic(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("CONTEXT_DEV_API_KEY", raising=False)
     monkeypatch.setenv("FIRECRAWL_API_KEY", "fc-test-secret")
     monkeypatch.delenv("PATCHHIVE_FIRECRAWL_PROXY", raising=False)
     transport = _Transport()
     _router(tmp_path, transport).fetch("https://maker.example/module")
-    assert _firecrawl_payload(transport)["proxy"] == "auto"
+    assert _firecrawl_payload(transport)["proxy"] == "basic"
 
 
 def test_unknown_proxy_tier_is_refused(tmp_path: Path) -> None:

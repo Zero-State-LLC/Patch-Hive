@@ -13,7 +13,8 @@
     "cap_fetches": 0,
     "cap_credits": 0,
     "ledger_baseline_fetches": 0,
-    "ledger_baseline_credits": 0
+    "ledger_baseline_credits": 0,
+    "proxy_tier": "optional: stealth or auto. Firecrawl uses basic unless an entry covering the run names another tier here."
   },
   "entries": [
     {

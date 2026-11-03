@@ -41,7 +41,9 @@ FIRECRAWL_SCRAPE_URL = "https://api.firecrawl.dev/v1/scrape"
 FIRECRAWL_SEARCH_URL = "https://api.firecrawl.dev/v1/search"
 # Firecrawl's managed proxy tiers (v1 scrape `proxy`). Proxies change where a paid fetch comes
 # from, never what may be fetched: robots, the deny list and the paid cap still apply first.
-# context.dev routes through its own managed network; its scrape API has no proxy field.
+# basic is the default; stealth and auto are used only under a fetch-approvals entry that names
+# the tier (`proxy_tier`). context.dev routes through its own managed network; its scrape API has
+# no proxy field.
 FIRECRAWL_PROXY_TIERS = ("basic", "stealth", "auto")
 # Paid backends render the page (browser, proxies), which routinely takes longer than a plain GET.
 # A 25 s timeout made most context.dev calls fail in the first v2 run while still using the paid cap.
@@ -49,8 +51,8 @@ PAID_TIMEOUT_S = 120.0
 DDG_LITE = "https://lite.duckduckgo.com/lite/"
 
 RETRY_STATUSES = {0, 429, 500, 502, 503, 504}
-# A 200 that is really a bot check. Treated as a failed free fetch so the paid backends
-# (which render and proxy) can try; never parsed as content.
+# A 200 that is really a bot check. A refusal (spec 003 D7): recorded as a failed free fetch,
+# never parsed as content and never retried through a paid backend that renders or proxies.
 CHALLENGE = re.compile(
     rb"(cf-chl-|challenge-platform|<title>\s*(?:Just a moment|Attention Required|Access denied|Are you a robot))", re.I
 )
@@ -336,11 +338,7 @@ class CatalogScraper:
         approvals_path: Path | None = None,
         brands: tuple[str, ...] = (),
     ) -> None:
-        tier = (firecrawl_proxy or os.environ.get("PATCHHIVE_FIRECRAWL_PROXY", "") or "auto")
-        tier = tier.strip().lower()
-        if tier not in FIRECRAWL_PROXY_TIERS:
-            raise ValueError(f"firecrawl proxy must be one of {FIRECRAWL_PROXY_TIERS}, got {tier!r}")
-        self.firecrawl_proxy = tier
+        self.firecrawl_proxy = firecrawl_proxy_tier(firecrawl_proxy)
         self.cache_dir = cache_dir
         self.ledger_path = ledger_path
         self.max_paid_fetches = max(0, int(max_paid_fetches))
@@ -435,9 +433,8 @@ class CatalogScraper:
 
         status, body = self._free_get(url, timeout)
         if status == 200 and body and body.lstrip()[:1] == b"<" and CHALLENGE.search(body[:8000]):
-            challenged = self._finish(url, "free_http", status, b"", ok=False, note="challenge", remember=False)
-            paid = self._paid_fetch(url, timeout) if allow_paid else None
-            return paid if paid is not None else challenged
+            # A bot check is the site saying no: never route around it (spec 003 D7).
+            return self._finish(url, "free_http", status, b"", ok=False, note="challenge", remember=False)
         if status == 200 and body:
             result = self._finish(url, "free_http", status, body, ok=True)
             self._write_cache(url, result, body)
@@ -480,7 +477,7 @@ class CatalogScraper:
             if not key:
                 self._finish(url, "skipped_no_key", None, b"", ok=False, note=method, remember=False)
                 continue
-            denied = self._reserve_paid()
+            denied = self._reserve_paid(self.firecrawl_proxy if method == "firecrawl" else "basic")
             if denied:
                 self._finish(url, denied, None, b"", ok=False, note=method, remember=False)
                 continue
@@ -568,11 +565,15 @@ class CatalogScraper:
             urls.extend(found)
         return urls[:limit], receipts
 
-    def _reserve_paid(self) -> str | None:
-        """Reserve one paid call. None when granted, else the receipt method naming the refusal."""
+    def _reserve_paid(self, proxy_tier: str = "basic") -> str | None:
+        """Reserve one paid call. None when granted, else the receipt method naming the refusal.
+        A non-basic proxy tier needs an approvals entry that names it, so with no approvals file
+        it is refused."""
         with self._lock:
             if self.paid_attempts >= self.max_paid_fetches:
                 return "skipped_paid_cap"
+            if proxy_tier != "basic" and self.approvals_path is None:
+                return "skipped_proxy_unapproved"
             if self.approvals_path is not None:
                 ok, _ = check_paid_approval(
                     self.approvals_path,
@@ -580,6 +581,7 @@ class CatalogScraper:
                     self.brands,
                     now=self.wall_clock(),
                     pending_fetches=self._paid_in_flight,
+                    proxy_tier=proxy_tier,
                 )
                 if not ok:
                     return "skipped_no_approval"
@@ -733,7 +735,8 @@ class CatalogScraper:
             self._memory[url] = result
         if method == "free_http":
             self._bump_ledger("free_http", 0)
-        elif method in {"skipped_no_key", "skipped_paid_cap", "skipped_no_approval", "robots_disallowed", "robots_unavailable", "blocked_url"}:
+        elif method in {"skipped_no_key", "skipped_paid_cap", "skipped_no_approval", "skipped_proxy_unapproved",
+                        "robots_disallowed", "robots_unavailable", "blocked_url"}:
             self._bump_ledger(method, 0)
         return result
 
@@ -851,6 +854,14 @@ def _parse_expiry(value: object) -> float | None:
     return parsed.timestamp()
 
 
+def firecrawl_proxy_tier(value: str | None = None) -> str:
+    """The Firecrawl proxy tier: `value`, else PATCHHIVE_FIRECRAWL_PROXY, else basic."""
+    tier = (value or os.environ.get("PATCHHIVE_FIRECRAWL_PROXY", "") or "basic").strip().lower()
+    if tier not in FIRECRAWL_PROXY_TIERS:
+        raise ValueError(f"firecrawl proxy must be one of {FIRECRAWL_PROXY_TIERS}, got {tier!r}")
+    return tier
+
+
 def check_paid_approval(
     approvals_path: Path,
     ledger_path: Path,
@@ -858,12 +869,14 @@ def check_paid_approval(
     *,
     now: float | None = None,
     pending_fetches: int = 0,
+    proxy_tier: str = "basic",
 ) -> tuple[bool, str]:
     """FR-003: is there an unexpired fetch-approvals entry covering `brands` with ledger headroom?
 
     An entry is {id, approver, expires_at, brands (names or "*"), cap_fetches, cap_credits}, plus
     optional ledger_baseline_fetches / ledger_baseline_credits: the ledger totals when it was approved,
-    so the caps count spend since then. ``pending_fetches`` are calls already granted but not
+    so the caps count spend since then. A `proxy_tier` other than basic matches only an entry whose
+    own `proxy_tier` names it. ``pending_fetches`` are calls already granted but not
     yet booked; each counts as one fetch and at least one credit. A ledger that exists but
     cannot be read, or reads below an entry's baseline, refuses: unknown spend is not zero.
     Returns (ok, reason).
@@ -905,6 +918,9 @@ def check_paid_approval(
         covered = {str(b) for b in entry.get("brands") or []}
         if "*" not in covered and (not brands or not set(brands) <= covered):
             reasons.append(f"{name}: brands not covered")
+            continue
+        if proxy_tier != "basic" and str(entry.get("proxy_tier") or "basic").strip().lower() != proxy_tier:
+            reasons.append(f"{name}: does not approve the {proxy_tier} proxy tier")
             continue
         try:
             cap_fetches = int(entry["cap_fetches"])

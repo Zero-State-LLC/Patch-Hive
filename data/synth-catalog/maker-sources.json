@@ -2,6 +2,11 @@
  "version": 1,
  "checked": "2026-10-27",
  "policy": "Maker-owned sites only (spec 003 D2). Every fetch goes through data/synth-catalog/catalog_scrape.py: robots.txt, the deny list, per-host delay, cache, then context.dev and Firecrawl under one paid cap.",
+ "permission_basis": {
+  "meaning": "The access basis each crawl row records (EXTERNAL_SOURCE_POLICY access_basis). unknown blocks bulk publication. Set default, or a brand under brands, to official_publication or maker_permission once the owner signs off the basis (docs/evidence/MAKER_PERMISSION_AND_PROXY_DECISION_2026-11-03.md).",
+  "default": "unknown",
+  "brands": {}
+ },
  "status_meaning": {
   "verified_free": "free fetch returned 200 and the page names the brand",
   "candidate": "free fetch was blocked or inconclusive; the crawl must see the brand on the page before using it",
