@@ -771,7 +771,7 @@ def preview_patchbook_style(
             headers={"Retry-After": str(int(limit.retry_after_seconds) + 1)},
         )
 
-    entitlements = get_design_entitlements(current_user.id)
+    entitlements = get_design_entitlements(db, current_user.id)
     recipe_payload, _lib_id = _load_request_recipe_payload(
         db=db,
         user_id=current_user.id,
@@ -864,7 +864,7 @@ def create_canonical_export(
             recipe_hash,
         )
 
-        entitlements = get_design_entitlements(current_user.id)
+        entitlements = get_design_entitlements(db, current_user.id)
         recipe_payload, library_recipe_id = _load_request_recipe_payload(
             db=db,
             user_id=current_user.id,
@@ -929,6 +929,9 @@ def create_canonical_export(
         code = str(exc)
         if code == "INSUFFICIENT_CREDITS":
             raise HTTPException(status_code=402, detail=code) from exc
+        if code == "FAIR_USE_CAP_REACHED":
+            # Spec 004 T050 (OQ-8): the STUDIO period's fair-use export cap is used up.
+            raise HTTPException(status_code=429, detail=code) from exc
         raise HTTPException(status_code=400, detail=code) from exc
     except Exception:
         db.rollback()
