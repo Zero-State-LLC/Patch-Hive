@@ -4,6 +4,10 @@
 html {
   color-scheme: dark;
   background: var(--color-paper);
+  scrollbar-color: var(--color-rule-strong) var(--color-paper);
+}
+html[data-theme="light"] {
+  color-scheme: light;
 }
 body {
   min-width: 320px;
@@ -133,7 +137,7 @@ code {
   left: var(--space-sm);
   height: 2px;
   border-radius: 2px 2px 0 0;
-  background: var(--color-accent);
+  background: var(--color-indicator);
   content: "";
   transform: scaleX(0);
   transform-origin: left center;
@@ -382,7 +386,7 @@ code {
   bottom: -1px;
   left: var(--space-md);
   height: 2px;
-  background: var(--color-accent);
+  background: var(--color-indicator);
   content: "";
   transform: scaleX(0);
   transform-origin: left center;
@@ -846,7 +850,7 @@ code {
   left: 0;
   width: calc(2 * var(--hp-px));
   border-radius: 1px;
-  background: var(--color-accent);
+  background: var(--color-indicator);
   content: "";
   transform: scaleY(0);
   transition: transform var(--dur-short) var(--ease-out);
@@ -928,7 +932,7 @@ code {
   bottom: -1px;
   left: var(--space-sm);
   height: 2px;
-  background: var(--color-accent);
+  background: var(--color-indicator);
   content: "";
   transform: scaleX(0);
   transform-origin: left center;

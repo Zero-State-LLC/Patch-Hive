@@ -111,13 +111,16 @@
   --color-rule-strong: var(--zs-gunmetal);
   --color-field-edge: #646b7a;
   --color-accent: var(--ph-amber);
+  /* Amber as a line (selected underlines, stripes, outlines): the accent in dark, deeper in light */
+  --color-indicator: var(--ph-amber);
   --color-accent-ink: #191306;
   --color-accent-text: var(--ph-amber);
   --color-focus: var(--ph-amber);
   --color-info: var(--ph-cyan);
   --color-success: var(--ph-emerald);
   --color-warning: var(--ph-warn);
-  --color-error: var(--ph-danger);
+  /* --ph-danger lifted a step: the primitive is 4.4:1 on panels, under the 4.5:1 text floor */
+  --color-error: #e8505c;
   --color-plate: #c9ced6;
   --color-plate-face: #2b3039;
   /* Text on the brand's carbon photo surfaces, the same in both themes */
@@ -161,7 +164,9 @@
   --cable-gate: var(--zs-titanium);
 }
 
-/* Light: cool graphite paper with amber action (design.md), never cream */
+/* Light: cool graphite paper with amber action (design.md), never cream. On <html> too, so the
+   page behind the shell and the overscroll follow the theme */
+:root[data-theme="light"],
 .app-shell[data-theme="light"] {
   --color-paper: #e9ebef;
   --color-paper-2: #f4f5f7;
@@ -175,16 +180,24 @@
   --color-field-edge: #7d8390;
   --color-accent-text: #8a5200;
   --color-focus: #b8700a;
-  --color-success: #0a7d5e;
-  --color-warning: #b4530f;
+  --color-success: #07704f;
+  --color-warning: #a34a0c;
   --color-error: #c2303a;
   --color-info: #0a6f8a;
   --color-plate: #d8dce2;
   --color-plate-face: #f7f8fa;
   --color-signal: #b8700a;
-  --color-cable-off: #c5cad3;
+  --color-cable-off: #8b919c;
   --color-plate-ink: #15181e;
   --color-screw: #8b919c;
   --shadow-lift: 0 6px 18px -10px rgb(18 21 26 / 30%);
   --surface-inset: var(--color-paper-4);
+  --color-indicator: #b8700a;
+  /* Cables and category bands at 3:1 or better on light paper, after the opacity they are painted at */
+  --cable-audio: #a8650a;
+  --cable-cv: #0a6f8a;
+  --cable-gate: #5e6573;
+  --module-source: #a8650a;
+  --module-shaper: #0a6f8a;
+  --module-controller: #5e6573;
 }

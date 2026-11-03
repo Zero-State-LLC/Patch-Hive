@@ -25,13 +25,47 @@ import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 
 type Theme = "dark" | "light";
 
+const THEME_KEY = "patchhive-theme";
+/** The browser chrome colour per theme: each theme's --color-paper (styles/tokens.css). */
+const THEME_COLOR: Record<Theme, string> = { dark: "#08090b", light: "#e9ebef" };
+
+/** Dark is the default; a remembered choice wins (public/theme-init.js applies it before paint). */
+function initialTheme(): Theme {
+  try {
+    return window.localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark";
+  } catch {
+    return "dark";
+  }
+}
+
 function App() {
   const { user, isAuthenticated } = useAuthStore();
   // Restore the session from the API's refresh cookie after a reload.
   useEffect(() => {
     if (ACCOUNTS_OPEN) void restoreSession();
   }, []);
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>(initialTheme);
+  // Mirror the theme onto <html> so the page behind the shell, form controls and the browser
+  // chrome follow it, and remember the choice.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.style.colorScheme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", THEME_COLOR[theme]);
+    try {
+      window.localStorage.setItem(THEME_KEY, theme);
+    } catch {
+      /* the choice just isn't remembered */
+    }
+  }, [theme]);
+  // Another open tab changed the theme: follow it.
+  useEffect(() => {
+    const follow = (event: StorageEvent) => {
+      if (event.key === THEME_KEY) setTheme(event.newValue === "light" ? "light" : "dark");
+    };
+    window.addEventListener("storage", follow);
+    return () => window.removeEventListener("storage", follow);
+  }, []);
   const canSeeAdmin = user && ["Admin", "Ops", "Support", "ReadOnly"].includes(user.role);
 
   return (
