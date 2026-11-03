@@ -101,19 +101,28 @@ def test_an_event_type_with_no_handler_is_ignored(db_session: Session) -> None:
         "customer.subscription.created",
         "customer.subscription.updated",
         "customer.subscription.deleted",
+        "invoice.paid",
     ],
 )
-def test_a_payment_event_with_no_machine_yet_is_unresolved_and_grants_nothing(
+def test_a_subscription_event_for_no_known_customer_is_unresolved_and_grants_nothing(
     db_session: Session, event_type: str
 ) -> None:
-    """Fail closed (FR-014) until Machine C (T049) exists. Machine B (T046) handles
-    checkout events: tests/unit/test_commerce_credit_checkout.py."""
-    _receive(db_session, _payload("evt_pay", event_type, data={"object": {"id": "cs_1"}}))
+    """Fail closed (FR-014). Machine C (T049) handles these events
+    (tests/unit/test_commerce_subscriptions.py) and Machine B (T046) checkout events
+    (tests/unit/test_commerce_credit_checkout.py)."""
+    obj = {
+        "id": "in_or_sub_1",
+        "customer": "cus_unknown",
+        "subscription": "sub_1",
+        "status": "paid",
+        "amount_paid": 499,
+    }
+    _receive(db_session, _payload("evt_pay", event_type, data={"object": obj}))
     db_session.commit()
 
     record = db_session.get(StripeEventRecordModel, "evt_pay")
     assert record.status == "unresolved"
-    assert record.reason_code == "HANDLER_NOT_IMPLEMENTED"
+    assert record.reason_code == "CUSTOMER_NOT_FOUND"
     assert record.processed_at is not None
     assert _ledger_count(db_session) == 0
 

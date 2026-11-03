@@ -1,4 +1,24 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+/** The app restores a session through the refresh endpoint, so a signed-in page mocks it. */
+async function signIn(page: Page, role = "User") {
+  await page.route("**/api/community/auth/refresh", async (route) => {
+    await route.fulfill({
+      json: {
+        access_token: "e2e-token",
+        token_type: "bearer",
+        user: {
+          id: 1,
+          username: "e2e-user",
+          email: "e2e-user@example.com",
+          role,
+          created_at: "2026-01-01T00:00:00Z",
+          updated_at: "2026-01-01T00:00:00Z",
+        },
+      },
+    });
+  });
+}
 
 test.describe("PatchHive canonical workspace", () => {
   test.beforeEach(async ({ page }) => {
@@ -545,6 +565,8 @@ test.describe("PatchHive canonical workspace", () => {
       });
     });
 
+    // Bulk materialize is shown to Admin and Ops only.
+    await signIn(page, "Admin");
     await page.goto("/racks/7/edit");
     await expect(page.getByRole("heading", { name: "Module placement" })).toBeVisible({
       timeout: 15000,
@@ -557,13 +579,17 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(page.getByTitle(/Alpha.*HP 0–9/i)).toBeVisible();
     await expect(page.getByTitle(/Beta.*power unknown/i)).toBeVisible();
     await expect(page.getByText(/Placement power/i)).toBeVisible();
-    await expect(page.getByText(/1 modules with \+12 known/i)).toBeVisible();
-    await expect(page.getByText(/1 unknown/i)).toBeVisible();
+    await expect(page.getByText(/Placement power: 1 of 2 modules state every rail/i)).toBeVisible();
     await expect(page.getByLabel("Power rail usage")).toBeVisible();
     await expect(page.getByLabel("+12V power usage")).toBeVisible();
+    // Beta states no rail, so all three meters report 1 unknown; check the +12V row.
+    const plus12Row = page
+      .locator(".power-rail-meters__row")
+      .filter({ has: page.getByLabel("+12V power usage") });
+    await expect(plus12Row.getByText(/1 unknown/i)).toBeVisible();
     // Alpha: +12 40 / case 2000 · Beta power unknown not assumed
     await expect(page.getByText(/40\/2000mA/i).first()).toBeVisible();
-    await expect(page.getByText(/Soft gap: 1 module without \+12 specs/i)).toBeVisible();
+    await expect(page.getByText(/Unknown draw, not assumed/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: "Dual-gate compatibility" })).toBeVisible();
     await expect(page.getByLabel("Dual-gate summary")).toBeVisible();
     await expect(
@@ -887,6 +913,30 @@ test.describe("PatchHive canonical workspace", () => {
       }
       await route.continue();
     });
+    // The picker lists rigs through the canon prefix: GET /canon/rigs?limit=50
+    await page.route("**/api/canon/rigs?**", async (route) => {
+      await route.fulfill({
+        json: {
+          total: 1,
+          rigs: [
+            {
+              rig_id: 7,
+              rack_id: 7,
+              user_id: 1,
+              case_id: 10,
+              name: "Sim rack",
+              name_suggested: null,
+              description: null,
+              tags: [],
+              is_public: false,
+              module_count: 0,
+              created_at: "2026-01-01T00:00:00Z",
+              updated_at: "2026-01-01T00:00:00Z",
+            },
+          ],
+        },
+      });
+    });
 
     await page.goto("/modules?hp=known");
     await page.getByRole("button", { name: "Add to existing" }).first().click();
@@ -1066,6 +1116,8 @@ test.describe("PatchHive canonical workspace", () => {
       });
     });
 
+    // Generate is disabled when signed out.
+    await signIn(page);
     await page.goto("/rigs/1");
     await expect(page.getByLabel("Inventory to generation loop")).toBeVisible();
     await expect(page.getByLabel("Generate patches from inventory")).toBeVisible();
