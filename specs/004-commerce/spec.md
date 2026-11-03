@@ -59,7 +59,7 @@ Checked against `main` at `95ca9ee`. Paths are under `backend/` unless shown oth
 | FR-027 | Implemented | `purchase_count != 1` returns no reward (`monetization/referrals.py`). |
 | FR-028 | Missing | No provider caller of `record_purchase(payment_verified=True)`. T046, T047. |
 | FR-029 | Partial | Code appends a `Rewarded` row and never edits `Pending`; no database guard (`alembic/versions/20240921_make_referrals_append_only.py` drops the unique pair only). |
-| FR-030 | Implemented | No refund path exists, so nothing revokes a reward. |
+| FR-030 | Implemented | The Machine B refund path (T053, `canon/checkout.py`) reverses only the buyer's credits and never touches the referrer's grant or `Referral` rows. |
 | FR-031 | Implemented | `get_referral_summary` behind the flag (`community/routes.py`); `earned_credits` reads the legacy ledger (research R6, T044). |
 | FR-032 | Implemented | Row lock on the `Pending` row plus `uq_referrals_one_reward` (#98). |
 | FR-033 | Implemented | The legacy `POST /api/monetization/purchases` route and `PurchaseCreate` are deleted; no client can record a purchase (T043). |
@@ -301,6 +301,7 @@ States:
 - `Credited`. A payment record and a `Purchase` entry exist. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
 - `Abandoned`. The user canceled, or the session expired. [INFERRED] A cancel URL appears in STRIPE_INTEGRATION_PROMPT.md.
 - `Unresolved`. A provider event could not be safely applied. [INFERRED] This follows constitution principle 9.
+- `PartiallyRefunded` and `Refunded`. The provider refunded part or all of a credited payment. [OBSERVED: canon/checkout.py] Decided by OQ-2.
 
 The initial state is `NONE`. The final states are `Credited` and `Abandoned`. `Unresolved` is not a final state. Only an operator action, defined in OQ-5, can exit it.
 
@@ -314,10 +315,14 @@ The initial state is `NONE`. The final states are `Credited` and `Abandoned`. `U
 | Credited | checkout_completed | The payment identifier has already been processed. | Credited | No operation. This is idempotent. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] |
 | Unresolved | operator_resolves | The operator verifies the identity and the payment. | Credited | Same effect as the verified completion. [INFERRED] |
 | Unresolved | operator_rejects | Any. | Abandoned | Grant nothing. [INFERRED] |
+| Credited or PartiallyRefunded | provider_refunded | The cumulative refunded amount is higher than any applied. | PartiallyRefunded, or Refunded when fully refunded | Append one `Refund` entry for `floor(credits * refunded / amount)` less earlier reversals, capped at the current balance. Any spent remainder is held as `Unresolved` for the operator. [OBSERVED: canon/checkout.py] Decided by OQ-2. |
+| PartiallyRefunded or Refunded | provider_refunded | The cumulative amount was already applied. | Unchanged | No operation. This is idempotent. [OBSERVED: canon/checkout.py] Decided by OQ-2. |
+| Credited | dispute_opened | Any. | Credited | No reversal. Hold the event as `Unresolved` for the operator. [OBSERVED: canon/checkout.py] Decided by OQ-2. |
 
 Illegal transitions:
 
 - `Credited` to `Credited` with a second `Purchase` for the same payment identifier. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
+- A refund reversal for a payment that was never credited, or one that takes a balance below zero. [OBSERVED: canon/checkout.py] Decided by OQ-2.
 - `NONE` or `CheckoutOpen` to `Credited` without a verified provider confirmation, including through a client call. [INFERRED]
 - `Abandoned` to `Credited`. A new checkout is required. [INFERRED]
 - `Unresolved` to `Credited` without operator action. [INFERRED]
@@ -332,7 +337,12 @@ stateDiagram-v2
     Credited --> Credited: checkout_completed [duplicate] / no-op
     Unresolved --> Credited: operator_resolves
     Unresolved --> Abandoned: operator_rejects
+    Credited --> PartiallyRefunded: provider_refunded [part]
+    Credited --> Refunded: provider_refunded [all]
+    PartiallyRefunded --> Refunded: provider_refunded [rest]
+    Credited --> Credited: dispute_opened / held for the operator
     Credited --> [*]
+    Refunded --> [*]
     Abandoned --> [*]
 ```
 
@@ -430,7 +440,7 @@ Each criterion is a pass or fail test. No numeric business targets are set. Busi
 ED] The observed sentinel `999999` can be exhausted or shown as a literal number. See FR-004.
 - **EC-10** A user subscribes and also buys one-time credits. The first of those events to complete is the referral-qualifying purchase only if it goes through the purchase-recording path. [INFERRED] See FR-028 and OQ-3.
 - **EC-11** A user changes tiers mid-period through the provider. The observed code updates status and period fields but not the stored tier or price. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] Proration and entitlement on tier change are NOT_COMPUTABLE. See OQ-7.
-- **EC-12** A refund or chargeback arrives for a one-time purchase or a subscription invoice. The ledger supports `Refund`, but no source defines when PatchHive appends one. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] The flow is NOT_COMPUTABLE. See OQ-2.
+- **EC-12** A refund or chargeback arrives for a one-time purchase or a subscription invoice. The ledger supports `Refund`, but no source defines when PatchHive appends one. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] The flow is NOT_COMPUTABLE. See OQ-2. One-time purchases follow OQ-2 `A_reverse_unspent` since 2026-11-02 (T053, Machine B refund rows); subscription invoices wait for Machine C (T049).
 - **EC-13** A user signs up with a code for a referrer whose account is later deleted. [INFERRED]
 
 ## Open questions
@@ -438,7 +448,7 @@ ED] The observed sentinel `999999` can be exhausted or shown as a literal number
 Reviewed 2026-10-29 against the code ([research.md](research.md) R7). Items the code answers are marked RESOLVED with evidence. The rest are owner, business or legal decisions; each carries a recommendation.
 
 - **OQ-1** Are the tier prices ($4.99, $14.99, $29.99), the monthly credit quantities (25, 100, unlimited), and the one-time rule ($0.20 per credit, $5.00 minimum) ratified? They come from an implementation prompt only. Currency, tax, and regional pricing are also undefined. NOT_COMPUTABLE. Still open (owner). Recommendation: ratify prices, quantities and currency before T046. The export price is already a server setting (`patchbook_export_cost = 3`). **Decided 2026-11-01 by Jev (owner-delegated):** `A_ratify_as_is` (confidence 0.29) (provisional: low confidence, owner to confirm; a lawyer must confirm): Keep $4.99/$14.99/$29.99, 25/100/unlimited, $0.20/credit, $5 min, USD only. Fastest; but CORE has no discount vs credit packs, STUDIO unlimited is open-ended cost, and Stripe fees are ~9% on CORE/min pack. Matches 'ratify' recommendation in spec. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
-- **OQ-2** What is the refund, chargeback, and dispute flow for purchases? When does PatchHive append a `Refund` entry, and can a balance go negative? NOT_COMPUTABLE. Partly answered: a failed export gets one `reversal`, and an export never takes a balance below zero [OBSERVED: canon/exports.py]. Purchase refunds and chargebacks are still open (owner, legal). Recommendation: on a provider refund, reverse only unspent credits, record the rest as unresolved, never go negative, and never revoke a referral reward (FR-030). **Decided 2026-11-01 by Jev (owner-delegated):** `A_reverse_unspent` (confidence 0.96) (a lawyer must confirm): On provider refund reverse only unspent credits, record remainder unresolved for operator, never negative, never revoke referral reward. Matches spec recommendation; simple, may leave small loss. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
+- **OQ-2** What is the refund, chargeback, and dispute flow for purchases? When does PatchHive append a `Refund` entry, and can a balance go negative? NOT_COMPUTABLE. Partly answered: a failed export gets one `reversal`, and an export never takes a balance below zero [OBSERVED: canon/exports.py]. Purchase refunds and chargebacks are still open (owner, legal). Recommendation: on a provider refund, reverse only unspent credits, record the rest as unresolved, never go negative, and never revoke a referral reward (FR-030). **Decided 2026-11-01 by Jev (owner-delegated):** `A_reverse_unspent` (confidence 0.96) (a lawyer must confirm): On provider refund reverse only unspent credits, record remainder unresolved for operator, never negative, never revoke referral reward. Matches spec recommendation; simple, may leave small loss. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md). Built 2026-11-02 for one-time purchases (T053): credits back are `floor(credits * amount_refunded / amount_cents)` on the cumulative refunded amount, capped at the current balance; the spent remainder is `unresolved` (`REFUND_EXCEEDS_UNSPENT`); a dispute is `unresolved` (`DISPUTE_OPENED`) with no reversal. Rounding and cap need owner confirmation.
 - **OQ-3** Does a subscription payment count as a "first paid purchase" for referral rewards? If yes, does it record a `Purchase` entry, a `Grant` entry, or both? NOT_COMPUTABLE. Still open (owner). Recommendation: yes. The first paid invoice records a provider-verified purchase through `record_purchase(payment_verified=True)`, and the period credits are a separate grant. **Decided 2026-11-01 by Jev (owner-delegated):** `A_both` (confidence 0.96): First paid invoice records a provider-verified Purchase via record_purchase(payment_verified=True) and the period credits are a separate Grant. Matches spec recommendation; referral rewards work for subscribers. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
 - **OQ-4** Which provider subscription statuses, such as `past_due`, `unpaid`, `incomplete`, and `trialing`, must PatchHive distinguish? What entitlement applies in each? NOT_COMPUTABLE. Still open (owner). Recommendation: grant only when an invoice is paid for a new period; `trialing`, `incomplete`, `past_due` and `unpaid` grant nothing and keep credits already granted. Research 2026-11-01: Stripe says to revoke access when `unpaid` and to grant on `invoice.paid`; recommended mapping in [research 2026-11-01](../../docs/evidence/COMMERCE_BLOCKERS_RESEARCH_2026-11-01.md) §3. **Decided 2026-11-01 by Jev (owner-delegated):** `A_stripe_mapping` (confidence 0.98): Per research table: active/trialing -> paid tier; past_due -> keep tier during retries, no new grant; unpaid/incomplete/incomplete_expired/canceled/paused -> FREE; grant only on invoice.paid. Matches spec recommendation and Stripe guidance. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
 - **OQ-5** What operator action resolves or rejects an `Unresolved` commerce event? Who is authorized, and what audit record does it produce? NOT_COMPUTABLE. Still open (owner). Recommendation: admin role only, one `CanonicalAdminAuditEventRecord` per resolve or reject, with a reason (T048). Reject built to this recommendation 2026-11-01; resolve waits for Machine B (T048b). See [research 2026-11-01](../../docs/evidence/COMMERCE_BLOCKERS_RESEARCH_2026-11-01.md) §1. **Decided 2026-11-01 by Jev (owner-delegated):** `A_refetch_session` (confidence 0.85): Implement resolve by retrieving the Checkout Session by stored object id and running idempotent fulfillment; audit record; unresolved if not retrievable. Matches research recommendation. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).

@@ -22,6 +22,9 @@ record or not at all:
 
 The user, credit count and amount come from the payment record the server wrote, never
 from event metadata; the metadata only has to agree with it.
+
+``handle_payment_reversal_event`` handles refunds and disputes of a credited payment
+(spec 004 OQ-2 ``A_reverse_unspent``, T053); see its docstring for the rules.
 """
 
 from __future__ import annotations
@@ -37,6 +40,7 @@ import httpx
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from canon.exports import _serialize_user_credits, credit_balance
 from canon.models import (
     CanonicalAdminAuditEventRecord,
     CanonicalCreditLedgerEntryRecord,
@@ -70,6 +74,8 @@ CHECKOUT_EVENT_TYPES = frozenset(
 
 OPEN_STATUSES = frozenset({"open", "pending"})
 CLOSED_STATUSES = frozenset({"failed", "abandoned"})
+# Credited, then possibly refunded (OQ-2, T053): the purchase entry exists.
+CREDITED_STATUSES = frozenset({"credited", "partially_refunded", "refunded"})
 
 
 class CheckoutUnavailableError(Exception):
@@ -375,7 +381,7 @@ def _credit(
 ) -> EventDisposition:
     """Machine B ``CheckoutOpen --checkout_completed--> Credited``."""
 
-    if payment.status == "credited":
+    if payment.status in CREDITED_STATUSES:
         return EventDisposition("duplicate", "PAYMENT_ALREADY_RECORDED")
     if payment.status in CLOSED_STATUSES:
         # Illegal Abandoned -> Credited, yet the provider says it was paid: an operator
@@ -496,6 +502,171 @@ def handle_checkout_session_event(session: Session, event: dict[str, Any]) -> Ev
         return EventDisposition("duplicate", "CHECKOUT_ALREADY_CLOSED")
     # Credited and then reported failed or expired: an operator must look.
     raise UnresolvedEventError("PAYMENT_STATE_CONFLICT")
+
+
+# --- Refunds and disputes (OQ-2, T053) ---------------------------------------------------
+
+CHARGE_REFUNDED = "charge.refunded"
+REFUND_FAILED = "refund.failed"
+DISPUTE_CREATED = "charge.dispute.created"
+
+
+def refund_key(payment_id: str, refunded_cents: int) -> str:
+    """One canonical ``refund`` entry per cumulative refunded amount of a payment."""
+
+    return f"purchase-refund:{payment_id}:{refunded_cents}"
+
+
+def credits_for_refund(*, credits: int, amount_cents: int, refunded_cents: int) -> int:
+    """Credits a cumulative refund takes back: ``floor(credits * refunded / amount)``.
+
+    Proportional to the amount paid (the minimum charge included), rounded down, so a
+    partial refund never takes back more than its share and a full refund takes back
+    exactly ``credits``. It is computed on the cumulative amount, so rounding never adds
+    up across several partial refunds.
+    """
+
+    if amount_cents <= 0 or credits <= 0:
+        raise ValueError("a payment has a positive amount and credit count")
+    refunded = max(0, min(refunded_cents, amount_cents))
+    return credits * refunded // amount_cents
+
+
+def _cents(value: Any) -> int | None:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        return None
+    return value
+
+
+def _locked_payment_by_provider_id(
+    session: Session, payment_id: str | None
+) -> ProviderPaymentRecord | None:
+    if payment_id is None:
+        return None
+    return (
+        session.query(ProviderPaymentRecord)
+        .filter_by(provider_payment_id=payment_id)
+        .with_for_update()
+        .populate_existing()
+        .one_or_none()
+    )
+
+
+def _refund(session: Session, obj: dict[str, Any]) -> EventDisposition:
+    """``charge.refunded``: reverse the purchase's still-unspent credits (OQ-2)."""
+
+    if obj.get("object", "charge") != "charge":
+        raise UnresolvedEventError("EVENT_PAYLOAD_MALFORMED")
+    payment_id = _object_id(obj.get("payment_intent"))
+    if payment_id is None:
+        raise UnresolvedEventError("PAYMENT_ID_MISSING")
+    amount = _cents(obj.get("amount"))
+    refunded = _cents(obj.get("amount_refunded"))
+    if amount is None or refunded is None:
+        raise UnresolvedEventError("EVENT_PAYLOAD_MALFORMED")
+    payment = _locked_payment_by_provider_id(session, payment_id)
+    if payment is None:
+        raise UnresolvedEventError("PAYMENT_RECORD_NOT_FOUND")
+    if (
+        amount != payment.amount_cents
+        or str(obj.get("currency") or "").lower() != payment.currency
+        or refunded > payment.amount_cents
+    ):
+        raise UnresolvedEventError("AMOUNT_MISMATCH")
+    link = session.query(ProviderCustomerRecord).filter_by(user_id=payment.user_id).one_or_none()
+    if link is None or _object_id(obj.get("customer")) != link.provider_customer_id:
+        raise UnresolvedEventError("CUSTOMER_MISMATCH")
+    if payment.status not in CREDITED_STATUSES:
+        # A refund of a payment PatchHive never credited: an operator must look.
+        raise UnresolvedEventError("PAYMENT_STATE_CONFLICT")
+    if refunded <= int(payment.refunded_cents or 0):
+        # The same cumulative amount again, or an older one delivered late.
+        return EventDisposition("duplicate", "REFUND_ALREADY_RECORDED")
+
+    reversed_before = int(payment.refund_reversed_credits or 0)
+    unrecovered_before = int(payment.refund_unrecovered_credits or 0)
+    owed = (
+        credits_for_refund(
+            credits=payment.credits, amount_cents=payment.amount_cents, refunded_cents=refunded
+        )
+        - reversed_before
+        - unrecovered_before
+    )
+    # Serialize with export debits for this user, then cap at the unspent balance so
+    # the balance never goes negative.
+    _serialize_user_credits(session, payment.user_id)
+    balance = credit_balance(session, payment.user_id)
+    reversed_now = max(0, min(owed, balance))
+    unrecovered_now = owed - reversed_now
+    if reversed_now:
+        key = refund_key(payment_id, refunded)
+        if session.query(CanonicalCreditLedgerEntryRecord).filter_by(idempotency_key=key).first():
+            raise UnresolvedEventError("LEDGER_ENTRY_CONFLICT")
+        session.add(
+            CanonicalCreditLedgerEntryRecord(
+                id=f"refund-{sha256(key.encode('utf-8')).hexdigest()[:24]}",
+                user_id=payment.user_id,
+                delta=-reversed_now,
+                entry_type="refund",
+                idempotency_key=key,
+                export_id=None,
+                created_at=datetime.now(timezone.utc),
+            )
+        )
+    payment.refunded_cents = refunded
+    payment.refund_reversed_credits = reversed_before + reversed_now
+    payment.refund_unrecovered_credits = unrecovered_before + unrecovered_now
+    _touch(payment, "refunded" if refunded == payment.amount_cents else "partially_refunded")
+    session.flush()
+    if unrecovered_now:
+        # The spent remainder goes to an operator; the reversal above still commits.
+        return EventDisposition("unresolved", "REFUND_EXCEEDS_UNSPENT", commit_effects=True)
+    return EventDisposition("processed")
+
+
+def _require_known_payment(session: Session, obj: dict[str, Any], object_type: str) -> None:
+    if obj.get("object", object_type) != object_type:
+        raise UnresolvedEventError("EVENT_PAYLOAD_MALFORMED")
+    if _locked_payment_by_provider_id(session, _object_id(obj.get("payment_intent"))) is None:
+        raise UnresolvedEventError("PAYMENT_RECORD_NOT_FOUND")
+
+
+def handle_payment_reversal_event(session: Session, event: dict[str, Any]) -> EventDisposition:
+    """Apply a refund or dispute of a Machine B payment (OQ-2 ``A_reverse_unspent``).
+
+    The payment is found by the provider payment id (``payment_intent``) on its record.
+
+    - ``charge.refunded`` (full or partial): ``amount_refunded`` is cumulative. The
+      credits it takes back are ``credits_for_refund`` of that amount, less what earlier
+      refunds already took back. They are reversed with one append-only canonical
+      ``refund`` entry keyed ``purchase-refund:<payment_id>:<amount_refunded>``, capped
+      at the user's current canonical balance, so a balance never goes negative. Credits
+      already spent are recorded on the record as ``refund_unrecovered_credits`` and the
+      event is ``unresolved`` (``REFUND_EXCEEDS_UNSPENT``) for the operator, with the
+      reversal committed. The record becomes ``partially_refunded`` or ``refunded``. An
+      amount no higher than one already applied is ``duplicate``.
+    - ``refund.failed``: ``unresolved`` (``REFUND_FAILED``); credits are not restored
+      automatically.
+    - ``charge.dispute.created``: ``unresolved`` (``DISPUTE_OPENED``) with no reversal;
+      the dispute outcome is unknown when it opens.
+    - An unknown payment, a currency or amount mismatch or a malformed payload is
+      ``unresolved`` with a reason code, as for checkout events.
+
+    A referral reward is never revoked: the reward is the referrer's grant, and nothing
+    here touches the referrer's ledger or the ``Referral`` rows (FR-030).
+    """
+
+    event_type = event.get("type")
+    obj = event["data"]["object"]
+    if event_type == CHARGE_REFUNDED:
+        return _refund(session, obj)
+    if event_type == REFUND_FAILED:
+        _require_known_payment(session, obj, "refund")
+        raise UnresolvedEventError("REFUND_FAILED")
+    if event_type == DISPUTE_CREATED:
+        _require_known_payment(session, obj, "dispute")
+        raise UnresolvedEventError("DISPUTE_OPENED")
+    raise UnresolvedEventError("EVENT_PAYLOAD_MALFORMED")
 
 
 # --- Operator resolve (T048b) ------------------------------------------------------------
