@@ -11,10 +11,12 @@ function Shell({ start }: { start: string }) {
       <nav>
         <Link to="/modules">Modules</Link>
         <Link to="/modules#filters">Filters</Link>
+        <Link to="/racks/2">Second rig</Link>
       </nav>
       <main id="main-content" tabIndex={-1}>
         <Routes>
           <Route path="/racks" element={<p>Rigs screen</p>} />
+          <Route path="/racks/:rigId" element={<p>Rigs screen, one rig chosen</p>} />
           <Route path="/modules" element={<p>Modules screen</p>} />
         </Routes>
       </main>
@@ -61,5 +63,18 @@ describe("RouteEffects", () => {
     expect(document.title).toBe("Modules, PatchHive");
     expect(scrollTo).not.toHaveBeenCalled();
     expect(document.getElementById("main-content")).not.toHaveFocus();
+  });
+
+  it("leaves focus alone for a new selection within the same screen", async () => {
+    const user = userEvent.setup();
+    render(<Shell start="/racks" />);
+    const link = screen.getByRole("link", { name: "Second rig" });
+
+    await user.click(link);
+
+    expect(screen.getByText("Rigs screen, one rig chosen")).toBeInTheDocument();
+    expect(document.title).toBe("Rigs, PatchHive");
+    expect(scrollTo).not.toHaveBeenCalled();
+    expect(link).toHaveFocus();
   });
 });

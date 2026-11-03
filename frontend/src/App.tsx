@@ -45,6 +45,7 @@ function AppRoutes() {
       <Route path="/racks" element={<RacksPage />} />
       <Route path="/racks/new" element={<RackBuilderPage />} />
       <Route path="/racks/:id/edit" element={<RackBuilderPage />} />
+      <Route path="/racks/:rigId" element={<RacksPage />} />
       <Route path="/rigs/:rigId" element={<RigDetailPage />} />
       <Route path="/rigs/:rigId/patchbook-studio" element={<PatchBookStyleStudioPage />} />
       <Route path="/patches" element={<PatchesPage />} />
