@@ -1,0 +1,150 @@
+name: DB restore drill
+
+# Manual only. Rehearses restoring a deployed database without writing to it.
+# 1. pg_dump the Neon staging database, or production only when confirm_production is
+#    exactly "dump production read-only".
+# 2. pg_restore into a Postgres container of the same major version on this runner.
+# 3. `alembic current` on the restored copy must equal this checkout's head.
+# 4. `python -m canon.reconcile_all` runs on the restored copy.
+# The source is only read (pg_dump, and count queries in read-only transactions). The
+# repo is public and Actions artifacts are downloadable by anyone, so the dump never
+# leaves the runner: only its size and sha256 are recorded, and the uploaded receipt
+# holds counts, revisions and export ids only. DATABASE_URL secrets are never echoed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Database to dump (read-only)
+        required: true
+        type: choice
+        default: staging
+        options: [staging, prod]
+      confirm_production:
+        description: "prod only: type exactly   dump production read-only"
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neon-db-${{ inputs.env }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    # No environment and no secrets: a refused production run never loads them.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Production needs the typed confirmation
+        env:
+          TARGET: ${{ inputs.env }}
+          CONFIRM: ${{ inputs.confirm_production }}
+        run: |
+          if [ "$TARGET" = "prod" ] && [ "$CONFIRM" != "dump production read-only" ]; then
+            printf '::error::env=prod needs confirm_production to be exactly: dump production read-only\n'
+            exit 1
+          fi
+          printf 'drill target: %s\n' "$TARGET"
+
+  drill:
+    needs: gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    environment: ${{ inputs.env == 'prod' && 'production' || 'staging' }}
+    env:
+      PYTHONPATH: backend
+      DRILL_DIR: drill-artifacts
+      # The runner's own throwaway Postgres; not a secret.
+      RESTORED_DATABASE_URL: postgresql://postgres:restore-drill@127.0.0.1:55432/patchhive_restore
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install backend
+        working-directory: backend
+        run: python -m pip install -e .
+      - name: Source counts before the dump (read-only)
+        id: source
+        env:
+          SOURCE_DATABASE_URL: ${{ secrets[inputs.env == 'prod' && 'PATCHHIVE_DATABASE_URL_PROD' || 'PATCHHIVE_DATABASE_URL_STAGING'] }}
+          TARGET: ${{ inputs.env }}
+        run: |
+          if [ -z "$SOURCE_DATABASE_URL" ]; then printf '::error::database secret for %s is not set\n' "$TARGET"; exit 1; fi
+          python scripts/staging/restore_drill.py counts --url-env SOURCE_DATABASE_URL --out "$DRILL_DIR/source-before.json" --github-output
+      - name: Start a Postgres container of the source's major version
+        env:
+          PG_MAJOR: ${{ steps.source.outputs.server_major }}
+        run: |
+          case "$PG_MAJOR" in ''|*[!0-9]*) printf '::error::source server major version is unknown\n'; exit 1;; esac
+          docker run -d --name restore-drill -e POSTGRES_PASSWORD=restore-drill -e POSTGRES_DB=patchhive_restore \
+            -p 127.0.0.1:55432:5432 "postgres:$PG_MAJOR" >/dev/null
+          # TCP only answers once initdb is finished and the real server is up.
+          for _ in $(seq 1 60); do
+            if docker exec restore-drill pg_isready -q -h 127.0.0.1 -U postgres -d patchhive_restore; then exit 0; fi
+            sleep 2
+          done
+          printf '::error::the restore Postgres did not become ready\n'
+          exit 1
+      - name: pg_dump the source (the dump stays on this runner)
+        env:
+          SOURCE_DATABASE_URL: ${{ secrets[inputs.env == 'prod' && 'PATCHHIVE_DATABASE_URL_PROD' || 'PATCHHIVE_DATABASE_URL_STAGING'] }}
+          PG_MAJOR: ${{ steps.source.outputs.server_major }}
+        run: |
+          # libpq does not accept SQLAlchemy driver names such as postgresql+psycopg2://.
+          PGURL="$(printf '%s' "$SOURCE_DATABASE_URL" | sed -E 's#^postgres(ql)?(\+[A-Za-z0-9_]+)?://#postgresql://#')"
+          export PGURL
+          docker run --rm --network host -e PGURL -v "$PWD/$DRILL_DIR:/drill" "postgres:$PG_MAJOR" \
+            sh -c 'pg_dump --format=custom --no-owner --no-privileges --dbname="$PGURL" --file=/drill/source.dump && chmod 0644 /drill/source.dump'
+          test -s "$DRILL_DIR/source.dump"
+          python - <<'PY'
+          import hashlib, json, os, pathlib
+          directory = pathlib.Path(os.environ["DRILL_DIR"])
+          dump = directory / "source.dump"
+          digest = hashlib.sha256(dump.read_bytes()).hexdigest()
+          facts = {"format": "custom", "bytes": dump.stat().st_size, "sha256": digest}
+          (directory / "dump.json").write_text(json.dumps(facts, indent=2) + "\n", encoding="utf-8")
+          print(json.dumps(facts))
+          PY
+      - name: Source counts after the dump (read-only)
+        env:
+          SOURCE_DATABASE_URL: ${{ secrets[inputs.env == 'prod' && 'PATCHHIVE_DATABASE_URL_PROD' || 'PATCHHIVE_DATABASE_URL_STAGING'] }}
+        run: python scripts/staging/restore_drill.py counts --url-env SOURCE_DATABASE_URL --out "$DRILL_DIR/source-after.json"
+      - name: pg_restore into the runner's Postgres
+        env:
+          PG_MAJOR: ${{ steps.source.outputs.server_major }}
+        run: |
+          docker run --rm --network host -e RESTORED_DATABASE_URL -v "$PWD/$DRILL_DIR:/drill" "postgres:$PG_MAJOR" \
+            sh -c 'pg_restore --no-owner --no-privileges --exit-on-error --single-transaction --dbname="$RESTORED_DATABASE_URL" /drill/source.dump'
+      - name: Remove the dump
+        if: always()
+        run: rm -f "$DRILL_DIR/source.dump"
+      - name: alembic current on the restored copy is head
+        run: |
+          (cd backend && DATABASE_URL="$RESTORED_DATABASE_URL" python -m alembic heads)
+          (cd backend && DATABASE_URL="$RESTORED_DATABASE_URL" python -m alembic current)
+          python scripts/staging/restore_drill.py head --url-env RESTORED_DATABASE_URL --out "$DRILL_DIR/head.json"
+      - name: Reconcile the ledger on the restored copy
+        working-directory: backend
+        run: DATABASE_URL="$RESTORED_DATABASE_URL" python -m canon.reconcile_all --json-out "../$DRILL_DIR/reconcile.json"
+      - name: Receipt
+        if: always()
+        env:
+          TARGET: ${{ inputs.env }}
+        run: python scripts/staging/restore_drill.py receipt --dir "$DRILL_DIR" --env "$TARGET" --url-env RESTORED_DATABASE_URL --out "$DRILL_DIR/receipt.json"
+      - name: Upload counts-only receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: restore-drill-receipt-${{ inputs.env }}
+          path: drill-artifacts/receipt.json
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Stop the restore Postgres
+        if: always()
+        run: docker rm -f restore-drill >/dev/null 2>&1 || true
