@@ -30,6 +30,8 @@ export interface AddPlacementForm {
   onRow: (row: number) => void;
   startHp: number;
   onStartHp: (hp: number) => void;
+  /** Why the next placement's slot can't take it, if it can't. */
+  blocked: string | null;
   onAdd: () => void;
 }
 
@@ -184,7 +186,8 @@ export default function PlacementStep({
           <button
             type="button"
             className="button button-primary"
-            disabled={saving || add.moduleId == null}
+            disabled={saving || add.moduleId == null || add.blocked != null}
+            title={add.blocked ?? undefined}
             onClick={add.onAdd}
           >
             {saving ? "Saving…" : "Add placement"}

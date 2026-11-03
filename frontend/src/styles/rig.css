@@ -412,6 +412,52 @@ div.rack-row-map__block {
   min-width: 1.5%;
 }
 
+/* Moving a placed module: it lifts, and a ghost shows where it would land */
+.placement-rail .rack-row-map__block.is-movable {
+  cursor: grab;
+  touch-action: none;
+}
+.placement-rail[data-dragging="pointer"],
+.placement-rail[data-dragging="pointer"] .rack-row-map__block.is-movable {
+  cursor: grabbing;
+}
+.placement-rail .rack-row-map__block[data-lifted] {
+  opacity: 0.4;
+}
+.rack-row-map__block--ghost {
+  z-index: var(--z-raised);
+  border-style: dashed;
+  border-color: var(--color-indicator);
+  background: color-mix(in oklab, var(--color-accent) 16%, var(--color-plate-face));
+  pointer-events: none;
+  animation: none;
+}
+.rack-row-map__block--ghost::before,
+.rack-row-map__block--ghost::after {
+  display: none;
+}
+/* The next placement can be dragged to its slot */
+.rack-row-map__block--preview.is-movable {
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+}
+/* A slot it can't take: overlapping another module, or off the end of the row */
+.rack-row-map__block[data-state="blocked"] {
+  border-color: var(--color-error);
+  color: var(--color-error);
+  background: color-mix(in oklab, var(--color-error) 12%, transparent);
+}
+/* The ghost is opaque, so the module it overlaps doesn't show through it */
+.rack-row-map__block--ghost[data-state="blocked"] {
+  border: 2px dashed var(--color-error);
+  background: color-mix(in oklab, var(--color-error) 22%, var(--color-plate-face));
+}
+.placement-rail__why,
+.placement-rail__hint {
+  margin: 0;
+}
+
 /* The rail on the rig overview: smaller, read-only */
 .rig-rail {
   display: grid;

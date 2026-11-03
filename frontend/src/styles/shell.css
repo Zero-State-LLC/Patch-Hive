@@ -659,6 +659,70 @@ code {
   flex-wrap: wrap;
   gap: var(--space-xs);
 }
+/* —— Toast: one short message at the foot of the screen, with an optional action —— */
+.toast-region {
+  position: fixed;
+  right: 0;
+  bottom: var(--space-lg);
+  left: 0;
+  z-index: var(--z-toast);
+  display: flex;
+  justify-content: center;
+  padding-inline: var(--space-md);
+  pointer-events: none;
+}
+.toast {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  max-width: min(36rem, 100%);
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-rule-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-ink);
+  background: var(--color-paper-3);
+  box-shadow: var(--shadow-lift);
+  pointer-events: auto;
+  animation: toast-in var(--dur-short) var(--ease-out) both;
+}
+.toast[data-tone="warning"] {
+  border-left: 2px solid var(--color-warning);
+}
+.toast[data-tone="danger"] {
+  border-left: 2px solid var(--color-error);
+}
+.toast__text {
+  flex: 1 1 16rem;
+  margin: 0;
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-xs));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}
+/* On a wide screen it sits to the right, clear of where a rail's modules begin */
+@media (min-width: 768px) {
+  .toast-region {
+    justify-content: flex-end;
+    padding-inline: var(--space-lg);
+  }
+}
+/* While one shows, the page can scroll its last row clear of it */
+[data-toast-open] {
+  padding-block-end: calc(var(--space-xl) * 3);
+}
+
 /* The next page of a list, under its rows. */
 .show-more {
   display: flex;
