@@ -15,6 +15,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from canon.contracts import ExportRequest, canonical_sha256
+from canon.entitlements import current_unlimited_grant
 from canon.models import (
     CanonicalCreditLedgerEntryRecord,
     CanonicalExportRecord,
@@ -87,12 +88,38 @@ def request_export(
     )
     if existing is not None:
         return existing
-    if credit_balance(session, request.user_id) < request.credit_cost:
-        raise ExportBoundaryError("INSUFFICIENT_CREDITS")
 
     # Ids and the debit key are scoped to the user, as the idempotency key is.
     scoped_key = f"{request.user_id}:{request.idempotency_key}"
     export_id = _stable_id("export", scoped_key)
+
+    # Spec 004 T050 (FR-004, OQ-8 ``A_flag_with_fair_use``): a STUDIO period grant covers
+    # the export instead of a debit, up to its fair-use cap. The count runs under the
+    # per-user lock above, so concurrent spends cannot both take the last slot.
+    grant = current_unlimited_grant(session, request.user_id, request.requested_at)
+    if grant is not None:
+        if _fair_use_exports(session, grant.id) >= int(grant.fair_use_export_cap or 0):
+            raise ExportBoundaryError("FAIR_USE_CAP_REACHED")
+        export = CanonicalExportRecord(
+            id=export_id,
+            user_id=request.user_id,
+            source_run_id=request.source_run_id,
+            source_rig_revision_id=request.source_rig_revision_id,
+            artifact_manifest_hash=artifact_manifest_hash,
+            export_version=export_version,
+            license=request.license,
+            credit_cost=0,
+            ledger_entry_id=None,
+            subscription_grant_id=grant.id,
+            idempotency_key=request.idempotency_key,
+            status="queued",
+            created_at=request.requested_at,
+        )
+        return _insert_export(session, request, export, None)
+
+    if credit_balance(session, request.user_id) < request.credit_cost:
+        raise ExportBoundaryError("INSUFFICIENT_CREDITS")
+
     ledger_id = _stable_id("ledger", f"export:{scoped_key}")
     export = CanonicalExportRecord(
         id=export_id,
@@ -117,13 +144,40 @@ def request_export(
         export_id=export_id,
         created_at=request.requested_at,
     )
+    return _insert_export(session, request, export, debit)
+
+
+def _fair_use_exports(session: Session, grant_id: str) -> int:
+    """Exports a STUDIO grant has covered, whatever their status.
+
+    A failed export keeps its slot: a retry of the same request returns it and runs
+    fulfillment again, so releasing the slot would let it succeed outside the cap.
+    """
+
+    return int(
+        session.scalar(
+            select(func.count())
+            .select_from(CanonicalExportRecord)
+            .where(CanonicalExportRecord.subscription_grant_id == grant_id)
+        )
+        or 0
+    )
+
+
+def _insert_export(
+    session: Session,
+    request: ExportRequest,
+    export: CanonicalExportRecord,
+    debit: CanonicalCreditLedgerEntryRecord | None,
+) -> CanonicalExportRecord:
     try:
         with session.begin_nested():
             # Insert export before debit: ledger.export_id FK requires the export row.
             session.add(export)
             session.flush()
-            session.add(debit)
-            session.flush()
+            if debit is not None:
+                session.add(debit)
+                session.flush()
     except IntegrityError:
         winner = session.scalar(
             select(CanonicalExportRecord).where(
@@ -210,8 +264,12 @@ def reconcile_ledger(session: Session, user_id: int) -> ReconciliationReport:
         user_id=user_id,
         balance=sum(entry.delta for entry in entries),
         export_debits=sum(-entry.delta for entry in entries if entry.entry_type == "debit"),
+        # Export reversals only: a provider purchase refund (OQ-2) is a ``refund`` entry
+        # with no export and a negative delta.
         reversals=sum(
-            entry.delta for entry in entries if entry.entry_type in {"refund", "reversal"}
+            entry.delta
+            for entry in entries
+            if entry.entry_type in {"refund", "reversal"} and entry.export_id
         ),
         anomalies=tuple(sorted(anomalies)),
     )

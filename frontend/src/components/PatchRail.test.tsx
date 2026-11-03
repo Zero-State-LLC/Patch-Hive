@@ -38,9 +38,9 @@ function rackWith(modules: RackModule[], hpPerRow: number[] = [84]): Rack {
   };
 }
 
-function patchWith(connections: Connection[]): Patch {
+function patchWith(connections: Connection[], id = 7): Patch {
   return {
-    id: 7,
+    id,
     rack_id: 1,
     name: "Slow drift",
     category: "texture",
@@ -113,6 +113,26 @@ describe("PatchRail", () => {
     const firstY = Number(plugs(first)[1].getAttribute("cy"));
     const secondY = Number(plugs(second)[0].getAttribute("cy"));
     expect(secondY - firstY).toBe(10);
+  });
+
+  it("clears the picked cable when the patch changes", async () => {
+    const user = userEvent.setup();
+    const rack = rackWith(modules);
+    const { container, rerender } = render(
+      <PatchRail rack={rack} patch={patchWith([cable(1, 2), cable(2, 1, "gate")])} />,
+    );
+    await act(async () => {
+      await user.click(screen.getByRole("button", { name: "Cable 2" }));
+    });
+    expect(container.querySelector(".is-dimmed")).not.toBeNull();
+
+    rerender(<PatchRail rack={rack} patch={patchWith([cable(1, 2)], 8)} />);
+    expect(container.querySelector(".is-dimmed")).toBeNull();
+    expect(container.querySelector(".is-selected")).toBeNull();
+    expect(screen.getByRole("button", { name: "Cable 1" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
   });
 
   it("says so when a patch has no cables", () => {

@@ -81,6 +81,12 @@ export default function PatchRail({ rack, patch }: { rack: Rack; patch: Patch })
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [plugs, setPlugs] = useState<Map<number, Point>>(new Map());
   const [selected, setSelected] = useState<number | null>(null);
+  // A picked cable belongs to its patch: switching patches clears it, whoever renders this.
+  const [selectedFor, setSelectedFor] = useState(patch.id);
+  if (selectedFor !== patch.id) {
+    setSelectedFor(patch.id);
+    setSelected(null);
+  }
 
   const rows = useMemo(() => rack.case?.hp_per_row ?? [], [rack.case]);
 

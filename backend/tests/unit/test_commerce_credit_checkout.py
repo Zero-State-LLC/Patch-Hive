@@ -487,7 +487,6 @@ def _metadata(payment: ProviderPaymentRecord, **changes: Any) -> dict[str, Any]:
 UNRESOLVED_CASES = [
     ("unknown-session", lambda p: {"id": "cs_unknown"}, "PAYMENT_RECORD_NOT_FOUND"),
     ("no-session-id", lambda p: {"id": None}, "EVENT_PAYLOAD_MALFORMED"),
-    ("subscription-mode", lambda p: {"mode": "subscription"}, "HANDLER_NOT_IMPLEMENTED"),
     ("no-mode", lambda p: {"mode": None}, "CHECKOUT_MODE_UNKNOWN"),
     ("no-metadata", lambda p: {"metadata": None}, "METADATA_MALFORMED"),
     ("other-user", lambda p: {"metadata": _metadata(p, user_id="999")}, "METADATA_MALFORMED"),
@@ -534,6 +533,29 @@ def test_a_malformed_or_unmappable_completion_is_unresolved_and_grants_nothing(
     db_session.refresh(payment)
     assert payment.status == "open"
     assert payment.provider_payment_id is None
+
+
+@pytest.mark.parametrize("event_type", sorted(checkout.CHECKOUT_EVENT_TYPES))
+def test_a_subscription_mode_session_is_ignored_and_writes_nothing(
+    db_session: Session, event_type: str
+) -> None:
+    """Machine C (T049): the subscription record and grant come from the subscription
+    and invoice events, so the session itself has no effect."""
+    user = _user(db_session)
+    payment = _open_checkout(db_session, user)
+
+    intake = _deliver(
+        db_session, "evt_sub_mode", event_type, _session_object(payment, mode="subscription")
+    )
+
+    assert (intake.record.status, intake.record.reason_code) == (
+        "ignored",
+        "SUBSCRIPTION_SESSION_NO_EFFECT",
+    )
+    assert _purchases(db_session) == []
+    assert _legacy_purchases(db_session) == 0
+    db_session.refresh(payment)
+    assert payment.status == "open"
 
 
 def test_a_payment_id_already_used_by_another_checkout_is_unresolved(db_session: Session) -> None:
