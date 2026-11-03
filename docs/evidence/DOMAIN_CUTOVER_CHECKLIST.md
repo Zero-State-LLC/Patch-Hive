@@ -1,5 +1,7 @@
 # Domain cutover checklist (operator-owned)
 
+> **Update 2026-11-03:** the domains are live. `patch-hive.com` and `api.patch-hive.com` (production) and `staging.patch-hive.com` and `api-staging.patch-hive.com` (staging) are Cloudflare Workers custom domains, with exact-origin CORS and an enforced CSP. The template below is kept for the record; the walkthrough-SHA pin (spec 008 T050b) is still open.
+
 **Status:** template only — **no domain was configured by the agent**  
 **Why:** DNS/registrar access and a public edge are required; they are not available from the local Docker-only environment without your credentials.
 

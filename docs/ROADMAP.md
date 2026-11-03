@@ -1,6 +1,6 @@
 ## Current next milestone — closed staging beta
 
-PatchHive remains late alpha (`v0.3.0-alpha`) and production payments remain disabled. The next milestone is a closed staging beta: land the active Cyber Hive UI slice, align demo authentication with seed data, capture a Design Engine walkthrough receipt with flags enabled in test mode, pin readiness docs to the resulting SHA, and choose a staging host. The milestone is complete only when its documented staging exit criteria pass; no calendar ship date is claimed.
+PatchHive remains late alpha (`v0.3.0-alpha`; 0.3.0-alpha.6 runs on staging and production since 2026-11-03) and production payments remain disabled. The next milestone is a closed staging beta. Done so far (2026-11-03): the Cyber Hive UI landed (#96, then the rail redesign and its follow-ups #215–#238), demo authentication matches the seed on staging (008 T030b), the Design Engine walkthrough passed on staging with flags on in test mode (008 T040b, #216), and the staging host is the Cloudflare pair (`staging.patch-hive.com`, `api-staging.patch-hive.com`). Remaining: pin the readiness docs to the walkthrough SHA (008 T050b, which waits on the signed spec 007 receipt) and pass the beta's staging exit criteria below. No calendar ship date is claimed.
 
 # PatchHive roadmap
 
@@ -26,8 +26,8 @@ Status vocabulary:
 |---|---|---|---|
 | `0.1.x` | historical prototype | early rig, patch, publishing, experimental surfaces | superseded / compatibility-only |
 | `0.2.x` | canon-aligned MVP | immutable rigs/runs, deterministic compiler, validation, canonical export/credit boundary | **COMPLETE on main** (not production released) |
-| `0.3.0-alpha` | Patch Book + VSI + Design Engine | one-page contracts, VSI P0, Style Studio / design packs (flags off) | **ACTIVE / late alpha** (`v0.3.0-alpha.1` lineage) |
-| `0.3.0-beta` | closed staging beta | named staging, Design Engine E2E, a11y protocol, dual-path thinning | **PLANNED** |
+| `0.3.0-alpha` | Patch Book + VSI + Design Engine | one-page contracts, VSI P0, Style Studio / design packs (flags off) | **ACTIVE / late alpha** (`v0.3.0-alpha.6` deployed 2026-11-03) |
+| `0.3.0-beta` | closed staging beta | named staging, Design Engine E2E, a11y protocol, dual-path thinning | **PLANNED** (released as `0.3.0-beta.1` when the beta exit criteria pass) |
 | `0.3.0-rc` | Patch Book release candidate | freeze SHA, full export matrix, concurrency/debit evidence | **PLANNED** |
 | `0.4.x` | production hardening | ops maturity, scanner, SLOs, support, payment readiness (still off) | **PLANNED** |
 | `1.0.0` | production-supported release | stable public workflow + authority decision | **not eligible** |
@@ -48,9 +48,9 @@ Status vocabulary:
 
 ### Residual (not blocking 0.2 classification)
 
-- Inventory HTTP still primarily `/api/racks` (CANON_SUPPORTING; dual-path F2–F5 planned)
-- Named multi-tenant staging host **NOT_PERFORMED**
-- Production deploy and live payments **NOT_GRANTED**
+- Inventory HTTP still primarily `/api/racks` (CANON_SUPPORTING; dual-path F2–F5 planned). Update 2026-11-03: F2, F4 and the F5 list cutover are done; the rig builder's reads move to canon next
+- Named multi-tenant staging host **NOT_PERFORMED**. Update 2026-11-03: the Cloudflare staging pair is live (`staging.patch-hive.com`, `api-staging.patch-hive.com`)
+- Production deploy and live payments **NOT_GRANTED**. Update 2026-11-03: production (`patch-hive.com`) is deployed with test-mode payments; live payments stay **NOT_GRANTED**
 
 ## `0.3.0-alpha` — Patch Books, Design Engine, product shell — ACTIVE
 
@@ -69,14 +69,14 @@ Status vocabulary:
 | Zero State × PatchHive brand / design system | COMPLETE (#88–#89) |
 | Local Docker staging receipts + domain cutover checklist | COMPLETE (#87) |
 | F3 generate dual-write audit | COMPLETE (#86) |
-| Cyber Hive product page visual upgrade | ACTIVE (#96 open) |
+| Cyber Hive product page visual upgrade | COMPLETE (#96; rail redesign and follow-ups #215–#238) |
 
 ### Exit criteria for closing alpha
 
-- [ ] Demo credentials aligned with seed data
-- [ ] Design Engine walkthrough receipt with flags on (test payments only)
-- [ ] Docs / readiness matrix pinned to post-#96 SHA
-- [ ] No P0 integrity regressions on main CI
+- [x] Demo credentials aligned with seed data (008 T030b, 2026-11-03)
+- [x] Design Engine walkthrough receipt with flags on (test payments only) (008 T040b, #216)
+- [ ] Docs / readiness matrix pinned to the walkthrough SHA (008 T050b; waits on the signed spec 007 receipt)
+- [x] No P0 integrity regressions on main CI (required checks green on main)
 
 ## `0.3.0-beta` — Closed staging beta — PLANNED
 
@@ -84,14 +84,14 @@ Status vocabulary:
 
 ### Required work
 
-1. Operator host pick (Compose VPS / Render / Fly / Azure) — [STAGING_HOST_PLAN.md](evidence/STAGING_HOST_PLAN.md)
-2. Secrets, CORS, fail-closed payment flags
-3. Design Engine staging enablement — [PATCHBOOK_STAGING_ENABLEMENT.md](design/PATCHBOOK_STAGING_ENABLEMENT.md)
-4. Acceptance suite against staging Postgres
-5. Backup/restore + ledger reconcile drill receipts
-6. Manual accessibility protocol — [ACCESSIBILITY.md](ACCESSIBILITY.md)
-7. Dual-path F2/F4/F5 thinning (no big-bang rack delete)
-8. Playwright against staging or staging-like stack
+1. Operator host pick (Compose VPS / Render / Fly / Azure) — [STAGING_HOST_PLAN.md](evidence/STAGING_HOST_PLAN.md). **Done:** the Cloudflare staging pair
+2. Secrets, CORS, fail-closed payment flags. **Done:** `edge-secrets` workflow, exact-origin CORS, test-mode payments
+3. Design Engine staging enablement — [PATCHBOOK_STAGING_ENABLEMENT.md](design/PATCHBOOK_STAGING_ENABLEMENT.md). **Done:** staging flags (#213), walkthrough PASS (#216)
+4. Acceptance suite against staging Postgres. **Open:** a CI job and a throwaway-database staging workflow are next
+5. Backup/restore + ledger reconcile drill receipts. **Open:** an all-users reconcile CLI and a drill workflow are next
+6. Manual accessibility protocol — [ACCESSIBILITY.md](ACCESSIBILITY.md). **Open:** an automated pre-pass is next; the screen-reader pass needs a human
+7. Dual-path F2/F4/F5 thinning (no big-bang rack delete). F2, F4 and the F5 list cutover are done; the rig builder's reads move to canon next
+8. Playwright against staging or staging-like stack. **Open:** a read-only smoke suite for staging and production is next
 
 ### Exit criteria
 
@@ -173,17 +173,19 @@ Design: [evidence/DUAL_PATH_RETIREMENT_DESIGN.md](evidence/DUAL_PATH_RETIREMENT_
 | F3 generate dual-write audit | COMPLETE |
 | F2 thin `GET /api/canon/rigs` | COMPLETE |
 | F4 evidence canon aliases | COMPLETE |
-| F5 FE inventory list cutover | PLANNED |
+| F5 FE inventory list cutover | COMPLETE for list views (008 T010/T020); rig builder reads remaining |
 | Z delete `backend/racks` | DEFERRED (operator-only campaign) |
 
 ## Near-term sequence (next 2 weeks)
 
-1. Land Cyber Hive UI pages (#96); pin readiness docs  
-2. Align demo auth with seed  
-3. Design Engine local/staging walkthrough receipt  
-4. Operator staging host pick  
-5. Dual-path F2 **or** export concurrency hardening (one primary track)  
-6. Optional tag `v0.3.1-alpha` / `v0.4.0-beta.1` only after staging receipts  
+Updated 2026-11-03; items 1–4 of the previous list are done.
+
+1. Staging drills: acceptance suite, backup/restore and ledger reconcile (beta #4, #5)  
+2. Accessibility: automated pre-pass, then a human screen-reader pass (beta #6)  
+3. Playwright smoke against staging and production (beta #8)  
+4. Owner confirms specs 001–004 (T001) so their plans and convergence can close  
+5. Spec 007 evaluation chain (corpus photos, run, approve, pin, sign), then pin the readiness docs (008 T050b)  
+6. Tag `0.3.0-beta.1` (a `Release-As` footer) only when the beta exit criteria pass  
 
 ## Deferred beyond 1.0
 

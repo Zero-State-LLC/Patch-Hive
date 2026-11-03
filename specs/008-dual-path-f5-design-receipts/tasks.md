@@ -36,7 +36,7 @@ parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
   - depends_on: [T010]
   - acceptance: no dual-write regression; existing confirmation and generate gates unchanged.
 
-- [ ] T030 Align demo authentication with seed data on the staging host.
+- [x] T030 Align demo authentication with seed data on the staging host.
   - depends_on: [T001]
   - acceptance: seeded operator can complete a full Design Engine flow without manual credential patching.
   - [x] T030a Make `scripts/seed_golden_demo.py` the single source of demo credentials; add read-only `check_seed_auth` (code).
@@ -44,7 +44,7 @@ parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
   - [x] T030b Verify seeded auth on the staging host (operator). Done 2026-11-03: `check_seed_auth` aligned=True for `golden_demo` (User) and `admin_demo` (Admin) on the Neon staging branch, seeded by `.github/workflows/staging-walkthrough.yml` run [41557808902](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41557808902) at `b6cc917` with per-run passwords; receipt `seed_auth_sha256` 7165983728… in [docs/evidence/receipts/staging-design-walkthrough-2026-11-03.json](../../docs/evidence/receipts/staging-design-walkthrough-2026-11-03.json).
     - depends_on: [T030a]
 
-- [ ] T040 Execute Design Engine walkthrough with flags enabled in test mode and capture the receipt.
+- [x] T040 Execute Design Engine walkthrough with flags enabled in test mode and capture the receipt.
   - depends_on: [T020, T030]
   - acceptance: debit → fulfillment → download pack succeeds under test payments; receipt includes SHA, flags, and outcome.
   - [x] T040a Implement `scripts/staging/design_engine_walkthrough.py` and receipt capture; pass in-process (code).

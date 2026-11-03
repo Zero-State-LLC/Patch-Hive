@@ -1,4 +1,4 @@
-# PatchBook Design Engine — local staging enablement
+# PatchBook Design Engine — staging enablement (hosted and local)
 
 **Status:** operational runbook  
 **Related:** `docs/FEATURE_FLAGS.md`, `docs/design/PATCHBOOK_DESIGN_ENGINE.md`
@@ -6,6 +6,20 @@
 ## Goal
 
 Turn on Design Engine export fulfillment and Style Studio against **local Docker staging** without enabling production payments.
+
+## Hosted staging (Cloudflare, since 2026-11-03)
+
+The hosted staging pair (`staging.patch-hive.com`, `api-staging.patch-hive.com`) runs with the Design Engine on:
+
+- The flags live in `edge/api/wrangler.jsonc` under `env.staging.vars` (#213): `ENABLE_PATCHBOOK_DESIGN_ENGINE`, `ENABLE_CANON_EXPORT_FULFILLMENT` and `ENABLE_INLINE_EXPORT_FULFILLMENT` are `true`, and `ENABLE_PATCHBOOK_PUBLICATION_PROFILE` is `false`.
+- `edge/api/src/index.ts` forwards only the names in its `FLAG_VARS` list, and production sets none.
+- Payments stay test-only (`STRIPE_TEST_MODE=true`, `ALLOW_PRODUCTION_PAYMENTS=false`).
+
+To deploy, run `cd edge/api && npx wrangler deploy --env staging` from a checkout of `main`.
+
+To verify, dispatch `.github/workflows/staging-walkthrough.yml`. It seeds per-run demo users, runs `scripts/staging/design_engine_walkthrough.py` against `api-staging.patch-hive.com`, reads the server's flags from `GET /api/admin/ops/runtime-flags`, and keeps the receipt. The first pass was on 2026-11-03 (run 41557808902, #216).
+
+The local Docker path below remains for development.
 
 ## Automated walkthrough (recommended)
 

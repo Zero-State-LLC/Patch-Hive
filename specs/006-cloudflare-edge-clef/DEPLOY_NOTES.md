@@ -79,13 +79,13 @@ Until the operator records them, `config_gate_checks(..., expected_frontend_orig
 reports `CORS_EXACT_ORIGIN` as failed with `OPERATOR_LOCKED`, so the readiness machine
 cannot reach GATES_PASSED from config alone.
 
-## Deferred tasks
+## Operator tasks (status 2026-11-03)
 
 | Task | Action | Status | Repo scaffolding |
 | --- | --- | --- | --- |
-| T030 | Cloudflare edge deploy for the Vite frontend | PARTIAL, API base pending T040 | `frontend/wrangler.jsonc` (Workers static assets); `VITE_API_BASE_URL` documented in `.env.example` (read by `frontend/src/lib/api.ts`) |
-| T040 | Publish API hostname and restrict CORS to the exact origin | T040a done; T040b operator | `edge/api/` (Containers Worker); `CORS_ORIGINS` exact-origin gate in `backend/core/ops/edge_readiness.py` |
-| T050 | Provision the Neon staging database for the API container | T050a done; T050b operator | `edge/api/src/index.ts` passes `DATABASE_URL`/`SECRET_KEY` and fails closed without them |
+| T030 | Cloudflare edge deploy for the Vite frontend | Done (#190); both pairs deployed at `9c42bd6` on 2026-11-03 | `frontend/wrangler.jsonc` (Workers static assets); `VITE_API_BASE_URL` documented in `.env.example` (read by `frontend/src/lib/api.ts`) |
+| T040 | Publish API hostname and restrict CORS to the exact origin | T040a done; T040b waits on T055b (R2 token scope and restart persistence) | `edge/api/` (Containers Worker); `CORS_ORIGINS` exact-origin gate in `backend/core/ops/edge_readiness.py` |
+| T050 | Provision the Neon staging database for the API container | Done (re-scoped from Hyperdrive to Neon's pooled endpoint; T050a and T050b done, #190) | `edge/api/src/index.ts` passes `DATABASE_URL`/`SECRET_KEY` and fails closed without them |
 
 T060 lists T050 as a dependency. The T060 code path is implemented and tested against the
 existing database layer and does not change persistence.

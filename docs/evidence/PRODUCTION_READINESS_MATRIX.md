@@ -1,5 +1,7 @@
 # Production readiness matrix (evidence-bound)
 
+> **Facts changed since this 2026-07-26 snapshot (noted 2026-11-03; the matrix itself is re-pinned by spec 008 T050b):** a named staging host exists (the Cloudflare pair `staging.patch-hive.com` / `api-staging.patch-hive.com`); production (`patch-hive.com`) runs 0.3.0-alpha.6 with test-mode payments and no feature flags; the Design Engine walkthrough passed on staging (#216); the frontend page upgrade (#96) and the rail redesign (#215–#238) are merged; migrations are at `20261102_export_fair_use`.
+
 ```yaml
 assessment:
   source_sha: d0bbcd072a9026538ce7403bed73337d6a6a4676  # #148; re-pin after F2 merge
