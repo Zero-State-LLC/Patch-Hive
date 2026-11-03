@@ -49,14 +49,14 @@ export default function AdminDashboard() {
           </div>
         </header>
         <AdminNav />
-        <div className="panel">
-          <h2>Guardrails</h2>
-          <ul className="auth-brand-list" style={{ marginTop: "var(--space-3)" }}>
+        <section className="ops-section" aria-labelledby="guardrails-heading">
+          <h2 id="guardrails-heading">Guardrails</h2>
+          <ul className="ops-guardrails">
             <li>All admin mutations are audited</li>
             <li>Credit changes append to the canonical ledger</li>
             <li>Modules are deprecated or tombstoned (no hard deletes)</li>
           </ul>
-        </div>
+        </section>
         <ul className="ops-link-list">
           {areas.map((area) => (
             <li key={area.to}>

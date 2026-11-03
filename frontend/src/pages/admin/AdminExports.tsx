@@ -27,10 +27,10 @@ export default function AdminExports() {
             {message}
           </p>
         ) : null}
-        <div className="panel">
-          <h2 style={{ marginTop: 0 }}>Export access</h2>
-          <div className="toolbar">
-            <label className="field" style={{ flex: "1 1 12rem" }}>
+        <section className="ops-section">
+          <h2>Export access</h2>
+          <div className="toolbar ops-toolbar">
+            <label className="field ops-grow">
               Audit reason
               <input
                 value={reason}
@@ -38,7 +38,7 @@ export default function AdminExports() {
                 placeholder="Required for mutations"
               />
             </label>
-            <label className="field" style={{ flex: "1 1 10rem" }}>
+            <label className="field ops-grow">
               Export ID
               <input
                 value={exportId}
@@ -69,11 +69,11 @@ export default function AdminExports() {
               Revoke
             </button>
           </div>
-        </div>
-        <div className="panel">
-          <h2 style={{ marginTop: 0 }}>Invalidate cache</h2>
-          <div className="toolbar">
-            <label className="field" style={{ flex: "1 1 8rem" }}>
+        </section>
+        <section className="ops-section">
+          <h2>Invalidate cache</h2>
+          <div className="toolbar ops-toolbar">
+            <label className="field ops-grow">
               Run ID
               <input
                 value={cacheRunId}
@@ -81,7 +81,7 @@ export default function AdminExports() {
                 placeholder="Optional"
               />
             </label>
-            <label className="field" style={{ flex: "1 1 10rem" }}>
+            <label className="field ops-grow">
               Export type
               <input
                 value={cacheExportType}
@@ -104,7 +104,7 @@ export default function AdminExports() {
               Invalidate
             </button>
           </div>
-        </div>
+        </section>
       </div>
     </AdminGuard>
   );

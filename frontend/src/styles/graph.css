@@ -215,11 +215,72 @@
 }
 
 /* Patch Book Style Studio */
-.style-studio-grid {
+.style-studio-layout {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-md);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-lg);
+  align-items: start;
   margin-top: var(--space-md);
+}
+.style-studio-preview {
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-lg));
+  max-height: calc(100dvh - var(--header-height) - var(--space-xl));
+  overflow: auto;
+}
+.studio-section {
+  display: grid;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.studio-section + .studio-section {
+  padding-top: var(--space-lg);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+.studio-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.studio-row input[type="text"] {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+.studio-note {
+  font-size: var(--text-sm);
+}
+.studio-status {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.studio-library {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+  padding-left: var(--space-md);
+}
+.studio-results {
+  display: grid;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+.studio-results h2,
+.studio-results h3,
+.studio-results h4,
+.studio-results p {
+  margin: 0;
+}
+.studio-page {
+  display: grid;
+  gap: var(--space-xs);
+  padding-top: var(--space-sm);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+.studio-page ol {
+  margin: 0;
+  padding-left: var(--space-md);
 }
 .weight-sliders {
   display: grid;
@@ -231,6 +292,11 @@
   display: flex;
   justify-content: space-between;
   font-size: var(--text-sm);
+  text-transform: capitalize;
+}
+.weight-row strong {
+  font-family: var(--font-mono);
+  font-weight: 500;
 }
 .weight-row input[type="range"] {
   width: 100%;
@@ -243,8 +309,18 @@
   max-height: 20rem;
 }
 
+@media (max-width: 60rem) {
+  .style-studio-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .style-studio-preview {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
 @media (max-width: 45rem) {
-  .style-studio-grid,
   .influence-grid {
     grid-template-columns: minmax(0, 1fr);
   }

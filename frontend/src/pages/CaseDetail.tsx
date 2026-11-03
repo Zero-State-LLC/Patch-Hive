@@ -1,7 +1,7 @@
 /**
  * Catalog case detail — revisions, sources summary, materialize CTA.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { caseCatalogApi } from "@/lib/api";
 
@@ -135,6 +135,10 @@ export default function CaseDetailPage() {
 
   const rev = detail.revisions[0];
   const placeable = canPlace(detail.format_family);
+  const hpCapacity =
+    rev && rev.capacity_value != null && (rev.capacity_unit || "").toLowerCase() === "hp"
+      ? rev.capacity_value
+      : null;
 
   return (
     <section aria-labelledby="case-detail-title">
@@ -149,15 +153,8 @@ export default function CaseDetailPage() {
             {detail.manufacturer} {detail.model}
           </h1>
           <p className="muted">
-            <Link to="/cases">Cases</Link>, {detail.format_family}
-          </p>
-          <p className="muted">
-            Slug <code>{detail.slug}</code> · status {detail.production_status}
-            {detail.powered === true
-              ? " · powered"
-              : detail.powered === false
-                ? " · unpowered"
-                : ""}
+            Slug <code>{detail.slug}</code>, status {detail.production_status}
+            {detail.powered === true ? ", powered" : detail.powered === false ? ", unpowered" : ""}
           </p>
         </div>
         <div className="header-actions">
@@ -186,34 +183,53 @@ export default function CaseDetailPage() {
       ) : null}
 
       {rev ? (
-        <div className="panel" style={{ marginBottom: "var(--space-4)" }}>
-          <h2 style={{ marginTop: 0 }}>Primary revision · {rev.revision_key}</h2>
+        <div className="panel case-detail-panel">
+          <h2>Primary revision: {rev.revision_key}</h2>
           <p className="muted">Confidence: {rev.confidence}</p>
-          <div className="stat-row">
-            <div className="stat-block">
-              <p className="muted" style={{ margin: 0 }}>
-                Capacity
-              </p>
-              <h3 style={{ fontSize: "1rem" }}>
-                {rev.capacity_value ?? "unknown"} {rev.capacity_unit || ""}
-                {rev.row_count != null ? ` · ${rev.row_count} row(s)` : ""}
-              </h3>
-            </div>
-            <div className="stat-block">
-              <p className="muted" style={{ margin: 0 }}>
-                Depth
-              </p>
-              <h3 style={{ fontSize: "1rem" }}>
-                {rev.depth_min_mm != null || rev.depth_max_mm != null
-                  ? `${rev.depth_min_mm ?? "unknown"}–${rev.depth_max_mm ?? "unknown"} mm`
-                  : "Unspecified"}
-              </h3>
-            </div>
+          <div className="case-detail-figure">
+            {hpCapacity != null ? (
+              <div
+                className="capacity-rail case-detail-rail"
+                data-wide={hpCapacity > 150 ? "true" : undefined}
+                style={{ "--cap": hpCapacity } as CSSProperties}
+                aria-hidden="true"
+              >
+                <div className="capacity-rail__track">
+                  <div className="capacity-rail__fill">
+                    <span className="capacity-rail__hp">{hpCapacity} HP</span>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+            <dl className="readout">
+              <div>
+                <dt>Capacity</dt>
+                <dd>
+                  {rev.capacity_value ?? "unknown"} {rev.capacity_unit || ""}
+                </dd>
+              </div>
+              {rev.row_count != null ? (
+                <div>
+                  <dt>Rows</dt>
+                  <dd>{rev.row_count}</dd>
+                </div>
+              ) : null}
+              <div>
+                <dt>Depth</dt>
+                <dd>
+                  {rev.depth_min_mm != null && rev.depth_min_mm === rev.depth_max_mm
+                    ? `${rev.depth_min_mm} mm`
+                    : rev.depth_min_mm != null || rev.depth_max_mm != null
+                      ? `${rev.depth_min_mm ?? "unknown"} to ${rev.depth_max_mm ?? "unknown"} mm`
+                      : "Unspecified"}
+                </dd>
+              </div>
+            </dl>
           </div>
           {rev.rows?.length ? (
             <>
               <h3>Rows</h3>
-              <ul>
+              <ul className="case-detail-list">
                 {rev.rows.map((r) => (
                   <li key={r.row_index}>
                     Row {r.row_index}: {r.capacity_value ?? "unknown"} {r.capacity_unit || ""} (
@@ -226,7 +242,7 @@ export default function CaseDetailPage() {
           {rev.power_systems?.length ? (
             <>
               <h3>Power</h3>
-              <ul>
+              <ul className="case-detail-list">
                 {rev.power_systems.map((p) => (
                   <li key={p.name}>
                     {p.name}: +12 V {p.current_pos12_ma ?? "unknown"} mA, −12 V{" "}
@@ -241,23 +257,41 @@ export default function CaseDetailPage() {
         </div>
       ) : null}
 
-      <div className="panel" style={{ marginBottom: "var(--space-4)" }}>
-        <h2 style={{ marginTop: 0 }}>Provenance</h2>
+      <div className="panel case-detail-panel">
+        <h2>Provenance</h2>
         <p className="muted">
           {detail.sources?.length ?? 0} field-level source packets
-          {detail.prices?.length ? ` · ${detail.prices.length} price observation(s)` : ""}
+          {detail.prices?.length ? `, ${detail.prices.length} price observation(s)` : ""}
         </p>
         {detail.sources?.length ? (
-          <ul>
-            {detail.sources.slice(0, 12).map((s, i) => (
-              <li key={`${s.field_path}-${i}`}>
-                <code>{s.field_path || "unknown"}</code> · {s.source_type} · {s.confidence}
-                {s.policy
-                  ? ` · ${s.policy.access_basis}/${s.policy.evidence_status}/${s.policy.review_state}`
-                  : ""}
-              </li>
-            ))}
-          </ul>
+          <div className="case-detail-table">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">Field</th>
+                  <th scope="col">Source</th>
+                  <th scope="col">Confidence</th>
+                  <th scope="col">Policy</th>
+                </tr>
+              </thead>
+              <tbody>
+                {detail.sources.slice(0, 12).map((s, i) => (
+                  <tr key={`${s.field_path}-${i}`}>
+                    <td>
+                      <code>{s.field_path || "unknown"}</code>
+                    </td>
+                    <td>{s.source_type}</td>
+                    <td>{s.confidence}</td>
+                    <td>
+                      {s.policy
+                        ? `${s.policy.access_basis}/${s.policy.evidence_status}/${s.policy.review_state}`
+                        : ""}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <p className="muted">No sources attached.</p>
         )}
