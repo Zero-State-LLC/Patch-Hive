@@ -37,7 +37,7 @@ globalThis.IntersectionObserver = class IntersectionObserver {
   unobserve() {}
 } as unknown as typeof IntersectionObserver;
 
-// Mock SVG filters (for LoadingSpinner and AnimatedLogo)
+// jsdom has no layout: SVG measurement returns a fixed box
 (globalThis.SVGElement.prototype as unknown as { getBBox: () => DOMRect }).getBBox = () => ({
   x: 0,
   y: 0,

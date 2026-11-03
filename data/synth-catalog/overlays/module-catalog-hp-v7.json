@@ -1,0 +1,99 @@
+{
+ "dataset_version": "module-catalog-hp-overlay-v7",
+ "generated_from": "spec 003 OQ-2 (Jev decision 2026-11-01: hand_check_then_correct). The maker-vs-v1 HP disagreements nobody had hand-checked. Each maker page or manual was read with a plain GET on 2026-11-02 (robots.txt read and honoured, at least 2 s apart, a host dropped at its first block). Kept only where the source names that exact product and states its width; the verification field quotes it (whitespace collapsed; '...' joins the product name and the width where they are apart). Every value equals what staging and production already store (filled from the maker crawl), so v1's value was the wrong one and no correction is needed; this overlay gives each a quoted maker source. Not confirmed: ALM Akemie's Castle (the product page states no width and the manual on assets.busycircuits.com answered with a bot check, not fetched further).",
+ "policy": "fill-null only; maker page values only, each quoted.",
+ "generated_at": "2026-11-02T00:00:00Z",
+ "count": 9,
+ "entries": [
+  {
+   "slug": "befaco-hexmix-vca",
+   "brand": "Befaco",
+   "name": "Hexmix VCA",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.befaco.org/hexmix-vca/",
+   "verification": "maker-page-checked-2026-11-02: \"Hexmix VCA ... Width: 14 HP Depth: 20mm\""
+  },
+  {
+   "slug": "intellijel-quadrax",
+   "brand": "Intellijel",
+   "name": "Quadrax",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/shop/eurorack/quadrax/",
+   "verification": "maker-page-checked-2026-11-02: \"Quadrax ... Width 14HP Depth 38mm\""
+  },
+  {
+   "slug": "intellijel-rubicon-2",
+   "brand": "Intellijel",
+   "name": "Rubicon 2",
+   "hp": 20,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://intellijel.com/downloads/manuals/rubicon-2_manual_2021.08.16.pdf",
+   "verification": "maker-page-checked-2026-11-02: \"Rubicon 2 Manual ... Width 20 hp Maximum Depth 38 mm\""
+  },
+  {
+   "slug": "erica-synths-fusion-vco",
+   "brand": "Erica Synths",
+   "name": "Fusion VCO",
+   "hp": 24,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/by-series/fusion-series/fusion-vco/",
+   "verification": "maker-page-checked-2026-11-02: \"Fusion VCO ... Module width 24HP Module depth 35mm\""
+  },
+  {
+   "slug": "doepfer-a-110-1",
+   "brand": "Doepfer",
+   "name": "A-110-1",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a110.htm",
+   "verification": "maker-page-checked-2026-11-02: \"Module A-110 has been renamed to A-110-1 ... Breite/Width: 10TE / 10HP / 50.5 mm\""
+  },
+  {
+   "slug": "joranalogue-generate-3",
+   "brand": "Joranalogue",
+   "name": "Generate 3",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://joranalogue.com/products/generate-3",
+   "verification": "maker-page-checked-2026-11-02: \"THROUGH-ZERO MULTIPHONIC SIGNAL GENERATOR 12 HP\""
+  },
+  {
+   "slug": "joranalogue-audio-design-generate-3",
+   "brand": "Joranalogue Audio Design",
+   "name": "Generate 3",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://joranalogue.com/products/generate-3",
+   "verification": "maker-page-checked-2026-11-02: \"THROUGH-ZERO MULTIPHONIC SIGNAL GENERATOR 12 HP\""
+  },
+  {
+   "slug": "qu-bit-electronix-chord-v2",
+   "brand": "Qu-Bit Electronix",
+   "name": "Chord v2",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.qubitelectronix.com/shop/p/chord-v2",
+   "verification": "maker-page-checked-2026-11-02: \"Chord ... Tech Specs Width: 14HP Depth: 23mm\""
+  },
+  {
+   "slug": "qu-bit-electronix-data-bender",
+   "brand": "Qu-Bit Electronix",
+   "name": "Data Bender",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.qubitelectronix.com/shop/data-bender",
+   "verification": "maker-page-checked-2026-11-02: \"Data Bender ... Tech Specs: Width: 14HP Depth: 28mm\""
+  }
+ ]
+}

@@ -102,7 +102,7 @@ def test_flag_by_null_action_archives_then_nulls_the_value() -> None:
 def test_retire_tombstones_the_row_and_never_deletes(source) -> None:
     modules = _module(source)
     catalog = {SLUG: {"brand": BRAND, "name": NAME, "hp": 14, "tombstoned": False}}
-    entry = {"slug": SLUG, "brand": BRAND, "name": NAME, "reason": "filed under the wrong brand"}
+    entry = {"slug": SLUG, "brand": BRAND, "name": NAME, "reason": "filed under the wrong brand", "evidence_url": PAGE}
     plan = P.Plan()
     P._schedule_retirement(plan, catalog, modules, entry)
     assert _kinds(plan) == ["retire_catalog", "retire_module"]
@@ -116,7 +116,7 @@ def test_retire_tombstones_the_row_and_never_deletes(source) -> None:
 @pytest.mark.parametrize("missing", ["reason", "brand", "name"])
 def test_retire_without_a_reason_or_identity_is_refused(missing) -> None:
     modules = _module("LIVE")
-    entry = {"slug": SLUG, "brand": BRAND, "name": NAME, "reason": "wrong brand", missing: ""}
+    entry = {"slug": SLUG, "brand": BRAND, "name": NAME, "reason": "wrong brand", "evidence_url": PAGE, missing: ""}
     plan = P.Plan()
     P._schedule_retirement(plan, {}, modules, entry)
     assert plan.ops == []
@@ -128,8 +128,22 @@ def test_retire_of_a_tombstoned_row_changes_nothing() -> None:
     modules = _module("TOMBSTONED")
     catalog = {SLUG: {"brand": BRAND, "name": NAME, "hp": 14, "tombstoned": True}}
     plan = P.Plan()
-    P._schedule_retirement(plan, catalog, modules, {"slug": SLUG, "brand": BRAND, "name": NAME, "reason": "again"})
+    P._schedule_retirement(plan, catalog, modules,
+                           {"slug": SLUG, "brand": BRAND, "name": NAME, "reason": "again", "evidence_url": PAGE})
     assert plan.ops == []
+
+
+@pytest.mark.parametrize("evidence", ["", "http://maker.example/eurorack"])
+def test_retire_without_evidence_is_refused(evidence) -> None:
+    """Retire guard: a reason AND evidence (spec 003 OQ-9)."""
+    modules = _module("LIVE")
+    catalog = {SLUG: {"brand": BRAND, "name": NAME, "hp": 14, "tombstoned": False}}
+    entry = {"slug": SLUG, "brand": BRAND, "name": NAME, "reason": "wrong brand", "evidence_url": evidence}
+    plan = P.Plan()
+    P._schedule_retirement(plan, catalog, modules, entry)
+    assert plan.ops == []
+    assert [c["reason"] for c in plan.conflicts] == ["retirement_needs_evidence"]
+    assert catalog[SLUG]["tombstoned"] is False and modules[(BRAND, NAME)]["status"] == "active"
 
 
 # --- Illegal transitions ----------------------------------------------------------------------
@@ -157,7 +171,7 @@ def test_no_planned_statement_untombstones_or_deletes() -> None:
     plans = [_schedule(_item(a), _module(s)) for s in ("LIVE", "FLAGGED") for a in ("flag", "correct", "keep", "relabel")]
     retire = P.Plan()
     P._schedule_retirement(retire, {SLUG: {"brand": BRAND, "name": NAME, "tombstoned": False}}, _module("LIVE"),
-                           {"slug": SLUG, "brand": BRAND, "name": NAME, "reason": "r"})
+                           {"slug": SLUG, "brand": BRAND, "name": NAME, "reason": "r", "evidence_url": PAGE})
     for plan in [*plans, retire]:
         for op in plan.ops:
             sql = " ".join(op.sql.upper().split())

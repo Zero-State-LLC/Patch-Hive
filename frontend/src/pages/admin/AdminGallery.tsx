@@ -33,44 +33,59 @@ export default function AdminGallery() {
           </button>
         </header>
         <AdminNav />
-        <div className="catalog-grid">
-          {revisions.map((revision) => (
-            <article key={revision.id} className="catalog-card">
-              <h2>{revision.module_key}</h2>
-              <p className="catalog-card-meta">{revision.revision_id}</p>
-              <p className="muted" style={{ margin: 0 }}>
-                Status: {revision.status}
-              </p>
-              <div className="page-hero-actions">
-                <button
-                  type="button"
-                  className="button button-primary"
-                  onClick={async () => {
-                    await adminApi.approveRevision(revision.id);
-                    void fetchRevisions();
-                  }}
-                >
-                  Approve
-                </button>
-                <button
-                  type="button"
-                  className="button button-secondary"
-                  onClick={async () => {
-                    await adminApi.confirmRevision(revision.id);
-                    void fetchRevisions();
-                  }}
-                >
-                  Confirm
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
-        {revisions.length === 0 ? (
-          <div className="panel">
+        {revisions.length ? (
+          <div className="ops-table-wrap">
+            <table className="data-table ops-table-stack">
+              <thead>
+                <tr>
+                  <th>Module</th>
+                  <th>Revision</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {revisions.map((revision) => (
+                  <tr key={revision.id}>
+                    <td data-label="Module">{revision.module_key}</td>
+                    <td data-label="Revision" className="muted ops-id">
+                      {revision.revision_id}
+                    </td>
+                    <td data-label="Status">{revision.status}</td>
+                    <td data-label="Actions">
+                      <div className="page-hero-actions">
+                        <button
+                          type="button"
+                          className="button button-primary"
+                          onClick={async () => {
+                            await adminApi.approveRevision(revision.id);
+                            void fetchRevisions();
+                          }}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          className="button button-secondary"
+                          onClick={async () => {
+                            await adminApi.confirmRevision(revision.id);
+                            void fetchRevisions();
+                          }}
+                        >
+                          Confirm
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="screen-state">
             <p className="status status-warning">No gallery revisions loaded.</p>
           </div>
-        ) : null}
+        )}
       </div>
     </AdminGuard>
   );

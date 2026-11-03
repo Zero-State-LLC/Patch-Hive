@@ -35,6 +35,8 @@ parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
     - depends_on: [T001]
   - [ ] T010b Promote reviewed cases into `fixtures/vision_eval/pilot-manifest.json` and freeze the corpus SHA (operator; manifest has 0 cases today).
     - depends_on: [T010a, 005:T061b2]
+    - Note (2026-11-02): candidate photos can now be found with `scripts/vision/find_corpus_photos.py` (owner-approved 300 context.dev searches, approval `corpus-photos-2026-11`; Commons and Flickr only; CC0, public domain, CC BY, CC BY-SA only; images stay outside the repo). Its rows are UNVERIFIED candidates for `scripts/build_vision_promotion_queue.py`; identity verification and review remain this operator task. Commands in `docs/evidence/PILOT_CASE_PROMOTION.md`.
+    - Note (2026-11-02, run): the 300 approved searches are spent. Only 2 images (6 rows: one Doepfer NAMM rack photo, one Verbos Complex Oscillator photo) name their module; the rest were generic photos, now excluded as `identity_not_named` ([run record](../../docs/evidence/CORPUS_PHOTO_SEARCH_2026-11-02.md)). Open web search will not reach 50 to 100 identities; owner or maker-licensed photos are the remaining source.
 
 - [ ] T020 Run baseline vs Clef-assisted evaluation on the frozen corpus.
   - depends_on: [T010]
@@ -88,7 +90,9 @@ From [research.md](research.md). Effort in brackets.
   - depends_on: [T060a]
 - [x] T081 Sign receipts: an Ed25519 signature over `receipt_sha256` against a committed approver allowlist (`key_id`, public key, `valid_from`, `revoked_at`); `approved_by` becomes the key id; reject unknown or revoked keys (R1) [M]. Done 2026-10-29: `intelligence/receipt_signing.py` and `verify_signed_enablement_receipt`; `intelligence/evaluation_approvers.json` is committed with no keys (T082 adds one).
   - depends_on: [T080]
-- [ ] T082 Generate the approver key pair offline and commit only the public key to the allowlist through a reviewed PR (operator) [S].
+- [x] T082 Generate the approver key pair offline and commit only the public key to the allowlist through a reviewed PR (operator) [S]. Done 2026-11-02 at the owner's direction: key id `approver-2026-11`, `valid_from` 2026-11-02T10:00:00Z, public key in `backend/intelligence/evaluation_approvers.json`; the private key stays in `~/patchhive-approver/` on the owner's machine (mode 0600), never in the repo, CI or Cloudflare. Receipts must use `approved_by = approver-2026-11`.
   - depends_on: [T081]
 - [ ] T083 Sign the receipt pinned in T060b with the approver key and retain the signature beside it (operator) [S]. To enable a provider in staging, point `DECISION_ENABLEMENT_RECEIPT_PATH` and `DECISION_ENABLEMENT_SIGNATURE_PATH` at those two JSON files (005 T080).
   - depends_on: [T060b, T082]
+- [x] T084 Operator driver for the chain: `scripts/staging/run_007_evaluation.py` runs freeze, run (live provider or `--dry-run` fixture), propose, approve, enable-staging, pin, sign and verify as commands over sealed JSON artifacts (owner guide 2026-11-02, finding 1) [S]. Done 2026-11-02; offline end-to-end and refusal tests in `backend/tests/integration/test_007_evaluation_driver.py`. The operator actions T010b to T083 are unchanged and still open.
+  - depends_on: [T081]

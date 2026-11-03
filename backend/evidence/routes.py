@@ -28,6 +28,7 @@ from evidence.images import (
 from evidence.cloud_provider import select_vision_provider
 from evidence.vision_provider import (
     VisionProviderContext,
+    bind_packet_to_evidence,
     collect_evidence_packet,
 )
 from community.auth import require_auth
@@ -37,6 +38,8 @@ from racks.access import owned_private_rack, private_rack
 router = APIRouter()
 
 DEFAULT_RETENTION_DAYS = 30
+# Spec 001 OQ-10 (provisional): a requested retention is capped at 90 days.
+MAX_RETENTION_DAYS = 90
 MAX_FILES_PER_REQUEST = 12
 
 
@@ -127,7 +130,7 @@ async def upload_rack_evidence_images(
         raise HTTPException(status_code=400, detail="NO_FILES")
     if len(files) > MAX_FILES_PER_REQUEST:
         raise HTTPException(status_code=400, detail="TOO_MANY_FILES")
-    if retention_days < 1 or retention_days > 365:
+    if retention_days < 1 or retention_days > MAX_RETENTION_DAYS:
         raise HTTPException(status_code=400, detail="RETENTION_DAYS_INVALID")
 
     uploaded: list[ImageAssetResponse] = []
@@ -204,9 +207,13 @@ async def upload_rack_evidence_images(
                     ),
                 )
                 evidence_status = str(packet.get("status"))
+                # The stored record id is the one authoritative evidence id: the
+                # candidates endpoint shows it and decision resolution binds to it.
+                evidence_id = f"ev-{uuid.uuid4().hex[:20]}"
+                packet = bind_packet_to_evidence(packet, evidence_id)
                 db.add(
                     ClassificationEvidenceRecord(
-                        id=f"ev-{uuid.uuid4().hex[:20]}",
+                        id=evidence_id,
                         image_asset_id=asset_id,
                         inventory_revision_id=None,
                         evidence_packet=packet,
@@ -268,15 +275,17 @@ def list_rack_evidence_images(
 def delete_rack_evidence_image(
     rack_id: int,
     asset_id: str,
-    purge_bytes: bool = False,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_auth),
 ) -> dict[str, str]:
-    """Soft-delete image evidence. Optionally purge storage bytes.
+    """Delete an evidence image the caller owns: soft-delete the row and remove its bytes.
 
-    Classification evidence and inventory lineage remain for audit when
-    ``purge_bytes`` is false; storage files are removed when true and no other
-    non-deleted asset shares the same content hash.
+    Owner only; anyone who cannot see the rack gets 404 (spec 001 OQ-10, provisional).
+    The bytes are removed unless another live asset shares the same content hash, as in
+    ``evidence.retention.expire_image_assets``. Classification evidence, decision
+    receipts and inventory revisions stay as append-only history: they keep reading, but
+    the deleted image is no longer served, listed as a candidate source, or accepted for
+    a new decision (``image_access_decision`` returns ASSET_DELETED).
     """
     owned_private_rack(db, rack_id, current_user)
     record = (
@@ -290,24 +299,23 @@ def delete_rack_evidence_image(
         record.deleted_at = datetime.now(timezone.utc)
         db.flush()
 
-    if purge_bytes:
-        path = Path(str(record.storage_path))
-        siblings = (
-            db.query(ImageAssetRecord)
-            .filter(
-                ImageAssetRecord.content_sha256 == record.content_sha256,
-                ImageAssetRecord.deleted_at.is_(None),
-            )
-            .count()
+    path = Path(str(record.storage_path))
+    siblings = (
+        db.query(ImageAssetRecord)
+        .filter(
+            ImageAssetRecord.content_sha256 == record.content_sha256,
+            ImageAssetRecord.deleted_at.is_(None),
         )
-        if siblings == 0:
-            try:
-                get_file_store().delete(path)
-            except StorageError as exc:
-                # Keep the soft-delete (access is revoked) and tell the caller the bytes
-                # are not gone yet; calling again retries the purge.
-                db.commit()
-                raise HTTPException(status_code=503, detail=exc.code) from exc
+        .count()
+    )
+    if siblings == 0:
+        try:
+            get_file_store().delete(path)
+        except StorageError as exc:
+            # Keep the soft-delete (access is revoked) and tell the caller the bytes
+            # are not gone yet; calling again retries the purge.
+            db.commit()
+            raise HTTPException(status_code=503, detail=exc.code) from exc
 
     db.commit()
     return {"status": "deleted", "asset_id": asset_id}

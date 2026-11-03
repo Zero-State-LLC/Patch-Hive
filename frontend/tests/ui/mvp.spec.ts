@@ -1,4 +1,24 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+/** The app restores a session through the refresh endpoint, so a signed-in page mocks it. */
+async function signIn(page: Page, role = "User") {
+  await page.route("**/api/community/auth/refresh", async (route) => {
+    await route.fulfill({
+      json: {
+        access_token: "e2e-token",
+        token_type: "bearer",
+        user: {
+          id: 1,
+          username: "e2e-user",
+          email: "e2e-user@example.com",
+          role,
+          created_at: "2026-01-01T00:00:00Z",
+          updated_at: "2026-01-01T00:00:00Z",
+        },
+      },
+    });
+  });
+}
 
 test.describe("PatchHive canonical workspace", () => {
   test.beforeEach(async ({ page }) => {
@@ -123,11 +143,23 @@ test.describe("PatchHive canonical workspace", () => {
   });
 
   test("export boundary explains zero-credit state", async ({ page }) => {
+    // A balance is an account's, so the zero-credit state is a signed-in one.
+    await signIn(page);
     await page.goto("/rigs/1");
     await page.getByRole("tab", { name: "Exports" }).click();
     await expect(page.getByRole("button", { name: "Export PDF patch book" })).toBeDisabled();
     await expect(page.getByText("Credits are required only for exports.")).toBeVisible();
-    await expect(page.getByText("/api/canon/exports")).toBeVisible();
+    await expect(page.getByText(/Each export is a patch book of this run/)).toBeVisible();
+  });
+
+  test("export boundary asks a signed-out visitor to sign in, not to buy credits", async ({
+    page,
+  }) => {
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+    await expect(page.getByRole("button", { name: "Export PDF patch book" })).toBeDisabled();
+    await expect(page.getByText("Sign in to export. Only exports cost credits.")).toBeVisible();
+    await expect(page.getByText("Available credits")).toHaveCount(0);
   });
 
   test("multi-photo fusion panel confirms representative and blocks conflict", async ({ page }) => {
@@ -545,6 +577,8 @@ test.describe("PatchHive canonical workspace", () => {
       });
     });
 
+    // Bulk materialize is shown to Admin and Ops only.
+    await signIn(page, "Admin");
     await page.goto("/racks/7/edit");
     await expect(page.getByRole("heading", { name: "Module placement" })).toBeVisible({
       timeout: 15000,
@@ -554,16 +588,20 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(page.getByLabel("Row HP usage")).toBeVisible();
     await expect(page.getByText(/18\/84HP used/i)).toBeVisible();
     await expect(page.getByLabel(/Row 0 layout/i)).toBeVisible();
-    await expect(page.getByTitle(/Alpha.*HP 0–9/i)).toBeVisible();
+    await expect(page.getByTitle(/Alpha.*HP 0 to 9/i)).toBeVisible();
     await expect(page.getByTitle(/Beta.*power unknown/i)).toBeVisible();
     await expect(page.getByText(/Placement power/i)).toBeVisible();
-    await expect(page.getByText(/1 modules with \+12 known/i)).toBeVisible();
-    await expect(page.getByText(/1 unknown/i)).toBeVisible();
+    await expect(page.getByText(/Placement power: 1 of 2 modules state every rail/i)).toBeVisible();
     await expect(page.getByLabel("Power rail usage")).toBeVisible();
     await expect(page.getByLabel("+12V power usage")).toBeVisible();
+    // Beta states no rail, so all three meters report 1 unknown; check the +12V row.
+    const plus12Row = page
+      .locator(".power-rail-meters__row")
+      .filter({ has: page.getByLabel("+12V power usage") });
+    await expect(plus12Row.getByText(/1 unknown/i)).toBeVisible();
     // Alpha: +12 40 / case 2000 · Beta power unknown not assumed
     await expect(page.getByText(/40\/2000mA/i).first()).toBeVisible();
-    await expect(page.getByText(/Soft gap: 1 module without \+12 specs/i)).toBeVisible();
+    await expect(page.getByText(/Unknown draw, not assumed/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: "Dual-gate compatibility" })).toBeVisible();
     await expect(page.getByLabel("Dual-gate summary")).toBeVisible();
     await expect(
@@ -733,6 +771,221 @@ test.describe("PatchHive canonical workspace", () => {
     expect(putBody?.modules?.[1]).toEqual({ module_id: 11, row_index: 0, start_hp: 12 });
   });
 
+  /** Rig 7 on a two-row case, served from state the PUTs change, as the API would. */
+  async function mockMovableRig(page: Page) {
+    const MODULES: Record<number, { name: string; hp: number }> = {
+      10: { name: "Gamma", hp: 12 },
+      11: { name: "Delta", hp: 6 },
+    };
+    const state = {
+      modules: [
+        { module_id: 10, row_index: 0, start_hp: 0 },
+        { module_id: 11, row_index: 0, start_hp: 12 },
+      ],
+    };
+    const puts: { module_id: number; row_index: number; start_hp: number }[][] = [];
+    const rig = () => ({
+      id: 7,
+      name: "Sim rack",
+      case_id: 10,
+      user_id: 1,
+      generation_seed: 1,
+      modules: state.modules.map((m, i) => ({
+        id: i + 1,
+        ...m,
+        module: {
+          id: m.module_id,
+          brand: "Sim",
+          module_type: "UTIL",
+          power_12v_ma: 20,
+          ...MODULES[m.module_id],
+        },
+      })),
+      case: {
+        id: 10,
+        brand: "Sim Co",
+        name: "Sim 168",
+        total_hp: 168,
+        rows: 2,
+        hp_per_row: [84, 84],
+        power_12v_ma: 2000,
+        power_neg12v_ma: 1200,
+        power_5v_ma: 500,
+      },
+    });
+    await page.route("**/api/racks/7**", async (route) => {
+      const request = route.request();
+      if (request.url().includes("/compatibility")) {
+        await route.fulfill({ json: { bridge_status: "ok", message: "ok", compatibility: null } });
+        return;
+      }
+      if (request.method() === "PUT" || request.method() === "PATCH") {
+        state.modules = request.postDataJSON().modules;
+        puts.push(state.modules);
+        await route.fulfill({ json: rig() });
+        return;
+      }
+      await route.fulfill({ json: rig() });
+    });
+    await page.route("**/api/modules/**", (route) =>
+      route.fulfill({
+        json: {
+          total: 2,
+          modules: Object.entries(MODULES).map(([id, m]) => ({
+            id: Number(id),
+            brand: "Sim",
+            module_type: "UTIL",
+            power_12v_ma: 20,
+            ...m,
+          })),
+        },
+      }),
+    );
+    return puts;
+  }
+
+  test("rack builder moves a placed module by keyboard, and Undo puts it back", async ({
+    page,
+  }) => {
+    const puts = await mockMovableRig(page);
+    await page.goto("/racks/7/edit");
+    const delta = page.locator('.placement-rail [data-module="11"]');
+    await expect(delta).toBeVisible({ timeout: 15000 });
+
+    // Enter picks it up; 1 + 1 + 4 HP right, then down a row; Enter drops it.
+    await delta.focus();
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("Shift+ArrowRight");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+
+    await expect(page.getByRole("status").filter({ hasText: "moved" })).toHaveText(
+      /Sim Delta moved to row 1 at 18 HP\./,
+    );
+    expect(puts.at(-1)).toMatchObject([
+      { module_id: 10, row_index: 0, start_hp: 0 },
+      { module_id: 11, row_index: 1, start_hp: 18 },
+    ]);
+    // Focus follows the module to its new row.
+    await expect(page.locator('.placement-rail [data-module="11"][data-row="1"]')).toBeFocused();
+
+    await page.getByRole("button", { name: "Undo" }).click();
+    await expect(page.getByText("Sim Delta is back at row 0 at 12 HP.")).toBeVisible();
+    expect(puts.at(-1)).toMatchObject([
+      { module_id: 10, row_index: 0, start_hp: 0 },
+      { module_id: 11, row_index: 0, start_hp: 12 },
+    ]);
+  });
+
+  test("rack builder shows a blocked slot and never saves it", async ({ page }) => {
+    const puts = await mockMovableRig(page);
+    await page.goto("/racks/7/edit");
+    const delta = page.locator('.placement-rail [data-module="11"]');
+    await expect(delta).toBeVisible({ timeout: 15000 });
+
+    await delta.focus();
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("ArrowLeft");
+    await expect(page.getByText("Can't go there. Overlaps Sim Gamma at HP 0 to 11.")).toBeVisible();
+    await expect(page.locator(".rack-row-map__block--ghost")).toHaveAttribute(
+      "data-state",
+      "blocked",
+    );
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Escape");
+    expect(puts).toHaveLength(0);
+  });
+
+  test("rack builder moves a placed module by dragging it to another row", async ({ page }) => {
+    const puts = await mockMovableRig(page);
+    await page.goto("/racks/7/edit");
+    const delta = page.locator('.placement-rail [data-module="11"]');
+    await expect(delta).toBeVisible({ timeout: 15000 });
+
+    const from = (await delta.boundingBox())!;
+    const row1 = (await page.locator('[data-rail-row="1"]').boundingBox())!;
+    await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+    await page.mouse.down();
+    // Held at its middle (3 HP in), dropped with the pointer at HP 43 of row 1: it starts at 40.
+    await page.mouse.move(row1.x + (43 / 84) * row1.width, row1.y + row1.height / 2, { steps: 8 });
+    await expect(page.locator(".rack-row-map__block--ghost")).toBeVisible();
+    await page.mouse.up();
+
+    await expect(page.getByText(/Sim Delta moved to row 1 at \d+ HP\./)).toBeVisible();
+    const moved = puts.at(-1)?.find((m) => m.module_id === 11);
+    expect(moved?.row_index).toBe(1);
+    expect(Math.abs((moved?.start_hp ?? 0) - 40)).toBeLessThanOrEqual(1);
+  });
+
+  test("rack builder keeps the gallery's module_id in the select and batch list", async ({
+    page,
+  }) => {
+    await page.route("**/api/racks/7**", async (route) => {
+      const path = new URL(route.request().url()).pathname;
+      if (route.request().method() === "GET" && /\/api\/racks\/7\/?$/.test(path)) {
+        await route.fulfill({
+          json: {
+            id: 7,
+            name: "Sim rack",
+            case_id: 10,
+            user_id: 1,
+            generation_seed: 1,
+            modules: [],
+            case: {
+              id: 10,
+              brand: "Sim Co",
+              name: "Sim 84",
+              total_hp: 84,
+              rows: 1,
+              hp_per_row: [84],
+              catalog_slug: "sim-co-sim-84",
+              power_12v_ma: 2000,
+              power_neg12v_ma: 1200,
+              power_5v_ma: 500,
+            },
+          },
+        });
+        return;
+      }
+      // Compatibility is optional for this page; a miss leaves the gate panel empty.
+      await route.fulfill({ status: 404, json: { detail: "Not found" } });
+    });
+    await page.route("**/api/modules/**", async (route) => {
+      const module = (id: number, name: string, hp: number) => ({
+        id,
+        brand: "Sim",
+        name,
+        hp,
+        module_type: "VCO",
+        power_12v_ma: 40,
+        source: "ModuleCatalog",
+        io_ports: [],
+        tags: [],
+        imported_at: "2026-01-01",
+        created_at: "2026-01-01",
+        updated_at: "2026-01-01",
+      });
+      await route.fulfill({
+        json: { total: 2, modules: [module(10, "Gamma", 12), module(11, "Delta", 6)] },
+      });
+    });
+
+    await page.goto("/racks/7/edit?module_id=11");
+    await expect(page.getByText(/Preselected from gallery/i)).toBeVisible({ timeout: 15000 });
+    await expect(page.getByLabel("Filter placeable modules")).toHaveValue("Sim Delta");
+    const select = page.getByLabel("Select module to place");
+    await expect(select).toHaveValue("11");
+    await expect(select.locator("option", { hasText: "Delta" })).toHaveCount(1);
+    const batchList = page.getByLabel("Batch module selection");
+    await expect(
+      batchList.getByRole("checkbox", { name: /Select Sim Delta for batch/i }),
+    ).toBeVisible();
+    await expect(batchList.getByRole("checkbox")).toHaveCount(1);
+    await expect(page.getByText("No modules match the filter.")).toHaveCount(0);
+  });
+
   test("module gallery URL filters and status chips", async ({ page }) => {
     const allModules = [
       {
@@ -886,6 +1139,30 @@ test.describe("PatchHive canonical workspace", () => {
         return;
       }
       await route.continue();
+    });
+    // The picker lists rigs through the canon prefix: GET /canon/rigs?limit=50
+    await page.route("**/api/canon/rigs?**", async (route) => {
+      await route.fulfill({
+        json: {
+          total: 1,
+          rigs: [
+            {
+              rig_id: 7,
+              rack_id: 7,
+              user_id: 1,
+              case_id: 10,
+              name: "Sim rack",
+              name_suggested: null,
+              description: null,
+              tags: [],
+              is_public: false,
+              module_count: 0,
+              created_at: "2026-01-01T00:00:00Z",
+              updated_at: "2026-01-01T00:00:00Z",
+            },
+          ],
+        },
+      });
     });
 
     await page.goto("/modules?hp=known");
@@ -1066,6 +1343,8 @@ test.describe("PatchHive canonical workspace", () => {
       });
     });
 
+    // Generate is disabled when signed out.
+    await signIn(page);
     await page.goto("/rigs/1");
     await expect(page.getByLabel("Inventory to generation loop")).toBeVisible();
     await expect(page.getByLabel("Generate patches from inventory")).toBeVisible();

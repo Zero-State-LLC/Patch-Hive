@@ -12,7 +12,11 @@ from core.storage import StorageError, get_file_store
 
 
 def expire_image_assets(
-    db: Session, *, now: datetime | None = None, dry_run: bool = False
+    db: Session,
+    *,
+    now: datetime | None = None,
+    dry_run: bool = False,
+    user_id: int | None = None,
 ) -> dict[str, int]:
     """Soft-delete assets past retention_expires_at; purge orphan storage files.
 
@@ -27,17 +31,18 @@ def expire_image_assets(
     Only ``image_assets`` rows (mutable) and their storage objects are touched; no
     append-only table is written.
 
+    ``user_id`` limits the run to one user's assets (account deletion, spec 004 OQ-12).
+
     Returns counts for observability receipts.
     """
     instant = now or datetime.now(timezone.utc)
-    expired = (
-        db.query(ImageAssetRecord)
-        .filter(
-            ImageAssetRecord.deleted_at.is_(None),
-            ImageAssetRecord.retention_expires_at <= instant,
-        )
-        .all()
+    query = db.query(ImageAssetRecord).filter(
+        ImageAssetRecord.deleted_at.is_(None),
+        ImageAssetRecord.retention_expires_at <= instant,
     )
+    if user_id is not None:
+        query = query.filter(ImageAssetRecord.user_id == user_id)
+    expired = query.all()
     # Sessions here run with autoflush off, so rows retired earlier in this loop are not
     # yet visible to the sibling query; track them so shared bytes are purged exactly once.
     retired_this_run: set[str] = set()

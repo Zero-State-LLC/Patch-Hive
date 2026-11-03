@@ -110,7 +110,7 @@ These passwords are public and work only on a **local** database. The seeder ref
 
 ## Evidence-image expiry
 
-Evidence images carry `retention_expires_at` (default 30 days). Access is refused after expiry, but stored bytes and rows are only cleaned up when an operator runs the expiry command. Nothing schedules it; automatic scheduling (a Cloudflare cron or GitHub scheduled workflow) is an owner decision.
+Evidence images carry `retention_expires_at` (default 30 days, at most 90). The owner can also delete an image, which removes its stored file at once. Access is refused after expiry, but stored bytes and rows are only cleaned up when an operator runs the expiry command. Nothing schedules it; automatic scheduling (a Cloudflare cron or GitHub scheduled workflow) is an owner decision.
 
 ```bash
 cd backend

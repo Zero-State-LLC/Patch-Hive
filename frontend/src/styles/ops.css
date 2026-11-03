@@ -1,0 +1,199 @@
+/* Ops screens: Account and the Admin console */
+
+.ops-page {
+  display: grid;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+.ops-section {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-rule);
+}
+/* Inside the console the header already sits on the shell's gap, and the tabs draw the first rule */
+.admin-shell > .workspace-header {
+  margin-bottom: 0;
+}
+.admin-nav + .ops-section,
+.admin-nav + * > .ops-section:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.ops-section > h2,
+.ops-section > h3 {
+  margin: 0;
+}
+.ops-section h3 {
+  font-size: var(--text-lg);
+}
+.ops-section > p {
+  margin: 0;
+}
+.ops-section .readout {
+  margin: 0;
+}
+.ops-stack {
+  display: grid;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+
+/* Tables scroll inside their wrapper, never the page */
+.ops-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.ops-table-wrap .data-table {
+  min-width: 36rem;
+}
+.ops-table-wrap .data-table td {
+  padding-right: var(--space-md);
+}
+.ops-table-wrap .field input,
+.ops-table-wrap .inline-field input,
+.ops-table-wrap .inline-field select {
+  min-width: 9rem;
+}
+.ops-table-wrap .ops-id-input {
+  min-width: 0;
+  width: 7rem;
+}
+.ops-cell-stack {
+  display: grid;
+  gap: var(--space-2xs);
+}
+.ops-cell-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.ops-id {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Account */
+.ops-form {
+  display: grid;
+  gap: var(--space-md);
+  max-width: 28rem;
+}
+.ops-form .button {
+  justify-self: start;
+}
+.ops-referral {
+  flex-wrap: wrap;
+}
+.ops-referral .field {
+  flex: 1 1 12rem;
+}
+.ops-avatar {
+  width: 6rem;
+  height: 6rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 50%;
+  object-fit: cover;
+}
+.ops-toolbar .ops-grow {
+  flex: 1 1 12rem;
+}
+
+/* Dashboard */
+.ops-guardrails {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 60rem) {
+  .ops-form {
+    max-width: none;
+  }
+  .ops-page {
+    gap: var(--space-lg);
+  }
+}
+
+/* In a table, each row's primary action waits as an outline and fills when the row is in hand */
+.app-shell .data-table .button-primary {
+  border-color: color-mix(in oklab, var(--color-indicator) 60%, var(--color-rule));
+  color: var(--color-accent-text);
+  background: transparent;
+}
+.app-shell .data-table tr:hover .button-primary:not(:disabled),
+.app-shell .data-table tr:focus-within .button-primary:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  background: var(--color-accent);
+}
+
+/* —— Account: two columns on wide screens; the balance is the figure the page exists for —— */
+.account-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-xl) var(--space-2xl);
+  align-items: start;
+}
+.account-balance dd {
+  font-size: var(--text-3xl);
+}
+/* The profile is a form, not a ledger: it sits in a well instead of under a rule */
+.ops-section--form {
+  padding: var(--space-lg);
+  border-top: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-paper-2);
+}
+
+/* —— Admin tables on narrow screens: each row stacks, each cell carries its column head,
+   so an audit reason and the actions it gates stay in view together —— */
+@media (max-width: 60rem) {
+  .account-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ops-table-wrap .data-table.ops-table-stack {
+    min-width: 0;
+  }
+  .ops-table-stack thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .ops-table-stack,
+  .ops-table-stack tbody,
+  .ops-table-stack tr,
+  .ops-table-stack td {
+    display: block;
+  }
+  .ops-table-stack tr {
+    display: grid;
+    gap: var(--space-xs);
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--color-rule);
+  }
+  .ops-table-stack td {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 0;
+    border: 0;
+  }
+  .ops-table-stack td::before {
+    color: var(--color-muted);
+    content: attr(data-label);
+    font-size: var(--text-sm);
+  }
+  .ops-table-stack .field input,
+  .ops-table-stack .inline-field input,
+  .ops-table-stack .inline-field select {
+    min-width: 0;
+  }
+}

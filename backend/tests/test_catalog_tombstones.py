@@ -56,7 +56,10 @@ def _state():
     return catalog, modules
 
 
-ENTRY = {"slug": "mental-noise-maths", "brand": "Mental Noise", "name": "Maths", "reason": "filed under the wrong brand"}
+ENTRY = {
+    "slug": "mental-noise-maths", "brand": "Mental Noise", "name": "Maths", "reason": "filed under the wrong brand",
+    "evidence_url": "https://www.makenoisemusic.com/modules/maths",
+}
 
 
 def test_retirement_tombstones_catalog_and_module_rows_once() -> None:
@@ -82,6 +85,30 @@ def test_retirement_needs_a_reason_and_matching_identity() -> None:
         "retirement_identity_mismatch",
     ]
     assert plan.ops == []
+
+
+@pytest.mark.parametrize("evidence", [None, "", "http://www.makenoisemusic.com/modules/maths", "makenoisemusic.com"])
+def test_retirement_needs_an_https_evidence_page(evidence) -> None:
+    """Spec 003 OQ-9: the retire guard is a reason and evidence; without a page nothing is tombstoned."""
+    catalog, modules = _state()
+    entry = {**ENTRY, "evidence_url": evidence}
+    if evidence is None:
+        entry.pop("evidence_url")
+    plan = P.Plan()
+    P._schedule_retirement(plan, catalog, modules, entry)
+    assert [c["reason"] for c in plan.conflicts] == ["retirement_needs_evidence"]
+    assert plan.ops == []
+    assert catalog["mental-noise-maths"]["tombstoned"] is False
+    assert modules[("Mental Noise", "Maths")]["status"] == "active"
+
+
+def test_every_committed_retirement_carries_https_evidence() -> None:
+    """The manifests already loaded on staging and prod keep validating under the evidence rule."""
+    paths = sorted(OVERLAYS.glob("catalog-retirements-v*.json"))
+    assert paths
+    for path in paths:
+        for row in json.loads(path.read_text())["rows"]:
+            assert str(row.get("evidence_url") or "").startswith("https://"), (path.name, row["slug"])
 
 
 def test_retirement_counts_rows_it_cannot_find() -> None:

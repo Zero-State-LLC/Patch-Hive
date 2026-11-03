@@ -2,11 +2,14 @@
  * Module gallery — browse lightweight module_catalog (research + curated)
  * with optional materialize into full-spec inventory for rack placement.
  */
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import LoadFailure from "@/components/LoadFailure";
 import { canonApi, moduleApi } from "@/lib/api";
 import { rigSummaryToRack } from "@/lib/canonRigAdapter";
+import { isCancelled } from "@/lib/loadError";
+import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import type { CatalogModule, CatalogModuleStats, Rack } from "@/types/api";
 
 type LoadState = "loading" | "ready" | "empty" | "error";
@@ -36,7 +39,10 @@ export default function ModulesPage() {
   const [brands, setBrands] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [state, setState] = useState<LoadState>("loading");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<unknown>(null);
+  // Retry and Refresh bump this to ask again with the same filters.
+  const [attempt, setAttempt] = useState(0);
+  const reload = () => setAttempt((n) => n + 1);
   const [query, setQuery] = useState(
     () => searchParams.get("q") || searchParams.get("search") || "",
   );
@@ -92,9 +98,41 @@ export default function ModulesPage() {
     setSearchParams,
   ]);
 
-  const load = useCallback(() => {
+  // The search asks once the typing pauses; the other filters ask at once.
+  const searchTerm = useDebouncedValue(query.trim());
+
+  // Stats, brands and categories don't change with the filters: fetched once, and again on
+  // Retry only if they didn't arrive.
+  const metaLoaded = useRef(false);
+  useEffect(() => {
+    if (metaLoaded.current) return;
+    let current = true;
+    void Promise.allSettled([
+      moduleApi.catalogStats(),
+      moduleApi.catalogBrands(),
+      moduleApi.catalogCategories(),
+    ]).then(([statsRes, brandsRes, catsRes]) => {
+      if (!current) return;
+      if (statsRes.status === "fulfilled") setStats(statsRes.value.data);
+      if (brandsRes.status === "fulfilled") {
+        setBrands((brandsRes.value.data.brands ?? []).map((b) => b.name));
+      }
+      if (catsRes.status === "fulfilled") {
+        setCategories((catsRes.value.data.categories ?? []).map((c) => c.name).filter(Boolean));
+      }
+      metaLoaded.current = [statsRes, brandsRes, catsRes].every((r) => r.status === "fulfilled");
+    });
+    return () => {
+      current = false;
+    };
+  }, [attempt]);
+
+  // The list: a change of filter cancels the request before it, so a slow earlier answer can
+  // never replace the one asked for last.
+  useEffect(() => {
+    const controller = new AbortController();
     setState("loading");
-    setError("");
+    setError(null);
     setActionMsg("");
     const params: Record<string, string | number | boolean> = {
       skip: page * PAGE_SIZE,
@@ -102,7 +140,7 @@ export default function ModulesPage() {
       sort_by: sortKey === "category" ? "category" : sortKey,
       sort_order: "asc",
     };
-    if (query.trim()) params.search = query.trim();
+    if (searchTerm) params.search = searchTerm;
     if (brandFilter !== "all") params.brand = brandFilter;
     if (typeFilter !== "all") params.category = typeFilter;
     if (hpFilter === "known") params.hp_known = true;
@@ -110,32 +148,34 @@ export default function ModulesPage() {
     if (sourceFilter !== "all") params.source = sourceFilter;
     if (availabilityFilter !== "all") params.is_available = availabilityFilter;
 
-    Promise.all([
-      moduleApi.catalog(params),
-      moduleApi.catalogStats(),
-      moduleApi.catalogBrands(),
-      moduleApi.catalogCategories(),
-    ])
-      .then(([listRes, statsRes, brandsRes, catsRes]) => {
+    moduleApi
+      .catalog(params, { signal: controller.signal })
+      .then((listRes) => {
+        if (controller.signal.aborted) return;
         const rows = listRes.data.modules ?? [];
         setModules(rows);
         setTotal(listRes.data.total ?? 0);
-        setStats(statsRes.data);
-        setBrands((brandsRes.data.brands ?? []).map((b) => b.name));
-        setCategories((catsRes.data.categories ?? []).map((c) => c.name).filter(Boolean));
         setState(listRes.data.total === 0 ? "empty" : "ready");
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        if (controller.signal.aborted || isCancelled(err)) return;
         setModules([]);
         setTotal(0);
-        setError("Unable to load module catalog. Check that the API is reachable and try again.");
+        setError(err);
         setState("error");
       });
-  }, [page, sortKey, query, brandFilter, typeFilter, hpFilter, sourceFilter, availabilityFilter]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
+    return () => controller.abort();
+  }, [
+    page,
+    sortKey,
+    searchTerm,
+    brandFilter,
+    typeFilter,
+    hpFilter,
+    sourceFilter,
+    availabilityFilter,
+    attempt,
+  ]);
 
   const clearFilters = () => {
     setQuery("");
@@ -226,7 +266,7 @@ export default function ModulesPage() {
   const materializeRow = async (row: CatalogModule) => {
     if (row.hp == null) {
       setActionMsg(
-        `${row.brand} ${row.name}: HP unknown. Cannot place until manufacturer width is confirmed.`,
+        `${row.brand} ${row.name}: HP unknown, so it cannot be placed until the manufacturer width is confirmed.`,
       );
       return null;
     }
@@ -255,7 +295,9 @@ export default function ModulesPage() {
       );
       navigate(`/racks/new?module_id=${prep.mid}`);
     } catch {
-      setActionMsg(`${row.brand} ${row.name}: materialize failed (needs known HP or API error).`);
+      setActionMsg(
+        `${row.brand} ${row.name} couldn't be prepared for a rig. It needs a known width, or the server refused.`,
+      );
     } finally {
       setBusySlug(null);
     }
@@ -279,7 +321,7 @@ export default function ModulesPage() {
         `${prep.brand} ${prep.name} ready (module #${prep.mid}). Choose a rig to open placement.`,
       );
     } catch {
-      setActionMsg(`${row.brand} ${row.name}: materialize or rig list failed.`);
+      setActionMsg(`${row.brand} ${row.name} couldn't be prepared, or your rigs couldn't load.`);
       setPickerOpen(false);
     } finally {
       setBusySlug(null);
@@ -291,460 +333,486 @@ export default function ModulesPage() {
     navigate(`/racks/${pickRackId}/edit?module_id=${lastPrepared.moduleId}`);
   };
 
+  const showList = state === "ready" || (state === "loading" && modules.length > 0);
+
   return (
     <section aria-labelledby="modules-title">
       <header className="workspace-header">
         <div>
           <h1 id="modules-title">Module gallery</h1>
           <p className="muted">
-            Browse the lightweight module catalog (research seed + curated). Full power/I/O specs
-            load when you materialize a row with known HP for rack placement: unknown widths stay
-            null (never invented).
+            Every module drawn to its width. Unknown widths stay unknown, never invented.
           </p>
         </div>
         <div className="header-actions">
           <Link className="button button-primary" to="/racks/new">
             Place on new rig
           </Link>
-          <button className="button button-secondary" type="button" onClick={load}>
+          <button className="button button-quiet" type="button" onClick={reload}>
             Refresh
           </button>
         </div>
       </header>
 
       {stats ? (
-        <div
-          className="panel"
-          style={{ marginBottom: "var(--space-4)" }}
-          aria-label="Catalog stats"
-        >
-          <p className="muted" style={{ margin: 0 }}>
-            <strong>{stats.total_modules}</strong> modules from{" "}
-            <strong>{stats.total_brands}</strong> brands. HP known for{" "}
-            <strong>{stats.hp_stats.known}</strong> ({stats.hp_stats.coverage_pct}%), unknown for{" "}
-            <strong>{stats.hp_stats.unknown}</strong>,{" "}
-            <strong>{stats.availability.available}</strong> available.
-            {stats.by_source
-              ? ` Sources: ${Object.entries(stats.by_source)
-                  .map(([k, n]) => `${k || "unknown"}=${n}`)
-                  .join(", ")}`
-              : ""}
-          </p>
-          <div className="gate-chip-row" style={{ marginTop: "var(--space-3)" }}>
-            <button
-              type="button"
-              className={`status-chip status-chip--interactive${hpFilter === "known" ? " status-chip--success" : ""}`}
-              onClick={() => {
-                setHpFilter("known");
-                setPage(0);
-              }}
-            >
-              Placeable (HP known)
-            </button>
-            <button
-              type="button"
-              className={`status-chip status-chip--interactive${hpFilter === "unknown" ? " status-chip--warning" : ""}`}
-              onClick={() => {
-                setHpFilter("unknown");
-                setPage(0);
-              }}
-            >
-              HP unknown
-            </button>
-            <button
-              type="button"
-              className={`status-chip status-chip--interactive${hpFilter === "all" ? " status-chip--neutral is-active" : ""}`}
-              onClick={() => {
-                setHpFilter("all");
-                setPage(0);
-              }}
-            >
-              All widths
-            </button>
+        <dl className="readout" aria-label="Catalog stats">
+          <div>
+            <dt>Modules</dt>
+            <dd>{stats.total_modules}</dd>
           </div>
-        </div>
+          <div>
+            <dt>Brands</dt>
+            <dd>{stats.total_brands}</dd>
+          </div>
+          <div>
+            <dt>HP known</dt>
+            <dd>
+              {stats.hp_stats.known}
+              <small>{stats.hp_stats.coverage_pct}%</small>
+            </dd>
+          </div>
+          <div>
+            <dt>HP unknown</dt>
+            <dd>{stats.hp_stats.unknown}</dd>
+          </div>
+          <div>
+            <dt>Available</dt>
+            <dd>{stats.availability.available}</dd>
+          </div>
+          {stats.by_source ? (
+            <div className="readout-wide">
+              <dt>Sources</dt>
+              <dd>
+                {Object.entries(stats.by_source)
+                  .map(([k, n]) => `${k || "Not stated"} ${n}`)
+                  .join(", ")}
+              </dd>
+            </div>
+          ) : null}
+        </dl>
       ) : null}
 
-      {actionMsg ? (
-        <div
-          className={`panel${lastPrepared ? " module-preselect-banner" : ""}`}
-          role="status"
-          style={{ marginBottom: "var(--space-4)" }}
-        >
-          <p className="status" style={{ margin: 0 }}>
-            {actionMsg}
-          </p>
-          {lastPrepared && !pickerOpen ? (
-            <p className="muted" style={{ margin: "var(--space-2) 0 0" }}>
-              Next: pick a case → create rig → module #{lastPrepared.moduleId} is preselected for
-              placement.
-            </p>
-          ) : null}
-          {pickerOpen && lastPrepared ? (
-            <div className="toolbar" style={{ marginTop: "var(--space-3)" }}>
-              <label className="field" style={{ flex: "1 1 14rem" }}>
-                Existing rig
-                <select
-                  value={pickRackId ?? ""}
-                  aria-label="Select existing rig"
-                  onChange={(e) => setPickRackId(e.target.value ? Number(e.target.value) : null)}
-                >
-                  {existingRacks.length === 0 ? (
-                    <option value="">No rigs yet: create one</option>
-                  ) : (
-                    existingRacks.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        #{r.id} · {r.name}
-                        {r.case_id != null ? ` · case #${r.case_id}` : ""}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </label>
+      <div className="catalog-layout">
+        <aside className="filter-rail" aria-label="Module filters">
+          <div className="seg" role="group" aria-labelledby="module-width-label">
+            <span className="seg-label" id="module-width-label">
+              Width
+            </span>
+            <div className="seg-options">
               <button
                 type="button"
-                className="button button-primary"
-                disabled={pickRackId == null}
-                onClick={goToPickedRig}
+                aria-pressed={hpFilter === "known"}
+                className={`status-chip status-chip--interactive${hpFilter === "known" ? " status-chip--success" : ""}`}
+                onClick={() => {
+                  setHpFilter("known");
+                  setPage(0);
+                }}
               >
-                Open placement
+                Placeable (HP known)
               </button>
-              <Link
-                className="button button-secondary"
-                to={`/racks/new?module_id=${lastPrepared.moduleId}`}
+              <button
+                type="button"
+                aria-pressed={hpFilter === "unknown"}
+                className={`status-chip status-chip--interactive${hpFilter === "unknown" ? " status-chip--warning" : ""}`}
+                onClick={() => {
+                  setHpFilter("unknown");
+                  setPage(0);
+                }}
               >
-                Or create new rig
-              </Link>
+                HP unknown
+              </button>
+              <button
+                type="button"
+                aria-pressed={hpFilter === "all"}
+                className={`status-chip status-chip--interactive${hpFilter === "all" ? " status-chip--neutral is-active" : ""}`}
+                onClick={() => {
+                  setHpFilter("all");
+                  setPage(0);
+                }}
+              >
+                All widths
+              </button>
+            </div>
+          </div>
+          <label className="field" htmlFor="module-search">
+            Search modules
+            <input
+              id="module-search"
+              type="search"
+              value={query}
+              placeholder="Brand, name…"
+              aria-label="Search modules"
+              onChange={(event) => {
+                setPage(0);
+                setQuery(event.target.value);
+              }}
+              autoComplete="off"
+            />
+          </label>
+          <label className="inline-field" htmlFor="module-brand">
+            Brand
+            <select
+              id="module-brand"
+              value={brandFilter}
+              onChange={(event) => {
+                setPage(0);
+                setBrandFilter(event.target.value);
+              }}
+            >
+              <option value="all">All brands</option>
+              {brands.map((brand) => (
+                <option key={brand} value={brand}>
+                  {brand}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="inline-field" htmlFor="module-type">
+            Category
+            <select
+              id="module-type"
+              value={typeFilter}
+              onChange={(event) => {
+                setPage(0);
+                setTypeFilter(event.target.value);
+              }}
+            >
+              <option value="all">All categories</option>
+              {categories.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="inline-field" htmlFor="module-hp">
+            HP
+            <select
+              id="module-hp"
+              value={hpFilter}
+              onChange={(event) => {
+                setPage(0);
+                setHpFilter(event.target.value as HpFilter);
+              }}
+            >
+              <option value="all">All</option>
+              <option value="known">Known width</option>
+              <option value="unknown">Unknown width</option>
+            </select>
+          </label>
+          <label className="inline-field" htmlFor="module-source">
+            Source
+            <select
+              id="module-source"
+              value={sourceFilter}
+              onChange={(event) => {
+                setPage(0);
+                setSourceFilter(event.target.value);
+              }}
+            >
+              <option value="all">All sources</option>
+              {stats?.by_source
+                ? Object.keys(stats.by_source)
+                    .filter(Boolean)
+                    .sort()
+                    .map((src) => (
+                      <option key={src} value={src}>
+                        {src}
+                      </option>
+                    ))
+                : null}
+              {!stats?.by_source ? (
+                <option value="SynthCatalogResearch">SynthCatalogResearch</option>
+              ) : null}
+            </select>
+          </label>
+          <label className="inline-field" htmlFor="module-availability">
+            Status
+            <select
+              id="module-availability"
+              value={availabilityFilter}
+              onChange={(event) => {
+                setPage(0);
+                setAvailabilityFilter(event.target.value);
+              }}
+            >
+              <option value="all">All status</option>
+              <option value="available">available</option>
+              <option value="discontinued">discontinued</option>
+              <option value="upcoming">upcoming</option>
+              <option value="duplicate">duplicate</option>
+              <option value="non_eurorack">non_eurorack</option>
+              <option value="desktop">desktop</option>
+              <option value="unresolved">unresolved</option>
+            </select>
+          </label>
+          <label className="inline-field" htmlFor="module-sort">
+            Sort
+            <select
+              id="module-sort"
+              value={sortKey}
+              onChange={(event) => {
+                setPage(0);
+                setSortKey(event.target.value as SortKey);
+              }}
+            >
+              <option value="brand">Brand</option>
+              <option value="name">Name</option>
+              <option value="category">Category</option>
+              <option value="hp">HP (width)</option>
+            </select>
+          </label>
+          {filtersActive ? (
+            <button className="button button-quiet" type="button" onClick={clearFilters}>
+              Clear filters
+            </button>
+          ) : null}
+          {activeFilterChips.length > 0 ? (
+            <div className="filter-chip-row" aria-label="Active filters">
+              {activeFilterChips.map((chip) => (
+                <button
+                  key={chip.key}
+                  type="button"
+                  className="status-chip status-chip--interactive"
+                  onClick={chip.clear}
+                  title="Remove filter"
+                >
+                  {chip.label} ×
+                </button>
+              ))}
             </div>
           ) : null}
-        </div>
-      ) : null}
+        </aside>
 
-      {state === "loading" ? (
-        <p className="status" role="status">
-          Loading catalog…
-        </p>
-      ) : null}
-
-      {state === "error" ? (
-        <div className="panel" role="alert">
-          <p className="status status-danger">{error}</p>
-          <button className="button button-primary" type="button" onClick={load}>
-            Retry
-          </button>
-        </div>
-      ) : null}
-
-      {state === "empty" ? (
-        <div className="panel">
-          <p className="status status-warning">No modules in the catalog yet.</p>
-          <p className="muted">
-            Run synth catalog import or ModularGrid curated populate to seed discovery.
-          </p>
-        </div>
-      ) : null}
-
-      {state === "ready" ? (
-        <>
-          <div
-            className="panel"
-            aria-label="Module filters"
-            style={{ marginBottom: "var(--space-4)" }}
-          >
-            <div className="toolbar">
-              <label className="field" htmlFor="module-search" style={{ flex: "1 1 12rem" }}>
-                Search modules
-                <input
-                  id="module-search"
-                  type="search"
-                  value={query}
-                  placeholder="Brand, name…"
-                  aria-label="Search modules"
-                  onChange={(event) => {
-                    setPage(0);
-                    setQuery(event.target.value);
-                  }}
-                  autoComplete="off"
-                />
-              </label>
-              <label className="inline-field" htmlFor="module-brand">
-                Brand
-                <select
-                  id="module-brand"
-                  value={brandFilter}
-                  onChange={(event) => {
-                    setPage(0);
-                    setBrandFilter(event.target.value);
-                  }}
-                >
-                  <option value="all">All brands</option>
-                  {brands.map((brand) => (
-                    <option key={brand} value={brand}>
-                      {brand}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="inline-field" htmlFor="module-type">
-                Category
-                <select
-                  id="module-type"
-                  value={typeFilter}
-                  onChange={(event) => {
-                    setPage(0);
-                    setTypeFilter(event.target.value);
-                  }}
-                >
-                  <option value="all">All categories</option>
-                  {categories.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="inline-field" htmlFor="module-hp">
-                HP
-                <select
-                  id="module-hp"
-                  value={hpFilter}
-                  onChange={(event) => {
-                    setPage(0);
-                    setHpFilter(event.target.value as HpFilter);
-                  }}
-                >
-                  <option value="all">All</option>
-                  <option value="known">Known width</option>
-                  <option value="unknown">Unknown width</option>
-                </select>
-              </label>
-              <label className="inline-field" htmlFor="module-source">
-                Source
-                <select
-                  id="module-source"
-                  value={sourceFilter}
-                  onChange={(event) => {
-                    setPage(0);
-                    setSourceFilter(event.target.value);
-                  }}
-                >
-                  <option value="all">All sources</option>
-                  {stats?.by_source
-                    ? Object.keys(stats.by_source)
-                        .filter(Boolean)
-                        .sort()
-                        .map((src) => (
-                          <option key={src} value={src}>
-                            {src}
+        <div className="catalog-results" aria-busy={state === "loading"}>
+          {actionMsg ? (
+            <div className={lastPrepared ? "module-preselect-banner" : "notice"} role="status">
+              <p className="status">{actionMsg}</p>
+              {lastPrepared && !pickerOpen ? (
+                <p className="muted">
+                  Next: pick a case, create the rig, and module #{lastPrepared.moduleId} is
+                  preselected for placement.
+                </p>
+              ) : null}
+              {pickerOpen && lastPrepared ? (
+                <div className="toolbar">
+                  <label className="field">
+                    Existing rig
+                    <select
+                      value={pickRackId ?? ""}
+                      aria-label="Select existing rig"
+                      onChange={(e) =>
+                        setPickRackId(e.target.value ? Number(e.target.value) : null)
+                      }
+                    >
+                      {existingRacks.length === 0 ? (
+                        <option value="">No rigs yet, create one</option>
+                      ) : (
+                        existingRacks.map((r) => (
+                          <option key={r.id} value={r.id}>
+                            #{r.id} {r.name}
+                            {r.case_id != null ? ` (case #${r.case_id})` : ""}
                           </option>
                         ))
-                    : null}
-                  {!stats?.by_source ? (
-                    <option value="SynthCatalogResearch">SynthCatalogResearch</option>
-                  ) : null}
-                </select>
-              </label>
-              <label className="inline-field" htmlFor="module-availability">
-                Status
-                <select
-                  id="module-availability"
-                  value={availabilityFilter}
-                  onChange={(event) => {
-                    setPage(0);
-                    setAvailabilityFilter(event.target.value);
-                  }}
-                >
-                  <option value="all">All status</option>
-                  <option value="available">available</option>
-                  <option value="discontinued">discontinued</option>
-                  <option value="upcoming">upcoming</option>
-                  <option value="duplicate">duplicate</option>
-                  <option value="non_eurorack">non_eurorack</option>
-                  <option value="desktop">desktop</option>
-                  <option value="unresolved">unresolved</option>
-                </select>
-              </label>
-              <label className="inline-field" htmlFor="module-sort">
-                Sort
-                <select
-                  id="module-sort"
-                  value={sortKey}
-                  onChange={(event) => {
-                    setPage(0);
-                    setSortKey(event.target.value as SortKey);
-                  }}
-                >
-                  <option value="brand">Brand</option>
-                  <option value="name">Name</option>
-                  <option value="category">Category</option>
-                  <option value="hp">HP (width)</option>
-                </select>
-              </label>
-              {filtersActive ? (
-                <button className="button button-quiet" type="button" onClick={clearFilters}>
-                  Clear filters
-                </button>
+                      )}
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    className="button button-primary"
+                    disabled={pickRackId == null}
+                    onClick={goToPickedRig}
+                  >
+                    Open placement
+                  </button>
+                  <Link
+                    className="button button-secondary"
+                    to={`/racks/new?module_id=${lastPrepared.moduleId}`}
+                  >
+                    Or create new rig
+                  </Link>
+                </div>
               ) : null}
             </div>
-            {activeFilterChips.length > 0 ? (
-              <div className="filter-chip-row" aria-label="Active filters">
-                {activeFilterChips.map((chip) => (
-                  <button
-                    key={chip.key}
-                    type="button"
-                    className="status-chip status-chip--interactive"
-                    onClick={chip.clear}
-                    title="Remove filter"
-                  >
-                    {chip.label} ×
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </div>
+          ) : null}
 
-          <p className="muted" role="status" style={{ marginBottom: "var(--space-4)" }}>
-            Showing {modules.length} of {total} catalog modules
-            {filtersActive ? " (filtered)" : ""} · page {page + 1}/{totalPages}
-          </p>
+          {state === "loading" ? (
+            <p className="results-meta" role="status">
+              Loading catalog…
+            </p>
+          ) : null}
 
-          {modules.length === 0 ? (
-            <div className="panel">
-              <p className="status status-warning">No modules match these filters.</p>
-              <button className="button button-secondary" type="button" onClick={clearFilters}>
-                Clear filters
-              </button>
+          {state === "loading" && modules.length === 0 ? (
+            <ul className="module-skeleton" aria-hidden="true">
+              {[8, 14, 4, 20, 10, 6].map((w, i) => (
+                <li key={i}>
+                  <span className="skeleton" style={{ "--w": w } as CSSProperties} />
+                  <span className="skeleton" />
+                </li>
+              ))}
+            </ul>
+          ) : null}
+
+          {state === "error" ? (
+            <LoadFailure what="The module catalog" error={error} onRetry={reload} />
+          ) : null}
+
+          {state === "empty" ? (
+            <div className="screen-state">
+              <p className="status status-warning">No modules in the catalog yet.</p>
+              <p className="muted">
+                Run synth catalog import or ModularGrid curated populate to seed discovery.
+              </p>
             </div>
-          ) : (
-            <ul className="catalog-grid" aria-label="Module catalog results">
-              {modules.map((module) => (
-                <li key={module.slug}>
-                  <article className="catalog-card" style={{ height: "100%" }}>
-                    {(() => {
-                      const hp = module.hp ?? 0;
-                      const hpScale = Math.min(Math.max(hp / 42, 0.2), 1); // normalize to ~42HP max
-                      return (
+          ) : null}
+
+          {showList ? (
+            <>
+              {state === "ready" ? (
+                <p className="results-meta" role="status">
+                  Showing {modules.length} of {total} catalog modules
+                  {filtersActive ? " (filtered)" : ""}, page {page + 1} of {totalPages}
+                </p>
+              ) : null}
+
+              {modules.length === 0 ? (
+                <div className="screen-state">
+                  <p className="status status-warning">No modules match these filters.</p>
+                  <button className="button button-secondary" type="button" onClick={clearFilters}>
+                    Clear filters
+                  </button>
+                </div>
+              ) : (
+                <ul className="module-list" aria-label="Module catalog results">
+                  {modules.map((module, index) => {
+                    const hp = module.hp ?? 0;
+                    return (
+                      <li
+                        key={module.slug}
+                        className="module-row"
+                        style={{ "--i": index } as CSSProperties}
+                      >
                         <div
                           className="module-mockup"
                           data-category={module.category || "UTIL"}
-                          style={{ "--hp-scale": hpScale } as CSSProperties}
+                          data-hp={hp > 0 ? "known" : "unknown"}
+                          data-wide={hp > 48 ? "true" : undefined}
+                          style={(hp > 0 ? { "--hp": hp } : {}) as CSSProperties}
                           title={`${module.brand} ${module.name} (${hp || "?"}HP)`}
                           aria-label={`Module: ${module.brand} ${module.name}, ${hp} HP, ${module.category || "UTIL"}`}
                         >
-                          <div className="mockup-hp">
-                            <div className="hp-num">{hp || "?"}</div>
-                            <div className="hp-label">HP</div>
-                            {hp > 0 && <div className="hp-bar" />}
+                          <div className="mockup-plate" aria-hidden="true">
+                            <span className="mockup-ports" />
                           </div>
                           <div className="mockup-face">
                             <div className="mockup-brand">{module.brand}</div>
                             <div className="mockup-name">{module.name}</div>
-                            {module.registry_manufacturer_slug && (
-                              <div className="reg-badge" title="Linked to Registry">
-                                REG
-                              </div>
-                            )}
-                            <div className="mockup-ports" aria-hidden="true" />
                           </div>
                         </div>
-                      );
-                    })()}
-                    <p className="catalog-card-meta">{module.category ?? "UTIL"}</p>
-                    <div className="gate-chip-row" aria-label="Module status">
-                      {module.hp != null ? (
-                        <span className="status-chip status-chip--success">placeable</span>
-                      ) : (
-                        <span className="status-chip status-chip--warning">HP unknown</span>
-                      )}
-                      {module.evidence_status === "CATALOG_OBSERVED" ? (
-                        <span
-                          className="status-chip status-chip--warning"
-                          title="Discovery lead from a community catalog. Not verified against the manufacturer."
-                        >
-                          Unverified lead
-                        </span>
-                      ) : null}
-                      {module.source ? (
-                        <span className="status-chip status-chip--neutral">{module.source}</span>
-                      ) : null}
-                      {module.registry_manufacturer_slug ? (
-                        <Link
-                          to={`/products?query=${encodeURIComponent(module.registry_manufacturer_slug)}`}
-                          className="status-chip status-chip--neutral hover:bg-zinc-700 no-underline"
-                          title="View in Product Database (Registry)"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          reg:{module.registry_manufacturer_slug}
-                          {module.registry_device_slug
-                            ? `/${module.registry_device_slug.split("-").pop()}`
-                            : ""}
-                        </Link>
-                      ) : null}
-                      {module.is_available && module.is_available !== "available" ? (
-                        <span className="status-chip status-chip--warning">
-                          {module.is_available}
-                        </span>
-                      ) : null}
-                    </div>
-                    <div className="page-hero-actions">
-                      <button
-                        className="button button-primary"
-                        type="button"
-                        disabled={busySlug === module.slug || module.hp == null}
-                        title={
-                          module.hp == null
-                            ? "Needs manufacturer-confirmed HP before placement"
-                            : "Materialize full module record, then open rack builder with it preselected"
-                        }
-                        onClick={() => placeFromCatalog(module)}
-                      >
-                        {busySlug === module.slug
-                          ? "Preparing…"
-                          : module.hp == null
-                            ? "Needs HP"
-                            : "Prepare for rig"}
-                      </button>
-                      <button
-                        className="button button-secondary"
-                        type="button"
-                        disabled={busySlug === module.slug || module.hp == null}
-                        title="Materialize and choose an existing rig for placement"
-                        onClick={() => void prepareForExistingRig(module)}
-                      >
-                        Add to existing
-                      </button>
-                      <Link className="button button-quiet" to="/racks">
-                        Open rigs
-                      </Link>
-                    </div>
-                  </article>
-                </li>
-              ))}
-            </ul>
-          )}
+                        <div className="gate-chip-row module-row__chips" aria-label="Module status">
+                          {module.hp != null ? (
+                            <span className="status-chip status-chip--success">placeable</span>
+                          ) : (
+                            <span className="status-chip status-chip--warning">HP unknown</span>
+                          )}
+                          {module.evidence_status === "CATALOG_OBSERVED" ? (
+                            <span
+                              className="status-chip status-chip--warning"
+                              title="Discovery lead from a community catalog. Not verified against the manufacturer."
+                            >
+                              Unverified lead
+                            </span>
+                          ) : null}
+                          {module.source ? (
+                            <span className="status-chip status-chip--neutral">
+                              {module.source}
+                            </span>
+                          ) : null}
+                          {module.registry_manufacturer_slug ? (
+                            <Link
+                              to={`/products?query=${encodeURIComponent(module.registry_manufacturer_slug)}`}
+                              className="status-chip status-chip--neutral"
+                              title="View in Product Database (Registry)"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              reg:{module.registry_manufacturer_slug}
+                              {module.registry_device_slug
+                                ? `/${module.registry_device_slug.split("-").pop()}`
+                                : ""}
+                            </Link>
+                          ) : null}
+                          {module.is_available && module.is_available !== "available" ? (
+                            <span className="status-chip status-chip--warning">
+                              {module.is_available}
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className="catalog-card-meta">{module.category ?? "UTIL"}</p>
+                        <p className="module-row__hp">
+                          <span className="hp-num">{hp || "?"}</span>
+                          <span className="hp-label">HP</span>
+                        </p>
+                        <div className="module-row__actions">
+                          <button
+                            className="button button-primary"
+                            type="button"
+                            disabled={busySlug === module.slug || module.hp == null}
+                            title={
+                              module.hp == null
+                                ? "Needs manufacturer-confirmed HP before placement"
+                                : "Load the full module record, then open the builder with it chosen"
+                            }
+                            onClick={() => placeFromCatalog(module)}
+                          >
+                            {busySlug === module.slug
+                              ? "Preparing…"
+                              : module.hp == null
+                                ? "Needs HP"
+                                : "Prepare for rig"}
+                          </button>
+                          <button
+                            className="button button-quiet"
+                            type="button"
+                            disabled={busySlug === module.slug || module.hp == null}
+                            title="Load the full module record, then choose one of your rigs"
+                            onClick={() => void prepareForExistingRig(module)}
+                          >
+                            Add to existing
+                          </button>
+                          <Link className="button button-quiet" to="/racks">
+                            Open rigs
+                          </Link>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
 
-          {totalPages > 1 ? (
-            <div className="toolbar" style={{ marginTop: "var(--space-4)" }}>
-              <button
-                className="button button-secondary"
-                type="button"
-                disabled={page <= 0}
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-              >
-                Previous
-              </button>
-              <button
-                className="button button-secondary"
-                type="button"
-                disabled={page + 1 >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Next
-              </button>
-            </div>
+              {totalPages > 1 && state === "ready" ? (
+                <nav className="pager" aria-label="Catalog pages">
+                  <button
+                    className="button button-secondary"
+                    type="button"
+                    disabled={page <= 0}
+                    onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  >
+                    Previous
+                  </button>
+                  <button
+                    className="button button-secondary"
+                    type="button"
+                    disabled={page + 1 >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                  >
+                    Next
+                  </button>
+                </nav>
+              ) : null}
+            </>
           ) : null}
-        </>
-      ) : null}
+        </div>
+      </div>
     </section>
   );
 }

@@ -3,10 +3,12 @@
  * Sign in or create an account with accessible, token-aligned UI.
  */
 import { useId, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import Tabs from "@/components/Tabs";
 import { authApi } from "@/lib/api";
 import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 import { useAuthStore } from "@/lib/store";
+import { panelId, tabId } from "@/lib/tabs";
 
 type AuthMode = "signin" | "register";
 
@@ -19,6 +21,17 @@ const DEMO_ACCOUNTS = import.meta.env.DEV
     }
   : null;
 
+/** The in-app screen that sent the visitor here, if it is one to return to. */
+function returnPath(state: unknown): string | null {
+  const from = (state as { from?: unknown } | null)?.from;
+  return typeof from === "string" &&
+    from.startsWith("/") &&
+    !from.startsWith("//") &&
+    from !== "/login"
+    ? from
+    : null;
+}
+
 // API error codes shown as words.
 const AUTH_ERRORS: Record<string, string> = {
   USERNAME_OR_EMAIL_TAKEN: "That username or email is already in use.",
@@ -27,6 +40,7 @@ const AUTH_ERRORS: Record<string, string> = {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const setAuth = useAuthStore((state) => state.setAuth);
   const formId = useId();
 
@@ -49,14 +63,14 @@ export default function LoginPage() {
       }
       const res = await authApi.login({ username, password });
       setAuth(res.data.user, res.data.access_token);
-      navigate("/racks");
+      navigate(returnPath(location.state) ?? "/racks", { replace: true });
     } catch (err: unknown) {
       const apiError = err as { response?: { data?: { detail?: string | { msg?: string }[] } } };
       const detail = apiError.response?.data?.detail;
       if (typeof detail === "string") {
         setError(AUTH_ERRORS[detail] ?? detail);
       } else if (Array.isArray(detail)) {
-        setError(detail.map((d) => d.msg || "Validation error").join(" · "));
+        setError(detail.map((d) => d.msg || "Validation error").join(" "));
       } else {
         setError(mode === "register" ? "Could not create account" : "Sign in failed");
       }
@@ -76,17 +90,13 @@ export default function LoginPage() {
     <section className="auth-page" aria-labelledby={`${formId}-title`}>
       <div className="auth-shell">
         <aside className="auth-brand panel" aria-label="Product identity">
-          <div className="auth-brand-grid" aria-hidden="true" />
           <div className="auth-brand-photo" aria-hidden="true" />
-          <p className="home-brand" style={{ fontSize: "clamp(2rem, 5vw, 3rem)" }}>
-            PatchHive
-          </p>
+          <p className="auth-brand-mark">PatchHive</p>
           <h1 id={`${formId}-title`} className="auth-brand-title">
             Enter the hive
           </h1>
           <p className="auth-brand-lede">
-            Confirm modular rigs, generate hardware-constrained patches, and export provenance-bound
-            PatchBooks, without inventing gear or running DSP.
+            Confirm your rig, generate patches it can play, and export the book.
           </p>
           <ul className="auth-brand-list">
             <li>Immutable rig revisions</li>
@@ -95,7 +105,7 @@ export default function LoginPage() {
             <li>Style Studio design recipes</li>
           </ul>
           <p className="auth-brand-foot muted">
-            A Zero State product, designed and engineered for signal clarity
+            A Zero State product, designed and engineered for signal clarity.
           </p>
         </aside>
 
@@ -110,34 +120,30 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="auth-tabs" role="tablist" aria-label="Authentication mode">
-              <button
-                type="button"
-                role="tab"
-                className="auth-tab"
-                aria-selected={mode === "signin"}
-                onClick={() => {
-                  setMode("signin");
-                  setError("");
-                }}
-              >
-                Sign in
-              </button>
-              <button
-                type="button"
-                role="tab"
-                className="auth-tab"
-                aria-selected={mode === "register"}
-                onClick={() => {
-                  setMode("register");
-                  setError("");
-                }}
-              >
-                Create account
-              </button>
-            </div>
+            <Tabs
+              label="Authentication mode"
+              idPrefix="auth-"
+              listClassName="auth-tabs"
+              tabClassName="auth-tab"
+              tabs={[
+                { key: "signin", label: "Sign in" },
+                { key: "register", label: "Create account" },
+              ]}
+              active={mode}
+              onChange={(next) => {
+                setMode(next);
+                setError("");
+              }}
+            />
 
-            <form className="auth-form" method="post" onSubmit={handleSubmit} noValidate>
+            <form
+              className="auth-form"
+              method="post"
+              onSubmit={handleSubmit}
+              noValidate
+              id={panelId("auth-", mode)}
+              aria-labelledby={tabId("auth-", mode)}
+            >
               <label className="field" htmlFor={`${formId}-username`}>
                 Username
                 <input
@@ -247,7 +253,7 @@ export default function LoginPage() {
             ) : null}
 
             <p className="auth-back muted">
-              <Link to="/">← Back to workspace home</Link>
+              <Link to="/">Back to workspace home</Link>
             </p>
           </div>
         ) : (
@@ -255,7 +261,7 @@ export default function LoginPage() {
             <h2 className="auth-card-title">Accounts are not open yet</h2>
             <p className="muted">Sign-in opens when the PatchHive service goes live.</p>
             <p className="auth-back muted">
-              <Link to="/">← Back to workspace home</Link>
+              <Link to="/">Back to workspace home</Link>
             </p>
           </div>
         )}

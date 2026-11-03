@@ -1,10 +1,11 @@
 /**
  * 404 Not Found — Cyber Hive broken patch cable
  */
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./NotFound.css";
 
 export default function NotFound() {
+  const { pathname } = useLocation();
   return (
     <div className="not-found-container">
       <div className="not-found-content">
@@ -18,27 +19,27 @@ export default function NotFound() {
         >
           <defs>
             <linearGradient id="cable-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="var(--ph-amber, #f5a623)" />
-              <stop offset="100%" stopColor="var(--ph-cyan, #3ddcff)" />
+              <stop offset="0%" stopColor="var(--cable-audio)" />
+              <stop offset="100%" stopColor="var(--cable-cv)" />
             </linearGradient>
           </defs>
 
           <path
             d="M 200,40 L 330,110 L 330,180"
             fill="none"
-            stroke="var(--ph-danger, #e23d4a)"
+            stroke="var(--color-rule-strong)"
             strokeWidth="3"
           />
           <path
             d="M 330,220 L 330,250 L 200,320 L 70,250 L 70,110 L 130,75"
             fill="none"
-            stroke="var(--ph-danger, #e23d4a)"
+            stroke="var(--color-rule-strong)"
             strokeWidth="3"
           />
           <path
             d="M 330,180 L 340,185 L 335,195 L 330,220"
             fill="none"
-            stroke="var(--ph-danger, #e23d4a)"
+            stroke="var(--color-rule-strong)"
             strokeWidth="2"
             strokeDasharray="3,3"
             opacity="0.6"
@@ -52,8 +53,8 @@ export default function NotFound() {
             strokeLinecap="round"
             className="cable-left"
           />
-          <circle cx="100" cy="150" r="8" fill="var(--ph-amber, #f5a623)" />
-          <circle cx="100" cy="150" r="4" fill="var(--zs-carbon, #08090b)" />
+          <circle cx="100" cy="150" r="8" fill="var(--cable-audio)" />
+          <circle cx="100" cy="150" r="4" fill="var(--color-paper)" />
 
           <path
             d="M 300,150 Q 280,170 250,180 T 220,190"
@@ -63,16 +64,16 @@ export default function NotFound() {
             strokeLinecap="round"
             className="cable-right"
           />
-          <circle cx="300" cy="150" r="8" fill="var(--ph-cyan, #3ddcff)" />
-          <circle cx="300" cy="150" r="4" fill="var(--zs-carbon, #08090b)" />
+          <circle cx="300" cy="150" r="8" fill="var(--cable-cv)" />
+          <circle cx="300" cy="150" r="4" fill="var(--color-paper)" />
 
           <text
             x="200"
             y="280"
-            fill="var(--ph-amber, #f5a623)"
-            fontFamily="var(--font-mono, ui-monospace, monospace)"
+            fill="var(--color-signal)"
+            fontFamily="var(--font-mono)"
             fontSize="72"
-            fontWeight="bold"
+            fontWeight="500"
             textAnchor="middle"
           >
             404
@@ -96,11 +97,9 @@ export default function NotFound() {
           </Link>
         </div>
 
-        <div className="error-details">
-          <code>ERROR_CODE: PATCH_DISCONNECTED</code>
-          <code>STATUS: 404 NOT_FOUND</code>
-          <code>SUGGESTED_ACTION: RECONNECT_OR_RETURN_HOME</code>
-        </div>
+        <p className="error-details">
+          Nothing lives at <code>{pathname}</code>.
+        </p>
       </div>
     </div>
   );
