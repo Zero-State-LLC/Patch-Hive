@@ -38,7 +38,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (!isAuthenticated()) {
-      navigate("/login");
+      navigate("/login", { replace: true, state: { from: "/account" } });
     }
   }, [isAuthenticated, navigate]);
 
