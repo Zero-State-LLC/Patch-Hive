@@ -1,0 +1,77 @@
+name: Staging walkthrough
+
+# Manual only, staging only (008 T030b/T040b, 006 T060b). Seeds the golden demo into
+# the Neon staging branch, checks the seeded sign-in, runs the Design Engine
+# walkthrough against api-staging.patch-hive.com with test payments, then uploads one
+# generated test image and calls decision-resolution. Each run makes new demo
+# passwords that exist only in this job (masked, never stored); the receipts hold
+# statuses, codes and hashes only.
+on:
+  workflow_dispatch:
+    inputs:
+      checks:
+        description: Which checks to run
+        required: true
+        type: choice
+        default: both
+        options: [both, walkthrough, evidence]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neon-db-staging
+  cancel-in-progress: false
+
+jobs:
+  staging:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: staging
+    env:
+      ENVIRONMENT: staging
+      PYTHONPATH: backend
+      STAGING_API_URL: https://api-staging.patch-hive.com
+      WALKTHROUGH_SOURCE_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install backend
+        working-directory: backend
+        run: python -m pip install -e .
+      - name: Demo passwords for this run
+        run: |
+          for name in PATCHHIVE_DEMO_USER_PASSWORD PATCHHIVE_DEMO_ADMIN_PASSWORD; do
+            value="$(openssl rand -base64 33 | tr -d '\n/+=')"
+            echo "::add-mask::$value"
+            echo "$name=$value" >> "$GITHUB_ENV"
+          done
+      - name: Seed the golden demo (T030b)
+        shell: bash
+        env:
+          DATABASE_URL: ${{ secrets.PATCHHIVE_DATABASE_URL_STAGING }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then echo "::error::PATCHHIVE_DATABASE_URL_STAGING is not set"; exit 1; fi
+          # The seeder prints its result with the password; keep everything but that.
+          python scripts/seed_golden_demo.py | jq 'del(.password)'
+      - name: Design Engine walkthrough (T040b)
+        if: inputs.checks != 'evidence'
+        env:
+          DATABASE_URL: ${{ secrets.PATCHHIVE_DATABASE_URL_STAGING }}
+        run: python scripts/staging/design_engine_walkthrough.py --receipt-out design-walkthrough-receipt.json
+      - name: Evidence upload and decision-resolution (T060b)
+        if: ${{ !cancelled() && inputs.checks != 'walkthrough' }}
+        run: python scripts/staging/evidence_resolution_check.py --receipt-out t060b-receipt.json
+      - name: Keep the receipts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-walkthrough-receipts
+          path: |
+            design-walkthrough-receipt.json
+            t060b-receipt.json
+          if-no-files-found: warn
+          retention-days: 90

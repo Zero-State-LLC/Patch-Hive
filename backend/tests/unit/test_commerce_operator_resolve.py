@@ -287,8 +287,11 @@ def _stored_event(db: Session, event_id: str, *, event_type: str, object_id: str
     [
         # Received before T046 stored object ids: nothing to retrieve.
         ("checkout.session.completed", None, "OBJECT_ID_MISSING"),
-        # Machine C (T049) is not built; resolve is Machine B only.
+        # Machine C (T049) has no operator resolve; an operator rejects instead.
         ("customer.subscription.created", "sub_1", "RESOLVE_NOT_SUPPORTED"),
+        ("customer.subscription.updated", "sub_1", "RESOLVE_NOT_SUPPORTED"),
+        ("customer.subscription.deleted", "sub_1", "RESOLVE_NOT_SUPPORTED"),
+        ("invoice.paid", "in_1", "RESOLVE_NOT_SUPPORTED"),
     ],
 )
 def test_resolve_is_refused_without_a_machine_b_object_id(
@@ -307,6 +310,33 @@ def test_resolve_is_refused_without_a_machine_b_object_id(
     assert (excinfo.value.code, excinfo.value.status_code) == (code, 409)
     assert provider.calls == []
     _refused(db_session, "evt_no_obj")
+
+
+def test_resolve_refuses_a_subscription_mode_session(db_session: Session):
+    """A subscription-mode session left unresolved before T049 is Machine C: refused
+    with nothing written, even though the provider reports it paid."""
+    from canon.checkout import ResolveRefusedError
+
+    admin = make_user(db_session, "resolver9", role="Admin")
+    _stored_event(
+        db_session, "evt_sub_session", event_type="checkout.session.completed", object_id="cs_sub"
+    )
+    provider = FakeRetriever(
+        {
+            "id": "cs_sub",
+            "object": "checkout.session",
+            "mode": "subscription",
+            "payment_status": "paid",
+            "livemode": False,
+        }
+    )
+
+    with pytest.raises(ResolveRefusedError) as excinfo:
+        _resolve(db_session, "evt_sub_session", provider, admin)
+    db_session.rollback()
+
+    assert (excinfo.value.code, excinfo.value.status_code) == ("RESOLVE_NOT_SUPPORTED", 409)
+    _refused(db_session, "evt_sub_session")
 
 
 # --- POST /api/admin/commerce/events/{id}/resolve -------------------------------------
