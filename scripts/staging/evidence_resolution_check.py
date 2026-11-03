@@ -47,9 +47,14 @@ FAIL_CLOSED_CODES = {
 }
 
 
-def test_card_png(width: int = 64, height: int = 48) -> bytes:
-    """A flat grey PNG built here, so the upload carries no third-party content."""
-    raw = b"".join(b"\x00" + b"\x80\x80\x80" * width for _ in range(height))
+def test_card_png(width: int = 96, height: int = 72, shade: int = 0x80) -> bytes:
+    """A flat PNG built here, so the upload carries no third-party content.
+
+    The default size clears the intake gate (`assess_local_image_quality`: 64 px each
+    way); ``shade`` makes each run's bytes, and so its asset, distinct.
+    """
+    pixel = bytes((shade & 0xFF, 0x80, 0x80))
+    raw = b"".join(b"\x00" + pixel * width for _ in range(height))
 
     def chunk(kind: bytes, data: bytes) -> bytes:
         return (
@@ -126,25 +131,40 @@ def run_check(http: httpx.Client, username: str, password: str) -> dict:
         return {"outcome": "FAIL", "steps": steps}
     rack_id = int(racks[0]["id"])
 
-    image = test_card_png()
+    image = test_card_png(shade=int(time.time()) % 256)
     resp = http.post(
         f"/api/racks/{rack_id}/evidence/images",
         headers=headers,
         files={"files": ("t060b-test-card.png", image, "image/png")},
         data={"consent_provider_processing": "true"},
     )
-    record("upload_evidence", resp, resp.status_code == 201)
-    if resp.status_code != 201:
+    body = _json(resp)
+    body = body if isinstance(body, dict) else {}
+    uploaded = body.get("uploaded") or []
+    # 201 also answers a batch whose every file was rejected; require this file's asset.
+    record("upload_evidence", resp, resp.status_code == 201 and len(uploaded) == 1)
+    if resp.status_code != 201 or len(uploaded) != 1:
+        steps[-1]["rejected"] = [r.get("reason") for r in body.get("rejected") or []]
         return {"outcome": "FAIL", "rack_id": rack_id, "steps": steps}
+    asset_id = str(uploaded[0]["id"])
 
     resp = http.get(f"/api/racks/{rack_id}/evidence/candidates", headers=headers)
     body = record("list_candidates", resp, resp.status_code == 200)
-    items = [i for i in (body or {}).get("candidates") or [] if i.get("evidence_id")]
+    # Candidates are sorted by confidence, not upload time: keep only this upload's.
+    items = [
+        i
+        for i in (body or {}).get("candidates") or []
+        if i.get("evidence_id") and str(i.get("image_asset_id")) == asset_id
+    ]
     if not items:
         steps[-1]["ok"] = False
-        return {"outcome": "FAIL", "rack_id": rack_id, "steps": steps}
-    # Ids are opaque; the listing returns this upload's records with the rack's others.
-    evidence_id = str(items[-1]["evidence_id"])
+        return {
+            "outcome": "FAIL",
+            "rack_id": rack_id,
+            "image_asset_id": asset_id,
+            "steps": steps,
+        }
+    evidence_id = str(items[0]["evidence_id"])
 
     key = f"t060b-{int(time.time())}"
     answers = []
@@ -181,6 +201,7 @@ def run_check(http: httpx.Client, username: str, password: str) -> dict:
         "outcome": outcome,
         "rack_id": rack_id,
         "evidence_id": evidence_id,
+        "image_asset_id": asset_id,
         "image_sha256": hashlib.sha256(image).hexdigest(),
         "resolution": answers[0],
         "steps": steps,

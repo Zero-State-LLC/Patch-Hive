@@ -21,7 +21,12 @@ sys.modules["evidence_resolution_check"] = check
 _spec.loader.exec_module(check)
 
 
-def _api(resolution: tuple[int, object], *, candidates: list[dict] | None = None):
+def _api(
+    resolution: tuple[int, object],
+    *,
+    candidates: list[dict] | None = None,
+    upload_rejected: bool = False,
+):
     seen: list[httpx.Request] = []
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -39,9 +44,21 @@ def _api(resolution: tuple[int, object], *, candidates: list[dict] | None = None
         if path == "/api/racks/7/evidence/images":
             assert b'name="consent_provider_processing"' in request.content
             assert b"\x89PNG" in request.content
-            return httpx.Response(201, json={"assets": []})
+            if upload_rejected:
+                return httpx.Response(
+                    201,
+                    json={"uploaded": [], "rejected": [{"reason": "IMAGE_DIMENSIONS_TOO_SMALL"}]},
+                )
+            return httpx.Response(201, json={"uploaded": [{"id": "asset-new"}], "rejected": []})
         if path == "/api/racks/7/evidence/candidates":
-            items = candidates if candidates is not None else [{"evidence_id": "ev-abc"}]
+            items = (
+                candidates
+                if candidates is not None
+                else [
+                    {"evidence_id": "ev-old", "image_asset_id": "asset-old"},
+                    {"evidence_id": "ev-abc", "image_asset_id": "asset-new"},
+                ]
+            )
             return httpx.Response(200, json={"total": len(items), "candidates": items})
         if path == "/api/racks/7/evidence/decision-resolution":
             body = json.loads(request.content)
@@ -53,6 +70,13 @@ def _api(resolution: tuple[int, object], *, candidates: list[dict] | None = None
     return httpx.Client(
         base_url="https://api-staging.example", transport=httpx.MockTransport(handler)
     ), seen
+
+
+def test_the_default_card_clears_the_intake_size_gate() -> None:
+    png = check.test_card_png()
+    width, height = int.from_bytes(png[16:20], "big"), int.from_bytes(png[20:24], "big")
+    assert width >= 64 and height >= 64
+    assert check.test_card_png(shade=1) != check.test_card_png(shade=2)
 
 
 def test_the_test_card_is_a_valid_png() -> None:
@@ -93,6 +117,22 @@ def test_a_wrong_password_stops_before_any_upload() -> None:
     http, seen = _api((409, {"detail": "DECISION_INTELLIGENCE_DISABLED"}))
     result = check.run_check(http, "golden_demo", "wrong")
     assert result["outcome"] == "FAIL" and len(seen) == 1
+
+
+def test_a_rejected_upload_fails_before_resolution() -> None:
+    http, seen = _api((409, {"detail": "DECISION_INTELLIGENCE_DISABLED"}), upload_rejected=True)
+    result = check.run_check(http, "golden_demo", "pw-for-tests-only")
+    assert result["outcome"] == "FAIL"
+    assert result["steps"][-1]["rejected"] == ["IMAGE_DIMENSIONS_TOO_SMALL"]
+    assert not any(r.url.path.endswith("decision-resolution") for r in seen)
+
+
+def test_older_evidence_on_the_rack_is_never_resolved() -> None:
+    http, _ = _api(
+        (409, {"detail": "DECISION_INTELLIGENCE_DISABLED"}),
+        candidates=[{"evidence_id": "ev-old", "image_asset_id": "asset-old"}],
+    )
+    assert check.run_check(http, "golden_demo", "pw-for-tests-only")["outcome"] == "FAIL"
 
 
 def test_no_candidates_fails() -> None:
