@@ -525,6 +525,25 @@ div.rack-row-map__block {
   display: grid;
   gap: var(--space-xl);
 }
+/* Patch detail, and the selected patch on Rig detail: the patch on its rail, then notes */
+.patch-detail,
+.rig-patch-detail {
+  display: grid;
+  align-content: start;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.rig-patch-detail__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+/* Notes read at a line length, not the full workspace width */
+.patch-detail .patch-notes {
+  max-width: 65ch;
+}
 .rig-placed {
   display: grid;
   gap: var(--space-sm);

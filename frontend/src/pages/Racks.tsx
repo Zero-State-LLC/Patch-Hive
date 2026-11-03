@@ -9,6 +9,7 @@ import RigRail from "@/components/RigRail";
 import { ListSkeleton, RailSkeleton } from "@/components/Skeletons";
 import type { CompatibilityResponse, Patch, Rack, Run } from "@/types/api";
 import { rigDetailToRack, rigSummaryToRack } from "@/lib/canonRigAdapter";
+import { patchName } from "@/lib/patchName";
 import {
   difficultyFromConnections,
   filterPatches,
@@ -724,7 +725,7 @@ export default function RacksPage() {
                             aria-current={selectedPatch?.id === patch.id ? "true" : undefined}
                             onClick={() => setSelectedPatchId(patch.id)}
                           >
-                            <span className="side-item-title">{patch.name}</span>
+                            <span className="side-item-title">{patchName(patch)}</span>
                             <span className="side-item-meta">
                               {patch.category}, {difficultyFromConnections(patch)}, weirdness{" "}
                               {weirdnessFromConnections(patch)}
@@ -735,12 +736,14 @@ export default function RacksPage() {
                     </ul>
                     {selectedPatch ? (
                       <section className="rack-patch-detail" aria-labelledby="rack-patch-title">
-                        <h2 id="rack-patch-title">{selectedPatch.name}</h2>
-                        {selectedPatch.suggested_name &&
-                        selectedPatch.suggested_name !== selectedPatch.name ? (
-                          <p className="muted">Suggested name: {selectedPatch.suggested_name}</p>
-                        ) : null}
+                        <h2 id="rack-patch-title">{patchName(selectedPatch)}</h2>
                         <p>{selectedPatch.description || "No description yet."}</p>
+                        <Link
+                          className="button button-quiet"
+                          to={`/rigs/${selectedRack.id}/patches/${selectedPatch.id}`}
+                        >
+                          Open patch
+                        </Link>
                         <PatchRail rack={selectedRack} patch={selectedPatch} />
                       </section>
                     ) : null}

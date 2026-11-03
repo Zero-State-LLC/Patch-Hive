@@ -1,66 +1,40 @@
 /* Brand surfaces: the home fold, sign-in diptych, the lost route */
 
-/* —— Home: brand-first fold over the hive-drone photograph —— */
+/* —— Home: the brand beside the product, a real rig on its rail —— */
 .home-hero {
-  position: relative;
   display: grid;
   align-items: center;
   min-height: min(calc(100dvh - var(--header-height)), 820px);
-  overflow: hidden;
   border-bottom: 1px solid var(--color-rule);
-  color: var(--color-on-dark);
-  background: var(--zs-carbon);
 }
-.home-hero__media {
-  position: absolute;
-  inset: 0;
-  background: url("/brand/splash/splash-hero.jpg") 72% 42% / cover no-repeat;
-  animation: hero-settle 1.6s var(--ease-out) both;
-}
-@keyframes hero-settle {
-  from {
-    opacity: 0;
-    transform: scale(1.04);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-.home-hero__veil {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      90deg,
-      var(--zs-carbon) 0%,
-      color-mix(in oklab, var(--zs-carbon) 82%, transparent) 30%,
-      transparent 62%
-    ),
-    linear-gradient(to top, var(--zs-carbon) 0%, transparent 34%);
-}
+/* Two rows: the copy beside the rig's rails, the rig's caption under them alone, so the copy
+   centres on the rails rather than on rails and caption together */
 .home-hero__content {
-  position: relative;
-  z-index: var(--z-base);
   display: grid;
-  justify-items: start;
-  gap: var(--space-lg);
+  grid-template-columns: minmax(0, 3fr) minmax(0, 5fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: var(--space-md) var(--space-2xl);
   width: 100%;
   max-width: var(--container);
   margin: 0 auto;
-  padding: var(--space-3xl) var(--gutter);
+  padding: var(--space-2xl) var(--gutter);
 }
-.home-hero__content > * {
+.home-hero__copy {
+  grid-area: 1 / 1;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.home-hero__copy > * {
   animation: hero-rise var(--dur-long) var(--ease-out) both;
 }
-.home-hero__content > :nth-child(2) {
+.home-hero__copy > :nth-child(2) {
   animation-delay: 80ms;
 }
-.home-hero__content > :nth-child(3) {
+.home-hero__copy > :nth-child(3) {
   animation-delay: 160ms;
-}
-.home-hero__content > :nth-child(4) {
-  animation-delay: 240ms;
 }
 @keyframes hero-rise {
   from {
@@ -74,7 +48,7 @@
 }
 .home-brand {
   margin: 0;
-  color: var(--color-on-dark);
+  color: var(--color-ink);
   font: 600 var(--text-poster) / 0.92 var(--font-display);
   letter-spacing: -0.045em;
   overflow-wrap: break-word;
@@ -82,15 +56,9 @@
 }
 .home-headline {
   max-width: 16ch;
-  color: var(--color-on-dark);
+  color: var(--color-ink);
   font: 500 clamp(1.6rem, 2.8vw, 2.25rem) / 1.1 var(--font-display);
   letter-spacing: -0.03em;
-}
-.home-lede {
-  max-width: 44ch;
-  color: var(--color-on-dark-2);
-  font-size: var(--text-lg);
-  line-height: 1.5;
 }
 .home-cta {
   display: flex;
@@ -104,58 +72,89 @@
   padding: 0 var(--space-lg);
   font-size: var(--text-md);
 }
-.app-shell .home-cta .button-quiet {
-  border-color: transparent;
-  text-decoration: underline;
-  text-decoration-color: var(--color-rule-strong);
-  text-underline-offset: 0.3em;
+
+/* The demo rig, each row as tall as a 3U panel is for its HP (25.3 HP); on a phone no shorter
+   than the workbench rail's 120px, so a long cable's sag clears the HP labels */
+.home-rig {
+  grid-area: 1 / 2 / span 2;
+  display: grid;
+  grid-template-rows: subgrid;
+  gap: var(--space-md);
+  min-width: 0;
+  margin: 0;
+}
+/* The size container for the rows' height; not the figure, since containment would undo its subgrid */
+.home-rig .patch-rail {
+  container-type: inline-size;
+}
+.home-rig .rack-row-map__track {
+  height: max(120px, 100cqi * 25.3 / var(--row-hp));
+}
+/* Rows this tall have room for a name on two lines instead of clipping it */
+.home-rig .rack-row-map__block-label {
+  white-space: normal;
+}
+.home-rig .patch-cable__lead {
+  stroke-width: 4;
+}
+/* The cables go in once the modules have slotted in */
+.home-rig .patch-cable__plug {
+  animation: cable-in var(--dur-short) var(--ease-out) both;
+}
+.home-rig .patch-cable__lead,
+.home-rig .patch-cable__plug {
+  animation-delay: calc(360ms + min(var(--i, 0), 10) * 80ms);
+}
+.home-rig__caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-lg);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+.home-rig__caption p {
+  max-width: 52ch;
+}
+.home-rig__caption strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.home-rig__key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.home-rig__key li {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
 }
 
-/* The four laws: a spec sheet, numbered */
-.home-laws {
+/* The path from rig to book: the rig's signal chain, lit end to end */
+.home-path {
   display: grid;
   grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  align-items: start;
   gap: var(--space-xl);
   width: 100%;
   max-width: var(--container);
   margin: 0 auto;
   padding: var(--space-3xl) var(--gutter);
 }
-.home-laws h2 {
+.home-path h2 {
   max-width: 12ch;
   font-size: clamp(2rem, 3.4vw, 3rem);
   line-height: 1.02;
   letter-spacing: -0.035em;
 }
-.home-laws__list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--color-rule);
-  counter-reset: law;
-  list-style: none;
-}
-.home-laws__list li {
-  display: grid;
-  align-content: start;
-  gap: var(--space-md);
-  min-height: 11rem;
-  padding: var(--space-lg) var(--space-lg) var(--space-xl) 0;
-  border-bottom: 1px solid var(--color-rule);
-  color: var(--color-ink);
-  font: 500 var(--text-lg) / 1.35 var(--font-display);
-  letter-spacing: -0.015em;
-  counter-increment: law;
-}
-.home-laws__list li:nth-child(even) {
-  padding-left: var(--space-lg);
-  border-left: 1px solid var(--color-rule);
-}
-.home-laws__list li::before {
-  color: var(--color-accent-text);
-  content: counter(law, decimal-leading-zero);
-  font: 500 var(--text-sm) / 1 var(--font-mono);
+.home-path .signal-chain {
+  --reach: 1;
 }
 
 /* —— Sign in: brand panel beside the form —— */
@@ -332,17 +331,25 @@
 }
 
 @media (max-width: 52rem) {
-  .home-laws {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .home-laws__list {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .home-laws__list li,
-  .home-laws__list li:nth-child(even) {
+  .home-hero {
     min-height: 0;
-    padding: var(--space-md) 0;
-    border-left: 0;
+  }
+  .home-hero__content,
+  .home-path {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-xl);
+    padding-block: var(--space-2xl);
+  }
+  .home-hero__content {
+    grid-template-rows: none;
+  }
+  .home-hero__copy,
+  .home-rig {
+    grid-area: auto;
+  }
+  .home-rig {
+    grid-template-rows: none;
+    gap: var(--space-md);
   }
   .auth-shell {
     grid-template-columns: minmax(0, 1fr);
@@ -355,16 +362,13 @@
     height: 13rem;
   }
 }
+/* Stacked, the path keeps each stage's line: on the home page it is the explanation */
+@media (max-width: 45rem) {
+  .home-path .signal-chain__detail {
+    display: block;
+  }
+}
 @media (max-width: 40rem) {
-  .home-hero__media {
-    background-position: 62% 30%;
-  }
-  .home-hero__veil {
-    background: linear-gradient(to top, var(--zs-carbon) 30%, transparent 85%);
-  }
-  .home-hero {
-    align-items: end;
-  }
   .auth-brand-list {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -374,8 +378,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-hero__media,
-  .home-hero__content > * {
+  .home-hero__copy > *,
+  .home-rig .patch-cable__plug {
     animation: none;
   }
   .auth-tab::after {

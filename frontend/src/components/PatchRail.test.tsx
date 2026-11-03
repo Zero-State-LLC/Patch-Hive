@@ -162,6 +162,15 @@ describe("PatchRail", () => {
     expect(container.querySelector(".is-dimmed")).toBeNull();
   });
 
+  it("draws the cables without the table where the rail is only shown", () => {
+    const { container } = render(
+      <PatchRail rack={rackWith(modules)} patch={patchWith([cable(1, 2)])} table={false} />,
+    );
+    expect(container.querySelectorAll(".patch-cable")).toHaveLength(1);
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Cable 1" })).not.toBeInTheDocument();
+  });
+
   it("falls back to the table when the case states no HP per row", () => {
     const { container } = render(
       <PatchRail rack={rackWith(modules, [])} patch={patchWith([cable(1, 2)])} />,

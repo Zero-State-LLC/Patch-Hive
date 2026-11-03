@@ -25,6 +25,7 @@ const AdminRuns = lazy(() => import("@/pages/admin/AdminRuns"));
 const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
 const CaseDetailPage = lazy(() => import("@/pages/CaseDetail"));
 const PatchBookStyleStudioPage = lazy(() => import("@/pages/PatchBookStyleStudio"));
+const PatchDetailPage = lazy(() => import("@/pages/PatchDetail"));
 const RackBuilderPage = lazy(() => import("@/pages/RackBuilder"));
 const RegistryPage = lazy(() => import("@/pages/Registry"));
 
@@ -48,6 +49,7 @@ function AppRoutes() {
       <Route path="/racks/:rigId" element={<RacksPage />} />
       <Route path="/rigs/:rigId" element={<RigDetailPage />} />
       <Route path="/rigs/:rigId/patchbook-studio" element={<PatchBookStyleStudioPage />} />
+      <Route path="/rigs/:rigId/patches/:patchId" element={<PatchDetailPage />} />
       <Route path="/patches" element={<PatchesPage />} />
       <Route path="/products" element={<RegistryPage />} />
       <Route path="/login" element={<LoginPage />} />

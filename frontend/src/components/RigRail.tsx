@@ -5,7 +5,10 @@
 import type { CSSProperties } from "react";
 import type { Rack } from "@/types/api";
 
-export default function RigRail({ rack }: { rack: Rack }) {
+/** What the rail draws from a rig: its name, its case's rows and the modules placed on them. */
+export type RailRack = Pick<Rack, "name" | "case" | "modules">;
+
+export default function RigRail({ rack }: { rack: RailRack }) {
   const rows = rack.case?.hp_per_row ?? [];
   if (rows.length === 0) return null;
 
