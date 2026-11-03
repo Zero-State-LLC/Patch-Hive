@@ -148,17 +148,17 @@ def request_export(
 
 
 def _fair_use_exports(session: Session, grant_id: str) -> int:
-    """Exports a STUDIO grant has covered. A failed one gives its slot back, as a failed
-    paid export gets its credits back (FR-005)."""
+    """Exports a STUDIO grant has covered, whatever their status.
+
+    A failed export keeps its slot: a retry of the same request returns it and runs
+    fulfillment again, so releasing the slot would let it succeed outside the cap.
+    """
 
     return int(
         session.scalar(
             select(func.count())
             .select_from(CanonicalExportRecord)
-            .where(
-                CanonicalExportRecord.subscription_grant_id == grant_id,
-                CanonicalExportRecord.status.notin_(("failed", "refunded")),
-            )
+            .where(CanonicalExportRecord.subscription_grant_id == grant_id)
         )
         or 0
     )

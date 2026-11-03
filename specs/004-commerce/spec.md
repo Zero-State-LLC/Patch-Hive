@@ -30,7 +30,7 @@ Checked against `main` at `95ca9ee`. Paths are under `backend/` unless shown oth
 
 | FR | Status | Evidence |
 |---|---|---|
-| FR-001 | Partial | Tier names and Design Engine family floors exist. Since T050 (2026-11-02) a user with an entitled subscription (`active`, `trialing`, `past_due`; OQ-4) resolves to its tier, others to the configured default tier (`canon/entitlements.py`). Stays Partial until T049 and T050 close. |
+| FR-001 | Partial | Tier names and Design Engine family floors exist. Since T050 (2026-11-02) a user with an entitled subscription (`active`, `trialing`, `past_due`; OQ-4) resolves to its tier, a user whose subscriptions are all lapsed to FREE, and a user who never subscribed to the configured default tier (`canon/entitlements.py`). Stays Partial until T049 and T050 close. |
 | FR-002 | Partial | Signup writes no ledger entry (`community/auth_routes.py`). "Demo mode only" is not defined, and the default tier is `core`. |
 | FR-003 | Missing | No per-period grant. T049. |
 | FR-004 | Partial | STUDIO period grants carry `unlimited=true` and a fair-use cap (T049); an export covered by one takes no debit and counts against the cap, refused 429 `FAIR_USE_CAP_REACHED` at the cap (T050, `canon/exports.py`). |

@@ -3,9 +3,10 @@
 No client-supplied tier. A user's tier comes from their provider subscription record
 (Machine C, ``canon/subscriptions.py``) when its provider status is one OQ-4
 ``A_stripe_mapping`` counts as entitled: ``active`` and ``trialing`` get the paid tier,
-and ``past_due`` keeps it while the provider retries. Any other status (``incomplete``,
-``incomplete_expired``, ``unpaid``, ``paused``, ``canceled``), or no subscription, falls
-back to the ``design_engine_default_tier`` setting.
+and ``past_due`` keeps it while the provider retries. A user whose subscriptions are all in
+another status (``incomplete``, ``incomplete_expired``, ``unpaid``, ``paused``,
+``canceled``) gets FREE, as OQ-4 maps them. A user with no subscription at all gets the
+``design_engine_default_tier`` setting.
 
 The stored tier is the one subscription sync took from the provider price (OQ-7
 ``A_next_period_no_proration``); what the user can spend follows the period grant, so a
@@ -92,12 +93,20 @@ def entitled_subscription(session: Session, user_id: int) -> ProviderSubscriptio
 def resolve_user_tier(session: Session, user_id: int) -> TierName:
     """Resolve the user's tier. Client input never decides it.
 
-    The entitled subscription's tier, else the default-tier setting.
+    The entitled subscription's tier; FREE if the user has subscriptions but none is
+    entitled (OQ-4); the default-tier setting if the user never subscribed.
     """
 
     record = entitled_subscription(session, user_id)
     if record is not None and record.tier in _TIER_RANK:
         return record.tier  # type: ignore[return-value]
+    lapsed = (
+        session.query(ProviderSubscriptionRecord.id)
+        .filter(ProviderSubscriptionRecord.user_id == user_id)
+        .first()
+    )
+    if lapsed is not None:
+        return "free"
     return default_tier()
 
 

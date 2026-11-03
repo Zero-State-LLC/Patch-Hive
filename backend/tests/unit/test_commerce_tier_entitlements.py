@@ -171,13 +171,18 @@ def test_an_entitled_subscription_sets_the_tier(
 
 
 @pytest.mark.parametrize("status", sorted(set(SUBSCRIPTION_STATUSES) - ENTITLED_STATUSES))
-def test_a_subscription_that_is_not_entitled_falls_back_to_the_default_tier(
+def test_a_lapsed_subscription_resolves_to_free_not_the_default_tier(
     db_session: Session, monkeypatch: pytest.MonkeyPatch, status: str
 ) -> None:
-    monkeypatch.setattr(entitlements.settings, "design_engine_default_tier", "free")
+    """OQ-4 maps every unentitled status to FREE (Codex review on #224); the default-tier
+    setting is only for users who never subscribed."""
+    monkeypatch.setattr(entitlements.settings, "design_engine_default_tier", "pro")
     user, _ = _persist_hierarchy(db_session)
     _subscription(db_session, user, tier="studio", status=status)
     assert resolve_user_tier(db_session, user.id) == "free"
+    assert TemplateFamilyId.HIVE_SYSTEMS_ATLAS not in get_design_entitlements(
+        db_session, user.id
+    ).allowed_families
 
 
 def test_another_users_subscription_never_sets_the_tier(db_session: Session) -> None:
@@ -261,7 +266,9 @@ def test_a_retry_of_a_covered_export_returns_it_even_at_the_cap(db_session: Sess
     assert _export(db_session, user, "studio-1").id == first.id
 
 
-def test_a_failed_covered_export_gives_its_slot_back(db_session: Session) -> None:
+def test_a_failed_covered_export_keeps_its_slot(db_session: Session) -> None:
+    """A retry of the failed request returns it and reruns fulfillment, so releasing its
+    slot would let a second export through a cap of one (Codex review on #224)."""
     user, _ = _persist_hierarchy(db_session)
     _studio_grant(db_session, _subscription(db_session, user), cap=1)
     first = _export(db_session, user, "studio-1")
@@ -271,8 +278,10 @@ def test_a_failed_covered_export_gives_its_slot_back(db_session: Session) -> Non
     assert first.status == "failed"
     assert db_session.query(CanonicalCreditLedgerEntryRecord).count() == 0
 
-    second = _export(db_session, user, "studio-2")
-    assert second.subscription_grant_id == first.subscription_grant_id
+    with pytest.raises(ExportBoundaryError, match="FAIR_USE_CAP_REACHED"):
+        _export(db_session, user, "studio-2")
+    db_session.rollback()
+    assert _export(db_session, user, "studio-1").id == first.id
 
 
 def test_a_new_period_grant_has_its_own_cap(db_session: Session) -> None:
@@ -290,7 +299,7 @@ def test_a_new_period_grant_has_its_own_cap(db_session: Session) -> None:
 
 
 @pytest.mark.parametrize(
-    "case", ["no_grant_for_this_period", "not_entitled", "core_grant", "other_users_grant"]
+    "case", ["no_grant_for_this_period", "lapsed", "core_grant", "other_users_grant"]
 )
 def test_without_a_current_studio_grant_the_export_pays_from_the_ledger(
     db_session: Session, case: str
@@ -300,7 +309,7 @@ def test_without_a_current_studio_grant_the_export_pays_from_the_ledger(
         # ``past_due`` keeps the tier, but the period's invoice is not paid: no grant.
         record = _subscription(db_session, user, status="past_due")
         _studio_grant(db_session, record, start=PERIOD_START - timedelta(days=30), end=PERIOD_START)
-    elif case == "not_entitled":
+    elif case == "lapsed":
         _studio_grant(db_session, _subscription(db_session, user, status="unpaid"))
     elif case == "core_grant":
         _subscription(db_session, user, tier="core")

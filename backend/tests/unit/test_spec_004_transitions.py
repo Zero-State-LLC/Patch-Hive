@@ -1010,7 +1010,7 @@ def test_c_tier_from_client_input_is_illegal(db_session: Session, pair, c_prices
 #
 # Not rows of the table: what each Machine C state entitles (OQ-4 ``A_stripe_mapping``).
 # Active, CancelScheduled and a ``past_due`` NotActive keep the subscription's tier; any
-# other NotActive status and Canceled fall back to the default-tier setting. A STUDIO
+# other NotActive status and Canceled resolve to FREE. A STUDIO
 # period grant covers exports without a debit up to its fair-use cap (OQ-8).
 
 
@@ -1018,7 +1018,9 @@ def test_c_tier_from_client_input_is_illegal(db_session: Session, pair, c_prices
 def c_default_tier(monkeypatch: pytest.MonkeyPatch) -> None:
     import canon.entitlements as entitlements
 
-    monkeypatch.setattr(entitlements.settings, "design_engine_default_tier", "free")
+    # Not ``free``, so a lapsed subscription resolving to FREE is told apart from the
+    # default a user who never subscribed gets.
+    monkeypatch.setattr(entitlements.settings, "design_engine_default_tier", "pro")
 
 
 def _c_studio_user(db: Session, status: str = "active") -> User:
