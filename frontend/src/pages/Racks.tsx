@@ -4,7 +4,9 @@ import { Link } from "react-router-dom";
 import { canonApi, exportApi, patchApi, rackApi, runApi } from "@/lib/api";
 import { filenameFromDisposition, saveBlob } from "@/lib/download";
 import { useAuthStore } from "@/lib/store";
+import PatchRail from "@/components/PatchRail";
 import RigRail from "@/components/RigRail";
+import { ListSkeleton, RailSkeleton } from "@/components/Skeletons";
 import type { CompatibilityResponse, Patch, Rack, Run } from "@/types/api";
 import { rigDetailToRack, rigSummaryToRack } from "@/lib/canonRigAdapter";
 import {
@@ -45,6 +47,7 @@ export default function RacksPage() {
   const [runs, setRuns] = useState<Run[]>([]);
   const [selectedRunId, setSelectedRunId] = useState<number | null>(null);
   const [patches, setPatches] = useState<Patch[]>([]);
+  const [selectedPatchId, setSelectedPatchId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [loading, setLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
@@ -231,6 +234,8 @@ export default function RacksPage() {
 
   const categories = useMemo(() => patchCategories(patches), [patches]);
   const filteredPatches = useMemo(() => filterPatches(patches, filters), [patches, filters]);
+  const selectedPatch =
+    filteredPatches.find((p) => p.id === selectedPatchId) ?? filteredPatches[0] ?? null;
 
   return (
     <div className="split-workspace">
@@ -245,11 +250,7 @@ export default function RacksPage() {
           Rig-centric workspace. Each rig carries runs and patch libraries.
         </p>
         <div className="side-list">
-          {listLoading ? (
-            <p className="status" role="status">
-              Loading rigs…
-            </p>
-          ) : null}
+          {listLoading ? <ListSkeleton label="Loading rigs…" /> : null}
           {!listLoading && error && racks.length === 0 ? (
             <div className="panel" role="alert">
               <p className="status status-danger">{error}</p>
@@ -606,8 +607,8 @@ export default function RacksPage() {
             ) : null}
 
             {activeTab === "patches" ? (
-              <div style={{ display: "grid", gap: "var(--space-4)" }}>
-                <div className="panel toolbar" aria-label="Patch filters">
+              <div className="rack-patches">
+                <div className="toolbar" aria-label="Patch filters">
                   <label className="inline-field">
                     Category
                     <select
@@ -666,28 +667,43 @@ export default function RacksPage() {
                   </label>
                 </div>
 
-                <div className="catalog-grid">
-                  {filteredPatches.map((patch) => (
-                    <article key={patch.id} className="catalog-card">
-                      <h3>{patch.name}</h3>
-                      <p className="catalog-card-meta">
-                        {patch.suggested_name || "Suggested name missing"}
-                      </p>
-                      <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>
-                        {patch.category}, {difficultyFromConnections(patch)}, weirdness{" "}
-                        {weirdnessFromConnections(patch)}
-                      </p>
-                      <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.9rem" }}>
-                        {patch.description || "No description yet."}
-                      </p>
-                    </article>
-                  ))}
-                </div>
                 {filteredPatches.length === 0 ? (
-                  <div className="panel">
-                    <p className="status status-warning">No patches yet. Generate a run.</p>
+                  <div className="screen-state">
+                    <p className="empty-title">No patches yet. Generate a run.</p>
                   </div>
-                ) : null}
+                ) : (
+                  <div className="split-workspace">
+                    <ul className="side-list rack-patch-list" aria-label="Patches in this run">
+                      {filteredPatches.map((patch) => (
+                        <li key={patch.id}>
+                          <button
+                            type="button"
+                            className={`side-item${selectedPatch?.id === patch.id ? " is-selected" : ""}`}
+                            aria-current={selectedPatch?.id === patch.id ? "true" : undefined}
+                            onClick={() => setSelectedPatchId(patch.id)}
+                          >
+                            <span className="side-item-title">{patch.name}</span>
+                            <span className="side-item-meta">
+                              {patch.category}, {difficultyFromConnections(patch)}, weirdness{" "}
+                              {weirdnessFromConnections(patch)}
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    {selectedPatch ? (
+                      <section className="rack-patch-detail" aria-labelledby="rack-patch-title">
+                        <h3 id="rack-patch-title">{selectedPatch.name}</h3>
+                        {selectedPatch.suggested_name &&
+                        selectedPatch.suggested_name !== selectedPatch.name ? (
+                          <p className="muted">Suggested name: {selectedPatch.suggested_name}</p>
+                        ) : null}
+                        <p>{selectedPatch.description || "No description yet."}</p>
+                        <PatchRail rack={selectedRack} patch={selectedPatch} />
+                      </section>
+                    ) : null}
+                  </div>
+                )}
               </div>
             ) : null}
 
@@ -770,9 +786,9 @@ export default function RacksPage() {
               Retry
             </button>
           </div>
-        ) : selectedRackId !== null ? (
+        ) : selectedRackId !== null || listLoading ? (
           <div className="panel" aria-busy="true">
-            <p className="muted">Loading rig details…</p>
+            <RailSkeleton label="Loading rig details…" />
           </div>
         ) : (
           <div className="panel">

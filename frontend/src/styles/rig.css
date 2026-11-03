@@ -633,3 +633,187 @@ div.rack-row-map__block {
     transform: none;
   }
 }
+
+/* —— Patch on the rail: cables hang between the modules they plug into —— */
+.patch-rail {
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.patch-rail__stage {
+  position: relative;
+  padding-bottom: var(--space-md);
+  background: var(--color-paper);
+}
+/* A patch view reads the cables, not the capacity: no usage meter, no empty rows */
+.patch-rail .usage-bar,
+.patch-rail .rack-row-map:not(:has(.rack-row-map__block)) {
+  display: none;
+}
+.patch-rail__cables {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-raised);
+  overflow: visible;
+  pointer-events: none;
+}
+.patch-cable {
+  --cable: var(--cable-audio);
+  transition: opacity var(--dur-short) var(--ease-out);
+}
+.patch-cable--cv {
+  --cable: var(--cable-cv);
+}
+.patch-cable--gate,
+.patch-cable--trigger,
+.patch-cable--clock {
+  --cable: var(--cable-gate);
+}
+.patch-cable--unknown {
+  --cable: var(--color-muted);
+}
+.patch-cable__lead {
+  fill: none;
+  stroke: var(--cable);
+  stroke-width: 3;
+  opacity: 0.9;
+  animation: cable-in var(--dur-long) var(--ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 10) * 40ms);
+}
+.patch-cable--cv .patch-cable__lead {
+  stroke-dasharray: 8 5;
+}
+.patch-cable--gate .patch-cable__lead,
+.patch-cable--trigger .patch-cable__lead,
+.patch-cable--clock .patch-cable__lead {
+  stroke-dasharray: 2 5;
+}
+/* Solid leads draw themselves along their length (pathLength is 1); dashed ones keep their pattern and fade */
+.patch-cable__lead--solid {
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  animation-name: cable-run;
+}
+@keyframes cable-run {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.patch-cable__plug {
+  fill: var(--color-paper);
+  stroke: var(--cable);
+  stroke-width: 2.5;
+}
+.patch-cable__plug--out {
+  fill: var(--cable);
+}
+.patch-cable.is-dimmed {
+  opacity: 0.25;
+}
+.patch-cable.is-selected .patch-cable__lead {
+  stroke-width: 5;
+  opacity: 1;
+}
+
+.patch-rail__table {
+  overflow-x: auto;
+}
+.patch-rail__table tr.is-selected {
+  background: var(--color-paper-3);
+}
+.patch-rail__pick {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  color: var(--color-ink);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.patch-rail__pick:hover {
+  color: var(--color-accent-text);
+}
+.patch-rail__pick:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.patch-rail__pick[aria-pressed="true"] {
+  color: var(--color-accent-text);
+}
+.patch-rail__pick .cable-swatch {
+  margin-right: 0;
+}
+.patch-rail__pick .cable-unknown {
+  border-top-color: var(--color-muted);
+}
+.patch-rail__port,
+.patch-rail__note {
+  display: block;
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+.patch-rail__key {
+  margin-bottom: var(--space-xs);
+  font-size: var(--text-xs);
+}
+.patch-rail__port {
+  font-family: var(--font-mono);
+}
+
+/* Racks > Patches: the list beside the selected patch on its rail */
+.rack-patches {
+  display: grid;
+  gap: var(--space-lg);
+}
+.rack-patches .toolbar {
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-rule);
+}
+.rack-patch-detail {
+  display: grid;
+  align-content: start;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.rack-patch-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Wide screens: the rail stays in view while the cable table scrolls under it */
+@media (min-width: 60rem) {
+  .patch-rail__stage {
+    position: sticky;
+    top: var(--header-height);
+    z-index: var(--z-base);
+  }
+}
+/* Phones: the module name alone over its port; the signal is the swatch, and stays for screen readers */
+@media (max-width: 45rem) {
+  .patch-rail__brand,
+  .patch-rail__signal {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .patch-cable,
+  .patch-cable__lead {
+    animation: none;
+    transition: none;
+  }
+}

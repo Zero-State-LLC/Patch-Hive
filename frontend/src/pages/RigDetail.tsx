@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { Link, useParams } from "react-router-dom";
+import { ChainSkeleton, ListSkeleton } from "@/components/Skeletons";
 import {
   canonApi,
   evidenceApi,
@@ -409,11 +410,7 @@ export default function RigDetailPage() {
         ))}
       </div>
 
-      {loading ? (
-        <p className="results-meta" role="status">
-          Loading rig history…
-        </p>
-      ) : null}
+      {loading ? <ChainSkeleton label="Loading rig history…" /> : null}
 
       {generateStatus ? (
         <div className="notice rig-receipt" role="status" aria-label="Generation receipt">
@@ -580,7 +577,7 @@ export default function RigDetailPage() {
               Canonical patches are immutable. Favorite, tried and notes are personal overlays.
             </p>
           </div>
-          {patchesLoading ? <p role="status">Loading patches…</p> : null}
+          {patchesLoading ? <ListSkeleton label="Loading patches…" rows={3} /> : null}
           {!patchesLoading && patches.length === 0 ? (
             <p className="status status-warning">No patches for this run.</p>
           ) : null}

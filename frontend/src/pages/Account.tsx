@@ -3,6 +3,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ListSkeleton, ReadoutSkeleton } from "@/components/Skeletons";
 import { accountApi, authApi, canonApi } from "@/lib/api";
 import { useAuthStore } from "@/lib/store";
 import type { CreditsSummary, UserExportRecord, ReferralSummary, User } from "@/types/api";
@@ -31,6 +32,7 @@ export default function AccountPage() {
   const [copyStatus, setCopyStatus] = useState("");
   const [tokenBusy, setTokenBusy] = useState<string | null>(null);
   const [tokenMessage, setTokenMessage] = useState("");
+  const [loading, setLoading] = useState(() => isAuthenticated());
 
   const safeAvatarUrl = useMemo(() => safeHttpUrl(avatarUrl.trim()), [avatarUrl]);
 
@@ -63,9 +65,12 @@ export default function AccountPage() {
     };
 
     if (isAuthenticated()) {
-      loadDashboard().catch(() => {
-        /* keep empty dashboard on failure */
-      });
+      setLoading(true);
+      loadDashboard()
+        .catch(() => {
+          /* keep empty dashboard on failure */
+        })
+        .finally(() => setLoading(false));
     }
   }, [isAuthenticated, setUser]);
 
@@ -130,11 +135,21 @@ export default function AccountPage() {
           <dl className="readout account-balance">
             <div>
               <dt>Canonical balance</dt>
-              <dd>{credits ? credits.balance : "unknown"}</dd>
+              <dd>
+                {loading ? (
+                  <ReadoutSkeleton label="Loading balance…" />
+                ) : credits ? (
+                  credits.balance
+                ) : (
+                  "unknown"
+                )}
+              </dd>
             </div>
           </dl>
           <h3>Ledger history</h3>
-          {credits?.entries.length ? (
+          {loading ? (
+            <ListSkeleton label="Loading ledger history…" rows={3} />
+          ) : credits?.entries.length ? (
             <div className="ops-table-wrap">
               <table className="data-table">
                 <thead>
@@ -169,7 +184,9 @@ export default function AccountPage() {
               {tokenMessage}
             </p>
           ) : null}
-          {exportRows.length ? (
+          {loading ? (
+            <ListSkeleton label="Loading exports…" rows={3} />
+          ) : exportRows.length ? (
             <div className="ops-table-wrap">
               <table className="data-table">
                 <thead>

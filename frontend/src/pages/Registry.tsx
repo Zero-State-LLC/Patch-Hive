@@ -4,6 +4,7 @@
  */
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { ListSkeleton, ReadoutSkeleton } from "@/components/Skeletons";
 import { registryApi } from "@/lib/api";
 import type { DeviceModel, Manufacturer, RegistryCoverage } from "@/types/api";
 
@@ -68,14 +69,6 @@ export default function RegistryPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="panel">
-        <p className="status">Loading Product Database…</p>
-      </div>
-    );
-  }
-
   return (
     <div className="registry-page">
       <header className="workspace-header">
@@ -117,12 +110,16 @@ export default function RegistryPage() {
         <aside className="split-aside" aria-label="Manufacturers">
           <div className="split-aside-head">
             <h2>Manufacturers</h2>
-            <span className="muted registry-count">
-              {filtered.length} of {coverage?.total_manufacturers || manufacturers.length}
-            </span>
+            {loading ? null : (
+              <span className="muted registry-count">
+                {filtered.length} of {coverage?.total_manufacturers || manufacturers.length}
+              </span>
+            )}
           </div>
           <div className="side-list">
-            {filtered.length === 0 ? (
+            {loading ? (
+              <ListSkeleton label="Loading Product Database…" rows={8} />
+            ) : filtered.length === 0 ? (
               <p className="muted">No matches.</p>
             ) : (
               filtered.map((m) => (
@@ -147,11 +144,17 @@ export default function RegistryPage() {
               <dl className="readout">
                 <div>
                   <dt>Manufacturers</dt>
-                  <dd>{coverage?.total_manufacturers || manufacturers.length}</dd>
+                  <dd>
+                    {loading ? (
+                      <ReadoutSkeleton />
+                    ) : (
+                      coverage?.total_manufacturers || manufacturers.length
+                    )}
+                  </dd>
                 </div>
                 <div>
                   <dt>Models</dt>
-                  <dd>{coverage?.total_models || 0}</dd>
+                  <dd>{loading ? <ReadoutSkeleton /> : coverage?.total_models || 0}</dd>
                 </div>
               </dl>
               <p className="muted">Select a manufacturer to inspect registry detail.</p>
