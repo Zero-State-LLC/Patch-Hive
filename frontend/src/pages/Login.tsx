@@ -4,9 +4,11 @@
  */
 import { useId, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import Tabs from "@/components/Tabs";
 import { authApi } from "@/lib/api";
 import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 import { useAuthStore } from "@/lib/store";
+import { panelId, tabId } from "@/lib/tabs";
 
 type AuthMode = "signin" | "register";
 
@@ -118,34 +120,30 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="auth-tabs" role="tablist" aria-label="Authentication mode">
-              <button
-                type="button"
-                role="tab"
-                className="auth-tab"
-                aria-selected={mode === "signin"}
-                onClick={() => {
-                  setMode("signin");
-                  setError("");
-                }}
-              >
-                Sign in
-              </button>
-              <button
-                type="button"
-                role="tab"
-                className="auth-tab"
-                aria-selected={mode === "register"}
-                onClick={() => {
-                  setMode("register");
-                  setError("");
-                }}
-              >
-                Create account
-              </button>
-            </div>
+            <Tabs
+              label="Authentication mode"
+              idPrefix="auth-"
+              listClassName="auth-tabs"
+              tabClassName="auth-tab"
+              tabs={[
+                { key: "signin", label: "Sign in" },
+                { key: "register", label: "Create account" },
+              ]}
+              active={mode}
+              onChange={(next) => {
+                setMode(next);
+                setError("");
+              }}
+            />
 
-            <form className="auth-form" method="post" onSubmit={handleSubmit} noValidate>
+            <form
+              className="auth-form"
+              method="post"
+              onSubmit={handleSubmit}
+              noValidate
+              id={panelId("auth-", mode)}
+              aria-labelledby={tabId("auth-", mode)}
+            >
               <label className="field" htmlFor={`${formId}-username`}>
                 Username
                 <input

@@ -6,11 +6,13 @@ import { filenameFromDisposition, saveBlob } from "@/lib/download";
 import { useAuthStore } from "@/lib/store";
 import PatchRail from "@/components/PatchRail";
 import RigRail from "@/components/RigRail";
+import Tabs from "@/components/Tabs";
 import { ListSkeleton, RailSkeleton } from "@/components/Skeletons";
 import type { CompatibilityResponse, Patch, Rack, Run } from "@/types/api";
 import { rigDetailToRack, rigSummaryToRack } from "@/lib/canonRigAdapter";
 import { formatDate, runLabel } from "@/lib/format";
 import { patchName } from "@/lib/patchName";
+import { panelId, tabId } from "@/lib/tabs";
 import {
   difficultyFromConnections,
   filterPatches,
@@ -58,7 +60,7 @@ export default function RacksPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedRackId = idFrom(rigId);
   const tabParam = searchParams.get("tab");
-  const activeTab: TabKey = isTabKey(tabParam) ? tabParam : "overview";
+  const requestedTab: TabKey = isTabKey(tabParam) ? tabParam : "overview";
   const selectedPatchId = idFrom(searchParams.get("patch"));
   const selectRig = (id: number, options?: { replace?: boolean }) =>
     navigate({ pathname: `/racks/${id}` }, options);
@@ -135,6 +137,11 @@ export default function RacksPage() {
   }, [selectedRack]);
 
   const hasRuns = runs.length > 0;
+  // Patches and Exports need a run; a link to them on a rig without one opens the Overview.
+  const activeTab: TabKey =
+    (requestedTab === "patches" || requestedTab === "exports") && !hasRuns
+      ? "overview"
+      : requestedTab;
 
   const loadRacks = async () => {
     setError(null);
@@ -280,7 +287,7 @@ export default function RacksPage() {
     <div className="split-workspace">
       <aside className="split-aside" aria-label="Rig list">
         <div className="split-aside-head">
-          <h2>Rigs</h2>
+          <h1>Rigs</h1>
           <Link className="button button-primary" to="/racks/new">
             New
           </Link>
@@ -334,7 +341,7 @@ export default function RacksPage() {
           <>
             <header className="workspace-header">
               <div>
-                <h1>{selectedRack.name}</h1>
+                <h2>{selectedRack.name}</h2>
                 <p className="muted">{selectedRack.description || "No rig notes yet."}</p>
               </div>
               <div className="header-actions">
@@ -344,24 +351,16 @@ export default function RacksPage() {
               </div>
             </header>
 
-            <nav className="tab-list" role="tablist" aria-label="Rig sections">
-              {tabs.map((tab) => {
-                const disabled = (tab.key === "patches" || tab.key === "exports") && !hasRuns;
-                return (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    role="tab"
-                    className="tab"
-                    aria-selected={activeTab === tab.key}
-                    disabled={disabled}
-                    onClick={() => setActiveTab(tab.key)}
-                  >
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </nav>
+            <Tabs
+              label="Rig sections"
+              idPrefix="rig-"
+              tabs={tabs.map((tab) => ({
+                ...tab,
+                disabled: (tab.key === "patches" || tab.key === "exports") && !hasRuns,
+              }))}
+              active={activeTab}
+              onChange={setActiveTab}
+            />
 
             {error ? (
               <div className="panel" role="alert" style={{ marginBottom: "var(--space-4)" }}>
@@ -370,10 +369,16 @@ export default function RacksPage() {
             ) : null}
 
             {activeTab === "overview" ? (
-              <div style={{ display: "grid", gap: "var(--space-5)" }}>
+              <div
+                className="rack-tabpanel"
+                role="tabpanel"
+                id={panelId("rig-", "overview")}
+                aria-labelledby={tabId("rig-", "overview")}
+                tabIndex={0}
+              >
                 {selectedRack.modules.length === 0 ? (
                   <div className="panel placement-cta" role="region" aria-label="Place modules">
-                    <h2 style={{ marginTop: 0 }}>This rig has no modules yet</h2>
+                    <h3>This rig has no modules yet</h3>
                     <p className="muted">
                       Place catalog modules by row and start HP, or prepare placeable rows from the
                       module gallery first.
@@ -390,29 +395,21 @@ export default function RacksPage() {
                 ) : null}
 
                 <div className="panel">
-                  <h2 style={{ marginTop: 0 }}>Rig inventory</h2>
-                  <div className="stat-row" style={{ marginTop: "var(--space-4)" }}>
-                    <div className="stat-block">
-                      <p className="muted" style={{ margin: 0 }}>
-                        Modules
-                      </p>
-                      <h3>{selectedRack.modules.length}</h3>
+                  <h3>Rig inventory</h3>
+                  <dl className="readout">
+                    <div>
+                      <dt>Modules</dt>
+                      <dd>{selectedRack.modules.length}</dd>
                     </div>
-                    <div className="stat-block">
-                      <p className="muted" style={{ margin: 0 }}>
-                        Runs
-                      </p>
-                      <h3>{runs.length}</h3>
+                    <div>
+                      <dt>Runs</dt>
+                      <dd>{runs.length}</dd>
                     </div>
-                    <div className="stat-block">
-                      <p className="muted" style={{ margin: 0 }}>
-                        Latest run
-                      </p>
-                      <h3 style={{ fontSize: "1rem" }}>
-                        {runs[0] ? formatDate(runs[0].created_at) : "None yet"}
-                      </h3>
+                    <div className="readout-wide">
+                      <dt>Latest run</dt>
+                      <dd>{runs[0] ? formatDate(runs[0].created_at) : "None yet"}</dd>
                     </div>
-                  </div>
+                  </dl>
                   {selectedRack.case ? (
                     <p className="muted">
                       Case: {selectedRack.case.brand} {selectedRack.case.name}
@@ -507,7 +504,7 @@ export default function RacksPage() {
                 </div>
 
                 <div className="panel" aria-live="polite">
-                  <h2 style={{ marginTop: 0 }}>Case fit report</h2>
+                  <h3>Case fit report</h3>
                   {compatLoading ? (
                     <p className="muted">Loading compatibility…</p>
                   ) : compat ? (
@@ -653,7 +650,13 @@ export default function RacksPage() {
             ) : null}
 
             {activeTab === "patches" ? (
-              <div className="rack-patches">
+              <div
+                className="rack-patches"
+                role="tabpanel"
+                id={panelId("rig-", "patches")}
+                aria-labelledby={tabId("rig-", "patches")}
+                tabIndex={0}
+              >
                 <div className="toolbar" aria-label="Patch filters">
                   <label className="inline-field">
                     Category
@@ -739,7 +742,7 @@ export default function RacksPage() {
                     </ul>
                     {selectedPatch ? (
                       <section className="rack-patch-detail" aria-labelledby="rack-patch-title">
-                        <h2 id="rack-patch-title">{patchName(selectedPatch)}</h2>
+                        <h3 id="rack-patch-title">{patchName(selectedPatch)}</h3>
                         <p>{selectedPatch.description || "No description yet."}</p>
                         <Link
                           className="button button-quiet"
@@ -756,8 +759,14 @@ export default function RacksPage() {
             ) : null}
 
             {activeTab === "exports" ? (
-              <div className="panel">
-                <h2 style={{ marginTop: 0 }}>PatchBook exports</h2>
+              <div
+                className="panel"
+                role="tabpanel"
+                id={panelId("rig-", "exports")}
+                aria-labelledby={tabId("rig-", "exports")}
+                tabIndex={0}
+              >
+                <h3>PatchBook exports</h3>
                 <p className="muted">
                   Export actions trigger credit checks at download time. Credits debit only at the
                   canonical boundary.
@@ -787,10 +796,16 @@ export default function RacksPage() {
             ) : null}
 
             {activeTab === "modules" ? (
-              <div className="catalog-grid">
+              <div
+                className="catalog-grid"
+                role="tabpanel"
+                id={panelId("rig-", "modules")}
+                aria-labelledby={tabId("rig-", "modules")}
+                tabIndex={0}
+              >
                 {selectedRack.modules.map((module) => (
                   <article key={module.id} className="catalog-card">
-                    <h3>{module.module?.name || "Unknown module"}</h3>
+                    <h4>{module.module?.name || "Unknown module"}</h4>
                     <p className="catalog-card-meta">
                       {module.module?.brand || "Unknown brand"},{" "}
                       {module.module?.module_type || "type unknown"}, {module.module?.hp ?? "?"}HP

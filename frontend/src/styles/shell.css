@@ -117,6 +117,8 @@ code {
   min-width: 0;
   overflow-x: auto;
   scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--space-xl);
 }
 .app-shell .primary-nav a {
   position: relative;
@@ -143,8 +145,10 @@ code {
   transform-origin: left center;
   transition: transform var(--dur-short) var(--ease-out);
 }
-.app-shell .primary-nav a:hover {
-  color: var(--color-ink);
+@media (hover: hover) {
+  .app-shell .primary-nav a:hover {
+    color: var(--color-ink);
+  }
 }
 .app-shell .primary-nav a.active {
   color: var(--color-ink);
@@ -366,6 +370,39 @@ code {
   margin-bottom: var(--space-lg);
   border-bottom: 1px solid var(--color-rule);
   scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--space-xl);
+}
+/* A row that scrolls (the nav and tab lists on a phone) fades whichever edge has more past it */
+.primary-nav[data-edge-end="true"],
+.tab-list[data-edge-end="true"] {
+  mask-image: linear-gradient(
+    to right,
+    var(--color-paper) calc(100% - var(--space-xl)),
+    transparent
+  );
+}
+.primary-nav[data-edge-start="true"],
+.tab-list[data-edge-start="true"] {
+  mask-image: linear-gradient(
+    to left,
+    var(--color-paper) calc(100% - var(--space-xl)),
+    transparent
+  );
+}
+.primary-nav[data-edge-start="true"][data-edge-end="true"],
+.tab-list[data-edge-start="true"][data-edge-end="true"] {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    var(--color-paper) var(--space-xl),
+    var(--color-paper) calc(100% - var(--space-xl)),
+    transparent
+  );
+}
+.primary-nav a,
+.tab {
+  scroll-snap-align: start;
 }
 .tab {
   position: relative;
@@ -392,8 +429,14 @@ code {
   transform-origin: left center;
   transition: transform var(--dur-short) var(--ease-out);
 }
-.tab:hover {
-  color: var(--color-ink);
+@media (hover: hover) {
+  .tab:hover:not(:disabled) {
+    color: var(--color-ink);
+  }
+}
+.tab:disabled {
+  color: var(--color-muted);
+  cursor: default;
 }
 .tab[aria-selected="true"] {
   color: var(--color-ink);
@@ -422,6 +465,7 @@ code {
   max-width: 72ch;
 }
 .workspace-header h1,
+.workspace-header h2,
 .page-hero h1 {
   max-width: none;
   font-size: var(--text-display);
@@ -825,7 +869,9 @@ code {
   justify-content: space-between;
   gap: var(--space-xs);
 }
+.split-aside-head h1,
 .split-aside-head h2 {
+  margin: 0;
   font-size: var(--text-xl);
 }
 .side-list {

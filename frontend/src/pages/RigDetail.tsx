@@ -5,6 +5,7 @@ import Hash from "@/components/Hash";
 import PatchOverlay from "@/components/PatchOverlay";
 import PatchRail from "@/components/PatchRail";
 import RigRail from "@/components/RigRail";
+import Tabs from "@/components/Tabs";
 import { ChainSkeleton, ListSkeleton } from "@/components/Skeletons";
 import { canonApi, evidenceApi, patchApi, runApi, type InventoryRevisionSummary } from "@/lib/api";
 import { rigDetailToRack } from "@/lib/canonRigAdapter";
@@ -416,22 +417,12 @@ export default function RigDetailPage() {
         ) : null}
       </header>
 
-      <div className="tab-list" role="tablist" aria-label="Rig workspace">
-        {tabs.map((tab) => (
-          <button
-            className="tab"
-            id={`tab-${tab}`}
-            key={tab}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === tab}
-            aria-controls={`panel-${tab}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tabLabels[tab]}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        label="Rig workspace"
+        tabs={tabs.map((tab) => ({ key: tab, label: tabLabels[tab] }))}
+        active={activeTab}
+        onChange={setActiveTab}
+      />
 
       {loading ? <ChainSkeleton label="Loading rig history…" /> : null}
 
