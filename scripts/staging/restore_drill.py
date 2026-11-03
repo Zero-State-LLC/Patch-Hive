@@ -5,7 +5,8 @@ The workflow runs pg_dump against the Neon staging (or, with a typed confirmatio
 production) database. It restores the dump into a Postgres container on the runner,
 then calls this script for the counts-only facts and the receipt. Every query against
 the source is read-only. The dump never leaves the runner. Nothing here prints a URL,
-host, user or row value.
+host, user or row value; the workflow masks the URL's parts first
+(scripts/staging/mask_db_url.sh).
 
 Usage (repo root, PYTHONPATH=backend):
   restore_drill.py counts  --url-env SOURCE_DATABASE_URL --out drill/source-before.json [--github-output]
@@ -40,7 +41,6 @@ from core.ops.restore_drill import (  # noqa: E402
     server_major,
     summary_markdown,
 )
-from core.ops.throwaway_db import secret_parts  # noqa: E402
 
 ENVIRONMENTS = ("staging", "prod")
 
@@ -49,9 +49,6 @@ def _url(name: str) -> str:
     url = os.environ.get(name, "").strip()
     if not url:
         raise DrillError(f"{name} is not set")
-    if os.environ.get("GITHUB_ACTIONS") == "true":
-        for part in secret_parts(url):
-            print(f"::add-mask::{part}", flush=True)
     return url
 
 

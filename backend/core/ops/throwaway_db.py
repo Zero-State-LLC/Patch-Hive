@@ -93,19 +93,6 @@ def with_database(url: str, name: str) -> str:
     return make_url(url).set(database=name).render_as_string(hide_password=False)
 
 
-def libpq_url(url: str) -> str:
-    """The same URL without a SQLAlchemy driver suffix, for psql / pg_dump / pg_restore."""
-    return make_url(url).set(drivername="postgresql").render_as_string(hide_password=False)
-
-
-def secret_parts(url: str) -> tuple[str, ...]:
-    """Values a CI log must mask: the URL itself, its password and its host."""
-    parsed = make_url(url)
-    parts = [url, libpq_url(url)]
-    parts += [value for value in (parsed.password, parsed.host) if value]
-    return tuple(dict.fromkeys(str(part) for part in parts))
-
-
 def _admin_execute(admin_url: str, statement: str, action: str) -> None:
     engine = create_engine(admin_url, isolation_level="AUTOCOMMIT", poolclass=NullPool)
     try:

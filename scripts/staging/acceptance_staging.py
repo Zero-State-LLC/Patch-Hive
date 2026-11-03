@@ -12,17 +12,24 @@ removes the target, and writes a counts-only receipt.
                            (Neon API, needs NEON_API_KEY) with a throwaway database on it;
                            the branch is deleted at the end.
 
+It runs as three workflow steps, so the workflow can mask the throwaway connection
+string (scripts/staging/mask_db_url.sh) before anything uses it. This script never
+prints any part of a connection string:
+
+  provision  create the target; write its URL to --target-file (mode 0600, on the runner)
+  suite      migrate the target to head and run the suite
+  cleanup    remove the target and the file, finish the receipt (idempotent; the
+             workflow runs it whatever happened, so a cancelled run leaves nothing)
+
 Environment:
   STAGING_SOURCE_URL   staging connection string (required; never printed)
   GITHUB_RUN_ID, GITHUB_RUN_ATTEMPT   name the throwaway target (digits)
   NEON_API_KEY, NEON_PROJECT_ID, NEON_PARENT_BRANCH   neon-branch only
 
 Usage (repo root):
-  python scripts/staging/acceptance_staging.py run --isolation database --receipt-out receipt.json
-  python scripts/staging/acceptance_staging.py cleanup --isolation database
-
-``cleanup`` is idempotent; the workflow runs it after ``run`` whatever happened, so a
-cancelled run does not leave a database or branch behind.
+  acceptance_staging.py provision --isolation database --target-file T --receipt-out R
+  acceptance_staging.py suite --target-file T --receipt-out R
+  acceptance_staging.py cleanup --isolation database --target-file T --receipt-out R
 """
 
 from __future__ import annotations
@@ -32,10 +39,10 @@ import json
 import os
 import subprocess
 import sys
-import time
 import xml.etree.ElementTree as ElementTree
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import httpx
 from sqlalchemy.engine import make_url
@@ -59,7 +66,6 @@ from core.ops.throwaway_db import (  # noqa: E402
     create_database,
     drop_database,
     refuse_real_database,
-    secret_parts,
     throwaway_branch_name,
     throwaway_database_name,
     with_database,
@@ -98,12 +104,6 @@ def _source_url(env: dict[str, str]) -> str:
     return source
 
 
-def _mask(url: str) -> None:
-    if os.environ.get("GITHUB_ACTIONS") == "true":
-        for part in secret_parts(url):
-            print(f"::add-mask::{part}", flush=True)
-
-
 def _neon(env: dict[str, str]) -> NeonBranches:
     return NeonBranches(
         env.get("NEON_API_KEY", "").strip(),
@@ -112,9 +112,8 @@ def _neon(env: dict[str, str]) -> NeonBranches:
 
 
 def provision(isolation: str, env: dict[str, str]) -> str:
-    """Create the throwaway target and return its URL (masked, never printed)."""
+    """Create the throwaway target and return its URL."""
     source = _source_url(env)
-    _mask(source)
     names = _names(env)
     if isolation == "database":
         target = with_database(source, names.database)
@@ -132,7 +131,6 @@ def provision(isolation: str, env: dict[str, str]) -> str:
     )
     neon.create_database(branch_id, names.database, owner)
     target = neon.connection_uri(branch_id, names.database, owner)
-    _mask(target)
     refuse_real_database(target)
     return target
 
@@ -174,25 +172,78 @@ def junit_counts(path: Path) -> dict[str, float | int]:
     return {**totals, "passed": passed, "duration_seconds": round(duration, 1)}
 
 
-def run(isolation: str, receipt_out: Path) -> int:
-    env = dict(os.environ)
-    head = alembic_head()
-    receipt: dict[str, object] = {
+def suite_passed(receipt: dict[str, Any]) -> bool:
+    tests = receipt.get("tests") or {}
+    return (
+        bool((receipt.get("alembic") or {}).get("at_head"))
+        and tests.get("pytest_exit_code") == 0
+        and bool(tests.get("total"))
+        and not tests.get("failed")
+        and not tests.get("errors")
+    )
+
+
+def _describe(exc: Exception) -> str:
+    # httpx messages carry the request URL; the class name is enough.
+    if isinstance(exc, httpx.HTTPError):
+        return f"Neon API request failed ({exc.__class__.__name__})"
+    return str(exc)
+
+
+def _new_receipt(isolation: str) -> dict[str, Any]:
+    return {
         "kind": "acceptance-staging",
         "isolation": isolation,
-        "source_sha": env.get("GITHUB_SHA", ""),
-        "run_id": env.get("GITHUB_RUN_ID", ""),
-        "run_attempt": env.get("GITHUB_RUN_ATTEMPT", ""),
-        "alembic": {"head": head},
+        "source_sha": os.environ.get("GITHUB_SHA", ""),
+        "run_id": os.environ.get("GITHUB_RUN_ID", ""),
+        "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
+        "alembic": {"head": alembic_head()},
         "result": "fail",
     }
-    junit = receipt_out.parent / "acceptance-junit.xml"
-    receipt_out.parent.mkdir(parents=True, exist_ok=True)
-    started = time.monotonic()
-    tests_ok = False
+
+
+def _read_receipt(path: Path) -> dict[str, Any] | None:
     try:
-        target = provision(isolation, env)
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def _write_receipt(path: Path, receipt: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _fail(receipt: dict[str, Any], message: str) -> None:
+    print(f"::error::{message}", flush=True)
+    # Keep the first error: later steps only report the consequence of it.
+    receipt.setdefault("error", message)
+
+
+def provision_step(isolation: str, target_file: Path, receipt_out: Path) -> int:
+    receipt = _new_receipt(isolation)
+    code = 1
+    try:
+        target = provision(isolation, dict(os.environ))
+        target_file.parent.mkdir(parents=True, exist_ok=True)
+        descriptor = os.open(target_file, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            handle.write(target)
         receipt["throwaway"] = "created"
+        code = 0
+    except (TargetRefused, ThrowawayError, httpx.HTTPError) as exc:
+        _fail(receipt, _describe(exc))
+    _write_receipt(receipt_out, receipt)
+    return code
+
+
+def suite_step(target_file: Path, receipt_out: Path) -> int:
+    receipt = _read_receipt(receipt_out) or _new_receipt("unknown")
+    junit = receipt_out.parent / "acceptance-junit.xml"
+    head = alembic_head()
+    try:
+        target = target_file.read_text(encoding="utf-8").strip()
+        refuse_real_database(target)
         receipt["server_major"] = server_major(target)
         migrate = subprocess.run(
             [sys.executable, "-m", "alembic", "upgrade", "head"],
@@ -201,13 +252,9 @@ def run(isolation: str, receipt_out: Path) -> int:
             check=False,
         )
         current = current_revision(target)
-        receipt["alembic"] = {
-            "head": head,
-            "current": current,
-            "at_head": current == head,
-        }
+        receipt["alembic"] = {"head": head, "current": current, "at_head": current == head}
         if migrate.returncode != 0 or current != head:
-            print("::error::the throwaway database did not migrate to head", flush=True)
+            _fail(receipt, "the throwaway database did not migrate to head")
         else:
             suite = subprocess.run(
                 [
@@ -227,50 +274,27 @@ def run(isolation: str, receipt_out: Path) -> int:
             )
             counts = junit_counts(junit) if junit.is_file() else {"total": 0}
             receipt["tests"] = {**counts, "pytest_exit_code": suite.returncode}
-            tests_ok = (
-                suite.returncode == 0
-                and bool(counts.get("total"))
-                and not counts.get("failed")
-                and not counts.get("errors")
-            )
-    except (TargetRefused, ThrowawayError, DrillError) as exc:
-        print(f"::error::{exc}", flush=True)
-        receipt["error"] = str(exc)
-    except httpx.HTTPError as exc:
-        print(f"::error::Neon API request failed ({exc.__class__.__name__})", flush=True)
-        receipt["error"] = f"Neon API request failed ({exc.__class__.__name__})"
-    finally:
-        try:
-            receipt["teardown"] = {"status": teardown(isolation, env)}
-        except (TargetRefused, ThrowawayError, httpx.HTTPError) as exc:
-            print(f"::error::teardown: {_describe(exc)}", flush=True)
-            receipt["teardown"] = {"status": "failed", "error": _describe(exc)}
-        receipt["wall_seconds"] = round(time.monotonic() - started, 1)
-        teardown_ok = receipt["teardown"]["status"] != "failed"  # type: ignore[index]
-        receipt["result"] = "pass" if tests_ok and teardown_ok else "fail"
-        receipt_out.write_text(
-            json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-        )
-        _summary(summary_markdown(f"Acceptance on Neon staging ({isolation})", receipt))
-    return 0 if receipt["result"] == "pass" else 1
+    except OSError:
+        _fail(receipt, "no throwaway target was provisioned")
+    except (TargetRefused, DrillError) as exc:
+        _fail(receipt, str(exc))
+    _write_receipt(receipt_out, receipt)
+    return 0 if suite_passed(receipt) else 1
 
 
-def cleanup(isolation: str) -> int:
+def cleanup_step(isolation: str, target_file: Path, receipt_out: Path) -> int:
+    receipt = _read_receipt(receipt_out) or _new_receipt(isolation)
     try:
-        print(json.dumps({"teardown": teardown(isolation, dict(os.environ))}))
+        receipt["teardown"] = {"status": teardown(isolation, dict(os.environ))}
     except (TargetRefused, ThrowawayError, httpx.HTTPError) as exc:
         print(f"::error::teardown: {_describe(exc)}", flush=True)
-        return 1
-    return 0
-
-
-def _describe(exc: Exception) -> str:
-    # httpx messages carry the request URL; the class name is enough.
-    return (
-        f"Neon API request failed ({exc.__class__.__name__})"
-        if isinstance(exc, httpx.HTTPError)
-        else str(exc)
-    )
+        receipt["teardown"] = {"status": "failed", "error": _describe(exc)}
+    target_file.unlink(missing_ok=True)
+    teardown_ok = receipt["teardown"]["status"] != "failed"
+    receipt["result"] = "pass" if suite_passed(receipt) and teardown_ok else "fail"
+    _write_receipt(receipt_out, receipt)
+    _summary(summary_markdown(f"Acceptance on Neon staging ({isolation})", receipt))
+    return 0 if teardown_ok else 1
 
 
 def _summary(text: str) -> None:
@@ -285,19 +309,20 @@ def _summary(text: str) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
     commands = parser.add_subparsers(dest="command", required=True)
-    run_cmd = commands.add_parser(
-        "run", help="provision, migrate, run the suite, tear down, write the receipt"
-    )
-    run_cmd.add_argument("--isolation", choices=ISOLATIONS, required=True)
-    run_cmd.add_argument("--receipt-out", type=Path, required=True)
-    cleanup_cmd = commands.add_parser(
-        "cleanup", help="remove this run's throwaway target if it still exists"
-    )
-    cleanup_cmd.add_argument("--isolation", choices=ISOLATIONS, required=True)
+    provision_cmd = commands.add_parser("provision", help="create the throwaway target")
+    suite_cmd = commands.add_parser("suite", help="migrate the target to head, run the suite")
+    cleanup_cmd = commands.add_parser("cleanup", help="remove the target, finish the receipt")
+    for command in (provision_cmd, cleanup_cmd):
+        command.add_argument("--isolation", choices=ISOLATIONS, required=True)
+    for command in (provision_cmd, suite_cmd, cleanup_cmd):
+        command.add_argument("--target-file", type=Path, required=True)
+        command.add_argument("--receipt-out", type=Path, required=True)
     args = parser.parse_args(argv)
-    if args.command == "run":
-        return run(args.isolation, args.receipt_out)
-    return cleanup(args.isolation)
+    if args.command == "provision":
+        return provision_step(args.isolation, args.target_file, args.receipt_out)
+    if args.command == "suite":
+        return suite_step(args.target_file, args.receipt_out)
+    return cleanup_step(args.isolation, args.target_file, args.receipt_out)
 
 
 if __name__ == "__main__":

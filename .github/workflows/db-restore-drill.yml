@@ -76,6 +76,8 @@ jobs:
           TARGET: ${{ inputs.env }}
         run: |
           if [ -z "$SOURCE_DATABASE_URL" ]; then printf '::error::database secret for %s is not set\n' "$TARGET"; exit 1; fi
+          # Masks the password and host too, for the rest of the job; Python never prints them.
+          bash scripts/staging/mask_db_url.sh SOURCE_DATABASE_URL
           python scripts/staging/restore_drill.py counts --url-env SOURCE_DATABASE_URL --out "$DRILL_DIR/source-before.json" --github-output
       - name: Start a Postgres container of the source's major version
         env:

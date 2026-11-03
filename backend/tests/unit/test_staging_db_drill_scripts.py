@@ -108,37 +108,52 @@ def _fake_suite(monkeypatch, *, pytest_code: int = 0, current: str | None = None
     return calls
 
 
-def test_run_migrates_then_runs_the_suite_then_tears_down(github_env, monkeypatch) -> None:
-    calls = _fake_suite(monkeypatch)
-    receipt_path = github_env / "out" / "receipt.json"
+def _three_steps(directory: Path, isolation: str = "database") -> tuple[int, int, int]:
+    target = directory / "runner-temp" / "acceptance-target"
+    receipt = directory / "out" / "receipt.json"
+    return (
+        acceptance.provision_step(isolation, target, receipt),
+        acceptance.suite_step(target, receipt),
+        acceptance.cleanup_step(isolation, target, receipt),
+    )
 
-    assert acceptance.run("database", receipt_path) == 0
+
+def test_provision_suite_cleanup_pass_and_leave_no_secret_behind(github_env, monkeypatch, capsys) -> None:
+    calls = _fake_suite(monkeypatch)
+    target_file = github_env / "runner-temp" / "acceptance-target"
+
+    assert acceptance.provision_step("database", target_file, github_env / "out" / "receipt.json") == 0
+    assert oct(target_file.stat().st_mode & 0o777) == "0o600"
+    assert acceptance.suite_step(target_file, github_env / "out" / "receipt.json") == 0
+    assert acceptance.cleanup_step("database", target_file, github_env / "out" / "receipt.json") == 0
 
     assert [c[2:4] for c in calls] == [["alembic", "upgrade"], ["pytest", "tests/acceptance"]]
+    assert not target_file.exists()
+    receipt_path = github_env / "out" / "receipt.json"
     receipt = json.loads(receipt_path.read_text())
     assert receipt["result"] == "pass" and receipt["teardown"] == {"status": "dropped"}
+    assert receipt["throwaway"] == "created" and receipt["server_major"] == 15
     assert receipt["tests"]["passed"] == 38 and receipt["alembic"]["at_head"] is True
-    rendered = receipt_path.read_text() + (github_env / "summary.md").read_text()
+    rendered = receipt_path.read_text() + (github_env / "summary.md").read_text() + capsys.readouterr().out
     for secret in ("s3cret-pw", "ep-cool-name-123", "owner"):
         assert secret not in rendered
 
 
-def test_run_fails_on_a_failing_suite(github_env, monkeypatch) -> None:
+def test_a_failing_suite_fails_the_suite_step_and_the_receipt(github_env, monkeypatch) -> None:
     _fake_suite(monkeypatch, pytest_code=1)
-    receipt_path = github_env / "receipt.json"
-    assert acceptance.run("database", receipt_path) == 1
-    assert json.loads(receipt_path.read_text())["result"] == "fail"
+    assert _three_steps(github_env) == (0, 1, 0)
+    assert json.loads((github_env / "out" / "receipt.json").read_text())["result"] == "fail"
 
 
-def test_run_skips_the_suite_when_migration_does_not_reach_head(github_env, monkeypatch) -> None:
+def test_the_suite_is_skipped_when_migration_does_not_reach_head(github_env, monkeypatch) -> None:
     calls = _fake_suite(monkeypatch, current="older")
-    receipt_path = github_env / "receipt.json"
-    assert acceptance.run("database", receipt_path) == 1
+    assert _three_steps(github_env) == (0, 1, 0)
     assert [c[2] for c in calls] == ["alembic"]
-    assert json.loads(receipt_path.read_text())["alembic"]["at_head"] is False
+    receipt = json.loads((github_env / "out" / "receipt.json").read_text())
+    assert receipt["alembic"]["at_head"] is False and receipt["result"] == "fail"
 
 
-def test_run_still_tears_down_and_writes_a_receipt_when_refused(github_env, monkeypatch) -> None:
+def test_a_refused_target_still_tears_down_and_writes_a_receipt(github_env, monkeypatch) -> None:
     torn: list[str] = []
 
     def refuse(isolation, env):
@@ -146,12 +161,30 @@ def test_run_still_tears_down_and_writes_a_receipt_when_refused(github_env, monk
 
     monkeypatch.setattr(acceptance, "provision", refuse)
     monkeypatch.setattr(acceptance, "teardown", lambda isolation, env: torn.append(isolation) or "dropped")
-    receipt_path = github_env / "receipt.json"
 
-    assert acceptance.run("database", receipt_path) == 1
+    assert _three_steps(github_env) == (1, 1, 0)
     assert torn == ["database"]
-    receipt = json.loads(receipt_path.read_text())
+    receipt = json.loads((github_env / "out" / "receipt.json").read_text())
     assert receipt["result"] == "fail" and "patchhive" in receipt["error"]
+
+
+def test_the_suite_step_refuses_a_target_file_naming_patchhive(github_env, monkeypatch) -> None:
+    calls = _fake_suite(monkeypatch)
+    target_file = github_env / "acceptance-target"
+    target_file.write_text(SOURCE)
+    assert acceptance.suite_step(target_file, github_env / "receipt.json") == 1
+    assert calls == []
+
+
+def test_teardown_failure_fails_cleanup(github_env, monkeypatch) -> None:
+    def broken(isolation, env):
+        raise acceptance.ThrowawayError("DROP DATABASE failed (OperationalError, SQLSTATE None)")
+
+    _fake_suite(monkeypatch)
+    monkeypatch.setattr(acceptance, "teardown", broken)
+    assert _three_steps(github_env) == (0, 0, 1)
+    receipt = json.loads((github_env / "out" / "receipt.json").read_text())
+    assert receipt["teardown"]["status"] == "failed" and receipt["result"] == "fail"
 
 
 # restore_drill.py ------------------------------------------------------------------------
@@ -220,9 +253,46 @@ def test_drill_receipt_fails_without_a_dump(tmp_path, restored, monkeypatch) -> 
     assert drill.receipt(directory, "staging", "RESTORED_DATABASE_URL", directory / "receipt.json") == 1
 
 
-def test_drill_masks_the_source_in_actions(monkeypatch, capsys) -> None:
-    monkeypatch.setenv("GITHUB_ACTIONS", "true")
-    monkeypatch.setenv("SOURCE_DATABASE_URL", SOURCE)
-    assert drill._url("SOURCE_DATABASE_URL") == SOURCE
-    masks = capsys.readouterr().out
-    assert "::add-mask::s3cret-pw" in masks and "::add-mask::ep-cool-name-123.us-west-2.aws.neon.tech" in masks
+def test_drill_requires_its_url_variable(monkeypatch) -> None:
+    monkeypatch.delenv("SOURCE_DATABASE_URL", raising=False)
+    with pytest.raises(drill.DrillError, match="SOURCE_DATABASE_URL is not set"):
+        drill._url("SOURCE_DATABASE_URL")
+
+
+# mask_db_url.sh --------------------------------------------------------------------------
+
+
+def _mask(url: str) -> list[str]:
+    completed = subprocess.run(
+        ["bash", str(ROOT / "scripts" / "staging" / "mask_db_url.sh"), "DB_URL"],
+        env={"PATH": os.environ["PATH"], "DB_URL": url},
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return completed.stdout.splitlines()
+
+
+def test_mask_script_masks_url_password_and_host() -> None:
+    url = "postgresql+psycopg2://owner:s3cret-pw@ep-cool-name-123.us-west-2.aws.neon.tech:5432/patchhive?sslmode=require"
+    assert _mask(url) == [
+        f"::add-mask::{url}",
+        "::add-mask::" + url.replace("postgresql+psycopg2://", "postgresql://"),
+        "::add-mask::s3cret-pw",
+        "::add-mask::ep-cool-name-123.us-west-2.aws.neon.tech",
+    ]
+
+
+def test_mask_script_handles_an_at_sign_in_the_password_and_no_port() -> None:
+    lines = _mask("postgresql://owner:p%40ss@word@db.example.com/patchhive")
+    assert "::add-mask::p%40ss@word" in lines and "::add-mask::db.example.com" in lines
+    assert all(line.startswith("::add-mask::") for line in lines)
+
+
+def test_mask_script_prints_nothing_for_an_empty_variable() -> None:
+    assert _mask("") == []
+
+
+def test_python_drill_scripts_never_print_mask_commands() -> None:
+    for name in ("acceptance_staging.py", "restore_drill.py"):
+        assert "add-mask" not in (ROOT / "scripts" / "staging" / name).read_text(encoding="utf-8")

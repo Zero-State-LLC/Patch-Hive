@@ -17,9 +17,7 @@ from core.ops.throwaway_db import (
     ThrowawayError,
     create_database,
     drop_database,
-    libpq_url,
     refuse_real_database,
-    secret_parts,
     throwaway_branch_name,
     throwaway_database_name,
     with_database,
@@ -75,13 +73,10 @@ def test_create_and_drop_refuse_other_names_before_connecting(name: str) -> None
         drop_database(unreachable, name)
 
 
-def test_url_helpers_keep_credentials_and_query() -> None:
+def test_with_database_keeps_credentials_and_query() -> None:
     target = with_database(NEON_URL, "patchhive_acceptance_1_1")
     assert target.endswith("/patchhive_acceptance_1_1?sslmode=require")
     assert "s3cret-pw" in target
-    assert libpq_url("postgresql+psycopg2://u:p@h/db").startswith("postgresql://")
-    parts = secret_parts(NEON_URL)
-    assert "s3cret-pw" in parts and "ep-cool-name-123.us-west-2.aws.neon.tech" in parts and NEON_URL in parts
 
 
 def test_connection_errors_name_the_class_not_the_host() -> None:

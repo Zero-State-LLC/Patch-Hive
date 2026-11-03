@@ -47,6 +47,16 @@ def test_acceptance_staging_is_manual_staging_only_and_cleans_up() -> None:
     steps = {step.get("name"): step for step in job["steps"]}
     cleanup = steps["Remove the throwaway database or branch"]
     assert cleanup["if"] == "always()" and "acceptance_staging.py cleanup" in cleanup["run"]
+    # Connection strings are masked by bash before Python touches them; Python prints none.
+    order = [step.get("name") for step in job["steps"]]
+    assert order.index("Mask the staging connection string's parts") < order.index(
+        "Create the throwaway database or branch"
+    )
+    assert order.index("Create the throwaway database or branch") < order.index(
+        "Mask the throwaway connection string's parts"
+    ) < order.index("Migrate to head and run the suite")
+    assert "mask_db_url.sh TARGET_URL" in steps["Mask the throwaway connection string's parts"]["run"]
+    assert '"$RUNNER_TEMP/acceptance-target"' in steps["Migrate to head and run the suite"]["run"]
     upload = steps["Keep the counts-only receipt"]
     assert upload["with"]["path"] == "acceptance-artifacts/receipt.json"
     assert "set -x" not in text and "echo " not in text
@@ -85,6 +95,8 @@ def test_restore_drill_never_uploads_the_dump_and_checks_head_and_ledger() -> No
     assert "restore_drill.py head" in runs["alembic current on the restored copy is head"]
     assert "python -m alembic current" in runs["alembic current on the restored copy is head"]
     assert "python -m canon.reconcile_all" in runs["Reconcile the ledger on the restored copy"]
+    first_source = runs["Source counts before the dump (read-only)"]
+    assert first_source.index("mask_db_url.sh SOURCE_DATABASE_URL") < first_source.index("restore_drill.py")
     receipt = next(step for step in steps if step.get("name") == "Receipt")
     assert receipt["if"] == "always()"
     # Source secrets reach only the steps that read the source.

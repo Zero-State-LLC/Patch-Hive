@@ -55,20 +55,28 @@ jobs:
             printf '::add-mask::%s\n' "$value"
             printf '%s=%s\n' "$name" "$value" >> "$GITHUB_ENV"
           done
-      - name: Acceptance suite on a throwaway database
+      - name: Mask the staging connection string's parts
+        env:
+          STAGING_SOURCE_URL: ${{ secrets.PATCHHIVE_DATABASE_URL_STAGING }}
+        run: bash scripts/staging/mask_db_url.sh STAGING_SOURCE_URL
+      - name: Create the throwaway database or branch
         env:
           STAGING_SOURCE_URL: ${{ secrets.PATCHHIVE_DATABASE_URL_STAGING }}
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
           NEON_PARENT_BRANCH: staging
-        run: python scripts/staging/acceptance_staging.py run --isolation "$ISOLATION" --receipt-out acceptance-artifacts/receipt.json
+        run: python scripts/staging/acceptance_staging.py provision --isolation "$ISOLATION" --target-file "$RUNNER_TEMP/acceptance-target" --receipt-out acceptance-artifacts/receipt.json
+      - name: Mask the throwaway connection string's parts
+        run: TARGET_URL="$(cat "$RUNNER_TEMP/acceptance-target")" bash scripts/staging/mask_db_url.sh TARGET_URL
+      - name: Migrate to head and run the suite
+        run: python scripts/staging/acceptance_staging.py suite --target-file "$RUNNER_TEMP/acceptance-target" --receipt-out acceptance-artifacts/receipt.json
       - name: Remove the throwaway database or branch
         if: always()
         env:
           STAGING_SOURCE_URL: ${{ secrets.PATCHHIVE_DATABASE_URL_STAGING }}
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
-        run: python scripts/staging/acceptance_staging.py cleanup --isolation "$ISOLATION"
+        run: python scripts/staging/acceptance_staging.py cleanup --isolation "$ISOLATION" --target-file "$RUNNER_TEMP/acceptance-target" --receipt-out acceptance-artifacts/receipt.json
       - name: Keep the counts-only receipt
         if: always()
         uses: actions/upload-artifact@v4
