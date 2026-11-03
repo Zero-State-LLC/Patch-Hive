@@ -140,6 +140,19 @@ def test_fe_scan_separates_legacy_and_canon_callers() -> None:
     assert canon == ("b.tsx",)
 
 
+def test_fe_scan_finds_calls_split_over_lines() -> None:
+    # A formatter puts `rackApi` and `.list(` on separate lines; the builder's legacy
+    # read hid this way from the one-line pattern (a false "no legacy callers").
+    legacy, canon = scan_fe_list_callers(
+        {
+            "builder.tsx": "    rackApi\n      .list({ limit: 50 })\n      .then(() => {})",
+            "racks.tsx": "    canonApi\n      .listRigs({ limit: 50 })",
+        }
+    )
+    assert legacy == ("builder.tsx",)
+    assert canon == ("racks.tsx",)
+
+
 def test_fe_cutover_evidence_links_alias(art) -> None:
     fe = art["fe"]
     assert fe.intact()
