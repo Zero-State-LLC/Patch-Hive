@@ -11,6 +11,10 @@ would hold with no category, when that row's crawled page gives a category.
 
 Built from the committed crawl (hermes-research/maker-crawl-v2.json); no fetches. The
 loader fills nulls only, so a category already stored is never changed.
+
+--list-ambiguous prints the rows still left empty because their tags point to more than
+one category, after every committed overlay (v2 holds the hand-reviewed ones). An overlay
+with a reviewed_by field is hand-made and never overwritten.
 """
 
 from __future__ import annotations
@@ -61,11 +65,13 @@ def classify(tags: list[str], name: str, url: str) -> tuple[str, str] | None:
     return None
 
 
-def planned_catalog(output: Path) -> tuple[dict, dict]:
-    """Catalog and module rows the loader would hold without this overlay."""
+def planned_catalog(output: Path | None) -> tuple[dict, dict]:
+    """Catalog and module rows the loader would hold without this overlay (with every
+    committed overlay when output is None)."""
     import population as P
 
-    output.unlink(missing_ok=True)
+    if output is not None:
+        output.unlink(missing_ok=True)
     catalog: dict = {}
     modules: dict = {}
     P._catalog_state = lambda conn: catalog
@@ -79,10 +85,13 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--crawl", default="maker-crawl-v2.json", help="file under hermes-research/")
     ap.add_argument("--version", type=int, default=1)
+    ap.add_argument("--list-ambiguous", action="store_true", help="print the ambiguous rows; write nothing")
     args = ap.parse_args(argv)
     output = CATALOG / "overlays" / f"module-catalog-category-v{args.version}.json"
+    if not args.list_ambiguous and output.is_file() and json.loads(output.read_text()).get("reviewed_by"):
+        raise SystemExit(f"{output.name} is hand-reviewed; pass a new --version")
     crawl = json.loads((CATALOG / "hermes-research" / args.crawl).read_text())
-    catalog, modules = planned_catalog(output)
+    catalog, modules = planned_catalog(None if args.list_ambiguous else output)
 
     crawled: dict[tuple[str, str], dict] = {}
     for brand in crawl["brands"]:
@@ -107,7 +116,13 @@ def main(argv: list[str] | None = None) -> int:
         url = page.get("source_url") or ""
         result = classify(tags, row["name"], url)
         if result is None:
-            stats["ambiguous" if len(tag_categories(tags)) > 1 else "unclassified"] += 1
+            ambiguous = len(tag_categories(tags)) > 1
+            stats["ambiguous" if ambiguous else "unclassified"] += 1
+            if ambiguous and args.list_ambiguous:
+                print(json.dumps({
+                    "slug": slug, "brand": row["brand"], "name": row["name"], "live": not row.get("tombstoned"),
+                    "categories": sorted(tag_categories(tags)), "tags": tags, "source_url": url,
+                }, ensure_ascii=False))
             continue
         category, basis = result
         entries.append({
@@ -115,6 +130,9 @@ def main(argv: list[str] | None = None) -> int:
             "basis": basis, "tags": tags, "source_url": url, "content_sha256": page.get("content_sha256"),
         })
     stats["entries"] = len(entries)
+    if args.list_ambiguous:
+        print(json.dumps(stats))
+        return 0
     output.write_text(json.dumps({
         "dataset_version": f"module-catalog-category-v{args.version}",
         "generated_from": f"hermes-research/{args.crawl}",
