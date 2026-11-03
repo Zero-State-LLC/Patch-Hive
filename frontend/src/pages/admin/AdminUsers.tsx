@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import LoadFailure from "@/components/LoadFailure";
 import { adminApi } from "@/lib/api";
 import type { AdminUser } from "@/types/admin";
 import { AdminGuard } from "./AdminGuard";
@@ -10,10 +11,17 @@ export default function AdminUsers() {
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [reasonByUser, setReasonByUser] = useState<Record<number, string>>({});
+  const [loadError, setLoadError] = useState<unknown>(null);
 
   const fetchUsers = async () => {
-    const response = await adminApi.listUsers(query || undefined);
-    setUsers(response.data.users);
+    setLoadError(null);
+    try {
+      const response = await adminApi.listUsers(query || undefined);
+      setUsers(response.data.users);
+    } catch (err: unknown) {
+      setUsers([]);
+      setLoadError(err);
+    }
   };
 
   useEffect(() => {
@@ -132,6 +140,8 @@ export default function AdminUsers() {
               </tbody>
             </table>
           </div>
+        ) : loadError ? (
+          <LoadFailure what="The user list" error={loadError} onRetry={() => void fetchUsers()} />
         ) : (
           <div className="screen-state">
             <p className="status status-warning">No users match this search.</p>

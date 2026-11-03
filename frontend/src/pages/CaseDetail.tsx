@@ -4,6 +4,7 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { caseCatalogApi } from "@/lib/api";
+import { failureReason } from "@/lib/loadError";
 
 type LoadState = "loading" | "ready" | "error" | "missing";
 
@@ -61,28 +62,37 @@ export default function CaseDetailPage() {
   const [detail, setDetail] = useState<CatalogDetail | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [loadError, setLoadError] = useState<unknown>(null);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (!slug) {
       setState("missing");
       return;
     }
+    let current = true;
     setState("loading");
+    setLoadError(null);
     caseCatalogApi
       .get(slug)
       .then((res) => {
+        if (!current) return;
         setDetail(res.data as CatalogDetail);
         setState("ready");
       })
       .catch((err) => {
-        const status = err?.response?.status;
-        if (status === 404) setState("missing");
-        else {
-          setError("Unable to load catalog case.");
+        if (!current) return;
+        if (err?.response?.status === 404) {
+          setState("missing");
+        } else {
+          setLoadError(err);
           setState("error");
         }
       });
-  }, [slug]);
+    return () => {
+      current = false;
+    };
+  }, [slug, attempt]);
 
   const materializeAndOpen = async () => {
     if (!detail || !canPlace(detail.format_family)) return;
@@ -124,11 +134,25 @@ export default function CaseDetailPage() {
 
   if (state === "error" || !detail) {
     return (
-      <section className="panel" role="alert">
-        <p className="status status-danger">{error || "Error"}</p>
-        <Link className="button button-secondary" to="/cases">
-          Back to cases
-        </Link>
+      <section className="screen-state" aria-labelledby="case-error-title">
+        <h1 id="case-error-title" className="empty-title">
+          Couldn&apos;t load this case.
+        </h1>
+        <p className="status status-danger" role="alert">
+          {failureReason(loadError)}
+        </p>
+        <div className="screen-state-actions">
+          <button
+            className="button button-primary"
+            type="button"
+            onClick={() => setAttempt((n) => n + 1)}
+          >
+            Retry
+          </button>
+          <Link className="button button-secondary" to="/cases">
+            Back to cases
+          </Link>
+        </div>
       </section>
     );
   }

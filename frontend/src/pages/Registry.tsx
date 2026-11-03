@@ -4,12 +4,17 @@
  */
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import LoadFailure from "@/components/LoadFailure";
 import { ListSkeleton, ReadoutSkeleton } from "@/components/Skeletons";
 import { registryApi } from "@/lib/api";
+import { isCancelled } from "@/lib/loadError";
+import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import type { DeviceModel, Manufacturer, RegistryCoverage } from "@/types/api";
 
 interface SelectedMan extends Manufacturer {
   models?: DeviceModel[];
+  /** Why its detail or models didn't load, if they didn't. */
+  failure?: unknown;
 }
 
 export default function RegistryPage() {
@@ -21,17 +26,54 @@ export default function RegistryPage() {
   );
   const [selected, setSelected] = useState<SelectedMan | null>(null);
   const [loading, setLoading] = useState(true);
+  const [listError, setListError] = useState<unknown>(null);
+  const [attempt, setAttempt] = useState(0);
   const [searchResults, setSearchResults] = useState<DeviceModel[]>([]);
+  const [searchError, setSearchError] = useState<unknown>(null);
+  const [searchAttempt, setSearchAttempt] = useState(0);
+  const searchTerm = useDebouncedValue(query.trim());
 
   useEffect(() => {
+    let current = true;
+    setLoading(true);
+    setListError(null);
     Promise.all([registryApi.listManufacturers({ limit: 200 }), registryApi.getCoverage()])
       .then(([mans, cov]) => {
+        if (!current) return;
         setManufacturers(mans.data.items.slice(0, 200));
         setCoverage(cov.data);
       })
-      .catch(() => undefined)
-      .finally(() => setLoading(false));
-  }, []);
+      .catch((err: unknown) => {
+        if (current) setListError(err);
+      })
+      .finally(() => {
+        if (current) setLoading(false);
+      });
+    return () => {
+      current = false;
+    };
+  }, [attempt]);
+
+  // Model search asks once the typing pauses, and a newer search cancels the one before it.
+  useEffect(() => {
+    setSearchError(null);
+    if (!searchTerm) {
+      setSearchResults([]);
+      return;
+    }
+    const controller = new AbortController();
+    registryApi
+      .search(searchTerm, 8, { signal: controller.signal })
+      .then((res) => {
+        if (!controller.signal.aborted) setSearchResults(res.data.results || []);
+      })
+      .catch((err: unknown) => {
+        if (controller.signal.aborted || isCancelled(err)) return;
+        setSearchResults([]);
+        setSearchError(err);
+      });
+    return () => controller.abort();
+  }, [searchTerm, searchAttempt]);
 
   const manLabel = (m: Manufacturer) => m.name || m.slug;
 
@@ -44,19 +86,6 @@ export default function RegistryPage() {
     );
   });
 
-  const onSearch = async (q: string) => {
-    if (!q) {
-      setSearchResults([]);
-      return;
-    }
-    try {
-      const res = await registryApi.search(q, 8);
-      setSearchResults(res.data.results || []);
-    } catch {
-      setSearchResults([]);
-    }
-  };
-
   const selectMan = async (m: Manufacturer) => {
     try {
       const [detail, models] = await Promise.all([
@@ -64,8 +93,8 @@ export default function RegistryPage() {
         registryApi.listModelsForManufacturer(m.slug),
       ]);
       setSelected({ ...detail.data, models: models.data.models });
-    } catch {
-      setSelected({ ...m, models: [] });
+    } catch (err: unknown) {
+      setSelected({ ...m, models: [], failure: err });
     }
   };
 
@@ -82,13 +111,18 @@ export default function RegistryPage() {
             className="input"
             placeholder="Search manufacturers or models…"
             value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              void onSearch(e.target.value);
-            }}
+            onChange={(e) => setQuery(e.target.value)}
           />
         </label>
       </header>
+
+      {searchError ? (
+        <LoadFailure
+          what="Model search"
+          error={searchError}
+          onRetry={() => setSearchAttempt((n) => n + 1)}
+        />
+      ) : null}
 
       {searchResults.length > 0 ? (
         <div className="panel">
@@ -110,7 +144,7 @@ export default function RegistryPage() {
         <aside className="split-aside" aria-label="Manufacturers">
           <div className="split-aside-head">
             <h2>Manufacturers</h2>
-            {loading ? null : (
+            {loading || listError ? null : (
               <span className="muted registry-count">
                 {filtered.length} of {coverage?.total_manufacturers || manufacturers.length}
               </span>
@@ -119,6 +153,12 @@ export default function RegistryPage() {
           <div className="side-list">
             {loading ? (
               <ListSkeleton label="Loading Product Database…" rows={8} />
+            ) : listError ? (
+              <LoadFailure
+                what="The manufacturer list"
+                error={listError}
+                onRetry={() => setAttempt((n) => n + 1)}
+              />
             ) : filtered.length === 0 ? (
               <p className="muted">No matches.</p>
             ) : (
@@ -147,6 +187,8 @@ export default function RegistryPage() {
                   <dd>
                     {loading ? (
                       <ReadoutSkeleton />
+                    ) : listError ? (
+                      "Not loaded"
                     ) : (
                       coverage?.total_manufacturers || manufacturers.length
                     )}
@@ -154,7 +196,15 @@ export default function RegistryPage() {
                 </div>
                 <div>
                   <dt>Models</dt>
-                  <dd>{loading ? <ReadoutSkeleton /> : coverage?.total_models || 0}</dd>
+                  <dd>
+                    {loading ? (
+                      <ReadoutSkeleton />
+                    ) : listError ? (
+                      "Not loaded"
+                    ) : (
+                      coverage?.total_models || 0
+                    )}
+                  </dd>
                 </div>
               </dl>
               <p className="muted">Select a manufacturer to inspect registry detail.</p>
@@ -182,7 +232,13 @@ export default function RegistryPage() {
                 ) : null}
               </dl>
               <h3>Models (sample)</h3>
-              {(selected.models || []).length === 0 ? (
+              {selected.failure ? (
+                <LoadFailure
+                  what={`${manLabel(selected)}'s models`}
+                  error={selected.failure}
+                  onRetry={() => void selectMan(selected)}
+                />
+              ) : (selected.models || []).length === 0 ? (
                 <p className="muted">No models loaded for this manufacturer yet.</p>
               ) : (
                 <ul className="registry-model-list">

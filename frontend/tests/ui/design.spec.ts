@@ -502,6 +502,43 @@ for (const theme of ["dark", "light"] as const) {
   }
 }
 
+/** Every screen that reads data, reached signed in while the rest of the API is unreachable. */
+const API_DOWN: { path: string; name: string }[] = [
+  { path: "/racks", name: "rigs" },
+  { path: "/rigs/1", name: "rig detail" },
+  { path: "/rigs/1/patches/501", name: "patch detail" },
+  { path: "/rigs/1/patchbook-studio", name: "style studio" },
+  { path: "/racks/new", name: "rig builder, new" },
+  { path: "/racks/1/edit", name: "rig builder, placement" },
+  { path: "/modules", name: "modules" },
+  { path: "/cases", name: "cases" },
+  { path: `/cases/${CASE_DETAIL.slug}`, name: "case detail" },
+  { path: "/products", name: "products" },
+  { path: "/patches", name: "patches" },
+  { path: "/account", name: "account" },
+  { path: "/admin/users", name: "ops users" },
+];
+
+test.describe("API down", () => {
+  for (const screen of API_DOWN) {
+    test(`${screen.name} says it didn't load`, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      // The session restores (the newest routes win), then every other call fails as an
+      // unreachable server would.
+      await page.route("**/api/**", (route) => route.abort("connectionrefused"));
+      await page.route("**/api/community/auth/refresh", (route) =>
+        route.fulfill(json({ access_token: "design-token", token_type: "bearer", user: ADMIN })),
+      );
+      await page.route("**/api/community/users/me", (route) => route.fulfill(json(ADMIN)));
+      await arrive(page, { ...screen, signedIn: true });
+
+      await expect(page.getByRole("alert").first()).toBeVisible();
+      await expect(page.locator(".skeleton")).toHaveCount(0);
+      expect(await axeViolations(page), "axe violations").toEqual([]);
+    });
+  }
+});
+
 test.describe("theme memory", () => {
   test("a remembered light theme applies before the app loads", async ({ page }) => {
     await page.addInitScript(() => window.localStorage.setItem("patchhive-theme", "light"));

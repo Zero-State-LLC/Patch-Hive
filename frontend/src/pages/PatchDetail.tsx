@@ -9,6 +9,7 @@ import PatchRail from "@/components/PatchRail";
 import { RailSkeleton } from "@/components/Skeletons";
 import { canonApi, patchApi } from "@/lib/api";
 import { rigDetailToRack } from "@/lib/canonRigAdapter";
+import { failureReason } from "@/lib/loadError";
 import { patchName } from "@/lib/patchName";
 import type { Patch, Rack } from "@/types/api";
 import { difficultyFromConnections } from "./racksPageUtils";
@@ -23,6 +24,7 @@ export default function PatchDetailPage() {
   const [patch, setPatch] = useState<Patch | null>(null);
   const [rig, setRig] = useState<Rack | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const [failure, setFailure] = useState<unknown>(null);
 
   useEffect(() => {
     if (!patchIdNum || !rigIdNum) {
@@ -39,6 +41,7 @@ export default function PatchDetailPage() {
           const status = (patchResult.reason as { response?: { status?: number } })?.response
             ?.status;
           setState(status === 404 ? "missing" : "error");
+          setFailure(patchResult.reason);
           return;
         }
         setPatch(patchResult.value.data);
@@ -63,9 +66,14 @@ export default function PatchDetailPage() {
   if (state !== "ready" || !patch) {
     return (
       <section className="screen-state" aria-labelledby="patch-missing">
-        <p id="patch-missing" className="empty-title">
+        <h1 id="patch-missing" className="empty-title">
           {state === "error" ? "Couldn't load this patch." : "No patch here."}
-        </p>
+        </h1>
+        {state === "error" ? (
+          <p className="status status-danger" role="alert">
+            {failureReason(failure)}
+          </p>
+        ) : null}
         {state === "error" ? (
           <button
             className="button button-primary"

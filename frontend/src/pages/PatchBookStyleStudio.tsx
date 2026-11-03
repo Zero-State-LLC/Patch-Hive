@@ -5,7 +5,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import Hash from "@/components/Hash";
+import LoadFailure from "@/components/LoadFailure";
 import { canonApi } from "@/lib/api";
+import { failureKind } from "@/lib/loadError";
 import { shortHash } from "@/lib/format";
 import { useAuthStore } from "@/lib/store";
 import {
@@ -112,6 +114,7 @@ export default function PatchBookStyleStudioPage() {
     }>;
   } | null>(null);
   const [serverLibrary, setServerLibrary] = useState<ServerRecipe[]>([]);
+  const [libraryError, setLibraryError] = useState<unknown>(null);
   const [recipeName, setRecipeName] = useState("");
   const [libraryBusy, setLibraryBusy] = useState(false);
   const [lastExportId, setLastExportId] = useState<string | null>(null);
@@ -150,12 +153,14 @@ export default function PatchBookStyleStudioPage() {
   };
 
   const refreshServerLibrary = useCallback(async () => {
+    setLibraryError(null);
     try {
       const res = await canonApi.listStyleRecipes();
       setServerLibrary(res.data);
-    } catch {
-      // Library endpoints may 401 when signed out: keep empty
+    } catch (err: unknown) {
       setServerLibrary([]);
+      // Signed out, the library is refused and simply empty; any other failure is shown.
+      if (failureKind(err) !== "denied") setLibraryError(err);
     }
   }, []);
 
@@ -471,7 +476,13 @@ export default function PatchBookStyleStudioPage() {
                 Save to account
               </button>
             </div>
-            {serverLibrary.length === 0 ? (
+            {libraryError ? (
+              <LoadFailure
+                what="Your saved recipes"
+                error={libraryError}
+                onRetry={() => void refreshServerLibrary()}
+              />
+            ) : serverLibrary.length === 0 ? (
               <p className="muted">No server recipes yet (sign in required).</p>
             ) : (
               <ul className="studio-library">

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import Hash from "@/components/Hash";
+import LoadFailure from "@/components/LoadFailure";
 import PatchOverlay from "@/components/PatchOverlay";
 import PatchRail from "@/components/PatchRail";
 import RigRail from "@/components/RigRail";
@@ -66,7 +67,13 @@ export default function RigDetailPage() {
   const [activeRevisionId, setActiveRevisionId] = useState<string | null>(null);
   const [activeRunId, setActiveRunId] = useState<number | null>(null);
   const [patches, setPatches] = useState<Patch[]>([]);
-  const [credits, setCredits] = useState(0);
+  // Null until the balance arrives, so a balance that didn't load never reads as 0 credits.
+  const [credits, setCredits] = useState<number | null>(null);
+  const [creditsError, setCreditsError] = useState<unknown>(null);
+  const [runsError, setRunsError] = useState<unknown>(null);
+  const [runsAttempt, setRunsAttempt] = useState(0);
+  const [patchesError, setPatchesError] = useState<unknown>(null);
+  const [patchesAttempt, setPatchesAttempt] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
@@ -131,39 +138,49 @@ export default function RigDetailPage() {
 
   useEffect(() => {
     if (!rigIdNum) return;
+    let current = true;
     setInventoryError("");
     evidenceApi
       .listInventory(rigIdNum)
-      .then((res) => setLatestInventory(res.data.latest ?? null))
+      .then((res) => {
+        if (current) setLatestInventory(res.data.latest ?? null);
+      })
       .catch(() => {
+        if (!current) return;
         setLatestInventory(null);
         setInventoryError("Inventory receipt unavailable.");
       });
+    return () => {
+      current = false;
+    };
   }, [rigIdNum]);
 
   useEffect(() => {
     if (!rigIdNum) return;
+    let current = true;
     setLoading(true);
+    setRunsError(null);
     // Load runs and revisions independently so a missing revisions route
     // cannot blank the whole workspace (tabs depend on hasRuns).
-    const runsPromise = canonApi.listRuns(rigIdNum).then((response) => {
-      const ordered = [...response.data.runs].sort(
-        (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at),
+    const runsPromise = canonApi
+      .listRuns(rigIdNum)
+      .then((response) =>
+        [...response.data.runs].sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)),
       );
-      setRuns(ordered);
-      return ordered;
-    });
-    const revsPromise = canonApi.listRevisions(rigIdNum).then((response) => {
-      const revs = response.data.revisions ?? [];
-      setRevisions(revs);
-      return revs;
-    });
+    const revsPromise = canonApi
+      .listRevisions(rigIdNum)
+      .then((response) => response.data.revisions ?? []);
     Promise.allSettled([runsPromise, revsPromise])
       .then((results) => {
+        if (!current) return;
         const ordered = results[0].status === "fulfilled" ? results[0].value : [];
         const revs = results[1].status === "fulfilled" ? results[1].value : [];
-        if (results[0].status !== "fulfilled") setRuns([]);
-        if (results[1].status !== "fulfilled") {
+        setRuns(ordered);
+        // Runs that didn't load are a failure to show, not a rig with no runs yet.
+        setRunsError(results[0].status === "rejected" ? results[0].reason : null);
+        if (results[1].status === "fulfilled") {
+          setRevisions(revs);
+        } else {
           // Derive revision options from run bridge fields when API absent.
           const derived: RigRevision[] = [];
           const seen = new Set<string>();
@@ -186,34 +203,54 @@ export default function RigDetailPage() {
           ordered.find((r) => r.rig_revision_id === firstRev)?.id ?? ordered[0]?.id ?? null;
         setActiveRunId(firstRun);
       })
-      .finally(() => setLoading(false));
-  }, [rigIdNum]);
+      .finally(() => {
+        if (current) setLoading(false);
+      });
+    return () => {
+      current = false;
+    };
+  }, [rigIdNum, runsAttempt]);
 
   useEffect(() => {
+    setPatchesError(null);
     if (!activeRun?.id) {
       setPatches([]);
       return;
     }
+    let current = true;
     setPatchesLoading(true);
     runApi
       .patches(activeRun.id)
       .then((response) => {
-        setPatches(response.data.patches ?? []);
+        if (current) setPatches(response.data.patches ?? []);
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        if (!current) return;
         setPatches([]);
+        setPatchesError(err);
       })
-      .finally(() => setPatchesLoading(false));
-  }, [activeRun?.id]);
+      .finally(() => {
+        if (current) setPatchesLoading(false);
+      });
+    return () => {
+      current = false;
+    };
+  }, [activeRun?.id, patchesAttempt]);
 
+  // Credits belong to an account, so a signed-out visitor is asked to sign in instead.
   const refreshCredits = () => {
+    if (!signedIn) return;
+    setCreditsError(null);
     canonApi
       .getBalance()
       .then((response) => setCredits(response.data.balance))
-      .catch(() => setCredits(0));
+      .catch((err: unknown) => {
+        setCredits(null);
+        setCreditsError(err);
+      });
   };
 
-  useEffect(refreshCredits, []);
+  useEffect(refreshCredits, [signedIn]);
 
   const handleRevisionChange = (revisionId: string) => {
     setActiveRevisionId(revisionId);
@@ -338,14 +375,24 @@ export default function RigDetailPage() {
     },
     {
       title: "Generate patches",
-      state: hasRuns ? `${runs.length} run${runs.length === 1 ? "" : "s"}` : "No runs yet",
+      state: runsError
+        ? "Runs didn't load"
+        : hasRuns
+          ? `${runs.length} run${runs.length === 1 ? "" : "s"}`
+          : "No runs yet",
       detail: "Uses confirmed modules only. With none confirmed, nothing can be generated.",
     },
     {
       title: "Review and export",
-      state: hasRuns
-        ? `${credits} credit${credits === 1 ? "" : "s"} available`
-        : "After the first run",
+      state: !hasRuns
+        ? "After the first run"
+        : !signedIn
+          ? "Sign in to export"
+          : credits == null
+            ? creditsError
+              ? "Balance didn't load"
+              : "Checking your balance"
+            : `${credits} credit${credits === 1 ? "" : "s"} available`,
       detail: "Review the patches, then export. Only exports cost credits.",
     },
   ];
@@ -442,9 +489,11 @@ export default function RigDetailPage() {
           <div className="rig-tabpanel__head">
             <h2>{hasRuns ? "Rig ready" : "Build the source of truth"}</h2>
             <p className="muted">
-              {hasRuns
-                ? `${revisions.length} revision${revisions.length === 1 ? "" : "s"}, ${runs.length} generation run${runs.length === 1 ? "" : "s"}.`
-                : "Add modules manually or review photo evidence before generating."}
+              {runsError
+                ? "Its revisions and runs are unknown until they load."
+                : hasRuns
+                  ? `${revisions.length} revision${revisions.length === 1 ? "" : "s"}, ${runs.length} generation run${runs.length === 1 ? "" : "s"}.`
+                  : "Add modules manually or review photo evidence before generating."}
             </p>
             {activeRevisionId ? (
               <p className="muted">
@@ -453,6 +502,14 @@ export default function RigDetailPage() {
               </p>
             ) : null}
           </div>
+
+          {runsError ? (
+            <LoadFailure
+              what="This rig's runs"
+              error={runsError}
+              onRetry={() => setRunsAttempt((n) => n + 1)}
+            />
+          ) : null}
 
           <ol
             className="signal-chain"
@@ -591,7 +648,14 @@ export default function RigDetailPage() {
             </p>
           </div>
           {patchesLoading ? <ListSkeleton label="Loading patches…" rows={3} /> : null}
-          {!patchesLoading && patches.length === 0 ? (
+          {patchesError ? (
+            <LoadFailure
+              what="This run's patches"
+              error={patchesError}
+              onRetry={() => setPatchesAttempt((n) => n + 1)}
+            />
+          ) : null}
+          {!patchesLoading && !patchesError && patches.length === 0 ? (
             <p className="status status-warning">No patches for this run.</p>
           ) : null}
           <div className="split-workspace">
@@ -645,19 +709,24 @@ export default function RigDetailPage() {
               {activeRun ? <Hash value={activeRun.rig_revision_id} /> : "none"}.
             </p>
           </div>
-          <dl className="readout">
-            <div>
-              <dt>Available credits</dt>
-              <dd>{credits}</dd>
-            </div>
-          </dl>
+          {signedIn ? (
+            <dl className="readout">
+              <div>
+                <dt>Available credits</dt>
+                <dd>{credits ?? "Not loaded"}</dd>
+              </div>
+            </dl>
+          ) : null}
+          {creditsError ? (
+            <LoadFailure what="Your credit balance" error={creditsError} onRetry={refreshCredits} />
+          ) : null}
           <div className="rig-export-actions">
             <div className="page-hero-actions">
               <button
                 className="button button-primary"
                 type="button"
                 onClick={handleExport}
-                disabled={credits <= 0 || exporting || !activeRun}
+                disabled={credits == null || credits <= 0 || exporting || !activeRun}
               >
                 {exporting ? "Requesting…" : "Export PDF patch book"}
               </button>
@@ -670,7 +739,9 @@ export default function RigDetailPage() {
                 </Link>
               ) : null}
             </div>
-            {credits <= 0 ? (
+            {!signedIn ? (
+              <p className="status status-warning">Sign in to export. Only exports cost credits.</p>
+            ) : credits != null && credits <= 0 ? (
               <p className="status status-warning">Credits are required only for exports.</p>
             ) : null}
           </div>

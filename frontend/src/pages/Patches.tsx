@@ -1,8 +1,10 @@
 /**
  * Patches list — browse generated patches with loading / empty / error parity.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import LoadFailure from "@/components/LoadFailure";
+import ShowMore from "@/components/ShowMore";
 import { ListSkeleton } from "@/components/Skeletons";
 import { patchApi } from "@/lib/api";
 import { patchName } from "@/lib/patchName";
@@ -10,30 +12,61 @@ import type { Patch } from "@/types/api";
 
 type LoadState = "loading" | "ready" | "empty" | "error";
 
+const PAGE_SIZE = 100;
+
 export default function PatchesPage() {
   const [patches, setPatches] = useState<Patch[]>([]);
   const [total, setTotal] = useState(0);
   const [state, setState] = useState<LoadState>("loading");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<unknown>(null);
   const [category, setCategory] = useState("");
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [moreError, setMoreError] = useState<unknown>(null);
+  // Only the latest request may update the list, so a slow answer for an earlier filter
+  // cannot replace the one chosen after it.
+  const request = useRef(0);
 
   const load = async () => {
+    const mine = ++request.current;
     setState("loading");
-    setError("");
+    setError(null);
+    setMoreError(null);
     try {
       const response = await patchApi.list({
-        limit: 100,
+        limit: PAGE_SIZE,
         category: category || undefined,
       });
+      if (mine !== request.current) return;
       const rows = response.data.patches ?? [];
       setPatches(rows);
       setTotal(response.data.total ?? rows.length);
       setState(rows.length === 0 ? "empty" : "ready");
-    } catch {
+    } catch (err: unknown) {
+      if (mine !== request.current) return;
       setPatches([]);
       setTotal(0);
-      setError("Unable to load patches. Generate a run from a rig, then refresh.");
+      setError(err);
       setState("error");
+    }
+  };
+
+  const loadMore = async () => {
+    const mine = request.current;
+    setLoadingMore(true);
+    setMoreError(null);
+    try {
+      const response = await patchApi.list({
+        skip: patches.length,
+        limit: PAGE_SIZE,
+        category: category || undefined,
+      });
+      if (mine !== request.current) return;
+      setPatches((shown) => [...shown, ...(response.data.patches ?? [])]);
+      if (response.data.total != null) setTotal(response.data.total);
+    } catch (err: unknown) {
+      if (mine === request.current) setMoreError(err);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -78,17 +111,7 @@ export default function PatchesPage() {
       {state === "loading" ? <ListSkeleton label="Loading patches…" rows={5} /> : null}
 
       {state === "error" ? (
-        <div className="panel" role="alert">
-          <p className="status status-danger">{error}</p>
-          <div className="page-hero-actions">
-            <button className="button button-primary" type="button" onClick={() => void load()}>
-              Retry
-            </button>
-            <Link className="button button-quiet" to="/racks">
-              Open rigs
-            </Link>
-          </div>
-        </div>
+        <LoadFailure what="Patches" error={error} onRetry={() => void load()} />
       ) : null}
 
       {state === "empty" ? (
@@ -151,6 +174,14 @@ export default function PatchesPage() {
               </li>
             ))}
           </ul>
+          <ShowMore
+            shown={patches.length}
+            total={total}
+            noun="patches"
+            loading={loadingMore}
+            error={moreError}
+            onMore={() => void loadMore()}
+          />
         </>
       ) : null}
     </section>

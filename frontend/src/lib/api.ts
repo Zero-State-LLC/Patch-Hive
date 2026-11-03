@@ -1,7 +1,7 @@
 /**
  * API client for PatchHive backend.
  */
-import axios, { type InternalAxiosRequestConfig } from "axios";
+import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from "axios";
 import type {
   CatalogMaterializeResponse,
   CatalogModuleListResponse,
@@ -49,6 +49,8 @@ import { useAuthStore } from "./store";
 const api = axios.create({
   // No API in this build: requests fail fast instead of reaching for localhost.
   baseURL: API_BASE_URL ?? "/__no_api__",
+  // A request that hangs ends as a failure the page can show, instead of a skeleton forever.
+  timeout: 15_000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -68,7 +70,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(undefined, async (error) => {
   const config = error?.config as (InternalAxiosRequestConfig & { _renewed?: boolean }) | undefined;
   const url = config?.url ?? "";
-  if (error?.response?.status !== 401 || !config || config._renewed || url.startsWith("/community/auth/")) {
+  if (
+    error?.response?.status !== 401 ||
+    !config ||
+    config._renewed ||
+    url.startsWith("/community/auth/")
+  ) {
     throw error;
   }
   config._renewed = true;
@@ -91,20 +98,23 @@ export const moduleApi = {
   }) => api.get<ModuleListResponse>("/modules/", { params }),
 
   /** Lightweight research/curated catalog browse (module_catalog table). */
-  catalog: (params?: {
-    skip?: number;
-    limit?: number;
-    search?: string;
-    brand?: string;
-    category?: string;
-    hp_min?: number;
-    hp_max?: number;
-    hp_known?: boolean;
-    is_available?: string;
-    source?: string;
-    sort_by?: string;
-    sort_order?: string;
-  }) => api.get<CatalogModuleListResponse>("/modules/catalog", { params }),
+  catalog: (
+    params?: {
+      skip?: number;
+      limit?: number;
+      search?: string;
+      brand?: string;
+      category?: string;
+      hp_min?: number;
+      hp_max?: number;
+      hp_known?: boolean;
+      is_available?: string;
+      source?: string;
+      sort_by?: string;
+      sort_order?: string;
+    },
+    config?: Pick<AxiosRequestConfig, "signal">,
+  ) => api.get<CatalogModuleListResponse>("/modules/catalog", { ...config, params }),
 
   catalogStats: () => api.get<CatalogModuleStats>("/modules/catalog/stats"),
 
@@ -828,8 +838,8 @@ export const accountApi = {
 export const registryApi = {
   listManufacturers: (params?: { limit?: number; offset?: number }) =>
     api.get<RegistryManufacturerList>("/registry/manufacturers", { params }),
-  search: (q: string, limit = 20) =>
-    api.get<RegistrySearchResult>("/registry/search", { params: { q, limit } }),
+  search: (q: string, limit = 20, config?: Pick<AxiosRequestConfig, "signal">) =>
+    api.get<RegistrySearchResult>("/registry/search", { ...config, params: { q, limit } }),
   getCoverage: () => api.get<RegistryCoverage>("/registry/coverage"),
   getManufacturer: (slug: string) => api.get<Manufacturer>(`/registry/manufacturers/${slug}`),
   listModelsForManufacturer: (slug: string) =>
