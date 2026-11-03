@@ -3,6 +3,7 @@
  * create the empty rig. The create controls appear once a case is chosen.
  */
 import { Link } from "react-router-dom";
+import LoadFailure from "@/components/LoadFailure";
 import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 import type { Case, CatalogCaseListItem } from "@/types/api";
 
@@ -11,6 +12,9 @@ interface CaseStepProps {
   caseQuery: string;
   onCaseQuery: (q: string) => void;
   casesLoading: boolean;
+  /** Why the case lists didn't load, if neither did. */
+  casesError: unknown;
+  onRetryCases: () => void;
   catalogCases: CatalogCaseListItem[];
   legacyCases: Case[];
   selectedCatalogSlug: string | null;
@@ -51,6 +55,8 @@ export default function CaseStep({
   caseQuery,
   onCaseQuery,
   casesLoading,
+  casesError,
+  onRetryCases,
   catalogCases,
   legacyCases,
   selectedCatalogSlug,
@@ -180,7 +186,9 @@ export default function CaseStep({
             </div>
           ) : null}
           {compatNote ? <p className="muted builder-note">{compatNote}</p> : null}
-          {!casesLoading && catalogCases.length === 0 && legacyCases.length === 0 ? (
+          {!casesLoading && casesError ? (
+            <LoadFailure what="The case list" error={casesError} onRetry={onRetryCases} />
+          ) : !casesLoading && catalogCases.length === 0 && legacyCases.length === 0 ? (
             <p className="status status-warning">
               No Eurorack cases available.{" "}
               {import.meta.env.DEV ? (

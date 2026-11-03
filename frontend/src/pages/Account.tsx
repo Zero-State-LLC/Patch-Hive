@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ListSkeleton, ReadoutSkeleton } from "@/components/Skeletons";
 import Hash from "@/components/Hash";
+import LoadFailure from "@/components/LoadFailure";
 import { accountApi, authApi, canonApi } from "@/lib/api";
 import { formatDateTime } from "@/lib/format";
 import { useAuthStore } from "@/lib/store";
@@ -35,6 +36,14 @@ export default function AccountPage() {
   const [tokenBusy, setTokenBusy] = useState<string | null>(null);
   const [tokenMessage, setTokenMessage] = useState("");
   const [loading, setLoading] = useState(() => isAuthenticated());
+  // Each part fails on its own, so one that didn't load never reads as an empty one.
+  const [failures, setFailures] = useState<{
+    credits?: unknown;
+    exports?: unknown;
+    profile?: unknown;
+  }>({});
+  const [attempt, setAttempt] = useState(0);
+  const retry = () => setAttempt((n) => n + 1);
 
   const safeAvatarUrl = useMemo(() => safeHttpUrl(avatarUrl.trim()), [avatarUrl]);
 
@@ -45,36 +54,52 @@ export default function AccountPage() {
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
+    if (!isAuthenticated()) return;
+    let current = true;
     const loadDashboard = async () => {
-      const [creditsRes, exportsRes, profileRes] = await Promise.all([
+      const [creditsRes, exportsRes, profileRes] = await Promise.allSettled([
         accountApi.getCredits(),
         accountApi.getExports(),
         authApi.getMe(),
       ]);
-      setCredits(creditsRes.data);
-      setExports(exportsRes.data as UserExportRecord[]);
-      setProfile(profileRes.data);
-      setDisplayName(profileRes.data.display_name || profileRes.data.username);
-      setAvatarUrl(profileRes.data.avatar_url || "");
-      setUser(profileRes.data);
+      if (!current) return;
+      const failed: typeof failures = {};
+      if (creditsRes.status === "fulfilled") {
+        setCredits(creditsRes.value.data);
+      } else {
+        failed.credits = creditsRes.reason;
+      }
+      if (exportsRes.status === "fulfilled") {
+        setExports(exportsRes.value.data as UserExportRecord[]);
+      } else {
+        failed.exports = exportsRes.reason;
+      }
+      if (profileRes.status === "fulfilled") {
+        const me = profileRes.value.data;
+        setProfile(me);
+        setDisplayName(me.display_name || me.username);
+        setAvatarUrl(me.avatar_url || "");
+        setUser(me);
+      } else {
+        failed.profile = profileRes.reason;
+      }
+      setFailures(failed);
+      setLoading(false);
 
       try {
         const referralsRes = await accountApi.getReferrals();
-        setReferrals(referralsRes.data);
+        if (current) setReferrals(referralsRes.data);
       } catch {
-        setReferrals(null);
+        if (current) setReferrals(null);
       }
     };
 
-    if (isAuthenticated()) {
-      setLoading(true);
-      loadDashboard()
-        .catch(() => {
-          /* keep empty dashboard on failure */
-        })
-        .finally(() => setLoading(false));
-    }
-  }, [isAuthenticated, setUser]);
+    setLoading(true);
+    void loadDashboard();
+    return () => {
+      current = false;
+    };
+  }, [isAuthenticated, setUser, attempt]);
 
   const handleSaveProfile = async () => {
     setSaving(true);
@@ -141,6 +166,8 @@ export default function AccountPage() {
                   <ReadoutSkeleton label="Loading balance…" />
                 ) : credits ? (
                   credits.balance
+                ) : failures.credits ? (
+                  "Not loaded"
                 ) : (
                   "Not available"
                 )}
@@ -150,6 +177,8 @@ export default function AccountPage() {
           <h3>Ledger history</h3>
           {loading ? (
             <ListSkeleton label="Loading ledger history…" rows={3} />
+          ) : failures.credits ? (
+            <LoadFailure what="Your credits" error={failures.credits} onRetry={retry} />
           ) : credits?.entries.length ? (
             <div className="ops-table-wrap">
               <table className="data-table">
@@ -187,6 +216,8 @@ export default function AccountPage() {
           ) : null}
           {loading ? (
             <ListSkeleton label="Loading exports…" rows={3} />
+          ) : failures.exports ? (
+            <LoadFailure what="Your exports" error={failures.exports} onRetry={retry} />
           ) : exportRows.length ? (
             <div className="ops-table-wrap">
               <table className="data-table">
@@ -275,6 +306,9 @@ export default function AccountPage() {
 
         <section className="ops-section ops-section--form" aria-labelledby="profile-heading">
           <h2 id="profile-heading">Profile</h2>
+          {failures.profile ? (
+            <LoadFailure what="Your profile" error={failures.profile} onRetry={retry} />
+          ) : null}
           <div className="ops-form">
             <label className="field">
               Display name
@@ -307,7 +341,8 @@ export default function AccountPage() {
               type="button"
               className="button button-primary"
               onClick={() => void handleSaveProfile()}
-              disabled={saving}
+              disabled={saving || !profile}
+              title={profile ? undefined : "Your profile has to load before it can be saved"}
             >
               {saving ? "Saving…" : "Save profile"}
             </button>

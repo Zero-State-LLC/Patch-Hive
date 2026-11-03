@@ -7,6 +7,7 @@ import { useAuthStore } from "@/lib/store";
 import PatchRail from "@/components/PatchRail";
 import RigRail from "@/components/RigRail";
 import Tabs from "@/components/Tabs";
+import ShowMore from "@/components/ShowMore";
 import { ListSkeleton, RailSkeleton } from "@/components/Skeletons";
 import type { CompatibilityResponse, Patch, Rack, Run } from "@/types/api";
 import { rigDetailToRack, rigSummaryToRack } from "@/lib/canonRigAdapter";
@@ -31,6 +32,8 @@ function idFrom(value: string | null | undefined): number | null {
   return value && /^[1-9]\d*$/.test(value) ? Number(value) : null;
 }
 
+const RIG_PAGE_SIZE = 50;
+
 const tabs: { key: TabKey; label: string }[] = [
   { key: "overview", label: "Overview" },
   { key: "patches", label: "Patches" },
@@ -49,6 +52,9 @@ function gateTone(status?: string | null): "success" | "warning" | "danger" | "n
 
 export default function RacksPage() {
   const [racks, setRacks] = useState<Rack[]>([]);
+  const [rackTotal, setRackTotal] = useState(0);
+  const [loadingMoreRigs, setLoadingMoreRigs] = useState(false);
+  const [moreRigsError, setMoreRigsError] = useState<unknown>(null);
   // Users own their racks: only the owner can generate patches for one.
   const currentUserId = useAuthStore((st) => st.user?.id ?? null);
   const [pdfDownloading, setPdfDownloading] = useState(false);
@@ -87,6 +93,10 @@ export default function RacksPage() {
   const [rackDetail, setRackDetail] = useState<Rack | null>(null);
   const [detailError, setDetailError] = useState<string | null>(null);
   const detailRequest = useRef(0);
+  // The same guard for a rig's runs and a run's patches: a slow answer for a rig or run chosen
+  // earlier never replaces the one chosen after it.
+  const runsRequest = useRef(0);
+  const patchesRequest = useRef(0);
   const [runs, setRuns] = useState<Run[]>([]);
   const [selectedRunId, setSelectedRunId] = useState<number | null>(null);
   const [patches, setPatches] = useState<Patch[]>([]);
@@ -147,9 +157,11 @@ export default function RacksPage() {
     setError(null);
     setListLoading(true);
     try {
-      const response = await canonApi.listRigs({ limit: 50 });
+      const response = await canonApi.listRigs({ limit: RIG_PAGE_SIZE });
       const rows = response.data.rigs.map(rigSummaryToRack);
       setRacks(rows);
+      setRackTotal(response.data.total ?? rows.length);
+      setMoreRigsError(null);
       if (rows.length && selectedRackId === null) {
         selectRig(rows[0].id, { replace: true });
       } else if (selectedRackId !== null) {
@@ -160,6 +172,25 @@ export default function RacksPage() {
       setError("Unable to load rigs. Please try again.");
     } finally {
       setListLoading(false);
+    }
+  };
+
+  const loadMoreRacks = async () => {
+    setLoadingMoreRigs(true);
+    setMoreRigsError(null);
+    try {
+      const response = await canonApi.listRigs({ skip: racks.length, limit: RIG_PAGE_SIZE });
+      const rows = response.data.rigs.map(rigSummaryToRack);
+      // A rig created meanwhile shifts the pages, so one already shown is not added twice.
+      setRacks((shown) => [
+        ...shown,
+        ...rows.filter((row) => !shown.some((rig) => rig.id === row.id)),
+      ]);
+      if (response.data.total != null) setRackTotal(response.data.total);
+    } catch (err: unknown) {
+      setMoreRigsError(err);
+    } finally {
+      setLoadingMoreRigs(false);
     }
   };
 
@@ -182,8 +213,10 @@ export default function RacksPage() {
   };
 
   const loadRuns = async (rackId: number) => {
+    const request = ++runsRequest.current;
     try {
       const response = await canonApi.listRuns(rackId);
+      if (request !== runsRequest.current) return response.data.runs;
       setRuns(response.data.runs);
       if (response.data.runs.length) {
         setSelectedRunId(response.data.runs[0].id);
@@ -192,6 +225,7 @@ export default function RacksPage() {
       }
       return response.data.runs;
     } catch {
+      if (request !== runsRequest.current) return [];
       setRuns([]);
       setSelectedRunId(null);
       return [];
@@ -211,11 +245,12 @@ export default function RacksPage() {
   };
 
   const loadPatches = async (runId: number) => {
+    const request = ++patchesRequest.current;
     try {
       const response = await runApi.patches(runId);
-      setPatches(response.data.patches);
+      if (request === patchesRequest.current) setPatches(response.data.patches);
     } catch {
-      setPatches([]);
+      if (request === patchesRequest.current) setPatches([]);
     }
   };
 
@@ -325,6 +360,16 @@ export default function RacksPage() {
                 </button>
               ))
             : null}
+          {!listLoading ? (
+            <ShowMore
+              shown={racks.length}
+              total={rackTotal}
+              noun="rigs"
+              loading={loadingMoreRigs}
+              error={moreRigsError}
+              onMore={() => void loadMoreRacks()}
+            />
+          ) : null}
           {!listLoading && racks.length === 0 && !error ? (
             <div className="panel">
               <p className="status status-warning">No rigs yet.</p>

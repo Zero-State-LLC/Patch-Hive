@@ -19,6 +19,7 @@ import PlacementStep, { type RackCompat } from "@/components/builder/PlacementSt
 import { firstFreeStartHp, packModulesOntoRows } from "@/lib/placementPack";
 import { placementPower, summarizePower } from "@/lib/powerBudget";
 import { useAuthStore } from "@/lib/store";
+import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import type { Case, CatalogCaseListItem, Module, Rack, RackModuleSpec } from "@/types/api";
 
 /** Demo ranked set when no rack id is available (create flow); shown with a Demo label. */
@@ -169,6 +170,10 @@ export default function RackBuilderPage() {
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState("");
   const [caseQuery, setCaseQuery] = useState("");
+  // The case search asks once the typing pauses.
+  const caseTerm = useDebouncedValue(caseQuery.trim());
+  const [casesError, setCasesError] = useState<unknown>(null);
+  const [casesAttempt, setCasesAttempt] = useState(0);
   const [compatNote, setCompatNote] = useState<string | null>(null);
 
   /** Live placement editor (method 01) */
@@ -357,20 +362,27 @@ export default function RackBuilderPage() {
 
   useEffect(() => {
     if (liveMode) return;
+    let current = true;
     setCasesLoading(true);
+    setCasesError(null);
     setCompatNote(null);
-    const q = caseQuery.trim() || undefined;
-    Promise.all([
+    const q = caseTerm || undefined;
+    void Promise.allSettled([
       caseCatalogApi
         .list({ limit: 200, format_family: "eurorack", q })
-        .then((res) => res.data.cases ?? [])
-        .catch(() => [] as CatalogCaseListItem[]),
+        .then((res) => res.data.cases ?? []),
       caseApi
         .list({ limit: 200, format_family: "Eurorack", q })
-        .then((res) => res.data.cases ?? [])
-        .catch(() => [] as Case[]),
+        .then((res) => res.data.cases ?? []),
     ])
-      .then(([catalogRows, legacyRows]) => {
+      .then(([catalogResult, legacyResult]) => {
+        if (!current) return;
+        const catalogRows = catalogResult.status === "fulfilled" ? catalogResult.value : [];
+        const legacyRows = legacyResult.status === "fulfilled" ? legacyResult.value : [];
+        // Either list is enough to choose from; with neither, the cases didn't load.
+        if (catalogResult.status === "rejected" && legacyResult.status === "rejected") {
+          setCasesError(catalogResult.reason);
+        }
         setCatalogCases(catalogRows);
         setLegacyCases(legacyRows);
         if (selectedCaseId == null && preselectedCaseId != null) {
@@ -389,9 +401,14 @@ export default function RackBuilderPage() {
           setSelectedCaseId(legacyRows[0].id);
         }
       })
-      .finally(() => setCasesLoading(false));
+      .finally(() => {
+        if (current) setCasesLoading(false);
+      });
+    return () => {
+      current = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- case catalog load
-  }, [liveMode, caseQuery]);
+  }, [liveMode, caseTerm, casesAttempt]);
 
   useEffect(() => {
     if (liveMode || !selectedCatalogSlug) {
@@ -997,6 +1014,8 @@ export default function RackBuilderPage() {
             caseQuery={caseQuery}
             onCaseQuery={setCaseQuery}
             casesLoading={casesLoading}
+            casesError={casesError}
+            onRetryCases={() => setCasesAttempt((n) => n + 1)}
             catalogCases={catalogCases}
             legacyCases={legacyCases}
             selectedCatalogSlug={selectedCatalogSlug}

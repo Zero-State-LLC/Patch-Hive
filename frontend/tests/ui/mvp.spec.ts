@@ -143,11 +143,23 @@ test.describe("PatchHive canonical workspace", () => {
   });
 
   test("export boundary explains zero-credit state", async ({ page }) => {
+    // A balance is an account's, so the zero-credit state is a signed-in one.
+    await signIn(page);
     await page.goto("/rigs/1");
     await page.getByRole("tab", { name: "Exports" }).click();
     await expect(page.getByRole("button", { name: "Export PDF patch book" })).toBeDisabled();
     await expect(page.getByText("Credits are required only for exports.")).toBeVisible();
     await expect(page.getByText(/Each export is a patch book of this run/)).toBeVisible();
+  });
+
+  test("export boundary asks a signed-out visitor to sign in, not to buy credits", async ({
+    page,
+  }) => {
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+    await expect(page.getByRole("button", { name: "Export PDF patch book" })).toBeDisabled();
+    await expect(page.getByText("Sign in to export. Only exports cost credits.")).toBeVisible();
+    await expect(page.getByText("Available credits")).toHaveCount(0);
   });
 
   test("multi-photo fusion panel confirms representative and blocks conflict", async ({ page }) => {

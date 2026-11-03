@@ -1,14 +1,17 @@
 /**
  * Cases catalog — normalized case_catalog browse + materialize into Rack Builder.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import ShowMore from "@/components/ShowMore";
 import { caseCatalogApi } from "@/lib/api";
 import type { CatalogCaseListItem, CatalogStatsResponse } from "@/types/api";
 
 type LoadState = "loading" | "ready" | "empty" | "error";
 type PoweredFilter = "all" | "yes" | "no";
+
+const PAGE_SIZE = 200;
 
 const FORMAT_OPTIONS: { value: string; label: string }[] = [
   { value: "", label: "All formats" },
@@ -90,6 +93,11 @@ export default function CasesPage() {
   const [actionError, setActionError] = useState("");
   const [batchNote, setBatchNote] = useState("");
   const [batchBusy, setBatchBusy] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [moreError, setMoreError] = useState<unknown>(null);
+  // Only the latest request may update the grid, so a slow answer for an earlier filter
+  // cannot replace the one chosen after it.
+  const request = useRef(0);
 
   useEffect(() => {
     const next = new URLSearchParams();
@@ -101,26 +109,31 @@ export default function CasesPage() {
     setSearchParams(next, { replace: true });
   }, [q, formatFamilyFilter, poweredFilter, minCapacity, setSearchParams]);
 
+  const listParams = () => ({
+    q: q.trim() || undefined,
+    format_family: formatFamilyFilter || undefined,
+    powered: poweredFilter === "all" ? undefined : poweredFilter === "yes" ? true : false,
+    min_capacity: minCapacity ? Number(minCapacity) : undefined,
+  });
+
   const load = async () => {
+    const mine = ++request.current;
     setState("loading");
     setError("");
+    setMoreError(null);
     try {
       const [listRes, statsRes] = await Promise.all([
-        caseCatalogApi.list({
-          limit: 200,
-          q: q.trim() || undefined,
-          format_family: formatFamilyFilter || undefined,
-          powered: poweredFilter === "all" ? undefined : poweredFilter === "yes" ? true : false,
-          min_capacity: minCapacity ? Number(minCapacity) : undefined,
-        }),
+        caseCatalogApi.list({ ...listParams(), limit: PAGE_SIZE }),
         caseCatalogApi.stats().catch(() => null),
       ]);
+      if (mine !== request.current) return;
       const rows = listRes.data.cases ?? [];
       setCases(rows);
       setTotal(listRes.data.total ?? rows.length);
       setStats(statsRes?.data ?? null);
       setState(rows.length === 0 ? "empty" : "ready");
     } catch {
+      if (mine !== request.current) return;
       setCases([]);
       setTotal(0);
       setStats(null);
@@ -130,6 +143,26 @@ export default function CasesPage() {
           : "Unable to load the case catalog. Try again in a moment.",
       );
       setState("error");
+    }
+  };
+
+  const loadMore = async () => {
+    const mine = request.current;
+    setLoadingMore(true);
+    setMoreError(null);
+    try {
+      const res = await caseCatalogApi.list({
+        ...listParams(),
+        skip: cases.length,
+        limit: PAGE_SIZE,
+      });
+      if (mine !== request.current) return;
+      setCases((shown) => [...shown, ...(res.data.cases ?? [])]);
+      if (res.data.total != null) setTotal(res.data.total);
+    } catch (err: unknown) {
+      if (mine === request.current) setMoreError(err);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -492,6 +525,14 @@ export default function CasesPage() {
               );
             })}
           </div>
+          <ShowMore
+            shown={cases.length}
+            total={total}
+            noun="cases"
+            loading={loadingMore}
+            error={moreError}
+            onMore={() => void loadMore()}
+          />
         </>
       ) : null}
     </section>

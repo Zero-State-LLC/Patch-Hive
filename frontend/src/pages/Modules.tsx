@@ -2,11 +2,14 @@
  * Module gallery — browse lightweight module_catalog (research + curated)
  * with optional materialize into full-spec inventory for rack placement.
  */
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import LoadFailure from "@/components/LoadFailure";
 import { canonApi, moduleApi } from "@/lib/api";
 import { rigSummaryToRack } from "@/lib/canonRigAdapter";
+import { isCancelled } from "@/lib/loadError";
+import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import type { CatalogModule, CatalogModuleStats, Rack } from "@/types/api";
 
 type LoadState = "loading" | "ready" | "empty" | "error";
@@ -36,7 +39,10 @@ export default function ModulesPage() {
   const [brands, setBrands] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [state, setState] = useState<LoadState>("loading");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<unknown>(null);
+  // Retry and Refresh bump this to ask again with the same filters.
+  const [attempt, setAttempt] = useState(0);
+  const reload = () => setAttempt((n) => n + 1);
   const [query, setQuery] = useState(
     () => searchParams.get("q") || searchParams.get("search") || "",
   );
@@ -92,9 +98,41 @@ export default function ModulesPage() {
     setSearchParams,
   ]);
 
-  const load = useCallback(() => {
+  // The search asks once the typing pauses; the other filters ask at once.
+  const searchTerm = useDebouncedValue(query.trim());
+
+  // Stats, brands and categories don't change with the filters: fetched once, and again on
+  // Retry only if they didn't arrive.
+  const metaLoaded = useRef(false);
+  useEffect(() => {
+    if (metaLoaded.current) return;
+    let current = true;
+    void Promise.allSettled([
+      moduleApi.catalogStats(),
+      moduleApi.catalogBrands(),
+      moduleApi.catalogCategories(),
+    ]).then(([statsRes, brandsRes, catsRes]) => {
+      if (!current) return;
+      if (statsRes.status === "fulfilled") setStats(statsRes.value.data);
+      if (brandsRes.status === "fulfilled") {
+        setBrands((brandsRes.value.data.brands ?? []).map((b) => b.name));
+      }
+      if (catsRes.status === "fulfilled") {
+        setCategories((catsRes.value.data.categories ?? []).map((c) => c.name).filter(Boolean));
+      }
+      metaLoaded.current = [statsRes, brandsRes, catsRes].every((r) => r.status === "fulfilled");
+    });
+    return () => {
+      current = false;
+    };
+  }, [attempt]);
+
+  // The list: a change of filter cancels the request before it, so a slow earlier answer can
+  // never replace the one asked for last.
+  useEffect(() => {
+    const controller = new AbortController();
     setState("loading");
-    setError("");
+    setError(null);
     setActionMsg("");
     const params: Record<string, string | number | boolean> = {
       skip: page * PAGE_SIZE,
@@ -102,7 +140,7 @@ export default function ModulesPage() {
       sort_by: sortKey === "category" ? "category" : sortKey,
       sort_order: "asc",
     };
-    if (query.trim()) params.search = query.trim();
+    if (searchTerm) params.search = searchTerm;
     if (brandFilter !== "all") params.brand = brandFilter;
     if (typeFilter !== "all") params.category = typeFilter;
     if (hpFilter === "known") params.hp_known = true;
@@ -110,32 +148,34 @@ export default function ModulesPage() {
     if (sourceFilter !== "all") params.source = sourceFilter;
     if (availabilityFilter !== "all") params.is_available = availabilityFilter;
 
-    Promise.all([
-      moduleApi.catalog(params),
-      moduleApi.catalogStats(),
-      moduleApi.catalogBrands(),
-      moduleApi.catalogCategories(),
-    ])
-      .then(([listRes, statsRes, brandsRes, catsRes]) => {
+    moduleApi
+      .catalog(params, { signal: controller.signal })
+      .then((listRes) => {
+        if (controller.signal.aborted) return;
         const rows = listRes.data.modules ?? [];
         setModules(rows);
         setTotal(listRes.data.total ?? 0);
-        setStats(statsRes.data);
-        setBrands((brandsRes.data.brands ?? []).map((b) => b.name));
-        setCategories((catsRes.data.categories ?? []).map((c) => c.name).filter(Boolean));
         setState(listRes.data.total === 0 ? "empty" : "ready");
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        if (controller.signal.aborted || isCancelled(err)) return;
         setModules([]);
         setTotal(0);
-        setError("Unable to load module catalog. Check that the API is reachable and try again.");
+        setError(err);
         setState("error");
       });
-  }, [page, sortKey, query, brandFilter, typeFilter, hpFilter, sourceFilter, availabilityFilter]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
+    return () => controller.abort();
+  }, [
+    page,
+    sortKey,
+    searchTerm,
+    brandFilter,
+    typeFilter,
+    hpFilter,
+    sourceFilter,
+    availabilityFilter,
+    attempt,
+  ]);
 
   const clearFilters = () => {
     setQuery("");
@@ -308,7 +348,7 @@ export default function ModulesPage() {
           <Link className="button button-primary" to="/racks/new">
             Place on new rig
           </Link>
-          <button className="button button-quiet" type="button" onClick={load}>
+          <button className="button button-quiet" type="button" onClick={reload}>
             Refresh
           </button>
         </div>
@@ -614,12 +654,7 @@ export default function ModulesPage() {
           ) : null}
 
           {state === "error" ? (
-            <div className="screen-state" role="alert">
-              <p className="status status-danger">{error}</p>
-              <button className="button button-primary" type="button" onClick={load}>
-                Retry
-              </button>
-            </div>
+            <LoadFailure what="The module catalog" error={error} onRetry={reload} />
           ) : null}
 
           {state === "empty" ? (
