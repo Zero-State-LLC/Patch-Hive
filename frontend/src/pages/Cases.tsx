@@ -45,7 +45,7 @@ function depthLabel(item: CatalogCaseListItem): string {
 
 function powerLabel(item: CatalogCaseListItem): string {
   if (item.powered === false) return "Unpowered";
-  if (item.powered === true) return "Powered (rails on revision / materialize)";
+  if (item.powered === true) return "Powered";
   return "Power unspecified";
 }
 
@@ -161,11 +161,11 @@ export default function CasesPage() {
       const res = await caseCatalogApi.materializeBatch({ format_family: "eurorack" });
       const b = res.data;
       setBatchNote(
-        `Eurorack materialize: scanned ${b.scanned}, created ${b.created}, updated ${b.updated}, failed ${b.failed}.`,
+        `Eurorack cases prepared for rigs: ${b.scanned} checked, ${b.created} added, ${b.updated} updated, ${b.failed} failed.`,
       );
     } catch {
       setActionError(
-        "Bulk materialize failed. Ensure the catalog seed is loaded in this environment.",
+        "Couldn't prepare the Eurorack cases. Check that the case catalog is loaded, then retry.",
       );
     } finally {
       setBatchBusy(false);
@@ -195,8 +195,7 @@ export default function CasesPage() {
         <div>
           <h1 id="cases-title">Cases</h1>
           <p className="muted">
-            Modular cases from research seeds and manufacturer data. Missing power or depth stays
-            missing. Eurorack cases can seed a new rig.
+            Modular cases from research and maker data. Missing figures stay missing.
           </p>
         </div>
         <div className="header-actions">
@@ -209,7 +208,7 @@ export default function CasesPage() {
             disabled={batchBusy}
             onClick={() => void materializeAllEurorack()}
           >
-            {batchBusy ? "Materializing…" : "Materialize Eurorack for rigs"}
+            {batchBusy ? "Preparing…" : "Prepare Eurorack cases for rigs"}
           </button>
           <button className="button button-quiet" type="button" onClick={() => void load()}>
             Refresh

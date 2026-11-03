@@ -60,7 +60,7 @@ describe("PatchGraphRenderer", () => {
     const user = userEvent.setup();
     render(<PatchGraphRenderer graph={graph} />);
     expect(screen.getByRole("table", { name: /structured cable list/i })).toBeInTheDocument();
-    expect(screen.getByText(/osc · out/i)).toBeInTheDocument();
+    expect(screen.getByText(/osc, out/i)).toBeInTheDocument();
     await act(async () => {
       await user.click(screen.getByLabelText("Diagnostic"));
     });

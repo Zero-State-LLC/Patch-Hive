@@ -9,6 +9,7 @@ import RigRail from "@/components/RigRail";
 import { ListSkeleton, RailSkeleton } from "@/components/Skeletons";
 import type { CompatibilityResponse, Patch, Rack, Run } from "@/types/api";
 import { rigDetailToRack, rigSummaryToRack } from "@/lib/canonRigAdapter";
+import { formatDate, runLabel } from "@/lib/format";
 import { patchName } from "@/lib/patchName";
 import {
   difficultyFromConnections,
@@ -311,9 +312,9 @@ export default function RacksPage() {
                   onClick={() => selectRig(rack.id)}
                 >
                   <span className="side-item-title">{rack.name}</span>
-                  <span className="side-item-meta">
-                    Suggested: {rack.name_suggested || "unknown"}
-                  </span>
+                  {rack.name_suggested && rack.name_suggested !== rack.name ? (
+                    <span className="side-item-meta">Suggested: {rack.name_suggested}</span>
+                  ) : null}
                 </button>
               ))
             : null}
@@ -407,7 +408,9 @@ export default function RacksPage() {
                       <p className="muted" style={{ margin: 0 }}>
                         Latest run
                       </p>
-                      <h3 style={{ fontSize: "1rem" }}>{runs[0]?.created_at || "None yet"}</h3>
+                      <h3 style={{ fontSize: "1rem" }}>
+                        {runs[0] ? formatDate(runs[0].created_at) : "None yet"}
+                      </h3>
                     </div>
                   </div>
                   {selectedRack.case ? (
@@ -703,7 +706,7 @@ export default function RacksPage() {
                     >
                       {runs.map((run) => (
                         <option key={run.id} value={run.id}>
-                          Run #{run.id}, {run.created_at}
+                          {runLabel(run)}
                         </option>
                       ))}
                     </select>

@@ -4,7 +4,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ListSkeleton, ReadoutSkeleton } from "@/components/Skeletons";
+import Hash from "@/components/Hash";
 import { accountApi, authApi, canonApi } from "@/lib/api";
+import { formatDateTime } from "@/lib/format";
 import { useAuthStore } from "@/lib/store";
 import type { CreditsSummary, UserExportRecord, ReferralSummary, User } from "@/types/api";
 
@@ -124,7 +126,6 @@ export default function AccountPage() {
           <h1 id="account-title">Credits & profile</h1>
           <p className="muted">
             PatchHive is free to explore. You only pay when you export something you want to keep.
-            Credits and export debits use the canonical ledger (<code>/api/canon/*</code>).
           </p>
         </div>
       </header>
@@ -134,14 +135,14 @@ export default function AccountPage() {
           <h2 id="credits-heading">Credits</h2>
           <dl className="readout account-balance">
             <div>
-              <dt>Canonical balance</dt>
+              <dt>Balance</dt>
               <dd>
                 {loading ? (
                   <ReadoutSkeleton label="Loading balance…" />
                 ) : credits ? (
                   credits.balance
                 ) : (
-                  "unknown"
+                  "Not available"
                 )}
               </dd>
             </div>
@@ -165,8 +166,8 @@ export default function AccountPage() {
                     <tr key={String(entry.id)}>
                       <td>{entry.entry_type}</td>
                       <td>{entry.amount}</td>
-                      <td>{new Date(entry.created_at).toLocaleString()}</td>
-                      <td className="muted">{entry.description || "unknown"}</td>
+                      <td>{formatDateTime(entry.created_at)}</td>
+                      <td className="muted">{entry.description || "No note"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -192,7 +193,7 @@ export default function AccountPage() {
                 <thead>
                   <tr>
                     <th>Type</th>
-                    <th>Run ID</th>
+                    <th>Run</th>
                     <th>Status</th>
                     <th>Date</th>
                     <th>Download</th>
@@ -202,9 +203,11 @@ export default function AccountPage() {
                   {exportRows.map((record) => (
                     <tr key={String(record.id)}>
                       <td>{record.label}</td>
-                      <td className="muted ops-id">{record.run_id}</td>
-                      <td>{record.status || "unknown"}</td>
-                      <td>{new Date(record.created_at).toLocaleString()}</td>
+                      <td className="muted ops-id">
+                        <Hash value={String(record.run_id)} />
+                      </td>
+                      <td>{record.status || "Not stated"}</td>
+                      <td>{formatDateTime(record.created_at)}</td>
                       <td>
                         {record.canRequestToken ? (
                           <button
@@ -257,19 +260,16 @@ export default function AccountPage() {
               <dl className="readout">
                 <div>
                   <dt>Pending</dt>
-                  <dd>{referrals.pending_count ?? "unknown"}</dd>
+                  <dd>{referrals.pending_count ?? "Not stated"}</dd>
                 </div>
                 <div>
                   <dt>Earned</dt>
-                  <dd>{referrals.earned_count ?? "unknown"}</dd>
+                  <dd>{referrals.earned_count ?? "Not stated"}</dd>
                 </div>
               </dl>
             </>
           ) : (
-            <p className="muted">
-              Referrals are feature-flagged off in the default MVP (
-              <code>ENABLE_REFERRALS=false</code>).
-            </p>
+            <p className="muted">Referrals aren&apos;t open yet.</p>
           )}
         </section>
 

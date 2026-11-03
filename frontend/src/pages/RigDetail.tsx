@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
+import Hash from "@/components/Hash";
 import PatchOverlay from "@/components/PatchOverlay";
 import PatchRail from "@/components/PatchRail";
 import RigRail from "@/components/RigRail";
 import { ChainSkeleton, ListSkeleton } from "@/components/Skeletons";
 import { canonApi, evidenceApi, patchApi, runApi, type InventoryRevisionSummary } from "@/lib/api";
 import { rigDetailToRack } from "@/lib/canonRigAdapter";
+import { formatDateTime, runLabel, shortHash } from "@/lib/format";
 import { describeEmptyGeneration } from "@/lib/generateOutcome";
 import { patchName } from "@/lib/patchName";
 import { useAuthStore } from "@/lib/store";
@@ -74,6 +76,7 @@ export default function RigDetailPage() {
   // Generating writes to the rig, which belongs to its owner (the server enforces it).
   const signedIn = useAuthStore((st) => st.isAuthenticated());
   const [generateStatus, setGenerateStatus] = useState("");
+  const [generateTone, setGenerateTone] = useState<"success" | "warning">("success");
   const [lastGenerateRunId, setLastGenerateRunId] = useState<number | null>(null);
 
   const hasRuns = runs.length > 0;
@@ -248,13 +251,17 @@ export default function RigDetailPage() {
       const count = body.generated_count ?? body.patches?.length ?? 0;
       const emptyMessage = describeEmptyGeneration(body);
       if (emptyMessage) {
+        setGenerateTone("warning");
         setGenerateStatus(emptyMessage);
       } else {
+        setGenerateTone("success");
         setGenerateStatus(
           `Generated ${count} patch${count === 1 ? "" : "es"}` +
             (body.run_id != null ? `, run ${body.run_id}` : "") +
-            (body.inventory_revision_id ? `, inventory ${body.inventory_revision_id}` : "") +
-            (body.rig_revision_id ? `, revision ${body.rig_revision_id.slice(0, 16)}…` : "") +
+            (body.inventory_revision_id
+              ? `, inventory ${shortHash(body.inventory_revision_id)}`
+              : "") +
+            (body.rig_revision_id ? `, revision ${shortHash(body.rig_revision_id)}` : "") +
             ".",
         );
         setLastGenerateRunId(body.run_id ?? null);
@@ -272,6 +279,7 @@ export default function RigDetailPage() {
     } catch (error: unknown) {
       const apiError = error as { response?: { data?: { detail?: string }; status?: number } };
       const detail = apiError.response?.data?.detail;
+      setGenerateTone("warning");
       setGenerateStatus(
         typeof detail === "string" ? detail : "Generation failed. Confirm inventory and retry.",
       );
@@ -299,16 +307,16 @@ export default function RigDetailPage() {
         idempotency_key,
       });
       setExportStatus(
-        `Canonical export ${created.data.export_id} ${created.data.status}. Credits debited on the /api/canon ledger only.`,
+        `Export ${shortHash(created.data.export_id)} requested (${created.data.status}). Its credits come off your balance; nothing else is charged.`,
       );
       refreshCredits();
     } catch (error: unknown) {
       const apiError = error as { response?: { data?: { detail?: string }; status?: number } };
       const detail = apiError.response?.data?.detail;
       if (apiError.response?.status === 402) {
-        setExportStatus("INSUFFICIENT_CREDITS: no debit recorded on the canonical ledger.");
+        setExportStatus("Not enough credits for this export. Nothing was charged.");
       } else {
-        setExportStatus(detail || "Export failed; no successful canonical debit recorded.");
+        setExportStatus(detail || "The export failed. Nothing was charged.");
       }
     } finally {
       setExporting(false);
@@ -330,14 +338,14 @@ export default function RigDetailPage() {
     {
       title: "Generate patches",
       state: hasRuns ? `${runs.length} run${runs.length === 1 ? "" : "s"}` : "No runs yet",
-      detail: "Constrained to confirmed modules. An empty inventory is NOT_COMPUTABLE.",
+      detail: "Uses confirmed modules only. With none confirmed, nothing can be generated.",
     },
     {
       title: "Review and export",
       state: hasRuns
         ? `${credits} credit${credits === 1 ? "" : "s"} available`
         : "After the first run",
-      detail: "Patches tab. Exports debit only through /api/canon.",
+      detail: "Review the patches, then export. Only exports cost credits.",
     },
   ];
 
@@ -362,14 +370,10 @@ export default function RigDetailPage() {
           </h1>
           {rigFailed ? (
             <p className="status status-warning" role="status">
-              Couldn&apos;t load this rig&apos;s name and placements. Its revisions and runs are
-              below.
+              Couldn&apos;t load this rig&apos;s details. Its runs are below.
             </p>
           ) : null}
-          <p className="muted">
-            Pick an immutable revision, inspect its runs, and keep personal notes as a mutable
-            overlay.
-          </p>
+          <p className="muted">Pick a revision, review its runs, keep notes on its patches.</p>
         </div>
         {revisions.length > 0 || runsForRevision.length > 0 ? (
           <div className="toolbar rig-source">
@@ -383,8 +387,8 @@ export default function RigDetailPage() {
                 >
                   {revisions.map((rev, index) => (
                     <option key={rev.rig_revision_id} value={rev.rig_revision_id}>
-                      {rev.rig_revision_id.slice(0, 20)}…{index === 0 ? " (latest)" : ""},{" "}
-                      {rev.run_count} run
+                      Revision {shortHash(rev.rig_revision_id)}
+                      {index === 0 ? " (latest)" : ""}, {rev.run_count} run
                       {rev.run_count === 1 ? "" : "s"}
                     </option>
                   ))}
@@ -401,7 +405,7 @@ export default function RigDetailPage() {
                 >
                   {runsForRevision.map((run, index) => (
                     <option key={run.id} value={run.id}>
-                      Run {run.id}, {new Date(run.created_at).toLocaleDateString()}
+                      {runLabel(run)}
                       {index === 0 ? " (latest)" : ""}
                     </option>
                   ))}
@@ -433,18 +437,7 @@ export default function RigDetailPage() {
 
       {generateStatus ? (
         <div className="notice rig-receipt" role="status" aria-label="Generation receipt">
-          <p
-            className={`status ${
-              generateStatus.includes("NOT_COMPUTABLE") ||
-              generateStatus.includes("VALIDATION_FAILED") ||
-              generateStatus.includes("No patch rule") ||
-              generateStatus.includes("failed")
-                ? "status-warning"
-                : "status-success"
-            }`}
-          >
-            {generateStatus}
-          </p>
+          <p className={`status status-${generateTone}`}>{generateStatus}</p>
         </div>
       ) : null}
 
@@ -464,12 +457,8 @@ export default function RigDetailPage() {
             </p>
             {activeRevisionId ? (
               <p className="muted">
-                Active revision: <code>{activeRevisionId}</code>
-                {activeRun ? (
-                  <>
-                    , run <code>{activeRun.id}</code>
-                  </>
-                ) : null}
+                Active revision <Hash value={activeRevisionId} />
+                {activeRun ? `, run ${activeRun.id}` : null}
               </p>
             ) : null}
           </div>
@@ -522,7 +511,7 @@ export default function RigDetailPage() {
                     className={`status status-${inventoryReady ? "success" : "warning"}`}
                     role="status"
                   >
-                    Inventory revision: <code>{latestInventory.inventory_revision_id}</code>
+                    Inventory revision: <Hash value={latestInventory.inventory_revision_id} />
                     {inventoryReady ? ", ready for generation" : ", not ready for generation"}
                   </p>
                   <p className="muted">
@@ -532,7 +521,7 @@ export default function RigDetailPage() {
                       ? `, ${latestInventory.unresolved_count} unresolved candidate(s)`
                       : ""}
                     {latestInventory.created_at
-                      ? `, sealed ${new Date(latestInventory.created_at).toLocaleString()}`
+                      ? `, sealed ${formatDateTime(latestInventory.created_at)}`
                       : ""}
                   </p>
                 </>
@@ -587,8 +576,7 @@ export default function RigDetailPage() {
               </div>
               {lastGenerateRunId != null ? (
                 <p className="muted">
-                  Latest generation run: <code>{lastGenerateRunId}</code>. Open the Patches tab to
-                  review.
+                  Latest generation: run {lastGenerateRunId}. Open the Patches tab to review it.
                 </p>
               ) : null}
             </div>
@@ -605,9 +593,10 @@ export default function RigDetailPage() {
         >
           <div className="rig-tabpanel__head">
             <h2>Patch library</h2>
-            <p className="muted">Run {activeRun?.id ?? "none"}</p>
+            <p className="muted">{activeRun ? runLabel(activeRun) : "No run selected"}</p>
             <p className="muted">
-              Canonical patches are immutable. Favorite, tried and notes are personal overlays.
+              Generated patches don&apos;t change. Your notes, favorites and tried marks are yours
+              alone.
             </p>
           </div>
           {patchesLoading ? <ListSkeleton label="Loading patches…" rows={3} /> : null}
@@ -661,8 +650,8 @@ export default function RigDetailPage() {
           <div className="rig-tabpanel__head">
             <h2>Exports</h2>
             <p className="muted">
-              Debits post only via <code>/api/canon/exports</code>. Bound to revision{" "}
-              <code>{activeRun?.rig_revision_id}</code>.
+              Each export is a patch book of this run, tied to revision{" "}
+              {activeRun ? <Hash value={activeRun.rig_revision_id} /> : "none"}.
             </p>
           </div>
           <dl className="readout">

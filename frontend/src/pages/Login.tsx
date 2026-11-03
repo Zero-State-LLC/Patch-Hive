@@ -68,7 +68,7 @@ export default function LoginPage() {
       if (typeof detail === "string") {
         setError(AUTH_ERRORS[detail] ?? detail);
       } else if (Array.isArray(detail)) {
-        setError(detail.map((d) => d.msg || "Validation error").join(" · "));
+        setError(detail.map((d) => d.msg || "Validation error").join(" "));
       } else {
         setError(mode === "register" ? "Could not create account" : "Sign in failed");
       }
@@ -94,8 +94,7 @@ export default function LoginPage() {
             Enter the hive
           </h1>
           <p className="auth-brand-lede">
-            Confirm modular rigs, generate hardware-constrained patches, and export provenance-bound
-            PatchBooks, without inventing gear or running DSP.
+            Confirm your rig, generate patches it can play, and export the book.
           </p>
           <ul className="auth-brand-list">
             <li>Immutable rig revisions</li>
