@@ -254,7 +254,7 @@ interface Screen {
 }
 
 const SCREENS: Screen[] = [
-  { path: "/", name: "home", signedIn: false },
+  { path: "/", name: "home", signedIn: false, signature: ".home-rig .patch-cable" },
   { path: "/login", name: "sign in", signedIn: false },
   { path: "/no-such-route", name: "not found", signedIn: false, signature: ".broken-patch" },
   { path: "/modules", name: "modules", signedIn: true, signature: ".module-mockup" },
