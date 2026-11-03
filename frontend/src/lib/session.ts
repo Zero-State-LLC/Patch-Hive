@@ -17,6 +17,8 @@ export function refreshSession(): Promise<string | null> {
     .post<TokenResponse>(`${API_BASE_URL}/community/auth/refresh`, null, {
       withCredentials: true,
       headers: SESSION_HEADER,
+      // Routes wait on this call at startup, so a hung API must not block them forever.
+      timeout: 10_000,
     })
     .then((res) => {
       useAuthStore.getState().setAuth(res.data.user, res.data.access_token);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
 import { restoreSession, signOut } from "@/lib/session";
-import { useAuthStore } from "@/lib/store";
+import { sessionHint, useAuthStore } from "@/lib/store";
 import AccountPage from "@/pages/Account";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminExports from "@/pages/admin/AdminExports";
@@ -27,9 +27,14 @@ type Theme = "dark" | "light";
 
 function App() {
   const { user, isAuthenticated } = useAuthStore();
-  // Restore the session from the API's refresh cookie after a reload.
+  // A visitor known to be signed out has nothing to restore, so never makes them wait.
+  const [sessionSettled, setSessionSettled] = useState(
+    () => !ACCOUNTS_OPEN || sessionHint() === "0",
+  );
+  // Restore the session from the API's refresh cookie after a reload. Child effects run
+  // before this one, so pages must not mount until it settles or they fetch signed out.
   useEffect(() => {
-    if (ACCOUNTS_OPEN) void restoreSession();
+    if (ACCOUNTS_OPEN) void restoreSession().finally(() => setSessionSettled(true));
   }, []);
   const [theme, setTheme] = useState<Theme>("dark");
   const canSeeAdmin = user && ["Admin", "Ops", "Support", "ReadOnly"].includes(user.role);
@@ -76,28 +81,34 @@ function App() {
         </header>
 
         <main id="main-content" className="workspace" tabIndex={-1}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/modules" element={<ModulesPage />} />
-            <Route path="/cases" element={<CasesPage />} />
-            <Route path="/cases/:slug" element={<CaseDetailPage />} />
-            <Route path="/racks" element={<RacksPage />} />
-            <Route path="/racks/new" element={<RackBuilderPage />} />
-            <Route path="/racks/:id/edit" element={<RackBuilderPage />} />
-            <Route path="/rigs/:rigId" element={<RigDetailPage />} />
-            <Route path="/rigs/:rigId/patchbook-studio" element={<PatchBookStyleStudioPage />} />
-            <Route path="/patches" element={<PatchesPage />} />
-            <Route path="/products" element={<RegistryPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/account" element={<AccountPage />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/modules" element={<AdminModules />} />
-            <Route path="/admin/gallery" element={<AdminGallery />} />
-            <Route path="/admin/runs" element={<AdminRuns />} />
-            <Route path="/admin/exports" element={<AdminExports />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
+          {sessionSettled ? (
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/modules" element={<ModulesPage />} />
+              <Route path="/cases" element={<CasesPage />} />
+              <Route path="/cases/:slug" element={<CaseDetailPage />} />
+              <Route path="/racks" element={<RacksPage />} />
+              <Route path="/racks/new" element={<RackBuilderPage />} />
+              <Route path="/racks/:id/edit" element={<RackBuilderPage />} />
+              <Route path="/rigs/:rigId" element={<RigDetailPage />} />
+              <Route path="/rigs/:rigId/patchbook-studio" element={<PatchBookStyleStudioPage />} />
+              <Route path="/patches" element={<PatchesPage />} />
+              <Route path="/products" element={<RegistryPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/account" element={<AccountPage />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/modules" element={<AdminModules />} />
+              <Route path="/admin/gallery" element={<AdminGallery />} />
+              <Route path="/admin/runs" element={<AdminRuns />} />
+              <Route path="/admin/exports" element={<AdminExports />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          ) : (
+            <p className="muted" role="status">
+              Restoring session…
+            </p>
+          )}
         </main>
 
         <footer className="app-footer">
