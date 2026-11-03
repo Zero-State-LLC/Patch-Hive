@@ -1,5 +1,12 @@
 {
   "schema_version": "patchhive.eval-approver-allowlist.v1",
-  "description": "Approver Ed25519 public keys for Spec 007 evaluation receipts. Public keys only; add or revoke through a reviewed PR (007 T082). Empty until an operator commits a key, so every signed-receipt check refuses.",
-  "approvers": []
+  "description": "Approver Ed25519 public keys for Spec 007 evaluation receipts and Spec 008 readiness pins. Public keys only; add or revoke through a reviewed PR (007 T082). The private key never enters the repo, CI or Cloudflare.",
+  "approvers": [
+    {
+      "key_id": "approver-2026-11",
+      "algorithm": "ed25519",
+      "public_key": "B0xqjscvm2FTnLKOZ6idx6z3Eb6wyEGj5j/6hBaO/QM=",
+      "valid_from": "2026-11-02T10:00:00Z"
+    }
+  ]
 }

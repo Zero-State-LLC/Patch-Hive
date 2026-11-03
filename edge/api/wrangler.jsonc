@@ -84,10 +84,15 @@
         "S3_KEY_PREFIX": "staging",
         // The NVIDIA provider stays off here (no ENABLE_NVIDIA_PROVIDER); when a drill
         // turns it on, a cold first call has taken over the 20 s backend default.
-        "NVIDIA_TIMEOUT_SECONDS": "60"
-        // Feature flags for 007/008 drills go here, staging only, for example
-        // "ENABLE_CLEF_PROVIDER": "true" or "ENABLE_PATCHBOOK_DESIGN_ENGINE": "true".
-        // src/index.ts forwards only the names in its FLAG_VARS list.
+        "NVIDIA_TIMEOUT_SECONDS": "60",
+        // Feature flags for 007/008 drills go here, staging only (src/index.ts forwards
+        // only the names in its FLAG_VARS list, and none in production).
+        // 008 T040b: the Design Engine walkthrough needs these, as in
+        // docker-compose.staging.design-engine.yml; payments above stay test-only.
+        "ENABLE_PATCHBOOK_DESIGN_ENGINE": "true",
+        "ENABLE_CANON_EXPORT_FULFILLMENT": "true",
+        "ENABLE_INLINE_EXPORT_FULFILLMENT": "true",
+        "ENABLE_PATCHBOOK_PUBLICATION_PROFILE": "false"
       }
     }
   }

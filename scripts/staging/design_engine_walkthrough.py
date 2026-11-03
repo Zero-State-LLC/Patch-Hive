@@ -113,7 +113,7 @@ def main() -> int:
     db.close()
 
     client = httpx.Client(base_url=api, timeout=90.0)
-    # Scan every active page (frontend/src/legacy is not routed); the guard also
+    # Scan every active page; the guard also
     # requires the known list pages to be on the canon alias.
     fe_sources = {
         path.relative_to(REPO_ROOT).as_posix(): path.read_text(encoding="utf-8")

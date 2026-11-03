@@ -42,65 +42,84 @@ export default function AdminModules() {
             />
           </label>
         </div>
-        <div className="catalog-grid">
-          {modules.map((module) => (
-            <article key={module.id} className="catalog-card">
-              <h2>
-                {module.brand} {module.name}
-              </h2>
-              <p className="catalog-card-meta">Status: {module.status || "active"}</p>
-              <div className="toolbar">
-                <label className="inline-field">
-                  Status
-                  <select
-                    onChange={async (e) => {
-                      await adminApi.updateModuleStatus(
-                        module.id,
-                        e.target.value,
-                        reason || "status update",
-                      );
-                      void fetchModules();
-                    }}
-                    defaultValue={module.status || "active"}
-                  >
-                    {STATUS_OPTIONS.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="inline-field">
-                  Replacement ID
-                  <input
-                    type="number"
-                    placeholder="ID"
-                    value={mergeTarget[module.id] || ""}
-                    onChange={(e) =>
-                      setMergeTarget((prev) => ({
-                        ...prev,
-                        [module.id]: Number(e.target.value),
-                      }))
-                    }
-                    style={{ width: "7rem" }}
-                  />
-                </label>
-                <button
-                  type="button"
-                  className="button button-secondary"
-                  onClick={async () => {
-                    const replacementId = mergeTarget[module.id];
-                    if (!replacementId) return;
-                    await adminApi.mergeModule(module.id, replacementId, reason || "merge");
-                    void fetchModules();
-                  }}
-                >
-                  Merge
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
+        {modules.length ? (
+          <div className="ops-table-wrap">
+            <table className="data-table ops-table-stack">
+              <thead>
+                <tr>
+                  <th>Module</th>
+                  <th>Status</th>
+                  <th>Change status</th>
+                  <th>Replacement ID</th>
+                  <th>Merge</th>
+                </tr>
+              </thead>
+              <tbody>
+                {modules.map((module) => (
+                  <tr key={module.id}>
+                    <td data-label="Module">
+                      {module.brand} {module.name}
+                    </td>
+                    <td data-label="Status">{module.status || "active"}</td>
+                    <td data-label="Change status">
+                      <label className="inline-field">
+                        <span className="visually-hidden">Status</span>
+                        <select
+                          onChange={async (e) => {
+                            await adminApi.updateModuleStatus(
+                              module.id,
+                              e.target.value,
+                              reason || "status update",
+                            );
+                            void fetchModules();
+                          }}
+                          defaultValue={module.status || "active"}
+                        >
+                          {STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>
+                              {status}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </td>
+                    <td data-label="Replacement ID">
+                      <label className="inline-field">
+                        <span className="visually-hidden">Replacement ID</span>
+                        <input
+                          className="ops-id-input"
+                          type="number"
+                          placeholder="ID"
+                          value={mergeTarget[module.id] || ""}
+                          onChange={(e) =>
+                            setMergeTarget((prev) => ({
+                              ...prev,
+                              [module.id]: Number(e.target.value),
+                            }))
+                          }
+                        />
+                      </label>
+                    </td>
+                    <td data-label="Merge">
+                      <button
+                        type="button"
+                        className="button button-secondary"
+                        onClick={async () => {
+                          const replacementId = mergeTarget[module.id];
+                          if (!replacementId) return;
+                          await adminApi.mergeModule(module.id, replacementId, reason || "merge");
+                          void fetchModules();
+                        }}
+                      >
+                        Merge
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : null}
       </div>
     </AdminGuard>
   );

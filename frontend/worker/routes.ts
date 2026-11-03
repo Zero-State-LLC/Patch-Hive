@@ -8,8 +8,10 @@ export const APP_ROUTES = [
   "/racks",
   "/racks/new",
   "/racks/:id/edit",
+  "/racks/:rigId",
   "/rigs/:rigId",
   "/rigs/:rigId/patchbook-studio",
+  "/rigs/:rigId/patches/:patchId",
   "/patches",
   "/products",
   "/login",
@@ -20,6 +22,7 @@ export const APP_ROUTES = [
   "/admin/gallery",
   "/admin/runs",
   "/admin/exports",
+  "/admin/leaderboards",
 ] as const;
 
 const MATCHERS = APP_ROUTES.map(

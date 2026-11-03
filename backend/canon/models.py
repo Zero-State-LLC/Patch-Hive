@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import (
     JSON,
+    BigInteger,
     Boolean,
     CheckConstraint,
     Column,
@@ -16,6 +17,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     event,
+    false,
 )
 
 from core.database import Base
@@ -225,6 +227,12 @@ class UserStyleRecipeRecord(Base):
     updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, onupdate=utcnow)
 
 
+# An export covered by a STUDIO period grant has no debit and costs nothing (T050).
+EXPORT_GRANT_SHAPE = (
+    "subscription_grant_id IS NULL OR (credit_cost = 0 AND ledger_entry_id IS NULL)"
+)
+
+
 class CanonicalExportRecord(Base):
     __tablename__ = "canonical_exports"
 
@@ -271,8 +279,18 @@ class CanonicalExportRecord(Base):
         nullable=True,
         index=True,
     )
+    # Spec 004 T050 (FR-004, OQ-8): the STUDIO period grant that covered this export in
+    # place of a debit. Such an export costs no credits and counts against the grant's
+    # ``fair_use_export_cap``.
+    subscription_grant_id = Column(
+        String(64),
+        ForeignKey("subscription_period_grants.id", ondelete="RESTRICT"),
+        nullable=True,
+        index=True,
+    )
     __table_args__ = (
         CheckConstraint("credit_cost >= 0", name="ck_canonical_exports_cost"),
+        CheckConstraint(EXPORT_GRANT_SHAPE, name="ck_canonical_exports_grant_shape"),
         UniqueConstraint("user_id", "idempotency_key", name="uq_canonical_exports_user_idempotency"),
     )
 
@@ -309,6 +327,234 @@ class StripeEventRecordModel(Base):
     received_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
     processed_at = Column(DateTime(timezone=True), nullable=True)
     reason_code = Column(String(64), nullable=True)
+    # The event's ``data.object.id`` (for a checkout event, the Checkout Session id),
+    # stored at intake so an operator resolve can retrieve the object (T048b).
+    object_id = Column(String(255), nullable=True, index=True)
+
+
+class ProviderCustomerRecord(Base):
+    """Spec 004 FR-020: each user maps to at most one payment-provider customer."""
+
+    __tablename__ = "provider_customers"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, unique=True
+    )
+    provider_customer_id = Column(String(255), nullable=False, unique=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+
+# Machine B states as stored on a payment record: ``open`` and ``pending`` (completed,
+# payment not settled) are CheckoutOpen; ``credited`` is Credited; ``failed`` and
+# ``abandoned`` are Abandoned.
+PAYMENT_STATUSES = ("open", "pending", "credited", "failed", "abandoned")
+
+
+class ProviderPaymentRecord(Base):
+    """Spec 004 Machine B: one record per one-time credit checkout session.
+
+    The server writes it when it creates the session, so the user, credit count and
+    amount come from here, not from event metadata. ``provider_payment_id`` (the payment
+    intent) is unique and set once the provider reports it (FR-012).
+
+    Refunds (OQ-2, T053): ``refunded_cents`` is the highest cumulative refunded amount
+    applied; ``refund_reversed_credits`` were taken back with canonical ``refund``
+    entries and ``refund_unrecovered_credits`` were already spent and went to an
+    operator. Their sum is always the credits proportional to ``refunded_cents``.
+    """
+
+    __tablename__ = "provider_payments"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('open', 'pending', 'credited', 'failed', 'abandoned', "
+            "'partially_refunded', 'refunded')",
+            name="ck_provider_payments_status",
+        ),
+        CheckConstraint("credits > 0", name="ck_provider_payments_credits_positive"),
+        CheckConstraint("amount_cents > 0", name="ck_provider_payments_amount_positive"),
+        CheckConstraint(
+            "refunded_cents >= 0 AND refunded_cents <= amount_cents",
+            name="ck_provider_payments_refunded_cents",
+        ),
+        CheckConstraint(
+            "refund_reversed_credits >= 0 AND refund_unrecovered_credits >= 0 "
+            "AND refund_reversed_credits + refund_unrecovered_credits <= credits",
+            name="ck_provider_payments_refund_credits",
+        ),
+    )
+
+    id = Column(String(64), primary_key=True)
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    checkout_session_id = Column(String(255), nullable=False, unique=True)
+    provider_payment_id = Column(String(255), nullable=True, unique=True)
+    credits = Column(Integer, nullable=False)
+    amount_cents = Column(Integer, nullable=False)
+    currency = Column(String(3), nullable=False)
+    status = Column(String(20), nullable=False, default="open")
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+    credited_at = Column(DateTime(timezone=True), nullable=True)
+    refunded_cents = Column(Integer, nullable=False, default=0, server_default="0")
+    refund_reversed_credits = Column(Integer, nullable=False, default=0, server_default="0")
+    refund_unrecovered_credits = Column(Integer, nullable=False, default=0, server_default="0")
+
+
+# Spec 004 Machine C (T049). Tiers a subscription can carry, and the provider statuses
+# stored verbatim (OQ-4 ``A_stripe_mapping`` maps them to entitlements in T050).
+SUBSCRIPTION_TIERS = ("core", "pro", "studio")
+SUBSCRIPTION_STATUSES = (
+    "incomplete",
+    "incomplete_expired",
+    "trialing",
+    "active",
+    "past_due",
+    "canceled",
+    "unpaid",
+    "paused",
+)
+_TIER_CHECK = "tier IN ('core', 'pro', 'studio')"
+
+
+class ProviderSubscriptionRecord(Base):
+    """Spec 004 Machine C (FR-015): one record per provider subscription.
+
+    ``customer.subscription.*`` events keep the tier (from the provider price, OQ-7),
+    the provider status, the current period and ``cancel_at_period_end`` in sync; they
+    never grant. ``last_event_created`` is the provider ``created`` time of the newest
+    event applied, so an older event delivered late cannot roll the record back.
+    ``purchase_recorded_at`` is set when the first paid invoice went through
+    ``record_purchase`` (OQ-3 ``A_both``).
+    """
+
+    __tablename__ = "provider_subscriptions"
+    __table_args__ = (
+        CheckConstraint(_TIER_CHECK, name="ck_provider_subscriptions_tier"),
+        CheckConstraint(
+            "status IN ("
+            + ", ".join(f"'{status}'" for status in SUBSCRIPTION_STATUSES)
+            + ")",
+            name="ck_provider_subscriptions_status",
+        ),
+        CheckConstraint(
+            "current_period_end > current_period_start",
+            name="ck_provider_subscriptions_period",
+        ),
+    )
+
+    id = Column(String(64), primary_key=True)
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    provider_subscription_id = Column(String(255), nullable=False, unique=True)
+    provider_customer_id = Column(String(255), nullable=False)
+    price_id = Column(String(255), nullable=False)
+    tier = Column(String(16), nullable=False)
+    status = Column(String(32), nullable=False)
+    current_period_start = Column(DateTime(timezone=True), nullable=False)
+    current_period_end = Column(DateTime(timezone=True), nullable=False)
+    cancel_at_period_end = Column(Boolean, nullable=False, default=False, server_default=false())
+    last_event_created = Column(BigInteger, nullable=True)
+    purchase_recorded_at = Column(DateTime(timezone=True), nullable=True)
+    canceled_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+
+SUBSCRIPTION_CHECKOUT_STATUSES = ("open", "completed", "expired")
+
+
+class SubscriptionCheckoutRecord(Base):
+    """Spec 004 Machine C ``CheckoutOpen``: the user's outstanding subscription checkout.
+
+    It reserves checkout per user, so a second request while one is open reuses that
+    session instead of opening another subscription (T049). ``expires_at`` is the
+    provider session's own expiry; past it the session can no longer be paid.
+    ``completed`` carries the subscription the session created, which blocks a new
+    checkout until that subscription is terminal.
+    """
+
+    __tablename__ = "subscription_checkouts"
+    __table_args__ = (
+        CheckConstraint(_TIER_CHECK, name="ck_subscription_checkouts_tier"),
+        CheckConstraint(
+            "status IN ('open', 'completed', 'expired')",
+            name="ck_subscription_checkouts_status",
+        ),
+    )
+
+    id = Column(String(64), primary_key=True)
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    checkout_session_id = Column(String(255), nullable=False, unique=True)
+    checkout_url = Column(Text, nullable=False)
+    tier = Column(String(16), nullable=False)
+    status = Column(String(16), nullable=False, default="open")
+    provider_subscription_id = Column(String(255), nullable=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+
+SUBSCRIPTION_GRANT_SHAPE = (
+    "(unlimited AND credits = 0 AND fair_use_export_cap >= 1 AND ledger_entry_id IS NULL) "
+    "OR (NOT unlimited AND credits > 0 AND fair_use_export_cap IS NULL "
+    "AND ledger_entry_id IS NOT NULL)"
+)
+
+
+class SubscriptionPeriodGrantRecord(Base):
+    """Spec 004 FR-016 / SC-005: exactly one grant per subscription billing period.
+
+    Written on ``invoice.paid`` only, keyed ``subscription-period:<subscription_id>:
+    <period_start>``. CORE and PRO carry ``credits`` and the canonical ``grant`` entry
+    with the same key. STUDIO carries no credits: ``unlimited`` is the explicit
+    entitlement (FR-004, never a numeric sentinel) and ``fair_use_export_cap`` is the
+    owner's fair-use cap for the period, copied from the setting when granted (OQ-8).
+    """
+
+    __tablename__ = "subscription_period_grants"
+    __table_args__ = (
+        UniqueConstraint(
+            "subscription_record_id",
+            "period_start",
+            name="uq_subscription_period_grants_period",
+        ),
+        CheckConstraint(_TIER_CHECK, name="ck_subscription_period_grants_tier"),
+        CheckConstraint(SUBSCRIPTION_GRANT_SHAPE, name="ck_subscription_period_grants_shape"),
+        CheckConstraint(
+            "period_end > period_start", name="ck_subscription_period_grants_period"
+        ),
+    )
+
+    id = Column(String(64), primary_key=True)
+    subscription_record_id = Column(
+        String(64),
+        ForeignKey("provider_subscriptions.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    grant_key = Column(String(128), nullable=False, unique=True)
+    provider_invoice_id = Column(String(255), nullable=False, unique=True)
+    tier = Column(String(16), nullable=False)
+    period_start = Column(DateTime(timezone=True), nullable=False)
+    period_end = Column(DateTime(timezone=True), nullable=False)
+    credits = Column(Integer, nullable=False)
+    unlimited = Column(Boolean, nullable=False)
+    fair_use_export_cap = Column(Integer, nullable=True)
+    ledger_entry_id = Column(
+        String(64),
+        ForeignKey("canonical_credit_ledger.id", ondelete="RESTRICT"),
+        nullable=True,
+        unique=True,
+    )
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
 
 
 class CanonicalAdminAuditEventRecord(Base):
@@ -435,6 +681,7 @@ IMMUTABLE_RECORDS = (
     ArtifactManifestRecord,
     CanonicalCreditLedgerEntryRecord,
     CanonicalAdminAuditEventRecord,
+    SubscriptionPeriodGrantRecord,
     SystemInventoryRevisionRecord,
     ClassificationEvidenceRecord,
 )

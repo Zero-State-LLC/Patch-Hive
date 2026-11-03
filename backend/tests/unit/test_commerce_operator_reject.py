@@ -3,7 +3,8 @@
 Machine B ``Unresolved --operator_rejects--> Abandoned``: an Admin closes an unresolved
 provider event with a reason; it grants nothing and writes one
 ``CanonicalAdminAuditEventRecord`` (OQ-5 recommendation). Any other status is 409
-``INVALID_TRANSITION`` with no change. ``operator_resolves`` waits for Machine B (T048b).
+``INVALID_TRANSITION`` with no change. ``operator_resolves`` is T048b
+(``tests/unit/test_commerce_operator_resolve.py``).
 """
 
 from __future__ import annotations

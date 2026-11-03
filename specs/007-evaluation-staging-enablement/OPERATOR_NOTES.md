@@ -28,6 +28,8 @@ artifact is rejected and the state does not change.
 
 ## Operator procedure
 
+The steps below name the library calls; the driver script (next section) runs them.
+
 1. Freeze the corpus (T010). Promote rights-cleared, reviewed cases into
    `fixtures/vision_eval/pilot-manifest.json` per `docs/evidence/PILOT_CASE_PROMOTION.md`,
    then call `freeze_corpus(manifest)`. It runs the governed validator
@@ -52,6 +54,66 @@ artifact is rejected and the state does not change.
 6. Pin the receipt (T060) with `pin_receipt(..., source_commit_sha=<git SHA>)` and
    retain it. Its `receipt_sha256` is accepted by the Spec 006 edge readiness
    `gates_pass` guard as the evaluation receipt SHA.
+
+## Driver script (T084)
+
+`scripts/staging/run_007_evaluation.py` runs the procedure above as commands. Each
+subcommand reads the previous JSON artifact from one directory and writes the next;
+artifacts are never overwritten, and every library refusal is printed with its code
+(exit 1). One chain covers one provider, so `--provider` is global and the default
+directory is `backend/intelligence/enablement/<provider>/` (files under `backend/`
+ship in the staging image as `/app/...`). Run from the repo root with the backend venv.
+
+```bash
+python scripts/staging/run_007_evaluation.py --provider nvidia candidate-hashes --inputs ~/patchhive-corpus/run-inputs.json
+python scripts/staging/run_007_evaluation.py --provider nvidia freeze --manifest fixtures/vision_eval/pilot-manifest.json
+python scripts/staging/run_007_evaluation.py --provider nvidia run --inputs ~/patchhive-corpus/run-inputs.json --harness-sha "$(git rev-parse HEAD)" --manifest fixtures/vision_eval/pilot-manifest.json
+python scripts/staging/run_007_evaluation.py --provider nvidia propose --proposal-version thresholds-v1
+python scripts/staging/run_007_evaluation.py --provider nvidia approve --approved-by approver-2026-11 --yes-i-approve
+python scripts/staging/run_007_evaluation.py --provider nvidia enable-staging
+python scripts/staging/run_007_evaluation.py --provider nvidia pin --source-commit-sha "$(git rev-parse HEAD)"
+python scripts/staging/run_007_evaluation.py --provider nvidia sign --key ~/patchhive-approver/approver-2026-11.pem
+python scripts/staging/run_007_evaluation.py --provider nvidia verify
+```
+
+`candidate-hashes` runs before the manifest is final: it prints each case's
+`candidate_set_hash` to record in the manifest.
+
+- `run` needs the provider flag and credentials in the shell (`ENABLE_NVIDIA_PROVIDER`
+  and `NVIDIA_API_KEY`, or `ENABLE_CLEF_PROVIDER`, `CLOUDFLARE_ACCOUNT_ID` and
+  `CLOUDFLARE_AI_API_TOKEN`); it refuses otherwise and never prints them. Any provider
+  failure aborts the run and writes nothing.
+- The run-inputs file (`patchhive.eval-run-inputs.v1`) holds what the manifest does
+  not: per case, the candidate options and local image paths (relative to the file).
+  `{"schema_version": "patchhive.eval-run-inputs.v1", "question": "<optional>", "cases":
+  {"<case_id>": {"candidates": [{"choice_id": "maker:model:rev", "description": "..."},
+  {"choice_id": "none_of_above"}], "images": ["photos/x.jpg"], "context": {}}}}`. It
+  must cover exactly the frozen case ids. Each image must hash to a frozen hash of its
+  case; the candidates must include `none_of_above` and the expected choice and must
+  hash to the case's frozen `candidate_set_hash` (the module-identity
+  `ChoiceRequest.candidate_set_hash()`, written `sha256:<hex>`; `candidate-hashes`
+  prints it). A case with no images is a text-modality case.
+- Baseline condition: a deterministic no-model abstainer through the fixture provider
+  (`provider="fixture"`, version `abstain-uniform.v1`): uniform probabilities over the
+  candidates, selecting `none_of_above`.
+- `propose` uses `non_regression_vs_baseline.v1` (005 OQ-5 `baseline_equal`) and prints
+  whether the assisted metrics meet it. `approve` requires `--yes-i-approve` and an
+  `--approved-by` key id that is in `evaluation_approvers.json`, valid and not revoked.
+- `enable-staging` builds `Settings` from the shell with only the environment fixed to
+  `staging`; the config gates still run on it.
+- `sign` reads the Ed25519 PEM from the path given (a password-protected PEM prompts
+  for the password), refuses a key that is not the allowlisted key for the receipt's
+  `approved_by`, and refuses to write a signature that does not verify. `pin` and
+  `sign` print `DECISION_ENABLEMENT_RECEIPT_PATH` / `DECISION_ENABLEMENT_SIGNATURE_PATH`
+  as container paths.
+- `verify` replays the chain from the directory (T080), checks the signature against
+  the committed allowlist (T081) and runs the staging startup gate (005 T080) on the
+  files; it prints `PASS` or the failure codes.
+- `run --dry-run --fixture-packets <file>` uses operator-supplied packets through the
+  fixture provider to exercise the chain offline. It must write outside `backend/`,
+  marks the directory `DRY_RUN`, and is never evidence. `sign` refuses a `DRY_RUN` chain
+  (`DRY_RUN_NOT_SIGNABLE`): its packets name the live provider, so a signed dry run
+  would authorize that provider with no live evaluation.
 
 ## Conservative interpretations
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   caseApi,
@@ -8,67 +8,32 @@ import {
   rackApi,
   type EvidenceCandidate,
 } from "@/lib/api";
-import { ACCOUNTS_OPEN } from "@/lib/apiBase";
+import CaseStep from "@/components/builder/CaseStep";
+import EvidenceStep, {
+  type CandidateStatus,
+  type EvidenceState,
+  type FusedEntityView,
+  type ReviewCandidate,
+} from "@/components/builder/EvidenceStep";
+import PlacementStep, { type RackCompat } from "@/components/builder/PlacementStep";
+import Toast from "@/components/Toast";
+import { failureReason } from "@/lib/loadError";
+import { checkSlot, moveTo, slotPhrase, type Slot } from "@/lib/placementMove";
 import { firstFreeStartHp, packModulesOntoRows } from "@/lib/placementPack";
-import {
-  placementPower,
-  railMeter,
-  summarizePower,
-  type RailKey,
-  type RailTone,
-} from "@/lib/powerBudget";
+import { placementPower, railMeter, summarizePower, type RailKey } from "@/lib/powerBudget";
 import { useAuthStore } from "@/lib/store";
-import type {
-  Case,
-  CatalogCaseListItem,
-  CompatibilityResponse,
-  Module,
-  Rack,
-  RackModuleSpec,
-} from "@/types/api";
+import { useDebouncedValue } from "@/lib/useDebouncedValue";
+import { useToast } from "@/lib/useToast";
+import type { Case, CatalogCaseListItem, Module, Rack, RackModuleSpec } from "@/types/api";
 
-type EvidenceState = "idle" | "ready" | "uploading" | "review" | "confirmed" | "error";
-type CandidateStatus = "inferred" | "confirmed" | "rejected" | "deferred";
-
-interface DecisionAdvisory {
-  disposition: "auto_propose" | "user_review" | "unresolved" | "escalate" | "reject";
-  provider?: string;
-  confidence?: number | null;
-  reasonCodes?: string[];
-}
-
-interface ReviewCandidate {
-  id: string;
-  label: string;
-  manufacturer: string;
-  confidence: number;
-  alternatives: string[];
-  status: CandidateStatus;
-  moduleRevisionId: string;
-  decision?: DecisionAdvisory;
-}
-
-interface FusedEntityView {
-  fuse_id: string;
-  manufacturer?: string | null;
-  model?: string | null;
-  observation_count: number;
-  supporting_image_ids: string[];
-  mean_confidence: number;
-  conflict: boolean;
-  conflict_notes: string[];
-  classification_status: string;
-  representative_candidate_id?: string | null;
-}
-
-/** Demo ranked set when no rack id is available (create flow). */
+/** Demo ranked set when no rack id is available (create flow); shown with a Demo label. */
 const DEMO_CANDIDATES: ReviewCandidate[] = [
   {
     id: "cand-mod-a",
     label: "Oscillator A",
     manufacturer: "MockAudio",
     confidence: 0.81,
-    alternatives: ["cand-mod-a-alt · higher-gain rev"],
+    alternatives: ["Oscillator A (higher-gain revision)"],
     status: "inferred",
     moduleRevisionId: "catalog-module-osc-a",
   },
@@ -82,6 +47,12 @@ const DEMO_CANDIDATES: ReviewCandidate[] = [
     moduleRevisionId: "catalog-module-vca-b",
   },
 ];
+
+const BUILDER_STEPS = [
+  { n: 1, label: "Case" },
+  { n: 2, label: "Create rig" },
+  { n: 3, label: "Place modules" },
+] as const;
 
 function mapApiCandidates(rows: EvidenceCandidate[]): ReviewCandidate[] {
   return rows.map((row) => ({
@@ -108,17 +79,10 @@ function mapApiCandidates(rows: EvidenceCandidate[]): ReviewCandidate[] {
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_BYTES = 12 * 1024 * 1024;
 
-function casePowerSummary(c: Case): string {
-  const parts: string[] = [];
-  if (c.power_12v_ma != null) parts.push(`+12 ${c.power_12v_ma}mA`);
-  if (c.power_neg12v_ma != null) parts.push(`−12 ${c.power_neg12v_ma}mA`);
-  if (c.power_5v_ma != null) parts.push(`+5 ${c.power_5v_ma}mA`);
-  if (parts.length) return parts.join(" · ");
-  if (c.powered === false || c.meta?.powered === false) return "Unpowered";
-  return "Power unspecified (placement will not enforce rails)";
-}
-
-function formatValidationError(err: unknown): string {
+function formatValidationError(
+  err: unknown,
+  fallback = "Could not create rig. Check case selection and try again.",
+): string {
   const apiError = err as {
     response?: {
       data?: {
@@ -131,21 +95,39 @@ function formatValidationError(err: unknown): string {
   if (detail && typeof detail === "object") {
     const errs = detail.errors;
     if (Array.isArray(errs) && errs.length) {
-      return errs.map((e) => e.message || e.field || "Validation error").join(" · ");
+      return errs.map((e) => e.message || e.field || "Validation error").join("; ");
     }
     if (detail.message) return detail.message;
   }
-  return "Could not create rig. Check case selection and try again.";
+  return fallback;
 }
 
-/** Map dual-gate status → chip tone class. */
-function gateTone(status?: string | null): "success" | "warning" | "danger" | "neutral" {
-  if (!status) return "neutral";
-  const s = status.toLowerCase();
-  if (s === "verified" || s === "ok" || s === "pass") return "success";
-  if (s === "incomplete" || s === "warning" || s === "unknown") return "warning";
-  if (s === "conflict" || s === "fail" || s === "error") return "danger";
-  return "neutral";
+/** The case rails a placement draws on, with the names the builder shows. */
+const POWER_RAILS: {
+  key: RailKey;
+  rail: string;
+  capacity: "power_12v_ma" | "power_neg12v_ma" | "power_5v_ma";
+}[] = [
+  { key: "p12", rail: "+12V", capacity: "power_12v_ma" },
+  { key: "n12", rail: "−12V", capacity: "power_neg12v_ma" },
+  { key: "p5", rail: "+5V", capacity: "power_5v_ma" },
+];
+
+/** ", in a Sim Co Sim 84 case, 84HP in one row", and whether compatibility can be checked. */
+function caseLine(c: NonNullable<Rack["case"]>): string {
+  const rowHp = c.hp_per_row ?? [];
+  const size =
+    c.total_hp == null
+      ? ""
+      : rowHp.length === 1
+        ? `, ${c.total_hp}HP in one row`
+        : rowHp.length > 1
+          ? `, ${c.total_hp}HP in rows of ${rowHp.join(" + ")}`
+          : `, ${c.total_hp}HP`;
+  const link = c.catalog_slug
+    ? ""
+    : ". It has no catalog link, so compatibility checks are partial";
+  return `, in a ${c.brand} ${c.name} case${size}${link}`;
 }
 
 /** Suggest start HP for single add (0 if row cannot fit — user may still override). */
@@ -174,6 +156,7 @@ export default function RackBuilderPage() {
   const [evidenceState, setEvidenceState] = useState<EvidenceState>("idle");
   const [fileLabel, setFileLabel] = useState("");
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  /** Photo evidence errors; rig creation keeps its own in createError. */
   const [error, setError] = useState("");
   // Rigs belong to the signed-in user, so creating one needs an account.
   const signedIn = useAuthStore((st) => st.isAuthenticated());
@@ -203,11 +186,26 @@ export default function RackBuilderPage() {
   );
   const [rigName, setRigName] = useState("");
   const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState("");
   const [caseQuery, setCaseQuery] = useState("");
+  // The case search asks once the typing pauses.
+  const caseTerm = useDebouncedValue(caseQuery.trim());
+  const [casesError, setCasesError] = useState<unknown>(null);
+  const [casesAttempt, setCasesAttempt] = useState(0);
   const [compatNote, setCompatNote] = useState<string | null>(null);
 
   /** Live placement editor (method 01) */
+  const { toast, show: showToast, dismiss: dismissToast } = useToast();
+  /** Counts placement saves, so only the latest one's answer updates the rail. */
+  const commitSeq = useRef(0);
+  /** A placed module the rail should focus once it is drawn, such as one Undo put back. */
+  const [focusRequest, setFocusRequest] = useState<{
+    module_id: number;
+    row: number;
+    start: number;
+  } | null>(null);
   const [liveRack, setLiveRack] = useState<Rack | null>(null);
+  const [liveRackLoading, setLiveRackLoading] = useState(false);
   const [placementModules, setPlacementModules] = useState<RackModuleSpec[]>([]);
   const [galleryModules, setGalleryModules] = useState<Module[]>([]);
   const [addModuleId, setAddModuleId] = useState<number | null>(null);
@@ -215,12 +213,7 @@ export default function RackBuilderPage() {
   const [addStartHp, setAddStartHp] = useState(0);
   const [placementSaving, setPlacementSaving] = useState(false);
   const [placementError, setPlacementError] = useState("");
-  const [rackCompat, setRackCompat] = useState<{
-    bridge_status: string;
-    message: string;
-    catalog_slug?: string | null;
-    compatibility?: CompatibilityResponse | null;
-  } | null>(null);
+  const [rackCompat, setRackCompat] = useState<RackCompat | null>(null);
   const [batchNote, setBatchNote] = useState("");
   const [moduleMaterializeNote, setModuleMaterializeNote] = useState("");
   const [moduleQuery, setModuleQuery] = useState("");
@@ -275,43 +268,6 @@ export default function RackBuilderPage() {
     [placementModules, liveRack, galleryModules],
   );
 
-  /** Case rail capacity vs known placement draw; unknown draws make it a lower bound. */
-  const powerRailMeters = useMemo(() => {
-    const c = liveRack?.case;
-    if (!c)
-      return [] as {
-        rail: string;
-        key: RailKey;
-        draw: number;
-        unknown: number;
-        capacity: number | null;
-        headroom: number | null;
-        tone: RailTone;
-        pct: number;
-        label: string;
-      }[];
-    const rails: { rail: string; key: RailKey; capacity: number | null | undefined }[] = [
-      { rail: "+12V", key: "p12", capacity: c.power_12v_ma },
-      { rail: "−12V", key: "n12", capacity: c.power_neg12v_ma },
-      { rail: "+5V", key: "p5", capacity: c.power_5v_ma },
-    ];
-    return rails.map((r) => ({
-      rail: r.rail,
-      key: r.key,
-      ...railMeter(placementPowerSummary[r.key], r.capacity),
-    }));
-  }, [liveRack, placementPowerSummary]);
-
-  /** Placed modules the catalog retired: they stay in the rack, flagged with a reason. */
-  const retiredPlacements = (liveRack?.modules ?? []).filter(
-    (m) => m.module?.status === "tombstoned",
-  );
-
-  const unknownRails = (["p12", "n12", "p5"] as RailKey[])
-    .map((key) => ({ key, n: placementPowerSummary[key].unknown }))
-    .filter((r) => r.n > 0);
-  const RAIL_LABEL: Record<RailKey, string> = { p12: "+12", n12: "−12", p5: "+5" };
-
   const previewModule = useMemo(() => {
     if (addModuleId == null) return null;
     return galleryModules.find((m) => m.id === addModuleId) ?? null;
@@ -321,11 +277,9 @@ export default function RackBuilderPage() {
     const q = moduleQuery.trim().toLowerCase();
     let rows = [...galleryModules];
     if (q) {
+      // Match the "Brand Name" label too: the module_id deep link prefills the query with it.
       rows = rows.filter(
-        (m) =>
-          m.brand.toLowerCase().includes(q) ||
-          m.name.toLowerCase().includes(q) ||
-          String(m.id) === q,
+        (m) => `${m.brand} ${m.name}`.toLowerCase().includes(q) || String(m.id) === q,
       );
     }
     // Prefer modules with known power, then smaller HP
@@ -346,6 +300,15 @@ export default function RackBuilderPage() {
       return fromGallery?.hp ?? null;
     };
   }, [liveRack, galleryModules]);
+
+  /** The module a placement refers to: the rig's own record first, else the gallery's. */
+  const placedModule = (spec: RackModuleSpec) =>
+    liveRack?.modules?.find(
+      (m) =>
+        m.module_id === spec.module_id &&
+        m.row_index === spec.row_index &&
+        m.start_hp === spec.start_hp,
+    )?.module ?? galleryModules.find((m) => m.id === spec.module_id);
 
   /** Per-row HP occupancy for visual usage bars. */
   const rowHpUsage = useMemo(() => {
@@ -426,20 +389,27 @@ export default function RackBuilderPage() {
 
   useEffect(() => {
     if (liveMode) return;
+    let current = true;
     setCasesLoading(true);
+    setCasesError(null);
     setCompatNote(null);
-    const q = caseQuery.trim() || undefined;
-    Promise.all([
+    const q = caseTerm || undefined;
+    void Promise.allSettled([
       caseCatalogApi
         .list({ limit: 200, format_family: "eurorack", q })
-        .then((res) => res.data.cases ?? [])
-        .catch(() => [] as CatalogCaseListItem[]),
+        .then((res) => res.data.cases ?? []),
       caseApi
         .list({ limit: 200, format_family: "Eurorack", q })
-        .then((res) => res.data.cases ?? [])
-        .catch(() => [] as Case[]),
+        .then((res) => res.data.cases ?? []),
     ])
-      .then(([catalogRows, legacyRows]) => {
+      .then(([catalogResult, legacyResult]) => {
+        if (!current) return;
+        const catalogRows = catalogResult.status === "fulfilled" ? catalogResult.value : [];
+        const legacyRows = legacyResult.status === "fulfilled" ? legacyResult.value : [];
+        // Either list is enough to choose from; with neither, the cases didn't load.
+        if (catalogResult.status === "rejected" && legacyResult.status === "rejected") {
+          setCasesError(catalogResult.reason);
+        }
         setCatalogCases(catalogRows);
         setLegacyCases(legacyRows);
         if (selectedCaseId == null && preselectedCaseId != null) {
@@ -458,9 +428,14 @@ export default function RackBuilderPage() {
           setSelectedCaseId(legacyRows[0].id);
         }
       })
-      .finally(() => setCasesLoading(false));
+      .finally(() => {
+        if (current) setCasesLoading(false);
+      });
+    return () => {
+      current = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- case catalog load
-  }, [liveMode, caseQuery]);
+  }, [liveMode, caseTerm, casesAttempt]);
 
   useEffect(() => {
     if (liveMode || !selectedCatalogSlug) {
@@ -471,9 +446,9 @@ export default function RackBuilderPage() {
       .compatibility(selectedCatalogSlug, { modules: [], plan_close_lid: false })
       .then((res) => {
         const c = res.data;
-        const rails = c.power_headroom.map((r) => `${r.rail} ${r.status}`).join(" · ");
+        const rails = c.power_headroom.map((r) => `${r.rail} ${r.status}`).join(", ");
         setCompatNote(
-          `Compatibility baseline: ${c.overall_status} · format ${c.format_check.status} · ${rails}`,
+          `Compatibility baseline: ${c.overall_status}; format ${c.format_check.status}; ${rails}`,
         );
       })
       .catch(() => setCompatNote(null));
@@ -481,7 +456,7 @@ export default function RackBuilderPage() {
 
   const createRigFromCase = async () => {
     setCreating(true);
-    setError("");
+    setCreateError("");
     try {
       let caseId = selectedCaseId;
       if (selectedCatalogSlug) {
@@ -494,7 +469,7 @@ export default function RackBuilderPage() {
         });
       }
       if (caseId == null) {
-        setError("Select a Eurorack case (catalog or legacy) before creating a rig.");
+        setCreateError("Select a Eurorack case (catalog or legacy) before creating a rig.");
         setCreating(false);
         return;
       }
@@ -507,14 +482,16 @@ export default function RackBuilderPage() {
       const qs = preselectedModuleId != null ? `?module_id=${preselectedModuleId}` : "";
       navigate(`/racks/${id}/edit${qs}`);
     } catch (err) {
-      setError(formatValidationError(err));
+      setCreateError(formatValidationError(err));
     } finally {
       setCreating(false);
     }
   };
 
-  const refreshLiveRack = async (id: number) => {
+  /** Reloads the rig; `isCurrent` lets a superseded save skip writing its stale answer. */
+  const refreshLiveRack = async (id: number, isCurrent: () => boolean = () => true) => {
     const res = await rackApi.get(id);
+    if (!isCurrent()) return;
     setLiveRack(res.data);
     setPlacementModules(
       (res.data.modules ?? []).map((m) => ({
@@ -539,10 +516,13 @@ export default function RackBuilderPage() {
       setRackCompat(null);
       return;
     }
-    void refreshLiveRack(rackId).catch(() => {
-      setLiveRack(null);
-      setPlacementError("Unable to load rig for placement.");
-    });
+    setLiveRackLoading(true);
+    void refreshLiveRack(rackId)
+      .catch(() => {
+        setLiveRack(null);
+        setPlacementError("Unable to load rig for placement.");
+      })
+      .finally(() => setLiveRackLoading(false));
     moduleApi
       .list({ limit: 500 })
       .then((res) => {
@@ -559,33 +539,25 @@ export default function RackBuilderPage() {
       .catch(() => setGalleryModules([]));
   }, [liveMode, rackId, preselectedModuleId]);
 
-  const savePlacements = async (next: RackModuleSpec[]) => {
-    if (rackId == null) return;
+  /** Saves placements once the server accepts them. Says whether it saved. */
+  const savePlacements = async (next: RackModuleSpec[]): Promise<boolean> => {
+    if (rackId == null) return false;
     setPlacementSaving(true);
     setPlacementError("");
     try {
       await rackApi.update(rackId, { modules: next });
       setPlacementModules(next);
       await refreshLiveRack(rackId);
+      return true;
     } catch (err) {
       setPlacementError(formatValidationError(err));
+      return false;
     } finally {
       setPlacementSaving(false);
     }
   };
 
-  const addPlacement = async () => {
-    if (addModuleId == null) {
-      setPlacementError("Select a module from the gallery.");
-      return;
-    }
-    const next = [
-      ...placementModules,
-      { module_id: addModuleId, row_index: addRow, start_hp: addStartHp },
-    ];
-    await savePlacements(next);
-  };
-
+  /** Each row's HP, declared before the checks and saves that read it. */
   const rowCapacities = useMemo(() => {
     if (!liveRack?.case) return [] as number[];
     const c = liveRack.case;
@@ -594,6 +566,130 @@ export default function RackBuilderPage() {
     const each = Math.floor((c.total_hp || 0) / rows) || c.total_hp || 0;
     return Array.from({ length: rows }, () => each);
   }, [liveRack]);
+
+  /** A placed module's name, for messages: the rig's record, else the gallery's. */
+  const placementName = (spec: RackModuleSpec) => {
+    const mod = placedModule(spec);
+    return mod ? `${mod.brand} ${mod.name}` : `Module #${spec.module_id}`;
+  };
+
+  /** Focus the placed module in this slot once the rail draws it. */
+  const focusPlacement = (spec: RackModuleSpec | undefined) =>
+    setFocusRequest(
+      spec ? { module_id: spec.module_id, row: spec.row_index, start: spec.start_hp } : null,
+    );
+
+  /**
+   * Saves placements at once on screen and rolls them back if the server refuses. The toast
+   * comes once the rig has reloaded, so its Undo never races the save it reverses. `undo`, when
+   * given, is offered there: it saves the placements as they were, and focuses `undoFocus`.
+   * `focus` is the module to return to when the toast is dismissed.
+   */
+  const commitPlacements = async (
+    next: RackModuleSpec[],
+    message: string,
+    options: { undo?: string; undoFocus?: RackModuleSpec; focus?: RackModuleSpec } = {},
+  ) => {
+    if (rackId == null) return;
+    const seq = ++commitSeq.current;
+    const isCurrent = () => seq === commitSeq.current;
+    const before = placementModules;
+    setPlacementModules(next);
+    setPlacementSaving(true);
+    setPlacementError("");
+    dismissToast();
+    try {
+      await rackApi.update(rackId, { modules: next });
+      await refreshLiveRack(rackId, isCurrent);
+      if (!isCurrent()) return;
+      const { undo, undoFocus, focus } = options;
+      showToast(message, {
+        action: undo
+          ? {
+              label: "Undo",
+              run: () => {
+                focusPlacement(undoFocus);
+                void commitPlacements(before, undo, { focus: undoFocus });
+              },
+            }
+          : undefined,
+        returnFocus: () => focusPlacement(focus),
+      });
+    } catch (err) {
+      if (!isCurrent()) return;
+      setPlacementModules(before);
+      const why = formatValidationError(err, failureReason(err));
+      setPlacementError(why);
+      showToast(`Not saved, so nothing changed. ${why}`, { tone: "danger" });
+    } finally {
+      if (isCurrent()) setPlacementSaving(false);
+    }
+  };
+
+  /** Whether a module may sit in a slot, against every other placement and the case's rows. */
+  const checkPlacementSlot = (slot: Slot, ignoreIndex: number) =>
+    checkSlot(slot, placementModules, rowCapacities, resolveModuleHp, placementName, ignoreIndex);
+
+  const movePlacement = (index: number, row: number, startHp: number) => {
+    const spec = placementModules[index];
+    if (!spec) return;
+    const name = placementName(spec);
+    void commitPlacements(
+      moveTo(placementModules, index, row, startHp),
+      `${name} moved to ${slotPhrase(row, startHp)}.`,
+      {
+        undo: `${name} is back at ${slotPhrase(spec.row_index, spec.start_hp)}.`,
+        undoFocus: spec,
+        focus: { ...spec, row_index: row, start_hp: startHp },
+      },
+    );
+  };
+
+  /** The rails a placement list would take past the case's stated capacity. */
+  const railsOverBudget = (next: RackModuleSpec[]) => {
+    const rack = liveRack?.case;
+    if (!rack) return [] as string[];
+    const summary = summarizePower(
+      next.map((spec) => placementPower(placedModule(spec), spec.power_config_id)),
+    );
+    return POWER_RAILS.flatMap(({ key, rail, capacity }) => {
+      const meter = railMeter(summary[key], rack[capacity]);
+      return meter.headroom != null && meter.headroom < 0
+        ? [`${rail} by ${-meter.headroom}mA`]
+        : [];
+    });
+  };
+
+  const addPlacement = async () => {
+    if (addModuleId == null) {
+      setPlacementError("Select a module from the gallery.");
+      return;
+    }
+    if (previewCheck && !previewCheck.ok) {
+      setPlacementError(previewCheck.reason);
+      return;
+    }
+    const next = [
+      ...placementModules,
+      { module_id: addModuleId, row_index: addRow, start_hp: addStartHp },
+    ];
+    // Over budget is the case's call to make, not the builder's: it warns, and still places.
+    const over = railsOverBudget(next);
+    const before = railsOverBudget(placementModules);
+    const saved = await savePlacements(next);
+    if (saved && over.length > before.length) {
+      showToast(`This placement takes the case over budget on ${over.join(" and ")}.`, {
+        tone: "warning",
+      });
+    }
+  };
+
+  // The next single placement, checked before it can be added: overlapping or off the row, the
+  // rail shows it red with the reason and Add placement waits.
+  const previewCheck =
+    previewModule && previewModule.hp > 0
+      ? checkPlacementSlot({ row: addRow, start: addStartHp, hp: previewModule.hp }, -1)
+      : null;
 
   const batchPreview = useMemo(() => {
     if (!batchSelectedIds.length || !rowCapacities.length) {
@@ -644,7 +740,7 @@ export default function RackBuilderPage() {
     if (!result.added.length) {
       setPlacementError(
         result.unplaced.length
-          ? `Nothing placed. ${result.unplaced.map((u) => `#${u.module_id}: ${u.reason}`).join(" · ")}`
+          ? `Nothing placed. ${result.unplaced.map((u) => `#${u.module_id}: ${u.reason}`).join("; ")}`
           : "Nothing to place.",
       );
       setBatchPlaceNote("");
@@ -652,7 +748,7 @@ export default function RackBuilderPage() {
     }
     await savePlacements(result.placements);
     const unMsg = result.unplaced.length
-      ? ` · ${result.unplaced.length} could not fit (${result.unplaced
+      ? `, ${result.unplaced.length} could not fit (${result.unplaced
           .map((u) => `#${u.module_id}`)
           .join(", ")})`
       : "";
@@ -670,9 +766,15 @@ export default function RackBuilderPage() {
     await savePlacements(next);
   };
 
-  const removePlacement = async (index: number) => {
-    const next = placementModules.filter((_, i) => i !== index);
-    await savePlacements(next);
+  const removePlacement = (index: number) => {
+    const spec = placementModules[index];
+    if (!spec) return;
+    const name = placementName(spec);
+    void commitPlacements(
+      placementModules.filter((_, i) => i !== index),
+      `${name} removed from ${slotPhrase(spec.row_index, spec.start_hp)}.`,
+      { undo: `${name} is back at ${slotPhrase(spec.row_index, spec.start_hp)}.`, undoFocus: spec },
+    );
   };
 
   const materializeAllEurorack = async () => {
@@ -681,13 +783,13 @@ export default function RackBuilderPage() {
       const res = await caseCatalogApi.materializeBatch({ format_family: "eurorack" });
       const b = res.data;
       setBatchNote(
-        `Materialized Eurorack catalog: scanned ${b.scanned}, created ${b.created}, updated ${b.updated}, failed ${b.failed}.`,
+        `Synced the Eurorack catalog: scanned ${b.scanned}, created ${b.created}, updated ${b.updated}, failed ${b.failed}.`,
       );
       // Refresh legacy case list for create flow
       const legacy = await caseApi.list({ limit: 200, format_family: "Eurorack" });
       setLegacyCases(legacy.data.cases ?? []);
     } catch {
-      setBatchNote("Bulk materialize failed. Ensure catalog seed is imported.");
+      setBatchNote("Bulk sync failed. Check that the catalog seed is imported.");
     }
   };
 
@@ -700,13 +802,13 @@ export default function RackBuilderPage() {
       });
       const b = res.data;
       setModuleMaterializeNote(
-        `Module catalog materialize: scanned ${b.scanned}, created ${b.created}, exists ${b.exists}, failed ${b.failed}.`,
+        `Loaded HP-known catalog modules: scanned ${b.scanned}, created ${b.created}, already present ${b.exists}, failed ${b.failed}.`,
       );
       const list = await moduleApi.list({ limit: 500 });
       setGalleryModules(list.data.modules ?? []);
     } catch {
       setModuleMaterializeNote(
-        "Module bulk materialize failed. Ensure research catalog is imported and API is up.",
+        "Loading HP-known modules failed. Check that the research catalog is imported and the API is up.",
       );
     }
   };
@@ -812,7 +914,7 @@ export default function RackBuilderPage() {
     });
     setFusionFeedback(
       `Confirmed ${eligible.length} non-conflict fusion${eligible.length === 1 ? "" : "s"}` +
-        (blocked ? ` · ${blocked} blocked (conflict or missing rep)` : ""),
+        (blocked ? `, ${blocked} blocked (conflict or missing rep)` : ""),
     );
   };
 
@@ -875,8 +977,8 @@ export default function RackBuilderPage() {
     setReconcileStatus(pendingFiles.length >= 2 ? "DEMO_MULTI" : "DEMO_SINGLE");
     setReconcileNote(
       pendingFiles.length >= 2
-        ? "Demo mode: multi-photo fusion requires a live rig target."
-        : "Demo mode: select a rig for live multi-photo reconciliation.",
+        ? "Multi-photo fusion needs a target rig."
+        : "Choose a target rig to reconcile your photos.",
     );
     setEvidenceState("review");
   };
@@ -932,30 +1034,46 @@ export default function RackBuilderPage() {
   };
 
   return (
-    <section aria-labelledby="builder-title">
+    <section
+      className="builder"
+      aria-labelledby="builder-title"
+      // Room below the last row, so a toast never sits over it.
+      data-toast-open={toast ? "" : undefined}
+    >
       <header className="workspace-header">
         <div>
           <h1 id="builder-title">
-            {liveMode ? "Place modules on this rig" : "Establish your module inventory"}
+            {liveMode ? "Module placement" : "Establish your module inventory"}
           </h1>
-          <p className="muted">
-            Bind a Eurorack case, then place modules manually or review photo evidence. Multi-photo
-            fusion never auto-confirms inventory. Missing case power stays unchecked.
-          </p>
+          {liveMode ? (
+            <p className="muted builder-rig-line">
+              <strong>{liveRack?.name ?? "This rig"}</strong>
+              {liveRack?.case ? caseLine(liveRack.case) : ""}.
+            </p>
+          ) : (
+            <p className="muted">
+              Choose a case, create the rig, then place modules from the{" "}
+              <Link to="/modules">module gallery</Link>.
+            </p>
+          )}
         </div>
+        {rackId != null ? (
+          <div className="header-actions">
+            <Link className="button button-quiet" to={`/rigs/${rackId}`}>
+              Open rig detail
+            </Link>
+            <Link className="button button-quiet" to="/racks">
+              Back to rigs
+            </Link>
+          </div>
+        ) : null}
       </header>
 
-      <nav className="step-progress" aria-label="Builder steps">
-        {(
-          [
-            { n: 1, label: "Case" },
-            { n: 2, label: "Create rig" },
-            { n: 3, label: "Place modules" },
-          ] as const
-        ).map((step) => {
+      <ol className="step-progress" aria-label="Builder steps">
+        {BUILDER_STEPS.map((step) => {
           const state = builderStep > step.n ? "done" : builderStep === step.n ? "current" : "todo";
           return (
-            <div
+            <li
               key={step.n}
               className={`step-progress__item step-progress__item--${state}`}
               aria-current={state === "current" ? "step" : undefined}
@@ -964,1207 +1082,166 @@ export default function RackBuilderPage() {
                 {step.n}
               </span>
               <span className="step-progress__label">{step.label}</span>
-            </div>
+              {state === "done" ? <span className="visually-hidden">, done</span> : null}
+            </li>
           );
         })}
-      </nav>
+      </ol>
 
-      {!liveMode && preselectedModuleId != null ? (
-        <div
-          className="panel module-preselect-banner"
-          role="status"
-          style={{ marginBottom: "var(--space-4)" }}
-        >
-          <p style={{ marginTop: 0 }}>
-            <strong>Module ready to place</strong>
-          </p>
-          <p style={{ margin: 0 }}>
-            {preselectedLabel ||
-              (preselectedModule
-                ? `${preselectedModule.brand} ${preselectedModule.name} (${preselectedModule.hp}HP)`
-                : `Module #${preselectedModuleId}`)}
-            {" · "}
-            <strong>create a rig</strong>, then placement opens with this module preselected.
-          </p>
-        </div>
-      ) : null}
-
-      {!liveMode ? (
-        <div
-          className="panel"
-          style={{ marginBottom: "var(--space-4)" }}
-          aria-labelledby="case-step-title"
-        >
-          <h2 id="case-step-title" style={{ marginTop: 0 }}>
-            Step 1: choose a case envelope
-          </h2>
-          <p className="muted">
-            Only Eurorack cases are selectable for placement. Other formats remain catalog-only on{" "}
-            <Link to="/cases">Cases</Link>.
-          </p>
-          <div className="toolbar" style={{ marginTop: "var(--space-3)" }}>
-            <label className="field" style={{ flex: "1 1 12rem" }}>
-              Search cases
-              <input
-                type="search"
-                value={caseQuery}
-                placeholder="Manufacturer or model…"
-                onChange={(e) => setCaseQuery(e.target.value)}
-              />
-            </label>
-            <label className="field" style={{ flex: "1 1 14rem" }}>
-              Catalog case (preferred)
-              <select
-                value={selectedCatalogSlug ?? ""}
-                onChange={(e) => {
-                  const slug = e.target.value || null;
-                  setSelectedCatalogSlug(slug);
-                  if (slug) setSelectedCaseId(null);
-                }}
-                disabled={casesLoading}
-                aria-required={catalogCases.length > 0}
-              >
-                <option value="">
-                  {casesLoading
-                    ? "Loading…"
-                    : catalogCases.length
-                      ? "Select from normalized catalog…"
-                      : "No catalog cases (use legacy below)"}
-                </option>
-                {catalogCases.map((c) => {
-                  const cap = c.primary_revision?.capacity_value;
-                  const unit = c.primary_revision?.capacity_unit || "hp";
-                  return (
-                    <option key={c.slug} value={c.slug}>
-                      {c.manufacturer} {c.model}
-                      {cap != null ? ` (${cap} ${unit})` : ""}
-                    </option>
-                  );
-                })}
-              </select>
-            </label>
-            <label className="field" style={{ flex: "1 1 14rem" }}>
-              Legacy case (fallback)
-              <select
-                value={selectedCaseId ?? ""}
-                onChange={(e) => {
-                  setSelectedCaseId(e.target.value ? Number(e.target.value) : null);
-                  if (e.target.value) setSelectedCatalogSlug(null);
-                }}
-                disabled={casesLoading}
-              >
-                <option value="">
-                  {casesLoading
-                    ? "Loading…"
-                    : catalogCases.length > 0
-                      ? "Optional legacy override…"
-                      : "Select legacy Eurorack case…"}
-                </option>
-                {legacyCases.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.brand} {c.name} ({c.total_hp}HP · {c.rows} row
-                    {c.rows === 1 ? "" : "s"})
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="field" style={{ flex: "1 1 10rem" }}>
-              Rig name (optional)
-              <input
-                type="text"
-                value={rigName}
-                onChange={(e) => setRigName(e.target.value)}
-                placeholder="Auto-named if empty"
-              />
-            </label>
-            <button
-              type="button"
-              className="button button-primary"
-              onClick={() => void createRigFromCase()}
-              disabled={
-                !signedIn || creating || (selectedCatalogSlug == null && selectedCaseId == null)
-              }
-            >
-              {creating ? "Creating…" : "Create empty rig"}
-            </button>
+      <div className="builder-flow">
+        {!liveMode && preselectedModuleId != null ? (
+          <div className="module-preselect-banner" role="status">
+            <p>
+              <strong>Module ready to place:</strong>{" "}
+              {preselectedLabel ||
+                (preselectedModule
+                  ? `${preselectedModule.brand} ${preselectedModule.name} (${preselectedModule.hp}HP)`
+                  : `Module #${preselectedModuleId}`)}
+              . Create a rig, then placement opens with this module preselected.
+            </p>
           </div>
-          {!signedIn ? (
-            <p className="muted" role="note">
-              {ACCOUNTS_OPEN ? (
-                <>
-                  Rigs are saved to your account. <Link to="/login">Sign in</Link> to create one.
-                </>
-              ) : (
-                "Rigs are saved to your account. Accounts open when the PatchHive service goes live."
-              )}
-            </p>
-          ) : null}
-          {selectedCatalogCase ? (
-            <div className="stat-row" style={{ marginTop: "var(--space-4)" }}>
-              <div className="stat-block">
-                <p className="muted" style={{ margin: 0 }}>
-                  Layout
-                </p>
-                <h3 style={{ fontSize: "1rem" }}>
-                  {selectedCatalogCase.primary_revision?.capacity_value ?? "unknown"}{" "}
-                  {selectedCatalogCase.primary_revision?.capacity_unit || "hp"}
-                  {selectedCatalogCase.primary_revision?.row_count != null
-                    ? ` · ${selectedCatalogCase.primary_revision.row_count} row(s)`
-                    : ""}
-                </h3>
-              </div>
-              <div className="stat-block">
-                <p className="muted" style={{ margin: 0 }}>
-                  Power
-                </p>
-                <h3 style={{ fontSize: "1rem" }}>
-                  {selectedCatalogCase.powered === false
-                    ? "Unpowered"
-                    : selectedCatalogCase.powered === true
-                      ? "Powered (materialize fills rails when known)"
-                      : "Power unspecified"}
-                </h3>
-              </div>
-            </div>
-          ) : null}
-          {selectedLegacyCase && !selectedCatalogCase ? (
-            <div className="stat-row" style={{ marginTop: "var(--space-4)" }}>
-              <div className="stat-block">
-                <p className="muted" style={{ margin: 0 }}>
-                  Layout
-                </p>
-                <h3 style={{ fontSize: "1rem" }}>
-                  {selectedLegacyCase.hp_per_row?.join(" + ") || selectedLegacyCase.total_hp} HP
-                </h3>
-              </div>
-              <div className="stat-block">
-                <p className="muted" style={{ margin: 0 }}>
-                  Power
-                </p>
-                <h3 style={{ fontSize: "1rem" }}>{casePowerSummary(selectedLegacyCase)}</h3>
-              </div>
-            </div>
-          ) : null}
-          {compatNote ? (
-            <p className="muted" style={{ marginTop: "var(--space-3)", fontSize: "0.9rem" }}>
-              {compatNote}
-            </p>
-          ) : null}
-          {error && !liveMode ? (
-            <p
-              className="status status-danger"
-              role="alert"
-              style={{ marginTop: "var(--space-3)" }}
-            >
-              {error}
-            </p>
-          ) : null}
-          {!casesLoading && catalogCases.length === 0 && legacyCases.length === 0 ? (
-            <p className="status status-warning" style={{ marginTop: "var(--space-3)" }}>
-              No Eurorack cases available.{" "}
-              {import.meta.env.DEV ? (
-                <>
-                  Import <code>data/cases/seed-v1.json</code> via the catalog populator, or
-                  open{" "}
-                </>
-              ) : (
-                "Open "
-              )}
-              <Link to="/cases">Cases</Link>.
-            </p>
-          ) : null}
+        ) : null}
 
-          {canBulkMaterialize ? (
-            <div style={{ marginTop: "var(--space-4)" }}>
-              <button
-                type="button"
-                className="button button-secondary"
-                onClick={() => void materializeAllEurorack()}
-              >
-                Materialize all Eurorack catalog cases
-              </button>
-              {batchNote ? (
-                <p className="muted" style={{ marginTop: "var(--space-2)" }} role="status">
-                  {batchNote}
-                </p>
-              ) : (
-                <p className="muted" style={{ marginTop: "var(--space-2)" }}>
-                  Syncs normalized catalog rows into legacy placement cases (idempotent).
-                </p>
-              )}
-            </div>
-          ) : null}
-
-          <hr
-            style={{ border: 0, borderTop: "1px solid var(--border)", margin: "var(--space-5) 0" }}
+        {rackId != null ? (
+          <PlacementStep
+            rack={liveRack}
+            loading={liveRackLoading}
+            preselected={
+              preselectedModuleId != null
+                ? {
+                    label: preselectedModule
+                      ? `${preselectedModule.brand} ${preselectedModule.name}`
+                      : `module #${preselectedModuleId}`,
+                    hp: preselectedModule?.hp ?? null,
+                  }
+                : null
+            }
+            rail={{
+              rows: rowHpUsage,
+              placements: placementModules,
+              moduleFor: placedModule,
+              resolveHp: resolveModuleHp,
+              preview:
+                previewModule && !batchSelectedIds.length
+                  ? {
+                      module: previewModule,
+                      row: addRow,
+                      startHp: addStartHp,
+                      check: previewCheck ?? undefined,
+                    }
+                  : null,
+              batchPlan: batchPreview?.added ?? [],
+              onPickSlot: (row, startHp) => {
+                setAddRow(row);
+                setAddStartHp(startHp);
+              },
+              checkSlot: checkPlacementSlot,
+              onMove: movePlacement,
+              onRemove: removePlacement,
+              busy: placementSaving,
+              focusRequest,
+            }}
+            powerSummary={placementPowerSummary}
+            modules={filteredGalleryModules}
+            add={{
+              query: moduleQuery,
+              onQuery: setModuleQuery,
+              moduleId: addModuleId,
+              onModule: setAddModuleId,
+              row: addRow,
+              onRow: setAddRow,
+              startHp: addStartHp,
+              onStartHp: setAddStartHp,
+              blocked: previewCheck && !previewCheck.ok ? previewCheck.reason : null,
+              onAdd: () => void addPlacement(),
+            }}
+            batch={{
+              selectedIds: batchSelectedIds,
+              onToggle: toggleBatchModule,
+              onSelectAll: selectAllFilteredForBatch,
+              onClear: clearBatchSelection,
+              onPlace: () => void addBatchPlacements(),
+              plan: batchPreview,
+              note: batchPlaceNote,
+            }}
+            placements={placementModules}
+            moduleFor={placedModule}
+            saving={placementSaving}
+            error={placementError}
+            onChoosePowerConfig={(index, id) => void choosePowerConfig(index, id)}
+            onRemove={removePlacement}
+            compat={rackCompat}
+            canLoadModules={canBulkMaterialize}
+            onLoadModules={() => void materializeHpKnownModules()}
+            loadNote={moduleMaterializeNote}
           />
+        ) : (
+          <CaseStep
+            step={builderStep === 1 ? 1 : 2}
+            caseQuery={caseQuery}
+            onCaseQuery={setCaseQuery}
+            casesLoading={casesLoading}
+            casesError={casesError}
+            onRetryCases={() => setCasesAttempt((n) => n + 1)}
+            catalogCases={catalogCases}
+            legacyCases={legacyCases}
+            selectedCatalogSlug={selectedCatalogSlug}
+            onSelectCatalog={(slug) => {
+              setSelectedCatalogSlug(slug);
+              if (slug) setSelectedCaseId(null);
+            }}
+            selectedCaseId={selectedCaseId}
+            onSelectLegacy={(id) => {
+              setSelectedCaseId(id);
+              if (id != null) setSelectedCatalogSlug(null);
+            }}
+            selectedCatalogCase={selectedCatalogCase}
+            selectedLegacyCase={selectedLegacyCase}
+            compatNote={compatNote}
+            rigName={rigName}
+            onRigName={setRigName}
+            signedIn={signedIn}
+            creating={creating}
+            onCreate={() => void createRigFromCase()}
+            error={createError}
+            canSyncCatalog={canBulkMaterialize}
+            syncNote={batchNote}
+            onSyncCatalog={() => void materializeAllEurorack()}
+          />
+        )}
 
-          <p className="muted">
-            Photo evidence binds to an existing rig. Select a rig for live multi-photo upload, or
-            continue with local demo detection after create.
-          </p>
-          {racks.length > 0 ? (
-            <label className="field" htmlFor="evidence-rack" style={{ maxWidth: "24rem" }}>
-              Target rig for evidence
-              <select
-                id="evidence-rack"
-                value={selectedRackId ?? ""}
-                onChange={(event) =>
-                  setSelectedRackId(event.target.value ? Number(event.target.value) : null)
-                }
-              >
-                <option value="">Demo only (no API)</option>
-                {racks.map((rack) => (
-                  <option key={rack.id} value={rack.id}>
-                    #{rack.id} · {rack.name}
-                    {rack.case_id != null ? ` · case #${rack.case_id}` : ""}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : (
-            <p className="muted">Create a case-bound rig above to enable live evidence APIs.</p>
-          )}
-        </div>
-      ) : (
-        <div className="panel" style={{ marginBottom: "var(--space-4)" }}>
-          <p className="muted" style={{ marginTop: 0 }}>
-            Live placement + evidence for rig #{rackId}.{" "}
-            <Link to={`/rigs/${rackId}`}>Open rig detail</Link>
-            {" · "}
-            <Link to="/racks">Back to rigs</Link>
-          </p>
-          {liveRack?.case ? (
-            <p className="muted">
-              Case: {liveRack.case.brand} {liveRack.case.name}
-              {liveRack.case.catalog_slug
-                ? ` · catalog ${liveRack.case.catalog_slug}`
-                : " · no catalog link (materialize for full compatibility)"}
-              {liveRack.case.total_hp != null
-                ? ` · ${liveRack.case.total_hp}HP / ${(liveRack.case.hp_per_row || []).join("+") || "unknown"} rows`
-                : ""}
-            </p>
-          ) : null}
-
-          {preselectedModuleId != null ? (
-            <div className="module-preselect-banner" role="status">
-              <p style={{ margin: 0 }}>
-                Preselected from gallery:{" "}
-                <strong>
-                  {preselectedModule
-                    ? `${preselectedModule.brand} ${preselectedModule.name}`
-                    : `module #${preselectedModuleId}`}
-                </strong>
-                {preselectedModule?.hp != null ? ` · ${preselectedModule.hp}HP` : ""}
-                {" · "}start HP auto-snaps to the first free gap on the selected row.
-              </p>
-            </div>
-          ) : null}
-
-          <h2 style={{ marginTop: "var(--space-3)" }}>Module placement</h2>
-          <p className="muted">
-            Place modules by row and start HP. Saves through rack validation; catalog compatibility
-            runs when the case has <code>meta.catalog_slug</code>.
-          </p>
-
-          {rowHpUsage.length > 0 ? (
-            <div className="hp-usage" aria-label="Row HP usage">
-              {rowHpUsage.map((row) => {
-                const pct =
-                  row.capacity > 0 ? Math.min(100, Math.round((row.used / row.capacity) * 100)) : 0;
-                const tone =
-                  pct >= 100 ? "danger" : pct >= 85 ? "warning" : pct > 0 ? "success" : "neutral";
-                const blocks = placementModules
-                  .map((spec, index) => {
-                    if (spec.row_index !== row.row) return null;
-                    const hp = resolveModuleHp(spec.module_id) ?? 0;
-                    if (hp <= 0 || row.capacity <= 0) return null;
-                    const mod =
-                      liveRack?.modules?.find(
-                        (m) =>
-                          m.module_id === spec.module_id &&
-                          m.row_index === spec.row_index &&
-                          m.start_hp === spec.start_hp,
-                      )?.module ?? galleryModules.find((m) => m.id === spec.module_id);
-                    const leftPct = (spec.start_hp / row.capacity) * 100;
-                    const widthPct = Math.max(1.5, (hp / row.capacity) * 100);
-                    const powerKnown = mod?.power_12v_ma != null;
-                    return {
-                      key: `${spec.module_id}-${spec.start_hp}-${index}`,
-                      index,
-                      leftPct,
-                      widthPct,
-                      label: mod ? `${mod.brand} ${mod.name}` : `#${spec.module_id}`,
-                      short: mod?.name || `#${spec.module_id}`,
-                      hp,
-                      start: spec.start_hp,
-                      powerKnown,
-                    };
-                  })
-                  .filter(Boolean) as {
-                  key: string;
-                  index: number;
-                  leftPct: number;
-                  widthPct: number;
-                  label: string;
-                  short: string;
-                  hp: number;
-                  start: number;
-                  powerKnown: boolean;
-                }[];
-                return (
-                  <div key={row.row} className="hp-usage__row">
-                    <div className="hp-usage__meta">
-                      <span>Row {row.row}</span>
-                      <span className="muted">
-                        {row.used}/{row.capacity}HP used · {row.free} free
-                      </span>
-                    </div>
-                    <div
-                      className="usage-bar"
-                      role="meter"
-                      aria-valuemin={0}
-                      aria-valuemax={row.capacity}
-                      aria-valuenow={row.used}
-                      aria-label={`Row ${row.row} HP usage`}
-                    >
-                      <div
-                        className={`usage-bar__fill usage-bar__fill--${tone}`}
-                        style={{ transform: `scaleX(${pct / 100})` }}
-                      />
-                    </div>
-                    <div
-                      className="rack-row-map"
-                      role="img"
-                      aria-label={`Row ${row.row} layout, ${row.capacity} HP`}
-                      onClick={(e) => {
-                        // Click empty track → set start HP + row for next placement
-                        const track = e.currentTarget.querySelector(".rack-row-map__track");
-                        if (!track || e.target !== track) return;
-                        const rect = (track as HTMLElement).getBoundingClientRect();
-                        const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                        setAddRow(row.row);
-                        setAddStartHp(Math.floor(frac * row.capacity));
-                      }}
-                    >
-                      <div className="rack-row-map__track">
-                        {blocks.map((b) => (
-                          <button
-                            key={b.key}
-                            type="button"
-                            className={`rack-row-map__block${b.powerKnown ? "" : " rack-row-map__block--unknown-power"}`}
-                            style={{ left: `${b.leftPct}%`, width: `${b.widthPct}%` }}
-                            title={`${b.label} · HP ${b.start}–${b.start + b.hp - 1}${b.powerKnown ? "" : " · power unknown"}`}
-                            onClick={(ev) => {
-                              ev.stopPropagation();
-                              setAddRow(row.row);
-                              setAddStartHp(b.start);
-                            }}
-                          >
-                            <span className="rack-row-map__block-label">{b.short}</span>
-                            <span className="rack-row-map__block-hp">{b.hp}H</span>
-                          </button>
-                        ))}
-                        {previewModule &&
-                        !batchSelectedIds.length &&
-                        addRow === row.row &&
-                        previewModule.hp > 0 &&
-                        row.capacity > 0 ? (
-                          <div
-                            className="rack-row-map__block rack-row-map__block--preview"
-                            style={{
-                              left: `${(addStartHp / row.capacity) * 100}%`,
-                              width: `${Math.max(1.5, (previewModule.hp / row.capacity) * 100)}%`,
-                            }}
-                            aria-hidden="true"
-                            title={`Preview: ${previewModule.brand} ${previewModule.name} @ HP ${addStartHp}`}
-                          >
-                            <span className="rack-row-map__block-label">{previewModule.name}</span>
-                            <span className="rack-row-map__block-hp">{previewModule.hp}H</span>
-                          </div>
-                        ) : null}
-                        {batchPreview?.added
-                          .filter((spec) => spec.row_index === row.row)
-                          .map((spec) => {
-                            const hp = resolveModuleHp(spec.module_id) ?? 0;
-                            if (hp <= 0 || row.capacity <= 0) return null;
-                            const mod = galleryModules.find((m) => m.id === spec.module_id);
-                            return (
-                              <div
-                                key={`batch-preview-${spec.module_id}-${spec.start_hp}`}
-                                className="rack-row-map__block rack-row-map__block--preview rack-row-map__block--batch"
-                                style={{
-                                  left: `${(spec.start_hp / row.capacity) * 100}%`,
-                                  width: `${Math.max(1.5, (hp / row.capacity) * 100)}%`,
-                                }}
-                                aria-hidden="true"
-                                title={`Batch plan: ${mod ? `${mod.brand} ${mod.name}` : `#${spec.module_id}`} @ HP ${spec.start_hp}`}
-                              >
-                                <span className="rack-row-map__block-label">
-                                  {mod?.name || `#${spec.module_id}`}
-                                </span>
-                                <span className="rack-row-map__block-hp">{hp}H</span>
-                              </div>
-                            );
-                          })}
-                      </div>
-                      <div className="rack-row-map__scale" aria-hidden="true">
-                        <span>0</span>
-                        <span>{Math.floor(row.capacity / 2)}</span>
-                        <span>{row.capacity}HP</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : null}
-
-          <div className="toolbar" style={{ marginTop: "var(--space-3)" }}>
-            {canBulkMaterialize ? (
-              <button
-                type="button"
-                className="button button-secondary"
-                onClick={() => void materializeHpKnownModules()}
-              >
-                Materialize HP-known modules
-              </button>
-            ) : null}
-            <Link className="button button-quiet" to="/modules?hp=known">
-              Browse placeable catalog
-            </Link>
-          </div>
-          {moduleMaterializeNote ? (
-            <p className="status" role="status">
-              {moduleMaterializeNote}
-            </p>
-          ) : null}
-
-          {placementModules.length > 0 || liveRack?.case ? (
-            <div className="power-rail-panel" aria-label="Power rail usage" aria-live="polite">
-              <p className="muted" style={{ marginTop: 0, marginBottom: "var(--space-2)" }}>
-                Placement power: <strong>{placementPowerSummary.fullyKnown}</strong> of{" "}
-                {placementPowerSummary.total} modules state every rail
-                {placementPowerSummary.total
-                  ? ` · known Σ +12 ${placementPowerSummary.p12.known}mA / −12 ${placementPowerSummary.n12.known}mA / +5 ${placementPowerSummary.p5.known}mA`
-                  : ""}
-              </p>
-              {powerRailMeters.length > 0 ? (
-                <div className="power-rail-meters">
-                  {powerRailMeters.map((rail) => (
-                    <div key={rail.rail} className="power-rail-meters__row">
-                      <div className="hp-usage__meta">
-                        <span>
-                          <span
-                            className={`status-chip status-chip--${rail.tone}`}
-                            style={{ marginRight: "0.35rem" }}
-                          >
-                            {rail.rail}
-                          </span>
-                        </span>
-                        <span className="muted">{rail.label}</span>
-                      </div>
-                      <div
-                        className="usage-bar"
-                        role="meter"
-                        aria-valuemin={0}
-                        aria-valuemax={rail.capacity ?? 0}
-                        aria-valuenow={rail.draw}
-                        aria-label={`${rail.rail} power usage`}
-                      >
-                        <div
-                          className={`usage-bar__fill usage-bar__fill--${rail.tone}`}
-                          style={{
-                            transform: `scaleX(${
-                              rail.capacity == null ? (rail.draw > 0 ? 0.08 : 0) : rail.pct / 100
-                            })`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-              {unknownRails.length > 0 ? (
-                <p
-                  className="status status-warning"
-                  style={{ marginBottom: 0, fontSize: "0.85rem" }}
-                >
-                  Unknown draw, not assumed:{" "}
-                  {unknownRails.map((r) => `${RAIL_LABEL[r.key]} ${r.n}`).join(" · ")}. Totals on
-                  those rails are lower bounds.
-                </p>
-              ) : null}
-            </div>
-          ) : null}
-
-          {retiredPlacements.length > 0 ? (
-            <div
-              className="status status-warning"
-              role="status"
-              style={{ marginTop: "var(--space-3)" }}
-            >
-              <p style={{ margin: 0 }}>
-                {retiredPlacements.length === 1
-                  ? "One placed module is"
-                  : `${retiredPlacements.length} placed modules are`}{" "}
-                retired from the catalog. They stay in this rack; check each one.
-              </p>
-              <ul style={{ margin: "var(--space-2) 0 0", paddingLeft: "1.2rem" }}>
-                {retiredPlacements.map((m) => (
-                  <li key={m.id}>
-                    {m.module?.brand} {m.module?.name}: {m.module?.tombstone_reason ?? "retired"}
-                    {m.module?.alternatives?.length
-                      ? `. Consider ${m.module.alternatives.map((a) => `${a.brand} ${a.name}`).join(", ")}.`
-                      : "."}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          <div className="toolbar" style={{ marginTop: "var(--space-3)" }}>
-            <label className="field" style={{ flex: "1 1 10rem" }}>
-              Filter modules
-              <input
-                type="search"
-                value={moduleQuery}
-                placeholder="Brand, name, id…"
-                aria-label="Filter placeable modules"
-                onChange={(e) => setModuleQuery(e.target.value)}
-              />
-            </label>
-            <label className="field" style={{ flex: "2 1 14rem" }}>
-              Module
-              <select
-                value={addModuleId ?? ""}
-                onChange={(e) => setAddModuleId(e.target.value ? Number(e.target.value) : null)}
-                aria-label="Select module to place"
-              >
-                <option value="">Select module…</option>
-                {filteredGalleryModules.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.brand} {m.name} ({m.hp}HP
-                    {m.power_12v_ma != null ? ` · +12 ${m.power_12v_ma}mA` : " · power unknown"}
-                    {m.depth_mm != null ? ` · ${m.depth_mm}mm` : " · depth unknown"})
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="field" style={{ flex: "0 0 6rem" }}>
-              Row
-              <input
-                type="number"
-                min={0}
-                value={addRow}
-                aria-label="Row index"
-                onChange={(e) => setAddRow(Number(e.target.value) || 0)}
-              />
-            </label>
-            <label className="field" style={{ flex: "0 0 7rem" }}>
-              Start HP
-              <input
-                type="number"
-                min={0}
-                value={addStartHp}
-                aria-label="Start HP"
-                title="Auto-fills to first free gap when you pick a module or row; override freely"
-                onChange={(e) => setAddStartHp(Number(e.target.value) || 0)}
-              />
-            </label>
-            <button
-              type="button"
-              className="button button-primary"
-              disabled={placementSaving || addModuleId == null}
-              onClick={() => void addPlacement()}
-            >
-              {placementSaving ? "Saving…" : "Add placement"}
-            </button>
-          </div>
-          {addModuleId != null ? (
-            <p className="muted" style={{ marginTop: "var(--space-2)", fontSize: "0.85rem" }}>
-              Start HP suggests the first free gap ({addStartHp}) on row {addRow}. Override if you
-              want a specific slot.
-            </p>
-          ) : null}
-
-          <div
-            className="panel batch-place-panel"
-            style={{ marginTop: "var(--space-4)" }}
-            aria-labelledby="batch-place-title"
-          >
-            <h3 id="batch-place-title" style={{ marginTop: 0 }}>
-              Batch place
-            </h3>
-            <p className="muted" style={{ marginTop: 0 }}>
-              Select several gallery modules, then pack left-to-right starting at row {addRow}.
-              Unknown HP is skipped (never invented). One save applies the full pack.
-            </p>
-            <div className="toolbar" style={{ marginBottom: "var(--space-3)" }}>
-              <button
-                type="button"
-                className="button button-quiet"
-                onClick={selectAllFilteredForBatch}
-                disabled={!filteredGalleryModules.length}
-              >
-                Select filtered ({filteredGalleryModules.length})
-              </button>
-              <button
-                type="button"
-                className="button button-quiet"
-                onClick={clearBatchSelection}
-                disabled={!batchSelectedIds.length}
-              >
-                Clear selection
-              </button>
-              <button
-                type="button"
-                className="button button-primary"
-                disabled={placementSaving || !batchSelectedIds.length}
-                onClick={() => void addBatchPlacements()}
-              >
-                {placementSaving ? "Saving…" : `Place ${batchSelectedIds.length || 0} selected`}
-              </button>
-            </div>
-            {batchPreview && batchSelectedIds.length > 0 ? (
-              <p className="muted" role="status" style={{ fontSize: "0.9rem" }}>
-                Plan: <strong>{batchPreview.added.length}</strong> will pack
-                {batchPreview.unplaced.length
-                  ? ` · ${batchPreview.unplaced.length} will not fit`
-                  : ""}
-                {batchPreview.added.length
-                  ? ` · e.g. row ${batchPreview.added[0].row_index} @ HP ${batchPreview.added[0].start_hp}`
-                  : ""}
-              </p>
-            ) : null}
-            {batchPlaceNote ? (
-              <p className="status status-success" role="status">
-                {batchPlaceNote}
-              </p>
-            ) : null}
-            <ul className="batch-module-list" aria-label="Batch module selection">
-              {filteredGalleryModules.slice(0, 80).map((m) => {
-                const checked = batchSelectedIds.includes(m.id);
-                const already = placementModules.some((p) => p.module_id === m.id);
-                return (
-                  <li key={m.id}>
-                    <label className={`batch-module-list__item${checked ? " is-selected" : ""}`}>
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => toggleBatchModule(m.id)}
-                        aria-label={`Select ${m.brand} ${m.name} for batch`}
-                      />
-                      <span>
-                        <strong>
-                          {m.brand} {m.name}
-                        </strong>
-                        <span className="muted">
-                          {" "}
-                          · {m.hp}HP
-                          {m.power_12v_ma != null
-                            ? ` · +12 ${m.power_12v_ma}mA`
-                            : " · power unknown"}
-                          {already ? " · already on rig" : ""}
-                        </span>
-                      </span>
-                    </label>
-                  </li>
-                );
-              })}
-            </ul>
-            {filteredGalleryModules.length > 80 ? (
-              <p className="muted" style={{ fontSize: "0.85rem" }}>
-                Showing first 80 of {filteredGalleryModules.length} filtered. Narrow the filter to
-                batch more precisely.
-              </p>
-            ) : null}
-            {!filteredGalleryModules.length ? (
-              <p className="status status-warning">No modules match the filter.</p>
-            ) : null}
-          </div>
-
-          {placementError ? (
-            <p className="status status-danger" role="alert">
-              {placementError}
-            </p>
-          ) : null}
-
-          {placementModules.length === 0 ? (
-            <p className="status status-warning">No modules placed yet.</p>
-          ) : (
-            <ul style={{ listStyle: "none", padding: 0 }}>
-              {placementModules.map((spec, index) => {
-                const mod =
-                  liveRack?.modules?.find(
-                    (m) =>
-                      m.module_id === spec.module_id &&
-                      m.row_index === spec.row_index &&
-                      m.start_hp === spec.start_hp,
-                  )?.module ?? galleryModules.find((m) => m.id === spec.module_id);
-                return (
-                  <li
-                    key={`${spec.module_id}-${spec.row_index}-${spec.start_hp}-${index}`}
-                    className="panel"
-                    style={{ marginBottom: "var(--space-2)", padding: "var(--space-3)" }}
-                  >
-                    <strong>
-                      {mod ? `${mod.brand} ${mod.name}` : `Module #${spec.module_id}`}
-                    </strong>
-                    <span className="muted">
-                      {" "}
-                      · row {spec.row_index} · HP {spec.start_hp}
-                      {mod?.hp != null ? `–${spec.start_hp + mod.hp - 1}` : ""}
-                    </span>
-                    {mod && "power_configs" in mod && mod.power_configs?.length ? (
-                      <label className="field" style={{ marginTop: "var(--space-2)" }}>
-                        Jumper setting
-                        <select
-                          value={spec.power_config_id ?? ""}
-                          disabled={placementSaving}
-                          aria-label={`Jumper setting for ${mod.brand} ${mod.name}`}
-                          onChange={(e) =>
-                            void choosePowerConfig(
-                              index,
-                              e.target.value ? Number(e.target.value) : null,
-                            )
-                          }
-                        >
-                          <option value="">Not chosen (jumper-dependent draw unknown)</option>
-                          {mod.power_configs.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {c.label} · +12 {c.power_12v_ma ?? "?"} / −12{" "}
-                              {c.power_neg12v_ma ?? "?"} / +5 {c.power_5v_ma ?? "?"} mA
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                    ) : null}
-                    <button
-                      type="button"
-                      className="button button-quiet"
-                      style={{ marginLeft: "var(--space-3)" }}
-                      disabled={placementSaving}
-                      onClick={() => void removePlacement(index)}
-                    >
-                      Remove
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-
-          {rackCompat ? (
-            <div className="panel" style={{ marginTop: "var(--space-4)" }} aria-live="polite">
-              <h3 style={{ marginTop: 0 }}>Dual-gate compatibility</h3>
-              <p className="muted">
-                Bridge: {rackCompat.bridge_status}
-                {rackCompat.catalog_slug ? ` · ${rackCompat.catalog_slug}` : ""}
-              </p>
-              <p>{rackCompat.message}</p>
-              {rackCompat.compatibility ? (
-                <>
-                  <div className="gate-chip-row" aria-label="Dual-gate summary">
-                    <span
-                      className={`status-chip status-chip--${gateTone(rackCompat.compatibility.overall_status)}`}
-                    >
-                      overall: {rackCompat.compatibility.overall_status}
-                    </span>
-                    <span
-                      className={`status-chip status-chip--${gateTone(rackCompat.compatibility.physical_fit.status)}`}
-                    >
-                      physical: {rackCompat.compatibility.physical_fit.status}
-                    </span>
-                    <span
-                      className={`status-chip status-chip--${gateTone(rackCompat.compatibility.connector_availability.status)}`}
-                    >
-                      connectors: {rackCompat.compatibility.connector_availability.status}
-                    </span>
-                    {rackCompat.compatibility.power_headroom?.map((r) => (
-                      <span
-                        key={r.rail}
-                        className={`status-chip status-chip--${gateTone(r.status)}`}
-                      >
-                        {r.rail}: {r.status}
-                      </span>
-                    ))}
-                  </div>
-                  <p>
-                    Overall: <strong>{rackCompat.compatibility.overall_status}</strong>
-                    {rackCompat.compatibility.overall_status === "incomplete"
-                      ? ": soft gaps only (missing power/depth/case rails stay missing)"
-                      : null}
-                    {rackCompat.compatibility.overall_status === "conflict"
-                      ? ": hard fail (overflow, connectors, or rail over budget)"
-                      : null}
-                  </p>
-                  <ul>
-                    <li>
-                      Format: <strong>{rackCompat.compatibility.format_check.status}</strong>:{" "}
-                      {rackCompat.compatibility.format_check.message}
-                    </li>
-                    <li>
-                      Physical fit: <strong>{rackCompat.compatibility.physical_fit.status}</strong>{" "}
-                      : {rackCompat.compatibility.physical_fit.message}
-                    </li>
-                    <li>
-                      Connectors:{" "}
-                      <strong>{rackCompat.compatibility.connector_availability.status}</strong>
-                      {rackCompat.compatibility.connector_availability.message
-                        ? `: ${rackCompat.compatibility.connector_availability.message}`
-                        : ""}
-                    </li>
-                    <li>
-                      +5V: <strong>{rackCompat.compatibility.pos5_compatibility.status}</strong>
-                      {rackCompat.compatibility.pos5_compatibility.message
-                        ? `: ${rackCompat.compatibility.pos5_compatibility.message}`
-                        : ""}
-                    </li>
-                    <li>
-                      Lid: <strong>{rackCompat.compatibility.lid_close.status}</strong>
-                    </li>
-                  </ul>
-                  {rackCompat.compatibility.power_headroom?.length ? (
-                    <>
-                      <h4 style={{ marginBottom: 0 }}>Power rails</h4>
-                      <ul>
-                        {rackCompat.compatibility.power_headroom.map((r) => (
-                          <li key={r.rail}>
-                            <strong>{r.rail}</strong>: {r.status}
-                            {r.case_capacity_ma != null
-                              ? ` · ${r.module_draw_ma}/${r.case_capacity_ma}mA`
-                              : ` · draw ${r.module_draw_ma}mA (case capacity unspecified)`}
-                            {r.headroom_ma != null && !r.unknown_draw_count
-                              ? ` · headroom ${r.headroom_ma}mA`
-                              : ""}
-                            {r.message ? `: ${r.message}` : ""}
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  ) : null}
-                  {rackCompat.compatibility.warnings?.length ? (
-                    <div className="status status-warning" role="status">
-                      <p style={{ marginTop: 0 }}>
-                        <strong>Soft warnings</strong> (not hard fails):
-                      </p>
-                      <ul style={{ marginBottom: 0 }}>
-                        {Array.from(
-                          new Map(
-                            rackCompat.compatibility.warnings.map((w) => [w.code || w.message, w]),
-                          ).values(),
-                        ).map((w) => (
-                          <li key={w.code || w.message}>
-                            {w.code ? <code>{w.code}</code> : null}
-                            {w.code ? ": " : null}
-                            {w.message}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                </>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
-      )}
-
-      <div className="builder-grid">
-        <article className="panel">
-          <h2>Method 1: manual selection</h2>
-          <p className="muted">
-            {liveMode
-              ? "Use the placement panel above to add modules with row/HP coordinates."
-              : "Create a case-bound rig first, then place modules on the edit screen."}
-          </p>
-          <Link className="button button-primary" to="/modules">
-            Browse module gallery
-          </Link>
-        </article>
-
-        <article className="panel" aria-labelledby="photo-title">
-          <h2 id="photo-title">Method 2: review rig photos</h2>
-          <div className="field">
-            <label htmlFor="rig-photo">Rig photo</label>
-            <input
-              id="rig-photo"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              aria-describedby="photo-help photo-error"
-              onChange={(event) => selectPhotos(event.target.files)}
-            />
-            <span id="photo-help" className="muted">
-              JPEG, PNG, or WebP, up to 12 MB each. Multiple angles supported.
-              {activeRackId != null
-                ? ` Live: upload + GET /api/racks/${activeRackId}/evidence/reconcile`
-                : " Demo mode until a target rig is selected."}
-            </span>
-            {error ? (
-              <span id="photo-error" role="alert" className="status status-danger">
-                {error}
-              </span>
-            ) : null}
-          </div>
-          {evidenceState === "ready" ? (
-            <div className="evidence-ready">
-              <p className="status status-success">Ready to scan: {fileLabel}</p>
-              <button
-                className="button button-secondary"
-                type="button"
-                onClick={() => void detectModules()}
-              >
-                Detect modules
-              </button>
-            </div>
-          ) : null}
-          {evidenceState === "uploading" ? (
-            <p className="status" role="status">
-              Uploading {pendingFiles.length} image(s) and reconciling…
-            </p>
-          ) : null}
-        </article>
+        <EvidenceStep
+          rackChoices={liveMode ? null : racks}
+          selectedRackId={selectedRackId}
+          onSelectRack={setSelectedRackId}
+          targetRackId={activeRackId}
+          state={evidenceState}
+          error={error}
+          fileLabel={fileLabel}
+          pendingCount={pendingFiles.length}
+          onSelectPhotos={selectPhotos}
+          onDetect={() => void detectModules()}
+          candidates={ranked}
+          fromLiveApi={fromLiveApi}
+          onSetStatus={setStatus}
+          fusion={{
+            entities: fused,
+            applied: fusedApplied,
+            feedback: fusionFeedback,
+            status: reconcileStatus,
+            note: reconcileNote,
+            imageCount,
+            onApply: applyFusedDecision,
+            onConfirmAll: confirmAllNonConflictFused,
+          }}
+          confirmedCount={confirmedCount}
+          allResolved={allResolved}
+          onCreateRevision={() => void createInventoryRevision()}
+          revisionId={inventoryRevisionId}
+          readyForGeneration={readyForGeneration}
+        />
       </div>
-
-      {evidenceState === "review" || evidenceState === "confirmed" ? (
-        <section className="panel evidence-review" aria-labelledby="review-title">
-          <div>
-            <h2 id="review-title">Review ranked detection candidates</h2>
-            <p className="muted">Human confirmation required.</p>
-            <p className="muted">
-              Provider suggestions remain inferred until you confirm an authoritative gallery match.
-              Multi-photo fusion is advisory only.
-            </p>
-          </div>
-
-          {(fused.length > 0 || reconcileStatus) && (
-            <div
-              className="panel"
-              aria-label="Multi-photo reconciliation"
-              style={{ marginBottom: "1rem" }}
-            >
-              <h3>Multi-photo reconciliation</h3>
-              <p className="muted" role="status">
-                Status: {reconcileStatus ?? "unknown"}
-                {imageCount ? ` · ${imageCount} image(s)` : ""}
-                {reconcileNote ? ` · ${reconcileNote}` : ""}
-              </p>
-              {fused.length === 0 ? (
-                <p className="muted">No fused entities yet.</p>
-              ) : (
-                <>
-                  <div style={{ marginBottom: "0.75rem" }}>
-                    <button
-                      className="button button-secondary"
-                      type="button"
-                      onClick={confirmAllNonConflictFused}
-                      disabled={evidenceState === "confirmed"}
-                    >
-                      Confirm all non-conflict fused
-                    </button>
-                    <p className="muted" style={{ marginTop: "0.5rem" }}>
-                      Applies confirm only to non-conflict fusions via their representative
-                      candidate. Conflicts must be resolved in the candidate list below.
-                    </p>
-                    {fusionFeedback ? (
-                      <p
-                        className="status status-success"
-                        role="status"
-                        style={{ marginTop: "0.5rem" }}
-                      >
-                        {fusionFeedback}
-                      </p>
-                    ) : null}
-                  </div>
-                  <ul style={{ listStyle: "none", padding: 0 }} aria-label="Fused module entities">
-                    {fused.map((entity) => {
-                      const applied = fusedApplied[entity.fuse_id];
-                      const statusClass = entity.conflict
-                        ? "danger"
-                        : applied === "confirmed"
-                          ? "success"
-                          : applied === "rejected"
-                            ? "danger"
-                            : "warning";
-                      const statusText = entity.conflict
-                        ? `Conflict: ${entity.conflict_notes.join("; ") || "disagreement"}`
-                        : applied
-                          ? `Applied: ${applied}`
-                          : `Status: ${entity.classification_status} (not confirmed)`;
-                      return (
-                        <li
-                          key={entity.fuse_id}
-                          className="detection-row"
-                          style={{ marginBottom: "0.75rem" }}
-                        >
-                          <div>
-                            <strong>
-                              {entity.manufacturer || "Unknown"} · {entity.model || entity.fuse_id}
-                            </strong>
-                            <p className="muted">
-                              Support: {entity.observation_count} observation(s) across{" "}
-                              {entity.supporting_image_ids.length} image(s) · mean confidence{" "}
-                              {(entity.mean_confidence * 100).toFixed(0)}%
-                              {entity.representative_candidate_id
-                                ? " · linked to ranked candidate"
-                                : " · no representative candidate"}
-                            </p>
-                            <p className={`status status-${statusClass}`}>{statusText}</p>
-                          </div>
-                          <div
-                            className="detection-actions"
-                            aria-label={`Resolve fused ${entity.model || entity.fuse_id}`}
-                          >
-                            <button
-                              className="button button-secondary"
-                              type="button"
-                              disabled={
-                                entity.conflict ||
-                                !entity.representative_candidate_id ||
-                                evidenceState === "confirmed"
-                              }
-                              onClick={() => applyFusedDecision(entity, "confirmed")}
-                            >
-                              Confirm fused match
-                            </button>
-                            <button
-                              className="button button-quiet"
-                              type="button"
-                              disabled={
-                                !entity.representative_candidate_id || evidenceState === "confirmed"
-                              }
-                              onClick={() => applyFusedDecision(entity, "rejected")}
-                            >
-                              Reject fused
-                            </button>
-                            <button
-                              className="button button-quiet"
-                              type="button"
-                              disabled={
-                                !entity.representative_candidate_id || evidenceState === "confirmed"
-                              }
-                              onClick={() => applyFusedDecision(entity, "deferred")}
-                            >
-                              Defer fused
-                            </button>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </>
-              )}
-            </div>
-          )}
-
-          <ul className="candidate-list" aria-label="Ranked module candidates">
-            {ranked.map((candidate) => (
-              <li key={candidate.id} className="detection-row">
-                <div>
-                  <strong>
-                    {candidate.manufacturer} · {candidate.label}
-                  </strong>
-                  <p className="muted">
-                    Confidence {(candidate.confidence * 100).toFixed(0)}%
-                    {candidate.alternatives.length
-                      ? ` · alternatives: ${candidate.alternatives.join(", ")}`
-                      : ""}
-                  </p>
-                  <p
-                    className={`status status-${
-                      candidate.status === "confirmed"
-                        ? "success"
-                        : candidate.status === "rejected"
-                          ? "danger"
-                          : "warning"
-                    }`}
-                  >
-                    Status: {candidate.status}
-                  </p>
-                  {candidate.decision ? (
-                    <div
-                      className="status status-neutral"
-                      aria-label="Decision Intelligence advisory"
-                    >
-                      <strong>Decision Intelligence: advisory only</strong>
-                      <span>
-                        {" "}
-                        · {candidate.decision.disposition.replace("_", " ")}
-                        {candidate.decision.confidence != null
-                          ? ` · ${(candidate.decision.confidence * 100).toFixed(0)}%`
-                          : ""}
-                        {candidate.decision.provider ? ` · ${candidate.decision.provider}` : ""}
-                      </span>
-                      {candidate.decision.reasonCodes?.length ? (
-                        <span className="muted">
-                          {" "}
-                          · {candidate.decision.reasonCodes.join(", ")}
-                        </span>
-                      ) : null}
-                      <p className="muted" style={{ marginBottom: 0 }}>
-                        This suggestion cannot confirm hardware. Use Confirm match, Reject, or Defer
-                        below.
-                      </p>
-                    </div>
-                  ) : null}
-                </div>
-                <div className="detection-actions" aria-label={`Resolve ${candidate.label}`}>
-                  <button
-                    className="button button-secondary"
-                    type="button"
-                    onClick={() => setStatus(candidate.id, "confirmed")}
-                  >
-                    Confirm match
-                  </button>
-                  <button
-                    className="button button-quiet"
-                    type="button"
-                    onClick={() => setStatus(candidate.id, "rejected")}
-                  >
-                    Reject
-                  </button>
-                  <button
-                    className="button button-quiet"
-                    type="button"
-                    onClick={() => setStatus(candidate.id, "deferred")}
-                  >
-                    Defer
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          <p className="muted" role="status">
-            {confirmedCount} confirmed, {ranked.length - confirmedCount} not confirmed. All
-            resolved: {allResolved ? "yes" : "no"}.
-          </p>
-
-          <button
-            className="button button-primary"
-            type="button"
-            disabled={!allResolved || confirmedCount < 1 || evidenceState === "confirmed"}
-            onClick={() => void createInventoryRevision()}
-          >
-            Create immutable rig revision
-          </button>
-
-          {inventoryRevisionId ? (
-            <p className="status status-success" role="status">
-              Inventory revision ready: {inventoryRevisionId}
-              {readyForGeneration ? " · ready for generation" : " · not ready for generation"}.
-              {activeRackId != null ? (
-                <>
-                  {" "}
-                  <Link to={`/rigs/${activeRackId}`}>Generate patches on this rig</Link>
-                </>
-              ) : null}
-            </p>
-          ) : null}
-        </section>
-      ) : null}
+      <Toast toast={toast} onDismiss={dismissToast} actionDisabled={placementSaving} />
     </section>
   );
 }

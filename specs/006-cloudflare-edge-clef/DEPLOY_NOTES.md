@@ -176,6 +176,8 @@ Status (2026-11-01): `NVIDIA_API_KEY` is set as a secret on the `patchhive-api-s
 
 Fallback model (2026-11-01): `meta/llama-3.2-90b-vision-instruct` is pinned in `NVIDIA_MODELS` as an operator-selected fallback. There is no automatic fallback: a failed call fails closed with the configured model. Selecting a non-default model logs a warning naming it (`patchhive.decision.nvidia`), and every packet and decision receipt names the model that answered in `provider_version`. The same opt-in live check passed for it with one synthetic image; its calls took 7-48 s, so it needs the raised staging timeout. The 007 receipt names the provider (`nvidia`), not the model.
 
+Status (2026-11-01): `NVIDIA_API_KEY` is set as a secret on the `patchhive-api-staging` Worker only; `ENABLE_NVIDIA_PROVIDER` is not set there, so the provider stays inert. A live wire check of both pinned models with one synthetic image passed (`RUN_NVIDIA_LIVE=1 pytest tests/integration/test_nvidia_live.py`, skipped otherwise). No 007 evaluation has been run with `nvidia`, so nothing about its accuracy on rig photos is known yet. A cold first call once took longer than the 20 s default timeout and failed closed as `NVIDIA_TIMEOUT`.
+
 The hosted API catalog endpoint is governed by NVIDIA's API trial terms; production use needs the account's paid or program entitlement (NVIDIA Inception) confirmed first. The models are licensed for commercial use (NVIDIA Open Model License; OpenMDW-1.1 for the 3.5 Super VL).
 
 Fail-closed behavior:

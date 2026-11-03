@@ -1,15 +1,19 @@
 """Routes for account dashboard data."""
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy import desc, func
 from sqlalchemy.orm import Session
 
+from community import login_guard, sessions
 from community.auth import require_auth
 from community.models import User
 from core import get_db, settings
+from core.security import burn_password_check, verify_and_update_password
 
+from .deletion import anonymize_user, purge_user_images
 from .models import CreditLedgerEntry, ExportRecord, Referral
 from .schemas import (
+    AccountDeleteRequest,
     CreditsSummaryResponse,
     ExportRecordResponse,
     ReferralRecordResponse,
@@ -18,6 +22,37 @@ from .schemas import (
 from .services import build_referral_link, ensure_referral_code, mask_user_id
 
 router = APIRouter()
+
+
+@router.delete("", status_code=204)
+def delete_account(
+    body: AccountDeleteRequest,
+    http_request: Request,
+    response: Response,
+    current_user: User = Depends(require_auth),
+    db: Session = Depends(get_db),
+):
+    """Delete the signed-in account (spec 004 OQ-12): re-confirm the password, then
+    anonymize the user and remove their personal content in one transaction. Ledger,
+    export and referral rows are kept. See ``account/deletion.py``."""
+    if not login_guard.allow_attempt(login_guard.client_address(http_request)):
+        raise HTTPException(status_code=429, detail="Too many attempts; try again shortly")
+    wrong = HTTPException(status_code=403, detail="PASSWORD_INCORRECT")
+    if login_guard.is_locked(current_user):
+        burn_password_check(body.password)
+        raise wrong
+    valid, _ = verify_and_update_password(body.password, current_user.password_hash)
+    if not valid:
+        login_guard.record_failure(db, current_user)
+        db.commit()
+        raise wrong
+    user_id = current_user.id
+    anonymize_user(db, current_user)
+    db.commit()
+    purge_user_images(db, user_id)
+    sessions.clear_cookie(response)
+    response.status_code = 204
+    return response
 
 
 @router.get("/credits", response_model=CreditsSummaryResponse)
