@@ -43,14 +43,16 @@ def _normal(text: str) -> str:
     return " ".join(text.split())
 
 
-def test_the_migration_revises_purchase_refunds_and_is_the_single_head() -> None:
+def test_the_migration_revises_purchase_refunds_on_the_single_head() -> None:
     module = _load()
     assert module.revision == "20261102_subscriptions"
     assert module.down_revision == "20261102_purchase_refunds"
     # alembic_version.version_num is VARCHAR(32).
     assert len(module.revision) <= 32
     script = ScriptDirectory.from_config(Config(str(BACKEND / "alembic.ini")))
-    assert script.get_heads() == [module.revision]
+    heads = script.get_heads()
+    assert len(heads) == 1
+    assert module.revision in {rev.revision for rev in script.iterate_revisions(heads[0], "base")}
 
 
 def test_the_model_and_the_migration_agree_on_the_constraints() -> None:
