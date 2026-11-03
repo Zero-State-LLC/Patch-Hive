@@ -147,7 +147,7 @@ test.describe("PatchHive canonical workspace", () => {
     await page.getByRole("tab", { name: "Exports" }).click();
     await expect(page.getByRole("button", { name: "Export PDF patch book" })).toBeDisabled();
     await expect(page.getByText("Credits are required only for exports.")).toBeVisible();
-    await expect(page.getByText("/api/canon/exports")).toBeVisible();
+    await expect(page.getByText(/Each export is a patch book of this run/)).toBeVisible();
   });
 
   test("multi-photo fusion panel confirms representative and blocks conflict", async ({ page }) => {

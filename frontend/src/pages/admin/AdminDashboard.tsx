@@ -43,8 +43,7 @@ export default function AdminDashboard() {
           <div>
             <h1>Admin console</h1>
             <p className="muted">
-              Manage users, catalog, gallery revisions, runs, exports, and leaderboards. All
-              mutations append audit rows; credits only move through the ledger.
+              Users, catalog, gallery, runs and exports. Each change logs a reason.
             </p>
           </div>
         </header>

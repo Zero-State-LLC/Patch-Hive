@@ -4,7 +4,9 @@
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
+import Hash from "@/components/Hash";
 import { canonApi } from "@/lib/api";
+import { shortHash } from "@/lib/format";
 import { useAuthStore } from "@/lib/store";
 import {
   ALL_INFLUENCE_IDS,
@@ -197,9 +199,7 @@ export default function PatchBookStyleStudioPage() {
         max_pages: 3,
       });
       setPreview(res.data);
-      setStatus(
-        `Preview ok (path ${res.data.load_path}, recipe ${res.data.style_recipe_hash.slice(0, 12)}…)`,
-      );
+      setStatus(`Preview ready, recipe ${shortHash(res.data.style_recipe_hash)}.`);
     } catch (error: unknown) {
       const apiError = error as { response?: { data?: { detail?: string } } };
       setStatus(apiError.response?.data?.detail || "Preview failed");
@@ -224,19 +224,14 @@ export default function PatchBookStyleStudioPage() {
         style_recipe: buildRequestBody(),
       });
       setLastExportId(created.data.export_id);
-      setStatus(
-        `Export ${created.data.export_id}, ${created.data.status}` +
-          (created.data.composition_hash
-            ? `, composition ${created.data.composition_hash.slice(0, 12)}…`
-            : ""),
-      );
+      setStatus(`Export ${shortHash(created.data.export_id)} requested (${created.data.status}).`);
       if (created.data.status === "succeeded") {
         // Auto-offer download path in status; user clicks buttons below
       }
     } catch (error: unknown) {
       const apiError = error as { response?: { data?: { detail?: string }; status?: number } };
       if (apiError.response?.status === 402) {
-        setStatus("INSUFFICIENT_CREDITS: no debit recorded.");
+        setStatus("Not enough credits for this export. Nothing was charged.");
       } else {
         setStatus(apiError.response?.data?.detail || "Export failed");
       }
@@ -273,8 +268,8 @@ export default function PatchBookStyleStudioPage() {
 
       {bridge ? (
         <p className="muted">
-          Run <code>{bridge.source_run_id}</code>, revision{" "}
-          <code>{bridge.source_rig_revision_id.slice(0, 20)}…</code>
+          Run <Hash value={bridge.source_run_id} />, revision{" "}
+          <Hash value={bridge.source_rig_revision_id} />
         </p>
       ) : null}
 
@@ -487,7 +482,7 @@ export default function PatchBookStyleStudioPage() {
                       <strong>{entry.name}</strong>{" "}
                       <span className="muted">
                         {String(loaded.mode || "?")} / {String(loaded.template_family || "?")},{" "}
-                        <code>{entry.recipe_hash.slice(0, 10)}…</code>
+                        <Hash value={entry.recipe_hash} />
                       </span>{" "}
                       <button
                         className="button button-quiet"
@@ -520,10 +515,7 @@ export default function PatchBookStyleStudioPage() {
                                 style_recipe_id: entry.id,
                               });
                               setStatus(
-                                `Export ${created.data.export_id}, ${created.data.status}` +
-                                  (created.data.style_recipe_id
-                                    ? `, recipe ${created.data.style_recipe_id}`
-                                    : ""),
+                                `Export ${shortHash(created.data.export_id)} requested (${created.data.status}), styled with “${entry.name}”.`,
                               );
                             } catch (error: unknown) {
                               const apiError = error as {
@@ -531,8 +523,9 @@ export default function PatchBookStyleStudioPage() {
                               };
                               setStatus(
                                 apiError.response?.status === 402
-                                  ? "INSUFFICIENT_CREDITS"
-                                  : apiError.response?.data?.detail || "Export failed",
+                                  ? "Not enough credits for this export. Nothing was charged."
+                                  : apiError.response?.data?.detail ||
+                                      "The export failed. Nothing was charged.",
                               );
                             } finally {
                               setExporting(false);
@@ -557,7 +550,7 @@ export default function PatchBookStyleStudioPage() {
                               setStatus(
                                 entry.is_shared
                                   ? `“${entry.name}” is private again`
-                                  : `“${entry.name}” shared (readable via /style-recipes/shared/{id})`,
+                                  : `“${entry.name}” is shared: anyone with its link can open it.`,
                               );
                             } catch {
                               setStatus("Share toggle failed");
@@ -620,9 +613,7 @@ export default function PatchBookStyleStudioPage() {
           {!bridge ? (
             <div className="notice" role="status">
               <p className="status status-warning">
-                Open Style Studio from a rig export run with bridge fields, or append{" "}
-                <code>source_run_id</code>, <code>source_rig_revision_id</code>, and{" "}
-                <code>artifact_manifest_hash</code> query params.
+                Open Style Studio from a rig&apos;s Exports tab, so it knows which run to style.
               </p>
             </div>
           ) : null}
@@ -656,8 +647,7 @@ export default function PatchBookStyleStudioPage() {
             <div className="studio-results">
               <h2>Preview</h2>
               <p className="muted">
-                Load path <code>{preview.load_path}</code>, library{" "}
-                <code>{preview.library_content_hash.slice(0, 16)}…</code>
+                Library <Hash value={preview.library_content_hash} />
               </p>
               {preview.resolution_events.length > 0 ? (
                 <div aria-label="Constraint resolution events">

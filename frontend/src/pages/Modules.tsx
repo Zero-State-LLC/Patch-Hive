@@ -255,7 +255,9 @@ export default function ModulesPage() {
       );
       navigate(`/racks/new?module_id=${prep.mid}`);
     } catch {
-      setActionMsg(`${row.brand} ${row.name}: materialize failed (needs known HP or API error).`);
+      setActionMsg(
+        `${row.brand} ${row.name} couldn't be prepared for a rig. It needs a known width, or the server refused.`,
+      );
     } finally {
       setBusySlug(null);
     }
@@ -279,7 +281,7 @@ export default function ModulesPage() {
         `${prep.brand} ${prep.name} ready (module #${prep.mid}). Choose a rig to open placement.`,
       );
     } catch {
-      setActionMsg(`${row.brand} ${row.name}: materialize or rig list failed.`);
+      setActionMsg(`${row.brand} ${row.name} couldn't be prepared, or your rigs couldn't load.`);
       setPickerOpen(false);
     } finally {
       setBusySlug(null);
@@ -299,9 +301,7 @@ export default function ModulesPage() {
         <div>
           <h1 id="modules-title">Module gallery</h1>
           <p className="muted">
-            The lightweight catalog: research seed plus curated rows, each drawn to its width.
-            Materialize a row with known HP to load its full power and I/O specs for placement.
-            Unknown widths stay null, never invented.
+            Every module drawn to its width. Unknown widths stay unknown, never invented.
           </p>
         </div>
         <div className="header-actions">
@@ -344,7 +344,7 @@ export default function ModulesPage() {
               <dt>Sources</dt>
               <dd>
                 {Object.entries(stats.by_source)
-                  .map(([k, n]) => `${k || "unknown"} ${n}`)
+                  .map(([k, n]) => `${k || "Not stated"} ${n}`)
                   .join(", ")}
               </dd>
             </div>
@@ -725,7 +725,7 @@ export default function ModulesPage() {
                             title={
                               module.hp == null
                                 ? "Needs manufacturer-confirmed HP before placement"
-                                : "Materialize full module record, then open rack builder with it preselected"
+                                : "Load the full module record, then open the builder with it chosen"
                             }
                             onClick={() => placeFromCatalog(module)}
                           >
@@ -739,7 +739,7 @@ export default function ModulesPage() {
                             className="button button-quiet"
                             type="button"
                             disabled={busySlug === module.slug || module.hp == null}
-                            title="Materialize and choose an existing rig for placement"
+                            title="Load the full module record, then choose one of your rigs"
                             onClick={() => void prepareForExistingRig(module)}
                           >
                             Add to existing

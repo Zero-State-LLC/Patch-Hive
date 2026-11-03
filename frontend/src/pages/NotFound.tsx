@@ -1,10 +1,11 @@
 /**
  * 404 Not Found — Cyber Hive broken patch cable
  */
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./NotFound.css";
 
 export default function NotFound() {
+  const { pathname } = useLocation();
   return (
     <div className="not-found-container">
       <div className="not-found-content">
@@ -96,11 +97,9 @@ export default function NotFound() {
           </Link>
         </div>
 
-        <div className="error-details">
-          <code>ERROR_CODE: PATCH_DISCONNECTED</code>
-          <code>STATUS: 404 NOT_FOUND</code>
-          <code>SUGGESTED_ACTION: RECONNECT_OR_RETURN_HOME</code>
-        </div>
+        <p className="error-details">
+          Nothing lives at <code>{pathname}</code>.
+        </p>
       </div>
     </div>
   );

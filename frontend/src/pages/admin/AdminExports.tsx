@@ -17,7 +17,7 @@ export default function AdminExports() {
           <div>
             <h1>Exports</h1>
             <p className="muted">
-              Grant or revoke export access and clear export caches, each with an audit reason.
+              Grant, revoke or clear export access, each change logged with a reason.
             </p>
           </div>
         </header>
