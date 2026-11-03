@@ -8,7 +8,7 @@
 
 ## Foundational
 
-- [ ] T010 Encode the transitions table as tests (workflows: anti-slop-code, production-systems). Tests written 2026-11-01 in `backend/tests/unit/test_spec_002_transitions.py` for the publication lifecycle (`publishing/routes.py`): 10 listed transitions and 14 illegal pairs plus ownership and admin checks. Drift, not encoded: the page and book compilation machines have no implementation; draft to published always answers 409 `PUBLICATION_BOOK_NOT_VALIDATED` (FR-048, OQ-6), so the success row cannot run; flag-off 404 untested; response codes the spec leaves open (422, 404, 403, 400 on a second create) are asserted as the code returns them. Stays open until T002.
+- [ ] T010 Encode the transitions table as tests (workflows: anti-slop-code, production-systems). Tests written 2026-11-01 in `backend/tests/unit/test_spec_002_transitions.py` for the publication lifecycle (`publishing/routes.py`): 10 listed transitions and 14 illegal pairs plus ownership and admin checks. Drift, not encoded: the page and book compilation machines have no implementation; draft to published always answers 409 `PUBLICATION_BOOK_NOT_VALIDATED` (FR-048, OQ-6), so the success row cannot run; flag-off 404 tested 2026-11-03 (every listed event plus create, against an app built with `ENABLE_LEGACY_PUBLISHING` off); response codes the spec leaves open (422, 404, 403, 400 on a second create) are asserted as the code returns them. Stays open until T002.
   - depends_on: [T002]
 
 ## Implemented (reconciled 2026-10-29)
