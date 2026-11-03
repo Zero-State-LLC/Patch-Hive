@@ -124,7 +124,9 @@ export default function AccountPage() {
       <header className="workspace-header">
         <div>
           <h1 id="account-title">Credits & profile</h1>
-          <p className="muted">Free to explore. You pay only to export a book you keep.</p>
+          <p className="muted">
+            PatchHive is free to explore. You only pay when you export something you want to keep.
+          </p>
         </div>
       </header>
 
