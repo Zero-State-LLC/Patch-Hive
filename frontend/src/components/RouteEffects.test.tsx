@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Link, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -11,10 +11,12 @@ function Shell({ start }: { start: string }) {
       <nav>
         <Link to="/modules">Modules</Link>
         <Link to="/modules#filters">Filters</Link>
+        <Link to="/racks/2">Second rig</Link>
       </nav>
       <main id="main-content" tabIndex={-1}>
         <Routes>
           <Route path="/racks" element={<p>Rigs screen</p>} />
+          <Route path="/racks/:rigId" element={<p>Rigs screen, one rig chosen</p>} />
           <Route path="/modules" element={<p>Modules screen</p>} />
         </Routes>
       </main>
@@ -46,10 +48,11 @@ describe("RouteEffects", () => {
 
     await user.click(screen.getByRole("link", { name: "Modules" }));
 
-    expect(screen.getByText("Modules screen")).toBeInTheDocument();
+    // Navigations are transitions: wait for the new screen before checking what followed it.
+    expect(await screen.findByText("Modules screen")).toBeInTheDocument();
+    await waitFor(() => expect(document.getElementById("main-content")).toHaveFocus());
     expect(document.title).toBe("Modules, PatchHive");
     expect(scrollTo).toHaveBeenCalledWith(0, 0);
-    expect(document.getElementById("main-content")).toHaveFocus();
   });
 
   it("leaves a link to a section of the page to the browser", async () => {
@@ -58,8 +61,22 @@ describe("RouteEffects", () => {
 
     await user.click(screen.getByRole("link", { name: "Filters" }));
 
-    expect(document.title).toBe("Modules, PatchHive");
+    expect(await screen.findByText("Modules screen")).toBeInTheDocument();
+    await waitFor(() => expect(document.title).toBe("Modules, PatchHive"));
     expect(scrollTo).not.toHaveBeenCalled();
     expect(document.getElementById("main-content")).not.toHaveFocus();
+  });
+
+  it("leaves focus alone for a new selection within the same screen", async () => {
+    const user = userEvent.setup();
+    render(<Shell start="/racks" />);
+    const link = screen.getByRole("link", { name: "Second rig" });
+
+    await user.click(link);
+
+    expect(await screen.findByText("Rigs screen, one rig chosen")).toBeInTheDocument();
+    expect(document.title).toBe("Rigs, PatchHive");
+    expect(scrollTo).not.toHaveBeenCalled();
+    expect(link).toHaveFocus();
   });
 });

@@ -8,6 +8,7 @@ export const APP_ROUTES = [
   "/racks",
   "/racks/new",
   "/racks/:id/edit",
+  "/racks/:rigId",
   "/rigs/:rigId",
   "/rigs/:rigId/patchbook-studio",
   "/patches",

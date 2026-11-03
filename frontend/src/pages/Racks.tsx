@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { canonApi, exportApi, patchApi, rackApi, runApi } from "@/lib/api";
 import { filenameFromDisposition, saveBlob } from "@/lib/download";
 import { useAuthStore } from "@/lib/store";
@@ -18,11 +18,20 @@ import {
 
 type TabKey = "overview" | "patches" | "exports" | "modules";
 
+function isTabKey(value: string | null): value is TabKey {
+  return value === "overview" || value === "patches" || value === "exports" || value === "modules";
+}
+
+/** A positive integer from a URL segment or query value, or null. */
+function idFrom(value: string | null | undefined): number | null {
+  return value && /^[1-9]\d*$/.test(value) ? Number(value) : null;
+}
+
 const tabs: { key: TabKey; label: string }[] = [
   { key: "overview", label: "Overview" },
   { key: "patches", label: "Patches" },
   { key: "exports", label: "Exports" },
-  { key: "modules", label: "Module Gallery" },
+  { key: "modules", label: "Module gallery" },
 ];
 
 function gateTone(status?: string | null): "success" | "warning" | "danger" | "neutral" {
@@ -40,15 +49,43 @@ export default function RacksPage() {
   const currentUserId = useAuthStore((st) => st.user?.id ?? null);
   const [pdfDownloading, setPdfDownloading] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
-  const [selectedRackId, setSelectedRackId] = useState<number | null>(null);
+  // The selected rig, tab and patch live in the URL (/racks/:rigId?tab=&patch=), so a view
+  // can be linked to, reloaded and reached with the back button.
+  const navigate = useNavigate();
+  const { rigId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedRackId = idFrom(rigId);
+  const tabParam = searchParams.get("tab");
+  const activeTab: TabKey = isTabKey(tabParam) ? tabParam : "overview";
+  const selectedPatchId = idFrom(searchParams.get("patch"));
+  const selectRig = (id: number, options?: { replace?: boolean }) =>
+    navigate({ pathname: `/racks/${id}` }, options);
+  const setActiveTab = (tab: TabKey) =>
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (tab === "overview") next.delete("tab");
+        else next.set("tab", tab);
+        if (tab !== "patches") next.delete("patch");
+        return next;
+      },
+      { replace: true },
+    );
+  const setSelectedPatchId = (id: number) =>
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("patch", String(id));
+        return next;
+      },
+      { replace: true },
+    );
   const [rackDetail, setRackDetail] = useState<Rack | null>(null);
   const [detailError, setDetailError] = useState<string | null>(null);
   const detailRequest = useRef(0);
   const [runs, setRuns] = useState<Run[]>([]);
   const [selectedRunId, setSelectedRunId] = useState<number | null>(null);
   const [patches, setPatches] = useState<Patch[]>([]);
-  const [selectedPatchId, setSelectedPatchId] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [loading, setLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -105,7 +142,7 @@ export default function RacksPage() {
       const rows = response.data.rigs.map(rigSummaryToRack);
       setRacks(rows);
       if (rows.length && selectedRackId === null) {
-        setSelectedRackId(rows[0].id);
+        selectRig(rows[0].id, { replace: true });
       } else if (selectedRackId !== null) {
         void loadRackDetail(selectedRackId);
       }
@@ -270,7 +307,7 @@ export default function RacksPage() {
                   type="button"
                   className={`side-item${rack.id === selectedRackId ? " is-selected" : ""}`}
                   aria-current={rack.id === selectedRackId ? "true" : undefined}
-                  onClick={() => setSelectedRackId(rack.id)}
+                  onClick={() => selectRig(rack.id)}
                 >
                   <span className="side-item-title">{rack.name}</span>
                   <span className="side-item-meta">
@@ -297,6 +334,11 @@ export default function RacksPage() {
               <div>
                 <h1>{selectedRack.name}</h1>
                 <p className="muted">{selectedRack.description || "No rig notes yet."}</p>
+              </div>
+              <div className="header-actions">
+                <Link className="button button-secondary" to={`/rigs/${selectedRack.id}`}>
+                  Revisions and runs
+                </Link>
               </div>
             </header>
 

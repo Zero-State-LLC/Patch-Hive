@@ -9,6 +9,7 @@ const HOME_TITLE = "PatchHive, by Zero State";
 const ROUTE_TITLES: [pattern: string, title: string][] = [
   ["/racks/new", "New rig"],
   ["/racks/:id/edit", "Place modules"],
+  ["/racks/:rigId", "Rigs"],
   ["/racks", "Rigs"],
   ["/rigs/:rigId/patchbook-studio", "Patch book style"],
   ["/rigs/:rigId", "Rig workspace"],

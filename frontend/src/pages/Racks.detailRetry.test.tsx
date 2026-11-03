@@ -5,7 +5,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 const api = vi.hoisted(() => ({
   listRigs: vi.fn(),
@@ -39,10 +39,14 @@ const summary = {
   updated_at: "2026-01-01T00:00:00Z",
 };
 
+// The selected rig lives in the URL: /racks picks the first rig by moving to /racks/:rigId.
 function renderPage() {
   return render(
-    <MemoryRouter>
-      <RacksPage />
+    <MemoryRouter initialEntries={["/racks"]}>
+      <Routes>
+        <Route path="/racks" element={<RacksPage />} />
+        <Route path="/racks/:rigId" element={<RacksPage />} />
+      </Routes>
     </MemoryRouter>,
   );
 }
@@ -59,7 +63,9 @@ describe("Racks page rig detail load", () => {
     api.getRig.mockRejectedValueOnce(new Error("boom"));
     renderPage();
 
-    expect(await screen.findByText("Unable to load rig details. Please try again.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Unable to load rig details. Please try again."),
+    ).toBeInTheDocument();
     expect(screen.queryByText("Select a rig to begin")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
     expect(api.getRig).toHaveBeenCalledTimes(1);
@@ -67,11 +73,9 @@ describe("Racks page rig detail load", () => {
   });
 
   it("retry re-invokes the detail load and renders the rig on success", async () => {
-    api.getRig
-      .mockRejectedValueOnce(new Error("boom"))
-      .mockResolvedValueOnce({
-        data: { ...summary, generation_seed: null, modules: [], case: null, vote_count: 0 },
-      });
+    api.getRig.mockRejectedValueOnce(new Error("boom")).mockResolvedValueOnce({
+      data: { ...summary, generation_seed: null, modules: [], case: null, vote_count: 0 },
+    });
     renderPage();
 
     const retry = await screen.findByRole("button", { name: "Retry" });
@@ -79,7 +83,11 @@ describe("Racks page rig detail load", () => {
 
     await waitFor(() => expect(api.getRig).toHaveBeenCalledTimes(2));
     expect(api.getRig).toHaveBeenLastCalledWith(7);
-    expect(await screen.findByRole("heading", { level: 1, name: "Golden Rig" })).toBeInTheDocument();
-    expect(screen.queryByText("Unable to load rig details. Please try again.")).not.toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Golden Rig" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Unable to load rig details. Please try again."),
+    ).not.toBeInTheDocument();
   });
 });

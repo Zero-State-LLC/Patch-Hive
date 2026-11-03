@@ -60,7 +60,8 @@ describe("ErrorBoundary", () => {
 
     await user.click(screen.getByRole("link", { name: "Elsewhere" }));
 
+    // Navigations are transitions: wait for the new screen to render.
+    expect(await screen.findByText("Working screen")).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-    expect(screen.getByText("Working screen")).toBeInTheDocument();
   });
 });
