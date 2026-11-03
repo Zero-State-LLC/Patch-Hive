@@ -610,6 +610,11 @@ code {
 .screen-state > p {
   max-width: 60ch;
 }
+.screen-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
 .skeleton {
   display: block;
   border-radius: var(--radius-plate);
