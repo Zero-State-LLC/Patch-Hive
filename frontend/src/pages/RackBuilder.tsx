@@ -245,11 +245,9 @@ export default function RackBuilderPage() {
     const q = moduleQuery.trim().toLowerCase();
     let rows = [...galleryModules];
     if (q) {
+      // Match the "Brand Name" label too: the module_id deep link prefills the query with it.
       rows = rows.filter(
-        (m) =>
-          m.brand.toLowerCase().includes(q) ||
-          m.name.toLowerCase().includes(q) ||
-          String(m.id) === q,
+        (m) => `${m.brand} ${m.name}`.toLowerCase().includes(q) || String(m.id) === q,
       );
     }
     // Prefer modules with known power, then smaller HP

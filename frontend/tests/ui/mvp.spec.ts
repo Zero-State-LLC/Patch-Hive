@@ -759,6 +759,73 @@ test.describe("PatchHive canonical workspace", () => {
     expect(putBody?.modules?.[1]).toEqual({ module_id: 11, row_index: 0, start_hp: 12 });
   });
 
+  test("rack builder keeps the gallery's module_id in the select and batch list", async ({
+    page,
+  }) => {
+    await page.route("**/api/racks/7**", async (route) => {
+      const path = new URL(route.request().url()).pathname;
+      if (route.request().method() === "GET" && /\/api\/racks\/7\/?$/.test(path)) {
+        await route.fulfill({
+          json: {
+            id: 7,
+            name: "Sim rack",
+            case_id: 10,
+            user_id: 1,
+            generation_seed: 1,
+            modules: [],
+            case: {
+              id: 10,
+              brand: "Sim Co",
+              name: "Sim 84",
+              total_hp: 84,
+              rows: 1,
+              hp_per_row: [84],
+              catalog_slug: "sim-co-sim-84",
+              power_12v_ma: 2000,
+              power_neg12v_ma: 1200,
+              power_5v_ma: 500,
+            },
+          },
+        });
+        return;
+      }
+      // Compatibility is optional for this page; a miss leaves the gate panel empty.
+      await route.fulfill({ status: 404, json: { detail: "Not found" } });
+    });
+    await page.route("**/api/modules/**", async (route) => {
+      const module = (id: number, name: string, hp: number) => ({
+        id,
+        brand: "Sim",
+        name,
+        hp,
+        module_type: "VCO",
+        power_12v_ma: 40,
+        source: "ModuleCatalog",
+        io_ports: [],
+        tags: [],
+        imported_at: "2026-01-01",
+        created_at: "2026-01-01",
+        updated_at: "2026-01-01",
+      });
+      await route.fulfill({
+        json: { total: 2, modules: [module(10, "Gamma", 12), module(11, "Delta", 6)] },
+      });
+    });
+
+    await page.goto("/racks/7/edit?module_id=11");
+    await expect(page.getByText(/Preselected from gallery/i)).toBeVisible({ timeout: 15000 });
+    await expect(page.getByLabel("Filter placeable modules")).toHaveValue("Sim Delta");
+    const select = page.getByLabel("Select module to place");
+    await expect(select).toHaveValue("11");
+    await expect(select.locator("option", { hasText: "Delta" })).toHaveCount(1);
+    const batchList = page.getByLabel("Batch module selection");
+    await expect(
+      batchList.getByRole("checkbox", { name: /Select Sim Delta for batch/i }),
+    ).toBeVisible();
+    await expect(batchList.getByRole("checkbox")).toHaveCount(1);
+    await expect(page.getByText("No modules match the filter.")).toHaveCount(0);
+  });
+
   test("module gallery URL filters and status chips", async ({ page }) => {
     const allModules = [
       {
