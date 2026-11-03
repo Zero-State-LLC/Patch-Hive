@@ -4,28 +4,15 @@ Mirror of [org Project #8 "Patch-Hive"](https://github.com/orgs/Zero-State-LLC/p
 
 Columns (Status): Backlog → Ready → In progress → In review → Done. Spec tasks are titled `[NNN Txxx]`; Ready means every `depends_on` is done (`just spec-dag`). Slices are described in [docs/evidence/NEXT_SLICES_2026-10-28.md](evidence/NEXT_SLICES_2026-10-28.md); decision research is in each spec's `research.md` (001–008, 2026-10-29). Gap-closure tasks added on 2026-10-29 (001 T030–T034, 002 T030–T036, 003 T036–T039, 004 T040–T051, 005 T080–T085, 006 T100–T104, 007 T080–T083, 008 T070–T072) are in the spec `tasks.md` files and not yet on the board.
 
-Snapshot: 2026-11-03, 159 items.
+Snapshot: 2026-11-03 (after the Backlog remediation), 159 items.
 
 ## Backlog
 
 - [#21](https://github.com/Zero-State-LLC/Patch-Hive/issues/21) Advance v0.3 alpha toward closed staging beta
-- [008 T040b] Run Design Engine walkthrough on staging (test payments) and capture receipt
 - [008 T050b] Pin readiness matrix + cutover checklist to walkthrough SHA
-- [beta] Operator staging host pick
-- [beta] Design Engine staging enablement
-- [beta] Acceptance suite against staging Postgres
-- [beta] Backup/restore + ledger reconcile drill receipts
-- [beta] Manual accessibility protocol
-- [beta] Dual-path F2/F4/F5 thinning
-- [beta] Playwright against staging
 - [005 T061 = 007 T030b+T040b] Propose and approve thresholds from baseline
 - [005 T062 = 007 T060b] Pin and retain SHA-pinned evaluation receipt
-- [005 T070 = 007 T050b] Enable provider in staging after approval
-- [005] Close Spec Kit gaps (Workflows section, transitions table)
-- [ops] Org Actions budget or spending limit (needed before making the repo private again)
-- [ops] Add required status checks backend/frontend/Analyze once green
-- [release] Tag v0.4.0-alpha.1 after versioning PR merges
-- [triage] Review personal-only branches with unmerged work
+- [005 T070 = 007 T050b+T085] Enable provider in staging after approval
 - [001 T002] Write plan.md (rig intelligence)
 - [001 T010] Encode transitions table as tests (rig intelligence)
 - [001 T090] Converge code against spec (rig intelligence)
@@ -38,19 +25,16 @@ Snapshot: 2026-11-03, 159 items.
 - [004 T002] Write plan.md (commerce)
 - [004 T010] Encode transitions table as tests (commerce)
 - [004 T090] Converge code against spec (commerce)
-- [006 T050] Bind Hyperdrive to Neon staging branch
-- [006 T060b] Verify Clef resolution path on Hyperdrive-bound staging
+- [006 T060b] Verify the decision-provider path on Neon-backed staging
 - [007 T020b = 005 T061d] Run baseline vs provider-assisted evaluation on frozen corpus
 - [decision] Maker permission metadata and stealth proxy sign-off
-- [decision] Model jumper-dependent power (power_configs)
-- [beta] Open accounts (VITE_ACCOUNTS_OPEN=true) once the API is live
-- [003 T031] Classify the 644 untagged rows from their pages (paid; no full cache rebuild — T035 covers jumper pages)
-- [catalog] Review 24 rows whose tags point to two categories
-- [003 T034] Jumper-dependent power as power_configs — schema decided (D8), after T035
 
 ## Ready
 
 - [008 T030b] Verify seeded demo auth on the staging host
+- [beta] Acceptance suite against staging Postgres
+- [beta] Backup/restore + ledger reconcile drill receipts
+- [005] Close Spec Kit gaps (Workflows section, transitions table)
 - [001 T001] Confirm rig intelligence spec
 - [002 T001] Confirm patch-book publishing spec
 - [003 T001] Confirm catalog dataset pipeline spec
@@ -63,6 +47,8 @@ Snapshot: 2026-11-03, 159 items.
 - [ops] Real sign-up on production (operator)
 - [ops] Decide repo visibility vs the Actions budget
 - [ops] Review open PRs #106, #109, #110, #111
+- [003 T031] Classify the 632 live untagged rows: free offline pass first, paid only for the remainder
+- [catalog] Resolve the 20 live rows whose tags point to two categories
 - [003 T035] Scoped re-fetch of ~45 jumper-dependent pages (needs a cap: ~20–50 context.dev credits)
 
 ## In progress
@@ -71,7 +57,10 @@ _None._
 
 ## In review
 
-_None._
+- [beta] Manual accessibility protocol
+- [beta] Dual-path F2/F4/F5 thinning
+- [beta] Playwright against staging
+- [triage] Review personal-only branches with unmerged work
 
 ## Done
 
@@ -81,14 +70,21 @@ _None._
 - [#25](https://github.com/Zero-State-LLC/Patch-Hive/pull/25) sync: bring personal repo main (964ce18) into org
 - [#26](https://github.com/Zero-State-LLC/Patch-Hive/pull/26) ci: real backend+frontend CI; fix project automation target
 - [#27](https://github.com/Zero-State-LLC/Patch-Hive/pull/27) specs: draft skeletons 001-004 + 005 gap list (stacked on #25)
+- [008 T040b] Run Design Engine walkthrough on staging (test payments) and capture receipt
 - [alpha exit] No P0 regressions on main CI — green on main 2026-10-28 (repo public)
+- [beta] Operator staging host pick
 - [beta] Secrets, CORS, fail-closed payment flags — edge-secrets workflow, exact-origin CORS, test-mode payments
+- [beta] Design Engine staging enablement
+- [ops] Org Actions budget or spending limit (needed before making the repo private again)
+- [ops] Add required status checks backend/frontend/Analyze once green
+- [release] Tag v0.4.0-alpha.1 after versioning PR merges
 - [data] Next catalog enrichment batch (needs budget approval)
 - [#28](https://github.com/Zero-State-LLC/Patch-Hive/pull/28) release: align versions to 0.3.0-alpha.2 + release workflow (stacked on #25)
 - [#29](https://github.com/Zero-State-LLC/Patch-Hive/pull/29) docs: KANBAN.md mirror of Project #8 (stacked on #25)
 - [#30](https://github.com/Zero-State-LLC/Patch-Hive/pull/30) data: catalog batch 7 via scrape-router (overlay v5 + new-brand candidates + dry-run receipt)
 - [006 T030] Edge frontend on Cloudflare (Pages in spec; Workers in #55)
 - [006 T040] Publish API hostname; restrict CORS to exact origin — api.patch-hive.com live, other origins 400
+- [006 T050] Bind Hyperdrive to Neon staging branch
 - [#55](https://github.com/Zero-State-LLC/Patch-Hive/pull/55) ops(frontend): ship SPA on Cloudflare Workers (patch-hive.com) and gate dev-only copy
 - [#56](https://github.com/Zero-State-LLC/Patch-Hive/pull/56) style(frontend): Hallmark polish to clear the Floor (cyber-hive DESIGN.md)
 - [#57](https://github.com/Zero-State-LLC/Patch-Hive/pull/57) spec: Spec Kit + DAG compliance audit for 001-008; add spec DAG checker
@@ -123,6 +119,8 @@ _None._
 - [decision] Retire bogus catalog rows (TLM ST MODULAR) — tombstones, #116
 - [decision] HP correction for NOT NULL modules.hp (Sovage CHICANE 14 -> 4) — decided D4, #125
 - [decision] seed_catalog_from_synth.py: delete — decided D5, #124
+- [decision] Model jumper-dependent power (power_configs)
+- [beta] Open accounts (VITE_ACCOUNTS_OPEN=true) once the API is live
 - [#81](https://github.com/Zero-State-LLC/Patch-Hive/pull/81) docs: refresh state, board mirror and open decisions after #80
 - [#82](https://github.com/Zero-State-LLC/Patch-Hive/pull/82) fix(api): close the P0 security gaps from the gap analysis
 - [#83](https://github.com/Zero-State-LLC/Patch-Hive/pull/83) ops: make the public pair production and add a separate staging pair
@@ -173,6 +171,7 @@ _None._
 - [#123](https://github.com/Zero-State-LLC/Patch-Hive/pull/123) fix(frontend): skip the refresh call on a signed-out page load (slice A5)
 - [#124](https://github.com/Zero-State-LLC/Patch-Hive/pull/124) spec(003): record D3-D6, a row lifecycle and FR-036-038; delete the seed scripts
 - [#125](https://github.com/Zero-State-LLC/Patch-Hive/pull/125) feat(catalog): reviewed corrections; fix Sovage CHICANE's HP (003 T033)
+- [003 T034] Jumper-dependent power as power_configs — schema decided (D8), after T035
 - [#126](https://github.com/Zero-State-LLC/Patch-Hive/pull/126) docs: refresh state, slices, decisions and the board mirror for 2026-10-29
 - [#127](https://github.com/Zero-State-LLC/Patch-Hive/pull/127) docs(003): mark T033 done after the staging and prod loads
 - [#128](https://github.com/Zero-State-LLC/Patch-Hive/pull/128) spec(003): decide Frap (D7) and jumper power (D8); close answerable questions
