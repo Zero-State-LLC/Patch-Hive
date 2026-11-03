@@ -30,7 +30,8 @@ def test_the_migration_revises_credit_checkout_on_the_single_head() -> None:
     assert len(module.revision) <= 32
     script = ScriptDirectory.from_config(Config(str(BACKEND / "alembic.ini")))
     heads = script.get_heads()
-    assert heads == [module.revision]
+    assert len(heads) == 1
+    assert module.revision in {rev.revision for rev in script.iterate_revisions(heads[0], "base")}
 
 
 def test_the_model_and_the_migration_allow_the_same_statuses() -> None:

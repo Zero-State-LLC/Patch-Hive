@@ -28,6 +28,13 @@ from canon.checkout import (
     checkout_gate,
     start_credit_checkout,
 )
+from canon.subscriptions import (
+    SUBSCRIPTION_FLAG,
+    SubscriptionProvider,
+    SubscriptionRefusedError,
+    request_subscription_cancel,
+    start_subscription_checkout,
+)
 from canon.contracts import ExportRequest
 from canon.downloads import DownloadTokenError, issue_download_token, verify_download_token
 from canon.exports import (
@@ -1166,6 +1173,113 @@ def create_credit_checkout(
         amount_cents=payment.amount_cents,
         currency=payment.currency,
         status=payment.status,
+    )
+
+
+class SubscriptionCheckoutCreate(BaseModel):
+    tier: Literal["core", "pro", "studio"]
+
+
+class SubscriptionCheckoutResponse(BaseModel):
+    tier: str
+    checkout_session_id: str
+    checkout_url: str
+
+
+class SubscriptionCancelResponse(BaseModel):
+    provider_subscription_id: str
+    tier: str
+    status: str
+    cancel_at_period_end: bool
+    current_period_end: datetime
+
+
+def get_subscription_provider() -> SubscriptionProvider:
+    """The provider client for Machine C; tests override this dependency with a fake."""
+
+    return StripeCheckoutProvider(
+        (settings.stripe_secret_key or "").strip(), api_base=settings.stripe_api_base
+    )
+
+
+def _gate_subscription_checkout() -> None:
+    # Runs before the provider dependency, so a refused request builds no client.
+    try:
+        checkout_gate(settings, flag=SUBSCRIPTION_FLAG)
+    except CheckoutUnavailableError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.code) from exc
+
+
+@router.post(
+    "/checkout/subscription",
+    response_model=SubscriptionCheckoutResponse,
+    status_code=201,
+    dependencies=[Depends(_gate_subscription_checkout)],
+)
+def create_subscription_checkout(
+    body: SubscriptionCheckoutCreate,
+    current_user: User = Depends(require_auth),
+    db: Session = Depends(get_db),
+    provider: SubscriptionProvider = Depends(get_subscription_provider),
+) -> SubscriptionCheckoutResponse:
+    """Spec 004 Machine C ``choose_tier``: open a subscription checkout for one tier.
+
+    Nothing is granted here; the period grant comes only from ``invoice.paid``.
+    """
+
+    try:
+        started = start_subscription_checkout(
+            db, user=current_user, tier=body.tier, provider=provider, app_settings=settings
+        )
+        db.commit()
+    except (CheckoutUnavailableError, SubscriptionRefusedError) as exc:
+        db.rollback()
+        raise HTTPException(status_code=exc.status_code, detail=exc.code) from exc
+    except PaymentProviderError as exc:
+        db.rollback()
+        raise HTTPException(status_code=502, detail="PAYMENT_PROVIDER_ERROR") from exc
+    except Exception:
+        db.rollback()
+        raise
+    return SubscriptionCheckoutResponse(
+        tier=started.tier,
+        checkout_session_id=started.checkout_session_id,
+        checkout_url=started.checkout_url,
+    )
+
+
+@router.post(
+    "/subscription/cancel",
+    response_model=SubscriptionCancelResponse,
+    dependencies=[Depends(_gate_subscription_checkout)],
+)
+def cancel_subscription(
+    current_user: User = Depends(require_auth),
+    db: Session = Depends(get_db),
+    provider: SubscriptionProvider = Depends(get_subscription_provider),
+) -> SubscriptionCancelResponse:
+    """Spec 004 Machine C ``cancel_requested`` (FR-017): cancel at the period end."""
+
+    try:
+        record = request_subscription_cancel(
+            db, user=current_user, provider=provider, app_settings=settings
+        )
+        db.commit()
+    except (CheckoutUnavailableError, SubscriptionRefusedError) as exc:
+        db.rollback()
+        raise HTTPException(status_code=exc.status_code, detail=exc.code) from exc
+    except PaymentProviderError as exc:
+        db.rollback()
+        raise HTTPException(status_code=502, detail="PAYMENT_PROVIDER_ERROR") from exc
+    except Exception:
+        db.rollback()
+        raise
+    return SubscriptionCancelResponse(
+        provider_subscription_id=record.provider_subscription_id,
+        tier=record.tier,
+        status=record.status,
+        cancel_at_period_end=bool(record.cancel_at_period_end),
+        current_period_end=record.current_period_end,
     )
 
 

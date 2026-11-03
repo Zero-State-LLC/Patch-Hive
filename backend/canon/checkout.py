@@ -63,6 +63,7 @@ from monetization.referrals import record_purchase
 MAX_CREDITS_PER_CHECKOUT = 1000
 TEST_KEY_PREFIXES = ("sk_test_", "rk_test_")
 PURCHASE_TYPE = "one_time"
+SUBSCRIPTION_PURCHASE_TYPE = "subscription"
 
 CHECKOUT_COMPLETED = "checkout.session.completed"
 ASYNC_PAYMENT_SUCCEEDED = "checkout.session.async_payment_succeeded"
@@ -212,6 +213,49 @@ class StripeCheckoutProvider:
             raise PaymentProviderError("provider returned no checkout session")
         return ProviderCheckoutSession(id=session_id, url=url)
 
+    def create_subscription_checkout_session(
+        self,
+        *,
+        customer_id: str,
+        user_id: int,
+        tier: str,
+        price_id: str,
+        success_url: str,
+        cancel_url: str,
+        expires_at: int,
+        idempotency_key: str,
+    ) -> ProviderCheckoutSession:
+        """Machine C ``choose_tier``: a ``subscription``-mode session for one tier price."""
+
+        form = {
+            "mode": "subscription",
+            "customer": customer_id,
+            "client_reference_id": str(user_id),
+            "line_items[0][price]": price_id,
+            "line_items[0][quantity]": "1",
+            "success_url": success_url,
+            "cancel_url": cancel_url,
+            "metadata[user_id]": str(user_id),
+            "metadata[tier]": tier,
+            "metadata[purchase_type]": SUBSCRIPTION_PURCHASE_TYPE,
+            "subscription_data[metadata][user_id]": str(user_id),
+            "subscription_data[metadata][tier]": tier,
+            "expires_at": str(expires_at),
+        }
+        body = self._post("/v1/checkout/sessions", form, idempotency_key)
+        session_id, url = body.get("id"), body.get("url")
+        if not isinstance(session_id, str) or not session_id or not isinstance(url, str) or not url:
+            raise PaymentProviderError("provider returned no checkout session")
+        return ProviderCheckoutSession(id=session_id, url=url)
+
+    def cancel_subscription_at_period_end(
+        self, *, subscription_id: str, idempotency_key: str
+    ) -> dict[str, Any]:
+        """Machine C ``cancel_requested``: ``cancel_at_period_end=true`` at the provider."""
+
+        path = f"/v1/subscriptions/{quote(subscription_id, safe='')}"
+        return self._post(path, {"cancel_at_period_end": "true"}, idempotency_key)
+
     def retrieve_checkout_session(self, session_id: str) -> dict[str, Any]:
         """``GET /v1/checkout/sessions/{id}``: the session as the provider has it now."""
 
@@ -227,17 +271,20 @@ def credit_charge_cents(credits: int, *, price_cents: int, minimum_cents: int) -
     return max(minimum_cents, credits * price_cents)
 
 
-def checkout_gate(app_settings: Any) -> None:
+def checkout_gate(app_settings: Any, *, flag: str = "enable_credit_checkout") -> None:
     """Refuse checkout unless payments are on, allowed here, and the key is safe.
 
-    - ``ENABLE_CREDIT_CHECKOUT`` off: ``PAYMENTS_DISABLED`` (FR-019).
+    ``flag`` names the machine's own switch: ``enable_credit_checkout`` (Machine B) or
+    ``enable_subscription_checkout`` (Machine C, T049). The other refusals are shared.
+
+    - The flag off: ``PAYMENTS_DISABLED`` (FR-019).
     - Production without ``ALLOW_PRODUCTION_PAYMENTS``: ``PRODUCTION_PAYMENTS_DISABLED``.
     - No secret key: ``STRIPE_SECRET_KEY_MISSING``.
     - A non-test key while ``STRIPE_TEST_MODE=true``, or anywhere production payments are
       not activated: ``LIVE_KEY_REFUSED``.
     """
 
-    if not bool(getattr(app_settings, "enable_credit_checkout", False)):
+    if not bool(getattr(app_settings, flag, False)):
         raise CheckoutUnavailableError("PAYMENTS_DISABLED")
     production = str(getattr(app_settings, "environment", "")).strip().lower() == "production"
     allow = bool(getattr(app_settings, "allow_production_payments", False))
@@ -451,8 +498,13 @@ def handle_checkout_session_event(session: Session, event: dict[str, Any]) -> Ev
         raise UnresolvedEventError("EVENT_PAYLOAD_MALFORMED")
     mode = obj.get("mode")
     if mode == "subscription":
-        # Machine C (T049) is not built; fail closed.
-        return EventDisposition("unresolved", "HANDLER_NOT_IMPLEMENTED")
+        # Machine C (T049): the session only settles the user's checkout reservation.
+        # The record comes from ``customer.subscription.*`` and the period grant from
+        # ``invoice.paid`` (canon.subscriptions); an expired session is Abandoned with no
+        # record.
+        from canon.subscriptions import handle_subscription_checkout_session
+
+        return handle_subscription_checkout_session(session, event)
     if mode != "payment":
         raise UnresolvedEventError("CHECKOUT_MODE_UNKNOWN")
 
@@ -698,6 +750,9 @@ def _apply_retrieved_session(
 ) -> EventDisposition:
     """Run Machine B fulfillment once on the retrieved session, in a savepoint."""
 
+    if obj.get("mode") == "subscription":
+        # Machine C (T049) has no operator resolve; an operator rejects instead.
+        raise ResolveRefusedError("RESOLVE_NOT_SUPPORTED")
     if obj.get("payment_status") != "paid":
         # Resolve only credits: a session the provider does not report paid stays with
         # the operator, who may reject it.
@@ -746,7 +801,8 @@ def resolve_unresolved_event(
     - ``LookupError``: no such event.
     - ``InvalidEventTransitionError``: the event is not ``unresolved``.
     - ``ResolveRefusedError``: not a Machine B event, or no stored object id (409); the
-      provider returned a different object (502).
+      provider returned a different object (502); the retrieved session is in
+      ``subscription`` mode (409 ``RESOLVE_NOT_SUPPORTED``: Machine C has no resolve).
     - ``CheckoutUnavailableError``: the payments flags or key refuse, as for checkout.
     - ``PaymentProviderError``: the session could not be retrieved.
     """

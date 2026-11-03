@@ -132,6 +132,25 @@ class Settings(BaseSettings):
     credit_price_cents: int = 20
     credit_minimum_charge_cents: int = 500
     credit_currency: str = "usd"
+    # Spec 004 Machine C (T049): subscription checkout. Off by default (FR-019, OQ-13);
+    # the same production and test-key refusals as Machine B apply.
+    enable_subscription_checkout: bool = False
+    # Provider (test-mode) price id per paid tier. Empty: the tier cannot be sold, and an
+    # event for a price that maps to no tier is unresolved (PRICE_UNKNOWN). The OQ-1
+    # prices (provisional: CORE $4.99, PRO $14.99, STUDIO $29.99 a month, USD) live on
+    # the provider Price objects; PatchHive maps price ids to tiers and never trusts a
+    # client-supplied amount.
+    subscription_price_id_core: str = ""
+    subscription_price_id_pro: str = ""
+    subscription_price_id_studio: str = ""
+    # OQ-1 (provisional): credits granted per paid billing period.
+    subscription_credits_core: int = 25
+    subscription_credits_pro: int = 100
+    # OQ-8 ``A_flag_with_fair_use``: STUDIO is an explicit unlimited entitlement, not a
+    # number of credits (FR-004), bounded by this owner-set fair-use cap of exports per
+    # billing period. The default 100 is conservative: at one credit or more per export,
+    # STUDIO allows no more exports than PRO's 100 credits until the owner raises it.
+    subscription_studio_fair_use_exports_per_period: int = 100
 
     # File Storage
     export_dir: str = "./exports"
