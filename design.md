@@ -54,6 +54,7 @@ Motion is signal: it carries a change of state, never decoration.
 
 - A module entering a rail row slides into its slot. HP and power meters fill to their value. Results crossfade when filters change. The active nav item's amber rule draws in. A hovered row lights its faceplate edge.
 - `transform` and `opacity` only. Durations: 120ms (press, tick), 220ms (hover, fill, crossfade), 420ms (a panel opening). Ease-out on arrival, no overshoot.
+- One exception: a patch cable draws itself along its path when it arrives (`stroke-dashoffset`), because the cable is the signal. Colour never animates: a hover or state change of colour is instant.
 - No ambient loops, no glow-blur neon stacks. A loader is the only infinite animation.
 - Honor `prefers-reduced-motion`: every animation shows its end state at once.
 

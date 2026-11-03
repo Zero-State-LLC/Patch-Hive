@@ -32,7 +32,7 @@ grep -n "^Symbol" .codebase-memory/symbols/tags | head   # or editor ctags jump
 |----------------------|---------------------|
 | `backend/canon/` | `backend/racks`, `patches` routers |
 | `backend/evidence/` | `backend/patchhive/` + repo-root `patchhive/` (HISTORICAL; see PATCHHIVE_IMPORT_TELEMETRY.md) |
-| `frontend/src/pages` MVP | `frontend/src/legacy` |
+| `frontend/src/pages` MVP | Old social and publish UI is deleted; don't revive it |
 
 ## Validate before claiming done
 

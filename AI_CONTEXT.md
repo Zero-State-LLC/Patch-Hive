@@ -22,7 +22,6 @@ Deterministic Eurorack **rig intelligence + Patch Book publishing**. Not audio D
 | `backend/runs/` | Run list + native bridge IDs |
 | `backend/racks|modules|cases/` | Catalog dual-path HTTP |
 | `frontend/src/pages/` | MVP UI |
-| `frontend/src/legacy/` | Quarantined social/publish UI |
 | `docs/` | Architecture, VSI, canon, ops |
 | `docs/engineering/` | Agent/dev engineering guides |
 | `.codebase-memory/` | Local indexes (gitignored) |

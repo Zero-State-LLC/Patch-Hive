@@ -367,6 +367,7 @@ const SCREENS: Screen[] = [
   { path: "/account", name: "account", signedIn: true },
   { path: "/admin", name: "ops", signedIn: true },
   { path: "/admin/users", name: "ops users", signedIn: true },
+  { path: "/admin/leaderboards", name: "ops leaderboards", signedIn: true },
   { path: "/rigs/1", name: "rig detail", signedIn: true, signature: ".signal-chain" },
   {
     path: "/rigs/1/patches/501",
@@ -517,6 +518,7 @@ const API_DOWN: { path: string; name: string }[] = [
   { path: "/patches", name: "patches" },
   { path: "/account", name: "account" },
   { path: "/admin/users", name: "ops users" },
+  { path: "/admin/leaderboards", name: "ops leaderboards" },
 ];
 
 test.describe("API down", () => {

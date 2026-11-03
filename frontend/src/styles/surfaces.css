@@ -254,7 +254,7 @@
 }
 .auth-tab {
   position: relative;
-  min-height: 44px;
+  min-height: var(--hit-target);
   border: 0;
   color: var(--color-ink-2);
   background: transparent;
@@ -262,7 +262,6 @@
   font-size: var(--text-sm);
   font-weight: 500;
   white-space: nowrap;
-  transition: color var(--dur-short) var(--ease-out);
 }
 .auth-tab::after {
   position: absolute;
@@ -300,7 +299,7 @@
 }
 .auth-submit {
   width: 100%;
-  min-height: 44px;
+  min-height: var(--hit-target);
 }
 .auth-error {
   padding: var(--space-sm) var(--space-md);

@@ -130,7 +130,6 @@ code {
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
-  transition: color var(--dur-short) var(--ease-out);
 }
 .primary-nav a::after {
   position: absolute;
@@ -205,7 +204,7 @@ code {
   align-items: center;
   justify-content: center;
   gap: var(--space-xs);
-  min-height: 40px;
+  min-height: var(--control-h);
   padding: 0 var(--space-md);
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
@@ -215,11 +214,7 @@ code {
   font: 600 var(--text-sm) / 1 var(--font-body);
   text-decoration: none;
   white-space: nowrap;
-  transition:
-    background-color var(--dur-short) var(--ease-out),
-    border-color var(--dur-short) var(--ease-out),
-    color var(--dur-short) var(--ease-out),
-    transform var(--dur-micro) var(--ease-out);
+  transition: transform var(--dur-micro) var(--ease-out);
 }
 /* 44px hit target around a 40px control */
 .button::before {
@@ -282,7 +277,7 @@ code {
 .toolbar select,
 .toolbar input:not([type="checkbox"]):not([type="radio"]) {
   width: 100%;
-  min-height: 40px;
+  min-height: var(--control-h);
   padding: 0 var(--space-sm);
   border: 1px solid var(--color-field-edge);
   border-radius: var(--radius-input);
@@ -291,7 +286,6 @@ code {
   font-size: var(--text-sm);
   outline: 2px solid transparent;
   outline-offset: -1px;
-  transition: border-color var(--dur-short) var(--ease-out);
 }
 .field textarea {
   min-height: 6rem;
@@ -406,7 +400,7 @@ code {
 }
 .tab {
   position: relative;
-  min-height: 44px;
+  min-height: var(--hit-target);
   padding: 0 var(--space-md);
   border: 0;
   color: var(--color-ink-2);
@@ -415,7 +409,6 @@ code {
   font-size: var(--text-sm);
   font-weight: 500;
   white-space: nowrap;
-  transition: color var(--dur-short) var(--ease-out);
 }
 .tab::after {
   position: absolute;
@@ -615,10 +608,6 @@ code {
   background: transparent;
   cursor: pointer;
   font-size: var(--text-sm);
-  transition:
-    border-color var(--dur-short) var(--ease-out),
-    color var(--dur-short) var(--ease-out),
-    background-color var(--dur-short) var(--ease-out);
 }
 .status-chip--interactive:hover {
   border-color: var(--color-rule-strong);
@@ -731,24 +720,20 @@ code {
   gap: var(--space-sm);
   margin-top: var(--space-md);
 }
+/* A placeholder breathes while its content loads: opacity only, the one infinite animation */
 .skeleton {
   display: block;
   border-radius: var(--radius-plate);
-  background: linear-gradient(
-    90deg,
-    var(--color-paper-2) 0%,
-    var(--color-paper-3) 50%,
-    var(--color-paper-2) 100%
-  );
-  background-size: 200% 100%;
-  animation: skeleton-sweep 1.4s linear infinite;
+  /* Tinted from the panel it sits on, so it reads in both themes */
+  background: color-mix(in oklab, var(--color-muted) 18%, var(--color-paper-2));
+  animation: skeleton-pulse var(--dur-loader) var(--ease-in-out) infinite alternate;
 }
-@keyframes skeleton-sweep {
+@keyframes skeleton-pulse {
   from {
-    background-position: 100% 0;
+    opacity: 1;
   }
   to {
-    background-position: -100% 0;
+    opacity: 0.45;
   }
 }
 
@@ -956,7 +941,7 @@ code {
   display: grid;
   gap: var(--space-3xs);
   width: 100%;
-  min-height: 44px;
+  min-height: var(--hit-target);
   padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
   border: 0;
   border-bottom: 1px solid var(--color-rule);
@@ -964,7 +949,6 @@ code {
   background: transparent;
   cursor: pointer;
   text-align: left;
-  transition: background-color var(--dur-short) var(--ease-out);
 }
 .side-item::before {
   position: absolute;
@@ -1019,7 +1003,6 @@ code {
   white-space: nowrap;
 }
 .data-table tbody tr {
-  transition: background-color var(--dur-short) var(--ease-out);
 }
 .data-table tbody tr:hover {
   background: var(--color-paper-2);
@@ -1041,7 +1024,7 @@ code {
   position: relative;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--hit-target);
   padding: 0 var(--space-sm);
   color: var(--color-ink-2);
   font-size: var(--text-sm);
@@ -1104,7 +1087,7 @@ code {
   .primary-nav {
     grid-column: 1 / -1;
     order: 3;
-    min-height: 44px;
+    min-height: var(--hit-target);
     margin: 0 calc(-1 * var(--space-sm));
   }
   .header-actions {
@@ -1131,7 +1114,7 @@ code {
 }
 @media (max-width: 40rem) {
   :root {
-    --gutter: 16px;
+    --gutter: var(--space-md);
   }
   .app-header .header-actions .button-secondary {
     max-width: 7.5rem;

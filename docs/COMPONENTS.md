@@ -8,85 +8,14 @@ This document describes the available UI components and how to use them.
 
 ## React Components
 
-### AnimatedLogo
+The shared components live in `frontend/src/components/`. The ones most screens use:
 
-**Location**: `frontend/src/components/AnimatedLogo.tsx`
-
-Animated version of the PatchHive logo with pulsing oscillator core and rotating CV pathways.
-
-#### Usage
-
-```tsx
-import { AnimatedLogo } from '@/components/AnimatedLogo';
-
-// Default (200px, animated)
-<AnimatedLogo />
-
-// Custom size
-<AnimatedLogo size={150} />
-
-// Static (no animation)
-<AnimatedLogo animate={false} />
-```
-
-#### Props
-
-| Prop     | Type    | Default | Description                    |
-|----------|---------|---------|--------------------------------|
-| size     | number  | 200     | Width and height in pixels     |
-| animate  | boolean | true    | Enable/disable animations      |
-
-#### Animations
-
-- **Core pulse**: Breathing effect on oscillator core (2s cycle)
-- **Pathway rotation**: CV pathways rotate slowly (15s cycle)
-- **Hex rotation**: Inner hex frame rotates (20s cycle)
-- **Signal flow**: Dots pulse along signal paths (4s cycle)
-
-**Accessibility**: Respects `prefers-reduced-motion` - animations disabled automatically for users who prefer reduced motion.
-
----
-
-### LoadingSpinner
-
-**Location**: `frontend/src/components/LoadingSpinner.tsx`
-
-Rotating hexagon spinner with orbiting signal dots.
-
-#### Usage
-
-```tsx
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-
-// Default (80px)
-<LoadingSpinner />
-
-// With loading message
-<LoadingSpinner message="Generating patches..." />
-
-// Custom size
-<LoadingSpinner size={120} message="Loading modules..." />
-```
-
-#### Props
-
-| Prop    | Type   | Default | Description                    |
-|---------|--------|---------|--------------------------------|
-| size    | number | 80      | Width and height in pixels     |
-| message | string | -       | Optional loading message       |
-
-#### Animations
-
-- **Hex rotation**: Outer hex rotates clockwise (2s cycle)
-- **Inner hex rotation**: Inner hex rotates counter-clockwise (3s cycle)
-- **Core pulse**: Central oscillator pulsing (1.5s cycle)
-- **Dot orbit**: 6 dots orbit around center with fade (3s cycle)
-
-**Use cases**:
-- Initial app loading
-- API request pending
-- Patch generation in progress
-- Module import processing
+- **Skeletons** (`Skeletons.tsx`): placeholders in the shape of what is loading (a list, a rail, the signal chain, a readout figure), with one delayed status line for screen readers.
+- **LoadFailure** (`LoadFailure.tsx`): what didn't load, why in one sentence (from `lib/loadError.ts`), and Retry. It is an alert, never an empty state.
+- **ShowMore** (`ShowMore.tsx`): the next page of a list the API pages.
+- **Toast** (`Toast.tsx`, with `lib/useToast.ts`): one polite message at the foot of the screen, with an optional action such as Undo that stays until used and also runs with Ctrl or Cmd+Z.
+- **Tabs** (`Tabs.tsx`): a keyboard-correct tab list (arrows, Home, End, one tab stop).
+- **RigRail**, **PatchRail** and **builder/PlacementRail**: a rig drawn to HP scale, a patch's cables on it, and the editable rail in the builder.
 
 ---
 
@@ -281,50 +210,13 @@ Add to your global CSS:
 ### Loading State
 
 ```tsx
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import LoadFailure from '@/components/LoadFailure';
+import { ListSkeleton } from '@/components/Skeletons';
 
 function ModulePage() {
-  const [loading, setLoading] = useState(true);
-
-  if (loading) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <LoadingSpinner message="Loading modules..." />
-      </div>
-    );
-  }
-
+  if (state === 'loading') return <ListSkeleton label="Loading modules…" />;
+  if (state === 'error') return <LoadFailure what="The module catalog" error={error} onRetry={reload} />;
   return <ModuleList />;
-}
-```
-
-### Splash Screen
-
-```tsx
-import { AnimatedLogo } from '@/components/AnimatedLogo';
-
-function SplashScreen() {
-  return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
-      backgroundColor: '#020407',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 9999
-    }}>
-      <AnimatedLogo size={300} />
-    </div>
-  );
 }
 ```
 
@@ -401,20 +293,11 @@ All interactive components support:
 
 ### Screen Readers
 
-```tsx
-// Add ARIA labels
-<AnimatedLogo aria-label="PatchHive logo" role="img" />
-<LoadingSpinner aria-live="polite" aria-busy="true" />
-```
+Loading states announce once through the skeleton's status line; failures are alerts (`LoadFailure`); results and Undo arrive through the toast's polite live region.
 
 ### Reduced Motion
 
-```tsx
-// Check user preference
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-<AnimatedLogo animate={!prefersReducedMotion} />
-```
+`frontend/src/styles/base.css` ends every animation and transition at once under `prefers-reduced-motion: reduce`, so components need no check of their own.
 
 ---
 
@@ -422,27 +305,17 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 
 ### Visual Testing
 
-```tsx
-// Storybook story example
-export default {
-  title: 'Components/AnimatedLogo',
-  component: AnimatedLogo,
-};
-
-export const Default = () => <AnimatedLogo />;
-export const Large = () => <AnimatedLogo size={300} />;
-export const Static = () => <AnimatedLogo animate={false} />;
-```
+There is no Storybook. Every screen is checked in a real browser by the design guard, `frontend/tests/ui/design.spec.ts`: axe (colour contrast included), nothing past the viewport, and each screen's signature drawing, in both themes at 1440 and 375 px.
 
 ### Unit Testing
 
 ```tsx
 import { render, screen } from '@testing-library/react';
-import { LoadingSpinner } from './LoadingSpinner';
+import LoadFailure from './LoadFailure';
 
-test('renders loading message', () => {
-  render(<LoadingSpinner message="Loading..." />);
-  expect(screen.getByText('Loading...')).toBeInTheDocument();
+test('says what did not load, and why', () => {
+  render(<LoadFailure what="Your credits" error={{ code: 'ERR_NETWORK' }} />);
+  expect(screen.getByRole('alert')).toHaveTextContent("Your credits didn't load.");
 });
 ```
 

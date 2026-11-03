@@ -67,6 +67,8 @@
   --dur-micro: 120ms;
   --dur-short: 220ms;
   --dur-long: 420ms;
+  /* One half of a loader's pulse: the only infinite animation */
+  --dur-loader: 900ms;
   --motion-fast: var(--dur-micro);
   --motion-med: var(--dur-short);
 
@@ -75,6 +77,9 @@
   --gutter: 40px;
   --gap-columns: 24px;
   --header-height: 60px;
+  /* A control's height, and the hit area a touch target keeps */
+  --control-h: 40px;
+  --hit-target: 44px;
   --z-base: 1;
   --z-raised: 10;
   --z-dropdown: 100;

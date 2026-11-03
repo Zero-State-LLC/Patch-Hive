@@ -94,9 +94,8 @@ SpecKit normalization and feature 005 are specified on the campaign branch. Impl
 ### P2 — Package and dead-UI hygiene
 
 1. ~~**Unrouted frontend pages**~~ **DONE**  
-   - Moved to `frontend/src/legacy/pages/`; clients in `frontend/src/legacy/apiClients.ts`.  
-   - See `frontend/src/legacy/README.md`.  
-   - **Exit:** `rg` for those page names only under `legacy/`; App routes unchanged.
+   - Moved to `frontend/src/legacy/`, then deleted once nothing referenced them (frontend slice 10, 2026-11-03).  
+   - **Exit:** the pages and their clients are gone; App routes unchanged.
 2. ~~**Import telemetry for `patchhive` package**~~ **DONE** (Wave 4)  
    - Telemetry: [engineering/PATCHHIVE_IMPORT_TELEMETRY.md](engineering/PATCHHIVE_IMPORT_TELEMETRY.md)  
    - Marker `legacy_pipeline` on residual unit importers; `patchhive/tests` quarantined  

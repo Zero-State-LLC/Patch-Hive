@@ -468,8 +468,6 @@ export const authApi = {
   getMe: () => api.get<User>("/community/users/me"),
 };
 
-// Community social API clients live under `src/legacy/apiClients.ts` (unrouted MVP).
-
 // Export API
 // PDF/SVG file URLs remain on legacy `/export/*` (artifact bytes).
 // Debited patch-book requests must use `canonApi.createExport` (ledger boundary).
@@ -789,8 +787,6 @@ export const adminApi = {
   exportedCategories: () =>
     api.get<AdminLeaderboardEntry[]>(`/admin/leaderboards/categories/exported`),
 };
-
-// Publishing / leaderboard clients live under `src/legacy/apiClients.ts`.
 
 // Account API
 // Credits/exports prefer the canonical ledger. Referrals remain legacy-flagged.

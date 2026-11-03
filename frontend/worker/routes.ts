@@ -22,6 +22,7 @@ export const APP_ROUTES = [
   "/admin/gallery",
   "/admin/runs",
   "/admin/exports",
+  "/admin/leaderboards",
 ] as const;
 
 const MATCHERS = APP_ROUTES.map(
