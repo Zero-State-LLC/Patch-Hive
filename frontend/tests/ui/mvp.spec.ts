@@ -771,6 +771,154 @@ test.describe("PatchHive canonical workspace", () => {
     expect(putBody?.modules?.[1]).toEqual({ module_id: 11, row_index: 0, start_hp: 12 });
   });
 
+  /** Rig 7 on a two-row case, served from state the PUTs change, as the API would. */
+  async function mockMovableRig(page: Page) {
+    const MODULES: Record<number, { name: string; hp: number }> = {
+      10: { name: "Gamma", hp: 12 },
+      11: { name: "Delta", hp: 6 },
+    };
+    const state = {
+      modules: [
+        { module_id: 10, row_index: 0, start_hp: 0 },
+        { module_id: 11, row_index: 0, start_hp: 12 },
+      ],
+    };
+    const puts: { module_id: number; row_index: number; start_hp: number }[][] = [];
+    const rig = () => ({
+      id: 7,
+      name: "Sim rack",
+      case_id: 10,
+      user_id: 1,
+      generation_seed: 1,
+      modules: state.modules.map((m, i) => ({
+        id: i + 1,
+        ...m,
+        module: {
+          id: m.module_id,
+          brand: "Sim",
+          module_type: "UTIL",
+          power_12v_ma: 20,
+          ...MODULES[m.module_id],
+        },
+      })),
+      case: {
+        id: 10,
+        brand: "Sim Co",
+        name: "Sim 168",
+        total_hp: 168,
+        rows: 2,
+        hp_per_row: [84, 84],
+        power_12v_ma: 2000,
+        power_neg12v_ma: 1200,
+        power_5v_ma: 500,
+      },
+    });
+    await page.route("**/api/racks/7**", async (route) => {
+      const request = route.request();
+      if (request.url().includes("/compatibility")) {
+        await route.fulfill({ json: { bridge_status: "ok", message: "ok", compatibility: null } });
+        return;
+      }
+      if (request.method() === "PUT" || request.method() === "PATCH") {
+        state.modules = request.postDataJSON().modules;
+        puts.push(state.modules);
+        await route.fulfill({ json: rig() });
+        return;
+      }
+      await route.fulfill({ json: rig() });
+    });
+    await page.route("**/api/modules/**", (route) =>
+      route.fulfill({
+        json: {
+          total: 2,
+          modules: Object.entries(MODULES).map(([id, m]) => ({
+            id: Number(id),
+            brand: "Sim",
+            module_type: "UTIL",
+            power_12v_ma: 20,
+            ...m,
+          })),
+        },
+      }),
+    );
+    return puts;
+  }
+
+  test("rack builder moves a placed module by keyboard, and Undo puts it back", async ({
+    page,
+  }) => {
+    const puts = await mockMovableRig(page);
+    await page.goto("/racks/7/edit");
+    const delta = page.locator('.placement-rail [data-module="11"]');
+    await expect(delta).toBeVisible({ timeout: 15000 });
+
+    // Enter picks it up; 1 + 1 + 4 HP right, then down a row; Enter drops it.
+    await delta.focus();
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("Shift+ArrowRight");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+
+    await expect(page.getByRole("status").filter({ hasText: "moved" })).toHaveText(
+      /Sim Delta moved to row 1 at 18 HP\./,
+    );
+    expect(puts.at(-1)).toMatchObject([
+      { module_id: 10, row_index: 0, start_hp: 0 },
+      { module_id: 11, row_index: 1, start_hp: 18 },
+    ]);
+    // Focus follows the module to its new row.
+    await expect(page.locator('.placement-rail [data-module="11"][data-row="1"]')).toBeFocused();
+
+    await page.getByRole("button", { name: "Undo" }).click();
+    await expect(page.getByText("Sim Delta is back at row 0 at 12 HP.")).toBeVisible();
+    expect(puts.at(-1)).toMatchObject([
+      { module_id: 10, row_index: 0, start_hp: 0 },
+      { module_id: 11, row_index: 0, start_hp: 12 },
+    ]);
+  });
+
+  test("rack builder shows a blocked slot and never saves it", async ({ page }) => {
+    const puts = await mockMovableRig(page);
+    await page.goto("/racks/7/edit");
+    const delta = page.locator('.placement-rail [data-module="11"]');
+    await expect(delta).toBeVisible({ timeout: 15000 });
+
+    await delta.focus();
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("ArrowLeft");
+    await expect(page.getByText("Can't go there. Overlaps Sim Gamma at HP 0 to 11.")).toBeVisible();
+    await expect(page.locator(".rack-row-map__block--ghost")).toHaveAttribute(
+      "data-state",
+      "blocked",
+    );
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Escape");
+    expect(puts).toHaveLength(0);
+  });
+
+  test("rack builder moves a placed module by dragging it to another row", async ({ page }) => {
+    const puts = await mockMovableRig(page);
+    await page.goto("/racks/7/edit");
+    const delta = page.locator('.placement-rail [data-module="11"]');
+    await expect(delta).toBeVisible({ timeout: 15000 });
+
+    const from = (await delta.boundingBox())!;
+    const row1 = (await page.locator('[data-rail-row="1"]').boundingBox())!;
+    await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+    await page.mouse.down();
+    // Held at its middle (3 HP in), dropped with the pointer at HP 43 of row 1: it starts at 40.
+    await page.mouse.move(row1.x + (43 / 84) * row1.width, row1.y + row1.height / 2, { steps: 8 });
+    await expect(page.locator(".rack-row-map__block--ghost")).toBeVisible();
+    await page.mouse.up();
+
+    await expect(page.getByText(/Sim Delta moved to row 1 at \d+ HP\./)).toBeVisible();
+    const moved = puts.at(-1)?.find((m) => m.module_id === 11);
+    expect(moved?.row_index).toBe(1);
+    expect(Math.abs((moved?.start_hp ?? 0) - 40)).toBeLessThanOrEqual(1);
+  });
+
   test("rack builder keeps the gallery's module_id in the select and batch list", async ({
     page,
   }) => {

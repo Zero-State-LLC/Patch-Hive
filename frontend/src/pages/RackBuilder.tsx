@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   caseApi,
@@ -16,10 +16,14 @@ import EvidenceStep, {
   type ReviewCandidate,
 } from "@/components/builder/EvidenceStep";
 import PlacementStep, { type RackCompat } from "@/components/builder/PlacementStep";
+import Toast from "@/components/Toast";
+import { failureReason } from "@/lib/loadError";
+import { checkSlot, moveTo, slotPhrase, type Slot } from "@/lib/placementMove";
 import { firstFreeStartHp, packModulesOntoRows } from "@/lib/placementPack";
-import { placementPower, summarizePower } from "@/lib/powerBudget";
+import { placementPower, railMeter, summarizePower, type RailKey } from "@/lib/powerBudget";
 import { useAuthStore } from "@/lib/store";
 import { useDebouncedValue } from "@/lib/useDebouncedValue";
+import { useToast } from "@/lib/useToast";
 import type { Case, CatalogCaseListItem, Module, Rack, RackModuleSpec } from "@/types/api";
 
 /** Demo ranked set when no rack id is available (create flow); shown with a Demo label. */
@@ -75,7 +79,10 @@ function mapApiCandidates(rows: EvidenceCandidate[]): ReviewCandidate[] {
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_BYTES = 12 * 1024 * 1024;
 
-function formatValidationError(err: unknown): string {
+function formatValidationError(
+  err: unknown,
+  fallback = "Could not create rig. Check case selection and try again.",
+): string {
   const apiError = err as {
     response?: {
       data?: {
@@ -92,8 +99,19 @@ function formatValidationError(err: unknown): string {
     }
     if (detail.message) return detail.message;
   }
-  return "Could not create rig. Check case selection and try again.";
+  return fallback;
 }
+
+/** The case rails a placement draws on, with the names the builder shows. */
+const POWER_RAILS: {
+  key: RailKey;
+  rail: string;
+  capacity: "power_12v_ma" | "power_neg12v_ma" | "power_5v_ma";
+}[] = [
+  { key: "p12", rail: "+12V", capacity: "power_12v_ma" },
+  { key: "n12", rail: "−12V", capacity: "power_neg12v_ma" },
+  { key: "p5", rail: "+5V", capacity: "power_5v_ma" },
+];
 
 /** ", in a Sim Co Sim 84 case, 84HP in one row", and whether compatibility can be checked. */
 function caseLine(c: NonNullable<Rack["case"]>): string {
@@ -177,6 +195,15 @@ export default function RackBuilderPage() {
   const [compatNote, setCompatNote] = useState<string | null>(null);
 
   /** Live placement editor (method 01) */
+  const { toast, show: showToast, dismiss: dismissToast } = useToast();
+  /** Counts placement saves, so only the latest one's answer updates the rail. */
+  const commitSeq = useRef(0);
+  /** A placed module the rail should focus once it is drawn, such as one Undo put back. */
+  const [focusRequest, setFocusRequest] = useState<{
+    module_id: number;
+    row: number;
+    start: number;
+  } | null>(null);
   const [liveRack, setLiveRack] = useState<Rack | null>(null);
   const [liveRackLoading, setLiveRackLoading] = useState(false);
   const [placementModules, setPlacementModules] = useState<RackModuleSpec[]>([]);
@@ -461,8 +488,10 @@ export default function RackBuilderPage() {
     }
   };
 
-  const refreshLiveRack = async (id: number) => {
+  /** Reloads the rig; `isCurrent` lets a superseded save skip writing its stale answer. */
+  const refreshLiveRack = async (id: number, isCurrent: () => boolean = () => true) => {
     const res = await rackApi.get(id);
+    if (!isCurrent()) return;
     setLiveRack(res.data);
     setPlacementModules(
       (res.data.modules ?? []).map((m) => ({
@@ -510,33 +539,25 @@ export default function RackBuilderPage() {
       .catch(() => setGalleryModules([]));
   }, [liveMode, rackId, preselectedModuleId]);
 
-  const savePlacements = async (next: RackModuleSpec[]) => {
-    if (rackId == null) return;
+  /** Saves placements once the server accepts them. Says whether it saved. */
+  const savePlacements = async (next: RackModuleSpec[]): Promise<boolean> => {
+    if (rackId == null) return false;
     setPlacementSaving(true);
     setPlacementError("");
     try {
       await rackApi.update(rackId, { modules: next });
       setPlacementModules(next);
       await refreshLiveRack(rackId);
+      return true;
     } catch (err) {
       setPlacementError(formatValidationError(err));
+      return false;
     } finally {
       setPlacementSaving(false);
     }
   };
 
-  const addPlacement = async () => {
-    if (addModuleId == null) {
-      setPlacementError("Select a module from the gallery.");
-      return;
-    }
-    const next = [
-      ...placementModules,
-      { module_id: addModuleId, row_index: addRow, start_hp: addStartHp },
-    ];
-    await savePlacements(next);
-  };
-
+  /** Each row's HP, declared before the checks and saves that read it. */
   const rowCapacities = useMemo(() => {
     if (!liveRack?.case) return [] as number[];
     const c = liveRack.case;
@@ -545,6 +566,130 @@ export default function RackBuilderPage() {
     const each = Math.floor((c.total_hp || 0) / rows) || c.total_hp || 0;
     return Array.from({ length: rows }, () => each);
   }, [liveRack]);
+
+  /** A placed module's name, for messages: the rig's record, else the gallery's. */
+  const placementName = (spec: RackModuleSpec) => {
+    const mod = placedModule(spec);
+    return mod ? `${mod.brand} ${mod.name}` : `Module #${spec.module_id}`;
+  };
+
+  /** Focus the placed module in this slot once the rail draws it. */
+  const focusPlacement = (spec: RackModuleSpec | undefined) =>
+    setFocusRequest(
+      spec ? { module_id: spec.module_id, row: spec.row_index, start: spec.start_hp } : null,
+    );
+
+  /**
+   * Saves placements at once on screen and rolls them back if the server refuses. The toast
+   * comes once the rig has reloaded, so its Undo never races the save it reverses. `undo`, when
+   * given, is offered there: it saves the placements as they were, and focuses `undoFocus`.
+   * `focus` is the module to return to when the toast is dismissed.
+   */
+  const commitPlacements = async (
+    next: RackModuleSpec[],
+    message: string,
+    options: { undo?: string; undoFocus?: RackModuleSpec; focus?: RackModuleSpec } = {},
+  ) => {
+    if (rackId == null) return;
+    const seq = ++commitSeq.current;
+    const isCurrent = () => seq === commitSeq.current;
+    const before = placementModules;
+    setPlacementModules(next);
+    setPlacementSaving(true);
+    setPlacementError("");
+    dismissToast();
+    try {
+      await rackApi.update(rackId, { modules: next });
+      await refreshLiveRack(rackId, isCurrent);
+      if (!isCurrent()) return;
+      const { undo, undoFocus, focus } = options;
+      showToast(message, {
+        action: undo
+          ? {
+              label: "Undo",
+              run: () => {
+                focusPlacement(undoFocus);
+                void commitPlacements(before, undo, { focus: undoFocus });
+              },
+            }
+          : undefined,
+        returnFocus: () => focusPlacement(focus),
+      });
+    } catch (err) {
+      if (!isCurrent()) return;
+      setPlacementModules(before);
+      const why = formatValidationError(err, failureReason(err));
+      setPlacementError(why);
+      showToast(`Not saved, so nothing changed. ${why}`, { tone: "danger" });
+    } finally {
+      if (isCurrent()) setPlacementSaving(false);
+    }
+  };
+
+  /** Whether a module may sit in a slot, against every other placement and the case's rows. */
+  const checkPlacementSlot = (slot: Slot, ignoreIndex: number) =>
+    checkSlot(slot, placementModules, rowCapacities, resolveModuleHp, placementName, ignoreIndex);
+
+  const movePlacement = (index: number, row: number, startHp: number) => {
+    const spec = placementModules[index];
+    if (!spec) return;
+    const name = placementName(spec);
+    void commitPlacements(
+      moveTo(placementModules, index, row, startHp),
+      `${name} moved to ${slotPhrase(row, startHp)}.`,
+      {
+        undo: `${name} is back at ${slotPhrase(spec.row_index, spec.start_hp)}.`,
+        undoFocus: spec,
+        focus: { ...spec, row_index: row, start_hp: startHp },
+      },
+    );
+  };
+
+  /** The rails a placement list would take past the case's stated capacity. */
+  const railsOverBudget = (next: RackModuleSpec[]) => {
+    const rack = liveRack?.case;
+    if (!rack) return [] as string[];
+    const summary = summarizePower(
+      next.map((spec) => placementPower(placedModule(spec), spec.power_config_id)),
+    );
+    return POWER_RAILS.flatMap(({ key, rail, capacity }) => {
+      const meter = railMeter(summary[key], rack[capacity]);
+      return meter.headroom != null && meter.headroom < 0
+        ? [`${rail} by ${-meter.headroom}mA`]
+        : [];
+    });
+  };
+
+  const addPlacement = async () => {
+    if (addModuleId == null) {
+      setPlacementError("Select a module from the gallery.");
+      return;
+    }
+    if (previewCheck && !previewCheck.ok) {
+      setPlacementError(previewCheck.reason);
+      return;
+    }
+    const next = [
+      ...placementModules,
+      { module_id: addModuleId, row_index: addRow, start_hp: addStartHp },
+    ];
+    // Over budget is the case's call to make, not the builder's: it warns, and still places.
+    const over = railsOverBudget(next);
+    const before = railsOverBudget(placementModules);
+    const saved = await savePlacements(next);
+    if (saved && over.length > before.length) {
+      showToast(`This placement takes the case over budget on ${over.join(" and ")}.`, {
+        tone: "warning",
+      });
+    }
+  };
+
+  // The next single placement, checked before it can be added: overlapping or off the row, the
+  // rail shows it red with the reason and Add placement waits.
+  const previewCheck =
+    previewModule && previewModule.hp > 0
+      ? checkPlacementSlot({ row: addRow, start: addStartHp, hp: previewModule.hp }, -1)
+      : null;
 
   const batchPreview = useMemo(() => {
     if (!batchSelectedIds.length || !rowCapacities.length) {
@@ -621,9 +766,15 @@ export default function RackBuilderPage() {
     await savePlacements(next);
   };
 
-  const removePlacement = async (index: number) => {
-    const next = placementModules.filter((_, i) => i !== index);
-    await savePlacements(next);
+  const removePlacement = (index: number) => {
+    const spec = placementModules[index];
+    if (!spec) return;
+    const name = placementName(spec);
+    void commitPlacements(
+      placementModules.filter((_, i) => i !== index),
+      `${name} removed from ${slotPhrase(spec.row_index, spec.start_hp)}.`,
+      { undo: `${name} is back at ${slotPhrase(spec.row_index, spec.start_hp)}.`, undoFocus: spec },
+    );
   };
 
   const materializeAllEurorack = async () => {
@@ -883,7 +1034,12 @@ export default function RackBuilderPage() {
   };
 
   return (
-    <section className="builder" aria-labelledby="builder-title">
+    <section
+      className="builder"
+      aria-labelledby="builder-title"
+      // Room below the last row, so a toast never sits over it.
+      data-toast-open={toast ? "" : undefined}
+    >
       <header className="workspace-header">
         <div>
           <h1 id="builder-title">
@@ -967,13 +1123,23 @@ export default function RackBuilderPage() {
               resolveHp: resolveModuleHp,
               preview:
                 previewModule && !batchSelectedIds.length
-                  ? { module: previewModule, row: addRow, startHp: addStartHp }
+                  ? {
+                      module: previewModule,
+                      row: addRow,
+                      startHp: addStartHp,
+                      check: previewCheck ?? undefined,
+                    }
                   : null,
               batchPlan: batchPreview?.added ?? [],
               onPickSlot: (row, startHp) => {
                 setAddRow(row);
                 setAddStartHp(startHp);
               },
+              checkSlot: checkPlacementSlot,
+              onMove: movePlacement,
+              onRemove: removePlacement,
+              busy: placementSaving,
+              focusRequest,
             }}
             powerSummary={placementPowerSummary}
             modules={filteredGalleryModules}
@@ -986,6 +1152,7 @@ export default function RackBuilderPage() {
               onRow: setAddRow,
               startHp: addStartHp,
               onStartHp: setAddStartHp,
+              blocked: previewCheck && !previewCheck.ok ? previewCheck.reason : null,
               onAdd: () => void addPlacement(),
             }}
             batch={{
@@ -1002,7 +1169,7 @@ export default function RackBuilderPage() {
             saving={placementSaving}
             error={placementError}
             onChoosePowerConfig={(index, id) => void choosePowerConfig(index, id)}
-            onRemove={(index) => void removePlacement(index)}
+            onRemove={removePlacement}
             compat={rackCompat}
             canLoadModules={canBulkMaterialize}
             onLoadModules={() => void materializeHpKnownModules()}
@@ -1074,6 +1241,7 @@ export default function RackBuilderPage() {
           readyForGeneration={readyForGeneration}
         />
       </div>
+      <Toast toast={toast} onDismiss={dismissToast} actionDisabled={placementSaving} />
     </section>
   );
 }
