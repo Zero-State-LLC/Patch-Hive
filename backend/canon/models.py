@@ -227,6 +227,12 @@ class UserStyleRecipeRecord(Base):
     updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, onupdate=utcnow)
 
 
+# An export covered by a STUDIO period grant has no debit and costs nothing (T050).
+EXPORT_GRANT_SHAPE = (
+    "subscription_grant_id IS NULL OR (credit_cost = 0 AND ledger_entry_id IS NULL)"
+)
+
+
 class CanonicalExportRecord(Base):
     __tablename__ = "canonical_exports"
 
@@ -273,8 +279,18 @@ class CanonicalExportRecord(Base):
         nullable=True,
         index=True,
     )
+    # Spec 004 T050 (FR-004, OQ-8): the STUDIO period grant that covered this export in
+    # place of a debit. Such an export costs no credits and counts against the grant's
+    # ``fair_use_export_cap``.
+    subscription_grant_id = Column(
+        String(64),
+        ForeignKey("subscription_period_grants.id", ondelete="RESTRICT"),
+        nullable=True,
+        index=True,
+    )
     __table_args__ = (
         CheckConstraint("credit_cost >= 0", name="ck_canonical_exports_cost"),
+        CheckConstraint(EXPORT_GRANT_SHAPE, name="ck_canonical_exports_grant_shape"),
         UniqueConstraint("user_id", "idempotency_key", name="uq_canonical_exports_user_idempotency"),
     )
 

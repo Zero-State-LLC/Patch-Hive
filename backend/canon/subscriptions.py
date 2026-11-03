@@ -31,7 +31,8 @@ The webhook side runs inside ``process_stripe_event``'s savepoint:
 Operator resolve (T048b) does not support Machine C: a subscription event stays
 ``RESOLVE_NOT_SUPPORTED`` and an operator rejects it instead.
 
-Out of scope here (T050): resolving the user's tier and spending the STUDIO entitlement.
+Resolving the user's tier and spending the STUDIO entitlement live in
+``canon/entitlements.py`` and ``canon/exports.py`` (T050).
 """
 
 from __future__ import annotations

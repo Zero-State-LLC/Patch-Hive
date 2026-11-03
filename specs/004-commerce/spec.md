@@ -30,10 +30,10 @@ Checked against `main` at `95ca9ee`. Paths are under `backend/` unless shown oth
 
 | FR | Status | Evidence |
 |---|---|---|
-| FR-001 | Partial | Tier names and Design Engine family floors exist; every user resolves to one configured default tier, not their own (`canon/entitlements.py`). T050. |
+| FR-001 | Partial | Tier names and Design Engine family floors exist. Since T050 (2026-11-02) a user with an entitled subscription (`active`, `trialing`, `past_due`; OQ-4) resolves to its tier, others to the configured default tier (`canon/entitlements.py`). Stays Partial until T049 and T050 close. |
 | FR-002 | Partial | Signup writes no ledger entry (`community/auth_routes.py`). "Demo mode only" is not defined, and the default tier is `core`. |
 | FR-003 | Missing | No per-period grant. T049. |
-| FR-004 | Missing | No STUDIO entitlement of any kind. T049. |
+| FR-004 | Partial | STUDIO period grants carry `unlimited=true` and a fair-use cap (T049); an export covered by one takes no debit and counts against the cap, refused 429 `FAIR_USE_CAP_REACHED` at the cap (T050, `canon/exports.py`). |
 | FR-005 | Implemented | Server-set price `patchbook_export_cost = 3` (`core/config.py`, `canon/routes.py`); 503 `EXPORT_FULFILLMENT_UNAVAILABLE` before any debit (#129). |
 | FR-006 | Missing | No one-time checkout. T046. |
 | FR-007 | Partial | Legacy `credits_ledger` uses `Purchase`, `Spend`, `Grant`; the canonical ledger uses `grant`, `debit`, `reversal`, with no `purchase` type (`canon/exports.py`). T046. |

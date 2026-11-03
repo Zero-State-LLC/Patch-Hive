@@ -1004,3 +1004,124 @@ def test_c_tier_from_client_input_is_illegal(db_session: Session, pair, c_prices
     _c_deliver(db_session, "evt_c_created", "customer.subscription.created", obj)
 
     assert _c_record(db_session, "sub_c").tier == "core"
+
+
+# --- Machine C entitlement: tier and STUDIO spending (T050) -------------------------------
+#
+# Not rows of the table: what each Machine C state entitles (OQ-4 ``A_stripe_mapping``).
+# Active, CancelScheduled and a ``past_due`` NotActive keep the subscription's tier; any
+# other NotActive status and Canceled fall back to the default-tier setting. A STUDIO
+# period grant covers exports without a debit up to its fair-use cap (OQ-8).
+
+
+@pytest.fixture
+def c_default_tier(monkeypatch: pytest.MonkeyPatch) -> None:
+    import canon.entitlements as entitlements
+
+    monkeypatch.setattr(entitlements.settings, "design_engine_default_tier", "free")
+
+
+def _c_studio_user(db: Session, status: str = "active") -> User:
+    from tests.unit.test_canon_contracts import _persist_hierarchy
+
+    user, _ = _persist_hierarchy(db)
+    _c_customer(db, user)
+    _c_deliver(
+        db,
+        "evt_c_studio",
+        "customer.subscription.created",
+        _c_subscription("sub_c", user.id, tier="studio", status=status),
+    )
+    return user
+
+
+@pytest.mark.parametrize(
+    ("status", "tier"),
+    [
+        ("active", "studio"),
+        ("trialing", "studio"),
+        ("past_due", "studio"),
+        ("incomplete", "free"),
+        ("unpaid", "free"),
+        ("paused", "free"),
+    ],
+)
+def test_c_state_entitles_the_oq4_tier(
+    db_session: Session, c_prices, c_default_tier, status, tier
+):
+    from canon.entitlements import resolve_user_tier
+
+    user = _c_studio_user(db_session, status=status)
+    assert resolve_user_tier(db_session, user.id) == tier
+
+
+def test_c_cancel_scheduled_keeps_the_tier_and_canceled_falls_back(
+    db_session: Session, c_prices, c_default_tier
+):
+    from canon.entitlements import resolve_user_tier
+
+    user = _c_studio_user(db_session)
+    request_subscription_cancel(
+        db_session, user=user, provider=FakeSubscriptionProvider(), app_settings=_c_settings()
+    )
+    db_session.commit()
+    assert _c_state(db_session) == C_CANCEL_SCHEDULED
+    assert resolve_user_tier(db_session, user.id) == "studio"
+
+    _c_deliver(
+        db_session,
+        "evt_c_deleted",
+        "customer.subscription.deleted",
+        _c_subscription("sub_c", user.id, tier="studio", status="canceled"),
+        created=TS + 20,
+    )
+    assert _c_state(db_session) == C_CANCELED
+    assert resolve_user_tier(db_session, user.id) == "free"
+
+
+def test_c_studio_paid_period_spends_against_the_fair_use_cap(
+    db_session: Session, monkeypatch: pytest.MonkeyPatch
+):
+    from datetime import datetime, timezone
+
+    from canon.contracts import ExportRequest
+    from canon.exports import request_export
+
+    monkeypatch.setattr(
+        core_config, "settings", _c_settings(subscription_studio_fair_use_exports_per_period=1)
+    )
+    user = _c_studio_user(db_session)
+    _c_deliver(
+        db_session,
+        "evt_c_paid",
+        "invoice.paid",
+        _c_invoice("in_c", "sub_c", user.id, tier="studio"),
+    )
+    at = datetime.fromtimestamp(P1 + 86_400, tz=timezone.utc)
+
+    def export(key: str):
+        return request_export(
+            db_session,
+            ExportRequest(
+                request_id=key,
+                user_id=user.id,
+                source_run_id="run-1",
+                source_rig_revision_id="rig-rev-1",
+                formats=("pdf",),
+                license="personal",
+                credit_cost=3,
+                idempotency_key=key,
+                requested_at=at,
+            ),
+            artifact_manifest_hash="a" * 64,
+            export_version="1.0.0",
+        )
+
+    first = export("studio-1")
+    db_session.commit()
+    assert (first.credit_cost, first.ledger_entry_id) == (0, None)
+    assert first.subscription_grant_id == db_session.query(SubscriptionPeriodGrantRecord).one().id
+    with pytest.raises(ExportBoundaryError, match="FAIR_USE_CAP_REACHED"):
+        export("studio-2")
+    db_session.rollback()
+    assert credit_balance(db_session, user.id) == 0
