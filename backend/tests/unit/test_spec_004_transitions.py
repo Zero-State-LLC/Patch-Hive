@@ -1,4 +1,4 @@
-"""Spec 004 T010: Machine A (Referral) and Machine B transitions tables encoded as tests.
+"""Spec 004 T010: the Machine A, B and C transitions tables and the append-only rules as tests.
 
 Source: specs/004-commerce/spec.md, "## Stateful behavior", "### Machine A: Referral" and
 "### Machine B: One-time credit purchase". Machine B (T046) lives in canon/checkout.py;
@@ -7,7 +7,9 @@ its ``Unresolved --operator_resolves--> Credited`` row is ``resolve_unresolved_e
 ``handle_payment_reversal_event``, which also encodes Machine A's
 ``Rewarded --refund_processed--> Rewarded``. Machine C (subscription, T049) lives in
 canon/subscriptions.py; see its section below for how its rows map to ``invoice.paid``
-(research 2026-11-01 §3). Machine A purchases here are provider-verified
+(research 2026-11-01 §3). The append-only section at the end asserts only what the code
+enforces; the gaps it lists are reported in specs/004-commerce/tasks.md (T010).
+Machine A purchases here are provider-verified
 (``payment_verified=True``); an unverified one is refused before anything is written
 (illegal row, FR-033).
 """
@@ -607,7 +609,7 @@ def test_a_rewarded_refund_processed_is_a_no_op(db_session: Session, pair):
 
 # --- Machine C: subscription (T049) ------------------------------------------------------
 #
-# Drift from the table, by decision: the period grant is triggered by ``invoice.paid``
+# Decided deviation from the table (not drift to fix): the period grant is triggered by ``invoice.paid``
 # (research 2026-11-01 §3, OQ-4 ``A_stripe_mapping``), not by ``subscription_created`` or
 # ``subscription_updated``, which only sync the record. So each "grant once" row is
 # encoded as: the subscription event grants nothing, and the paid invoice for the period
@@ -1127,3 +1129,302 @@ def test_c_studio_paid_period_spends_against_the_fair_use_cap(
         export("studio-2")
     db_session.rollback()
     assert credit_balance(db_session, user.id) == 0
+
+
+# --- Machine B gaps filled by T010: async settlement, failed refunds, invoice refunds ------
+
+
+def test_b_completed_unpaid_waits_and_async_success_credits_once(db_session: Session, pair):
+    referrer, buyer = pair
+    create_referral(db_session, referrer=referrer, referred=buyer)
+    db_session.commit()
+    payment = _open_checkout(db_session, buyer)
+
+    waiting = _deliver(
+        db_session,
+        "evt_b_wait",
+        "checkout.session.completed",
+        _session_object(payment, payment_status="unpaid"),
+    )
+    assert waiting.record.status == "processed"
+    assert _b_state(db_session, payment) == CHECKOUT_OPEN
+    assert payment.status == "pending"
+    assert _purchase_entries(db_session) == 0
+    assert _state(db_session, buyer) == PENDING
+
+    _deliver(
+        db_session,
+        "evt_b_settled",
+        "checkout.session.async_payment_succeeded",
+        _session_object(payment),
+    )
+    assert _b_state(db_session, payment) == CREDITED
+    assert _purchase_entries(db_session) == 1
+    assert _state(db_session, buyer) == REWARDED
+
+    again = _deliver(
+        db_session,
+        "evt_b_settled_again",
+        "checkout.session.async_payment_succeeded",
+        _session_object(payment),
+    )
+    assert again.record.status == "duplicate"
+    assert _purchase_entries(db_session) == 1
+
+
+def test_b_pending_async_failure_is_abandoned_with_status_failed(db_session: Session, pair):
+    _, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    unpaid = _session_object(payment, payment_status="unpaid")
+    _deliver(db_session, "evt_b_pf_wait", "checkout.session.completed", unpaid)
+    assert payment.status == "pending"
+
+    _deliver(db_session, "evt_b_pf_fail", "checkout.session.async_payment_failed", unpaid)
+
+    assert _b_state(db_session, payment) == ABANDONED
+    assert payment.status == "failed"
+    assert _purchase_entries(db_session) == 0
+
+
+def test_b_credited_refund_failed_goes_to_an_operator_without_reversal(db_session: Session, pair):
+    _, buyer = pair
+    payment = _credited_b(db_session, buyer, "evt_b_rf_paid")
+    failed = {
+        "id": "re_b",
+        "object": "refund",
+        "payment_intent": payment.provider_payment_id,
+        "amount": 300,
+        "currency": payment.currency,
+        "status": "failed",
+    }
+
+    intake = _deliver(db_session, "evt_b_rf", "refund.failed", failed)
+
+    assert (intake.record.status, intake.record.reason_code) == ("unresolved", "REFUND_FAILED")
+    assert _b_state(db_session, payment) == CREDITED
+    assert _refund_entries(db_session) == []
+
+
+def test_b_refund_for_a_subscription_invoice_payment_is_unresolved(
+    db_session: Session, pair, c_prices
+):
+    """Gap, not a machine row: no machine handles a subscription invoice refund.
+
+    A ``charge.refunded`` for an invoice payment finds no ``provider_payments`` record, so
+    it waits for an operator (``PAYMENT_RECORD_NOT_FOUND``) and changes nothing.
+    """
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_ACTIVE)
+    _c_deliver(db_session, "evt_c_inv", "invoice.paid", _c_invoice("in_c", "sub_c", buyer.id))
+    before = _c_snapshot(db_session)
+    charge = {
+        "id": "ch_invoice",
+        "object": "charge",
+        "payment_intent": "pi_invoice",
+        "customer": f"cus_{buyer.id}",
+        "amount": 499,
+        "amount_refunded": 499,
+        "currency": "usd",
+        "invoice": "in_c",
+    }
+
+    intake = _deliver(db_session, "evt_c_inv_refund", "charge.refunded", charge)
+
+    assert (intake.record.status, intake.record.reason_code) == (
+        "unresolved",
+        "PAYMENT_RECORD_NOT_FOUND",
+    )
+    assert _c_snapshot(db_session) == before
+    assert credit_balance(db_session, buyer.id) == 25
+
+
+# --- Append-only: what the code enforces (FR-008, FR-029, research R2) --------------------
+#
+# Enforced: the canonical ledger rejects UPDATE and DELETE with Postgres triggers
+# (migration ``20261029_ledger_append_only``, proved on Postgres by
+# ``tests/acceptance/test_ledger_append_only.py``); ledger idempotency keys, grant keys,
+# grant invoice ids and (subscription, period) pairs are unique; a stripe event id replayed
+# with a different payload is refused. SQLite, which this file runs on, has no triggers.
+# Not enforced anywhere (reported as gaps, not asserted): UPDATE and DELETE on the
+# ``Referral`` rows, the legacy ``credits_ledger``, ``subscription_period_grants`` and
+# ``stripe_event_records`` (whose status and reason code are written after intake by
+# design). The tests below show that the commerce code paths append and never rewrite.
+
+
+def _ledger_rows(db: Session) -> dict[str, tuple]:
+    db.expire_all()
+    return {
+        row.id: (row.user_id, row.delta, row.entry_type, row.idempotency_key, row.created_at)
+        for row in db.query(CanonicalCreditLedgerEntryRecord).all()
+    }
+
+
+def _assert_only_appended(before: dict[str, tuple], after: dict[str, tuple]) -> None:
+    assert len(after) > len(before)
+    assert {key: after[key] for key in before} == before
+
+
+def test_append_only_purchase_refund_and_reversal_only_append_ledger_rows(
+    db_session: Session, pair
+):
+    _, buyer = pair
+    payment = _credited_b(db_session, buyer, "evt_ao_paid")
+    after_purchase = _ledger_rows(db_session)
+    assert len(after_purchase) == 1
+
+    _deliver(db_session, "evt_ao_r1", "charge.refunded", _charge_refunded(payment, 300))
+    after_partial = _ledger_rows(db_session)
+    _assert_only_appended(after_purchase, after_partial)
+
+    _deliver(db_session, "evt_ao_r2", "charge.refunded", _charge_refunded(payment, 600))
+    after_full = _ledger_rows(db_session)
+    _assert_only_appended(after_partial, after_full)
+
+    # A repeated refund changes nothing at all.
+    _deliver(db_session, "evt_ao_r3", "charge.refunded", _charge_refunded(payment, 600))
+    assert _ledger_rows(db_session) == after_full
+    assert sorted(row[1] for row in after_full.values()) == [-15, -15, payment.credits]
+
+
+def _grant_rows(db: Session) -> dict[str, tuple]:
+    db.expire_all()
+    return {
+        row.id: (
+            row.grant_key,
+            row.provider_invoice_id,
+            row.tier,
+            row.period_start,
+            row.period_end,
+            row.credits,
+            row.unlimited,
+        )
+        for row in db.query(SubscriptionPeriodGrantRecord).all()
+    }
+
+
+def test_append_only_subscription_grants_are_never_rewritten(db_session: Session, pair, c_prices):
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_ACTIVE)
+    _c_deliver(db_session, "evt_ao_c1", "invoice.paid", _c_invoice("in_c1", "sub_c", buyer.id))
+    first = _grant_rows(db_session)
+    ledger_first = _ledger_rows(db_session)
+    assert len(first) == 1
+
+    # A second invoice for the same period, a status sync and a cancellation add nothing.
+    _c_deliver(db_session, "evt_ao_c2", "invoice.paid", _c_invoice("in_c2", "sub_c", buyer.id))
+    _c_deliver(
+        db_session,
+        "evt_ao_c3",
+        "customer.subscription.updated",
+        _c_subscription("sub_c", buyer.id, status="past_due"),
+        created=TS + 5,
+    )
+    _c_deliver(
+        db_session,
+        "evt_ao_c4",
+        "customer.subscription.deleted",
+        _c_subscription("sub_c", buyer.id, status="canceled"),
+        created=TS + 6,
+    )
+    assert _grant_rows(db_session) == first
+    assert _ledger_rows(db_session) == ledger_first
+
+
+def test_append_only_next_period_appends_a_second_grant(db_session: Session, pair, c_prices):
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_ACTIVE)
+    _c_deliver(db_session, "evt_ao_p1", "invoice.paid", _c_invoice("in_p1", "sub_c", buyer.id))
+    first = _grant_rows(db_session)
+
+    renewal = _c_invoice("in_p2", "sub_c", buyer.id, start=P1 + MONTH, end=P1 + 2 * MONTH)
+    _c_deliver(db_session, "evt_ao_p2", "invoice.paid", renewal)
+
+    after = _grant_rows(db_session)
+    assert len(after) == 2
+    assert {key: after[key] for key in first} == first
+
+
+def test_append_only_ledger_and_grant_keys_are_unique(db_session: Session, pair, c_prices):
+    from sqlalchemy.exc import IntegrityError
+
+    _, buyer = pair
+    payment = _credited_b(db_session, buyer, "evt_ao_u_paid")
+    existing = db_session.query(CanonicalCreditLedgerEntryRecord).one()
+
+    with pytest.raises(IntegrityError):
+        with db_session.begin_nested():
+            db_session.add(
+                CanonicalCreditLedgerEntryRecord(
+                    id="dup-entry",
+                    user_id=buyer.id,
+                    delta=payment.credits,
+                    entry_type="purchase",
+                    idempotency_key=existing.idempotency_key,
+                    created_at=existing.created_at,
+                )
+            )
+    db_session.rollback()
+    assert db_session.query(CanonicalCreditLedgerEntryRecord).count() == 1
+
+    other = _user(db_session, "grant-dupe")
+    _c_in_state(db_session, other, C_ACTIVE)
+    _c_deliver(db_session, "evt_ao_u_g", "invoice.paid", _c_invoice("in_u", "sub_c", other.id))
+    grant = db_session.query(SubscriptionPeriodGrantRecord).one()
+    with pytest.raises(IntegrityError):
+        with db_session.begin_nested():
+            db_session.add(
+                SubscriptionPeriodGrantRecord(
+                    id="dup-grant",
+                    subscription_record_id=grant.subscription_record_id,
+                    user_id=grant.user_id,
+                    grant_key=grant.grant_key,
+                    provider_invoice_id="in_other",
+                    tier=grant.tier,
+                    period_start=grant.period_start,
+                    period_end=grant.period_end,
+                    credits=grant.credits,
+                    unlimited=grant.unlimited,
+                    fair_use_export_cap=grant.fair_use_export_cap,
+                )
+            )
+    db_session.rollback()
+    assert db_session.query(SubscriptionPeriodGrantRecord).count() == 1
+
+
+def test_append_only_stripe_event_replay_with_a_new_payload_is_refused(
+    db_session: Session, pair
+):
+    _, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    _deliver(db_session, "evt_ao_e", "checkout.session.completed", _session_object(payment))
+    stored = db_session.get(StripeEventRecordModel, "evt_ao_e")
+    identity = (stored.event_type, stored.payload_hash, stored.livemode, stored.received_at)
+
+    with pytest.raises(ExportBoundaryError, match="WEBHOOK_REPLAY_CONFLICT"):
+        _deliver(
+            db_session,
+            "evt_ao_e",
+            "checkout.session.completed",
+            _session_object(payment, amount_total=1),
+        )
+    db_session.rollback()
+
+    db_session.expire_all()
+    stored = db_session.get(StripeEventRecordModel, "evt_ao_e")
+    assert (stored.event_type, stored.payload_hash, stored.livemode, stored.received_at) == identity
+    assert stored.status == "processed"
+    assert _purchase_entries(db_session) == 1
+
+
+def test_append_only_migration_installs_ledger_triggers_on_postgres():
+    """The enforced rule: a Postgres trigger denies UPDATE and DELETE on the ledger."""
+    import re
+    from pathlib import Path
+
+    versions = Path(__file__).resolve().parents[2] / "alembic" / "versions"
+    source = (versions / "20261029_ledger_append_only.py").read_text()
+    bound = re.findall(r"CREATE TRIGGER \w+\s+BEFORE (UPDATE|DELETE) ON (\w+)", source)
+    assert sorted(bound) == [
+        ("DELETE", "canonical_credit_ledger"),
+        ("UPDATE", "canonical_credit_ledger"),
+    ]
