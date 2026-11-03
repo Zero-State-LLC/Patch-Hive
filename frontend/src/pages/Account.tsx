@@ -124,27 +124,18 @@ export default function AccountPage() {
         </div>
       </header>
 
-      <div style={{ display: "grid", gap: "var(--space-5)" }}>
-        <section className="panel" aria-labelledby="credits-heading">
-          <h2 id="credits-heading" style={{ marginTop: 0 }}>
-            Credits
-          </h2>
-          <div className="stat-row">
-            <div className="stat-block">
-              <p className="muted" style={{ margin: 0 }}>
-                Canonical balance
-              </p>
-              <h3>{credits ? credits.balance : "unknown"}</h3>
+      <div className="ops-page account-grid">
+        <section className="ops-section" aria-labelledby="credits-heading">
+          <h2 id="credits-heading">Credits</h2>
+          <dl className="readout account-balance">
+            <div>
+              <dt>Canonical balance</dt>
+              <dd>{credits ? credits.balance : "unknown"}</dd>
             </div>
-          </div>
-          <p
-            className="muted"
-            style={{ marginTop: "var(--space-4)", marginBottom: "var(--space-2)" }}
-          >
-            Ledger history
-          </p>
+          </dl>
+          <h3>Ledger history</h3>
           {credits?.entries.length ? (
-            <div style={{ overflowX: "auto" }}>
+            <div className="ops-table-wrap">
               <table className="data-table">
                 <thead>
                   <tr>
@@ -171,17 +162,15 @@ export default function AccountPage() {
           )}
         </section>
 
-        <section className="panel" aria-labelledby="exports-heading">
-          <h2 id="exports-heading" style={{ marginTop: 0 }}>
-            Exports
-          </h2>
+        <section className="ops-section" aria-labelledby="exports-heading">
+          <h2 id="exports-heading">Exports</h2>
           {tokenMessage ? (
             <p className="status status-success" role="status">
               {tokenMessage}
             </p>
           ) : null}
           {exportRows.length ? (
-            <div style={{ overflowX: "auto" }}>
+            <div className="ops-table-wrap">
               <table className="data-table">
                 <thead>
                   <tr>
@@ -196,7 +185,7 @@ export default function AccountPage() {
                   {exportRows.map((record) => (
                     <tr key={String(record.id)}>
                       <td>{record.label}</td>
-                      <td className="muted">{record.run_id}</td>
+                      <td className="muted ops-id">{record.run_id}</td>
                       <td>{record.status || "unknown"}</td>
                       <td>{new Date(record.created_at).toLocaleString()}</td>
                       <td>
@@ -223,17 +212,15 @@ export default function AccountPage() {
           )}
         </section>
 
-        <section className="panel" aria-labelledby="referrals-heading">
-          <h2 id="referrals-heading" style={{ marginTop: 0 }}>
-            Referrals
-          </h2>
+        <section className="ops-section" aria-labelledby="referrals-heading">
+          <h2 id="referrals-heading">Referrals</h2>
           {referrals ? (
             <>
               <p className="muted">
                 You’ll receive free credits if your friend makes their first purchase.
               </p>
-              <div className="toolbar" style={{ marginTop: "var(--space-3)" }}>
-                <label className="field" style={{ flex: 1, minWidth: "12rem" }}>
+              <div className="toolbar ops-referral">
+                <label className="field">
                   Referral link
                   <input type="text" value={referrals.referral_link || ""} readOnly />
                 </label>
@@ -250,20 +237,16 @@ export default function AccountPage() {
                   </span>
                 ) : null}
               </div>
-              <div className="stat-row" style={{ marginTop: "var(--space-4)" }}>
-                <div className="stat-block">
-                  <p className="muted" style={{ margin: 0 }}>
-                    Pending
-                  </p>
-                  <h3>{referrals.pending_count ?? "unknown"}</h3>
+              <dl className="readout">
+                <div>
+                  <dt>Pending</dt>
+                  <dd>{referrals.pending_count ?? "unknown"}</dd>
                 </div>
-                <div className="stat-block">
-                  <p className="muted" style={{ margin: 0 }}>
-                    Earned
-                  </p>
-                  <h3>{referrals.earned_count ?? "unknown"}</h3>
+                <div>
+                  <dt>Earned</dt>
+                  <dd>{referrals.earned_count ?? "unknown"}</dd>
                 </div>
-              </div>
+              </dl>
             </>
           ) : (
             <p className="muted">
@@ -273,11 +256,9 @@ export default function AccountPage() {
           )}
         </section>
 
-        <section className="panel" aria-labelledby="profile-heading">
-          <h2 id="profile-heading" style={{ marginTop: 0 }}>
-            Profile
-          </h2>
-          <div style={{ display: "grid", gap: "var(--space-4)", maxWidth: "28rem" }}>
+        <section className="ops-section ops-section--form" aria-labelledby="profile-heading">
+          <h2 id="profile-heading">Profile</h2>
+          <div className="ops-form">
             <label className="field">
               Display name
               <input
@@ -297,18 +278,12 @@ export default function AccountPage() {
             </label>
             {safeAvatarUrl ? (
               <img
+                className="ops-avatar"
                 src={safeAvatarUrl}
                 alt="Avatar preview"
                 referrerPolicy="no-referrer"
                 width={96}
                 height={96}
-                style={{
-                  width: "96px",
-                  height: "96px",
-                  borderRadius: "50%",
-                  border: "1px solid var(--border)",
-                  objectFit: "cover",
-                }}
               />
             ) : null}
             <button
@@ -316,13 +291,12 @@ export default function AccountPage() {
               className="button button-primary"
               onClick={() => void handleSaveProfile()}
               disabled={saving}
-              style={{ justifySelf: "start" }}
             >
               {saving ? "Saving…" : "Save profile"}
             </button>
           </div>
           {profile ? (
-            <p className="muted" style={{ marginTop: "var(--space-4)", marginBottom: 0 }}>
+            <p className="muted">
               Signed in as <strong>{profile.username}</strong>
             </p>
           ) : null}

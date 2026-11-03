@@ -35,8 +35,8 @@ export default function AdminRuns() {
           </button>
         </header>
         <AdminNav />
-        <div className="panel toolbar">
-          <label className="field" style={{ flex: "1 1 12rem" }}>
+        <div className="toolbar ops-toolbar">
+          <label className="field ops-grow">
             Rig ID to re-run
             <input
               value={rerunRigId}
@@ -75,8 +75,8 @@ export default function AdminRuns() {
           </p>
         ) : null}
         {runs.length ? (
-          <div style={{ overflowX: "auto" }} className="panel">
-            <table className="data-table">
+          <div className="ops-table-wrap">
+            <table className="data-table ops-table-stack">
               <thead>
                 <tr>
                   <th>Run</th>
@@ -87,16 +87,16 @@ export default function AdminRuns() {
               <tbody>
                 {runs.map((run) => (
                   <tr key={run.id}>
-                    <td>#{run.id}</td>
-                    <td>{run.rack_id}</td>
-                    <td>{run.status}</td>
+                    <td data-label="Run">#{run.id}</td>
+                    <td data-label="Rack">{run.rack_id}</td>
+                    <td data-label="Status">{run.status}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <div className="panel">
+          <div className="screen-state">
             <p className="status status-warning">No runs loaded.</p>
           </div>
         )}

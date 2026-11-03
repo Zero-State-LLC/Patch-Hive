@@ -1,0 +1,142 @@
+/* Library screens: Patches, Products (registry) and Case detail */
+
+/* Patches: the library as dense rows */
+.patch-rows {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-rule);
+  list-style: none;
+}
+.patch-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: var(--space-lg);
+  align-items: center;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-rule);
+  transition: background-color var(--dur-short) var(--ease-out);
+}
+.patch-row:hover,
+.patch-row:focus-within {
+  background: var(--color-paper-2);
+}
+.patch-row__main {
+  display: grid;
+  gap: var(--space-2xs);
+  min-width: 0;
+}
+.patch-row__main h2 {
+  margin: 0;
+  font-size: var(--text-md);
+}
+.patch-row__desc {
+  margin: 0;
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+}
+.patch-row__facts {
+  display: flex;
+  gap: var(--space-lg);
+  margin: 0;
+}
+.patch-row__facts div {
+  display: grid;
+  gap: var(--space-3xs);
+  min-width: 4.5rem;
+}
+.patch-row__facts dt {
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+.patch-row__facts dd {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: var(--text-sm);
+}
+.patch-row__figure {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Products: search, count and empty state */
+.registry-search {
+  min-width: min(18rem, 100%);
+}
+.registry-count {
+  font-size: var(--text-xs);
+}
+.registry-empty {
+  display: grid;
+  gap: var(--space-sm);
+}
+.registry-empty .readout {
+  margin: 0;
+}
+.registry-empty p {
+  margin: 0;
+}
+.registry-split .panel h2 {
+  margin-top: 0;
+}
+
+/* Case detail */
+/* The case drawn beside its figures, so the drawing and the numbers explain each other.
+   The detail page draws it larger, still to scale: both lengths re-derive from --hp-px. */
+.case-detail-figure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-lg) var(--space-xl);
+}
+.case-detail-figure .readout {
+  flex: 1 1 20rem;
+  margin: 0;
+}
+.case-detail-rail {
+  --hp-px: 5px;
+  --u3-px: calc(25.3 * var(--hp-px));
+  flex: 0 1 auto;
+  width: min(calc(var(--cap, 84) * var(--hp-px)), 100%);
+}
+.case-detail-panel {
+  margin-bottom: var(--space-lg);
+}
+.case-detail-panel h2 {
+  margin-top: 0;
+}
+.case-detail-list {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+.case-detail-table {
+  overflow-x: auto;
+}
+
+@media (max-width: 60rem) {
+  .registry-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .registry-split .split-aside {
+    position: static;
+  }
+  .patch-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-sm);
+  }
+  .patch-row__facts {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .patch-row {
+    transition: none;
+  }
+}

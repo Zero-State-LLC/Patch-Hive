@@ -1,5 +1,5 @@
 /**
- * PatchBook Style Studio MVP — weighted recipe controls + preview + export.
+ * PatchBook Style Studio MVP: weighted recipe controls + preview + export.
  * Presentation only; never mutates patch topology.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -152,7 +152,7 @@ export default function PatchBookStyleStudioPage() {
       const res = await canonApi.listStyleRecipes();
       setServerLibrary(res.data);
     } catch {
-      // Library endpoints may 401 when signed out — keep empty
+      // Library endpoints may 401 when signed out: keep empty
       setServerLibrary([]);
     }
   }, []);
@@ -198,7 +198,7 @@ export default function PatchBookStyleStudioPage() {
       });
       setPreview(res.data);
       setStatus(
-        `Preview ok · path=${res.data.load_path} · recipe ${res.data.style_recipe_hash.slice(0, 12)}…`,
+        `Preview ok (path ${res.data.load_path}, recipe ${res.data.style_recipe_hash.slice(0, 12)}…)`,
       );
     } catch (error: unknown) {
       const apiError = error as { response?: { data?: { detail?: string } } };
@@ -225,9 +225,9 @@ export default function PatchBookStyleStudioPage() {
       });
       setLastExportId(created.data.export_id);
       setStatus(
-        `Export ${created.data.export_id} · ${created.data.status}` +
+        `Export ${created.data.export_id}, ${created.data.status}` +
           (created.data.composition_hash
-            ? ` · composition ${created.data.composition_hash.slice(0, 12)}…`
+            ? `, composition ${created.data.composition_hash.slice(0, 12)}…`
             : ""),
       );
       if (created.data.status === "succeeded") {
@@ -261,431 +261,444 @@ export default function PatchBookStyleStudioPage() {
             Deterministic publishing instrument, presentation only. Canonical patch data is never
             mutated.
           </p>
-          {rigId ? (
-            <p>
-              <Link to={`/rigs/${rigId}`}>← Back to rig</Link>
-            </p>
-          ) : null}
         </div>
+        {rigId ? (
+          <div className="header-actions">
+            <Link className="button button-quiet" to={`/rigs/${rigId}`}>
+              Back to rig
+            </Link>
+          </div>
+        ) : null}
       </header>
 
-      {!bridge ? (
-        <div className="panel status status-warning" role="status">
-          Open Style Studio from a rig export run with bridge fields, or append{" "}
-          <code>source_run_id</code>, <code>source_rig_revision_id</code>, and{" "}
-          <code>artifact_manifest_hash</code> query params.
-        </div>
-      ) : (
-        <p className="muted panel">
-          Run <code>{bridge.source_run_id}</code> · revision{" "}
+      {bridge ? (
+        <p className="muted">
+          Run <code>{bridge.source_run_id}</code>, revision{" "}
           <code>{bridge.source_rig_revision_id.slice(0, 20)}…</code>
         </p>
-      )}
+      ) : null}
 
       {artistic ? (
-        <div className="panel status status-warning" role="alert">
-          This mode prioritizes visual interpretation over complete technical readability. A
-          canonical technical appendix will remain available.
+        <div className="notice" role="alert">
+          <p className="status status-warning">
+            This mode prioritizes visual interpretation over complete technical readability. A
+            canonical technical appendix will remain available.
+          </p>
         </div>
       ) : null}
 
-      <div className="style-studio-grid">
-        <div className="panel">
-          <h2>Mode &amp; family</h2>
-          <label className="field">
-            Mode
-            <select
-              value={recipe.mode}
-              onChange={(e) => setRecipe((r) => ({ ...r, mode: e.target.value as PatchBookMode }))}
-            >
-              {MODES.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="field">
-            Template family
-            <select
-              value={recipe.template_family}
-              onChange={(e) =>
-                setRecipe((r) => ({
-                  ...r,
-                  template_family: e.target.value as TemplateFamilyId,
-                }))
-              }
-            >
-              {FAMILIES.map((f) => (
-                <option key={f} value={f}>
-                  {f}
-                </option>
-              ))}
-            </select>
-          </label>
-          <p className="muted" style={{ fontSize: "0.85rem" }}>
-            Layout algorithm: <code>{FAMILY_ALGORITHM[recipe.template_family]}</code>
-          </p>
-          <label className="field">
-            Seed
-            <div style={{ display: "flex", gap: "0.5rem" }}>
-              <input
-                type="number"
-                min={0}
-                max={2147483647}
-                value={recipe.seed}
-                onChange={(e) => setRecipe((r) => ({ ...r, seed: Number(e.target.value) || 0 }))}
-              />
-              <button className="button button-secondary" type="button" onClick={randomizeSeed}>
-                Randomize
-              </button>
-            </div>
-          </label>
-          <label className="field">
-            Notes
-            <input
-              type="text"
-              maxLength={500}
-              value={recipe.notes || ""}
-              onChange={(e) => setRecipe((r) => ({ ...r, notes: e.target.value }))}
-            />
-          </label>
-        </div>
-
-        <div className="panel">
-          <h2>Master weights</h2>
-          <div className="weight-sliders">
-            {WEIGHT_KEYS.map((key) => (
-              <label key={key} className="field weight-row">
-                <span>
-                  {key.replace(/_/g, " ")} <strong>{recipe.weights[key]}</strong>
-                </span>
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  value={recipe.weights[key]}
-                  onChange={(e) => setWeight(key, Number(e.target.value))}
-                />
-              </label>
-            ))}
-          </div>
-          <button
-            className="button button-quiet"
-            type="button"
-            onClick={() => setRecipe((r) => ({ ...r, weights: { ...DEFAULT_STYLE_WEIGHTS } }))}
-          >
-            Reset weights
-          </button>
-        </div>
-      </div>
-
-      <div className="panel" style={{ marginTop: "1rem" }}>
-        <h2>Influence mixer</h2>
-        <p className="muted">
-          All 32 style vectors (0–100). Engine normalizes competing groups; conflicts appear in
-          preview resolution events.
-        </p>
-        <div className="weight-sliders influence-grid">
-          {ALL_INFLUENCE_IDS.map((key) => {
-            const value = recipe.influences[key] ?? 0;
-            return (
-              <label key={key} className="field weight-row">
-                <span>
-                  {key.replace(/_/g, " ")} <strong>{value}</strong>
-                </span>
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  value={value}
-                  onChange={(e) => {
-                    const next = Number(e.target.value);
-                    setRecipe((r) => {
-                      const influences = { ...r.influences };
-                      if (next <= 0) {
-                        delete influences[key];
-                      } else {
-                        influences[key] = next;
-                      }
-                      return { ...r, influences };
-                    });
-                  }}
-                />
-              </label>
-            );
-          })}
-        </div>
-        <button
-          className="button button-quiet"
-          type="button"
-          onClick={() =>
-            setRecipe((r) => ({
-              ...r,
-              influences: {
-                engineering: 92,
-                swiss: 65,
-                scientific: 55,
-                cyber_hive: 24,
-              },
-            }))
-          }
-        >
-          Reset influences
-        </button>
-      </div>
-
-      <div className="panel" style={{ marginTop: "1rem" }}>
-        <h2>Recipe library</h2>
-        <p className="muted">
-          Server-backed library for your account (max 40). Export/preview can reference a recipe by
-          id so the sealed debit snapshot matches the library entry.
-        </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
-          <input
-            type="text"
-            placeholder="Recipe name"
-            value={recipeName}
-            maxLength={80}
-            onChange={(e) => setRecipeName(e.target.value)}
-            style={{ minWidth: "12rem" }}
-          />
-          <button
-            className="button button-secondary"
-            type="button"
-            disabled={libraryBusy || !recipeName.trim()}
-            onClick={() => {
-              void (async () => {
-                setLibraryBusy(true);
-                try {
-                  const created = await canonApi.createStyleRecipe({
-                    name: recipeName.trim(),
-                    style_recipe: buildRequestBody() as unknown as Record<string, unknown>,
-                  });
-                  setRecipeName("");
-                  await refreshServerLibrary();
-                  setStatus(`Saved server recipe “${created.data.name}” (${created.data.id})`);
-                } catch (error: unknown) {
-                  const apiError = error as { response?: { data?: { detail?: string } } };
-                  setStatus(apiError.response?.data?.detail || "Save recipe failed");
-                } finally {
-                  setLibraryBusy(false);
+      <div className="style-studio-layout">
+        <div className="panel style-studio-controls">
+          <section className="studio-section">
+            <h2>Mode &amp; family</h2>
+            <label className="field">
+              Mode
+              <select
+                value={recipe.mode}
+                onChange={(e) =>
+                  setRecipe((r) => ({ ...r, mode: e.target.value as PatchBookMode }))
                 }
-              })();
-            }}
-          >
-            Save to account
-          </button>
-        </div>
-        {serverLibrary.length === 0 ? (
-          <p className="muted" style={{ marginTop: "0.75rem" }}>
-            No server recipes yet (sign in required).
-          </p>
-        ) : (
-          <ul style={{ marginTop: "0.75rem", paddingLeft: "1.1rem" }}>
-            {serverLibrary.map((entry) => {
-              const loaded = entry.style_recipe as unknown as RequestStyleRecipe;
-              return (
-                <li key={entry.id} style={{ marginBottom: "0.4rem" }}>
-                  <strong>{entry.name}</strong>{" "}
-                  <span className="muted">
-                    · {String(loaded.mode || "?")} / {String(loaded.template_family || "?")} ·{" "}
-                    <code>{entry.recipe_hash.slice(0, 10)}…</code>
-                  </span>{" "}
-                  <button
-                    className="button button-quiet"
-                    type="button"
-                    onClick={() => {
-                      setRecipe(loaded);
-                      setStatus(`Loaded “${entry.name}”`);
-                    }}
-                  >
-                    Load
-                  </button>{" "}
-                  <button
-                    className="button button-quiet"
-                    type="button"
-                    onClick={() => {
-                      void (async () => {
-                        if (!bridge) {
-                          setStatus("Need bridge fields to export by recipe id");
-                          return;
-                        }
-                        setExporting(true);
-                        try {
-                          const created = await canonApi.createExport({
-                            source_run_id: bridge.source_run_id,
-                            source_rig_revision_id: bridge.source_rig_revision_id,
-                            artifact_manifest_hash: bridge.artifact_manifest_hash,
-                            formats: ["pdf", "json"],
-                            license: "personal",
-                            idempotency_key: `studio-lib-${entry.id}-${crypto.randomUUID()}`,
-                            style_recipe_id: entry.id,
-                          });
-                          setStatus(
-                            `Export ${created.data.export_id} · ${created.data.status}` +
-                              (created.data.style_recipe_id
-                                ? ` · recipe ${created.data.style_recipe_id}`
-                                : ""),
-                          );
-                        } catch (error: unknown) {
-                          const apiError = error as {
-                            response?: { data?: { detail?: string }; status?: number };
-                          };
-                          setStatus(
-                            apiError.response?.status === 402
-                              ? "INSUFFICIENT_CREDITS"
-                              : apiError.response?.data?.detail || "Export failed",
-                          );
-                        } finally {
-                          setExporting(false);
-                        }
-                      })();
-                    }}
-                  >
-                    Export with id
-                  </button>{" "}
-                  <button
-                    className="button button-quiet"
-                    type="button"
-                    disabled={libraryBusy}
-                    onClick={() => {
-                      void (async () => {
-                        setLibraryBusy(true);
-                        try {
-                          await canonApi.updateStyleRecipe(entry.id, {
-                            is_shared: !entry.is_shared,
-                          });
-                          await refreshServerLibrary();
-                          setStatus(
-                            entry.is_shared
-                              ? `“${entry.name}” is private again`
-                              : `“${entry.name}” shared (readable via /style-recipes/shared/{id})`,
-                          );
-                        } catch {
-                          setStatus("Share toggle failed");
-                        } finally {
-                          setLibraryBusy(false);
-                        }
-                      })();
-                    }}
-                  >
-                    {entry.is_shared ? "Unshare" : "Share"}
-                  </button>{" "}
-                  <button
-                    className="button button-quiet"
-                    type="button"
-                    disabled={libraryBusy}
-                    onClick={() => {
-                      void (async () => {
-                        setLibraryBusy(true);
-                        try {
-                          await canonApi.deleteStyleRecipe(entry.id);
-                          await refreshServerLibrary();
-                          setStatus(`Deleted “${entry.name}”`);
-                        } catch {
-                          setStatus("Delete failed");
-                        } finally {
-                          setLibraryBusy(false);
-                        }
-                      })();
-                    }}
-                  >
-                    Delete
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
+              >
+                {MODES.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              Template family
+              <select
+                value={recipe.template_family}
+                onChange={(e) =>
+                  setRecipe((r) => ({
+                    ...r,
+                    template_family: e.target.value as TemplateFamilyId,
+                  }))
+                }
+              >
+                {FAMILIES.map((f) => (
+                  <option key={f} value={f}>
+                    {f}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p className="muted studio-note">
+              Layout algorithm: <code>{FAMILY_ALGORITHM[recipe.template_family]}</code>
+            </p>
+            <label className="field">
+              Seed
+              <div className="studio-row">
+                <input
+                  type="number"
+                  min={0}
+                  max={2147483647}
+                  value={recipe.seed}
+                  onChange={(e) => setRecipe((r) => ({ ...r, seed: Number(e.target.value) || 0 }))}
+                />
+                <button className="button button-secondary" type="button" onClick={randomizeSeed}>
+                  Randomize
+                </button>
+              </div>
+            </label>
+            <label className="field">
+              Notes
+              <input
+                type="text"
+                maxLength={500}
+                value={recipe.notes || ""}
+                onChange={(e) => setRecipe((r) => ({ ...r, notes: e.target.value }))}
+              />
+            </label>
+          </section>
 
-      <div className="panel" style={{ marginTop: "1rem" }}>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-          <button
-            className="button button-secondary"
-            type="button"
-            disabled={!bridge || previewing}
-            onClick={() => void handlePreview()}
-          >
-            {previewing ? "Previewing…" : "Preview (free)"}
-          </button>
-          <button
-            className="button button-primary"
-            type="button"
-            disabled={!bridge || exporting}
-            onClick={() => void handleExport()}
-          >
-            {exporting ? "Exporting…" : "Export with recipe"}
-          </button>
-        </div>
-        {status ? (
-          <p role="status" className="status" style={{ marginTop: "0.75rem" }}>
-            {status}
-          </p>
-        ) : null}
-        {lastExportId ? (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.75rem" }}>
-            <button
-              className="button button-secondary"
-              type="button"
-              disabled={downloading}
-              onClick={() => void downloadArtifact(lastExportId, "pdf")}
-            >
-              {downloading ? "Downloading…" : "Download PDF"}
-            </button>
+          <section className="studio-section">
+            <h2>Master weights</h2>
+            <div className="weight-sliders">
+              {WEIGHT_KEYS.map((key) => (
+                <label key={key} className="field weight-row">
+                  <span>
+                    {key.replace(/_/g, " ")} <strong>{recipe.weights[key]}</strong>
+                  </span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={recipe.weights[key]}
+                    onChange={(e) => setWeight(key, Number(e.target.value))}
+                  />
+                </label>
+              ))}
+            </div>
             <button
               className="button button-quiet"
               type="button"
-              disabled={downloading}
-              onClick={() => void downloadArtifact(lastExportId, "zip")}
+              onClick={() => setRecipe((r) => ({ ...r, weights: { ...DEFAULT_STYLE_WEIGHTS } }))}
             >
-              Download ZIP pack
+              Reset weights
+            </button>
+          </section>
+
+          <section className="studio-section">
+            <h2>Influence mixer</h2>
+            <p className="muted">
+              All 32 style vectors (0 to 100). Engine normalizes competing groups; conflicts appear
+              in preview resolution events.
+            </p>
+            <div className="weight-sliders influence-grid">
+              {ALL_INFLUENCE_IDS.map((key) => {
+                const value = recipe.influences[key] ?? 0;
+                return (
+                  <label key={key} className="field weight-row">
+                    <span>
+                      {key.replace(/_/g, " ")} <strong>{value}</strong>
+                    </span>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      value={value}
+                      onChange={(e) => {
+                        const next = Number(e.target.value);
+                        setRecipe((r) => {
+                          const influences = { ...r.influences };
+                          if (next <= 0) {
+                            delete influences[key];
+                          } else {
+                            influences[key] = next;
+                          }
+                          return { ...r, influences };
+                        });
+                      }}
+                    />
+                  </label>
+                );
+              })}
+            </div>
+            <button
+              className="button button-quiet"
+              type="button"
+              onClick={() =>
+                setRecipe((r) => ({
+                  ...r,
+                  influences: {
+                    engineering: 92,
+                    swiss: 65,
+                    scientific: 55,
+                    cyber_hive: 24,
+                  },
+                }))
+              }
+            >
+              Reset influences
+            </button>
+          </section>
+
+          <section className="studio-section">
+            <h2>Recipe library</h2>
+            <p className="muted">
+              Server-backed library for your account (max 40). Export/preview can reference a recipe
+              by id so the sealed debit snapshot matches the library entry.
+            </p>
+            <div className="studio-row">
+              <input
+                type="text"
+                placeholder="Recipe name"
+                value={recipeName}
+                maxLength={80}
+                onChange={(e) => setRecipeName(e.target.value)}
+              />
+              <button
+                className="button button-secondary"
+                type="button"
+                disabled={libraryBusy || !recipeName.trim()}
+                onClick={() => {
+                  void (async () => {
+                    setLibraryBusy(true);
+                    try {
+                      const created = await canonApi.createStyleRecipe({
+                        name: recipeName.trim(),
+                        style_recipe: buildRequestBody() as unknown as Record<string, unknown>,
+                      });
+                      setRecipeName("");
+                      await refreshServerLibrary();
+                      setStatus(`Saved server recipe “${created.data.name}” (${created.data.id})`);
+                    } catch (error: unknown) {
+                      const apiError = error as { response?: { data?: { detail?: string } } };
+                      setStatus(apiError.response?.data?.detail || "Save recipe failed");
+                    } finally {
+                      setLibraryBusy(false);
+                    }
+                  })();
+                }}
+              >
+                Save to account
+              </button>
+            </div>
+            {serverLibrary.length === 0 ? (
+              <p className="muted">No server recipes yet (sign in required).</p>
+            ) : (
+              <ul className="studio-library">
+                {serverLibrary.map((entry) => {
+                  const loaded = entry.style_recipe as unknown as RequestStyleRecipe;
+                  return (
+                    <li key={entry.id}>
+                      <strong>{entry.name}</strong>{" "}
+                      <span className="muted">
+                        {String(loaded.mode || "?")} / {String(loaded.template_family || "?")},{" "}
+                        <code>{entry.recipe_hash.slice(0, 10)}…</code>
+                      </span>{" "}
+                      <button
+                        className="button button-quiet"
+                        type="button"
+                        onClick={() => {
+                          setRecipe(loaded);
+                          setStatus(`Loaded “${entry.name}”`);
+                        }}
+                      >
+                        Load
+                      </button>{" "}
+                      <button
+                        className="button button-quiet"
+                        type="button"
+                        onClick={() => {
+                          void (async () => {
+                            if (!bridge) {
+                              setStatus("Need bridge fields to export by recipe id");
+                              return;
+                            }
+                            setExporting(true);
+                            try {
+                              const created = await canonApi.createExport({
+                                source_run_id: bridge.source_run_id,
+                                source_rig_revision_id: bridge.source_rig_revision_id,
+                                artifact_manifest_hash: bridge.artifact_manifest_hash,
+                                formats: ["pdf", "json"],
+                                license: "personal",
+                                idempotency_key: `studio-lib-${entry.id}-${crypto.randomUUID()}`,
+                                style_recipe_id: entry.id,
+                              });
+                              setStatus(
+                                `Export ${created.data.export_id}, ${created.data.status}` +
+                                  (created.data.style_recipe_id
+                                    ? `, recipe ${created.data.style_recipe_id}`
+                                    : ""),
+                              );
+                            } catch (error: unknown) {
+                              const apiError = error as {
+                                response?: { data?: { detail?: string }; status?: number };
+                              };
+                              setStatus(
+                                apiError.response?.status === 402
+                                  ? "INSUFFICIENT_CREDITS"
+                                  : apiError.response?.data?.detail || "Export failed",
+                              );
+                            } finally {
+                              setExporting(false);
+                            }
+                          })();
+                        }}
+                      >
+                        Export with id
+                      </button>{" "}
+                      <button
+                        className="button button-quiet"
+                        type="button"
+                        disabled={libraryBusy}
+                        onClick={() => {
+                          void (async () => {
+                            setLibraryBusy(true);
+                            try {
+                              await canonApi.updateStyleRecipe(entry.id, {
+                                is_shared: !entry.is_shared,
+                              });
+                              await refreshServerLibrary();
+                              setStatus(
+                                entry.is_shared
+                                  ? `“${entry.name}” is private again`
+                                  : `“${entry.name}” shared (readable via /style-recipes/shared/{id})`,
+                              );
+                            } catch {
+                              setStatus("Share toggle failed");
+                            } finally {
+                              setLibraryBusy(false);
+                            }
+                          })();
+                        }}
+                      >
+                        {entry.is_shared ? "Unshare" : "Share"}
+                      </button>{" "}
+                      <button
+                        className="button button-quiet"
+                        type="button"
+                        disabled={libraryBusy}
+                        onClick={() => {
+                          void (async () => {
+                            setLibraryBusy(true);
+                            try {
+                              await canonApi.deleteStyleRecipe(entry.id);
+                              await refreshServerLibrary();
+                              setStatus(`Deleted “${entry.name}”`);
+                            } catch {
+                              setStatus("Delete failed");
+                            } finally {
+                              setLibraryBusy(false);
+                            }
+                          })();
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+        </div>
+
+        <aside className="panel style-studio-preview" aria-label="Preview and export">
+          <div className="studio-row">
+            <button
+              className="button button-secondary"
+              type="button"
+              disabled={!bridge || previewing}
+              onClick={() => void handlePreview()}
+            >
+              {previewing ? "Previewing…" : "Preview (free)"}
+            </button>
+            <button
+              className="button button-primary"
+              type="button"
+              disabled={!bridge || exporting}
+              onClick={() => void handleExport()}
+            >
+              {exporting ? "Exporting…" : "Export with recipe"}
             </button>
           </div>
-        ) : null}
-      </div>
-
-      {preview ? (
-        <div className="panel" style={{ marginTop: "1rem" }}>
-          <h2>Preview</h2>
-          <p className="muted">
-            load_path=<code>{preview.load_path}</code> · library{" "}
-            <code>{preview.library_content_hash.slice(0, 16)}…</code>
-          </p>
-          {preview.resolution_events.length > 0 ? (
-            <div aria-label="Constraint resolution events">
-              <h3>Resolved conflicts</h3>
-              <ul>
-                {preview.resolution_events.map((ev) => (
-                  <li key={ev.code + (ev.field || "")}>
-                    <code>{ev.code}</code>: {ev.message}
-                  </li>
-                ))}
-              </ul>
+          {!bridge ? (
+            <div className="notice" role="status">
+              <p className="status status-warning">
+                Open Style Studio from a rig export run with bridge fields, or append{" "}
+                <code>source_run_id</code>, <code>source_rig_revision_id</code>, and{" "}
+                <code>artifact_manifest_hash</code> query params.
+              </p>
             </div>
-          ) : (
-            <p className="muted">No constraint clamps on this recipe.</p>
-          )}
-          <h3>Pages</h3>
-          {preview.page_summaries.map((page) => (
-            <article key={page.position} className="panel" style={{ marginBottom: "0.75rem" }}>
-              <h4>
-                {page.position + 1}. {page.title}
-              </h4>
-              <p>{page.intent}</p>
-              <p className="muted">{page.edge_count} cables</p>
-              <ol>
-                {page.steps.map((s, i) => (
-                  <li key={i}>
-                    [{s.phase}] {s.instruction}
-                  </li>
-                ))}
-              </ol>
-            </article>
-          ))}
-        </div>
-      ) : null}
+          ) : null}
+          {status ? (
+            <p role="status" className="status studio-status">
+              {status}
+            </p>
+          ) : null}
+          {lastExportId ? (
+            <div className="studio-row">
+              <button
+                className="button button-secondary"
+                type="button"
+                disabled={downloading}
+                onClick={() => void downloadArtifact(lastExportId, "pdf")}
+              >
+                {downloading ? "Downloading…" : "Download PDF"}
+              </button>
+              <button
+                className="button button-quiet"
+                type="button"
+                disabled={downloading}
+                onClick={() => void downloadArtifact(lastExportId, "zip")}
+              >
+                Download ZIP pack
+              </button>
+            </div>
+          ) : null}
+
+          {preview ? (
+            <div className="studio-results">
+              <h2>Preview</h2>
+              <p className="muted">
+                Load path <code>{preview.load_path}</code>, library{" "}
+                <code>{preview.library_content_hash.slice(0, 16)}…</code>
+              </p>
+              {preview.resolution_events.length > 0 ? (
+                <div aria-label="Constraint resolution events">
+                  <h3>Resolved conflicts</h3>
+                  <ul>
+                    {preview.resolution_events.map((ev) => (
+                      <li key={ev.code + (ev.field || "")}>
+                        <code>{ev.code}</code>: {ev.message}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p className="muted">No constraint clamps on this recipe.</p>
+              )}
+              <h3>Pages</h3>
+              {preview.page_summaries.map((page) => (
+                <article key={page.position} className="studio-page">
+                  <h4>
+                    {page.position + 1}. {page.title}
+                  </h4>
+                  <p>{page.intent}</p>
+                  <p className="muted">{page.edge_count} cables</p>
+                  <ol>
+                    {page.steps.map((s, i) => (
+                      <li key={i}>
+                        [{s.phase}] {s.instruction}
+                      </li>
+                    ))}
+                  </ol>
+                </article>
+              ))}
+            </div>
+          ) : bridge ? (
+            <div className="studio-results">
+              <h2>Preview</h2>
+              <p className="muted">Run Preview (free) to lay out the pages here.</p>
+            </div>
+          ) : null}
+        </aside>
+      </div>
     </section>
   );
 }

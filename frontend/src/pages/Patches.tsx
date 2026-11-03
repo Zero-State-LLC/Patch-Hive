@@ -95,7 +95,7 @@ export default function PatchesPage() {
 
       {state === "empty" ? (
         <div className="panel">
-          <p className="status status-warning">No patches match this filter.</p>
+          <p className="empty-title">No patches match this filter.</p>
           <p className="muted">
             Generate patches from a rig with confirmed modules, or clear the category filter.
           </p>
@@ -107,33 +107,45 @@ export default function PatchesPage() {
 
       {state === "ready" ? (
         <>
-          <p className="muted" role="status" style={{ marginBottom: "var(--space-4)" }}>
+          <p className="muted results-meta" role="status">
             Showing {patches.length} of {total} patches
           </p>
-          <div className="catalog-grid">
+          <ul className="patch-rows">
             {patches.map((patch) => (
-              <article key={patch.id} className="catalog-card">
-                <h2>{patch.name_override || patch.suggested_name || patch.name}</h2>
-                <p className="catalog-card-meta">
-                  {patch.category}
-                  {patch.difficulty ? ` · ${patch.difficulty}` : ""} ·{" "}
-                  {patch.connections?.length ?? 0} cables · rack #{patch.rack_id}
-                  {patch.run_id != null ? ` · run #${patch.run_id}` : ""}
-                </p>
-                {patch.description ? (
-                  <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.9rem" }}>
-                    {patch.description}
+              <li key={patch.id} className="patch-row">
+                <div className="patch-row__main">
+                  <h2>{patch.name_override || patch.suggested_name || patch.name}</h2>
+                  {patch.description ? (
+                    <p className="patch-row__desc">{patch.description}</p>
+                  ) : null}
+                  <p className="catalog-card-meta">
+                    Rack #{patch.rack_id}
+                    {patch.run_id != null ? `, run #${patch.run_id}` : ""}, seed{" "}
+                    {patch.generation_seed}, {patch.generation_version}
                   </p>
-                ) : null}
-                <p className="catalog-card-meta">
-                  seed {patch.generation_seed} · {patch.generation_version}
-                </p>
+                </div>
+                <dl className="patch-row__facts">
+                  <div>
+                    <dt>Category</dt>
+                    <dd>{patch.category}</dd>
+                  </div>
+                  {patch.difficulty ? (
+                    <div>
+                      <dt>Difficulty</dt>
+                      <dd>{patch.difficulty}</dd>
+                    </div>
+                  ) : null}
+                  <div>
+                    <dt>Cables</dt>
+                    <dd className="patch-row__figure">{patch.connections?.length ?? 0}</dd>
+                  </div>
+                </dl>
                 <Link className="button button-quiet" to={`/rigs/${patch.rack_id}`}>
                   Open rig
                 </Link>
-              </article>
+              </li>
             ))}
-          </div>
+          </ul>
         </>
       ) : null}
     </section>

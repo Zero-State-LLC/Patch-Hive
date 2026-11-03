@@ -81,12 +81,9 @@ export default function RegistryPage() {
       <header className="workspace-header">
         <div>
           <h1>Product Database</h1>
-          <p className="muted">
-            Live registry of {coverage?.total_manufacturers || manufacturers.length} manufacturers
-            and {coverage?.total_models || 0} models.
-          </p>
+          <p className="muted">Live registry of manufacturers and the models they make.</p>
         </div>
-        <label className="field" style={{ minWidth: "min(18rem, 100%)" }}>
+        <label className="field registry-search">
           <span className="visually-hidden">Search manufacturers or models</span>
           <input
             className="input"
@@ -101,7 +98,7 @@ export default function RegistryPage() {
       </header>
 
       {searchResults.length > 0 ? (
-        <div className="panel" style={{ marginBottom: "var(--space-5)" }}>
+        <div className="panel">
           <h3>Model search</h3>
           <ul className="registry-search-list">
             {searchResults.map((r, i) => (
@@ -120,8 +117,8 @@ export default function RegistryPage() {
         <aside className="split-aside" aria-label="Manufacturers">
           <div className="split-aside-head">
             <h2>Manufacturers</h2>
-            <span className="muted" style={{ fontSize: "0.8rem" }}>
-              {filtered.length}/{manufacturers.length}
+            <span className="muted registry-count">
+              {filtered.length} of {coverage?.total_manufacturers || manufacturers.length}
             </span>
           </div>
           <div className="side-list">
@@ -146,10 +143,22 @@ export default function RegistryPage() {
 
         <section className="panel" aria-live="polite">
           {!selected ? (
-            <p className="muted">Select a manufacturer to inspect registry detail.</p>
+            <div className="registry-empty">
+              <dl className="readout">
+                <div>
+                  <dt>Manufacturers</dt>
+                  <dd>{coverage?.total_manufacturers || manufacturers.length}</dd>
+                </div>
+                <div>
+                  <dt>Models</dt>
+                  <dd>{coverage?.total_models || 0}</dd>
+                </div>
+              </dl>
+              <p className="muted">Select a manufacturer to inspect registry detail.</p>
+            </div>
           ) : (
             <>
-              <h2 style={{ marginTop: 0 }}>{manLabel(selected)}</h2>
+              <h2>{manLabel(selected)}</h2>
               <p className="catalog-card-meta">{selected.slug}</p>
               <dl className="registry-detail">
                 <div>

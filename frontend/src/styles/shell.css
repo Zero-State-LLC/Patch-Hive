@@ -486,6 +486,11 @@ code {
   border-radius: var(--radius-md);
   background: var(--color-paper-2);
 }
+/* A lone action in a well keeps its own width */
+.panel > .button,
+.screen-state > .button {
+  justify-self: start;
+}
 .panel .panel {
   padding: 0;
   border-radius: 0;
@@ -503,10 +508,8 @@ code {
 }
 
 /* —— Status —— */
+/* Status is a colour only, so inline code and links inside it flow as text */
 .status {
-  display: inline-flex;
-  align-items: baseline;
-  gap: var(--space-xs);
   color: var(--color-ink-2);
 }
 .status-success {
@@ -622,6 +625,13 @@ code {
   to {
     background-position: -100% 0;
   }
+}
+
+/* An empty state names what is missing in ink; amber stays on the one action that fills it */
+.empty-title {
+  color: var(--color-ink);
+  font: 600 var(--text-lg) / 1.3 var(--font-display);
+  letter-spacing: -0.01em;
 }
 
 /* —— Readouts (figures the API returns) —— */

@@ -6,25 +6,27 @@ import { AdminNav } from "./AdminNav";
 
 function LeaderboardTable({ title, entries }: { title: string; entries: AdminLeaderboardEntry[] }) {
   return (
-    <section className="panel">
-      <h2 style={{ marginTop: 0 }}>{title}</h2>
+    <section className="ops-section">
+      <h2>{title}</h2>
       {entries.length ? (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Label</th>
-              <th>Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry) => (
-              <tr key={entry.label}>
-                <td>{entry.label}</td>
-                <td>{entry.count}</td>
+        <div className="ops-table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Label</th>
+                <th>Count</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {entries.map((entry) => (
+                <tr key={entry.label}>
+                  <td>{entry.label}</td>
+                  <td>{entry.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p className="muted">No entries.</p>
       )}
@@ -61,7 +63,7 @@ export default function AdminLeaderboards() {
           </div>
         </header>
         <AdminNav />
-        <div style={{ display: "grid", gap: "var(--space-5)" }}>
+        <div className="ops-stack">
           <LeaderboardTable title="Popular modules" entries={popular} />
           <LeaderboardTable title="Trending modules (14 days)" entries={trending} />
           <LeaderboardTable title="Exported categories" entries={exported} />
