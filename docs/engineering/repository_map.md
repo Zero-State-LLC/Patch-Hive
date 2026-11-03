@@ -54,7 +54,6 @@ Coarse import edges are persisted at `.codebase-memory/graph/module_graph.json`.
 | Pages | `frontend/src/pages/` |
 | API client | `frontend/src/lib/api.ts` |
 | Types | `frontend/src/types/` |
-| Legacy quarantine | `frontend/src/legacy/` |
 | Admin | `frontend/src/pages/admin/` |
 
 ## Public HTTP APIs (active)
@@ -89,7 +88,6 @@ Coarse import edges are persisted at `.codebase-memory/graph/module_graph.json`.
 
 | Surface | Classification |
 |---------|----------------|
-| `frontend/src/legacy/` | Quarantined UI |
 | Top-level / nested `patchhive` package | HISTORICAL; tests still import |
 | Legacy patchbook debit POST | Gated off by default |
 | Root `DEPLOY_STATUS.md`, `CANON_DIFF.md` | Superseded notes |

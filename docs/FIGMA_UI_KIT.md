@@ -289,16 +289,11 @@ ICON BUTTON:
 ### **Loading States**
 
 ```
-SPINNER:
-├── Use LoadingSpinner component (see frontend/src/components/LoadingSpinner.tsx)
-├── Rotating hexagon with signal dots
-├── Size variants: 40px, 60px, 80px
-└── Optional message below
-
-SKELETON:
-├── Background: linear-gradient(90deg, #1C2128, #3D4450, #1C2128)
-├── Animation: shimmer 2s infinite
-└── Border Radius: matches content type
+SKELETON (no spinners; see frontend/src/components/Skeletons.tsx):
+├── Shaped like what is coming: list rows, a rail of faceplates, the signal chain, a readout figure
+├── Fill: --color-muted mixed 18% into --color-paper-2, so it reads in both themes
+├── Animation: opacity pulse, --dur-loader alternating (the only infinite animation)
+└── Border Radius: --radius-plate
 
 PROGRESS BAR:
 ├── Height: 4px

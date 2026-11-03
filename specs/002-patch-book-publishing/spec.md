@@ -52,7 +52,7 @@ Checked against the code on `main` at 95ca9ee. Open gaps link to [research.md](r
 | FR-023 | Partial | Stage receipts carry `determinism_class` and `operation_version`. No rune declares its schemas, side effects or test vectors [OBSERVED: canon/contracts.py]. |
 | FR-024 | Partial | No `COMPILE_PATCH_PAGE` stage. The preflight and overflow gates cover part of it. |
 | FR-030 | Implemented | The router is mounted only when the flag is set; the default is false [OBSERVED: backend/main.py, backend/core/config.py]. |
-| FR-031 | Implemented | Publishing pages are only under `frontend/src/legacy/`, and no active page imports them [OBSERVED: repo grep 2026-10-29]. |
+| FR-031 | Implemented | The publishing pages, once quarantined under `frontend/src/legacy/`, are deleted, so no page can import them [OBSERVED: repo grep 2026-11-03]. |
 | FR-032 | Implemented | With the flag off every route is 404 and changes nothing (OQ-5). |
 | FR-033 | Implemented | 403 `Export ownership mismatch` on export and publication create [OBSERVED: backend/publishing/routes.py]. |
 | FR-034 | Implemented | `unique_publication_export`, and 400 on a second create [OBSERVED: backend/publishing/models.py, routes.py]. |
@@ -179,7 +179,7 @@ As an operator, I want legacy publishing off by default and isolated, so that it
 Acceptance criteria:
 
 1. **Given** default configuration, **when** the backend starts, **then** `ENABLE_LEGACY_PUBLISHING` is `false`. [OBSERVED: docs/FEATURE_FLAGS.md]
-2. **Given** the active frontend, **when** you navigate the app, **then** no navigation leads to publishing pages. Those pages stay quarantined under `frontend/src/legacy/`. [OBSERVED: docs/FEATURE_FLAGS.md]
+2. **Given** the active frontend, **when** you navigate the app, **then** no navigation leads to publishing pages. Those pages are deleted from the frontend. [OBSERVED: docs/FEATURE_FLAGS.md]
 3. **Given** publication exports, **when** they are stored, **then** they are kept separate from paid MVP exports. [OBSERVED: backend/publishing/models.py]
 
 ## Functional requirements

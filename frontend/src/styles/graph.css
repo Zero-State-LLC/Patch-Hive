@@ -16,7 +16,7 @@
   gap: var(--space-xs);
 }
 .graph-controls .button {
-  min-width: 40px;
+  min-width: var(--control-h);
   padding: 0 var(--space-sm);
 }
 .view-switcher {
@@ -45,16 +45,13 @@
 .view-switcher span {
   display: grid;
   place-items: center;
-  min-height: 40px;
+  min-height: var(--control-h);
   padding: 0 var(--space-md);
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-sm);
   color: var(--color-ink-2);
   cursor: pointer;
   font-size: var(--text-sm);
-  transition:
-    border-color var(--dur-short) var(--ease-out),
-    color var(--dur-short) var(--ease-out);
 }
 .view-switcher span:hover {
   color: var(--color-ink);
@@ -95,11 +92,11 @@
 }
 .graph-node-label {
   fill: var(--color-ink);
-  font: 600 13px/1 var(--font-display);
+  font: 600 var(--text-xs) / 1 var(--font-display);
 }
 .graph-node-meta {
   fill: var(--color-muted);
-  font: 11px/1 var(--font-mono);
+  font: 400 var(--text-2xs) / 1 var(--font-mono);
 }
 /* Cables arrive once. CV and gate cables keep the renderer's dash patterns and fade in;
    solid audio cables draw themselves along their length. */
@@ -109,9 +106,7 @@
   stroke-width: 3;
   opacity: 0.8;
   animation: cable-in var(--dur-long) var(--ease-out) both;
-  transition:
-    opacity var(--dur-short) var(--ease-out),
-    stroke-width var(--dur-short) var(--ease-out);
+  transition: opacity var(--dur-short) var(--ease-out);
 }
 .graph-edge:not([stroke-dasharray]) {
   stroke-linecap: round;
@@ -169,13 +164,12 @@
   white-space: nowrap;
 }
 .cable-table tbody tr {
-  transition: background-color var(--dur-short) var(--ease-out);
 }
 .cable-table tbody tr.selected {
   background: var(--color-paper-3);
 }
 .cable-table button {
-  min-height: 40px;
+  min-height: var(--control-h);
   padding: 0;
   border: 0;
   color: var(--color-accent-text);

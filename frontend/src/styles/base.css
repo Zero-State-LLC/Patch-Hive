@@ -133,19 +133,19 @@ td.num {
 }
 @media (max-width: 60rem) {
   :root {
-    --gutter: 24px;
+    --gutter: var(--space-lg);
     --section-gap-s: 80px;
-    --section-gap: 96px;
+    --section-gap: var(--space-3xl);
     --section-gap-l: 120px;
   }
 }
 @media (max-width: 40rem) {
   :root {
-    --gutter: 16px;
+    --gutter: var(--space-md);
     --section-gap-s: 56px;
     --section-gap: 72px;
-    --section-gap-l: 96px;
-    --gap-columns: 16px;
+    --section-gap-l: var(--space-3xl);
+    --gap-columns: var(--space-md);
   }
 }
 @media (prefers-reduced-motion: reduce) {

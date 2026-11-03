@@ -60,8 +60,8 @@ See also: `docs/design/PATCHBOOK_STAGING_ENABLEMENT.md`
 |---|---|---|
 | `exportApi.patchbookExport` | **Removed from MVP client** | Lived under active `api.ts`; deleted — use `canonApi.createExport` |
 | `POST /api/export/runs/{id}/patchbook` | **Disabled by default** | `ENABLE_LEGACY_PATCHBOOK_DEBIT=false` → 410; opt-in only for compatibility tests |
-| Unrouted FE pages (Feed/Publish/…) | **Quarantined** | `frontend/src/legacy/` — not linked in `App.tsx` |
-| `publishingApi` / `communityApi` / `leaderboardsApi` | **Legacy clients** | `frontend/src/legacy/apiClients.ts` only |
+| Unrouted FE pages (Feed/Publish/…) | **Deleted** | Were quarantined in `frontend/src/legacy/`; removed with their clients |
+| `publishingApi` / `communityApi` / `leaderboardsApi` | **Deleted** | Admin leaderboards use `adminApi` at `/admin/leaderboards` |
 
 Legacy `/api/export` PatchBook **POST** routes remain during transition but must not be used by the active UI. Production payments stay disabled unless a separate reviewed change sets `ALLOW_PRODUCTION_PAYMENTS=true` with real secrets.
 

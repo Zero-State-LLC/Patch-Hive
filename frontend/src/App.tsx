@@ -21,6 +21,7 @@ const AccountPage = lazy(() => import("@/pages/Account"));
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const AdminExports = lazy(() => import("@/pages/admin/AdminExports"));
 const AdminGallery = lazy(() => import("@/pages/admin/AdminGallery"));
+const AdminLeaderboards = lazy(() => import("@/pages/admin/AdminLeaderboards"));
 const AdminModules = lazy(() => import("@/pages/admin/AdminModules"));
 const AdminRuns = lazy(() => import("@/pages/admin/AdminRuns"));
 const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
@@ -61,6 +62,7 @@ function AppRoutes() {
       <Route path="/admin/gallery" element={<AdminGallery />} />
       <Route path="/admin/runs" element={<AdminRuns />} />
       <Route path="/admin/exports" element={<AdminExports />} />
+      <Route path="/admin/leaderboards" element={<AdminLeaderboards />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
