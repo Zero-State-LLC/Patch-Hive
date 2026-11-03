@@ -693,7 +693,7 @@ export default function RacksPage() {
                     </ul>
                     {selectedPatch ? (
                       <section className="rack-patch-detail" aria-labelledby="rack-patch-title">
-                        <h3 id="rack-patch-title">{selectedPatch.name}</h3>
+                        <h2 id="rack-patch-title">{selectedPatch.name}</h2>
                         {selectedPatch.suggested_name &&
                         selectedPatch.suggested_name !== selectedPatch.name ? (
                           <p className="muted">Suggested name: {selectedPatch.suggested_name}</p>

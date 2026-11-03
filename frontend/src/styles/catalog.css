@@ -66,7 +66,7 @@
 .seg-options .status-chip--interactive[aria-pressed="true"] {
   color: var(--color-ink);
   background: var(--color-paper-3);
-  box-shadow: inset 0 -2px 0 var(--color-accent);
+  box-shadow: inset 0 -2px 0 var(--color-indicator);
 }
 
 .filter-rail .seg-options {
@@ -290,25 +290,25 @@
 }
 .module-row:hover .mockup-plate,
 .module-row:focus-within .mockup-plate {
-  border-color: var(--color-accent);
+  border-color: var(--color-indicator);
   transform: translateY(-2px);
 }
 
 .module-mockup {
-  --cat-color: var(--zs-titanium);
+  --cat-color: var(--module-controller);
 }
 .module-mockup[data-category="VCO"],
 .module-mockup[data-category="VCA"],
 .module-mockup[data-category="ENV"],
 .module-mockup[data-category="SAMP"],
 .module-mockup[data-category="DRUM"] {
-  --cat-color: var(--ph-amber);
+  --cat-color: var(--module-source);
 }
 .module-mockup[data-category="VCF"],
 .module-mockup[data-category="LFO"],
 .module-mockup[data-category="SEQ"],
 .module-mockup[data-category="FX"] {
-  --cat-color: var(--ph-cyan);
+  --cat-color: var(--module-shaper);
 }
 
 .mockup-face {
@@ -377,7 +377,7 @@
 /* In a list, the row's primary action waits as an outline and fills when the row is in hand */
 .app-shell .module-row .button-primary,
 .app-shell .catalog-card .button-primary {
-  border-color: color-mix(in oklab, var(--color-accent) 60%, var(--color-rule));
+  border-color: color-mix(in oklab, var(--color-indicator) 60%, var(--color-rule));
   color: var(--color-accent-text);
   background: transparent;
 }
@@ -524,7 +524,7 @@
 }
 .catalog-card:hover .capacity-rail__fill,
 .catalog-card:focus-within .capacity-rail__fill {
-  box-shadow: inset 0 0 0 1px var(--color-accent);
+  box-shadow: inset 0 0 0 1px var(--color-indicator);
 }
 @keyframes rail-fill {
   from {

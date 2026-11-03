@@ -122,7 +122,7 @@
 
 /* In a table, each row's primary action waits as an outline and fills when the row is in hand */
 .app-shell .data-table .button-primary {
-  border-color: color-mix(in oklab, var(--color-accent) 60%, var(--color-rule));
+  border-color: color-mix(in oklab, var(--color-indicator) 60%, var(--color-rule));
   color: var(--color-accent-text);
   background: transparent;
 }

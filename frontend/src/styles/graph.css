@@ -60,7 +60,7 @@
   color: var(--color-ink);
 }
 .view-switcher input:checked + span {
-  border-color: var(--color-accent);
+  border-color: var(--color-indicator);
   color: var(--color-ink);
   background: var(--color-paper-3);
 }
