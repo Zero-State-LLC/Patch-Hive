@@ -557,6 +557,16 @@ export default function RackBuilderPage() {
     }
   };
 
+  /** Each row's HP, declared before the checks and saves that read it. */
+  const rowCapacities = useMemo(() => {
+    if (!liveRack?.case) return [] as number[];
+    const c = liveRack.case;
+    if (c.hp_per_row?.length) return c.hp_per_row;
+    const rows = c.rows || 1;
+    const each = Math.floor((c.total_hp || 0) / rows) || c.total_hp || 0;
+    return Array.from({ length: rows }, () => each);
+  }, [liveRack]);
+
   /** A placed module's name, for messages: the rig's record, else the gallery's. */
   const placementName = (spec: RackModuleSpec) => {
     const mod = placedModule(spec);
@@ -673,15 +683,6 @@ export default function RackBuilderPage() {
       });
     }
   };
-
-  const rowCapacities = useMemo(() => {
-    if (!liveRack?.case) return [] as number[];
-    const c = liveRack.case;
-    if (c.hp_per_row?.length) return c.hp_per_row;
-    const rows = c.rows || 1;
-    const each = Math.floor((c.total_hp || 0) / rows) || c.total_hp || 0;
-    return Array.from({ length: rows }, () => each);
-  }, [liveRack]);
 
   // The next single placement, checked before it can be added: overlapping or off the row, the
   // rail shows it red with the reason and Add placement waits.
