@@ -601,12 +601,40 @@ def _apply_fields(
     return True
 
 
-def _is_stale(record: ProviderSubscriptionRecord, event_created: int | None) -> bool:
-    return (
-        event_created is not None
-        and record.last_event_created is not None
-        and event_created < record.last_event_created
-    )
+# Provider status progression, used only to order two snapshots with the same event
+# ``created`` second (Stripe timestamps have one-second resolution). ``incomplete`` comes
+# only before the first payment; ``incomplete_expired`` and ``canceled`` are terminal.
+_STATUS_STAGE: dict[str, int] = {
+    "incomplete": 0,
+    "trialing": 1,
+    "active": 1,
+    "past_due": 1,
+    "unpaid": 1,
+    "paused": 1,
+    "incomplete_expired": 2,
+    "canceled": 2,
+}
+
+
+def _is_stale(record: ProviderSubscriptionRecord, event_created: int | None, status: Any) -> bool:
+    """Whether an incoming snapshot with ``status`` is older than the record's state.
+
+    An earlier ``created`` time is stale. At the same second, arrival order says
+    nothing, so the provider's status progression decides: a snapshot from an earlier
+    stage (for example ``incomplete`` after the record is ``active``) is stale, and one
+    from the same or a later stage applies. A subscription never moves backward from a
+    paid stage to ``incomplete``.
+    """
+
+    if event_created is None or record.last_event_created is None:
+        return False
+    if event_created < record.last_event_created:
+        return True
+    if event_created > record.last_event_created:
+        return False
+    incoming = _STATUS_STAGE.get(status) if isinstance(status, str) else None
+    current = _STATUS_STAGE.get(record.status)
+    return incoming is not None and current is not None and incoming < current
 
 
 def handle_subscription_event(session: Session, event: dict[str, Any]) -> EventDisposition:
@@ -658,7 +686,7 @@ def handle_subscription_event(session: Session, event: dict[str, Any]) -> EventD
             record.updated_at = now
             session.flush()
             return EventDisposition("processed")
-        if _is_stale(record, event_created):
+        if _is_stale(record, event_created, obj.get("status")):
             return EventDisposition("duplicate", "STALE_EVENT")
 
     fields = _subscription_fields(obj, deleted=deleted, app_settings=_app_settings())
@@ -678,7 +706,7 @@ def handle_subscription_event(session: Session, event: dict[str, Any]) -> EventD
             raise UnresolvedEventError("CUSTOMER_MISMATCH")
         if record.status == CANCELED:
             return EventDisposition("duplicate", "SUBSCRIPTION_ALREADY_CANCELED")
-        if not deleted and _is_stale(record, event_created):
+        if not deleted and _is_stale(record, event_created, fields.status):
             return EventDisposition("duplicate", "STALE_EVENT")
     if not _apply_fields(record, fields, event_created):
         return EventDisposition("duplicate", "SUBSCRIPTION_UNCHANGED")
@@ -699,18 +727,45 @@ def _invoice_subscription_id(obj: dict[str, Any]) -> str | None:
     return None
 
 
-def _invoice_period_line(obj: dict[str, Any]) -> tuple[str, int, int]:
-    """The one priced line of a subscription invoice: ``(price_id, start, end)``.
+def _is_proration(line: dict[str, Any]) -> bool:
+    """Whether an invoice line is a proration, in either API shape.
 
-    The line's ``period`` is the service period the payment covers; the invoice's own
-    ``period_start`` / ``period_end`` are not (for a renewal they describe the period
-    before).
+    Older versions carry ``proration`` on the line; newer ones under
+    ``parent.subscription_item_details`` or ``parent.invoice_item_details``.
+    """
+
+    flags = [line.get("proration")]
+    parent = line.get("parent")
+    if isinstance(parent, dict):
+        for key in ("subscription_item_details", "invoice_item_details"):
+            details = parent.get(key)
+            if isinstance(details, dict):
+                flags.append(details.get("proration"))
+    for flag in flags:
+        if flag is not None and not isinstance(flag, bool):
+            raise UnresolvedEventError("EVENT_PAYLOAD_MALFORMED")
+    return any(flag is True for flag in flags)
+
+
+def _invoice_period_line(obj: dict[str, Any]) -> tuple[str, int, int] | None:
+    """The one priced, non-proration line of a subscription invoice.
+
+    Returns ``(price_id, start, end)``, or ``None`` when every priced line is a
+    proration. The line's ``period`` is the service period the payment covers; the
+    invoice's own ``period_start`` / ``period_end`` are not (for a renewal they describe
+    the period before). A proration line's period starts when the proration was
+    calculated, mid-period, so it never selects a period to grant (OQ-7: a tier change
+    takes effect from the next period, no proration).
     """
 
     lines = _list_data(obj.get("lines"))
     if lines is None:
         raise UnresolvedEventError("EVENT_PAYLOAD_MALFORMED")
     priced = [line for line in lines if isinstance(line, dict) and _price_id(line) is not None]
+    full = [line for line in priced if not _is_proration(line)]
+    if priced and not full:
+        return None
+    priced = full
     if len(priced) != 1:
         raise UnresolvedEventError("INVOICE_LINES_UNSUPPORTED")
     line = priced[0]
@@ -736,6 +791,9 @@ def handle_invoice_paid(session: Session, event: dict[str, Any]) -> EventDisposi
     ``customer.subscription.created``, EC-2), it is created from the invoice as
     ``active``, the status a paid subscription invoice implies; later subscription
     events keep it in sync. An existing record keeps the status its events gave it.
+
+    Proration lines never select the period. An invoice with only proration lines is
+    ``ignored`` (``INVOICE_PRORATION_ONLY``) and grants nothing.
 
     Refused (``unresolved``, nothing written): not a paid invoice (``INVOICE_NOT_PAID``),
     no subscription (``INVOICE_NOT_SUBSCRIPTION``), nothing paid
@@ -765,7 +823,12 @@ def handle_invoice_paid(session: Session, event: dict[str, Any]) -> EventDisposi
         # neither, so an operator looks.
         raise UnresolvedEventError("INVOICE_AMOUNT_ZERO")
     customer_id, link = _customer_link(session, obj)
-    price_id, period_start, period_end = _invoice_period_line(obj)
+    period_line = _invoice_period_line(obj)
+    if period_line is None:
+        # Only proration lines (a mid-period tier change billed at once): no period
+        # grant, the new tier's credits come with the next period (OQ-7).
+        return EventDisposition("ignored", "INVOICE_PRORATION_ONLY")
+    price_id, period_start, period_end = period_line
     tier = tier_for_price(_app_settings(), price_id)
     if tier is None:
         raise UnresolvedEventError("PRICE_UNKNOWN")

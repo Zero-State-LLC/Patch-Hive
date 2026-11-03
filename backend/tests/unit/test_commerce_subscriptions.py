@@ -672,6 +672,159 @@ def test_an_unchanged_newer_snapshot_still_advances_the_watermark(
     assert (record.status, record.last_event_created) == ("active", TS + 20)
 
 
+def test_a_same_second_incomplete_snapshot_never_moves_an_active_record_back(
+    db_session: Session, machine_c
+) -> None:
+    """Codex P2 on #219: invoice.paid made the record ``active``; the creation snapshot
+    from the same second (``incomplete``) arrives later and must not win."""
+    user = _user(db_session)
+    _customer(db_session, user)
+    _deliver(db_session, "evt_inv", "invoice.paid", _invoice("in_1", "sub_1", user.id), created=TS)
+
+    late = _deliver(
+        db_session,
+        "evt_created",
+        "customer.subscription.created",
+        _subscription("sub_1", user.id, status="incomplete"),
+        created=TS,
+    )
+
+    assert _disposition(late) == ("duplicate", "STALE_EVENT")
+    assert _record(db_session, "sub_1").status == "active"
+    provider = FakeSubscriptionProvider()
+    request_subscription_cancel(
+        db_session, user=user, provider=provider, app_settings=_c_settings()
+    )
+    assert [name for name, _ in provider.calls] == ["cancel"]
+
+
+def test_a_same_second_snapshot_at_the_same_or_a_later_stage_applies(
+    db_session: Session, machine_c
+) -> None:
+    """Equal timestamps are not all rejected: a same-stage change (active to past_due,
+    a cancel flag) and a forward move (incomplete to active) apply."""
+    user = _user(db_session)
+    _customer(db_session, user)
+    _deliver(
+        db_session,
+        "evt_1",
+        "customer.subscription.created",
+        _subscription("sub_1", user.id, status="incomplete"),
+        created=TS,
+    )
+    forward = _deliver(
+        db_session,
+        "evt_2",
+        "customer.subscription.updated",
+        _subscription("sub_1", user.id),
+        created=TS,
+    )
+    same_stage = _deliver(
+        db_session,
+        "evt_3",
+        "customer.subscription.updated",
+        _subscription("sub_1", user.id, status="past_due", cancel=True),
+        created=TS,
+    )
+
+    assert _disposition(forward) == ("processed", None)
+    assert _disposition(same_stage) == ("processed", None)
+    record = _record(db_session, "sub_1")
+    assert (record.status, record.cancel_at_period_end) == ("past_due", True)
+
+
+def _proration_line(*, newer_shape: bool = False) -> dict[str, Any]:
+    line: dict[str, Any] = {
+        "id": "il_prorate",
+        "price": {"id": PRICES["pro"]},
+        "period": {"start": P1 + MONTH // 2, "end": P1 + MONTH},
+    }
+    if newer_shape:
+        line["parent"] = {
+            "type": "subscription_item_details",
+            "subscription_item_details": {"proration": True, "subscription": "sub_1"},
+        }
+    else:
+        line["proration"] = True
+    return line
+
+
+@pytest.mark.parametrize("newer_shape", [False, True])
+def test_a_proration_only_invoice_grants_nothing(
+    db_session: Session, machine_c, newer_shape: bool
+) -> None:
+    """Codex P2 on #219, OQ-7: a mid-period upgrade billed at once is no new period."""
+    user = _user(db_session)
+    _customer(db_session, user)
+    _deliver(db_session, "evt_1", "invoice.paid", _invoice("in_1", "sub_1", user.id))
+
+    prorated = _deliver(
+        db_session,
+        "evt_2",
+        "invoice.paid",
+        _invoice(
+            "in_2",
+            "sub_1",
+            user.id,
+            amount=500,
+            billing_reason="subscription_update",
+            lines={"data": [_proration_line(newer_shape=newer_shape)]},
+        ),
+    )
+
+    assert _disposition(prorated) == ("ignored", "INVOICE_PRORATION_ONLY")
+    assert len(_grants(db_session)) == 1
+    assert credit_balance(db_session, user.id) == 25
+
+
+def test_proration_lines_never_select_the_period(db_session: Session, machine_c) -> None:
+    """A renewal invoice carrying earlier prorations grants its full-period line only."""
+    user = _user(db_session)
+    _customer(db_session, user)
+    full = {
+        "id": "il_full",
+        "price": {"id": PRICES["pro"]},
+        "period": {"start": P1 + MONTH, "end": P1 + 2 * MONTH},
+        "proration": False,
+    }
+
+    intake = _deliver(
+        db_session,
+        "evt_1",
+        "invoice.paid",
+        _invoice(
+            "in_1",
+            "sub_1",
+            user.id,
+            amount=1499,
+            billing_reason="subscription_cycle",
+            lines={"data": [_proration_line(), full]},
+        ),
+    )
+
+    assert _disposition(intake) == ("processed", None)
+    (grant,) = _grants(db_session)
+    assert (grant.grant_key, grant.tier) == (subscription_period_key("sub_1", P1 + MONTH), "pro")
+    assert credit_balance(db_session, user.id) == 100
+
+
+def test_a_malformed_proration_flag_is_unresolved(db_session: Session, machine_c) -> None:
+    user = _user(db_session)
+    _customer(db_session, user)
+    line = _proration_line()
+    line["proration"] = "yes"
+
+    intake = _deliver(
+        db_session,
+        "evt_1",
+        "invoice.paid",
+        _invoice("in_1", "sub_1", user.id, lines={"data": [line]}),
+    )
+
+    assert _disposition(intake) == ("unresolved", "EVENT_PAYLOAD_MALFORMED")
+    assert _nothing_granted(db_session)
+
+
 def test_an_older_event_delivered_late_does_not_roll_the_record_back(
     db_session: Session, machine_c
 ) -> None:
