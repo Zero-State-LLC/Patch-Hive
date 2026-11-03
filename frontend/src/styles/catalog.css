@@ -1,0 +1,668 @@
+/* Catalog screens: modules drawn to HP scale, cases with their capacity rail */
+
+.catalog-layout {
+  display: grid;
+  grid-template-columns: minmax(14rem, 16rem) minmax(0, 1fr);
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+/* —— Filter rail —— */
+.filter-rail {
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-lg));
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+  max-height: calc(100dvh - var(--header-height) - var(--space-xl));
+  overflow-y: auto;
+  padding-right: var(--space-2xs);
+  scrollbar-width: thin;
+}
+.filter-rail .field,
+.filter-rail .inline-field {
+  width: 100%;
+}
+.filter-rail .button {
+  justify-self: start;
+}
+.filter-rail .filter-chip-row {
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
+}
+
+/* A choice between three: the HP quick filters */
+.seg {
+  display: grid;
+  gap: var(--space-2xs);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.seg-label {
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+.seg-options {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  padding: var(--space-3xs);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: var(--color-paper);
+}
+.seg-options .status-chip--interactive {
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 var(--space-xs);
+  border: 0;
+  border-radius: calc(var(--radius-sm) - 3px);
+  color: var(--color-ink-2);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+.seg-options .status-chip--interactive[aria-pressed="true"] {
+  color: var(--color-ink);
+  background: var(--color-paper-3);
+  box-shadow: inset 0 -2px 0 var(--color-accent);
+}
+
+.filter-rail .seg-options {
+  grid-auto-flow: row;
+  grid-auto-columns: auto;
+}
+.filter-rail .seg-options .status-chip--interactive {
+  justify-content: flex-start;
+  padding: 0 var(--space-sm);
+  font-size: var(--text-sm);
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-rule);
+}
+.filter-bar .field {
+  flex: 1 1 16rem;
+}
+.filter-bar .inline-field {
+  flex: 0 1 11rem;
+}
+.filter-bar .seg {
+  flex: 0 0 auto;
+}
+.filter-bar .seg-options {
+  grid-auto-columns: auto;
+}
+
+.results-meta {
+  margin: 0 0 var(--space-md);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+.catalog-results {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.catalog-results[aria-busy="true"] .module-list {
+  opacity: 0.45;
+}
+.module-list {
+  transition: opacity var(--dur-short) var(--ease-out);
+}
+
+/* —— Notice (the result of an action) —— */
+.module-preselect-banner,
+.notice {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  border-left: 2px solid var(--color-info);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: color-mix(in oklab, var(--color-info) 7%, var(--color-paper-2));
+}
+.module-preselect-banner .toolbar {
+  align-items: end;
+}
+.module-preselect-banner .field {
+  flex: 1 1 14rem;
+}
+
+/* —— Module rows —— */
+.module-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-rule);
+  list-style: none;
+}
+.module-row {
+  --plate-track: calc(48 * var(--hp-px));
+  display: grid;
+  grid-template-columns: var(--plate-track) minmax(0, 1fr) 4.5rem 3.5rem auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: var(--space-xs) var(--space-lg);
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-rule);
+  transition: background-color var(--dur-short) var(--ease-out);
+  animation: row-in var(--dur-short) var(--ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 16) * 24ms);
+}
+.module-row:hover,
+.module-row:focus-within {
+  background: linear-gradient(90deg, transparent, var(--color-paper-2) 8rem);
+}
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The mockup holds the plate and the module's identity on the row's own tracks; its label names both */
+.module-row .module-mockup {
+  display: grid;
+  grid-column: 1 / 3;
+  grid-row: 1 / 3;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+  align-items: center;
+  min-width: 0;
+}
+.module-mockup .mockup-plate {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  justify-self: end;
+}
+.module-mockup .mockup-face {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+}
+.module-row__chips {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: start;
+}
+.module-row .catalog-card-meta {
+  grid-column: 3;
+  grid-row: 1 / 3;
+}
+.module-row__hp {
+  grid-column: 4;
+  grid-row: 1 / 3;
+}
+.module-row__actions {
+  grid-column: 5;
+  grid-row: 1 / 3;
+}
+
+/* —— The faceplate, drawn to HP —— */
+.mockup-plate {
+  position: relative;
+  width: min(calc(var(--hp, 4) * var(--hp-px)), 100%);
+  min-width: calc(2 * var(--hp-px));
+  height: var(--u3-px);
+  container-type: inline-size;
+  border: 1px solid var(--color-rule-strong);
+  border-radius: var(--radius-plate);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--color-ink) 6%, transparent),
+      transparent 30%,
+      transparent 70%,
+      color-mix(in oklab, var(--color-paper) 30%, transparent)
+    ),
+    var(--color-plate-face);
+  transition:
+    border-color var(--dur-short) var(--ease-out),
+    transform var(--dur-short) var(--ease-out);
+}
+@container (max-width: 14px) {
+  .mockup-plate .mockup-ports {
+    display: none;
+  }
+}
+/* The header band: amber sources, cyan shapers, titanium utilities (design.md) */
+.mockup-plate::before {
+  position: absolute;
+  top: 5px;
+  right: 1px;
+  left: 1px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--cat-color, var(--color-muted));
+  content: "";
+  opacity: 0.85;
+}
+/* Mounting screws, top and bottom */
+.mockup-plate::after {
+  position: absolute;
+  top: 9px;
+  bottom: 2px;
+  left: 50%;
+  width: 4px;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(circle at 50% 2px, var(--color-screw) 1.5px, transparent 2px) top / 4px 4px
+      no-repeat,
+    radial-gradient(circle at 50% 2px, var(--color-screw) 1.5px, transparent 2px) bottom / 4px 4px
+      no-repeat;
+  content: "";
+}
+.mockup-plate .mockup-ports {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translateX(-50%);
+  border: 1.5px solid var(--color-muted);
+  border-radius: 50%;
+  background: var(--color-paper);
+}
+.module-mockup[data-hp="unknown"] .mockup-plate {
+  --hp: 12;
+  border-style: dashed;
+  border-right-color: transparent;
+  background: transparent;
+}
+.module-mockup[data-hp="unknown"] .mockup-plate::after,
+.module-mockup[data-hp="unknown"] .mockup-ports {
+  display: none;
+}
+.module-mockup[data-wide="true"] .mockup-plate {
+  border-right-style: dashed;
+}
+.module-row:hover .mockup-plate,
+.module-row:focus-within .mockup-plate {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.module-mockup {
+  --cat-color: var(--zs-titanium);
+}
+.module-mockup[data-category="VCO"],
+.module-mockup[data-category="VCA"],
+.module-mockup[data-category="ENV"],
+.module-mockup[data-category="SAMP"],
+.module-mockup[data-category="DRUM"] {
+  --cat-color: var(--ph-amber);
+}
+.module-mockup[data-category="VCF"],
+.module-mockup[data-category="LFO"],
+.module-mockup[data-category="SEQ"],
+.module-mockup[data-category="FX"] {
+  --cat-color: var(--ph-cyan);
+}
+
+.mockup-face {
+  display: grid;
+  gap: var(--space-3xs);
+  align-self: start;
+  min-width: 0;
+  padding-top: var(--space-2xs);
+}
+.mockup-brand {
+  overflow: hidden;
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mockup-name {
+  overflow: hidden;
+  color: var(--color-ink);
+  font: 600 var(--text-md) / 1.25 var(--font-display);
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.module-row .catalog-card-meta {
+  margin: 0;
+  color: var(--color-ink-2);
+  font: 500 var(--text-xs) / 1 var(--font-mono);
+}
+.module-row__hp {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: var(--space-3xs);
+  margin: 0;
+}
+.hp-num {
+  color: var(--color-ink);
+  font: 500 var(--text-lg) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.hp-label {
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+.module-row__chips {
+  padding-bottom: var(--space-2xs);
+}
+.module-row__chips .status-chip {
+  min-height: 20px;
+}
+.module-row__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-xs);
+}
+.module-row__actions .button {
+  min-height: 34px;
+  padding: 0 var(--space-sm);
+}
+.module-row__actions .button::before {
+  inset: -5px 0;
+}
+
+/* In a list, the row's primary action waits as an outline and fills when the row is in hand */
+.app-shell .module-row .button-primary,
+.app-shell .catalog-card .button-primary {
+  border-color: color-mix(in oklab, var(--color-accent) 60%, var(--color-rule));
+  color: var(--color-accent-text);
+  background: transparent;
+}
+.app-shell .module-row:hover .button-primary:not(:disabled),
+.app-shell .module-row:focus-within .button-primary:not(:disabled),
+.app-shell .catalog-card:hover .button-primary:not(:disabled),
+.app-shell .catalog-card:focus-within .button-primary:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  background: var(--color-accent);
+}
+.app-shell .module-row .button-quiet,
+.app-shell .catalog-card .button-quiet {
+  border-color: transparent;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding-top: var(--space-md);
+}
+
+/* Loading: rows in the shape of what is coming */
+.module-skeleton {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-rule);
+  list-style: none;
+}
+.module-skeleton li {
+  display: grid;
+  grid-template-columns: calc(48 * var(--hp-px)) minmax(0, 1fr);
+  gap: var(--space-lg);
+  align-items: center;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+.module-skeleton .skeleton:first-child {
+  width: calc(var(--w, 8) * var(--hp-px));
+  height: var(--u3-px);
+}
+.module-skeleton .skeleton:last-child {
+  width: min(22rem, 70%);
+  height: 14px;
+}
+
+/* —— Cards (cases, patches, rig modules) —— */
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(21rem, 100%), 1fr));
+  gap: var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.catalog-card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-sm);
+  min-width: 0;
+  padding: var(--space-lg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--color-paper-2);
+  transition: border-color var(--dur-short) var(--ease-out);
+}
+.catalog-card:hover,
+.catalog-card:focus-within {
+  border-color: var(--color-rule-strong);
+}
+.catalog-card h2,
+.catalog-card h3 {
+  margin: 0;
+  max-width: none;
+  color: var(--color-ink);
+  font-size: var(--text-lg);
+  line-height: 1.2;
+}
+.catalog-card-meta {
+  margin: 0;
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+}
+.catalog-card .page-hero-actions {
+  margin-top: var(--space-xs);
+}
+.catalog-card .status-chip {
+  min-height: 22px;
+}
+
+/* A case's stated capacity, drawn as its rail */
+.capacity-rail {
+  display: grid;
+  gap: var(--space-2xs);
+}
+.capacity-rail__track {
+  position: relative;
+  height: var(--u3-px);
+}
+.capacity-rail__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: grid;
+  place-items: center;
+  width: min(calc(var(--cap, 84) * var(--hp-px)), 100%);
+  overflow: hidden;
+  border-radius: var(--radius-plate);
+  background: var(--color-paper);
+  box-shadow: inset 0 0 0 1px var(--color-rule-strong);
+  transform-origin: left center;
+  animation: rail-fill var(--dur-long) var(--ease-out) both;
+  transition: box-shadow var(--dur-short) var(--ease-out);
+}
+.capacity-rail__fill::before,
+.capacity-rail__fill::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 8px;
+  background: linear-gradient(
+    color-mix(in oklab, var(--color-muted) 42%, var(--color-paper-3)),
+    color-mix(in oklab, var(--color-muted) 22%, var(--color-paper-3))
+  );
+  content: "";
+}
+.capacity-rail__fill::before {
+  top: 0;
+}
+.capacity-rail__fill::after {
+  bottom: 0;
+}
+.capacity-rail[data-wide="true"] .capacity-rail__fill {
+  border-radius: var(--radius-plate) 0 0 var(--radius-plate);
+  mask-image: linear-gradient(90deg, var(--zs-carbon) 85%, transparent);
+}
+.capacity-rail__hp {
+  position: relative;
+  color: var(--color-muted);
+  font: 500 var(--text-xs) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.catalog-card:hover .capacity-rail__fill,
+.catalog-card:focus-within .capacity-rail__fill {
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+@keyframes rail-fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+.capacity-rail__caption {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-muted);
+  font: 400 var(--text-xs) / 1.2 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.case-specs {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-2xs) var(--space-md);
+  margin: 0;
+  font-size: var(--text-sm);
+}
+.case-specs dt {
+  color: var(--color-muted);
+}
+.case-specs dd {
+  margin: 0;
+  color: var(--color-ink-2);
+}
+
+.filter-bar .case-min-capacity {
+  flex: 0 0 7rem;
+}
+.case-confidence {
+  font-size: var(--text-sm);
+}
+
+/* —— Registry —— */
+.registry-page {
+  display: grid;
+  gap: var(--space-lg);
+}
+.registry-search-list,
+.registry-model-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-rule);
+  list-style: none;
+}
+.registry-search-list li,
+.registry-model-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--color-rule);
+  font-size: var(--text-sm);
+}
+.registry-detail {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-xs) var(--space-lg);
+  margin: 0;
+}
+.registry-detail div {
+  display: contents;
+}
+.registry-detail dt {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+.registry-detail dd {
+  margin: 0;
+}
+
+@media (max-width: 72rem) {
+  .module-row {
+    grid-template-columns: var(--plate-track) minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto;
+  }
+  .module-row .module-mockup {
+    grid-row: 1 / 4;
+  }
+  .module-mockup .mockup-plate {
+    grid-row: 1 / 4;
+  }
+  .module-row .catalog-card-meta {
+    display: none;
+  }
+  .module-row__hp {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .module-row__actions {
+    grid-column: 2 / 4;
+    grid-row: 3;
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 60rem) {
+  .catalog-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .filter-rail {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    grid-template-columns: repeat(auto-fill, minmax(min(9.5rem, 100%), 1fr));
+    gap: var(--space-sm);
+  }
+  .filter-rail .seg,
+  .filter-rail .field,
+  .filter-rail .filter-chip-row {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 40rem) {
+  .module-row {
+    --plate-track: calc(32 * var(--hp-px));
+    gap: var(--space-xs) var(--space-sm);
+  }
+  .module-row__actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .module-row,
+  .capacity-rail__fill {
+    animation: none;
+  }
+  .mockup-plate,
+  .module-list,
+  .catalog-card {
+    transition: none;
+  }
+  .module-row:hover .mockup-plate,
+  .module-row:focus-within .mockup-plate {
+    transform: none;
+  }
+}

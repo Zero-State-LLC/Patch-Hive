@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { canonApi, exportApi, patchApi, rackApi, runApi } from "@/lib/api";
 import { filenameFromDisposition, saveBlob } from "@/lib/download";
 import { useAuthStore } from "@/lib/store";
+import RigRail from "@/components/RigRail";
 import type { CompatibilityResponse, Patch, Rack, Run } from "@/types/api";
 import { rigDetailToRack, rigSummaryToRack } from "@/lib/canonRigAdapter";
 import {
@@ -365,16 +367,17 @@ export default function RacksPage() {
                     </div>
                   </div>
                   {selectedRack.case ? (
-                    <p className="muted" style={{ marginBottom: 0, marginTop: "var(--space-3)" }}>
+                    <p className="muted">
                       Case: {selectedRack.case.brand} {selectedRack.case.name}
                       {selectedRack.case.catalog_slug
-                        ? ` · catalog ${selectedRack.case.catalog_slug}`
-                        : " · not linked to normalized catalog"}
+                        ? `, catalog ${selectedRack.case.catalog_slug}`
+                        : ", not linked to normalized catalog"}
                       {selectedRack.case.total_hp != null
-                        ? ` · ${selectedRack.case.total_hp}HP`
+                        ? `, ${selectedRack.case.total_hp}HP`
                         : ""}
                     </p>
                   ) : null}
+                  <RigRail rack={selectedRack} />
                   {selectedRack.modules.length > 0 ? (
                     <div
                       className="power-rail-panel"
@@ -385,11 +388,11 @@ export default function RacksPage() {
                         Power known on <strong>{inventoryPower.known}</strong>/
                         {selectedRack.modules.length} modules
                         {inventoryPower.unknown
-                          ? ` · ${inventoryPower.unknown} unknown (not assumed)`
+                          ? `, ${inventoryPower.unknown} unknown (not assumed)`
                           : ""}
                       </p>
                       {selectedRack.case ? (
-                        <div className="gate-chip-row" style={{ marginTop: "var(--space-2)" }}>
+                        <div className="power-rail-meters" aria-label="Inventory power rails">
                           {(
                             [
                               {
@@ -417,10 +420,27 @@ export default function RacksPage() {
                                   : r.cap > 0 && r.draw / r.cap >= 0.85
                                     ? "warning"
                                     : "success";
+                            const fill =
+                              r.cap == null || r.cap <= 0 ? 0 : Math.min(1, r.draw / r.cap);
                             return (
-                              <span key={r.rail} className={`status-chip status-chip--${tone}`}>
-                                {r.rail} {r.cap == null ? `${r.draw}mA` : `${r.draw}/${r.cap}mA`}
-                              </span>
+                              <div key={r.rail} className="power-rail-meters__row">
+                                <span className={`status-chip status-chip--${tone}`}>
+                                  {r.rail} {r.cap == null ? `${r.draw}mA` : `${r.draw}/${r.cap}mA`}
+                                </span>
+                                <div
+                                  className="usage-bar"
+                                  role="meter"
+                                  aria-valuemin={0}
+                                  aria-valuemax={r.cap ?? 0}
+                                  aria-valuenow={r.draw}
+                                  aria-label={`${r.rail} inventory draw`}
+                                >
+                                  <div
+                                    className={`usage-bar__fill usage-bar__fill--${tone}`}
+                                    style={{ "--fill": fill } as CSSProperties}
+                                  />
+                                </div>
+                              </div>
                             );
                           })}
                         </div>
@@ -447,7 +467,7 @@ export default function RacksPage() {
                     <>
                       <p>
                         Bridge: <strong>{compat.bridge_status}</strong>
-                        {compat.catalog_slug ? ` · ${compat.catalog_slug}` : ""}
+                        {compat.catalog_slug ? ` (${compat.catalog_slug})` : ""}
                       </p>
                       <p className="muted">{compat.message}</p>
                       {compat.compatibility ? (
@@ -489,13 +509,13 @@ export default function RacksPage() {
                           </div>
                           {compat.compatibility.overall_status === "incomplete" ? (
                             <p className="muted" style={{ fontSize: "0.9rem" }}>
-                              Soft gaps only: missing power/depth/case rails stay missing (never
-                              invented).
+                              Soft gaps only: missing power, depth or case rails stay missing, never
+                              invented.
                             </p>
                           ) : null}
                           {compat.compatibility.overall_status === "conflict" ? (
                             <p className="status status-danger" style={{ fontSize: "0.9rem" }}>
-                              Hard fail: overflow, connectors, or rail over budget.
+                              Hard fail: overflow, connectors, or a rail over budget.
                             </p>
                           ) : null}
                           {compat.compatibility.warnings?.length ? (
@@ -503,7 +523,7 @@ export default function RacksPage() {
                               {compat.compatibility.warnings.length} soft warning
                               {compat.compatibility.warnings.length === 1 ? "" : "s"}
                               {compat.compatibility.warnings[0]?.code
-                                ? ` · e.g. ${compat.compatibility.warnings[0].code}`
+                                ? `, e.g. ${compat.compatibility.warnings[0].code}`
                                 : ""}
                             </p>
                           ) : null}
@@ -530,9 +550,9 @@ export default function RacksPage() {
                                 <li key={r.rail}>
                                   {r.rail}: {r.status}
                                   {r.unknown_draw_count
-                                    ? ` · ${r.message}`
+                                    ? `. ${r.message}`
                                     : r.headroom_ma != null
-                                      ? ` · headroom ${r.headroom_ma}mA`
+                                      ? `, headroom ${r.headroom_ma}mA`
                                       : ""}
                                 </li>
                               ))}
@@ -639,7 +659,7 @@ export default function RacksPage() {
                     >
                       {runs.map((run) => (
                         <option key={run.id} value={run.id}>
-                          Run #{run.id} · {run.created_at}
+                          Run #{run.id}, {run.created_at}
                         </option>
                       ))}
                     </select>
@@ -654,7 +674,7 @@ export default function RacksPage() {
                         {patch.suggested_name || "Suggested name missing"}
                       </p>
                       <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>
-                        {patch.category} · {difficultyFromConnections(patch)} · weirdness{" "}
+                        {patch.category}, {difficultyFromConnections(patch)}, weirdness{" "}
                         {weirdnessFromConnections(patch)}
                       </p>
                       <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.9rem" }}>
@@ -708,16 +728,16 @@ export default function RacksPage() {
                   <article key={module.id} className="catalog-card">
                     <h3>{module.module?.name || "Unknown module"}</h3>
                     <p className="catalog-card-meta">
-                      {module.module?.brand || "Unknown brand"} ·{" "}
-                      {module.module?.module_type || "unknown"} · {module.module?.hp ?? "unknown"}HP
+                      {module.module?.brand || "Unknown brand"},{" "}
+                      {module.module?.module_type || "type unknown"}, {module.module?.hp ?? "?"}HP
                       {module.module?.depth_mm != null
-                        ? ` · depth ${module.module.depth_mm}mm`
-                        : " · depth unspecified"}
+                        ? `, depth ${module.module.depth_mm}mm`
+                        : ", depth unspecified"}
                     </p>
                     <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>
-                      Row {module.row_index} · start HP {module.start_hp}
+                      Row {module.row_index}, start HP {module.start_hp}
                       {module.module?.power_12v_ma != null
-                        ? ` · +12 ${module.module.power_12v_ma}mA`
+                        ? `, +12 ${module.module.power_12v_ma}mA`
                         : ""}
                     </p>
                   </article>
@@ -752,7 +772,7 @@ export default function RacksPage() {
           </div>
         ) : selectedRackId !== null ? (
           <div className="panel" aria-busy="true">
-            <p className="muted">Loading rig details...</p>
+            <p className="muted">Loading rig details…</p>
           </div>
         ) : (
           <div className="panel">

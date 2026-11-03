@@ -76,11 +76,8 @@ export default function LoginPage() {
     <section className="auth-page" aria-labelledby={`${formId}-title`}>
       <div className="auth-shell">
         <aside className="auth-brand panel" aria-label="Product identity">
-          <div className="auth-brand-grid" aria-hidden="true" />
           <div className="auth-brand-photo" aria-hidden="true" />
-          <p className="home-brand" style={{ fontSize: "clamp(2rem, 5vw, 3rem)" }}>
-            PatchHive
-          </p>
+          <p className="auth-brand-mark">PatchHive</p>
           <h1 id={`${formId}-title`} className="auth-brand-title">
             Enter the hive
           </h1>
@@ -95,7 +92,7 @@ export default function LoginPage() {
             <li>Style Studio design recipes</li>
           </ul>
           <p className="auth-brand-foot muted">
-            A Zero State product, designed and engineered for signal clarity
+            A Zero State product, designed and engineered for signal clarity.
           </p>
         </aside>
 
@@ -247,7 +244,7 @@ export default function LoginPage() {
             ) : null}
 
             <p className="auth-back muted">
-              <Link to="/">← Back to workspace home</Link>
+              <Link to="/">Back to workspace home</Link>
             </p>
           </div>
         ) : (
@@ -255,7 +252,7 @@ export default function LoginPage() {
             <h2 className="auth-card-title">Accounts are not open yet</h2>
             <p className="muted">Sign-in opens when the PatchHive service goes live.</p>
             <p className="auth-back muted">
-              <Link to="/">← Back to workspace home</Link>
+              <Link to="/">Back to workspace home</Link>
             </p>
           </div>
         )}

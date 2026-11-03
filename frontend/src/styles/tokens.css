@@ -1,0 +1,185 @@
+/* PatchHive · Cyber Hive tokens. Brand values from design.md and docs/brand/design-tokens.cyber-hive.json. */
+:root {
+  /* Brand primitives (locked) */
+  --zs-carbon: #08090b;
+  --zs-graphite: #111318;
+  --zs-panel: #1a1d24;
+  --zs-border: #2a2f3a;
+  --zs-titanium: #8b919c;
+  --zs-gunmetal: #4a5160;
+  --ph-amber: #f5a623;
+  --ph-honey: #d4891a;
+  --ph-copper: #b87333;
+  --ph-cyan: #3ddcff;
+  --ph-emerald: #00c896;
+  --ph-violet: #7b61ff;
+  --ph-danger: #e23d4a;
+  --ph-warn: #ff8a3d;
+
+  /* Faces */
+  --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-ui: var(--font-body);
+  --font-outlier: var(--font-mono);
+
+  /* Spacing: Hallmark scale, with the project's numbered aliases */
+  --space-3xs: 2px;
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+  --space-4xl: 144px;
+  --space-1: var(--space-2xs);
+  --space-2: var(--space-xs);
+  --space-3: var(--space-sm);
+  --space-4: var(--space-md);
+  --space-5: var(--space-lg);
+  --space-6: 32px;
+  --space-8: 48px;
+
+  /* Type: app scale at 1.2 from a 16px body; the home fold takes the poster size */
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.2rem;
+  --text-xl: 1.44rem;
+  --text-2xl: 1.728rem;
+  --text-3xl: 2.074rem;
+  --text-display: var(--text-3xl);
+  --text-display-s: var(--text-2xl);
+  --text-section: var(--text-xl);
+  --text-title: var(--text-lg);
+  --text-lead: var(--text-md);
+  --text-poster: clamp(3.5rem, 7.5vw, 6rem);
+  --tracking-display: -0.03em;
+  --display-weight: 600;
+
+  /* Motion: state, never decoration */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+  --motion-fast: var(--dur-micro);
+  --motion-med: var(--dur-short);
+
+  /* Layout */
+  --container: 1440px;
+  --gutter: 40px;
+  --gap-columns: 24px;
+  --header-height: 60px;
+  --z-base: 1;
+  --z-raised: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-sticky-nav: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  /* Shape (design.md: card 18, control 10, chips squared; module plates are metal) */
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 18px;
+  --radius-card: var(--radius-md);
+  --radius-input: var(--radius-sm);
+  --radius-chip: 6px;
+  --radius-plate: 3px;
+  --radius-pill: 999px;
+  --rule-hair: 1px;
+
+  /* Eurorack geometry, true to proportion: 1 HP is 5.08 mm, a 3U panel 128.5 mm (25.3 HP) tall */
+  --hp-px: 2.5px;
+  --u3-px: calc(25.3 * var(--hp-px));
+
+  /* Dark (default) */
+  --color-paper: var(--zs-carbon);
+  --color-paper-2: var(--zs-graphite);
+  --color-paper-3: var(--zs-panel);
+  --color-paper-4: #22262e;
+  --color-ink: #e8ecf0;
+  --color-ink-2: #b4bac4;
+  --color-muted: var(--zs-titanium);
+  --color-rule: var(--zs-border);
+  --color-rule-strong: var(--zs-gunmetal);
+  --color-field-edge: #646b7a;
+  --color-accent: var(--ph-amber);
+  --color-accent-ink: #191306;
+  --color-accent-text: var(--ph-amber);
+  --color-focus: var(--ph-amber);
+  --color-info: var(--ph-cyan);
+  --color-success: var(--ph-emerald);
+  --color-warning: var(--ph-warn);
+  --color-error: var(--ph-danger);
+  --color-plate: #c9ced6;
+  --color-plate-face: #2b3039;
+  /* Text on the brand's carbon photo surfaces, the same in both themes */
+  --color-on-dark: #e8ecf0;
+  --color-on-dark-2: #b4bac4;
+  --color-plate-ink: #15181e;
+  --color-screw: #6b7280;
+  --shadow-lift: 0 6px 18px -8px rgb(0 0 0 / 60%);
+  --shadow-card: none;
+}
+
+/* Project aliases kept for components that read them inline. Declared on the shell as well as
+   :root, so they resolve against the theme block's colour overrides instead of the dark defaults. */
+:root,
+.app-shell {
+  --surface-canvas: var(--color-paper);
+  --surface-panel: var(--color-paper-2);
+  --surface-raised: var(--color-paper-3);
+  --surface-inset: var(--color-paper);
+  --text-primary: var(--color-ink);
+  --text-secondary: var(--color-ink-2);
+  --text-muted: var(--color-muted);
+  --border: var(--color-rule);
+  --border-strong: var(--color-rule-strong);
+  --action: var(--color-accent);
+  --action-contrast: var(--color-accent-ink);
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --danger: var(--color-error);
+  --info: var(--color-info);
+  --focus: 0 0 0 2px var(--color-focus);
+  --module-source: var(--ph-amber);
+  --module-shaper: var(--ph-cyan);
+  --module-controller: var(--zs-titanium);
+  --module-utility: var(--zs-gunmetal);
+  --cable-audio: var(--ph-amber);
+  --cable-cv: var(--ph-cyan);
+  --cable-gate: var(--zs-titanium);
+}
+
+/* Light: cool graphite paper with amber action (design.md), never cream */
+.app-shell[data-theme="light"] {
+  --color-paper: #e9ebef;
+  --color-paper-2: #f4f5f7;
+  --color-paper-3: #fcfcfd;
+  --color-paper-4: #dfe2e7;
+  --color-ink: #12151a;
+  --color-ink-2: #3d4450;
+  --color-muted: #5e6573;
+  --color-rule: #c5cad3;
+  --color-rule-strong: #8b919c;
+  --color-field-edge: #7d8390;
+  --color-accent-text: #8a5200;
+  --color-focus: #b8700a;
+  --color-success: #0a7d5e;
+  --color-warning: #b4530f;
+  --color-error: #c2303a;
+  --color-info: #0a6f8a;
+  --color-plate: #d8dce2;
+  --color-plate-face: #f7f8fa;
+  --color-plate-ink: #15181e;
+  --color-screw: #8b919c;
+  --shadow-lift: 0 6px 18px -10px rgb(18 21 26 / 30%);
+  --surface-inset: var(--color-paper-4);
+}

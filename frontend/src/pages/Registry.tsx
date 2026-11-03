@@ -169,7 +169,7 @@ export default function RegistryPage() {
                   </div>
                 ) : null}
               </dl>
-              <h3 style={{ marginTop: "var(--space-5)" }}>Models (sample)</h3>
+              <h3>Models (sample)</h3>
               {(selected.models || []).length === 0 ? (
                 <p className="muted">No models loaded for this manufacturer yet.</p>
               ) : (

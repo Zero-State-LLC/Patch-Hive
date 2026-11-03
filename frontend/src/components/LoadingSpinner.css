@@ -126,8 +126,8 @@
 /* Loading message */
 .loading-message {
   color: var(--action);
-  font-family: var(--font-ui);
-  font-size: 0.875rem;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
   animation: message-fade 2s ease-in-out infinite;
 }
 
