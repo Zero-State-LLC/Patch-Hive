@@ -423,6 +423,184 @@ div.rack-row-map__block {
   list-style: none;
 }
 
+/* —— Rig detail: the patch path from inventory to book —— */
+.rig-tabpanel {
+  display: grid;
+  gap: var(--space-xl);
+}
+.rig-tabpanel__head {
+  display: grid;
+  gap: var(--space-xs);
+}
+.rig-receipt {
+  margin-bottom: var(--space-lg);
+}
+.rig-source {
+  flex-wrap: nowrap;
+}
+.rig-source .field {
+  width: 18rem;
+}
+.rig-tabpanel .readout {
+  margin: 0;
+}
+.rig-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+.rig-patch-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rig-export-actions {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-xs);
+}
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--text-sm);
+}
+.check-row input {
+  accent-color: var(--color-accent);
+}
+
+/* Three stages on one cable; the lit length runs to the jack the rig is plugged into */
+.signal-chain {
+  --jack: 22px;
+  --cable: 3px;
+  --reach: 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-lg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.signal-chain::before,
+.signal-chain::after {
+  position: absolute;
+  top: calc(var(--jack) / 2 - var(--cable) / 2);
+  right: calc((100% - 2 * var(--space-lg)) / 3 - var(--jack) / 2);
+  left: calc(var(--jack) / 2);
+  height: var(--cable);
+  border-radius: var(--cable);
+  content: "";
+}
+.signal-chain::before {
+  background: var(--color-cable-off);
+}
+/* Moves only when the rig reaches a new stage */
+.signal-chain::after {
+  background: var(--color-signal);
+  transform: scaleX(var(--reach));
+  transform-origin: left center;
+  transition: transform var(--dur-long) var(--ease-out);
+}
+.signal-chain__stage {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--space-2xs);
+  padding-top: calc(var(--jack) + var(--space-md));
+}
+/* A patch point: a ring around a dark socket. The lead is plugged in at the current stage. */
+.signal-chain__jack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: var(--z-base);
+  width: var(--jack);
+  height: var(--jack);
+  border: 2px solid var(--color-cable-off);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--zs-carbon) 0 4px, var(--color-paper-3) 4.5px);
+}
+.signal-chain__jack::after {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--color-signal);
+  content: "";
+  opacity: 0;
+  transition: opacity var(--dur-short) var(--ease-out);
+}
+.signal-chain__stage[data-state="done"] .signal-chain__jack,
+.signal-chain__stage[data-state="current"] .signal-chain__jack {
+  border-color: var(--color-signal);
+}
+.signal-chain__stage[data-state="current"] .signal-chain__jack::after {
+  opacity: 1;
+}
+.signal-chain__title {
+  color: var(--color-ink);
+  font: 600 var(--text-lg) / 1.2 var(--font-display);
+  letter-spacing: -0.015em;
+}
+.signal-chain__stage[data-state="todo"] .signal-chain__title {
+  color: var(--color-ink-2);
+}
+.signal-chain__state {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+.signal-chain__stage[data-state="current"] .signal-chain__state {
+  color: var(--color-accent-text);
+}
+.signal-chain__stage[data-state="done"] .signal-chain__state {
+  color: var(--color-success);
+}
+.signal-chain__detail {
+  max-width: 36ch;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+@media (max-width: 60rem) {
+  .rig-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rig-source {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 45rem) {
+  .signal-chain {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .signal-chain::before,
+  .signal-chain::after {
+    display: none;
+  }
+  .signal-chain__stage {
+    padding-top: 0;
+    padding-left: calc(var(--jack) + var(--space-md));
+  }
+  .signal-chain__detail {
+    display: none;
+  }
+  /* Stacked, each stage runs its own length of cable down to the next jack */
+  .signal-chain__stage:not(:last-child)::after {
+    position: absolute;
+    top: var(--jack);
+    bottom: calc(-1 * var(--space-lg));
+    left: calc(var(--jack) / 2 - 1px);
+    width: 2px;
+    background: var(--color-rule-strong);
+    content: "";
+  }
+  .signal-chain__stage[data-state="done"]:not(:last-child)::after {
+    background: var(--color-accent);
+  }
+}
+
 @media (max-width: 45rem) {
   .builder-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -438,6 +616,10 @@ div.rack-row-map__block {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .signal-chain::after,
+  .signal-chain__jack::after {
+    transition: none;
+  }
   .usage-bar__fill,
   .rack-row-map__block {
     animation: none;

@@ -242,6 +242,11 @@ code {
 .app-shell .button-primary:hover:not(:disabled) {
   background: var(--ph-honey);
 }
+.app-shell .button-primary:disabled {
+  border-color: var(--color-rule);
+  color: var(--color-muted);
+  background: var(--color-paper-3);
+}
 .app-shell .button-secondary {
   color: var(--color-ink);
   background: var(--color-paper-3);
