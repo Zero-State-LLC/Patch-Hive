@@ -117,7 +117,7 @@ describe("Racks deep links", () => {
     renderAt("/racks/8?tab=patches&patch=502");
 
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Travel rig" }),
+      await screen.findByRole("heading", { level: 2, name: "Travel rig" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Travel rig/ })).toHaveAttribute(
       "aria-current",
@@ -140,7 +140,7 @@ describe("Racks deep links", () => {
 
   it("moves a bare /racks to the first rig without adding a history entry", async () => {
     renderAt("/racks");
-    expect(await screen.findByRole("heading", { level: 1, name: "Bench rig" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 2, name: "Bench rig" })).toBeInTheDocument();
     await expectUrl("/racks/7");
   });
 
@@ -157,6 +157,6 @@ describe("Racks deep links", () => {
 
     await user.click(screen.getByRole("button", { name: /Bench rig/ }));
     await expectUrl(/^\/racks\/7$/);
-    expect(await screen.findByRole("heading", { level: 1, name: "Bench rig" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 2, name: "Bench rig" })).toBeInTheDocument();
   });
 });

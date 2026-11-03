@@ -92,7 +92,7 @@ export default function RegistryPage() {
 
       {searchResults.length > 0 ? (
         <div className="panel">
-          <h3>Model search</h3>
+          <h2>Model search</h2>
           <ul className="registry-search-list">
             {searchResults.map((r, i) => (
               <li key={`${r.brand}-${r.name}-${i}`}>

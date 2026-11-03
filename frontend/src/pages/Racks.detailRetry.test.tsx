@@ -84,7 +84,7 @@ describe("Racks page rig detail load", () => {
     await waitFor(() => expect(api.getRig).toHaveBeenCalledTimes(2));
     expect(api.getRig).toHaveBeenLastCalledWith(7);
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Golden Rig" }),
+      await screen.findByRole("heading", { level: 2, name: "Golden Rig" }),
     ).toBeInTheDocument();
     expect(
       screen.queryByText("Unable to load rig details. Please try again."),

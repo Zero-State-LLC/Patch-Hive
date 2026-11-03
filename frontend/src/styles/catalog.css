@@ -450,8 +450,15 @@
 .catalog-card:focus-within {
   border-color: var(--color-rule-strong);
 }
+.catalog-card h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--tracking-display);
+}
 .catalog-card h2,
-.catalog-card h3 {
+.catalog-card h3,
+.catalog-card h4 {
   margin: 0;
   max-width: none;
   color: var(--color-ink);

@@ -544,6 +544,11 @@ div.rack-row-map__block {
 .patch-detail .patch-notes {
   max-width: 65ch;
 }
+/* Racks' Overview tab: its blocks stacked */
+.rack-tabpanel {
+  display: grid;
+  gap: var(--space-5);
+}
 .rig-placed {
   display: grid;
   gap: var(--space-sm);

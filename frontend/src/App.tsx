@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter, NavLink, Route, Routes, useLocation } from "react-router-dom";
 import { RouteErrorBoundary } from "@/components/ErrorBoundary";
+import PrimaryNav from "@/components/PrimaryNav";
 import RouteEffects from "@/components/RouteEffects";
 import { ListSkeleton } from "@/components/Skeletons";
 import { restoreSession, signOut } from "@/lib/session";
@@ -135,15 +136,7 @@ function App() {
             <span aria-hidden="true" className="wordmark-mark" />
             <span>PatchHive</span>
           </NavLink>
-          <nav className="primary-nav" aria-label="Primary navigation">
-            <NavLink to="/racks">Rigs</NavLink>
-            <NavLink to="/modules">Modules</NavLink>
-            <NavLink to="/products">Products</NavLink>
-            <NavLink to="/cases">Cases</NavLink>
-            <NavLink to="/patches">Patches</NavLink>
-            {isAuthenticated() && <NavLink to="/account">Account</NavLink>}
-            {canSeeAdmin ? <NavLink to="/admin">Ops</NavLink> : null}
-          </nav>
+          <PrimaryNav signedIn={isAuthenticated()} canSeeAdmin={Boolean(canSeeAdmin)} />
           <div className="header-actions">
             <button
               className="button button-quiet"
