@@ -1,3 +1,5 @@
+/* Hallmark · rig screens · the full stamp heads src/index.css */
+/* Hallmark · dismissed 49 · every .button sets white-space: nowrap in shell.css, so the long builder labels never wrap */
 /* Rig screens: the builder's steps, its rail rows, HP and power meters, evidence review */
 
 /* —— Steps —— */
@@ -6,7 +8,9 @@
   flex-wrap: wrap;
   gap: 0;
   margin: 0 0 var(--space-xl);
+  padding: 0;
   border-bottom: 1px solid var(--color-rule);
+  list-style: none;
   counter-reset: step;
 }
 .step-progress__item {
@@ -71,6 +75,72 @@
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
 }
 
+/* —— Builder layout: one section per step, each a heading over its wells —— */
+.builder-flow {
+  display: grid;
+  gap: var(--space-xl);
+}
+.builder-step {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.builder-step__head {
+  display: grid;
+  gap: var(--space-xs);
+}
+.builder-step__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs) var(--space-sm);
+}
+.builder-toolbar .field {
+  flex: 1 1 12rem;
+}
+.builder-toolbar .field--wide {
+  flex: 2 1 14rem;
+}
+.builder-toolbar .field--num {
+  flex: 0 0 7rem;
+}
+.builder-note {
+  font-size: var(--text-sm);
+}
+.builder-admin {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs) var(--space-md);
+}
+.builder-rig-line strong {
+  color: var(--color-ink);
+}
+.builder-gate-table td {
+  overflow-wrap: anywhere;
+}
+/* Divides choosing the case from creating the rig, inside one well */
+.section-rule {
+  width: 100%;
+  margin: var(--space-sm) 0;
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+}
+/* The summary states facts in words, so it reads in the body face, not the meter figures */
+.case-summary .stat-block h3 {
+  font: 500 var(--text-md) / 1.3 var(--font-body);
+  letter-spacing: 0;
+}
+.builder-retired ul,
+.builder-warnings ul {
+  margin: var(--space-xs) 0 0;
+  padding-left: var(--space-lg);
+}
+.builder-gates {
+  margin: 0;
+  padding-left: var(--space-lg);
+}
+
 /* —— Meters: HP per row, power per rail —— */
 .hp-usage {
   display: grid;
@@ -129,8 +199,26 @@
   background: var(--color-rule-strong);
 }
 
-.power-rail-meters__row > .status-chip {
-  justify-self: start;
+/* A rail reads as its figure first; the note under the bar says what the figure leaves out */
+.power-meter__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+.power-meter__figure {
+  color: var(--color-ink);
+  font: 500 var(--text-lg) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.power-meter__bar {
+  height: 10px;
+}
+.power-meter__note {
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+  line-height: 1.4;
 }
 .power-rail-panel {
   display: grid;
@@ -195,6 +283,8 @@
   align-items: stretch;
   justify-content: space-between;
   gap: var(--space-3xs);
+  left: calc(var(--start, 0) / var(--row-hp, 84) * 100%);
+  width: calc(var(--hp, 1) / var(--row-hp, 84) * 100%);
   min-width: 0;
   padding: var(--space-sm) var(--space-2xs) var(--space-sm);
   overflow: hidden;
@@ -317,6 +407,11 @@ div.rack-row-map__block {
   font-variant-numeric: tabular-nums;
 }
 
+/* In the builder a 1HP module still keeps a block wide enough to click */
+.placement-rail .rack-row-map__block {
+  min-width: 1.5%;
+}
+
 /* The rail on the rig overview: smaller, read-only */
 .rig-rail {
   display: grid;
@@ -366,11 +461,11 @@ div.rack-row-map__block {
   border-top: 1px solid var(--color-rule);
   list-style: none;
 }
+/* Remove stays at the row's right edge; a jumper choice takes its own line under the name */
 .placement-list li {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-xs) var(--space-md);
   padding: var(--space-xs) 0;
   border-bottom: 1px solid var(--color-rule);
@@ -380,27 +475,24 @@ div.rack-row-map__block {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
 }
+.placement-list li > .button {
+  grid-row: 1;
+  grid-column: 2;
+}
 .placement-list__config {
-  flex: 1 1 100%;
-  order: 3;
+  grid-column: 1 / -1;
   max-width: 32rem;
 }
 
-/* —— Methods and evidence —— */
-.builder-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-md);
-  margin-top: var(--space-xl);
+/* —— Evidence —— */
+.evidence-target {
+  max-width: 24rem;
 }
 .evidence-ready {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-sm);
-}
-.evidence-review {
-  margin-top: var(--space-xl);
 }
 .detection-row {
   display: flex;
@@ -409,6 +501,11 @@ div.rack-row-map__block {
   gap: var(--space-md);
   padding: var(--space-md) 0;
   border-bottom: 1px solid var(--color-rule);
+}
+.detection-row__body {
+  display: grid;
+  gap: var(--space-2xs);
+  min-width: 0;
 }
 .detection-actions {
   display: flex;
@@ -630,13 +727,40 @@ div.rack-row-map__block {
 }
 
 @media (max-width: 45rem) {
-  .builder-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
   .detection-row,
   .evidence-ready {
     align-items: stretch;
     flex-direction: column;
+  }
+  /* The decision on its own line, the two others shared evenly under it */
+  .detection-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .detection-actions > :first-child {
+    grid-column: 1 / -1;
+  }
+  /* Three steps on one line: a gap between them instead of padding inside each */
+  .step-progress {
+    gap: var(--space-md);
+  }
+  .step-progress__item,
+  .step-progress__item + .step-progress__item {
+    padding: 0;
+  }
+  .step-progress__item::after,
+  .step-progress__item + .step-progress__item::after {
+    right: 0;
+    left: 0;
+  }
+  /* Stacked, the layout and power facts divide with a hairline above, not a rule beside */
+  .case-summary {
+    flex-direction: column;
+  }
+  .case-summary .stat-block + .stat-block {
+    padding-left: 0;
+    border-top: 1px solid var(--color-rule);
+    border-left: 0;
   }
   .rack-row-map__track {
     height: 96px;

@@ -92,7 +92,7 @@ export function railMeter(total: RailTotal, capacity: number | null | undefined)
       headroom: null,
       pct: 0,
       tone: "neutral",
-      label: `draw ${draw}mA${plus} · case capacity unspecified`,
+      label: `draw ${draw}mA${plus}, case capacity unspecified`,
     };
   }
   const headroom = capacity - draw;
@@ -100,7 +100,7 @@ export function railMeter(total: RailTotal, capacity: number | null | undefined)
     capacity > 0 ? Math.min(100, Math.round((draw / capacity) * 100)) : draw > 0 ? 100 : 0;
   const tone: RailTone = headroom < 0 ? "danger" : unknown > 0 || pct >= 85 ? "warning" : "success";
   const label = unknown
-    ? `at least ${draw}/${capacity}mA${plus} · at most ${headroom}mA headroom`
-    : `${draw}/${capacity}mA · headroom ${headroom}mA`;
+    ? `at least ${draw}/${capacity}mA${plus}, at most ${headroom}mA headroom`
+    : `${draw}/${capacity}mA, headroom ${headroom}mA`;
   return { draw, unknown, capacity, headroom, pct, tone, label };
 }

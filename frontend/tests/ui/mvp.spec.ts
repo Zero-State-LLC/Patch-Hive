@@ -576,7 +576,7 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(page.getByLabel("Row HP usage")).toBeVisible();
     await expect(page.getByText(/18\/84HP used/i)).toBeVisible();
     await expect(page.getByLabel(/Row 0 layout/i)).toBeVisible();
-    await expect(page.getByTitle(/Alpha.*HP 0–9/i)).toBeVisible();
+    await expect(page.getByTitle(/Alpha.*HP 0 to 9/i)).toBeVisible();
     await expect(page.getByTitle(/Beta.*power unknown/i)).toBeVisible();
     await expect(page.getByText(/Placement power/i)).toBeVisible();
     await expect(page.getByText(/Placement power: 1 of 2 modules state every rail/i)).toBeVisible();

@@ -138,6 +138,81 @@ const CATALOG_MODULES = [
   { id: 3, slug: "sim-co-mixer", brand: "Sim Co", name: "Mixer", hp: 6, category: "MIX" },
 ].map((m) => ({ ...m, is_available: "available" }));
 
+/** The rig open in the builder: one placed module states every rail, one states none. */
+const BUILDER_RACK = {
+  id: 1,
+  user_id: 1,
+  case_id: 1,
+  name: "Bench rig",
+  tags: [],
+  is_public: false,
+  created_at: STAMP,
+  updated_at: STAMP,
+  modules: [
+    placed(101, 11, 0, "Oscillator", 12),
+    {
+      id: 102,
+      module_id: 12,
+      row_index: 0,
+      start_hp: 14,
+      module: { id: 12, brand: "Sim Co", name: "Filter", hp: 10, module_type: "VCF" },
+    },
+  ],
+  case: {
+    id: 1,
+    brand: "Sim Co",
+    name: "Sim 84",
+    total_hp: 84,
+    rows: 1,
+    hp_per_row: [84],
+    catalog_slug: "sim-co-sim-84",
+    power_12v_ma: 2000,
+    power_neg12v_ma: 1200,
+    power_5v_ma: 500,
+  },
+};
+
+const gate = (status: string) => ({ status, code: status.toUpperCase(), message: status });
+
+const BUILDER_COMPAT = {
+  bridge_status: "ok",
+  message: "Catalog case linked.",
+  catalog_slug: "sim-co-sim-84",
+  compatibility: {
+    overall_status: "incomplete",
+    format_check: gate("verified"),
+    physical_fit: gate("verified"),
+    connector_availability: gate("verified"),
+    pos5_compatibility: gate("verified"),
+    lid_close: gate("verified"),
+    power_headroom: [
+      {
+        rail: "+12V",
+        status: "incomplete",
+        module_draw_ma: 40,
+        case_capacity_ma: 2000,
+        headroom_ma: 1960,
+        unknown_draw_count: 1,
+      },
+    ],
+    warnings: [
+      {
+        status: "incomplete",
+        code: "MODULE_POWER_UNKNOWN",
+        message: "One module lacks power specs",
+      },
+    ],
+    remaining_capacity: [],
+    notes: [],
+  },
+};
+
+const BUILDER_MODULES = [
+  { id: 11, brand: "Sim Co", name: "Oscillator", hp: 12, power_12v_ma: 40, depth_mm: 30 },
+  { id: 12, brand: "Sim Co", name: "Filter", hp: 10 },
+  { id: 13, brand: "Sim Co", name: "Envelope", hp: 8, power_12v_ma: 20 },
+].map((m) => ({ ...m, module_type: "VCO", io_ports: [], tags: [], created_at: STAMP }));
+
 const json = (body: unknown) => ({ json: body });
 
 /** Mock the API. Routes run newest first, so the 404 catch-all is registered first. */
@@ -244,6 +319,25 @@ async function mockApi(page: Page, { signedIn }: { signedIn: boolean }) {
   );
 }
 
+/** The builder's own reads: the rig list, the rig open for placement, and the gallery. */
+async function mockBuilder(page: Page) {
+  await page.route(
+    (url) => url.pathname.replace(/\/+$/, "").endsWith("/api/racks"),
+    (route) => route.fulfill(json({ total: 1, racks: [BUILDER_RACK] })),
+  );
+  await page.route(
+    (url) => url.pathname.replace(/\/+$/, "").endsWith("/api/racks/1"),
+    (route) => route.fulfill(json(BUILDER_RACK)),
+  );
+  await page.route("**/api/racks/1/compatibility**", (route) =>
+    route.fulfill(json(BUILDER_COMPAT)),
+  );
+  await page.route(
+    (url) => url.pathname.replace(/\/+$/, "").endsWith("/api/modules"),
+    (route) => route.fulfill(json({ total: 3, modules: BUILDER_MODULES })),
+  );
+}
+
 interface Screen {
   path: string;
   name: string;
@@ -252,6 +346,8 @@ interface Screen {
   signature?: string;
   /** Steps after arriving, such as opening a tab. */
   open?: (page: Page) => Promise<void>;
+  /** Routes this screen alone reads, on top of the shared mocks. */
+  mock?: (page: Page) => Promise<void>;
 }
 
 const SCREENS: Screen[] = [
@@ -279,6 +375,21 @@ const SCREENS: Screen[] = [
     signature: ".patch-rail .patch-cable",
   },
   { path: "/rigs/1/patchbook-studio", name: "style studio", signedIn: true },
+  // The one catalog case is chosen on load, so the builder opens on step 2.
+  {
+    path: "/racks/new",
+    name: "rig builder, new",
+    signedIn: true,
+    signature: ".case-summary",
+    mock: mockBuilder,
+  },
+  {
+    path: "/racks/1/edit",
+    name: "rig builder, placement",
+    signedIn: true,
+    signature: ".placement-rail .rack-row-map__block",
+    mock: mockBuilder,
+  },
   {
     path: "/racks",
     name: "rigs, patches tab",
@@ -373,6 +484,7 @@ for (const theme of ["dark", "light"] as const) {
             window.localStorage.setItem("patchhive-theme", value);
           }, theme);
           await mockApi(page, { signedIn: screen.signedIn });
+          await screen.mock?.(page);
           await arrive(page, screen);
           await screen.open?.(page);
           await expect(page.locator("main")).toBeVisible();
