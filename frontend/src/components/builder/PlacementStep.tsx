@@ -1,6 +1,6 @@
 /**
- * PlacementStep — builder step 3 on /racks/:id/edit: the rig's rail, its power, single and
- * batch placement, the placed list, and the dual-gate compatibility result.
+ * PlacementStep — builder step 3 on /racks/:id/edit: the rig's rail with the form that places
+ * onto it, its power, batch placement, the placed list, and the dual-gate compatibility result.
  */
 import type { ComponentProps } from "react";
 import { Link } from "react-router-dom";
@@ -44,7 +44,6 @@ export interface BatchPlaceForm {
 }
 
 interface PlacementStepProps {
-  rackId: number;
   rack: Rack | null;
   loading: boolean;
   /** The module the gallery sent here (module_id), shown until it is placed. */
@@ -70,6 +69,12 @@ interface PlacementStepProps {
 
 const BATCH_LIST_LIMIT = 80;
 
+/** What an overall verdict means, beside the verdict itself. */
+const OVERALL_MEANS: Record<string, string> = {
+  incomplete: "Soft gaps only: missing power, depth or case rails stay missing.",
+  conflict: "Hard fail: overflow, connectors, or a rail over budget.",
+};
+
 /** Map dual-gate status to chip tone. */
 function gateTone(status?: string | null): "success" | "warning" | "danger" | "neutral" {
   if (!status) return "neutral";
@@ -80,29 +85,11 @@ function gateTone(status?: string | null): "success" | "warning" | "danger" | "n
   return "neutral";
 }
 
-/** ", in a Sim Co Sim 84 case, 84HP in one row", and whether compatibility can be checked. */
-function caseLine(c: NonNullable<Rack["case"]>): string {
-  const rowHp = c.hp_per_row ?? [];
-  const size =
-    c.total_hp == null
-      ? ""
-      : rowHp.length === 1
-        ? `, ${c.total_hp}HP in one row`
-        : rowHp.length > 1
-          ? `, ${c.total_hp}HP in rows of ${rowHp.join(" + ")}`
-          : `, ${c.total_hp}HP`;
-  const link = c.catalog_slug
-    ? ""
-    : ". It has no catalog link, so compatibility checks are partial";
-  return `, in a ${c.brand} ${c.name} case${size}${link}`;
-}
-
 function moduleOption(m: Module): string {
   return `${m.brand} ${m.name} (${m.hp}HP${m.power_12v_ma != null ? `, +12 ${m.power_12v_ma}mA` : ", power unknown"}${m.depth_mm != null ? `, ${m.depth_mm}mm` : ", depth unknown"})`;
 }
 
 export default function PlacementStep({
-  rackId,
   rack,
   loading,
   preselected,
@@ -127,25 +114,7 @@ export default function PlacementStep({
   const gates = compat?.compatibility;
 
   return (
-    <section className="builder-step" aria-labelledby="placement-title">
-      <div className="builder-step__head">
-        <h2 id="placement-title">Module placement</h2>
-        <p className="muted">
-          {rack ? (
-            <>
-              Placing modules on <strong>{rack.name}</strong>
-            </>
-          ) : (
-            "Placing modules on this rig"
-          )}
-          {rackCase ? caseLine(rackCase) : ""}.
-        </p>
-        <div className="page-hero-actions">
-          <Link to={`/rigs/${rackId}`}>Open rig detail</Link>
-          <Link to="/racks">Back to rigs</Link>
-        </div>
-      </div>
-
+    <div className="builder-step">
       {preselected ? (
         <div className="module-preselect-banner" role="status">
           <p>
@@ -164,47 +133,6 @@ export default function PlacementStep({
 
         {loading && !rack ? <RailSkeleton label="Loading rig for placement…" /> : null}
         {rail.rows.length > 0 ? <PlacementRail {...rail} /> : null}
-
-        <div className="toolbar">
-          {canLoadModules ? (
-            <button type="button" className="button button-secondary" onClick={onLoadModules}>
-              Materialize HP-known modules
-            </button>
-          ) : null}
-          <Link className="button button-quiet" to="/modules?hp=known">
-            Browse placeable catalog
-          </Link>
-        </div>
-        {loadNote ? (
-          <p className="status" role="status">
-            {loadNote}
-          </p>
-        ) : null}
-
-        {placements.length > 0 || rackCase ? (
-          <PowerMeters summary={powerSummary} caseRails={rackCase} />
-        ) : null}
-
-        {retired.length > 0 ? (
-          <div className="status status-warning builder-retired" role="status">
-            <p>
-              {retired.length === 1
-                ? "One placed module is"
-                : `${retired.length} placed modules are`}{" "}
-              retired from the catalog. They stay in this rack; check each one.
-            </p>
-            <ul>
-              {retired.map((m) => (
-                <li key={m.id}>
-                  {m.module?.brand} {m.module?.name}: {m.module?.tombstone_reason ?? "retired"}
-                  {m.module?.alternatives?.length
-                    ? `. Consider ${m.module.alternatives.map((a) => `${a.brand} ${a.name}`).join(", ")}.`
-                    : "."}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
 
         <div className="toolbar builder-toolbar">
           <label className="field">
@@ -268,10 +196,56 @@ export default function PlacementStep({
             specific slot.
           </p>
         ) : null}
+        {error ? (
+          <p className="status status-danger" role="alert">
+            {error}
+          </p>
+        ) : null}
+
+        {placements.length > 0 || rackCase ? (
+          <PowerMeters summary={powerSummary} caseRails={rackCase} />
+        ) : null}
+
+        {retired.length > 0 ? (
+          <div className="status status-warning builder-retired" role="status">
+            <p>
+              {retired.length === 1
+                ? "One placed module is"
+                : `${retired.length} placed modules are`}{" "}
+              retired from the catalog. They stay in this rack; check each one.
+            </p>
+            <ul>
+              {retired.map((m) => (
+                <li key={m.id}>
+                  {m.module?.brand} {m.module?.name}: {m.module?.tombstone_reason ?? "retired"}
+                  {m.module?.alternatives?.length
+                    ? `. Consider ${m.module.alternatives.map((a) => `${a.brand} ${a.name}`).join(", ")}.`
+                    : "."}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        <div className="toolbar">
+          {canLoadModules ? (
+            <button type="button" className="button button-secondary" onClick={onLoadModules}>
+              Materialize HP-known modules
+            </button>
+          ) : null}
+          <Link className="button button-quiet" to="/modules?hp=known">
+            Browse placeable catalog
+          </Link>
+        </div>
+        {loadNote ? (
+          <p className="status" role="status">
+            {loadNote}
+          </p>
+        ) : null}
       </div>
 
       <div className="panel batch-place-panel" aria-labelledby="batch-place-title">
-        <h3 id="batch-place-title">Batch place</h3>
+        <h2 id="batch-place-title">Batch place</h2>
         <p className="muted">
           Select several gallery modules, then pack them left to right starting at row {add.row}.
           Unknown HP is skipped, never invented. One save applies the whole pack.
@@ -351,20 +325,13 @@ export default function PlacementStep({
             batch more precisely.
           </p>
         ) : null}
-        {!modules.length ? (
-          <p className="status status-warning">No modules match the filter.</p>
-        ) : null}
+        {!modules.length ? <p className="muted">No modules match the filter.</p> : null}
       </div>
 
       <div className="panel" aria-labelledby="placed-title">
-        <h3 id="placed-title">Placed modules</h3>
-        {error ? (
-          <p className="status status-danger" role="alert">
-            {error}
-          </p>
-        ) : null}
+        <h2 id="placed-title">Placed modules</h2>
         {placements.length === 0 ? (
-          <p className="status status-warning">No modules placed yet.</p>
+          <p className="muted">No modules placed yet.</p>
         ) : (
           <ul className="placement-list" aria-label="Placed modules">
             {placements.map((spec, index) => {
@@ -418,82 +385,66 @@ export default function PlacementStep({
 
       {compat ? (
         <div className="panel" aria-labelledby="compat-title" aria-live="polite">
-          <h3 id="compat-title">Dual-gate compatibility</h3>
+          <h2 id="compat-title">Dual-gate compatibility</h2>
           <p className="muted">
             Bridge: {compat.bridge_status}
-            {compat.catalog_slug ? ` (${compat.catalog_slug})` : ""}
+            {compat.catalog_slug ? ` (${compat.catalog_slug})` : ""}. {compat.message}
           </p>
-          <p>{compat.message}</p>
           {gates ? (
             <>
               <div className="gate-chip-row" role="group" aria-label="Dual-gate summary">
                 <span className={`status-chip status-chip--${gateTone(gates.overall_status)}`}>
                   overall: {gates.overall_status}
                 </span>
-                <span className={`status-chip status-chip--${gateTone(gates.physical_fit.status)}`}>
-                  physical: {gates.physical_fit.status}
-                </span>
-                <span
-                  className={`status-chip status-chip--${gateTone(gates.connector_availability.status)}`}
-                >
-                  connectors: {gates.connector_availability.status}
-                </span>
-                {gates.power_headroom?.map((r) => (
-                  <span key={r.rail} className={`status-chip status-chip--${gateTone(r.status)}`}>
-                    {r.rail}: {r.status}
-                  </span>
-                ))}
+                {OVERALL_MEANS[gates.overall_status] ? (
+                  <span className="muted builder-note">{OVERALL_MEANS[gates.overall_status]}</span>
+                ) : null}
               </div>
-              <p>
-                Overall: <strong>{gates.overall_status}</strong>
-                {gates.overall_status === "incomplete"
-                  ? ": soft gaps only (missing power, depth or case rails stay missing)"
-                  : null}
-                {gates.overall_status === "conflict"
-                  ? ": hard fail (overflow, connectors, or a rail over budget)"
-                  : null}
-              </p>
-              <ul className="builder-gates">
-                <li>
-                  Format: <strong>{gates.format_check.status}</strong>: {gates.format_check.message}
-                </li>
-                <li>
-                  Physical fit: <strong>{gates.physical_fit.status}</strong>:{" "}
-                  {gates.physical_fit.message}
-                </li>
-                <li>
-                  Connectors: <strong>{gates.connector_availability.status}</strong>
-                  {gates.connector_availability.message
-                    ? `: ${gates.connector_availability.message}`
-                    : ""}
-                </li>
-                <li>
-                  +5V: <strong>{gates.pos5_compatibility.status}</strong>
-                  {gates.pos5_compatibility.message ? `: ${gates.pos5_compatibility.message}` : ""}
-                </li>
-                <li>
-                  Lid: <strong>{gates.lid_close.status}</strong>
-                </li>
-              </ul>
-              {gates.power_headroom?.length ? (
-                <>
-                  <h4>Power rails</h4>
-                  <ul className="builder-gates">
-                    {gates.power_headroom.map((r) => (
-                      <li key={r.rail}>
-                        <strong>{r.rail}</strong>: {r.status}
+              <table className="data-table builder-gate-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Check</th>
+                    <th scope="col">State</th>
+                    <th scope="col">Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { check: "Format", gate: gates.format_check },
+                    { check: "Physical fit", gate: gates.physical_fit },
+                    { check: "Connectors", gate: gates.connector_availability },
+                    { check: "+5V", gate: gates.pos5_compatibility },
+                    { check: "Lid", gate: { status: gates.lid_close.status, message: "" } },
+                  ].map(({ check, gate }) => (
+                    <tr key={check}>
+                      <th scope="row">{check}</th>
+                      <td>
+                        <span className={`status status-${gateTone(gate.status)}`}>
+                          {gate.status}
+                        </span>
+                      </td>
+                      <td>{gate.message && gate.message !== gate.status ? gate.message : ""}</td>
+                    </tr>
+                  ))}
+                  {gates.power_headroom?.map((r) => (
+                    <tr key={r.rail}>
+                      <th scope="row">{r.rail} rail</th>
+                      <td>
+                        <span className={`status status-${gateTone(r.status)}`}>{r.status}</span>
+                      </td>
+                      <td>
                         {r.case_capacity_ma != null
-                          ? `, ${r.module_draw_ma}/${r.case_capacity_ma}mA`
-                          : `, draw ${r.module_draw_ma}mA (case capacity unspecified)`}
+                          ? `${r.module_draw_ma}/${r.case_capacity_ma}mA`
+                          : `Draw ${r.module_draw_ma}mA, case capacity unspecified`}
                         {r.headroom_ma != null && !r.unknown_draw_count
                           ? `, headroom ${r.headroom_ma}mA`
                           : ""}
-                        {r.message ? `: ${r.message}` : ""}
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              ) : null}
+                        {r.message ? `. ${r.message}` : ""}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
               {gates.warnings?.length ? (
                 <div className="status status-warning builder-warnings" role="status">
                   <p>
@@ -516,6 +467,6 @@ export default function PlacementStep({
           ) : null}
         </div>
       ) : null}
-    </section>
+    </div>
   );
 }

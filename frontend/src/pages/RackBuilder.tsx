@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   caseApi,
   caseCatalogApi,
@@ -92,6 +92,23 @@ function formatValidationError(err: unknown): string {
     if (detail.message) return detail.message;
   }
   return "Could not create rig. Check case selection and try again.";
+}
+
+/** ", in a Sim Co Sim 84 case, 84HP in one row", and whether compatibility can be checked. */
+function caseLine(c: NonNullable<Rack["case"]>): string {
+  const rowHp = c.hp_per_row ?? [];
+  const size =
+    c.total_hp == null
+      ? ""
+      : rowHp.length === 1
+        ? `, ${c.total_hp}HP in one row`
+        : rowHp.length > 1
+          ? `, ${c.total_hp}HP in rows of ${rowHp.join(" + ")}`
+          : `, ${c.total_hp}HP`;
+  const link = c.catalog_slug
+    ? ""
+    : ". It has no catalog link, so compatibility checks are partial";
+  return `, in a ${c.brand} ${c.name} case${size}${link}`;
 }
 
 /** Suggest start HP for single add (0 if row cannot fit — user may still override). */
@@ -855,14 +872,30 @@ export default function RackBuilderPage() {
       <header className="workspace-header">
         <div>
           <h1 id="builder-title">
-            {liveMode ? "Place modules on this rig" : "Establish your module inventory"}
+            {liveMode ? "Module placement" : "Establish your module inventory"}
           </h1>
-          <p className="muted">
-            {liveMode
-              ? "Place modules by row and HP, or confirm them from photos."
-              : "Choose a case, create the rig, then place its modules."}
-          </p>
+          {liveMode ? (
+            <p className="muted builder-rig-line">
+              <strong>{liveRack?.name ?? "This rig"}</strong>
+              {liveRack?.case ? caseLine(liveRack.case) : ""}.
+            </p>
+          ) : (
+            <p className="muted">
+              Choose a case, create the rig, then place modules from the{" "}
+              <Link to="/modules">module gallery</Link>.
+            </p>
+          )}
         </div>
+        {rackId != null ? (
+          <div className="header-actions">
+            <Link className="button button-quiet" to={`/rigs/${rackId}`}>
+              Open rig detail
+            </Link>
+            <Link className="button button-quiet" to="/racks">
+              Back to rigs
+            </Link>
+          </div>
+        ) : null}
       </header>
 
       <ol className="step-progress" aria-label="Builder steps">
@@ -900,7 +933,6 @@ export default function RackBuilderPage() {
 
         {rackId != null ? (
           <PlacementStep
-            rackId={rackId}
             rack={liveRack}
             loading={liveRackLoading}
             preselected={

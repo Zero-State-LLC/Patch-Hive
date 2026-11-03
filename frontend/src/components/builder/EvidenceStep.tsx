@@ -110,8 +110,9 @@ function rigLabel(rack: Rack, all: Rack[]): string {
   return shared ? `${name}, id ${rack.id}` : name;
 }
 
-function statusTone(status: CandidateStatus): string {
-  return status === "confirmed" ? "success" : status === "rejected" ? "danger" : "warning";
+/** Undecided is the normal state of a candidate, so it reads in muted ink, not as a warning. */
+function statusTone(status: CandidateStatus | undefined): string {
+  return status === "confirmed" ? "success" : status === "rejected" ? "danger" : "neutral";
 }
 
 export default function EvidenceStep({
@@ -261,13 +262,7 @@ export default function EvidenceStep({
                   <ul className="candidate-list" aria-label="Fused module entities">
                     {fusion.entities.map((entity) => {
                       const applied = fusion.applied[entity.fuse_id];
-                      const tone = entity.conflict
-                        ? "danger"
-                        : applied === "confirmed"
-                          ? "success"
-                          : applied === "rejected"
-                            ? "danger"
-                            : "warning";
+                      const tone = entity.conflict ? "danger" : statusTone(applied);
                       const statusText = entity.conflict
                         ? `Conflict: ${entity.conflict_notes.join("; ") || "disagreement"}`
                         : applied

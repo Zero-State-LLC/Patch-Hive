@@ -3,7 +3,7 @@
  * state is counted as unknown, never 0, so a total with unknowns is a lower bound.
  */
 import type { CSSProperties } from "react";
-import { railMeter, type PowerSummary, type RailKey } from "@/lib/powerBudget";
+import { railMeter, type PowerSummary, type RailKey, type RailMeter } from "@/lib/powerBudget";
 
 /** The case's stated capacity per rail; a missing number leaves that meter unscaled. */
 export interface CaseRails {
@@ -19,6 +19,24 @@ const RAILS: { rail: string; key: RailKey; capacity: keyof CaseRails }[] = [
 ];
 
 const RAIL_LABEL: Record<RailKey, string> = { p12: "+12", n12: "−12", p5: "+5" };
+
+/** Under the figure: what is left, and when unknowns make the figure a lower bound. */
+function meterNote(m: RailMeter): string {
+  const unknown = m.unknown ? `${m.unknown} unknown, so a lower bound` : "";
+  if (m.capacity == null || m.headroom == null) {
+    return sentence([unknown, "case capacity unspecified"]);
+  }
+  const left =
+    m.headroom < 0
+      ? `${-m.headroom}mA over budget`
+      : `${m.unknown ? "at most " : ""}${m.headroom}mA headroom`;
+  return sentence([unknown, left]);
+}
+
+function sentence(parts: string[]): string {
+  const s = parts.filter(Boolean).join("; ");
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
 export default function PowerMeters({
   summary,
@@ -48,18 +66,19 @@ export default function PowerMeters({
         <div className="power-rail-meters">
           {meters.map((rail) => (
             <div key={rail.rail} className="power-rail-meters__row">
-              <div className="hp-usage__meta">
-                <span>
-                  <span className={`status-chip status-chip--${rail.tone}`}>{rail.rail}</span>
+              <div className="power-meter__head">
+                <span className={`status-chip status-chip--${rail.tone}`}>{rail.rail}</span>
+                <span className="power-meter__figure">
+                  {rail.capacity == null ? `${rail.draw}mA` : `${rail.draw}/${rail.capacity}mA`}
                 </span>
-                <span className="muted">{rail.label}</span>
               </div>
               <div
-                className="usage-bar"
+                className="usage-bar power-meter__bar"
                 role="meter"
                 aria-valuemin={0}
                 aria-valuemax={rail.capacity ?? 0}
                 aria-valuenow={rail.draw}
+                aria-valuetext={rail.label}
                 aria-label={`${rail.rail} power usage`}
               >
                 <div
@@ -72,6 +91,7 @@ export default function PowerMeters({
                   }
                 />
               </div>
+              <span className="power-meter__note">{meterNote(rail)}</span>
             </div>
           ))}
         </div>
