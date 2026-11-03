@@ -1,0 +1,453 @@
+/* Rig screens: the builder's steps, its rail rows, HP and power meters, evidence review */
+
+/* —— Steps —— */
+.step-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 0 0 var(--space-xl);
+  border-bottom: 1px solid var(--color-rule);
+  counter-reset: step;
+}
+.step-progress__item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 44px;
+  padding: 0 var(--space-lg) 0 0;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+.step-progress__item + .step-progress__item {
+  padding-left: var(--space-lg);
+}
+.step-progress__item::after {
+  position: absolute;
+  right: var(--space-lg);
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--color-accent);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+.step-progress__item + .step-progress__item::after {
+  left: var(--space-lg);
+}
+.step-progress__num {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--color-rule-strong);
+  border-radius: var(--radius-plate);
+  font: 500 var(--text-xs) / 1 var(--font-mono);
+}
+.step-progress__item--current {
+  color: var(--color-ink);
+}
+.step-progress__item--current::after {
+  transform: scaleX(1);
+}
+.step-progress__item--current .step-progress__num {
+  border-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  background: var(--color-accent);
+}
+.step-progress__item--done {
+  color: var(--color-ink-2);
+}
+.step-progress__item--done .step-progress__num {
+  border-color: color-mix(in oklab, var(--color-success) 60%, var(--color-rule));
+  color: var(--color-success);
+}
+
+.placement-cta {
+  border-left: 2px solid var(--color-accent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* —— Meters: HP per row, power per rail —— */
+.hp-usage {
+  display: grid;
+  gap: var(--space-lg);
+}
+.hp-usage__row,
+.power-rail-meters__row {
+  display: grid;
+  gap: var(--space-xs);
+}
+.hp-usage__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+.hp-usage__meta .muted {
+  font: 400 var(--text-sm) / 1.4 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.usage-bar {
+  position: relative;
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-paper-4);
+}
+.usage-bar__fill {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-muted);
+  transform: scaleX(var(--fill, 0));
+  transform-origin: left center;
+  transition: transform var(--dur-long) var(--ease-out);
+  animation: meter-fill var(--dur-long) var(--ease-out);
+}
+@keyframes meter-fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+.usage-bar__fill--success {
+  background: var(--color-success);
+}
+.usage-bar__fill--warning {
+  background: var(--color-warning);
+}
+.usage-bar__fill--danger {
+  background: var(--color-error);
+}
+.usage-bar__fill--neutral {
+  background: var(--color-rule-strong);
+}
+
+.power-rail-meters__row > .status-chip {
+  justify-self: start;
+}
+.power-rail-panel {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-lg) 0;
+  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+}
+.power-rail-meters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+  gap: var(--space-lg);
+}
+
+/* —— The rail: a 3U row, rails top and bottom with a hole at every HP —— */
+.rack-row-map {
+  display: grid;
+  gap: var(--space-2xs);
+}
+.rack-row-map__track {
+  position: relative;
+  height: 120px;
+  overflow: hidden;
+  border-radius: var(--radius-plate);
+  background: var(--color-paper);
+  box-shadow: inset 0 0 0 1px var(--color-rule);
+  cursor: crosshair;
+}
+.rack-row-map__track::before,
+.rack-row-map__track::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 12px;
+  background:
+    radial-gradient(circle, var(--color-paper) 1.5px, transparent 2px) 0 50% /
+      calc(100% / var(--row-hp, 84)) 100% repeat-x,
+    linear-gradient(
+      color-mix(in oklab, var(--color-muted) 42%, var(--color-paper-3)),
+      color-mix(in oklab, var(--color-muted) 22%, var(--color-paper-3))
+    );
+  content: "";
+  pointer-events: none;
+}
+.rack-row-map__track::before {
+  top: 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+.rack-row-map__track::after {
+  bottom: 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+/* A placed module: a faceplate screwed over both rails */
+.rack-row-map__block {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  z-index: var(--z-base);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: var(--space-3xs);
+  min-width: 0;
+  padding: var(--space-sm) var(--space-2xs) var(--space-sm);
+  overflow: hidden;
+  border: 1px solid var(--color-rule-strong);
+  border-radius: 2px;
+  color: var(--color-ink);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--color-ink) 7%, transparent),
+      transparent 35%,
+      transparent 70%,
+      color-mix(in oklab, var(--color-paper) 35%, transparent)
+    ),
+    var(--color-plate-face);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-short) var(--ease-out),
+    transform var(--dur-short) var(--ease-out);
+  animation: slot-in var(--dur-short) var(--ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 12) * 30ms);
+}
+/* Mounting screws */
+.rack-row-map__block::before,
+.rack-row-map__block::after {
+  position: absolute;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--color-screw);
+  content: "";
+}
+.rack-row-map__block::before {
+  top: 3px;
+}
+.rack-row-map__block::after {
+  bottom: 3px;
+}
+@keyframes slot-in {
+  from {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+button.rack-row-map__block:hover,
+button.rack-row-map__block:focus-visible {
+  z-index: var(--z-raised);
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+button.rack-row-map__block:active {
+  transform: none;
+}
+button.rack-row-map__block:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.rack-row-map__block--unknown-power {
+  border-style: dashed;
+  border-color: color-mix(in oklab, var(--color-warning) 60%, var(--color-rule));
+}
+button.rack-row-map__block,
+div.rack-row-map__block {
+  container-type: inline-size;
+}
+@container (max-width: 44px) {
+  .rack-row-map__block-label {
+    display: none;
+  }
+}
+@container (max-width: 24px) {
+  .rack-row-map__block-hp {
+    align-self: center;
+    writing-mode: vertical-rl;
+  }
+}
+.rack-row-map__block-label {
+  max-width: 100%;
+  overflow: hidden;
+  font: 600 var(--text-xs) / 1.2 var(--font-display);
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rack-row-map__block-hp {
+  color: var(--color-muted);
+  font: 500 var(--text-2xs) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.rack-row-map__block--preview {
+  z-index: var(--z-raised);
+  border-style: dashed;
+  border-color: var(--color-accent);
+  color: var(--color-accent-text);
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  pointer-events: none;
+}
+.rack-row-map__block--preview::before,
+.rack-row-map__block--preview::after {
+  display: none;
+}
+.rack-row-map__block--batch {
+  border-color: var(--color-info);
+  color: var(--color-info);
+  background: color-mix(in oklab, var(--color-info) 10%, transparent);
+}
+.rack-row-map__scale {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-muted);
+  font: 400 var(--text-xs) / 1.2 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The rail on the rig overview: smaller, read-only */
+.rig-rail {
+  display: grid;
+  gap: var(--space-md);
+}
+.rig-rail .rack-row-map__track {
+  height: 84px;
+  cursor: default;
+}
+.rig-rail .rack-row-map__block {
+  cursor: default;
+}
+
+/* —— Batch place —— */
+.batch-module-list {
+  max-height: 18rem;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  border-top: 1px solid var(--color-rule);
+  list-style: none;
+}
+.batch-module-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-xs) var(--space-xs) 0;
+  border-bottom: 1px solid var(--color-rule);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  transition: background-color var(--dur-short) var(--ease-out);
+}
+.batch-module-list__item:hover {
+  background: var(--color-paper-3);
+}
+.batch-module-list__item.is-selected {
+  background: color-mix(in oklab, var(--color-info) 9%, transparent);
+}
+.batch-module-list__item input {
+  margin-top: var(--space-2xs);
+  accent-color: var(--color-accent);
+}
+.placement-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-rule);
+  list-style: none;
+}
+.placement-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-md);
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--color-rule);
+  font-size: var(--text-sm);
+}
+.placement-list .muted {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+.placement-list__config {
+  flex: 1 1 100%;
+  order: 3;
+  max-width: 32rem;
+}
+
+/* —— Methods and evidence —— */
+.builder-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+.evidence-ready {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.evidence-review {
+  margin-top: var(--space-xl);
+}
+.detection-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+.detection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.candidate-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-rule);
+  list-style: none;
+}
+
+@media (max-width: 45rem) {
+  .builder-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .detection-row,
+  .evidence-ready {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .rack-row-map__track {
+    height: 96px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usage-bar__fill,
+  .rack-row-map__block {
+    animation: none;
+    transition: none;
+  }
+  .step-progress__item::after {
+    transition: none;
+  }
+  button.rack-row-map__block:hover,
+  button.rack-row-map__block:focus-visible {
+    transform: none;
+  }
+}

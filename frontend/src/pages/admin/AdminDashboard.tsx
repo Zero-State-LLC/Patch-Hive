@@ -50,7 +50,7 @@ export default function AdminDashboard() {
         </header>
         <AdminNav />
         <div className="panel">
-          <h2 style={{ marginTop: 0 }}>Guardrails</h2>
+          <h2>Guardrails</h2>
           <ul className="auth-brand-list" style={{ marginTop: "var(--space-3)" }}>
             <li>All admin mutations are audited</li>
             <li>Credit changes append to the canonical ledger</li>

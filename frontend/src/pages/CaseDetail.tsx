@@ -140,6 +140,11 @@ export default function CaseDetailPage() {
     <section aria-labelledby="case-detail-title">
       <header className="workspace-header">
         <div>
+          <nav className="breadcrumb" aria-label="Breadcrumb">
+            <Link to="/cases">Cases</Link>
+            <span aria-hidden="true">/</span>
+            <span>{detail.format_family}</span>
+          </nav>
           <h1 id="case-detail-title">
             {detail.manufacturer} {detail.model}
           </h1>

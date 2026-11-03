@@ -64,7 +64,11 @@ function App() {
               {theme === "dark" ? "Light" : "Dark"}
             </button>
             {isAuthenticated() ? (
-              <button className="button button-secondary" type="button" onClick={() => void signOut()}>
+              <button
+                className="button button-secondary"
+                type="button"
+                onClick={() => void signOut()}
+              >
                 Sign out {user?.username}
               </button>
             ) : ACCOUNTS_OPEN ? (
@@ -101,7 +105,9 @@ function App() {
         </main>
 
         <footer className="app-footer">
-          Canonical rig revisions and deterministic runs. Exports are the credit boundary.
+          <span>
+            Canonical rig revisions and deterministic runs. Exports are the credit boundary.
+          </span>
           <span className="zero-state-credit">Designed and engineered by Zero State</span>
         </footer>
       </div>

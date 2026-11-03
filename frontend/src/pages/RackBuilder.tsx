@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   caseApi,
@@ -113,7 +114,7 @@ function casePowerSummary(c: Case): string {
   if (c.power_12v_ma != null) parts.push(`+12 ${c.power_12v_ma}mA`);
   if (c.power_neg12v_ma != null) parts.push(`−12 ${c.power_neg12v_ma}mA`);
   if (c.power_5v_ma != null) parts.push(`+5 ${c.power_5v_ma}mA`);
-  if (parts.length) return parts.join(" · ");
+  if (parts.length) return parts.join(", ");
   if (c.powered === false || c.meta?.powered === false) return "Unpowered";
   return "Power unspecified (placement will not enforce rails)";
 }
@@ -131,7 +132,7 @@ function formatValidationError(err: unknown): string {
   if (detail && typeof detail === "object") {
     const errs = detail.errors;
     if (Array.isArray(errs) && errs.length) {
-      return errs.map((e) => e.message || e.field || "Validation error").join(" · ");
+      return errs.map((e) => e.message || e.field || "Validation error").join("; ");
     }
     if (detail.message) return detail.message;
   }
@@ -471,9 +472,9 @@ export default function RackBuilderPage() {
       .compatibility(selectedCatalogSlug, { modules: [], plan_close_lid: false })
       .then((res) => {
         const c = res.data;
-        const rails = c.power_headroom.map((r) => `${r.rail} ${r.status}`).join(" · ");
+        const rails = c.power_headroom.map((r) => `${r.rail} ${r.status}`).join(", ");
         setCompatNote(
-          `Compatibility baseline: ${c.overall_status} · format ${c.format_check.status} · ${rails}`,
+          `Compatibility baseline: ${c.overall_status}; format ${c.format_check.status}; ${rails}`,
         );
       })
       .catch(() => setCompatNote(null));
@@ -644,7 +645,7 @@ export default function RackBuilderPage() {
     if (!result.added.length) {
       setPlacementError(
         result.unplaced.length
-          ? `Nothing placed. ${result.unplaced.map((u) => `#${u.module_id}: ${u.reason}`).join(" · ")}`
+          ? `Nothing placed. ${result.unplaced.map((u) => `#${u.module_id}: ${u.reason}`).join("; ")}`
           : "Nothing to place.",
       );
       setBatchPlaceNote("");
@@ -652,7 +653,7 @@ export default function RackBuilderPage() {
     }
     await savePlacements(result.placements);
     const unMsg = result.unplaced.length
-      ? ` · ${result.unplaced.length} could not fit (${result.unplaced
+      ? `, ${result.unplaced.length} could not fit (${result.unplaced
           .map((u) => `#${u.module_id}`)
           .join(", ")})`
       : "";
@@ -812,7 +813,7 @@ export default function RackBuilderPage() {
     });
     setFusionFeedback(
       `Confirmed ${eligible.length} non-conflict fusion${eligible.length === 1 ? "" : "s"}` +
-        (blocked ? ` · ${blocked} blocked (conflict or missing rep)` : ""),
+        (blocked ? `, ${blocked} blocked (conflict or missing rep)` : ""),
     );
   };
 
@@ -970,34 +971,21 @@ export default function RackBuilderPage() {
       </nav>
 
       {!liveMode && preselectedModuleId != null ? (
-        <div
-          className="panel module-preselect-banner"
-          role="status"
-          style={{ marginBottom: "var(--space-4)" }}
-        >
-          <p style={{ marginTop: 0 }}>
-            <strong>Module ready to place</strong>
-          </p>
-          <p style={{ margin: 0 }}>
+        <div className="module-preselect-banner" role="status">
+          <p>
+            <strong>Module ready to place:</strong>{" "}
             {preselectedLabel ||
               (preselectedModule
                 ? `${preselectedModule.brand} ${preselectedModule.name} (${preselectedModule.hp}HP)`
                 : `Module #${preselectedModuleId}`)}
-            {" · "}
-            <strong>create a rig</strong>, then placement opens with this module preselected.
+            . Create a rig, then placement opens with this module preselected.
           </p>
         </div>
       ) : null}
 
       {!liveMode ? (
-        <div
-          className="panel"
-          style={{ marginBottom: "var(--space-4)" }}
-          aria-labelledby="case-step-title"
-        >
-          <h2 id="case-step-title" style={{ marginTop: 0 }}>
-            Step 1: choose a case envelope
-          </h2>
+        <div className="panel" aria-labelledby="case-step-title">
+          <h2 id="case-step-title">Step 1: choose a case envelope</h2>
           <p className="muted">
             Only Eurorack cases are selectable for placement. Other formats remain catalog-only on{" "}
             <Link to="/cases">Cases</Link>.
@@ -1062,7 +1050,7 @@ export default function RackBuilderPage() {
                 </option>
                 {legacyCases.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.brand} {c.name} ({c.total_hp}HP · {c.rows} row
+                    {c.brand} {c.name} ({c.total_hp}HP, {c.rows} row
                     {c.rows === 1 ? "" : "s"})
                   </option>
                 ))}
@@ -1109,7 +1097,7 @@ export default function RackBuilderPage() {
                   {selectedCatalogCase.primary_revision?.capacity_value ?? "unknown"}{" "}
                   {selectedCatalogCase.primary_revision?.capacity_unit || "hp"}
                   {selectedCatalogCase.primary_revision?.row_count != null
-                    ? ` · ${selectedCatalogCase.primary_revision.row_count} row(s)`
+                    ? `, ${selectedCatalogCase.primary_revision.row_count} row(s)`
                     : ""}
                 </h3>
               </div>
@@ -1216,8 +1204,8 @@ export default function RackBuilderPage() {
                 <option value="">Demo only (no API)</option>
                 {racks.map((rack) => (
                   <option key={rack.id} value={rack.id}>
-                    #{rack.id} · {rack.name}
-                    {rack.case_id != null ? ` · case #${rack.case_id}` : ""}
+                    #{rack.id} {rack.name}
+                    {rack.case_id != null ? ` (case #${rack.case_id})` : ""}
                   </option>
                 ))}
               </select>
@@ -1227,41 +1215,40 @@ export default function RackBuilderPage() {
           )}
         </div>
       ) : (
-        <div className="panel" style={{ marginBottom: "var(--space-4)" }}>
-          <p className="muted" style={{ marginTop: 0 }}>
-            Live placement + evidence for rig #{rackId}.{" "}
+        <div className="panel">
+          <div className="page-hero-actions">
+            <p className="muted">Live placement and evidence for rig #{rackId}.</p>
             <Link to={`/rigs/${rackId}`}>Open rig detail</Link>
-            {" · "}
             <Link to="/racks">Back to rigs</Link>
-          </p>
+          </div>
           {liveRack?.case ? (
             <p className="muted">
               Case: {liveRack.case.brand} {liveRack.case.name}
               {liveRack.case.catalog_slug
-                ? ` · catalog ${liveRack.case.catalog_slug}`
-                : " · no catalog link (materialize for full compatibility)"}
+                ? `, catalog ${liveRack.case.catalog_slug}`
+                : ", no catalog link (materialize for full compatibility)"}
               {liveRack.case.total_hp != null
-                ? ` · ${liveRack.case.total_hp}HP / ${(liveRack.case.hp_per_row || []).join("+") || "unknown"} rows`
+                ? `, ${liveRack.case.total_hp}HP in rows of ${(liveRack.case.hp_per_row || []).join(" + ") || "unknown"}`
                 : ""}
             </p>
           ) : null}
 
           {preselectedModuleId != null ? (
             <div className="module-preselect-banner" role="status">
-              <p style={{ margin: 0 }}>
+              <p>
                 Preselected from gallery:{" "}
                 <strong>
                   {preselectedModule
                     ? `${preselectedModule.brand} ${preselectedModule.name}`
                     : `module #${preselectedModuleId}`}
                 </strong>
-                {preselectedModule?.hp != null ? ` · ${preselectedModule.hp}HP` : ""}
-                {" · "}start HP auto-snaps to the first free gap on the selected row.
+                {preselectedModule?.hp != null ? ` (${preselectedModule.hp}HP)` : ""}. Start HP
+                auto-snaps to the first free gap on the selected row.
               </p>
             </div>
           ) : null}
 
-          <h2 style={{ marginTop: "var(--space-3)" }}>Module placement</h2>
+          <h2>Module placement</h2>
           <p className="muted">
             Place modules by row and start HP. Saves through rack validation; catalog compatibility
             runs when the case has <code>meta.catalog_slug</code>.
@@ -1317,7 +1304,7 @@ export default function RackBuilderPage() {
                     <div className="hp-usage__meta">
                       <span>Row {row.row}</span>
                       <span className="muted">
-                        {row.used}/{row.capacity}HP used · {row.free} free
+                        {row.used}/{row.capacity}HP used, {row.free} free
                       </span>
                     </div>
                     <div
@@ -1347,13 +1334,22 @@ export default function RackBuilderPage() {
                         setAddStartHp(Math.floor(frac * row.capacity));
                       }}
                     >
-                      <div className="rack-row-map__track">
+                      <div
+                        className="rack-row-map__track"
+                        style={{ "--row-hp": row.capacity } as CSSProperties}
+                      >
                         {blocks.map((b) => (
                           <button
                             key={b.key}
                             type="button"
                             className={`rack-row-map__block${b.powerKnown ? "" : " rack-row-map__block--unknown-power"}`}
-                            style={{ left: `${b.leftPct}%`, width: `${b.widthPct}%` }}
+                            style={
+                              {
+                                left: `${b.leftPct}%`,
+                                width: `${b.widthPct}%`,
+                                "--i": b.index,
+                              } as CSSProperties
+                            }
                             title={`${b.label} · HP ${b.start}–${b.start + b.hp - 1}${b.powerKnown ? "" : " · power unknown"}`}
                             onClick={(ev) => {
                               ev.stopPropagation();
@@ -1362,7 +1358,7 @@ export default function RackBuilderPage() {
                             }}
                           >
                             <span className="rack-row-map__block-label">{b.short}</span>
-                            <span className="rack-row-map__block-hp">{b.hp}H</span>
+                            <span className="rack-row-map__block-hp">{b.hp}HP</span>
                           </button>
                         ))}
                         {previewModule &&
@@ -1380,7 +1376,7 @@ export default function RackBuilderPage() {
                             title={`Preview: ${previewModule.brand} ${previewModule.name} @ HP ${addStartHp}`}
                           >
                             <span className="rack-row-map__block-label">{previewModule.name}</span>
-                            <span className="rack-row-map__block-hp">{previewModule.hp}H</span>
+                            <span className="rack-row-map__block-hp">{previewModule.hp}HP</span>
                           </div>
                         ) : null}
                         {batchPreview?.added
@@ -1403,7 +1399,7 @@ export default function RackBuilderPage() {
                                 <span className="rack-row-map__block-label">
                                   {mod?.name || `#${spec.module_id}`}
                                 </span>
-                                <span className="rack-row-map__block-hp">{hp}H</span>
+                                <span className="rack-row-map__block-hp">{hp}HP</span>
                               </div>
                             );
                           })}
@@ -1442,11 +1438,11 @@ export default function RackBuilderPage() {
 
           {placementModules.length > 0 || liveRack?.case ? (
             <div className="power-rail-panel" aria-label="Power rail usage" aria-live="polite">
-              <p className="muted" style={{ marginTop: 0, marginBottom: "var(--space-2)" }}>
+              <p className="muted">
                 Placement power: <strong>{placementPowerSummary.fullyKnown}</strong> of{" "}
                 {placementPowerSummary.total} modules state every rail
                 {placementPowerSummary.total
-                  ? ` · known Σ +12 ${placementPowerSummary.p12.known}mA / −12 ${placementPowerSummary.n12.known}mA / +5 ${placementPowerSummary.p5.known}mA`
+                  ? `. Known draw: +12 ${placementPowerSummary.p12.known}mA, −12 ${placementPowerSummary.n12.known}mA, +5 ${placementPowerSummary.p5.known}mA`
                   : ""}
               </p>
               {powerRailMeters.length > 0 ? (
@@ -1455,10 +1451,7 @@ export default function RackBuilderPage() {
                     <div key={rail.rail} className="power-rail-meters__row">
                       <div className="hp-usage__meta">
                         <span>
-                          <span
-                            className={`status-chip status-chip--${rail.tone}`}
-                            style={{ marginRight: "0.35rem" }}
-                          >
+                          <span className={`status-chip status-chip--${rail.tone}`}>
                             {rail.rail}
                           </span>
                         </span>
@@ -1486,12 +1479,9 @@ export default function RackBuilderPage() {
                 </div>
               ) : null}
               {unknownRails.length > 0 ? (
-                <p
-                  className="status status-warning"
-                  style={{ marginBottom: 0, fontSize: "0.85rem" }}
-                >
+                <p className="status status-warning">
                   Unknown draw, not assumed:{" "}
-                  {unknownRails.map((r) => `${RAIL_LABEL[r.key]} ${r.n}`).join(" · ")}. Totals on
+                  {unknownRails.map((r) => `${RAIL_LABEL[r.key]} ${r.n}`).join(", ")}. Totals on
                   those rails are lower bounds.
                 </p>
               ) : null}
@@ -1545,8 +1535,8 @@ export default function RackBuilderPage() {
                 {filteredGalleryModules.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.brand} {m.name} ({m.hp}HP
-                    {m.power_12v_ma != null ? ` · +12 ${m.power_12v_ma}mA` : " · power unknown"}
-                    {m.depth_mm != null ? ` · ${m.depth_mm}mm` : " · depth unknown"})
+                    {m.power_12v_ma != null ? `, +12 ${m.power_12v_ma}mA` : ", power unknown"}
+                    {m.depth_mm != null ? `, ${m.depth_mm}mm` : ", depth unknown"})
                   </option>
                 ))}
               </select>
@@ -1588,15 +1578,9 @@ export default function RackBuilderPage() {
             </p>
           ) : null}
 
-          <div
-            className="panel batch-place-panel"
-            style={{ marginTop: "var(--space-4)" }}
-            aria-labelledby="batch-place-title"
-          >
-            <h3 id="batch-place-title" style={{ marginTop: 0 }}>
-              Batch place
-            </h3>
-            <p className="muted" style={{ marginTop: 0 }}>
+          <div className="panel batch-place-panel" aria-labelledby="batch-place-title">
+            <h3 id="batch-place-title">Batch place</h3>
+            <p className="muted">
               Select several gallery modules, then pack left-to-right starting at row {addRow}.
               Unknown HP is skipped (never invented). One save applies the full pack.
             </p>
@@ -1630,10 +1614,10 @@ export default function RackBuilderPage() {
               <p className="muted" role="status" style={{ fontSize: "0.9rem" }}>
                 Plan: <strong>{batchPreview.added.length}</strong> will pack
                 {batchPreview.unplaced.length
-                  ? ` · ${batchPreview.unplaced.length} will not fit`
+                  ? `, ${batchPreview.unplaced.length} will not fit`
                   : ""}
                 {batchPreview.added.length
-                  ? ` · e.g. row ${batchPreview.added[0].row_index} @ HP ${batchPreview.added[0].start_hp}`
+                  ? `, starting at row ${batchPreview.added[0].row_index}, HP ${batchPreview.added[0].start_hp}`
                   : ""}
               </p>
             ) : null}
@@ -1661,11 +1645,9 @@ export default function RackBuilderPage() {
                         </strong>
                         <span className="muted">
                           {" "}
-                          · {m.hp}HP
-                          {m.power_12v_ma != null
-                            ? ` · +12 ${m.power_12v_ma}mA`
-                            : " · power unknown"}
-                          {already ? " · already on rig" : ""}
+                          {m.hp}HP
+                          {m.power_12v_ma != null ? `, +12 ${m.power_12v_ma}mA` : ", power unknown"}
+                          {already ? ", already on rig" : ""}
                         </span>
                       </span>
                     </label>
@@ -1693,7 +1675,7 @@ export default function RackBuilderPage() {
           {placementModules.length === 0 ? (
             <p className="status status-warning">No modules placed yet.</p>
           ) : (
-            <ul style={{ listStyle: "none", padding: 0 }}>
+            <ul className="placement-list" aria-label="Placed modules">
               {placementModules.map((spec, index) => {
                 const mod =
                   liveRack?.modules?.find(
@@ -1703,21 +1685,18 @@ export default function RackBuilderPage() {
                       m.start_hp === spec.start_hp,
                   )?.module ?? galleryModules.find((m) => m.id === spec.module_id);
                 return (
-                  <li
-                    key={`${spec.module_id}-${spec.row_index}-${spec.start_hp}-${index}`}
-                    className="panel"
-                    style={{ marginBottom: "var(--space-2)", padding: "var(--space-3)" }}
-                  >
-                    <strong>
-                      {mod ? `${mod.brand} ${mod.name}` : `Module #${spec.module_id}`}
-                    </strong>
-                    <span className="muted">
-                      {" "}
-                      · row {spec.row_index} · HP {spec.start_hp}
-                      {mod?.hp != null ? `–${spec.start_hp + mod.hp - 1}` : ""}
+                  <li key={`${spec.module_id}-${spec.row_index}-${spec.start_hp}-${index}`}>
+                    <span>
+                      <strong>
+                        {mod ? `${mod.brand} ${mod.name}` : `Module #${spec.module_id}`}
+                      </strong>{" "}
+                      <span className="muted">
+                        row {spec.row_index}, HP {spec.start_hp}
+                        {mod?.hp != null ? ` to ${spec.start_hp + mod.hp - 1}` : ""}
+                      </span>
                     </span>
                     {mod && "power_configs" in mod && mod.power_configs?.length ? (
-                      <label className="field" style={{ marginTop: "var(--space-2)" }}>
+                      <label className="field placement-list__config">
                         Jumper setting
                         <select
                           value={spec.power_config_id ?? ""}
@@ -1733,8 +1712,8 @@ export default function RackBuilderPage() {
                           <option value="">Not chosen (jumper-dependent draw unknown)</option>
                           {mod.power_configs.map((c) => (
                             <option key={c.id} value={c.id}>
-                              {c.label} · +12 {c.power_12v_ma ?? "?"} / −12{" "}
-                              {c.power_neg12v_ma ?? "?"} / +5 {c.power_5v_ma ?? "?"} mA
+                              {c.label}: +12 {c.power_12v_ma ?? "?"}, −12 {c.power_neg12v_ma ?? "?"}
+                              , +5 {c.power_5v_ma ?? "?"} mA
                             </option>
                           ))}
                         </select>
@@ -1743,7 +1722,6 @@ export default function RackBuilderPage() {
                     <button
                       type="button"
                       className="button button-quiet"
-                      style={{ marginLeft: "var(--space-3)" }}
                       disabled={placementSaving}
                       onClick={() => void removePlacement(index)}
                     >
@@ -1756,11 +1734,11 @@ export default function RackBuilderPage() {
           )}
 
           {rackCompat ? (
-            <div className="panel" style={{ marginTop: "var(--space-4)" }} aria-live="polite">
-              <h3 style={{ marginTop: 0 }}>Dual-gate compatibility</h3>
+            <div className="panel" aria-live="polite">
+              <h3>Dual-gate compatibility</h3>
               <p className="muted">
                 Bridge: {rackCompat.bridge_status}
-                {rackCompat.catalog_slug ? ` · ${rackCompat.catalog_slug}` : ""}
+                {rackCompat.catalog_slug ? ` (${rackCompat.catalog_slug})` : ""}
               </p>
               <p>{rackCompat.message}</p>
               {rackCompat.compatibility ? (
@@ -1833,10 +1811,10 @@ export default function RackBuilderPage() {
                           <li key={r.rail}>
                             <strong>{r.rail}</strong>: {r.status}
                             {r.case_capacity_ma != null
-                              ? ` · ${r.module_draw_ma}/${r.case_capacity_ma}mA`
-                              : ` · draw ${r.module_draw_ma}mA (case capacity unspecified)`}
+                              ? `, ${r.module_draw_ma}/${r.case_capacity_ma}mA`
+                              : `, draw ${r.module_draw_ma}mA (case capacity unspecified)`}
                             {r.headroom_ma != null && !r.unknown_draw_count
-                              ? ` · headroom ${r.headroom_ma}mA`
+                              ? `, headroom ${r.headroom_ma}mA`
                               : ""}
                             {r.message ? `: ${r.message}` : ""}
                           </li>
@@ -1940,16 +1918,12 @@ export default function RackBuilderPage() {
           </div>
 
           {(fused.length > 0 || reconcileStatus) && (
-            <div
-              className="panel"
-              aria-label="Multi-photo reconciliation"
-              style={{ marginBottom: "1rem" }}
-            >
+            <div className="panel" aria-label="Multi-photo reconciliation">
               <h3>Multi-photo reconciliation</h3>
               <p className="muted" role="status">
                 Status: {reconcileStatus ?? "unknown"}
-                {imageCount ? ` · ${imageCount} image(s)` : ""}
-                {reconcileNote ? ` · ${reconcileNote}` : ""}
+                {imageCount ? `, ${imageCount} image(s)` : ""}
+                {reconcileNote ? `. ${reconcileNote}` : ""}
               </p>
               {fused.length === 0 ? (
                 <p className="muted">No fused entities yet.</p>
@@ -2001,15 +1975,15 @@ export default function RackBuilderPage() {
                         >
                           <div>
                             <strong>
-                              {entity.manufacturer || "Unknown"} · {entity.model || entity.fuse_id}
+                              {entity.manufacturer || "Unknown"} {entity.model || entity.fuse_id}
                             </strong>
                             <p className="muted">
                               Support: {entity.observation_count} observation(s) across{" "}
-                              {entity.supporting_image_ids.length} image(s) · mean confidence{" "}
+                              {entity.supporting_image_ids.length} image(s), mean confidence{" "}
                               {(entity.mean_confidence * 100).toFixed(0)}%
                               {entity.representative_candidate_id
-                                ? " · linked to ranked candidate"
-                                : " · no representative candidate"}
+                                ? ", linked to ranked candidate"
+                                : ", no representative candidate"}
                             </p>
                             <p className={`status status-${statusClass}`}>{statusText}</p>
                           </div>
@@ -2064,12 +2038,12 @@ export default function RackBuilderPage() {
               <li key={candidate.id} className="detection-row">
                 <div>
                   <strong>
-                    {candidate.manufacturer} · {candidate.label}
+                    {candidate.manufacturer} {candidate.label}
                   </strong>
                   <p className="muted">
                     Confidence {(candidate.confidence * 100).toFixed(0)}%
                     {candidate.alternatives.length
-                      ? ` · alternatives: ${candidate.alternatives.join(", ")}`
+                      ? `. Alternatives: ${candidate.alternatives.join(", ")}`
                       : ""}
                   </p>
                   <p
@@ -2090,17 +2064,17 @@ export default function RackBuilderPage() {
                     >
                       <strong>Decision Intelligence: advisory only</strong>
                       <span>
-                        {" "}
-                        · {candidate.decision.disposition.replace("_", " ")}
+                        {": "}
+                        {candidate.decision.disposition.replace("_", " ")}
                         {candidate.decision.confidence != null
-                          ? ` · ${(candidate.decision.confidence * 100).toFixed(0)}%`
+                          ? `, ${(candidate.decision.confidence * 100).toFixed(0)}%`
                           : ""}
-                        {candidate.decision.provider ? ` · ${candidate.decision.provider}` : ""}
+                        {candidate.decision.provider ? `, ${candidate.decision.provider}` : ""}
                       </span>
                       {candidate.decision.reasonCodes?.length ? (
                         <span className="muted">
                           {" "}
-                          · {candidate.decision.reasonCodes.join(", ")}
+                          ({candidate.decision.reasonCodes.join(", ")})
                         </span>
                       ) : null}
                       <p className="muted" style={{ marginBottom: 0 }}>
@@ -2154,7 +2128,7 @@ export default function RackBuilderPage() {
           {inventoryRevisionId ? (
             <p className="status status-success" role="status">
               Inventory revision ready: {inventoryRevisionId}
-              {readyForGeneration ? " · ready for generation" : " · not ready for generation"}.
+              {readyForGeneration ? ", ready for generation" : ", not ready for generation"}.
               {activeRackId != null ? (
                 <>
                   {" "}

@@ -2,6 +2,7 @@
  * Cases catalog — normalized case_catalog browse + materialize into Rack Builder.
  */
 import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { caseCatalogApi } from "@/lib/api";
 import type { CatalogCaseListItem, CatalogStatsResponse } from "@/types/api";
@@ -24,10 +25,10 @@ function capacityLabel(item: CatalogCaseListItem): string {
   const rev = item.primary_revision;
   if (!rev) return "Capacity unspecified";
   const unit = (rev.capacity_unit || "units").replace(/_/g, " ");
-  const value = rev.capacity_value != null ? rev.capacity_value : "unknown";
   const rows =
-    rev.row_count != null ? ` · ${rev.row_count} row${rev.row_count === 1 ? "" : "s"}` : "";
-  return `${value} ${unit}${rows}`;
+    rev.row_count != null ? `, ${rev.row_count} row${rev.row_count === 1 ? "" : "s"}` : "";
+  if (rev.capacity_value == null) return `Capacity unspecified${rows}`;
+  return `${rev.capacity_value} ${unit}${rows}`;
 }
 
 function depthLabel(item: CatalogCaseListItem): string {
@@ -35,7 +36,7 @@ function depthLabel(item: CatalogCaseListItem): string {
   if (!rev) return "Depth unspecified";
   if (rev.depth_min_mm != null && rev.depth_max_mm != null) {
     if (rev.depth_min_mm === rev.depth_max_mm) return `Depth ${rev.depth_min_mm} mm`;
-    return `Depth ${rev.depth_min_mm}–${rev.depth_max_mm} mm`;
+    return `Depth ${rev.depth_min_mm} to ${rev.depth_max_mm} mm`;
   }
   if (rev.depth_min_mm != null) return `Depth ≥ ${rev.depth_min_mm} mm`;
   if (rev.depth_max_mm != null) return `Depth ≤ ${rev.depth_max_mm} mm`;
@@ -46,6 +47,13 @@ function powerLabel(item: CatalogCaseListItem): string {
   if (item.powered === false) return "Unpowered";
   if (item.powered === true) return "Powered (rails on revision / materialize)";
   return "Power unspecified";
+}
+
+/** Stated capacity in HP, drawn as the case's rail; other units are not drawn. */
+function railCapacity(item: CatalogCaseListItem): number | null {
+  const rev = item.primary_revision;
+  if (!rev || rev.capacity_value == null) return null;
+  return (rev.capacity_unit || "").toLowerCase() === "hp" ? rev.capacity_value : null;
 }
 
 function canPlace(item: CatalogCaseListItem): boolean {
@@ -203,32 +211,48 @@ export default function CasesPage() {
           >
             {batchBusy ? "Materializing…" : "Materialize Eurorack for rigs"}
           </button>
-          <button className="button button-secondary" type="button" onClick={() => void load()}>
+          <button className="button button-quiet" type="button" onClick={() => void load()}>
             Refresh
           </button>
         </div>
       </header>
 
-      {batchNote ? (
-        <p className="status status-success" role="status">
-          {batchNote}
-        </p>
+      {stats ? (
+        <div role="status" aria-label="Case catalog stats">
+          <dl className="readout">
+            <div>
+              <dt>Cases</dt>
+              <dd>{stats.case_count}</dd>
+            </div>
+            <div>
+              <dt>Manufacturers</dt>
+              <dd>{stats.manufacturer_count}</dd>
+            </div>
+            <div>
+              <dt>With rail data</dt>
+              <dd>{stats.with_power_rails}</dd>
+            </div>
+            <div>
+              <dt>With depth</dt>
+              <dd>{stats.with_depth}</dd>
+            </div>
+            <div>
+              <dt>Source packets</dt>
+              <dd>{stats.source_packet_count}</dd>
+            </div>
+          </dl>
+        </div>
       ) : null}
 
-      {stats ? (
-        <div
-          className="panel"
-          style={{ marginBottom: "var(--space-4)" }}
-          aria-label="Case catalog stats"
-        >
-          <p className="muted" style={{ margin: 0 }} role="status">
-            {stats.case_count} cases from {stats.manufacturer_count} manufacturers.{" "}
-            {stats.with_power_rails} with rail data, {stats.with_depth} with depth,{" "}
-            {stats.source_packet_count} source packets.
-          </p>
-          <div className="gate-chip-row" style={{ marginTop: "var(--space-3)" }}>
+      <div className="filter-bar" aria-label="Case filters">
+        <div className="seg" role="group" aria-labelledby="case-format-label">
+          <span className="seg-label" id="case-format-label">
+            Placement
+          </span>
+          <div className="seg-options">
             <button
               type="button"
+              aria-pressed={formatFamilyFilter === "eurorack"}
               className={`status-chip status-chip--interactive${formatFamilyFilter === "eurorack" ? " status-chip--success" : ""}`}
               onClick={() => setFormatFamilyFilter("eurorack")}
             >
@@ -236,13 +260,22 @@ export default function CasesPage() {
             </button>
             <button
               type="button"
+              aria-pressed={formatFamilyFilter === ""}
               className={`status-chip status-chip--interactive${formatFamilyFilter === "" ? " is-active" : ""}`}
               onClick={() => setFormatFamilyFilter("")}
             >
               All formats
             </button>
+          </div>
+        </div>
+        <div className="seg" role="group" aria-labelledby="case-power-label">
+          <span className="seg-label" id="case-power-label">
+            Power supply
+          </span>
+          <div className="seg-options">
             <button
               type="button"
+              aria-pressed={poweredFilter === "yes"}
               className={`status-chip status-chip--interactive${poweredFilter === "yes" ? " status-chip--success" : ""}`}
               onClick={() => setPoweredFilter("yes")}
             >
@@ -250,6 +283,7 @@ export default function CasesPage() {
             </button>
             <button
               type="button"
+              aria-pressed={poweredFilter === "no"}
               className={`status-chip status-chip--interactive${poweredFilter === "no" ? " status-chip--warning" : ""}`}
               onClick={() => setPoweredFilter("no")}
             >
@@ -257,73 +291,73 @@ export default function CasesPage() {
             </button>
           </div>
         </div>
-      ) : null}
-
-      <div className="panel" style={{ marginBottom: "var(--space-4)" }} aria-label="Case filters">
-        <div className="toolbar">
-          <label className="field" style={{ flex: "1 1 12rem" }}>
-            Search cases
-            <input
-              type="search"
-              value={q}
-              placeholder="Manufacturer, model, or slug…"
-              aria-label="Search cases"
-              onChange={(e) => setQ(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") void load();
-              }}
-            />
-          </label>
-          <label className="inline-field">
-            Format
-            <select
-              value={formatFamilyFilter}
-              onChange={(e) => setFormatFamilyFilter(e.target.value)}
-            >
-              {FORMAT_OPTIONS.map((opt) => (
-                <option key={opt.label} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="inline-field">
-            Powered
-            <select
-              value={poweredFilter}
-              onChange={(e) => setPoweredFilter(e.target.value as PoweredFilter)}
-            >
-              <option value="all">Any</option>
-              <option value="yes">Powered</option>
-              <option value="no">Unpowered</option>
-            </select>
-          </label>
-          <label className="inline-field">
-            Min capacity
-            <input
-              type="number"
-              min={0}
-              value={minCapacity}
-              onChange={(e) => setMinCapacity(e.target.value)}
-              style={{ width: "6rem" }}
-            />
-          </label>
-          <button className="button button-secondary" type="button" onClick={() => void load()}>
-            Apply
+        <label className="field">
+          Search cases
+          <input
+            type="search"
+            value={q}
+            placeholder="Manufacturer, model, or slug…"
+            aria-label="Search cases"
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") void load();
+            }}
+          />
+        </label>
+        <label className="inline-field">
+          Format
+          <select
+            value={formatFamilyFilter}
+            onChange={(e) => setFormatFamilyFilter(e.target.value)}
+          >
+            {FORMAT_OPTIONS.map((opt) => (
+              <option key={opt.label} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="inline-field">
+          Powered
+          <select
+            value={poweredFilter}
+            onChange={(e) => setPoweredFilter(e.target.value as PoweredFilter)}
+          >
+            <option value="all">Any</option>
+            <option value="yes">Powered</option>
+            <option value="no">Unpowered</option>
+          </select>
+        </label>
+        <label className="inline-field case-min-capacity">
+          Min capacity
+          <input
+            type="number"
+            min={0}
+            value={minCapacity}
+            onChange={(e) => setMinCapacity(e.target.value)}
+          />
+        </label>
+        <button className="button button-secondary" type="button" onClick={() => void load()}>
+          Apply
+        </button>
+        {filtersActive ? (
+          <button
+            className="button button-quiet"
+            type="button"
+            onClick={() => {
+              clearFilters();
+            }}
+          >
+            Clear filters
           </button>
-          {filtersActive ? (
-            <button
-              className="button button-quiet"
-              type="button"
-              onClick={() => {
-                clearFilters();
-              }}
-            >
-              Clear filters
-            </button>
-          ) : null}
-        </div>
+        ) : null}
       </div>
+
+      {batchNote ? (
+        <p className="notice status status-success" role="status">
+          {batchNote}
+        </p>
+      ) : null}
 
       {actionError ? (
         <p className="status status-danger" role="alert">
@@ -332,13 +366,13 @@ export default function CasesPage() {
       ) : null}
 
       {state === "loading" ? (
-        <p className="status" role="status">
+        <p className="results-meta" role="status">
           Loading catalog…
         </p>
       ) : null}
 
       {state === "error" ? (
-        <div className="panel" role="alert">
+        <div className="screen-state" role="alert">
           <p className="status status-danger">{error}</p>
           {import.meta.env.DEV ? (
             <p className="muted">
@@ -353,7 +387,7 @@ export default function CasesPage() {
       ) : null}
 
       {state === "empty" ? (
-        <div className="panel">
+        <div className="screen-state">
           <p className="status status-warning">No catalog cases match these filters.</p>
           <p className="muted">
             {import.meta.env.DEV ? (
@@ -369,17 +403,32 @@ export default function CasesPage() {
 
       {state === "ready" ? (
         <>
-          <p className="muted" role="status" style={{ marginBottom: "var(--space-4)" }}>
+          <p className="results-meta" role="status">
             Showing {cases.length} of {total} catalog cases
-            {manufacturers.length ? ` · ${manufacturers.length} manufacturers in view` : ""}
+            {manufacturers.length ? `, ${manufacturers.length} manufacturers in view` : ""}
             {filtersActive ? " (filtered)" : ""}
           </p>
           <div className="catalog-grid" aria-label="Case catalog results">
             {cases.map((item) => {
               const placeable = canPlace(item);
               const busy = materializing === item.slug;
+              const hpCapacity = railCapacity(item);
               return (
                 <article key={item.slug} className="catalog-card">
+                  {hpCapacity != null ? (
+                    <div
+                      className="capacity-rail"
+                      data-wide={hpCapacity > 150 ? "true" : undefined}
+                      style={{ "--cap": hpCapacity } as CSSProperties}
+                      aria-hidden="true"
+                    >
+                      <div className="capacity-rail__track">
+                        <div className="capacity-rail__fill">
+                          <span className="capacity-rail__hp">{hpCapacity} HP</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
                   <h2>
                     {item.manufacturer} {item.model}
                   </h2>
@@ -403,21 +452,19 @@ export default function CasesPage() {
                       {formatDisplay(item.format_family)}
                     </span>
                   </div>
-                  <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>
-                    {item.primary_revision?.confidence
-                      ? `confidence ${item.primary_revision.confidence}`
-                      : ""}
-                    {item.production_status
-                      ? `${item.primary_revision?.confidence ? " · " : ""}${item.production_status}`
-                      : ""}
-                  </p>
+                  {item.primary_revision?.confidence || item.production_status ? (
+                    <p className="muted case-confidence">
+                      {[
+                        item.primary_revision?.confidence
+                          ? `confidence ${item.primary_revision.confidence}`
+                          : "",
+                        item.production_status ?? "",
+                      ]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </p>
+                  ) : null}
                   <div className="page-hero-actions">
-                    <Link
-                      className="button button-secondary"
-                      to={`/cases/${encodeURIComponent(item.slug)}`}
-                    >
-                      Details
-                    </Link>
                     {placeable ? (
                       <button
                         className="button button-primary"
@@ -432,6 +479,12 @@ export default function CasesPage() {
                         Catalog only (non-Eurorack placement)
                       </span>
                     )}
+                    <Link
+                      className="button button-secondary"
+                      to={`/cases/${encodeURIComponent(item.slug)}`}
+                    >
+                      Details
+                    </Link>
                     <Link className="button button-quiet" to="/racks">
                       Open rigs
                     </Link>

@@ -50,7 +50,16 @@ Prefer real brand assets under `/brand/` (`splash-hero.jpg`, lockups, hive-drone
 
 ## Motion
 
-Stillness preferred. Amber micro-pulse OK. No glow-blur neon stacks. Honor `prefers-reduced-motion`.
+Motion is signal: it carries a change of state, never decoration.
+
+- A module entering a rail row slides into its slot. HP and power meters fill to their value. Results crossfade when filters change. The active nav item's amber rule draws in. A hovered row lights its faceplate edge.
+- `transform` and `opacity` only. Durations: 120ms (press, tick), 220ms (hover, fill, crossfade), 420ms (a panel opening). Ease-out on arrival, no overshoot.
+- No ambient loops, no glow-blur neon stacks. A loader is the only infinite animation.
+- Honor `prefers-reduced-motion`: every animation shows its end state at once.
+
+## Signature
+
+**The rail.** Modules are drawn to scale in HP (1 HP = 5.08 mm) wherever they appear: as a faceplate in the catalog, as a slot in a rig row. A rig row is a 3U rail that fills toward its HP budget. Widths come from data; an unknown width is drawn as unknown, never guessed.
 
 ## Stamp
 

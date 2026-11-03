@@ -1,0 +1,384 @@
+/* Brand surfaces: the home fold, sign-in diptych, the lost route */
+
+/* —— Home: brand-first fold over the hive-drone photograph —— */
+.home-hero {
+  position: relative;
+  display: grid;
+  align-items: center;
+  min-height: min(calc(100dvh - var(--header-height)), 820px);
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-rule);
+  color: var(--color-on-dark);
+  background: var(--zs-carbon);
+}
+.home-hero__media {
+  position: absolute;
+  inset: 0;
+  background: url("/brand/splash/splash-hero.jpg") 72% 42% / cover no-repeat;
+  animation: hero-settle 1.6s var(--ease-out) both;
+}
+@keyframes hero-settle {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.home-hero__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      var(--zs-carbon) 0%,
+      color-mix(in oklab, var(--zs-carbon) 82%, transparent) 30%,
+      transparent 62%
+    ),
+    linear-gradient(to top, var(--zs-carbon) 0%, transparent 34%);
+}
+.home-hero__content {
+  position: relative;
+  z-index: var(--z-base);
+  display: grid;
+  justify-items: start;
+  gap: var(--space-lg);
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-3xl) var(--gutter);
+}
+.home-hero__content > * {
+  animation: hero-rise var(--dur-long) var(--ease-out) both;
+}
+.home-hero__content > :nth-child(2) {
+  animation-delay: 80ms;
+}
+.home-hero__content > :nth-child(3) {
+  animation-delay: 160ms;
+}
+.home-hero__content > :nth-child(4) {
+  animation-delay: 240ms;
+}
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.home-brand {
+  margin: 0;
+  color: var(--color-on-dark);
+  font: 600 var(--text-poster) / 0.92 var(--font-display);
+  letter-spacing: -0.045em;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+.home-headline {
+  max-width: 16ch;
+  color: var(--color-on-dark);
+  font: 500 clamp(1.6rem, 2.8vw, 2.25rem) / 1.1 var(--font-display);
+  letter-spacing: -0.03em;
+}
+.home-lede {
+  max-width: 44ch;
+  color: var(--color-on-dark-2);
+  font-size: var(--text-lg);
+  line-height: 1.5;
+}
+.home-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+.home-cta .button {
+  min-height: 48px;
+  padding: 0 var(--space-lg);
+  font-size: var(--text-md);
+}
+.app-shell .home-cta .button-quiet {
+  border-color: transparent;
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule-strong);
+  text-underline-offset: 0.3em;
+}
+
+/* The four laws: a spec sheet, numbered */
+.home-laws {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  gap: var(--space-xl);
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-3xl) var(--gutter);
+}
+.home-laws h2 {
+  max-width: 12ch;
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+.home-laws__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-rule);
+  counter-reset: law;
+  list-style: none;
+}
+.home-laws__list li {
+  display: grid;
+  align-content: start;
+  gap: var(--space-md);
+  min-height: 11rem;
+  padding: var(--space-lg) var(--space-lg) var(--space-xl) 0;
+  border-bottom: 1px solid var(--color-rule);
+  color: var(--color-ink);
+  font: 500 var(--text-lg) / 1.35 var(--font-display);
+  letter-spacing: -0.015em;
+  counter-increment: law;
+}
+.home-laws__list li:nth-child(even) {
+  padding-left: var(--space-lg);
+  border-left: 1px solid var(--color-rule);
+}
+.home-laws__list li::before {
+  color: var(--color-accent-text);
+  content: counter(law, decimal-leading-zero);
+  font: 500 var(--text-sm) / 1 var(--font-mono);
+}
+
+/* —— Sign in: brand panel beside the form —— */
+.auth-page {
+  display: grid;
+  place-items: center;
+  min-height: calc(100dvh - 220px);
+}
+.auth-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: var(--space-md);
+  width: min(1040px, 100%);
+}
+.auth-brand {
+  position: relative;
+  overflow: hidden;
+  align-content: end;
+  gap: var(--space-md);
+  min-height: 38rem;
+  padding: 16rem var(--space-xl) var(--space-xl);
+  color: var(--color-on-dark);
+  background: var(--zs-carbon);
+  box-shadow: inset 0 0 0 1px var(--color-rule);
+}
+.auth-brand-photo {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 17rem;
+  background: url("/brand/splash/splash-hero.jpg") 50% 44% / cover no-repeat;
+  opacity: 0.9;
+  mask-image: linear-gradient(to bottom, var(--zs-carbon) 55%, transparent);
+  pointer-events: none;
+}
+.auth-brand > *:not(.auth-brand-photo) {
+  position: relative;
+  z-index: var(--z-base);
+}
+.auth-brand-mark {
+  color: var(--color-on-dark);
+  font: 600 var(--text-3xl) / 1 var(--font-display);
+  letter-spacing: -0.04em;
+}
+.auth-brand-title {
+  max-width: none;
+  font-size: clamp(2.25rem, 4vw, 3.25rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.auth-brand-lede {
+  max-width: 40ch;
+  color: var(--color-on-dark-2);
+  line-height: 1.55;
+}
+.auth-brand-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-rule);
+  color: var(--color-on-dark-2);
+  font-size: var(--text-sm);
+  list-style: none;
+}
+.auth-brand-list li {
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+.auth-brand-foot {
+  color: var(--color-on-dark-2);
+  font-size: var(--text-sm);
+}
+.auth-card {
+  align-content: start;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+}
+.auth-card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.auth-mark {
+  flex-shrink: 0;
+  width: calc(2 * var(--hp-px));
+  height: 24px;
+  border-radius: 1px;
+  background: var(--color-accent);
+}
+.auth-card-title {
+  font-size: var(--text-2xl);
+}
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--color-rule);
+}
+.auth-tab {
+  position: relative;
+  min-height: 44px;
+  border: 0;
+  color: var(--color-ink-2);
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color var(--dur-short) var(--ease-out);
+}
+.auth-tab::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--color-accent);
+  content: "";
+  transform: scaleX(0);
+  transition: transform var(--dur-short) var(--ease-out);
+}
+.auth-tab:hover,
+.auth-tab[aria-selected="true"] {
+  color: var(--color-ink);
+}
+.auth-tab[aria-selected="true"]::after {
+  transform: scaleX(1);
+}
+.auth-tab:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+}
+.auth-form {
+  display: grid;
+  gap: var(--space-md);
+}
+.auth-password-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-xs);
+}
+.auth-password-toggle {
+  min-width: 4.5rem;
+}
+.auth-submit {
+  width: 100%;
+  min-height: 44px;
+}
+.auth-error {
+  padding: var(--space-sm) var(--space-md);
+  border-left: 2px solid var(--color-error);
+  background: color-mix(in oklab, var(--color-error) 8%, var(--color-paper-2));
+}
+.auth-demo {
+  display: grid;
+  gap: var(--space-xs);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-rule);
+  font-size: var(--text-sm);
+}
+.auth-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: var(--space-2xs);
+}
+.auth-back {
+  font-size: var(--text-sm);
+}
+.app-shell .auth-back a {
+  color: var(--color-ink-2);
+}
+.app-shell .auth-back a:hover {
+  color: var(--color-ink);
+}
+
+@media (max-width: 52rem) {
+  .home-laws {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .home-laws__list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .home-laws__list li,
+  .home-laws__list li:nth-child(even) {
+    min-height: 0;
+    padding: var(--space-md) 0;
+    border-left: 0;
+  }
+  .auth-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .auth-brand {
+    min-height: 0;
+    padding-top: 12rem;
+  }
+  .auth-brand-photo {
+    height: 13rem;
+  }
+}
+@media (max-width: 40rem) {
+  .home-hero__media {
+    background-position: 62% 30%;
+  }
+  .home-hero__veil {
+    background: linear-gradient(to top, var(--zs-carbon) 30%, transparent 85%);
+  }
+  .home-hero {
+    align-items: end;
+  }
+  .auth-brand-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .auth-password-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero__media,
+  .home-hero__content > * {
+    animation: none;
+  }
+  .auth-tab::after {
+    transition: none;
+  }
+}
