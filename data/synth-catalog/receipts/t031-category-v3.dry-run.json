@@ -1,0 +1,36 @@
+{
+  "task": "spec 003 T031 offline pass: category overlay v3 dry run",
+  "target": "scratch Postgres 15 database (local container), migrated to alembic head and loaded by import_catalog_population.py --apply from this branch's inputs without module-catalog-category-v3.json (main's catalog inputs); no staging or production replica was available offline",
+  "baseline_apply": {
+    "plan_hash": "24cf2df2ffb394105c8f6deff0d002d82bffeaac76aad643eb8f96e9852dc200",
+    "inputs_hash": "8c1e8bca23a1fd7d9e4d6591ab120d62af21e0b5c1178c3b646b660c33cac6e0",
+    "conflicts_total": 0,
+    "unmatched": {
+      "hp": 31,
+      "power_depth": 38,
+      "retire_catalog": 1,
+      "retire_module": 1
+    }
+  },
+  "dry_run": {
+    "mode": "dry-run",
+    "database": "127.0.0.1:5432/patchhive_t031_offline_scratch",
+    "plan_hash": "5960fd8e83fc7fe2c5ca7fb43ff8eda9fe10a76ec0909e317ae1548c98660af7",
+    "inputs_hash": "f17caec2d923f6ae9c51be5aa614eebb56414f02655f316d69da9be9d19c4043",
+    "inserts": {},
+    "updates": {
+      "category_overlay": 74
+    },
+    "conflicts_total": 0,
+    "unmatched": {
+      "hp": 31,
+      "power_depth": 38,
+      "retire_catalog": 1,
+      "retire_module": 1
+    },
+    "destructive_sql": false,
+    "started_at": "2026-11-03T20:54:27+00:00",
+    "finished_at": "2026-11-03T20:54:30+00:00"
+  },
+  "note": "plan_hash depends on the target database's state, so db-load.yml's own dry run on staging or prod gives the hash to apply with; inputs_hash is a hash of the committed catalog inputs and matches any run on this commit"
+}

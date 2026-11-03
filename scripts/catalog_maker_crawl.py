@@ -701,6 +701,8 @@ def crawl_adapter(brand: str, cfg: dict, cap: int, rec: dict) -> None:
                 method = page_method if any(row.get(f) is not None for f in RAIL) else method
         if row and "ambiguous_hp" not in row:
             row["fetch_method"] = method
+            if cand.store_tags:  # the store's own taxonomy, kept apart from the page's tags
+                row["store_tags"] = cand.store_tags
             rec["modules"].append(row)
 
 

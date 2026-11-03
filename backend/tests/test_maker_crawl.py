@@ -302,6 +302,77 @@ def test_woocommerce_keeps_wanted_categories(tmp_path: Path) -> None:
     ]
 
 
+def test_feed_adapters_keep_the_store_taxonomy(tmp_path: Path) -> None:
+    """Spec 003 T031: the store's own product type, categories and tags reach the crawl."""
+    shopify = {
+        "products": [
+            {
+                "handle": "maths",
+                "title": "Maths",
+                "product_type": "Eurorack Module",
+                "tags": ["Function Generator", "Envelope", "eurorack module"],
+                "body_html": "<p>20HP</p>",
+            }
+        ]
+    }
+    squarespace = {
+        "items": [
+            {"title": "Blur", "fullUrl": "/modules/p/blur", "body": "2HP", "categories": ["Filters"], "tags": ["lowpass"]}
+        ],
+        "pagination": {},
+    }
+    woo = [
+        {
+            "name": "Plonk",
+            "permalink": "https://woo.example/shop/plonk/",
+            "categories": [{"slug": "eurorack", "name": "Eurorack"}, {"slug": "voices", "name": "Drums &amp; Voices"}],
+            "tags": [{"slug": "physical-modelling", "name": "Physical modelling"}],
+            "description": "Width 12HP",
+        }
+    ]
+    site = Site(
+        {
+            "https://shop.example/products.json?limit=250&page=1": (200, json.dumps(shopify)),
+            "https://shop.example/products.json?limit=250&page=2": (200, json.dumps({"products": []})),
+            "https://sq.example/modules?format=json": (200, json.dumps(squarespace)),
+            "https://woo.example/wp-json/wc/store/v1/products?per_page=100&page=1": (200, json.dumps(woo)),
+            "https://woo.example/wp-json/wc/store/v1/products?per_page=100&page=2": (200, "[]"),
+        }
+    )
+    scraper = _scraper(tmp_path, site)
+    [maths] = maker_adapters.enumerate_products(scraper, {"homepage": "https://shop.example/", "kind": "shopify"})
+    [blur] = maker_adapters.enumerate_products(
+        scraper, {"homepage": "https://sq.example/", "kind": "squarespace", "collections": ["/modules"]}
+    )
+    [plonk] = maker_adapters.enumerate_products(
+        scraper, {"homepage": "https://woo.example/", "kind": "woocommerce", "categories": ["eurorack"]}
+    )
+    assert maths.store_tags == ["Eurorack Module", "Function Generator", "Envelope"]
+    assert blur.store_tags == ["Filters", "lowpass"]
+    assert plonk.store_tags == ["Eurorack", "Drums & Voices", "Physical modelling"]
+
+
+def test_store_tags_reads_comma_strings_and_skips_blanks() -> None:
+    assert maker_adapters.store_tags([None, ""], "VCO, Oscillators ,, vco") == ["VCO", "Oscillators"]
+
+
+def test_adapter_rows_carry_the_store_taxonomy(monkeypatch: pytest.MonkeyPatch) -> None:
+    cands = [
+        maker_adapters.Candidate(
+            "https://shop.example/products/maths", "Maths", "Width 20HP, 60mA @ +12V, 50mA @ -12V", ["Function Generator"]
+        ),
+        maker_adapters.Candidate("https://shop.example/products/blur", "Blur", "Width 2HP, 20mA @ +12V"),
+    ]
+    monkeypatch.setattr(crawl.maker_adapters, "enumerate_products", lambda fetch, cfg: cands)
+    monkeypatch.setattr(crawl, "fetch_text", lambda url, render=False: ("", "free_http"))
+    rec = {"modules": [], "pages": 0, "methods": {}, "ambiguous_hp": 0}
+    crawl.crawl_adapter("Acme", {"homepage": "https://shop.example/", "kind": "shopify"}, 10, rec)
+    by_name = {m["name"]: m for m in rec["modules"]}
+    assert by_name["Maths"]["store_tags"] == ["Function Generator"]
+    assert by_name["Maths"]["tags"] == []  # the page's own tags stay separate
+    assert "store_tags" not in by_name["Blur"]
+
+
 def test_listing_follows_index_pages_to_products(tmp_path: Path) -> None:
     site = Site(
         {
