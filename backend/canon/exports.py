@@ -210,8 +210,12 @@ def reconcile_ledger(session: Session, user_id: int) -> ReconciliationReport:
         user_id=user_id,
         balance=sum(entry.delta for entry in entries),
         export_debits=sum(-entry.delta for entry in entries if entry.entry_type == "debit"),
+        # Export reversals only: a provider purchase refund (OQ-2) is a ``refund`` entry
+        # with no export and a negative delta.
         reversals=sum(
-            entry.delta for entry in entries if entry.entry_type in {"refund", "reversal"}
+            entry.delta
+            for entry in entries
+            if entry.entry_type in {"refund", "reversal"} and entry.export_id
         ),
         anomalies=tuple(sorted(anomalies)),
     )

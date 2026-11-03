@@ -3,7 +3,9 @@
 Source: specs/004-commerce/spec.md, "## Stateful behavior", "### Machine A: Referral" and
 "### Machine B: One-time credit purchase". Machine B (T046) lives in canon/checkout.py;
 its ``Unresolved --operator_resolves--> Credited`` row is ``resolve_unresolved_event``
-(T048b). Machine C
+(T048b), and its refund and dispute rows (OQ-2 ``A_reverse_unspent``, T053) are
+``handle_payment_reversal_event``, which also encodes Machine A's
+``Rewarded --refund_processed--> Rewarded``. Machine C
 (subscription) is not encoded: its handlers are still ``_machine_not_built`` in
 canon/webhook_events.py (T049 open). Machine A purchases here are provider-verified
 (``payment_verified=True``); an unverified one is refused before anything is written
@@ -23,7 +25,7 @@ from canon.checkout import (
     resolve_unresolved_event,
     start_credit_checkout,
 )
-from canon.exports import ExportBoundaryError, receive_stripe_webhook
+from canon.exports import ExportBoundaryError, credit_balance, receive_stripe_webhook
 from canon.models import (
     CanonicalAdminAuditEventRecord,
     CanonicalCreditLedgerEntryRecord,
@@ -221,6 +223,8 @@ _B_STATES = {
     "credited": CREDITED,
     "failed": ABANDONED,
     "abandoned": ABANDONED,
+    "partially_refunded": "PartiallyRefunded",
+    "refunded": "Refunded",
 }
 
 
@@ -442,3 +446,145 @@ def test_b_open_to_credited_needs_a_verified_provider_event(db_session: Session,
     db_session.rollback()
     assert _b_state(db_session, payment) == CHECKOUT_OPEN
     assert _purchase_entries(db_session) == 0
+
+
+# --- Machine B refunds and disputes (OQ-2 ``A_reverse_unspent``, T053) -------------------
+
+PARTIALLY_REFUNDED, REFUNDED = "PartiallyRefunded", "Refunded"
+
+
+def _refund_entries(db: Session) -> list[CanonicalCreditLedgerEntryRecord]:
+    return db.query(CanonicalCreditLedgerEntryRecord).filter_by(entry_type="refund").all()
+
+
+def _credited_b(db: Session, buyer: User, event_id: str) -> ProviderPaymentRecord:
+    payment = _open_checkout(db, buyer)
+    _deliver(db, event_id, "checkout.session.completed", _session_object(payment))
+    assert _b_state(db, payment) == CREDITED
+    return payment
+
+
+def _charge_refunded(payment: ProviderPaymentRecord, refunded: int) -> dict:
+    return {
+        "id": f"ch_{payment.checkout_session_id}",
+        "object": "charge",
+        "payment_intent": payment.provider_payment_id,
+        "customer": f"cus_{payment.user_id}",
+        "amount": payment.amount_cents,
+        "amount_refunded": refunded,
+        "currency": payment.currency,
+    }
+
+
+def test_b_credited_full_refund_reverses_unspent_credits(db_session: Session, pair):
+    _, buyer = pair
+    payment = _credited_b(db_session, buyer, "evt_b_rf_paid")
+
+    intake = _deliver(db_session, "evt_b_rf", "charge.refunded", _charge_refunded(payment, 600))
+
+    assert intake.record.status == "processed"
+    assert _b_state(db_session, payment) == REFUNDED
+    assert [entry.delta for entry in _refund_entries(db_session)] == [-payment.credits]
+    assert credit_balance(db_session, buyer.id) == 0
+
+
+def test_b_credited_partial_refund_reverses_its_share(db_session: Session, pair):
+    _, buyer = pair
+    payment = _credited_b(db_session, buyer, "evt_b_prf_paid")
+
+    _deliver(db_session, "evt_b_prf", "charge.refunded", _charge_refunded(payment, 300))
+
+    assert _b_state(db_session, payment) == PARTIALLY_REFUNDED
+    assert credit_balance(db_session, buyer.id) == payment.credits // 2
+
+
+def test_b_credited_refund_after_spend_reverses_the_rest_and_holds_the_remainder(
+    db_session: Session, pair
+):
+    _, buyer = pair
+    payment = _credited_b(db_session, buyer, "evt_b_srf_paid")
+    db_session.add(
+        CanonicalCreditLedgerEntryRecord(
+            id="debit-b-srf",
+            user_id=buyer.id,
+            delta=-25,
+            entry_type="debit",
+            idempotency_key="test-spend:b-srf",
+            export_id=None,
+        )
+    )
+    db_session.commit()
+
+    intake = _deliver(db_session, "evt_b_srf", "charge.refunded", _charge_refunded(payment, 600))
+
+    assert (intake.record.status, intake.record.reason_code) == (
+        "unresolved",
+        "REFUND_EXCEEDS_UNSPENT",
+    )
+    assert _b_state(db_session, payment) == REFUNDED
+    assert credit_balance(db_session, buyer.id) == 0  # never negative
+    assert payment.refund_unrecovered_credits == 25
+
+
+def test_b_refunded_duplicate_refund_is_a_no_op(db_session: Session, pair):
+    _, buyer = pair
+    payment = _credited_b(db_session, buyer, "evt_b_drf_paid")
+    _deliver(db_session, "evt_b_drf_1", "charge.refunded", _charge_refunded(payment, 600))
+
+    again = _deliver(db_session, "evt_b_drf_2", "charge.refunded", _charge_refunded(payment, 600))
+
+    assert again.record.status == "duplicate"
+    assert _b_state(db_session, payment) == REFUNDED
+    assert len(_refund_entries(db_session)) == 1
+
+
+def test_b_credited_dispute_opened_goes_to_an_operator_without_reversal(db_session: Session, pair):
+    _, buyer = pair
+    payment = _credited_b(db_session, buyer, "evt_b_dp_paid")
+    dispute = {
+        "id": "dp_b",
+        "object": "dispute",
+        "payment_intent": payment.provider_payment_id,
+        "amount": payment.amount_cents,
+        "currency": payment.currency,
+    }
+
+    intake = _deliver(db_session, "evt_b_dp", "charge.dispute.created", dispute)
+
+    assert (intake.record.status, intake.record.reason_code) == ("unresolved", "DISPUTE_OPENED")
+    assert _b_state(db_session, payment) == CREDITED
+    assert _refund_entries(db_session) == []
+
+
+def test_b_abandoned_refund_reverses_nothing(db_session: Session, pair):
+    """Illegal: a refund reversal for a payment that was never credited."""
+    _, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    unpaid = _session_object(payment, payment_status="unpaid")
+    _deliver(db_session, "evt_b_arf_unpaid", "checkout.session.completed", unpaid)
+    _deliver(db_session, "evt_b_arf_fail", "checkout.session.async_payment_failed", unpaid)
+
+    intake = _deliver(db_session, "evt_b_arf", "charge.refunded", _charge_refunded(payment, 600))
+
+    assert (intake.record.status, intake.record.reason_code) == (
+        "unresolved",
+        "PAYMENT_STATE_CONFLICT",
+    )
+    assert _b_state(db_session, payment) == ABANDONED
+    assert _refund_entries(db_session) == []
+
+
+def test_a_rewarded_refund_processed_is_a_no_op(db_session: Session, pair):
+    """Machine A ``Rewarded --refund_processed--> Rewarded``: no revocation (FR-030)."""
+    referrer, buyer = pair
+    create_referral(db_session, referrer=referrer, referred=buyer)
+    db_session.commit()
+    payment = _credited_b(db_session, buyer, "evt_a_rf_paid")
+    assert _state(db_session, buyer) == REWARDED
+    before = (_grants(db_session), db_session.query(Referral).count())
+
+    _deliver(db_session, "evt_a_rf", "charge.refunded", _charge_refunded(payment, 600))
+
+    assert _state(db_session, buyer) == REWARDED
+    assert (_grants(db_session), db_session.query(Referral).count()) == before
+    assert credit_balance(db_session, referrer.id) == REFERRAL_REWARD_CREDITS

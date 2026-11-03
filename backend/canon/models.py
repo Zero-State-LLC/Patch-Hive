@@ -339,16 +339,31 @@ class ProviderPaymentRecord(Base):
     The server writes it when it creates the session, so the user, credit count and
     amount come from here, not from event metadata. ``provider_payment_id`` (the payment
     intent) is unique and set once the provider reports it (FR-012).
+
+    Refunds (OQ-2, T053): ``refunded_cents`` is the highest cumulative refunded amount
+    applied; ``refund_reversed_credits`` were taken back with canonical ``refund``
+    entries and ``refund_unrecovered_credits`` were already spent and went to an
+    operator. Their sum is always the credits proportional to ``refunded_cents``.
     """
 
     __tablename__ = "provider_payments"
     __table_args__ = (
         CheckConstraint(
-            "status IN ('open', 'pending', 'credited', 'failed', 'abandoned')",
+            "status IN ('open', 'pending', 'credited', 'failed', 'abandoned', "
+            "'partially_refunded', 'refunded')",
             name="ck_provider_payments_status",
         ),
         CheckConstraint("credits > 0", name="ck_provider_payments_credits_positive"),
         CheckConstraint("amount_cents > 0", name="ck_provider_payments_amount_positive"),
+        CheckConstraint(
+            "refunded_cents >= 0 AND refunded_cents <= amount_cents",
+            name="ck_provider_payments_refunded_cents",
+        ),
+        CheckConstraint(
+            "refund_reversed_credits >= 0 AND refund_unrecovered_credits >= 0 "
+            "AND refund_reversed_credits + refund_unrecovered_credits <= credits",
+            name="ck_provider_payments_refund_credits",
+        ),
     )
 
     id = Column(String(64), primary_key=True)
@@ -364,6 +379,9 @@ class ProviderPaymentRecord(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
     updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
     credited_at = Column(DateTime(timezone=True), nullable=True)
+    refunded_cents = Column(Integer, nullable=False, default=0, server_default="0")
+    refund_reversed_credits = Column(Integer, nullable=False, default=0, server_default="0")
+    refund_unrecovered_credits = Column(Integer, nullable=False, default=0, server_default="0")
 
 
 class CanonicalAdminAuditEventRecord(Base):
