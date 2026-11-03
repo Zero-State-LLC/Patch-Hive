@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { Link, useParams } from "react-router-dom";
+import RigRail from "@/components/RigRail";
 import { ChainSkeleton, ListSkeleton } from "@/components/Skeletons";
 import {
   canonApi,
@@ -10,9 +11,10 @@ import {
   runApi,
   type InventoryRevisionSummary,
 } from "@/lib/api";
+import { rigDetailToRack } from "@/lib/canonRigAdapter";
 import { describeEmptyGeneration } from "@/lib/generateOutcome";
 import { useAuthStore } from "@/lib/store";
-import type { Patch, Run } from "@/types/api";
+import type { Patch, Rack, Run } from "@/types/api";
 
 type WorkspaceTab = "overview" | "patches" | "exports" | "gallery";
 
@@ -41,6 +43,27 @@ interface OverlayState {
 export default function RigDetailPage() {
   const { rigId } = useParams();
   const rigIdNum = Number(rigId);
+  const [rig, setRig] = useState<Rack | null>(null);
+  const [rigFailed, setRigFailed] = useState(false);
+
+  // The rig itself: its name for the title and its placements for the rail.
+  useEffect(() => {
+    if (!rigIdNum) return;
+    let current = true;
+    setRig(null);
+    setRigFailed(false);
+    canonApi
+      .getRig(rigIdNum)
+      .then((response) => {
+        if (current) setRig(rigDetailToRack(response.data));
+      })
+      .catch(() => {
+        if (current) setRigFailed(true);
+      });
+    return () => {
+      current = false;
+    };
+  }, [rigIdNum]);
   const [runs, setRuns] = useState<Run[]>([]);
   const [revisions, setRevisions] = useState<RigRevision[]>([]);
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("overview");
@@ -346,7 +369,27 @@ export default function RigDetailPage() {
     <section aria-labelledby="rig-title">
       <header className="workspace-header">
         <div>
-          <h1 id="rig-title">Rig {rigId}</h1>
+          <nav className="breadcrumb" aria-label="Breadcrumb">
+            <Link to={`/racks/${rigIdNum}`}>Rigs</Link>
+          </nav>
+          <h1 id="rig-title">
+            {rig ? (
+              rig.name
+            ) : rigFailed ? (
+              "Rig workspace"
+            ) : (
+              <>
+                <span className="visually-hidden">Rig workspace</span>
+                <span className="skeleton rig-title-skeleton" aria-hidden="true" />
+              </>
+            )}
+          </h1>
+          {rigFailed ? (
+            <p className="status status-warning" role="status">
+              Couldn&apos;t load this rig&apos;s name and placements. Its revisions and runs are
+              below.
+            </p>
+          ) : null}
           <p className="muted">
             Pick an immutable revision, inspect its runs, and keep personal notes as a mutable
             overlay.
@@ -474,6 +517,20 @@ export default function RigDetailPage() {
               </li>
             ))}
           </ol>
+
+          {rig ? (
+            <section className="rig-placed" aria-labelledby="rig-placed-title">
+              <h3 id="rig-placed-title">On the rail</h3>
+              {rig.case?.hp_per_row?.length ? (
+                <RigRail rack={rig} />
+              ) : (
+                <p className="muted">
+                  This rig&apos;s case doesn&apos;t state its row sizes yet, so its rail can&apos;t
+                  be drawn. <Link to={`/racks/${rigIdNum}/edit`}>Place modules</Link>
+                </p>
+              )}
+            </section>
+          ) : null}
 
           <div className="rig-detail-grid">
             <div className="panel" aria-label="Confirmed inventory receipt">
@@ -684,12 +741,12 @@ export default function RigDetailPage() {
                 {exporting ? "Requesting…" : "Export PDF patch book"}
               </button>
               {activeRun?.export_bridge_ready ? (
-                <a
+                <Link
                   className="button button-secondary"
-                  href={`/rigs/${rigIdNum}/patchbook-studio?source_run_id=${encodeURIComponent(activeRun.source_run_id)}&source_rig_revision_id=${encodeURIComponent(activeRun.rig_revision_id)}&artifact_manifest_hash=${encodeURIComponent(activeRun.artifact_manifest_hash)}`}
+                  to={`/rigs/${rigIdNum}/patchbook-studio?source_run_id=${encodeURIComponent(activeRun.source_run_id)}&source_rig_revision_id=${encodeURIComponent(activeRun.rig_revision_id)}&artifact_manifest_hash=${encodeURIComponent(activeRun.artifact_manifest_hash)}`}
                 >
                   Open Style Studio
-                </a>
+                </Link>
               ) : null}
             </div>
             {credits <= 0 ? (

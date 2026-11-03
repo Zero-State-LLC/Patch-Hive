@@ -137,7 +137,10 @@ export default function PatchesPage() {
                     <dd className="patch-row__figure">{patch.connections?.length ?? 0}</dd>
                   </div>
                 </dl>
-                <Link className="button button-quiet" to={`/rigs/${patch.rack_id}`}>
+                <Link
+                  className="button button-quiet"
+                  to={`/racks/${patch.rack_id}?tab=patches&patch=${patch.id}`}
+                >
                   Open rig
                 </Link>
               </li>

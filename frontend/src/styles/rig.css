@@ -525,6 +525,15 @@ div.rack-row-map__block {
   display: grid;
   gap: var(--space-xl);
 }
+.rig-placed {
+  display: grid;
+  gap: var(--space-sm);
+}
+/* Holds the title's line while the rig's name loads */
+.rig-title-skeleton {
+  width: min(16ch, 70%);
+  height: 0.9em;
+}
 .rig-tabpanel__head {
   display: grid;
   gap: var(--space-xs);
