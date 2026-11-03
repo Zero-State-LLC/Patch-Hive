@@ -207,17 +207,17 @@ export default function PatchGraphRenderer({ graph }: { graph: PatchGraph }) {
                     </button>
                   </th>
                   <td>
-                    {source?.module_instance_id} · {source?.label}{" "}
-                    <span className="direction">OUT</span>
+                    {source?.module_instance_id}, {source?.label}{" "}
+                    <span className="direction">out</span>
                   </td>
                   <td>
-                    {target?.module_instance_id} · {target?.label}{" "}
-                    <span className="direction">IN</span>
+                    {target?.module_instance_id}, {target?.label}{" "}
+                    <span className="direction">in</span>
                   </td>
                   <td>
                     <span className={`cable-swatch cable-${edge.signal_type}`} aria-hidden="true" />
                     {cableLabel(edge)}
-                    {edge.feedback_cycle_id ? ` · feedback ${edge.feedback_cycle_id}` : ""}
+                    {edge.feedback_cycle_id ? `, feedback ${edge.feedback_cycle_id}` : ""}
                   </td>
                 </tr>
               );

@@ -43,20 +43,19 @@ export default function AdminDashboard() {
           <div>
             <h1>Admin console</h1>
             <p className="muted">
-              Manage users, catalog, gallery revisions, runs, exports, and leaderboards. All
-              mutations append audit rows; credits only move through the ledger.
+              Users, catalog, gallery, runs and exports. Each change logs a reason.
             </p>
           </div>
         </header>
         <AdminNav />
-        <div className="panel">
-          <h2 style={{ marginTop: 0 }}>Guardrails</h2>
-          <ul className="auth-brand-list" style={{ marginTop: "var(--space-3)" }}>
+        <section className="ops-section" aria-labelledby="guardrails-heading">
+          <h2 id="guardrails-heading">Guardrails</h2>
+          <ul className="ops-guardrails">
             <li>All admin mutations are audited</li>
             <li>Credit changes append to the canonical ledger</li>
             <li>Modules are deprecated or tombstoned (no hard deletes)</li>
           </ul>
-        </div>
+        </section>
         <ul className="ops-link-list">
           {areas.map((area) => (
             <li key={area.to}>

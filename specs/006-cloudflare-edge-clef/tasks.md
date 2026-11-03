@@ -69,15 +69,15 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
   - depends_on: [T001]
   - acceptance: only SUCCESS emits DecisionPacket; no type leakage; flag default off.
 
-- [ ] T030 Create Cloudflare Pages project for Vite frontend. DEFERRED, operator. PR #55 ships the SPA on Cloudflare Workers and records this task as PARTIAL.
+- [x] T030 Create Cloudflare Pages project for Vite frontend. Closed 2026-11-01: superseded by Workers static assets (PR #55; "Pages" reads as Workers per the 2026-10-29 amendment). Both frontends serve 200 with `VITE_API_BASE_URL` set; receipt in `docs/evidence/006_OPERATOR_TASK_RECEIPTS_2026-11-01.md`.
   - depends_on: [T001]
   - acceptance: build succeeds, custom domain attached, VITE_API_BASE_URL set.
 
-- [ ] T050 Provision the Neon staging database for the API container. Re-scoped 2026-10-26: Hyperdrive serves Worker-runtime clients only, so the FastAPI container connects to Neon's pooled endpoint directly.
+- [x] T050 Provision the Neon staging database for the API container. Re-scoped 2026-10-26: Hyperdrive serves Worker-runtime clients only, so the FastAPI container connects to Neon's pooled endpoint directly.
   - depends_on: [T001]
   - [x] T050a Pass `DATABASE_URL` and `SECRET_KEY` from Worker secrets into the container, and answer 503 without starting it when either is unset (code).
     - depends_on: [T001]
-  - [ ] T050b Create the Neon staging branch and set its pooled connection string (`sslmode=require`) as the `edge/api` `DATABASE_URL` secret; migrate it with the `db-migrate.yml` workflow (target `staging`); container starts do not migrate (operator).
+  - [x] T050b Create the Neon staging branch and set its pooled connection string (`sslmode=require`) as the `edge/api` `DATABASE_URL` secret; migrate it with the `db-migrate.yml` workflow (target `staging`); container starts do not migrate (operator). Receipt 2026-11-01: staging `/health/ready` 200 with `database: ok`; `db-migrate.yml` runs 41041862162 and 41043042378 succeeded (`docs/evidence/006_OPERATOR_TASK_RECEIPTS_2026-11-01.md`).
     - depends_on: [T050a]
 
 - [ ] T055 Keep evidence uploads, exports and design packs in durable object storage (R2), not on the container's disk. Container disks are wiped when the instance sleeps, restarts or redeploys, and `backend/evidence/routes.py`, `backend/export/`, `backend/publishing/routes.py` and `backend/canon/fulfillment.py` write under `export_dir` / `export_store_root` and record local paths in Postgres.
@@ -86,7 +86,7 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
   - [x] T055a Mirror durable files to R2 through its S3 API and restore them on read (`backend/core/storage.py`, `STORAGE_BACKEND=s3`); `edge/api` passes the R2 settings and fails closed without them (code).
     - depends_on: [T001]
     - acceptance: `tests/unit/test_durable_storage.py`: evidence and a design pack are restored and served after the local copy is deleted; an unpersisted upload is rejected, not recorded.
-  - [ ] T055b Create the R2 bucket and bucket-scoped credentials, and set them as `edge/api` secrets (operator).
+  - [ ] T055b Create the R2 bucket and bucket-scoped credentials, and set them as `edge/api` secrets (operator). Open 2026-11-01: the Worker serves only with its R2 secrets set, but bucket existence and the T055 restart-persistence check cannot be shown read-only; the operator must list the buckets and run the upload, restart, fetch check. Receipt 2026-11-02: both buckets exist (read-only listing); the restart-persistence check is still not run (`docs/evidence/OPERATOR_RECEIPTS_2026-11-02.md`).
     - depends_on: [T055a]
 
 - [ ] T040 Publish API hostname and restrict CORS. Operator chose Cloudflare Containers at `api.patch-hive.com` (2026-10-26).
@@ -95,7 +95,7 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
   - [x] T040a Add the `edge/api` Containers Worker serving FastAPI (`backend/Dockerfile`) at `api.patch-hive.com`, with exact-origin CORS and fail-closed payment flags in its config (code).
     - depends_on: [T001]
     - acceptance: `wrangler deploy --dry-run` builds the image; locally the image serves `/health` 200 and CORS allows only `https://patch-hive.com`.
-  - [ ] T040b Set the `edge/api` secrets, deploy it, and record `GET /health/ready` through the edge (operator).
+  - [ ] T040b Set the `edge/api` secrets, deploy it, and record `GET /health/ready` through the edge (operator). Open 2026-11-01: `/health/ready` is 200 on `api-staging.patch-hive.com` and `api.patch-hive.com`, but this stays open until T055b is closed. Receipt 2026-11-02: still 200 with `database: ok` on both at `ee5326e`; open on T055b (`docs/evidence/OPERATOR_RECEIPTS_2026-11-02.md`).
     - depends_on: [T040a, T050b, T055b]
 
 - [ ] T060 Wire ClefProvider into evidence-resolution path behind Spec 005 policy.
@@ -104,7 +104,8 @@ shows done while it waits on an operator dependency. `scripts/check_spec_dag.py`
   - [x] T060a Wire ClefProvider into the evidence-resolution path against the existing database layer (code).
     - depends_on: [T010, T020]
     - acceptance: disposition policy-owned; idempotent receipts; no persistence change.
-  - [ ] T060b Verify the wired path on the Neon-backed staging API (operator).
+  - [ ] T060b Verify the wired path on the Neon-backed staging API (operator). Note 2026-11-02: the code blocker found in review is fixed; an upload now binds its candidates to the stored evidence record id, so the id `GET .../evidence/candidates` returns is the id `decision-resolution` accepts (`tests/api/test_evidence_upload.py`). Only the operator run remains. Evidence uploaded before the fix keeps the old provider id and still cannot be resolved; upload a new image.
+    - Note 2026-11-03: run on staging at `b6cc917` (run [41557808902](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41557808902), [receipt](../../docs/evidence/receipts/staging-t060b-2026-11-03.json)): a fresh upload was accepted, its candidate's evidence id reached `decision-resolution`, and both calls with one idempotency key answered 409 `DECISION_INTELLIGENCE_DISABLED`. That shows the wired route and its fail-closed refusal on the Neon-backed API; the provider path itself (200 with a policy disposition and a retained receipt) needs a provider enabled on staging, which waits for the signed 007 receipt (T083). Stays open.
     - depends_on: [T050, T060a]
 
 - [x] T070 Implement Edge Deployment readiness state machine and gate checks.

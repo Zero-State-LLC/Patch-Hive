@@ -209,3 +209,197 @@ def test_fake_ip_range_only_trusted_with_opt_in(monkeypatch):
     assert cs._trusted_fake_ip(ip) is True
     assert cs._trusted_fake_ip(ipaddress.ip_address("10.0.0.1")) is False
     assert cs._trusted_fake_ip(ipaddress.ip_address("127.0.0.1")) is False
+
+
+# ---- FR-003: paid fetches need a matching unexpired approval entry ----
+
+FUTURE = "2099-01-01T00:00:00Z"
+
+
+def _approval(**over) -> dict:
+    entry = {
+        "id": "t", "approver": "owner", "expires_at": FUTURE, "brands": ["Acme"],
+        "cap_fetches": 5, "cap_credits": 10,
+    }
+    entry.update(over)
+    return entry
+
+
+def _gated(tmp_path: Path, entries: list, transport: FakeTransport, ledger: dict | None = None, **kwargs):
+    approvals = tmp_path / "fetch-approvals.json"
+    approvals.write_text(json.dumps({"entries": entries}))
+    if ledger is not None:
+        (tmp_path / "ledger.json").write_text(json.dumps(ledger))
+    return _scraper(tmp_path, transport, max_paid_fetches=5, approvals_path=approvals, **kwargs)
+
+
+def _blocked_site() -> FakeTransport:
+    transport = FakeTransport()
+    transport.routes["https://ex.com/p"] = (403, b"no")
+    return transport
+
+
+def _paid_calls(transport: FakeTransport) -> list:
+    return [c for c in transport.calls if "api.context.dev" in c.url or "api.firecrawl.dev" in c.url]
+
+
+def test_paid_fetch_refused_without_matching_entry(tmp_path, monkeypatch):
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    for entries in ([], [_approval(expires_at="2000-01-01T00:00:00Z")], [_approval(brands=["Other"])], [_approval(approver="")]):
+        transport = _blocked_site()
+        scraper = _gated(tmp_path, entries, transport, brands=("Acme",))
+        scraper.fetch("https://ex.com/p")
+        assert _paid_calls(transport) == []
+        assert any(r["method"] == "skipped_no_approval" for r in scraper.receipts)
+
+
+def test_paid_fetch_refused_when_approvals_file_missing(tmp_path, monkeypatch):
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    transport = _blocked_site()
+    scraper = _scraper(tmp_path, transport, max_paid_fetches=5, approvals_path=tmp_path / "absent.json")
+    scraper.fetch("https://ex.com/p")
+    assert _paid_calls(transport) == []
+
+
+def test_paid_fetch_allowed_with_matching_entry(tmp_path, monkeypatch):
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    transport = _blocked_site()
+    transport.routes["https://api.context.dev/v1/web/scrape"] = (200, json.dumps({"html": "<html>paid</html>"}))
+    scraper = _gated(tmp_path, [_approval()], transport, brands=("Acme",))
+    assert scraper.fetch("https://ex.com/p").ok
+    assert len(_paid_calls(transport)) == 1
+
+
+def test_wildcard_entry_covers_unscoped_run(tmp_path, monkeypatch):
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    transport = _blocked_site()
+    scraper = _gated(tmp_path, [_approval(brands=["*"])], transport)
+    scraper.fetch("https://ex.com/p")
+    assert len(_paid_calls(transport)) == 1
+
+
+def test_ledger_at_entry_cap_blocks_paid_fetch(tmp_path, monkeypatch):
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    for ledger, over in (
+        ({"paid_fetches": 5, "credits_by_backend": {"context_dev": 1}}, {}),
+        ({"paid_fetches": 1, "credits_by_backend": {"context_dev": 10}}, {}),
+        # Spend before the approval (baseline) does not count against the cap.
+        ({"paid_fetches": 105, "credits_by_backend": {"context_dev": 1}}, {"ledger_baseline_fetches": 100}),
+    ):
+        transport = _blocked_site()
+        scraper = _gated(tmp_path, [_approval(**over)], transport, ledger=ledger, brands=("Acme",))
+        scraper.fetch("https://ex.com/p")
+        assert _paid_calls(transport) == []
+
+
+def test_ledger_baseline_leaves_headroom(tmp_path, monkeypatch):
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    transport = _blocked_site()
+    ledger = {"paid_fetches": 102, "credits_by_backend": {"context_dev": 50}}
+    scraper = _gated(
+        tmp_path, [_approval(ledger_baseline_fetches=100, ledger_baseline_credits=48)], transport,
+        ledger=ledger, brands=("Acme",),
+    )
+    scraper.fetch("https://ex.com/p")
+    assert len(_paid_calls(transport)) == 1
+
+
+def test_free_fetch_unaffected_by_approval_gate(tmp_path):
+    transport = FakeTransport()
+    scraper = _gated(tmp_path, [], transport)
+    assert scraper.fetch("https://ex.com/p").ok
+    assert _paid_calls(transport) == []
+
+
+def test_committed_approvals_file_has_only_the_owner_approved_corpus_photo_entry():
+    """The committed file holds exactly the owner's 2026-11-02 approval (300 context.dev searches
+    for 007 corpus photos), with its baseline at the ledger totals of that day."""
+    doc = json.loads((ROOT / "data" / "synth-catalog" / "receipts" / "fetch-approvals.json").read_text())
+    assert doc["entries"] == [
+        {
+            "id": "corpus-photos-2026-11",
+            "approver": "Daniel Meyer (owner; approved in chat 2026-11-02: 300 searches, context.dev)",
+            "approved_at": "2026-11-02T11:00:00Z",
+            "expires_at": "2026-11-30T23:59:59Z",
+            "brands": ["corpus-photos-2026-11"],
+            "cap_fetches": 300,
+            "cap_credits": 300,
+            "ledger_baseline_fetches": 2569,
+            "ledger_baseline_credits": 1149,
+        }
+    ]
+
+
+def test_parallel_reservations_cannot_overspend_the_approval(tmp_path):
+    """Granted-but-unbooked paid calls count against the cap, so workers sharing one
+    scraper cannot all pass on the same remaining allowance."""
+    scraper = _gated(tmp_path, [_approval(cap_fetches=2, cap_credits=100)], FakeTransport(), brands=("Acme",))
+    assert scraper._reserve_paid() is None
+    assert scraper._reserve_paid() is None
+    assert scraper._reserve_paid() == "skipped_no_approval"
+    scraper._bump_ledger("context_dev", 1)
+    scraper._bump_ledger("context_dev", 1)
+    assert scraper._paid_in_flight == 0
+    assert scraper._reserve_paid() == "skipped_no_approval"
+
+
+def test_unknown_spend_refuses_instead_of_counting_as_zero(tmp_path):
+    import catalog_scrape as cs
+
+    approvals = tmp_path / "fetch-approvals.json"
+    approvals.write_text(json.dumps({"entries": [_approval(brands=["*"])]}))
+    ledger = tmp_path / "ledger.json"
+    for broken in ("{not json", "[]", json.dumps({"paid_fetches": "lots"})):
+        ledger.write_text(broken)
+        ok, reason = cs.check_paid_approval(approvals, ledger)
+        assert not ok and "ledger" in reason
+    ledger.write_text(json.dumps({"paid_fetches": 3, "credits_by_backend": {"context_dev": 3}}))
+    approvals.write_text(json.dumps({"entries": [_approval(brands=["*"], ledger_baseline_fetches=10)]}))
+    ok, reason = cs.check_paid_approval(approvals, ledger)
+    assert not ok and "below its baseline" in reason
+    ledger.unlink()
+    approvals.write_text(json.dumps({"entries": [_approval(brands=["*"])]}))
+    assert cs.check_paid_approval(approvals, ledger)[0]
+
+
+def test_the_corpus_photo_approval_admits_only_its_own_scope(tmp_path):
+    """The owner approved 300 searches for corpus photos, not catalog crawls: the entry's only
+    brand is its scope, so a crawl with real brands or no brands is refused by it."""
+    import catalog_scrape as cs
+
+    approvals = ROOT / "data" / "synth-catalog" / "receipts" / "fetch-approvals.json"
+    ledger = tmp_path / "ledger.json"
+    ledger.write_text(json.dumps({"paid_fetches": 2569, "credits_by_backend": {"context_dev": 1149}}))
+    from datetime import datetime, timezone
+
+    now = datetime(2026, 11, 15, tzinfo=timezone.utc).timestamp()  # inside the approval window
+    assert cs.check_paid_approval(approvals, ledger, ("corpus-photos-2026-11",), now=now)[0]
+    assert not cs.check_paid_approval(approvals, ledger, ("Make Noise",), now=now)[0]
+    assert not cs.check_paid_approval(approvals, ledger, (), now=now)[0]
+
+
+def test_a_blocked_free_search_is_not_scraped_through_a_paid_backend(tmp_path, monkeypatch):
+    """Codex review: a DuckDuckGo 403 must not spend a paid scrape of the results page; the only
+    paid call is the paid search API itself."""
+    import catalog_scrape as cs
+
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    import urllib.parse
+
+    query = "acme vco eurorack"
+    transport = FakeTransport()
+    transport.routes[cs.DDG_LITE + "?" + urllib.parse.urlencode({"q": query})] = (403, b"blocked")
+    transport.routes[cs.CONTEXT_SEARCH_URL] = (
+        200, json.dumps({"results": [{"url": "https://commons.wikimedia.org/wiki/File:X.jpg"}]})
+    )
+    scraper = _scraper(tmp_path, transport, max_paid_fetches=1)
+    scraper.search(query, limit=3)
+    paid = [c.url for c in transport.calls if "api.context.dev" in c.url]
+    assert paid == [cs.CONTEXT_SEARCH_URL]
+    assert cs.CONTEXT_SCRAPE_URL not in paid

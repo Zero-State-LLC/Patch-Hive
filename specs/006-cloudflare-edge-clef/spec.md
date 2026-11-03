@@ -101,7 +101,7 @@ Checked against `main` at 95ca9ee. Decision research is in [research.md](researc
 | --- | --- | --- |
 | FR-001 Edge frontend | Implemented | SPA on Workers static assets (#55), production and staging pairs live [OBSERVED: CURRENT_STATE.md]; CSP enforced (#113) [OBSERVED: frontend/worker/headers.ts] |
 | FR-002 Public API surface | Implemented | Exact-origin `CORS_ORIGINS` and `ALLOW_PRODUCTION_PAYMENTS=false` per Worker env [OBSERVED: edge/api/wrangler.jsonc]; security headers (#130) [OBSERVED: edge/api/src/index.ts]; production refuses providers (#132) [OBSERVED: backend/core/startup_policy.py] |
-| FR-003 Database continuity | Implemented | Staging and production migrated 2026-10-28 [OBSERVED: CURRENT_STATE.md]; startup migrations opt-in (#110) [OBSERVED: backend/docker-entrypoint.sh]. T050b stays open: no receipt in the tree |
+| FR-003 Database continuity | Implemented | Staging and production migrated 2026-10-28 [OBSERVED: CURRENT_STATE.md]; startup migrations opt-in (#110) [OBSERVED: backend/docker-entrypoint.sh]. T050b closed 2026-11-01 ([receipt](../../docs/evidence/006_OPERATOR_TASK_RECEIPTS_2026-11-01.md)) |
 | FR-004 Clef as DecisionProvider | Implemented | Adapter state machine, flag default off (T020) [OBSERVED: backend/intelligence/clef_provider.py, core/config.py] |
 | FR-005 Policy ownership unchanged | Implemented | Guarded resolution applies `DecisionPolicy` (T060a) [OBSERVED: backend/intelligence/clef_resolution.py] |
 | FR-006 State machines | Partial | All three machines exist and pass tests [OBSERVED: tests/integration/test_006_edge_clef_state_machines.py, 2026-10-29 run]. `gates_pass` accepts any 64-hex SHA (R1); the Jev path skips the resolution machine (005 research R2) |

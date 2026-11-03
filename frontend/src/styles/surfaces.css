@@ -1,0 +1,387 @@
+/* Brand surfaces: the home fold, sign-in diptych, the lost route */
+
+/* —— Home: the brand beside the product, a real rig on its rail —— */
+.home-hero {
+  display: grid;
+  align-items: center;
+  min-height: min(calc(100dvh - var(--header-height)), 820px);
+  border-bottom: 1px solid var(--color-rule);
+}
+/* Two rows: the copy beside the rig's rails, the rig's caption under them alone, so the copy
+   centres on the rails rather than on rails and caption together */
+.home-hero__content {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 5fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: var(--space-md) var(--space-2xl);
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--gutter);
+}
+.home-hero__copy {
+  grid-area: 1 / 1;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.home-hero__copy > * {
+  animation: hero-rise var(--dur-long) var(--ease-out) both;
+}
+.home-hero__copy > :nth-child(2) {
+  animation-delay: 80ms;
+}
+.home-hero__copy > :nth-child(3) {
+  animation-delay: 160ms;
+}
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.home-brand {
+  margin: 0;
+  color: var(--color-ink);
+  font: 600 var(--text-poster) / 0.92 var(--font-display);
+  letter-spacing: -0.045em;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+.home-headline {
+  max-width: 16ch;
+  color: var(--color-ink);
+  font: 500 clamp(1.6rem, 2.8vw, 2.25rem) / 1.1 var(--font-display);
+  letter-spacing: -0.03em;
+}
+.home-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+.home-cta .button {
+  min-height: 48px;
+  padding: 0 var(--space-lg);
+  font-size: var(--text-md);
+}
+
+/* The demo rig, each row as tall as a 3U panel is for its HP (25.3 HP); on a phone no shorter
+   than the workbench rail's 120px, so a long cable's sag clears the HP labels */
+.home-rig {
+  grid-area: 1 / 2 / span 2;
+  display: grid;
+  grid-template-rows: subgrid;
+  gap: var(--space-md);
+  min-width: 0;
+  margin: 0;
+}
+/* The size container for the rows' height; not the figure, since containment would undo its subgrid */
+.home-rig .patch-rail {
+  container-type: inline-size;
+}
+.home-rig .rack-row-map__track {
+  height: max(120px, 100cqi * 25.3 / var(--row-hp));
+}
+/* Rows this tall have room for a name on two lines instead of clipping it */
+.home-rig .rack-row-map__block-label {
+  white-space: normal;
+}
+.home-rig .patch-cable__lead {
+  stroke-width: 4;
+}
+/* The cables go in once the modules have slotted in */
+.home-rig .patch-cable__plug {
+  animation: cable-in var(--dur-short) var(--ease-out) both;
+}
+.home-rig .patch-cable__lead,
+.home-rig .patch-cable__plug {
+  animation-delay: calc(360ms + min(var(--i, 0), 10) * 80ms);
+}
+.home-rig__caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-lg);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+.home-rig__caption p {
+  max-width: 52ch;
+}
+.home-rig__caption strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.home-rig__key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.home-rig__key li {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* The path from rig to book: the rig's signal chain, lit end to end */
+.home-path {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  align-items: start;
+  gap: var(--space-xl);
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-3xl) var(--gutter);
+}
+.home-path h2 {
+  max-width: 12ch;
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+.home-path .signal-chain {
+  --reach: 1;
+}
+
+/* —— Sign in: brand panel beside the form —— */
+.auth-page {
+  display: grid;
+  place-items: center;
+  min-height: calc(100dvh - 220px);
+}
+.auth-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: var(--space-md);
+  width: min(1040px, 100%);
+}
+.auth-brand {
+  position: relative;
+  overflow: hidden;
+  align-content: end;
+  gap: var(--space-md);
+  min-height: 38rem;
+  padding: 16rem var(--space-xl) var(--space-xl);
+  color: var(--color-on-dark);
+  background: var(--zs-carbon);
+  box-shadow: inset 0 0 0 1px var(--color-rule);
+}
+.auth-brand-photo {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 17rem;
+  background: url("/brand/splash/splash-hero.jpg") 50% 44% / cover no-repeat;
+  opacity: 0.9;
+  mask-image: linear-gradient(to bottom, var(--zs-carbon) 55%, transparent);
+  pointer-events: none;
+}
+.auth-brand > *:not(.auth-brand-photo) {
+  position: relative;
+  z-index: var(--z-base);
+}
+.auth-brand-mark {
+  color: var(--color-on-dark);
+  font: 600 var(--text-3xl) / 1 var(--font-display);
+  letter-spacing: -0.04em;
+}
+.auth-brand-title {
+  max-width: none;
+  font-size: clamp(2.25rem, 4vw, 3.25rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.auth-brand-lede {
+  max-width: 40ch;
+  color: var(--color-on-dark-2);
+  line-height: 1.55;
+}
+.auth-brand-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-rule);
+  color: var(--color-on-dark-2);
+  font-size: var(--text-sm);
+  list-style: none;
+}
+.auth-brand-list li {
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+.auth-brand-foot {
+  color: var(--color-on-dark-2);
+  font-size: var(--text-sm);
+}
+.auth-card {
+  align-content: start;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+}
+.auth-card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.auth-mark {
+  flex-shrink: 0;
+  width: calc(2 * var(--hp-px));
+  height: 24px;
+  border-radius: 1px;
+  background: var(--color-accent);
+}
+.auth-card-title {
+  font-size: var(--text-2xl);
+}
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--color-rule);
+}
+.auth-tab {
+  position: relative;
+  min-height: var(--hit-target);
+  border: 0;
+  color: var(--color-ink-2);
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.auth-tab::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--color-indicator);
+  content: "";
+  transform: scaleX(0);
+  transition: transform var(--dur-short) var(--ease-out);
+}
+.auth-tab:hover,
+.auth-tab[aria-selected="true"] {
+  color: var(--color-ink);
+}
+.auth-tab[aria-selected="true"]::after {
+  transform: scaleX(1);
+}
+.auth-tab:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+}
+.auth-form {
+  display: grid;
+  gap: var(--space-md);
+}
+.auth-password-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-xs);
+}
+.auth-password-toggle {
+  min-width: 4.5rem;
+}
+.auth-submit {
+  width: 100%;
+  min-height: var(--hit-target);
+}
+.auth-error {
+  padding: var(--space-sm) var(--space-md);
+  border-left: 2px solid var(--color-error);
+  background: color-mix(in oklab, var(--color-error) 8%, var(--color-paper-2));
+}
+.auth-demo {
+  display: grid;
+  gap: var(--space-xs);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-rule);
+  font-size: var(--text-sm);
+}
+.auth-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: var(--space-2xs);
+}
+.auth-back {
+  font-size: var(--text-sm);
+}
+.app-shell .auth-back a {
+  color: var(--color-ink-2);
+}
+.app-shell .auth-back a:hover {
+  color: var(--color-ink);
+}
+
+@media (max-width: 52rem) {
+  .home-hero {
+    min-height: 0;
+  }
+  .home-hero__content,
+  .home-path {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-xl);
+    padding-block: var(--space-2xl);
+  }
+  .home-hero__content {
+    grid-template-rows: none;
+  }
+  .home-hero__copy,
+  .home-rig {
+    grid-area: auto;
+  }
+  .home-rig {
+    grid-template-rows: none;
+    gap: var(--space-md);
+  }
+  .auth-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .auth-brand {
+    min-height: 0;
+    padding-top: 12rem;
+  }
+  .auth-brand-photo {
+    height: 13rem;
+  }
+}
+/* Stacked, the path keeps each stage's line: on the home page it is the explanation */
+@media (max-width: 45rem) {
+  .home-path .signal-chain__detail {
+    display: block;
+  }
+}
+@media (max-width: 40rem) {
+  .auth-brand-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .auth-password-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero__copy > *,
+  .home-rig .patch-cable__plug {
+    animation: none;
+  }
+  .auth-tab::after {
+    transition: none;
+  }
+}

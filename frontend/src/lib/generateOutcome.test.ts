@@ -5,32 +5,41 @@ import type { GeneratePatchesResponse } from "@/types/api";
 const base: GeneratePatchesResponse = { generated_count: 0, patches: [] };
 
 describe("describeEmptyGeneration", () => {
-  it("lists the blocking findings for VALIDATION_FAILED, not the inventory hint", () => {
+  it("lists the blocking findings when validation fails, not the inventory hint", () => {
     const message = describeEmptyGeneration({
       ...base,
       generation_status: "VALIDATION_FAILED",
       validation: {
         blocking: true,
         findings: [
-          { severity: "block", code: "PORT_DIRECTION_MISMATCH", message: "VCF: 'LP Out' is not a declared input." },
-          { severity: "unresolved", code: "PORT_NOT_ON_FILE", message: "Bare: jack names are not on file." },
+          {
+            severity: "block",
+            code: "PORT_DIRECTION_MISMATCH",
+            message: "VCF: 'LP Out' is not a declared input.",
+          },
+          {
+            severity: "unresolved",
+            code: "PORT_NOT_ON_FILE",
+            message: "Bare: jack names are not on file.",
+          },
         ],
       },
     });
-    expect(message).toContain("VALIDATION_FAILED");
+    expect(message).toContain("Nothing was saved");
     expect(message).toContain("VCF: 'LP Out' is not a declared input.");
     expect(message).not.toContain("not on file");
     expect(message).not.toContain("Confirm inventory");
   });
 
-  it("keeps the inventory hint for NOT_COMPUTABLE", () => {
+  it("keeps the inventory hint, in words, when nothing can be computed", () => {
     const message = describeEmptyGeneration({
       ...base,
       generation_status: "NOT_COMPUTABLE",
       inventory_gate_code: "NO_CONFIRMED_MODULES",
     });
     expect(message).toContain("Confirm inventory modules");
-    expect(message).toContain("NO_CONFIRMED_MODULES");
+    expect(message).toContain("this rig has no confirmed modules yet");
+    expect(message).not.toContain("NO_CONFIRMED_MODULES");
   });
 
   it("says no rule fits for zero patches on a computed run", () => {
@@ -40,6 +49,8 @@ describe("describeEmptyGeneration", () => {
   });
 
   it("returns null when patches were produced", () => {
-    expect(describeEmptyGeneration({ ...base, generated_count: 2, generation_status: "OK" })).toBeNull();
+    expect(
+      describeEmptyGeneration({ ...base, generated_count: 2, generation_status: "OK" }),
+    ).toBeNull();
   });
 });

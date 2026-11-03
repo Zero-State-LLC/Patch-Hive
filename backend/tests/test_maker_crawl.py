@@ -497,6 +497,13 @@ def test_no_model_paid_run_keeps_generic_rows_unconfirmed(
         },
     )
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    # FR-003: a non-dry-run crawl refuses to start without a matching approval entry.
+    assert crawl.main(["--no-model", "--max-paid-fetches", "5", "--workers", "1"]) == 2
+    entry = {
+        "id": "t", "approver": "owner", "expires_at": "2099-01-01T00:00:00Z",
+        "brands": ["*"], "cap_fetches": 5, "cap_credits": 5,
+    }
+    (tmp_path / "receipts" / "fetch-approvals.json").write_text(json.dumps({"entries": [entry]}))
     assert crawl.main(["--no-model", "--max-paid-fetches", "5", "--workers", "1"]) == 0
     receipt = json.loads((tmp_path / "receipts" / "maker-crawl-v2.json").read_text())
     assert receipt["modules_total"] == 0 and receipt["unconfirmed_generic"] == 1

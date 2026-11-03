@@ -1,0 +1,1019 @@
+/* Hallmark · rig screens · the full stamp heads src/index.css */
+/* Hallmark · dismissed 49 · every .button sets white-space: nowrap in shell.css, so the long builder labels never wrap */
+/* Rig screens: the builder's steps, its rail rows, HP and power meters, evidence review */
+
+/* —— Steps —— */
+.step-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 0 0 var(--space-xl);
+  padding: 0;
+  border-bottom: 1px solid var(--color-rule);
+  list-style: none;
+  counter-reset: step;
+}
+.step-progress__item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: var(--hit-target);
+  padding: 0 var(--space-lg) 0 0;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+.step-progress__item + .step-progress__item {
+  padding-left: var(--space-lg);
+}
+.step-progress__item::after {
+  position: absolute;
+  right: var(--space-lg);
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--color-indicator);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+.step-progress__item + .step-progress__item::after {
+  left: var(--space-lg);
+}
+.step-progress__num {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--color-rule-strong);
+  border-radius: var(--radius-plate);
+  font: 500 var(--text-xs) / 1 var(--font-mono);
+}
+.step-progress__item--current {
+  color: var(--color-ink);
+}
+.step-progress__item--current::after {
+  transform: scaleX(1);
+}
+.step-progress__item--current .step-progress__num {
+  border-color: var(--color-indicator);
+  color: var(--color-accent-ink);
+  background: var(--color-accent);
+}
+.step-progress__item--done {
+  color: var(--color-ink-2);
+}
+.step-progress__item--done .step-progress__num {
+  border-color: color-mix(in oklab, var(--color-success) 60%, var(--color-rule));
+  color: var(--color-success);
+}
+
+.placement-cta {
+  border-left: 2px solid var(--color-indicator);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* —— Builder layout: one section per step, each a heading over its wells —— */
+.builder-flow {
+  display: grid;
+  gap: var(--space-xl);
+}
+.builder-step {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.builder-step__head {
+  display: grid;
+  gap: var(--space-xs);
+}
+.builder-step__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs) var(--space-sm);
+}
+.builder-toolbar .field {
+  flex: 1 1 12rem;
+}
+.builder-toolbar .field--wide {
+  flex: 2 1 14rem;
+}
+.builder-toolbar .field--num {
+  flex: 0 0 7rem;
+}
+.builder-note {
+  font-size: var(--text-sm);
+}
+.builder-admin {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs) var(--space-md);
+}
+.builder-rig-line strong {
+  color: var(--color-ink);
+}
+.builder-gate-table td {
+  overflow-wrap: anywhere;
+}
+/* Divides choosing the case from creating the rig, inside one well */
+.section-rule {
+  width: 100%;
+  margin: var(--space-sm) 0;
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+}
+/* The summary states facts in words, so it reads in the body face, not the meter figures */
+.case-summary .stat-block h3 {
+  font: 500 var(--text-md) / 1.3 var(--font-body);
+  letter-spacing: 0;
+}
+.builder-retired ul,
+.builder-warnings ul {
+  margin: var(--space-xs) 0 0;
+  padding-left: var(--space-lg);
+}
+.builder-gates {
+  margin: 0;
+  padding-left: var(--space-lg);
+}
+
+/* —— Meters: HP per row, power per rail —— */
+.hp-usage {
+  display: grid;
+  gap: var(--space-lg);
+}
+.hp-usage__row,
+.power-rail-meters__row {
+  display: grid;
+  gap: var(--space-xs);
+}
+.hp-usage__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+.hp-usage__meta .muted {
+  font: 400 var(--text-sm) / 1.4 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.usage-bar {
+  position: relative;
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-paper-4);
+}
+.usage-bar__fill {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-muted);
+  transform: scaleX(var(--fill, 0));
+  transform-origin: left center;
+  transition: transform var(--dur-long) var(--ease-out);
+  animation: meter-fill var(--dur-long) var(--ease-out);
+}
+@keyframes meter-fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+.usage-bar__fill--success {
+  background: var(--color-success);
+}
+.usage-bar__fill--warning {
+  background: var(--color-warning);
+}
+.usage-bar__fill--danger {
+  background: var(--color-error);
+}
+.usage-bar__fill--neutral {
+  background: var(--color-rule-strong);
+}
+
+/* A rail reads as its figure first; the note under the bar says what the figure leaves out */
+.power-meter__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+.power-meter__figure {
+  color: var(--color-ink);
+  font: 500 var(--text-lg) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.power-meter__bar {
+  height: 10px;
+}
+.power-meter__note {
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+}
+.power-rail-panel {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-lg) 0;
+  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+}
+.power-rail-meters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+  gap: var(--space-lg);
+}
+
+/* —— The rail: a 3U row, rails top and bottom with a hole at every HP —— */
+.rack-row-map {
+  display: grid;
+  gap: var(--space-2xs);
+}
+.rack-row-map__track {
+  position: relative;
+  height: 120px;
+  overflow: hidden;
+  border-radius: var(--radius-plate);
+  background: var(--color-paper);
+  box-shadow: inset 0 0 0 1px var(--color-rule);
+  cursor: crosshair;
+}
+.rack-row-map__track::before,
+.rack-row-map__track::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 12px;
+  background:
+    radial-gradient(circle, var(--color-paper) 1.5px, transparent 2px) 0 50% /
+      calc(100% / var(--row-hp, 84)) 100% repeat-x,
+    linear-gradient(
+      color-mix(in oklab, var(--color-muted) 42%, var(--color-paper-3)),
+      color-mix(in oklab, var(--color-muted) 22%, var(--color-paper-3))
+    );
+  content: "";
+  pointer-events: none;
+}
+.rack-row-map__track::before {
+  top: 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+.rack-row-map__track::after {
+  bottom: 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+/* A placed module: a faceplate screwed over both rails */
+.rack-row-map__block {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  z-index: var(--z-base);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: var(--space-3xs);
+  left: calc(var(--start, 0) / var(--row-hp, 84) * 100%);
+  width: calc(var(--hp, 1) / var(--row-hp, 84) * 100%);
+  min-width: 0;
+  padding: var(--space-sm) var(--space-2xs) var(--space-sm);
+  overflow: hidden;
+  border: 1px solid var(--color-rule-strong);
+  border-radius: 2px;
+  color: var(--color-ink);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--color-ink) 7%, transparent),
+      transparent 35%,
+      transparent 70%,
+      color-mix(in oklab, var(--color-paper) 35%, transparent)
+    ),
+    var(--color-plate-face);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform var(--dur-short) var(--ease-out);
+  animation: slot-in var(--dur-short) var(--ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 12) * 30ms);
+}
+/* Mounting screws */
+.rack-row-map__block::before,
+.rack-row-map__block::after {
+  position: absolute;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--color-screw);
+  content: "";
+}
+.rack-row-map__block::before {
+  top: 3px;
+}
+.rack-row-map__block::after {
+  bottom: 3px;
+}
+@keyframes slot-in {
+  from {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+button.rack-row-map__block:hover,
+button.rack-row-map__block:focus-visible {
+  z-index: var(--z-raised);
+  border-color: var(--color-indicator);
+  transform: translateY(-2px);
+}
+button.rack-row-map__block:active {
+  transform: none;
+}
+button.rack-row-map__block:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.rack-row-map__block--unknown-power {
+  border-style: dashed;
+  border-color: color-mix(in oklab, var(--color-warning) 60%, var(--color-rule));
+}
+button.rack-row-map__block,
+div.rack-row-map__block {
+  container-type: inline-size;
+}
+@container (max-width: 44px) {
+  .rack-row-map__block-label {
+    display: none;
+  }
+}
+@container (max-width: 24px) {
+  .rack-row-map__block-hp {
+    align-self: center;
+    writing-mode: vertical-rl;
+  }
+}
+.rack-row-map__block-label {
+  max-width: 100%;
+  overflow: hidden;
+  font: 600 var(--text-xs) / 1.2 var(--font-display);
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rack-row-map__block-hp {
+  color: var(--color-muted);
+  font: 500 var(--text-2xs) / 1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.rack-row-map__block--preview {
+  z-index: var(--z-raised);
+  border-style: dashed;
+  border-color: var(--color-indicator);
+  color: var(--color-accent-text);
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  pointer-events: none;
+}
+.rack-row-map__block--preview::before,
+.rack-row-map__block--preview::after {
+  display: none;
+}
+.rack-row-map__block--batch {
+  border-color: var(--color-info);
+  color: var(--color-info);
+  background: color-mix(in oklab, var(--color-info) 10%, transparent);
+}
+.rack-row-map__scale {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-muted);
+  font: 400 var(--text-xs) / 1.2 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* In the builder a 1HP module still keeps a block wide enough to click */
+.placement-rail .rack-row-map__block {
+  min-width: 1.5%;
+}
+
+/* Moving a placed module: it lifts, and a ghost shows where it would land */
+.placement-rail .rack-row-map__block.is-movable {
+  cursor: grab;
+  touch-action: none;
+}
+.placement-rail[data-dragging="pointer"],
+.placement-rail[data-dragging="pointer"] .rack-row-map__block.is-movable {
+  cursor: grabbing;
+}
+.placement-rail .rack-row-map__block[data-lifted] {
+  opacity: 0.4;
+}
+.rack-row-map__block--ghost {
+  z-index: var(--z-raised);
+  border-style: dashed;
+  border-color: var(--color-indicator);
+  background: color-mix(in oklab, var(--color-accent) 16%, var(--color-plate-face));
+  pointer-events: none;
+  animation: none;
+}
+.rack-row-map__block--ghost::before,
+.rack-row-map__block--ghost::after {
+  display: none;
+}
+/* The next placement can be dragged to its slot */
+.rack-row-map__block--preview.is-movable {
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+}
+/* A slot it can't take: overlapping another module, or off the end of the row */
+.rack-row-map__block[data-state="blocked"] {
+  border-color: var(--color-error);
+  color: var(--color-error);
+  background: color-mix(in oklab, var(--color-error) 12%, transparent);
+}
+/* The ghost is opaque, so the module it overlaps doesn't show through it */
+.rack-row-map__block--ghost[data-state="blocked"] {
+  border: 2px dashed var(--color-error);
+  background: color-mix(in oklab, var(--color-error) 22%, var(--color-plate-face));
+}
+.placement-rail__why,
+.placement-rail__hint {
+  margin: 0;
+}
+
+/* The rail on the rig overview: smaller, read-only */
+.rig-rail {
+  display: grid;
+  gap: var(--space-md);
+}
+.rig-rail .rack-row-map__track {
+  height: 84px;
+  cursor: default;
+}
+.rig-rail .rack-row-map__block {
+  cursor: default;
+}
+
+/* —— Batch place —— */
+.batch-module-list {
+  max-height: 18rem;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  border-top: 1px solid var(--color-rule);
+  list-style: none;
+}
+.batch-module-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-xs) var(--space-xs) 0;
+  border-bottom: 1px solid var(--color-rule);
+  cursor: pointer;
+  font-size: var(--text-sm);
+}
+.batch-module-list__item:hover {
+  background: var(--color-paper-3);
+}
+.batch-module-list__item.is-selected {
+  background: color-mix(in oklab, var(--color-info) 9%, transparent);
+}
+.batch-module-list__item input {
+  margin-top: var(--space-2xs);
+  accent-color: var(--color-accent);
+}
+.placement-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-rule);
+  list-style: none;
+}
+/* Remove stays at the row's right edge; a jumper choice takes its own line under the name */
+.placement-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-xs) var(--space-md);
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--color-rule);
+  font-size: var(--text-sm);
+}
+.placement-list .muted {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+.placement-list li > .button {
+  grid-row: 1;
+  grid-column: 2;
+}
+.placement-list__config {
+  grid-column: 1 / -1;
+  max-width: 32rem;
+}
+
+/* —— Evidence —— */
+.evidence-target {
+  max-width: 24rem;
+}
+.evidence-ready {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.detection-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+.detection-row__body {
+  display: grid;
+  gap: var(--space-2xs);
+  min-width: 0;
+}
+.detection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.candidate-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-rule);
+  list-style: none;
+}
+
+/* —— Rig detail: the patch path from inventory to book —— */
+.rig-tabpanel {
+  display: grid;
+  gap: var(--space-xl);
+}
+/* Patch detail, and the selected patch on Rig detail: the patch on its rail, then notes */
+.patch-detail,
+.rig-patch-detail {
+  display: grid;
+  align-content: start;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.rig-patch-detail__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+/* Notes read at a line length, not the full workspace width */
+.patch-detail .patch-notes {
+  max-width: 65ch;
+}
+/* Racks' Overview tab: its blocks stacked */
+.rack-tabpanel {
+  display: grid;
+  gap: var(--space-5);
+}
+.rig-placed {
+  display: grid;
+  gap: var(--space-sm);
+}
+/* Holds the title's line while the rig's name loads */
+.rig-title-skeleton {
+  width: min(16ch, 70%);
+  height: 0.9em;
+}
+.rig-tabpanel__head {
+  display: grid;
+  gap: var(--space-xs);
+}
+.rig-receipt {
+  margin-bottom: var(--space-lg);
+}
+.rig-source {
+  flex-wrap: nowrap;
+}
+.rig-source .field {
+  width: 18rem;
+}
+.rig-tabpanel .readout {
+  margin: 0;
+}
+.rig-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+.rig-patch-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rig-export-actions {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-xs);
+}
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--text-sm);
+}
+.check-row input {
+  accent-color: var(--color-accent);
+}
+
+/* Three stages on one cable; the lit length runs to the jack the rig is plugged into */
+.signal-chain {
+  --jack: 22px;
+  --cable: 3px;
+  --reach: 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-lg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.signal-chain::before,
+.signal-chain::after {
+  position: absolute;
+  top: calc(var(--jack) / 2 - var(--cable) / 2);
+  right: calc((100% - 2 * var(--space-lg)) / 3 - var(--jack) / 2);
+  left: calc(var(--jack) / 2);
+  height: var(--cable);
+  border-radius: var(--cable);
+  content: "";
+}
+.signal-chain::before {
+  background: var(--color-cable-off);
+}
+/* Moves only when the rig reaches a new stage */
+.signal-chain::after {
+  background: var(--color-signal);
+  transform: scaleX(var(--reach));
+  transform-origin: left center;
+  transition: transform var(--dur-long) var(--ease-out);
+}
+.signal-chain__stage {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--space-2xs);
+  padding-top: calc(var(--jack) + var(--space-md));
+}
+/* A patch point: a ring around a dark socket. The lead is plugged in at the current stage. */
+.signal-chain__jack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: var(--z-base);
+  width: var(--jack);
+  height: var(--jack);
+  border: 2px solid var(--color-cable-off);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--zs-carbon) 0 4px, var(--color-paper-3) 4.5px);
+}
+.signal-chain__jack::after {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--color-signal);
+  content: "";
+  opacity: 0;
+  transition: opacity var(--dur-short) var(--ease-out);
+}
+.signal-chain__stage[data-state="done"] .signal-chain__jack,
+.signal-chain__stage[data-state="current"] .signal-chain__jack {
+  border-color: var(--color-signal);
+}
+.signal-chain__stage[data-state="current"] .signal-chain__jack::after {
+  opacity: 1;
+}
+.signal-chain__title {
+  color: var(--color-ink);
+  font: 600 var(--text-lg) / 1.2 var(--font-display);
+  letter-spacing: -0.015em;
+}
+.signal-chain__stage[data-state="todo"] .signal-chain__title {
+  color: var(--color-ink-2);
+}
+.signal-chain__state {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+.signal-chain__stage[data-state="current"] .signal-chain__state {
+  color: var(--color-accent-text);
+}
+.signal-chain__stage[data-state="done"] .signal-chain__state {
+  color: var(--color-success);
+}
+.signal-chain__detail {
+  max-width: 36ch;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+@media (max-width: 60rem) {
+  .rig-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rig-source {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 45rem) {
+  .signal-chain {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .signal-chain::before,
+  .signal-chain::after {
+    display: none;
+  }
+  .signal-chain__stage {
+    padding-top: 0;
+    padding-left: calc(var(--jack) + var(--space-md));
+  }
+  .signal-chain__detail {
+    display: none;
+  }
+  /* Stacked, each stage runs its own length of cable down to the next jack */
+  .signal-chain__stage:not(:last-child)::after {
+    position: absolute;
+    top: var(--jack);
+    bottom: calc(-1 * var(--space-lg));
+    left: calc(var(--jack) / 2 - 1px);
+    width: 2px;
+    background: var(--color-rule-strong);
+    content: "";
+  }
+  .signal-chain__stage[data-state="done"]:not(:last-child)::after {
+    background: var(--color-indicator);
+  }
+}
+
+@media (max-width: 45rem) {
+  .detection-row,
+  .evidence-ready {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  /* The decision on its own line, the two others shared evenly under it */
+  .detection-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .detection-actions > :first-child {
+    grid-column: 1 / -1;
+  }
+  /* Three steps on one line: a gap between them instead of padding inside each */
+  .step-progress {
+    gap: var(--space-md);
+  }
+  .step-progress__item,
+  .step-progress__item + .step-progress__item {
+    padding: 0;
+  }
+  .step-progress__item::after,
+  .step-progress__item + .step-progress__item::after {
+    right: 0;
+    left: 0;
+  }
+  /* Stacked, the layout and power facts divide with a hairline above, not a rule beside */
+  .case-summary {
+    flex-direction: column;
+  }
+  .case-summary .stat-block + .stat-block {
+    padding-left: 0;
+    border-top: 1px solid var(--color-rule);
+    border-left: 0;
+  }
+  .rack-row-map__track {
+    height: 96px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-chain::after,
+  .signal-chain__jack::after {
+    transition: none;
+  }
+  .usage-bar__fill,
+  .rack-row-map__block {
+    animation: none;
+    transition: none;
+  }
+  .step-progress__item::after {
+    transition: none;
+  }
+  button.rack-row-map__block:hover,
+  button.rack-row-map__block:focus-visible {
+    transform: none;
+  }
+}
+
+/* —— Patch on the rail: cables hang between the modules they plug into —— */
+.patch-rail {
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.patch-rail__stage {
+  position: relative;
+  padding-bottom: var(--space-md);
+  background: var(--color-paper);
+}
+/* A patch view reads the cables, not the capacity: no usage meter, no empty rows */
+.patch-rail .usage-bar,
+.patch-rail .rack-row-map:not(:has(.rack-row-map__block)) {
+  display: none;
+}
+.patch-rail__cables {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-raised);
+  overflow: visible;
+  pointer-events: none;
+}
+.patch-cable {
+  --cable: var(--cable-audio);
+  transition: opacity var(--dur-short) var(--ease-out);
+}
+.patch-cable--cv {
+  --cable: var(--cable-cv);
+}
+.patch-cable--gate,
+.patch-cable--trigger,
+.patch-cable--clock {
+  --cable: var(--cable-gate);
+}
+.patch-cable--unknown {
+  --cable: var(--color-muted);
+}
+.patch-cable__lead {
+  fill: none;
+  stroke: var(--cable);
+  stroke-width: 3;
+  opacity: 0.9;
+  animation: cable-in var(--dur-long) var(--ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 10) * 40ms);
+}
+.patch-cable--cv .patch-cable__lead {
+  stroke-dasharray: 8 5;
+}
+.patch-cable--gate .patch-cable__lead,
+.patch-cable--trigger .patch-cable__lead,
+.patch-cable--clock .patch-cable__lead {
+  stroke-dasharray: 2 5;
+}
+/* Solid leads draw themselves along their length (pathLength is 1); dashed ones keep their pattern and fade */
+.patch-cable__lead--solid {
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  animation-name: cable-run;
+}
+@keyframes cable-run {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.patch-cable__plug {
+  fill: var(--color-paper);
+  stroke: var(--cable);
+  stroke-width: 2.5;
+}
+.patch-cable__plug--out {
+  fill: var(--cable);
+}
+.patch-cable.is-dimmed {
+  opacity: 0.25;
+}
+.patch-cable.is-selected .patch-cable__lead {
+  stroke-width: 5;
+  opacity: 1;
+}
+
+.patch-rail__table {
+  overflow-x: auto;
+}
+.patch-rail__table tr.is-selected {
+  background: var(--color-paper-3);
+}
+.patch-rail__pick {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: var(--hit-target);
+  padding: 0;
+  border: 0;
+  color: var(--color-ink);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.patch-rail__pick:hover {
+  color: var(--color-accent-text);
+}
+.patch-rail__pick:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.patch-rail__pick[aria-pressed="true"] {
+  color: var(--color-accent-text);
+}
+.patch-rail__pick .cable-swatch {
+  margin-right: 0;
+}
+.patch-rail__pick .cable-unknown {
+  border-top-color: var(--color-muted);
+}
+.patch-rail__port,
+.patch-rail__note {
+  display: block;
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+.patch-rail__key {
+  margin-bottom: var(--space-xs);
+  font-size: var(--text-xs);
+}
+.patch-rail__port {
+  font-family: var(--font-mono);
+}
+
+/* Racks > Patches: the list beside the selected patch on its rail */
+.rack-patches {
+  display: grid;
+  gap: var(--space-lg);
+}
+.rack-patches .toolbar {
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-rule);
+}
+.rack-patch-detail {
+  display: grid;
+  align-content: start;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.rack-patch-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Wide screens: the rail stays in view while the cable table scrolls under it */
+@media (min-width: 60rem) {
+  .patch-rail__stage {
+    position: sticky;
+    top: var(--header-height);
+    z-index: var(--z-base);
+  }
+}
+/* Phones: the module name alone over its port; the signal is the swatch, and stays for screen readers */
+@media (max-width: 45rem) {
+  .patch-rail__brand,
+  .patch-rail__signal {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .patch-cable,
+  .patch-cable__lead {
+    animation: none;
+    transition: none;
+  }
+}

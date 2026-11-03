@@ -4,21 +4,7 @@ Component tests for the PatchHive React frontend using Vitest and React Testing 
 
 ## Test Coverage
 
-**Component Tests** (2 test suites, 50+ assertions):
-
-- ✅ **LoadingSpinner** (24 tests)
-  - Rendering with default and custom props
-  - SVG structure validation
-  - Props validation
-  - CSS classes
-  - Accessibility
-
-- ✅ **AnimatedLogo** (26 tests)
-  - Rendering with animation states
-  - SVG structure and definitions
-  - Visual elements validation
-  - Props validation
-  - Accessibility
+Unit and component tests sit beside the code they test (`*.test.ts`, `*.test.tsx`): the shared components in `src/components/`, the helpers in `src/lib/`, and page behaviour in `src/pages/`. Browser tests live in `frontend/tests/ui/` (Playwright): `mvp.spec.ts` covers the product flows against mocked APIs, and `design.spec.ts` is the design guard (axe, overflow and each screen's signature, in both themes, plus an "API down" sweep).
 
 ## Running Tests
 
@@ -49,7 +35,7 @@ npm run test:coverage
 
 ```bash
 # Run specific test file
-npm test LoadingSpinner.test.tsx
+npm test Tabs.test.tsx
 
 # Run tests matching pattern
 npm test -- --grep "Rendering"
@@ -66,10 +52,8 @@ frontend/src/
 │   ├── setup.ts                      # Vitest configuration
 │   └── README.md                     # This file
 ├── components/
-│   ├── LoadingSpinner.tsx
-│   ├── LoadingSpinner.test.tsx       # Component tests
-│   ├── AnimatedLogo.tsx
-│   └── AnimatedLogo.test.tsx         # Component tests
+│   ├── Tabs.tsx
+│   └── Tabs.test.tsx                 # Component tests
 ```
 
 ## Testing Stack
@@ -222,7 +206,7 @@ Tests run automatically on:
 npm test -- --reporter=verbose
 
 # Run single test file with debugging
-npm test -- LoadingSpinner.test.tsx --reporter=verbose
+npm test -- Tabs.test.tsx --reporter=verbose
 ```
 
 ### Use Vitest UI

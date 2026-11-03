@@ -1,19 +1,19 @@
 {
-  "paid_fetches": 2569,
+  "paid_fetches": 2869,
   "credits_by_backend": {
-    "context_dev": 1116.0,
+    "context_dev": 1411.0,
     "firecrawl": 33.0
   },
   "calls_by_method": {
-    "free_http": 1549,
+    "free_http": 1924,
     "skipped_no_key": 2475,
     "robots_unavailable": 3025,
     "cache": 31879,
-    "context_dev": 2533,
-    "robots_disallowed": 19,
+    "context_dev": 2833,
+    "robots_disallowed": 127,
     "firecrawl": 36,
     "skipped_paid_cap": 1036,
     "blocked_url": 10
   },
-  "updated_at": "2026-10-30T07:40:55Z"
+  "updated_at": "2026-11-02T22:05:53Z"
 }

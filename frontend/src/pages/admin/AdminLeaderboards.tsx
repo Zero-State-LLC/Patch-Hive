@@ -1,30 +1,45 @@
 import { useEffect, useState } from "react";
+import LoadFailure from "@/components/LoadFailure";
+import { ListSkeleton } from "@/components/Skeletons";
 import { adminApi } from "@/lib/api";
 import type { AdminLeaderboardEntry } from "@/types/admin";
 import { AdminGuard } from "./AdminGuard";
 import { AdminNav } from "./AdminNav";
 
-function LeaderboardTable({ title, entries }: { title: string; entries: AdminLeaderboardEntry[] }) {
+function LeaderboardTable({
+  title,
+  board,
+  onRetry,
+}: {
+  title: string;
+  board: Board;
+  onRetry: () => void;
+}) {
+  const { entries, error } = board;
   return (
-    <section className="panel">
-      <h2 style={{ marginTop: 0 }}>{title}</h2>
-      {entries.length ? (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Label</th>
-              <th>Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry) => (
-              <tr key={entry.label}>
-                <td>{entry.label}</td>
-                <td>{entry.count}</td>
+    <section className="ops-section">
+      <h2>{title}</h2>
+      {error ? (
+        <LoadFailure what={title} error={error} onRetry={onRetry} />
+      ) : entries.length ? (
+        <div className="ops-table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Label</th>
+                <th>Count</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {entries.map((entry) => (
+                <tr key={entry.label}>
+                  <td>{entry.label}</td>
+                  <td>{entry.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p className="muted">No entries.</p>
       )}
@@ -32,24 +47,42 @@ function LeaderboardTable({ title, entries }: { title: string; entries: AdminLea
   );
 }
 
-export default function AdminLeaderboards() {
-  const [popular, setPopular] = useState<AdminLeaderboardEntry[]>([]);
-  const [trending, setTrending] = useState<AdminLeaderboardEntry[]>([]);
-  const [exported, setExported] = useState<AdminLeaderboardEntry[]>([]);
+interface Board {
+  entries: AdminLeaderboardEntry[];
+  error: unknown;
+}
 
+const NOT_LOADED: Board = { entries: [], error: null };
+
+export default function AdminLeaderboards() {
+  const [boards, setBoards] = useState<Board[] | null>(null);
+  const [attempt, setAttempt] = useState(0);
+
+  // Each board loads on its own, so one that is switched off or fails leaves the others.
   useEffect(() => {
-    const fetchData = async () => {
-      const [popularRes, trendingRes, exportedRes] = await Promise.all([
-        adminApi.popularModules(),
-        adminApi.trendingModules(14),
-        adminApi.exportedCategories(),
-      ]);
-      setPopular(popularRes.data);
-      setTrending(trendingRes.data);
-      setExported(exportedRes.data);
+    let current = true;
+    setBoards(null);
+    void Promise.allSettled([
+      adminApi.popularModules(),
+      adminApi.trendingModules(14),
+      adminApi.exportedCategories(),
+    ]).then((results) => {
+      if (!current) return;
+      setBoards(
+        results.map((r) =>
+          r.status === "fulfilled"
+            ? { entries: r.value.data, error: null }
+            : { entries: [], error: r.reason },
+        ),
+      );
+    });
+    return () => {
+      current = false;
     };
-    void fetchData();
-  }, []);
+  }, [attempt]);
+
+  const retry = () => setAttempt((n) => n + 1);
+  const titles = ["Popular modules", "Trending modules (14 days)", "Exported categories"];
 
   return (
     <AdminGuard>
@@ -61,10 +94,22 @@ export default function AdminLeaderboards() {
           </div>
         </header>
         <AdminNav />
-        <div style={{ display: "grid", gap: "var(--space-5)" }}>
-          <LeaderboardTable title="Popular modules" entries={popular} />
-          <LeaderboardTable title="Trending modules (14 days)" entries={trending} />
-          <LeaderboardTable title="Exported categories" entries={exported} />
+        <div className="ops-stack">
+          {titles.map((title, i) =>
+            boards ? (
+              <LeaderboardTable
+                key={title}
+                title={title}
+                board={boards[i] ?? NOT_LOADED}
+                onRetry={retry}
+              />
+            ) : (
+              <section key={title} className="ops-section">
+                <h2>{title}</h2>
+                <ListSkeleton label={`Loading ${title.toLowerCase()}…`} rows={3} />
+              </section>
+            ),
+          )}
         </div>
       </div>
     </AdminGuard>

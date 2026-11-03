@@ -1,10 +1,10 @@
 # CURRENT_STATE
 
-**Authoritative as of:** 2026-11-01  
+**Authoritative as of:** 2026-11-02  
 **Branch pin:** `main` on `Zero-State-LLC/Patch-Hive`  
-**HEAD:** `e59d9a9` (#186); #134–#186 plus the 0.3.0-alpha.4 release (#109) and the zod bump (#106) merged 2026-10-29/30. Database migrations (head `20261030_power_configs`) and catalog loads are applied to staging and production. **Staging and production both run `9dbb5ba`** (0.3.0-alpha.5; #168–#181 changed only docs and catalog data, loaded 2026-10-30 to 11-01; #182 adds tests only, and the backend changes in #183–#186 are on main but not deployed) (API and frontend redeployed and smoke-tested 2026-10-30: staging API Worker `6cf8458e` and frontend `ea6b2239`, production API `604091fa` and frontend `2b7c6bcb`). Payments stay in test mode on both.  
+**HEAD:** `cf8fd3f` (#211); #134–#211 plus the 0.3.0-alpha.4 release (#109) and the zod bump (#106) merged 2026-10-29 to 11-02. Database migrations (head `20261102_credit_checkout`, staging run [41540758612](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41540758612), production run [41540879632](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41540879632); `/health/ready` 200 on both afterwards) and catalog loads are applied to staging and production. **Staging and production both run `ee5326e`**, so the commerce work in #209–#211 is migrated but not deployed (deployed and smoke-tested 2026-11-02: staging API Worker `6a957dfb` and frontend `9259b090`, production API `ae714896` and frontend `289a7544`; `/health` still reports 0.3.0-alpha.5 because release PR #169 is not merged). Payments stay in test mode on both; production sets no feature flags.  
 **Recent work (2026-10-28):** gap-analysis fixes for specs 001–005 and P0/P1 security (#82–#105); Cloudflare edge for staging and production (#83–#87, #107); short-lived tokens, refresh cookie and an enforced CSP (#99, #100, #113); prod catalog load, Products page, category fill and catalog tombstones (#112–#116). 2026-10-29: slices A1–A5 (#118, #119, #121–#123) and a second retirement (#120); spec research (#134); lifecycle and decision fixes (#135); slices B1–B5 (#136–#140) and C1–C5 (#142–#146).  
-**Open PRs:** [#169](https://github.com/Zero-State-LLC/Patch-Hive/pull/169) (Release Please, 0.3.0-alpha.6).  
+**Open PRs:** [#169](https://github.com/Zero-State-LLC/Patch-Hive/pull/169) (Release Please, 0.3.0-alpha.6; merging it publishes a tag and release, owner's call), [#191](https://github.com/Zero-State-LLC/Patch-Hive/pull/191) and [#192](https://github.com/Zero-State-LLC/Patch-Hive/pull/192) (NVIDIA smoke test and staging timeout, from another session), [#199](https://github.com/Zero-State-LLC/Patch-Hive/pull/199) (Dependabot).  
 **Board:** [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8), mirrored in [docs/KANBAN.md](docs/KANBAN.md).  
 **Open owner decisions:** [docs/evidence/OPEN_DECISIONS_2026-10-30.md](docs/evidence/OPEN_DECISIONS_2026-10-30.md) (13 decisions with recommendations, plus [follow-up research](docs/evidence/OPEN_DECISIONS_2026-10-30_RESEARCH.md); supersedes [the 2026-10-28 note](docs/evidence/OPEN_DESIGN_DECISIONS_2026-10-28.md)). Decided and done 2026-10-30: legacy purchase route deleted (#150), routing target empty by default (#151), strict key revocation kept (#149), HP overlay precedence fixed (#152), prod workflows given a `production` environment (#160; moving the secrets is the owner's step T101b), two rig scores defined with the other four NOT_COMPUTABLE (#161), T035 jumper pages fetched free (#163), unsourced HP values triaged (#164), jumper-dependent power loaded as `power_configs` (#166), 26 more legacy HP values re-sourced (#167), Otool's jumper settings labelled from its maker manual (#170), the SMR and VCA Matrix settings and the A-155 width decided and loaded (#172; reviewed HP corrections may now run to 84 HP), `evidence.expire` scheduling deferred to 006 T101c after T101b, every remaining unsourced HP value checked against reachable maker sources (#174: 4 re-sourced, Dixie II corrected to 6 HP, 57 left; then retailer evidence for those 57, #180: 40 agree and read `retailer_observed`).  
 **Next slices:** [docs/evidence/NEXT_SLICES_2026-10-28.md](docs/evidence/NEXT_SLICES_2026-10-28.md) (A1–A5 done; status updated 2026-10-29).  
@@ -12,10 +12,32 @@
 
 **Alpha tag lineage:** `v0.3.0-alpha` (late alpha — **not** production); latest pre-release `v0.3.0-alpha.5` (2026-10-30)
 
-### Recent merges (OBSERVED, 2026-10-30)
+### Recent merges (OBSERVED, 2026-10-30 to 11-02)
 
 | PR | Result |
 |----|--------|
+| [#211](https://github.com/Zero-State-LLC/Patch-Hive/pull/211) | 004 T048b: Admin `POST /api/admin/commerce/events/{id}/resolve` re-fetches the Checkout Session and runs Machine B fulfillment once, with one audit record; fails closed otherwise |
+| [#210](https://github.com/Zero-State-LLC/Patch-Hive/pull/210) | 004 T047: a referred user's first provider purchase writes one referral reward (duplicate and concurrent deliveries write none more) |
+| [#209](https://github.com/Zero-State-LLC/Patch-Hive/pull/209) | 004 T046: Machine B credit checkout behind `ENABLE_CREDIT_CHECKOUT` (off), test keys only; webhook fulfillment credits once on `paid`; migration `20261102_credit_checkout` |
+| [#208](https://github.com/Zero-State-LLC/Patch-Hive/pull/208) | 007 T010b: corpus photos must name maker and module; [run record](docs/evidence/CORPUS_PHOTO_SEARCH_2026-11-02.md): 300 paid searches spent, 2 usable images |
+| [#207](https://github.com/Zero-State-LLC/Patch-Hive/pull/207) | 006 OQ-3: operator-task receipts for 2026-11-02; no task closed (evidence incomplete) |
+| [#206](https://github.com/Zero-State-LLC/Patch-Hive/pull/206) | 007 T010b: `scripts/vision/find_corpus_photos.py` and approval `corpus-photos-2026-11` (300 context.dev searches) |
+| [#205](https://github.com/Zero-State-LLC/Patch-Hive/pull/205) | CURRENT_STATE: 2026-11-02 migrations and deploys |
+| [#204](https://github.com/Zero-State-LLC/Patch-Hive/pull/204) | 007 T082: approver public key `approver-2026-11` committed to the allowlist |
+| [#203](https://github.com/Zero-State-LLC/Patch-Hive/pull/203) | 007 T084: `scripts/staging/run_007_evaluation.py` runs the evaluation and enablement chain (freeze, run, propose, approve, enable-staging, pin, sign, verify); a dry run can never be signed |
+| [#202](https://github.com/Zero-State-LLC/Patch-Hive/pull/202) | An uploaded photo reaches the decision route: candidates carry the stored evidence record id (006 T060b blocker) |
+| [#201](https://github.com/Zero-State-LLC/Patch-Hive/pull/201) | [Owner action guide](docs/evidence/OWNER_ACTIONS_2026-11-02.md): every owner-only item with exact steps |
+| [#200](https://github.com/Zero-State-LLC/Patch-Hive/pull/200) | 003 OQ-2: maker quotes for eight hand-checked HP values (`module-catalog-hp-v7`), all equal to the stored values; Akemie's Castle unconfirmed |
+| [#198](https://github.com/Zero-State-LLC/Patch-Hive/pull/198) | 003 OQ-9: a catalog apply needs the dry run's `inputs_hash` as well as `plan_hash`; retirements need evidence |
+| [#197](https://github.com/Zero-State-LLC/Patch-Hive/pull/197) | 002 OQ-10, OQ-13: publication rows lock on transitions; reports rate-limited and de-duplicated |
+| [#196](https://github.com/Zero-State-LLC/Patch-Hive/pull/196) | 003 OQ-3: paid catalog fetches need a committed approval (`fetch-approvals.json`, no entries yet) |
+| [#195](https://github.com/Zero-State-LLC/Patch-Hive/pull/195) | Threat-model sections for the provider/evidence boundary (001) and public publishing surfaces (002) |
+| [#194](https://github.com/Zero-State-LLC/Patch-Hive/pull/194) | 004 OQ-12: `DELETE /api/me` anonymizes the account and keeps the ledgers (migration `20261101_user_deleted_at`) |
+| [#193](https://github.com/Zero-State-LLC/Patch-Hive/pull/193) | 001 OQ-10: a user can delete an evidence image; requested retention capped at 90 days |
+| [#190](https://github.com/Zero-State-LLC/Patch-Hive/pull/190) | 006: T030 and T050b closed with evidence receipts; T055b and T040b wait on the R2 check |
+| [#189](https://github.com/Zero-State-LLC/Patch-Hive/pull/189) | 005 T086: NVIDIA vision provider beside Clef (off by default, refused in production, receipt-gated) |
+| [#188](https://github.com/Zero-State-LLC/Patch-Hive/pull/188) | [Jev decisions](docs/evidence/JEV_DECISIONS_2026-11-01.md) on all open questions; seven provisional |
+| [#182](https://github.com/Zero-State-LLC/Patch-Hive/pull/182) | T010 transition tests for specs 001–004; 183–186: verified-purchase referrals, admin reject of unresolved payment events, the 005 receipt gate and signed readiness pins |
 | [#160](https://github.com/Zero-State-LLC/Patch-Hive/pull/160) | `db-migrate`, `db-load` and `edge-secrets` jobs run in a `production` or `staging` environment (006 T101a); nothing changes until the owner moves the secrets (T101b, steps in `specs/006-cloudflare-edge-clef/DEPLOY_NOTES.md`) |
 | [#161](https://github.com/Zero-State-LLC/Patch-Hive/pull/161) | `routing_flex_score` and `performance_density_index` defined (`canon-metrics.1.2.0`); NOT_COMPUTABLE whenever a module lacks `io_ports`, which today is almost every real rig |
 | [#162](https://github.com/Zero-State-LLC/Patch-Hive/pull/162) | `/health` reports the release version from `backend/pyproject.toml`; `python -m evidence.expire` (dry run unless `--apply`) retires expired evidence images; not scheduled |
@@ -97,20 +119,20 @@
 | Product identity | Deterministic Eurorack **rig + patch documentation** |
 | Canonical domain | `backend/canon/` (+ design recipes, export fulfillment) |
 | Design Engine flags | **Default off** — staging overlay + walkthrough PASS (#147) |
-| Alembic | Single head through `20261030_catalog_hp_source`; staging and prod migrated 2026-10-30 |
+| Alembic | Single head through `20261102_credit_checkout`; staging and prod migrated 2026-11-02 |
 | Rig validation | Unknown draws are per rail (`POWER_RAIL_INCOMPLETE`, lower bounds); retired placements warn (`MODULE_TOMBSTONED`) on every rack read |
 | Health | `/health` liveness; `/health/ready` includes DB |
 | Local Compose staging | `docker-compose.staging.yml` + `scripts/staging/*` + `scripts/test/run.*` |
 | Test automation | `scripts/test/run.sh\|ps1` · CI `acceptance-tests.yml` · 11 acceptance PASS |
 | Dual-path inventory | F0/F1/F3/F2 done; F4/F5 residual; Z deferred |
 | Named staging host | Plan only — **NOT_PERFORMED** |
-| Payments | Test-mode only. Payment webhook events are recorded `unresolved` (`HANDLER_NOT_IMPLEMENTED`) until 004 T046/T049; on main (not deployed) an Admin can reject them (#184) and referral rewards need a verified purchase (#183) |
+| Payments | Test-mode only; sales deferred (004 OQ-13). On main, not deployed: Machine B credit checkout behind `ENABLE_CREDIT_CHECKOUT` (off; refuses live keys) with webhook fulfillment (#209), referral rewards on a verified provider purchase (#183, #210), and Admin reject and resolve for unresolved events (#184, #211). Subscription events stay `unresolved` (`HANDLER_NOT_IMPLEMENTED`) until T049; refunds (OQ-2) in progress |
 | Publishing | Drafts cannot be published (`PUBLICATION_BOOK_NOT_VALIDATED`) until the owner decides OQ-6 (002 T033) |
-| Readiness gates | Refuse every evaluation receipt (`APPROVER_KEY_UNKNOWN`) until the operator commits an approver public key (007 T082). On main, a decision provider outside development also needs that signed receipt (#185), and readiness pins are signed by the approver key (#186) |
+| Readiness gates | The approver public key `approver-2026-11` is committed (#204); a receipt verifies only once the operator signs the 007 chain (T083). On main, a decision provider outside development also needs that signed receipt (#185), and readiness pins are signed by the approver key (#186) |
 | Module catalog (staging = prod) | 4,184 catalog rows and 4,154 modules, of which 448 each are tombstoned; 3,736 visible from 356 brands, 0 conflicts. 855 rows have no category. Sovage CHICANE corrected to 4 HP (#125) and unflagged (#135, loads of 2026-10-29). HP corrected for Acid Rain Junction, Doepfer A-101-3 and A-137-2 (#153, loads of 2026-10-30); A-101-3's module stays flagged because its +5V draw is unstated: doepfer.de gives +12V 50 mA, -12V 50 mA and 65 mm depth (already loaded from `module-power-depth-v10`), but neither the product page nor either manual states +5V. HP corrected for Make Noise DPO (28) and Morphagene (20), Bastl Knit Rider (16) and Intellijel MEMS Mic 1U (10) (#164); A-106-1 (14) and A-138m (20) corrected (#167), A-155 (50) corrected (#172), Dixie II (6) corrected (#174), loads of 2026-10-30; Cockpit (golden) HP and both Cockpit rows' power and depth filled from the maker page (#176, #178, loads of 2026-10-31 and 11-01); 17 HP values carry `hp_source = legacy_unsourced` and 40 carry `retailer_observed` (a retailer page states the stored value, #180) until a maker page confirms them (mostly ADDAC and Befaco, whose sites block automated reads; T039 open). 21 jumper settings for 11 modules are in `power_configs` (#166, #170, #172), every setting the T035 receipt recorded. The older duplicate row "QCD: Quad Clock Distributor" has none; they sit on "4ms QCD"). Sources: Phase 2 seed (ModularGrid leads, tagged `unknown`/`CATALOG_OBSERVED`) plus maker pages (`official_publication`). Maker-crawl page cache deleted 2026-10-28; committed crawl results intact |
 | API access | Module and case writes admin-only (#79). Racks owner-scoped (#80): owner reads/writes, admin read roles read all, public racks readable by anyone, others 404. Catalog materialize and stateless layout recommendation stay public |
 | Accounts | Sign-in open on staging and production (#113). No account yet created on production; a real sign-up is still to be tried |
-| Production deploy | Frontend (`patch-hive.com`) and API (`api.patch-hive.com`) on Cloudflare, deployed manually with `wrangler deploy` from a checkout of main (no deploy workflow); API and frontend last deployed at `9dbb5ba` on 2026-10-30. CSP enforced; CORS limited to the exact origin. `/health` reports the release version (0.3.0-alpha.5) |
+| Production deploy | Frontend (`patch-hive.com`) and API (`api.patch-hive.com`) on Cloudflare, deployed manually with `wrangler deploy` from a checkout of main (no deploy workflow); API and frontend last deployed at `ee5326e` on 2026-11-02. CSP enforced; CORS limited to the exact origin. `/health` reports the release version (0.3.0-alpha.5) |
 | CI | Repo is public so GitHub Actions runs on free minutes; with the repo private the Actions budget blocks every job |
 | Production readiness | **Not ready** (beta-staging engineering) — [assessment](docs/evidence/PRODUCTION_READINESS_ASSESSMENT_2026-07-21.md) · [matrix](docs/evidence/PRODUCTION_READINESS_MATRIX.md) · [delta](docs/evidence/PRODUCTION_READINESS_DELTA_2026-07-26.md) |
 
@@ -122,17 +144,16 @@
 
 ## Immediate continuation priorities
 
-1. **Review #110 first.** Today `edge/api/src/index.ts` sends `RUN_MIGRATIONS: "true"`, so every API container cold start runs `alembic upgrade head` on its database, production included. Deploying a branch with a new migration migrates that database without `db-migrate.yml`. #110 makes startup migrations opt-in and warns when the schema is behind. Its CI is green, but it needs updating with main (it is behind), and that is the owner's branch.
+1. Owner steps, in order: [docs/evidence/OWNER_ACTIONS_2026-11-02.md](docs/evidence/OWNER_ACTIONS_2026-11-02.md). Next up: protect the `production` environment (T101b), confirm specs 001–004, the R2 check, and photos for the 007 corpus (open web search found 2 usable images in 300 searches, #208; owner or maker-licensed photos are the remaining source). Startup migrations are opt-in (#110, merged); databases migrate only through `db-migrate.yml`.
 2. Catalog: 17 HP values stay `legacy_unsourced` (T039, #180). 6 have a retailer page that disagrees: ADDAC200PI 2 vs 4, ADDAC200S black 2 vs 4, ADDAC501B 8 vs 4, Befaco Mixer 5 vs 4, Cwejman D-LFO 12 vs 14, Instruō dàil 4 vs 6 (that page bundles a 2 HP expander); each needs a maker source or an owner correction. 11 are on no retailer we may use: ADDAC001, 003, 005, 101 and 203, Befaco Dual Atenuverter, Doepfer A-101-4, Intellijel Quadra Expander and μAtt, Make Noise Mysteron and Strega. The 40 `retailer_observed` rows still lack maker confirmation (FR-027). Asking the makers for spec sheets remains the route to confirm them; cwejman.net now redirects to an unrelated site. `evidence.expire` gets a daily job once T101b is done (006 T101c; 0 evidence images today). T035 needed no paid pass (#163); Frap needs none either (D7).
-3. Deploy: #183–#186 change backend code on main that staging and production do not run yet (they run `9dbb5ba`); release PR #169 is open.
-4. Operator:
+3. Release: #169 (0.3.0-alpha.6) is open; merging it and redeploying makes `/health` report alpha.6.
+4. Operator (step-by-step guide: [docs/evidence/OWNER_ACTIONS_2026-11-02.md](docs/evidence/OWNER_ACTIONS_2026-11-02.md)):
    - real sign-up on production;
    - verify seeded demo auth on staging (008 T030b);
    - VirusTotal reanalysis;
    - rotate the context.dev and OpenRouter keys;
-   - add `PROJECT_TOKEN` and `RELEASE_PLEASE_TOKEN`;
+   - add `PROJECT_TOKEN` (`RELEASE_PLEASE_TOKEN` exists, checked 2026-11-02);
    - decide repo visibility versus the Actions budget;
-   - #106 (zod; its CodeQL failures came from the private-repo period, so rerun it), #109 (release), #111 (CODEOWNERS);
    - confirm specs 001–004 (R6).
 
 **Local test automation:**

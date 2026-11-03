@@ -55,7 +55,7 @@ describe("railMeter", () => {
   it("warns when unknown draws make the budget a lower bound", () => {
     const m = railMeter({ known: 300, unknown: 2 }, 1000);
     expect(m.tone).toBe("warning");
-    expect(m.label).toBe("at least 300/1000mA + 2 unknown · at most 700mA headroom");
+    expect(m.label).toBe("at least 300/1000mA + 2 unknown, at most 700mA headroom");
   });
 
   it("is danger when known draws alone exceed capacity", () => {
@@ -65,12 +65,12 @@ describe("railMeter", () => {
   it("is success when every draw is known and fits", () => {
     const m = railMeter({ known: 200, unknown: 0 }, 1000);
     expect(m.tone).toBe("success");
-    expect(m.label).toBe("200/1000mA · headroom 800mA");
+    expect(m.label).toBe("200/1000mA, headroom 800mA");
   });
 
   it("is neutral when the case capacity is unspecified", () => {
     expect(railMeter({ known: 50, unknown: 1 }, null).label).toBe(
-      "draw 50mA + 1 unknown · case capacity unspecified",
+      "draw 50mA + 1 unknown, case capacity unspecified",
     );
   });
 });
