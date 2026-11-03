@@ -3,7 +3,7 @@
  * and choosing in the page updates the URL.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 
@@ -77,6 +77,10 @@ function Where() {
   return <output data-testid="where">{`${location.pathname}${location.search}`}</output>;
 }
 
+// React Router runs navigations as transitions, so the URL can settle after a click resolves.
+const expectUrl = (url: string | RegExp) =>
+  waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent(url));
+
 function renderAt(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
@@ -137,7 +141,7 @@ describe("Racks deep links", () => {
   it("moves a bare /racks to the first rig without adding a history entry", async () => {
     renderAt("/racks");
     expect(await screen.findByRole("heading", { level: 1, name: "Bench rig" })).toBeInTheDocument();
-    expect(screen.getByTestId("where")).toHaveTextContent("/racks/7");
+    await expectUrl("/racks/7");
   });
 
   it("writes choices back to the URL", async () => {
@@ -146,13 +150,13 @@ describe("Racks deep links", () => {
     const list = await screen.findByRole("list", { name: "Patches in this run" });
 
     await user.click(within(list).getByRole("button", { name: /Slow drift/ }));
-    expect(screen.getByTestId("where")).toHaveTextContent("/racks/8?tab=patches&patch=501");
+    await expectUrl("/racks/8?tab=patches&patch=501");
 
     await user.click(screen.getByRole("tab", { name: "Overview" }));
-    expect(screen.getByTestId("where")).toHaveTextContent(/^\/racks\/8$/);
+    await expectUrl(/^\/racks\/8$/);
 
     await user.click(screen.getByRole("button", { name: /Bench rig/ }));
-    expect(screen.getByTestId("where")).toHaveTextContent(/^\/racks\/7$/);
+    await expectUrl(/^\/racks\/7$/);
     expect(await screen.findByRole("heading", { level: 1, name: "Bench rig" })).toBeInTheDocument();
   });
 });
