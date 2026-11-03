@@ -9,6 +9,9 @@ and leaves the record in a final disposition with ``processed_at`` set:
   provider payment under a new event id).
 - ``unresolved``: the event cannot be applied safely. It carries a ``reason_code`` for
   operator review, and any writes the handler made are rolled back, so it grants nothing.
+  The one exception is a disposition with ``commit_effects=True``: the handler applied
+  the safe part of the event and an operator must settle the rest (a refund larger than
+  the credits still unspent, spec 004 OQ-2). Its writes commit with the record.
 - ``ignored``: no handler exists for the event type.
 
 No event stays ``received``. An operator may then move an ``unresolved`` event to
@@ -40,6 +43,8 @@ FINAL_EVENT_STATUSES: frozenset[str] = frozenset(
 class EventDisposition:
     status: EventStatus
     reason_code: str | None = None
+    # Only meaningful with ``unresolved``: keep the handler's writes (see module doc).
+    commit_effects: bool = False
 
 
 class UnresolvedEventError(Exception):
@@ -53,11 +58,18 @@ class UnresolvedEventError(Exception):
 EventHandler = Callable[[Session, dict[str, Any]], EventDisposition]
 
 
-def _machine_not_built(_session: Session, _event: dict[str, Any]) -> EventDisposition:
-    # Fail closed (FR-014): these events move money or tiers, so an operator must see
-    # them until their machine exists. Machine C (T049) replaces these entries with
-    # real handlers.
-    return EventDisposition("unresolved", "HANDLER_NOT_IMPLEMENTED")
+def _machine_c(session: Session, event: dict[str, Any]) -> EventDisposition:
+    # Machine C (T049): subscription records; never grants.
+    from canon.subscriptions import handle_subscription_event
+
+    return handle_subscription_event(session, event)
+
+
+def _machine_c_invoice(session: Session, event: dict[str, Any]) -> EventDisposition:
+    # Machine C (T049): the only subscription grant trigger.
+    from canon.subscriptions import handle_invoice_paid
+
+    return handle_invoice_paid(session, event)
 
 
 def _machine_b(session: Session, event: dict[str, Any]) -> EventDisposition:
@@ -68,6 +80,13 @@ def _machine_b(session: Session, event: dict[str, Any]) -> EventDisposition:
     return handle_checkout_session_event(session, event)
 
 
+def _machine_b_refund(session: Session, event: dict[str, Any]) -> EventDisposition:
+    # Machine B refunds and disputes (spec 004 OQ-2 ``A_reverse_unspent``, T053).
+    from canon.checkout import handle_payment_reversal_event
+
+    return handle_payment_reversal_event(session, event)
+
+
 # The event types the observed integration handled (STRIPE_INTEGRATION_PROMPT.md), plus
 # the delayed-payment and expiry outcomes of a Checkout Session (research 2026-11-01 §2).
 EVENT_HANDLERS: dict[str, EventHandler] = {
@@ -75,9 +94,18 @@ EVENT_HANDLERS: dict[str, EventHandler] = {
     "checkout.session.async_payment_succeeded": _machine_b,
     "checkout.session.async_payment_failed": _machine_b,
     "checkout.session.expired": _machine_b,
-    "customer.subscription.created": _machine_not_built,
-    "customer.subscription.updated": _machine_not_built,
-    "customer.subscription.deleted": _machine_not_built,
+    # Refunds and disputes of a Machine B payment (OQ-2, T053). ``charge.refunded``
+    # carries the cumulative ``amount_refunded`` and is the only event that reverses
+    # credits; ``refund.failed`` and ``charge.dispute.created`` go to an operator.
+    "charge.refunded": _machine_b_refund,
+    "refund.failed": _machine_b_refund,
+    "charge.dispute.created": _machine_b_refund,
+    # Machine C (T049): ``customer.subscription.*`` sync the subscription record and
+    # ``invoice.paid`` grants once per billing period (research 2026-11-01 §3).
+    "customer.subscription.created": _machine_c,
+    "customer.subscription.updated": _machine_c,
+    "customer.subscription.deleted": _machine_c,
+    "invoice.paid": _machine_c_invoice,
 }
 
 
@@ -95,9 +123,9 @@ def process_stripe_event(
 ) -> EventDisposition:
     """Dispatch ``event`` by type and set the record's final status and ``processed_at``.
 
-    The handler runs in a savepoint. An unresolved outcome rolls the savepoint back. An
-    unexpected exception propagates so the caller rolls back the whole delivery and the
-    provider retries it.
+    The handler runs in a savepoint. An unresolved outcome rolls the savepoint back unless
+    the handler set ``commit_effects``. An unexpected exception propagates so the caller
+    rolls back the whole delivery and the provider retries it.
     """
 
     registry = EVENT_HANDLERS if handlers is None else handlers
@@ -120,7 +148,7 @@ def process_stripe_event(
             if disposition.status not in FINAL_EVENT_STATUSES:
                 savepoint.rollback()
                 raise ValueError(f"handler returned invalid status {disposition.status!r}")
-            if disposition.status == "unresolved":
+            if disposition.status == "unresolved" and not disposition.commit_effects:
                 savepoint.rollback()
             else:
                 savepoint.commit()

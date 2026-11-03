@@ -41,7 +41,7 @@ parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
   - acceptance: seeded operator can complete a full Design Engine flow without manual credential patching.
   - [x] T030a Make `scripts/seed_golden_demo.py` the single source of demo credentials; add read-only `check_seed_auth` (code).
     - depends_on: [T001]
-  - [ ] T030b Verify seeded auth on the staging host (operator). Open 2026-11-02: no `check_seed_auth` result from staging yet (`docs/evidence/OPERATOR_RECEIPTS_2026-11-02.md`).
+  - [x] T030b Verify seeded auth on the staging host (operator). Done 2026-11-03: `check_seed_auth` aligned=True for `golden_demo` (User) and `admin_demo` (Admin) on the Neon staging branch, seeded by `.github/workflows/staging-walkthrough.yml` run [41557808902](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41557808902) at `b6cc917` with per-run passwords; receipt `seed_auth_sha256` 7165983728… in [docs/evidence/receipts/staging-design-walkthrough-2026-11-03.json](../../docs/evidence/receipts/staging-design-walkthrough-2026-11-03.json).
     - depends_on: [T030a]
 
 - [ ] T040 Execute Design Engine walkthrough with flags enabled in test mode and capture the receipt.
@@ -49,7 +49,7 @@ parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
   - acceptance: debit → fulfillment → download pack succeeds under test payments; receipt includes SHA, flags, and outcome.
   - [x] T040a Implement `scripts/staging/design_engine_walkthrough.py` and receipt capture; pass in-process (code).
     - depends_on: [T020, T030a]
-  - [ ] T040b Run the walkthrough against staging and capture the receipt (operator).
+  - [x] T040b Run the walkthrough against staging and capture the receipt (operator). Done 2026-11-03: `WALKTHROUGH PASS` on `api-staging.patch-hive.com` at `b6cc917` (run [41557808902](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41557808902)): health, both logins, preview, grant, export debit, fulfillment, download token and pack download all passed; server flags read from `GET /api/admin/ops/runtime-flags`, production payments off. `receipt_sha256` 27de665e…f736 in [docs/evidence/receipts/staging-design-walkthrough-2026-11-03.json](../../docs/evidence/receipts/staging-design-walkthrough-2026-11-03.json).
     - depends_on: [T030b, T040a]
 
 - [ ] T050 Pin readiness docs and DOMAIN_CUTOVER_CHECKLIST to the walkthrough SHA.
@@ -57,7 +57,7 @@ parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
   - acceptance: matrix and checklist reference the exact source SHA; no unresolved P0 integrity regressions.
   - [x] T050a Implement `pin_readiness_docs`; add Spec 008 sections with `PENDING_OPERATOR_WALKTHROUGH` placeholders (code).
     - depends_on: [T040a]
-  - [ ] T050b Replace the placeholders with receipt values and pin (operator). Open 2026-11-02: no walkthrough receipt and 007 T060b open; placeholders unchanged (`docs/evidence/OPERATOR_RECEIPTS_2026-11-02.md`).
+  - [ ] T050b Replace the placeholders with receipt values and pin (operator). Note 2026-11-03: the walkthrough receipt now exists (T040b); this still waits on 007 T060b (the signed evaluation receipt). Open 2026-11-02: no walkthrough receipt and 007 T060b open; placeholders unchanged (`docs/evidence/OPERATOR_RECEIPTS_2026-11-02.md`).
     - depends_on: [T040b, T050a, 007:T060b]
 
 - [x] T060 Integration tests for the cutover state machine and receipt gate.
