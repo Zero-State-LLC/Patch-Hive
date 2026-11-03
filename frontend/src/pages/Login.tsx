@@ -3,7 +3,7 @@
  * Sign in or create an account with accessible, token-aligned UI.
  */
 import { useId, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { authApi } from "@/lib/api";
 import { ACCOUNTS_OPEN } from "@/lib/apiBase";
 import { useAuthStore } from "@/lib/store";
@@ -19,6 +19,17 @@ const DEMO_ACCOUNTS = import.meta.env.DEV
     }
   : null;
 
+/** The in-app screen that sent the visitor here, if it is one to return to. */
+function returnPath(state: unknown): string | null {
+  const from = (state as { from?: unknown } | null)?.from;
+  return typeof from === "string" &&
+    from.startsWith("/") &&
+    !from.startsWith("//") &&
+    from !== "/login"
+    ? from
+    : null;
+}
+
 // API error codes shown as words.
 const AUTH_ERRORS: Record<string, string> = {
   USERNAME_OR_EMAIL_TAKEN: "That username or email is already in use.",
@@ -27,6 +38,7 @@ const AUTH_ERRORS: Record<string, string> = {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const setAuth = useAuthStore((state) => state.setAuth);
   const formId = useId();
 
@@ -49,7 +61,7 @@ export default function LoginPage() {
       }
       const res = await authApi.login({ username, password });
       setAuth(res.data.user, res.data.access_token);
-      navigate("/racks");
+      navigate(returnPath(location.state) ?? "/racks", { replace: true });
     } catch (err: unknown) {
       const apiError = err as { response?: { data?: { detail?: string | { msg?: string }[] } } };
       const detail = apiError.response?.data?.detail;

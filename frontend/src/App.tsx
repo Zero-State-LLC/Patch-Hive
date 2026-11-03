@@ -1,33 +1,80 @@
-import { useEffect, useState } from "react";
-import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { BrowserRouter, NavLink, Route, Routes, useLocation } from "react-router-dom";
+import { RouteErrorBoundary } from "@/components/ErrorBoundary";
+import RouteEffects from "@/components/RouteEffects";
+import { ListSkeleton } from "@/components/Skeletons";
 import { restoreSession, signOut } from "@/lib/session";
 import { sessionHint, useAuthStore } from "@/lib/store";
-import AccountPage from "@/pages/Account";
-import AdminDashboard from "@/pages/admin/AdminDashboard";
-import AdminExports from "@/pages/admin/AdminExports";
-import AdminGallery from "@/pages/admin/AdminGallery";
-import AdminModules from "@/pages/admin/AdminModules";
-import AdminRuns from "@/pages/admin/AdminRuns";
-import AdminUsers from "@/pages/admin/AdminUsers";
-import CaseDetailPage from "@/pages/CaseDetail";
 import CasesPage from "@/pages/Cases";
 import Home from "@/pages/Home";
 import LoginPage from "@/pages/Login";
 import ModulesPage from "@/pages/Modules";
 import NotFoundPage from "@/pages/NotFound";
 import PatchesPage from "@/pages/Patches";
-import RackBuilderPage from "@/pages/RackBuilder";
 import RacksPage from "@/pages/Racks";
 import RigDetailPage from "@/pages/RigDetail";
-import PatchBookStyleStudioPage from "@/pages/PatchBookStyleStudio";
-import RegistryPage from "@/pages/Registry";
 import { ACCOUNTS_OPEN } from "@/lib/apiBase";
+
+// Screens most visits never open load on demand, keeping them out of the first download.
+const AccountPage = lazy(() => import("@/pages/Account"));
+const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
+const AdminExports = lazy(() => import("@/pages/admin/AdminExports"));
+const AdminGallery = lazy(() => import("@/pages/admin/AdminGallery"));
+const AdminModules = lazy(() => import("@/pages/admin/AdminModules"));
+const AdminRuns = lazy(() => import("@/pages/admin/AdminRuns"));
+const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
+const CaseDetailPage = lazy(() => import("@/pages/CaseDetail"));
+const PatchBookStyleStudioPage = lazy(() => import("@/pages/PatchBookStyleStudio"));
+const RackBuilderPage = lazy(() => import("@/pages/RackBuilder"));
+const RegistryPage = lazy(() => import("@/pages/Registry"));
 
 type Theme = "dark" | "light";
 
 const THEME_KEY = "patchhive-theme";
 /** The browser chrome colour per theme: each theme's --color-paper (styles/tokens.css). */
 const THEME_COLOR: Record<Theme, string> = { dark: "#08090b", light: "#e9ebef" };
+
+/** Every screen. The edge worker mirrors these paths (worker/routes.ts), and its test reads them here. */
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/modules" element={<ModulesPage />} />
+      <Route path="/cases" element={<CasesPage />} />
+      <Route path="/cases/:slug" element={<CaseDetailPage />} />
+      <Route path="/racks" element={<RacksPage />} />
+      <Route path="/racks/new" element={<RackBuilderPage />} />
+      <Route path="/racks/:id/edit" element={<RackBuilderPage />} />
+      <Route path="/rigs/:rigId" element={<RigDetailPage />} />
+      <Route path="/rigs/:rigId/patchbook-studio" element={<PatchBookStyleStudioPage />} />
+      <Route path="/patches" element={<PatchesPage />} />
+      <Route path="/products" element={<RegistryPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/account" element={<AccountPage />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/users" element={<AdminUsers />} />
+      <Route path="/admin/modules" element={<AdminModules />} />
+      <Route path="/admin/gallery" element={<AdminGallery />} />
+      <Route path="/admin/runs" element={<AdminRuns />} />
+      <Route path="/admin/exports" element={<AdminExports />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  );
+}
+
+/** Sign in, remembering the screen to come back to. */
+function SignInLink() {
+  const { pathname } = useLocation();
+  return (
+    <NavLink
+      className="button button-primary"
+      to="/login"
+      state={pathname === "/login" ? undefined : { from: pathname }}
+    >
+      Sign in
+    </NavLink>
+  );
+}
 
 /** Dark is the default; a remembered choice wins (public/theme-init.js applies it before paint). */
 function initialTheme(): Theme {
@@ -75,6 +122,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <RouteEffects />
       <div className="app-shell" data-theme={theme}>
         <a className="skip-link" href="#main-content">
           Skip to workspace
@@ -111,37 +159,18 @@ function App() {
                 Sign out {user?.username}
               </button>
             ) : ACCOUNTS_OPEN ? (
-              <NavLink className="button button-primary" to="/login">
-                Sign in
-              </NavLink>
+              <SignInLink />
             ) : null}
           </div>
         </header>
 
         <main id="main-content" className="workspace" tabIndex={-1}>
           {sessionSettled ? (
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/modules" element={<ModulesPage />} />
-              <Route path="/cases" element={<CasesPage />} />
-              <Route path="/cases/:slug" element={<CaseDetailPage />} />
-              <Route path="/racks" element={<RacksPage />} />
-              <Route path="/racks/new" element={<RackBuilderPage />} />
-              <Route path="/racks/:id/edit" element={<RackBuilderPage />} />
-              <Route path="/rigs/:rigId" element={<RigDetailPage />} />
-              <Route path="/rigs/:rigId/patchbook-studio" element={<PatchBookStyleStudioPage />} />
-              <Route path="/patches" element={<PatchesPage />} />
-              <Route path="/products" element={<RegistryPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/account" element={<AccountPage />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/users" element={<AdminUsers />} />
-              <Route path="/admin/modules" element={<AdminModules />} />
-              <Route path="/admin/gallery" element={<AdminGallery />} />
-              <Route path="/admin/runs" element={<AdminRuns />} />
-              <Route path="/admin/exports" element={<AdminExports />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
+            <RouteErrorBoundary>
+              <Suspense fallback={<ListSkeleton label="Loading this screen" />}>
+                <AppRoutes />
+              </Suspense>
+            </RouteErrorBoundary>
           ) : (
             <p className="muted" role="status">
               Restoring session…
