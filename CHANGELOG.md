@@ -4,6 +4,89 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.6](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.5...v0.3.0-alpha.6) (2026-11-03)
+
+
+### Added
+
+* **002:** lock publication rows on transitions; rate-limit and dedupe reports ([#197](https://github.com/Zero-State-LLC/Patch-Hive/issues/197)) ([1209396](https://github.com/Zero-State-LLC/Patch-Hive/commit/12093968b5dc849ce44d4c21ff369a1d1de5bf46))
+* **003:** apply checks the reviewed inputs_hash; retirements need evidence ([#198](https://github.com/Zero-State-LLC/Patch-Hive/issues/198)) ([ba8e3d2](https://github.com/Zero-State-LLC/Patch-Hive/commit/ba8e3d222708a0e03cc7b3d64250494d3502748a))
+* **003:** require a committed approval for paid catalog fetches ([#196](https://github.com/Zero-State-LLC/Patch-Hive/issues/196)) ([825defe](https://github.com/Zero-State-LLC/Patch-Hive/commit/825defeb8fae6288a2e165d773f19aac3c68a0b4))
+* **004:** account deletion anonymizes the user and keeps the ledger (OQ-12) ([#194](https://github.com/Zero-State-LLC/Patch-Hive/issues/194)) ([653911f](https://github.com/Zero-State-LLC/Patch-Hive/commit/653911f556ee9767f097e7f1e9ebb70e45f21ca9))
+* **004:** Machine B credit checkout behind the payments flag (T046) ([#209](https://github.com/Zero-State-LLC/Patch-Hive/issues/209)) ([5ac3209](https://github.com/Zero-State-LLC/Patch-Hive/commit/5ac320907ff2dac62c5309390634d84b7fa8e982))
+* **004:** Machine B refunds and disputes (OQ-2, T053) ([#214](https://github.com/Zero-State-LLC/Patch-Hive/issues/214)) ([b6cc917](https://github.com/Zero-State-LLC/Patch-Hive/commit/b6cc917ae1bfe8050480592700e70d288fc358ab))
+* **004:** Machine C subscriptions (T049) ([#219](https://github.com/Zero-State-LLC/Patch-Hive/issues/219)) ([6d33e80](https://github.com/Zero-State-LLC/Patch-Hive/commit/6d33e8018681c4e0f155622ab34e14af28815ed2))
+* **004:** operator resolve for unresolved checkout events (T048b) ([#211](https://github.com/Zero-State-LLC/Patch-Hive/issues/211)) ([cf8fd3f](https://github.com/Zero-State-LLC/Patch-Hive/commit/cf8fd3f5a9e9e6e433ff363829e0ac036d2047ed))
+* **004:** tier from subscription, STUDIO fair-use spending (T050) ([#224](https://github.com/Zero-State-LLC/Patch-Hive/issues/224)) ([571ba23](https://github.com/Zero-State-LLC/Patch-Hive/commit/571ba23cd4a7b82fedf5778ab1a59f3b204efadb))
+* **005:** gate the decision runtime on a signed 007 receipt (T080) ([#185](https://github.com/Zero-State-LLC/Patch-Hive/issues/185)) ([d6b791c](https://github.com/Zero-State-LLC/Patch-Hive/commit/d6b791cd01116016c838c3557deb013d45bf6128))
+* **005:** NVIDIA vision provider beside Clef (T086) ([#189](https://github.com/Zero-State-LLC/Patch-Hive/issues/189)) ([176779e](https://github.com/Zero-State-LLC/Patch-Hive/commit/176779e3ba55b185e06bfd8d5f8f785ca43cf4cf))
+* **005:** staging NVIDIA timeout 60 s and a pinned Meta Llama fallback model (T086) ([#192](https://github.com/Zero-State-LLC/Patch-Hive/issues/192)) ([7dbdb57](https://github.com/Zero-State-LLC/Patch-Hive/commit/7dbdb578a09efeae419a0873eef080a80dead585))
+* **007:** add operator driver for the evaluation and enablement chain ([#203](https://github.com/Zero-State-LLC/Patch-Hive/issues/203)) ([ee5326e](https://github.com/Zero-State-LLC/Patch-Hive/commit/ee5326e21796d1dec44c5bd6a22f6dfedb9ea2a7))
+* **007:** find openly licensed corpus photos via context.dev (T010b) ([#206](https://github.com/Zero-State-LLC/Patch-Hive/issues/206)) ([7493472](https://github.com/Zero-State-LLC/Patch-Hive/commit/74934729f6cac4c51920cb3e30b5b0b85dc46da5))
+* **008:** pin only against a signed 007 receipt and sign the pin (T071) ([#186](https://github.com/Zero-State-LLC/Patch-Hive/issues/186)) ([e59d9a9](https://github.com/Zero-State-LLC/Patch-Hive/commit/e59d9a961c9ae01661248cdb624671bcfeb4ac30))
+* **commerce:** admin reject for unresolved provider events (004 T048) ([#184](https://github.com/Zero-State-LLC/Patch-Hive/issues/184)) ([41bef96](https://github.com/Zero-State-LLC/Patch-Hive/commit/41bef96f525c6528ab3058ec31d76e3ad30eae6f))
+* **evidence:** cap retention at 90 days and purge bytes on owner image delete ([#193](https://github.com/Zero-State-LLC/Patch-Hive/issues/193)) ([0eb1acd](https://github.com/Zero-State-LLC/Patch-Hive/commit/0eb1acd1b9854172500a6caa56b6a424499ac745))
+* **frontend:** a page for each patch, on its rig's rail ([#232](https://github.com/Zero-State-LLC/Patch-Hive/issues/232)) ([dccc88f](https://github.com/Zero-State-LLC/Patch-Hive/commit/dccc88f73fa4f57e2725fa3bcdbceb25f685b782))
+* **frontend:** app shell that recovers, names screens and loads less ([#227](https://github.com/Zero-State-LLC/Patch-Hive/issues/227)) ([2d17957](https://github.com/Zero-State-LLC/Patch-Hive/commit/2d17957886ab4b3cf49e2437ad44f34a2b50b01a))
+* **frontend:** finish the light theme, remember it, and guard the design ([#225](https://github.com/Zero-State-LLC/Patch-Hive/issues/225)) ([5879e5b](https://github.com/Zero-State-LLC/Patch-Hive/commit/5879e5b6c05c07a598c78b559494f8fcc0184c27))
+* **frontend:** keyboard tabs, a nav that shows it scrolls, one heading outline ([#235](https://github.com/Zero-State-LLC/Patch-Hive/issues/235)) ([f496362](https://github.com/Zero-State-LLC/Patch-Hive/commit/f4963623b0d28974f66e2d4323cac635ea97a156))
+* **frontend:** motion by transform and opacity only, unused code gone ([#238](https://github.com/Zero-State-LLC/Patch-Hive/issues/238)) ([5135762](https://github.com/Zero-State-LLC/Patch-Hive/commit/51357624748598e34b297ae4af362446722bc798))
+* **frontend:** move modules on the rail by drag, tap or keyboard, with Undo ([#237](https://github.com/Zero-State-LLC/Patch-Hive/issues/237)) ([fa8d09d](https://github.com/Zero-State-LLC/Patch-Hive/commit/fa8d09dd67d7ab67d4ba8db23514f3de3c9120aa))
+* **frontend:** patch on the rail, and loading skeletons ([#222](https://github.com/Zero-State-LLC/Patch-Hive/issues/222)) ([55917bb](https://github.com/Zero-State-LLC/Patch-Hive/commit/55917bb98c753da78923a05d79c0ce366c4adffd))
+* **frontend:** put the rig in the URL and link Racks with Rig detail ([#228](https://github.com/Zero-State-LLC/Patch-Hive/issues/228)) ([91414d2](https://github.com/Zero-State-LLC/Patch-Hive/commit/91414d2e90dabdb96afb2bc84f57af064837bbaa))
+* **frontend:** rail redesign of the workbench UI under the Cyber Hive system ([#215](https://github.com/Zero-State-LLC/Patch-Hive/issues/215)) ([4fb2474](https://github.com/Zero-State-LLC/Patch-Hive/commit/4fb24745417a1758d55b65ae2a627a9891a4acdf))
+* **frontend:** recompose Rig detail around the patch path ([#218](https://github.com/Zero-State-LLC/Patch-Hive/issues/218)) ([4a88069](https://github.com/Zero-State-LLC/Patch-Hive/commit/4a880699785f3cc977ee1256154b8785026c175d))
+* **frontend:** recompose the remaining screens under the rail system ([#220](https://github.com/Zero-State-LLC/Patch-Hive/issues/220)) ([0d24cf2](https://github.com/Zero-State-LLC/Patch-Hive/commit/0d24cf295cbf52210e77b7ab356b6a4f3dd58c50))
+* **frontend:** recompose the rig builder into steps on the rail ([#231](https://github.com/Zero-State-LLC/Patch-Hive/issues/231)) ([3e40b77](https://github.com/Zero-State-LLC/Patch-Hive/commit/3e40b770efe6998d4fe7e854f844d52761e1a790))
+* **frontend:** say it plainly: dates, short ids, and words for codes ([#234](https://github.com/Zero-State-LLC/Patch-Hive/issues/234)) ([d6a2f1d](https://github.com/Zero-State-LLC/Patch-Hive/commit/d6a2f1df76e6f80f73b75313eacdd7593c2fc825))
+* **frontend:** searches that wait for a pause, failures that say so ([#236](https://github.com/Zero-State-LLC/Patch-Hive/issues/236)) ([7f5abbe](https://github.com/Zero-State-LLC/Patch-Hive/commit/7f5abbe493482c9a15f64750656907519a5d38ea))
+* **frontend:** show the product on Home, the demo rig on its rail ([#229](https://github.com/Zero-State-LLC/Patch-Hive/issues/229)) ([726be3a](https://github.com/Zero-State-LLC/Patch-Hive/commit/726be3a431182f2c75c65f65ab0b344a69f08fb5))
+
+
+### Fixed
+
+* **007:** keep only corpus photos that name their module; record the 300-search run (T010b) ([#208](https://github.com/Zero-State-LLC/Patch-Hive/issues/208)) ([ecf2eb7](https://github.com/Zero-State-LLC/Patch-Hive/commit/ecf2eb7257d96429b756a1ac562ab6a24d0c65ab))
+* **evidence:** bind uploaded candidates to the stored evidence record id ([#202](https://github.com/Zero-State-LLC/Patch-Hive/issues/202)) ([2911d54](https://github.com/Zero-State-LLC/Patch-Hive/commit/2911d54b263ea05a29baa8d1a1ef48d2815d813a))
+* **frontend:** keep the gallery's preselected module in the builder filter ([#233](https://github.com/Zero-State-LLC/Patch-Hive/issues/233)) ([9a67eb8](https://github.com/Zero-State-LLC/Patch-Hive/commit/9a67eb856ab9144e3fcc5e7457a3d852197b3f9f))
+* **frontend:** wait for the session restore before rendering routes ([#221](https://github.com/Zero-State-LLC/Patch-Hive/issues/221)) ([c872b31](https://github.com/Zero-State-LLC/Patch-Hive/commit/c872b316437aff01829ddaf4f75d13c808a6264b))
+* **referrals:** refuse unverified purchases (spec 004 FR-033) ([#183](https://github.com/Zero-State-LLC/Patch-Hive/issues/183)) ([9f4d3a2](https://github.com/Zero-State-LLC/Patch-Hive/commit/9f4d3a2e5048188f473b1eb7088fd45bc066da2e))
+
+
+### Data
+
+* **catalog:** apply the owner's T034 and A-155 decisions ([#172](https://github.com/Zero-State-LLC/Patch-Hive/issues/172)) ([414d96a](https://github.com/Zero-State-LLC/Patch-Hive/commit/414d96a39f45c9fb4e2133365738b1972340d095))
+* **catalog:** fill Cockpit (golden) HP from the maker's COCKPIT MK1 page ([#176](https://github.com/Zero-State-LLC/Patch-Hive/issues/176)) ([927a086](https://github.com/Zero-State-LLC/Patch-Hive/commit/927a086a772cc91f0fa9a90ef0d57828a64453d2))
+* **catalog:** fill Cockpit power and depth from the maker's COCKPIT MK1 page ([#178](https://github.com/Zero-State-LLC/Patch-Hive/issues/178)) ([5b46781](https://github.com/Zero-State-LLC/Patch-Hive/commit/5b46781b62bd7bc3c3cf4657a1e2abe6cbf11020))
+* **catalog:** label Otool's jumper settings from its manual (spec 003 T034) ([#170](https://github.com/Zero-State-LLC/Patch-Hive/issues/170)) ([eabc044](https://github.com/Zero-State-LLC/Patch-Hive/commit/eabc044b0744a418bdb05eb6cf6e38e49788c588))
+* **catalog:** quote the maker for eight hand-checked HP values (003 OQ-2) ([#200](https://github.com/Zero-State-LLC/Patch-Hive/issues/200)) ([9dba804](https://github.com/Zero-State-LLC/Patch-Hive/commit/9dba804ec18e21283427e5d51ca932b1222c7833))
+* **catalog:** re-source 4 more legacy HP values, correct Dixie II to 6 HP (spec 003 T039) ([#174](https://github.com/Zero-State-LLC/Patch-Hive/issues/174)) ([4baf206](https://github.com/Zero-State-LLC/Patch-Hive/commit/4baf206f498cda93794656d3918332c8a1f54ebf))
+* **catalog:** retailer evidence for the 57 unsourced HP values (FR-039) ([#180](https://github.com/Zero-State-LLC/Patch-Hive/issues/180)) ([ada8949](https://github.com/Zero-State-LLC/Patch-Hive/commit/ada8949ab88aa84b05f66787acf4f286fe708180))
+
+
+### Operations
+
+* **008,006:** staging walkthrough workflow and Design Engine flags for staging ([#213](https://github.com/Zero-State-LLC/Patch-Hive/issues/213)) ([820a136](https://github.com/Zero-State-LLC/Patch-Hive/commit/820a136bc86a794c7fe81c81dfd16b10f4ddaa1f))
+
+
+### Documentation
+
+* 006 OQ-3 operator receipts for 2026-11-02 (no closures) ([#207](https://github.com/Zero-State-LLC/Patch-Hive/issues/207)) ([74b7a93](https://github.com/Zero-State-LLC/Patch-Hive/commit/74b7a938cc2733225ded058022fae32f872ee87c))
+* **006:** record operator task receipts, close T030 and T050b ([#190](https://github.com/Zero-State-LLC/Patch-Hive/issues/190)) ([f7b79ec](https://github.com/Zero-State-LLC/Patch-Hive/commit/f7b79ec7e7f90a242fb6bc8edb83364199f36bfc))
+* **008,006:** staging walkthrough receipts; close T030b and T040b ([#216](https://github.com/Zero-State-LLC/Patch-Hive/issues/216)) ([7899458](https://github.com/Zero-State-LLC/Patch-Hive/commit/7899458eabd3ee9811cc767f6353d3d368d75501))
+* owner action guide (2026-11-02) ([#201](https://github.com/Zero-State-LLC/Patch-Hive/issues/201)) ([9730109](https://github.com/Zero-State-LLC/Patch-Hive/commit/9730109ba5aeaa69f81c01cffed6deb99af4af91))
+* record [#166](https://github.com/Zero-State-LLC/Patch-Hive/issues/166), [#167](https://github.com/Zero-State-LLC/Patch-Hive/issues/167), [#159](https://github.com/Zero-State-LLC/Patch-Hive/issues/159), the power_configs migration and the 9dbb5ba redeploy ([#168](https://github.com/Zero-State-LLC/Patch-Hive/issues/168)) ([4943db1](https://github.com/Zero-State-LLC/Patch-Hive/commit/4943db17e4ec9c938a1f1405e616f01353e76dcc))
+* record [#168](https://github.com/Zero-State-LLC/Patch-Hive/issues/168), [#170](https://github.com/Zero-State-LLC/Patch-Hive/issues/170) and the Otool power_configs load ([#171](https://github.com/Zero-State-LLC/Patch-Hive/issues/171)) ([5c69e5d](https://github.com/Zero-State-LLC/Patch-Hive/commit/5c69e5d91c8819702c95d5050d78d4039c4b86db))
+* record [#171](https://github.com/Zero-State-LLC/Patch-Hive/issues/171), [#172](https://github.com/Zero-State-LLC/Patch-Hive/issues/172) and the owner-decision loads ([#173](https://github.com/Zero-State-LLC/Patch-Hive/issues/173)) ([fb0139a](https://github.com/Zero-State-LLC/Patch-Hive/commit/fb0139a658a309efdfbbb0cbf1a21a8f442371ca))
+* record [#173](https://github.com/Zero-State-LLC/Patch-Hive/issues/173), [#174](https://github.com/Zero-State-LLC/Patch-Hive/issues/174) and the HP v5 load ([#175](https://github.com/Zero-State-LLC/Patch-Hive/issues/175)) ([486e72f](https://github.com/Zero-State-LLC/Patch-Hive/commit/486e72f17691ef333c6b8c1fd76f70dc74f6c97c))
+* record [#175](https://github.com/Zero-State-LLC/Patch-Hive/issues/175), [#176](https://github.com/Zero-State-LLC/Patch-Hive/issues/176) and the Cockpit (golden) load ([#177](https://github.com/Zero-State-LLC/Patch-Hive/issues/177)) ([81904b6](https://github.com/Zero-State-LLC/Patch-Hive/commit/81904b6b9c4db876a5d4ec4c923a1325c90cbbd0))
+* record Jev's decisions on every open question (2026-11-01) ([#188](https://github.com/Zero-State-LLC/Patch-Hive/issues/188)) ([ad8c0f9](https://github.com/Zero-State-LLC/Patch-Hive/commit/ad8c0f9b7b50686344ecd57ee2664ba8f84a4f18))
+* **spec:** threat models for the provider boundary and publishing surfaces ([#195](https://github.com/Zero-State-LLC/Patch-Hive/issues/195)) ([4b8fbb6](https://github.com/Zero-State-LLC/Patch-Hive/commit/4b8fbb6d9838648576fcc334009b6fd452de7ed1))
+* **state:** record [#178](https://github.com/Zero-State-LLC/Patch-Hive/issues/178) and its Cockpit power/depth loads ([#179](https://github.com/Zero-State-LLC/Patch-Hive/issues/179)) ([867026b](https://github.com/Zero-State-LLC/Patch-Hive/commit/867026b1528e8ab9d85b519e90913de96f7789e4))
+* **state:** record [#180](https://github.com/Zero-State-LLC/Patch-Hive/issues/180) and its retailer marker loads ([#181](https://github.com/Zero-State-LLC/Patch-Hive/issues/181)) ([93f55ed](https://github.com/Zero-State-LLC/Patch-Hive/commit/93f55ed3588810651e0f5eedaa25cfa93fecdfcc))
+* **state:** record [#181](https://github.com/Zero-State-LLC/Patch-Hive/issues/181)-[#186](https://github.com/Zero-State-LLC/Patch-Hive/issues/186) ([#187](https://github.com/Zero-State-LLC/Patch-Hive/issues/187)) ([2c67a4e](https://github.com/Zero-State-LLC/Patch-Hive/commit/2c67a4e78ed9f6fd3a3a3d0c68a46c2c70965a8d))
+* **state:** record [#204](https://github.com/Zero-State-LLC/Patch-Hive/issues/204)-[#211](https://github.com/Zero-State-LLC/Patch-Hive/issues/211) and the 20261102_credit_checkout migrations ([#212](https://github.com/Zero-State-LLC/Patch-Hive/issues/212)) ([a12260a](https://github.com/Zero-State-LLC/Patch-Hive/commit/a12260a397962e1b257a52948c209fed74fe6af5))
+* **state:** record the 2026-11-02 migrations and deploys ([#187](https://github.com/Zero-State-LLC/Patch-Hive/issues/187)-[#203](https://github.com/Zero-State-LLC/Patch-Hive/issues/203)) ([#205](https://github.com/Zero-State-LLC/Patch-Hive/issues/205)) ([f2c6ada](https://github.com/Zero-State-LLC/Patch-Hive/commit/f2c6ada9b08b44dd541717fef89f7a58a2b4373c))
+
 ## [0.3.0-alpha.5](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.4...v0.3.0-alpha.5) (2026-10-30)
 
 
