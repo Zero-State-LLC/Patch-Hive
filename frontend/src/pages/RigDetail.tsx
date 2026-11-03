@@ -1,22 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import PatchOverlay from "@/components/PatchOverlay";
+import PatchRail from "@/components/PatchRail";
 import RigRail from "@/components/RigRail";
 import { ChainSkeleton, ListSkeleton } from "@/components/Skeletons";
-import {
-  canonApi,
-  evidenceApi,
-  legacyPatchRef,
-  patchApi,
-  runApi,
-  type InventoryRevisionSummary,
-} from "@/lib/api";
+import { canonApi, evidenceApi, patchApi, runApi, type InventoryRevisionSummary } from "@/lib/api";
 import { rigDetailToRack } from "@/lib/canonRigAdapter";
 import { describeEmptyGeneration } from "@/lib/generateOutcome";
+import { patchName } from "@/lib/patchName";
 import { useAuthStore } from "@/lib/store";
 import type { Patch, Rack, Run } from "@/types/api";
 
 type WorkspaceTab = "overview" | "patches" | "exports" | "gallery";
+
+function isWorkspaceTab(value: string | null): value is WorkspaceTab {
+  return value === "overview" || value === "patches" || value === "exports" || value === "gallery";
+}
 
 const tabLabels: Record<WorkspaceTab, string> = {
   overview: "Overview",
@@ -32,12 +32,6 @@ interface RigRevision {
   latest_run_id?: number | null;
   latest_run_at?: string | null;
   export_bridge_ready: boolean;
-}
-
-interface OverlayState {
-  notes: string;
-  favorite: boolean;
-  tried: boolean;
 }
 
 export default function RigDetailPage() {
@@ -66,17 +60,9 @@ export default function RigDetailPage() {
   }, [rigIdNum]);
   const [runs, setRuns] = useState<Run[]>([]);
   const [revisions, setRevisions] = useState<RigRevision[]>([]);
-  const [activeTab, setActiveTab] = useState<WorkspaceTab>("overview");
   const [activeRevisionId, setActiveRevisionId] = useState<string | null>(null);
   const [activeRunId, setActiveRunId] = useState<number | null>(null);
   const [patches, setPatches] = useState<Patch[]>([]);
-  const [selectedPatchId, setSelectedPatchId] = useState<number | null>(null);
-  const [overlay, setOverlay] = useState<OverlayState>({
-    notes: "",
-    favorite: false,
-    tried: false,
-  });
-  const [overlayStatus, setOverlayStatus] = useState("");
   const [credits, setCredits] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
   const [loading, setLoading] = useState(true);
@@ -97,6 +83,37 @@ export default function RigDetailPage() {
     () => (hasRuns ? ["overview", "patches", "exports", "gallery"] : ["overview", "gallery"]),
     [hasRuns],
   );
+
+  // The tab and the selected patch live in the URL (?tab=&patch=), so a patch page's
+  // breadcrumb, a reload or the back button returns to the same view.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const requestedTab: WorkspaceTab = isWorkspaceTab(tabParam) ? tabParam : "overview";
+  const activeTab: WorkspaceTab = tabs.includes(requestedTab) ? requestedTab : "overview";
+  const patchParam = searchParams.get("patch");
+  const selectedPatch =
+    patches.find((patch) => String(patch.id) === patchParam) ?? patches[0] ?? null;
+  const selectedPatchId = selectedPatch?.id ?? null;
+  const setActiveTab = (tab: WorkspaceTab) =>
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (tab === "overview") next.delete("tab");
+        else next.set("tab", tab);
+        if (tab !== "patches") next.delete("patch");
+        return next;
+      },
+      { replace: true },
+    );
+  const setSelectedPatchId = (id: number) =>
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("patch", String(id));
+        return next;
+      },
+      { replace: true },
+    );
 
   const runsForRevision = useMemo(() => {
     if (!activeRevisionId) return runs;
@@ -171,45 +188,19 @@ export default function RigDetailPage() {
   useEffect(() => {
     if (!activeRun?.id) {
       setPatches([]);
-      setSelectedPatchId(null);
       return;
     }
     setPatchesLoading(true);
     runApi
       .patches(activeRun.id)
       .then((response) => {
-        const rows = response.data.patches ?? [];
-        setPatches(rows);
-        setSelectedPatchId(rows[0]?.id ?? null);
+        setPatches(response.data.patches ?? []);
       })
       .catch(() => {
         setPatches([]);
-        setSelectedPatchId(null);
       })
       .finally(() => setPatchesLoading(false));
   }, [activeRun?.id]);
-
-  useEffect(() => {
-    if (selectedPatchId == null) {
-      setOverlay({ notes: "", favorite: false, tried: false });
-      return;
-    }
-    const ref = legacyPatchRef(selectedPatchId);
-    canonApi
-      .getOverlay(ref)
-      .then((response) => {
-        setOverlay({
-          notes: response.data.notes ?? "",
-          favorite: response.data.favorite,
-          tried: response.data.tried,
-        });
-        setOverlayStatus("");
-      })
-      .catch(() => {
-        // Unauthenticated or network — keep local draft only
-        setOverlay({ notes: "", favorite: false, tried: false });
-      });
-  }, [selectedPatchId]);
 
   const refreshCredits = () => {
     canonApi
@@ -224,21 +215,6 @@ export default function RigDetailPage() {
     setActiveRevisionId(revisionId);
     const nextRun = runs.find((r) => r.rig_revision_id === revisionId);
     setActiveRunId(nextRun?.id ?? null);
-  };
-
-  const saveOverlay = async () => {
-    if (selectedPatchId == null) return;
-    setOverlayStatus("Saving…");
-    try {
-      await canonApi.upsertOverlay(legacyPatchRef(selectedPatchId), {
-        notes: overlay.notes,
-        favorite: overlay.favorite,
-        tried: overlay.tried,
-      });
-      setOverlayStatus("Personal overlay saved (does not mutate canonical patch).");
-    } catch {
-      setOverlayStatus("Sign in required to persist notes/favorite/tried on the server.");
-    }
   };
 
   const reloadRunsAndSelect = async (preferRunId?: number | null) => {
@@ -648,9 +624,7 @@ export default function RigDetailPage() {
                     aria-current={selectedPatchId === patch.id ? "true" : undefined}
                     onClick={() => setSelectedPatchId(patch.id)}
                   >
-                    <span className="side-item-title">
-                      {patch.name_override || patch.suggested_name || patch.name}
-                    </span>
+                    <span className="side-item-title">{patchName(patch)}</span>
                     <span className="side-item-meta">
                       {patch.category}, {patch.connections?.length ?? 0} cables
                     </span>
@@ -658,53 +632,20 @@ export default function RigDetailPage() {
                 </li>
               ))}
             </ul>
-            {selectedPatchId != null ? (
-              <div className="panel" aria-label="Personal patch overlay">
-                <h3>Personal overlay</h3>
-                <p className="muted">
-                  Ref <code>{legacyPatchRef(selectedPatchId)}</code>
-                </p>
-                <label className="field">
-                  Notes
-                  <textarea
-                    value={overlay.notes}
-                    onChange={(event) => setOverlay((o) => ({ ...o, notes: event.target.value }))}
-                    rows={4}
-                  />
-                </label>
-                <label className="check-row">
-                  <input
-                    type="checkbox"
-                    checked={overlay.favorite}
-                    onChange={(event) =>
-                      setOverlay((o) => ({ ...o, favorite: event.target.checked }))
-                    }
-                  />
-                  Favorite
-                </label>
-                <label className="check-row">
-                  <input
-                    type="checkbox"
-                    checked={overlay.tried}
-                    onChange={(event) => setOverlay((o) => ({ ...o, tried: event.target.checked }))}
-                  />
-                  Tried
-                </label>
-                <div className="page-hero-actions">
-                  <button
-                    className="button button-secondary"
-                    type="button"
-                    onClick={() => void saveOverlay()}
+            {selectedPatch ? (
+              <section className="rig-patch-detail" aria-labelledby="rig-patch-title">
+                <div className="rig-patch-detail__head">
+                  <h3 id="rig-patch-title">{patchName(selectedPatch)}</h3>
+                  <Link
+                    className="button button-quiet"
+                    to={`/rigs/${rigIdNum}/patches/${selectedPatch.id}`}
                   >
-                    Save overlay
-                  </button>
+                    Open patch
+                  </Link>
                 </div>
-                {overlayStatus ? (
-                  <p role="status" className="status">
-                    {overlayStatus}
-                  </p>
-                ) : null}
-              </div>
+                {rig ? <PatchRail rack={rig} patch={selectedPatch} /> : null}
+                <PatchOverlay patchId={selectedPatch.id} />
+              </section>
             ) : null}
           </div>
         </div>

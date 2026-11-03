@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ListSkeleton } from "@/components/Skeletons";
 import { patchApi } from "@/lib/api";
+import { patchName } from "@/lib/patchName";
 import type { Patch } from "@/types/api";
 
 type LoadState = "loading" | "ready" | "empty" | "error";
@@ -111,7 +112,11 @@ export default function PatchesPage() {
             {patches.map((patch) => (
               <li key={patch.id} className="patch-row">
                 <div className="patch-row__main">
-                  <h2>{patch.name_override || patch.suggested_name || patch.name}</h2>
+                  <h2>
+                    <Link to={`/rigs/${patch.rack_id}/patches/${patch.id}`}>
+                      {patchName(patch)}
+                    </Link>
+                  </h2>
                   {patch.description ? (
                     <p className="patch-row__desc">{patch.description}</p>
                   ) : null}

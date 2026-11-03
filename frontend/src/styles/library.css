@@ -30,6 +30,14 @@
   margin: 0;
   font-size: var(--text-md);
 }
+/* The patch's name opens it; ink, not link amber, so the list reads as names */
+.patch-row__main h2 a {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+.patch-row__main h2 a:hover {
+  text-decoration: underline;
+}
 .patch-row__desc {
   margin: 0;
   color: var(--color-ink-2);
