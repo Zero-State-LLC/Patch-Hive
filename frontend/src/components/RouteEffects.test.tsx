@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Link, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -48,10 +48,11 @@ describe("RouteEffects", () => {
 
     await user.click(screen.getByRole("link", { name: "Modules" }));
 
-    expect(screen.getByText("Modules screen")).toBeInTheDocument();
+    // Navigations are transitions: wait for the new screen before checking what followed it.
+    expect(await screen.findByText("Modules screen")).toBeInTheDocument();
+    await waitFor(() => expect(document.getElementById("main-content")).toHaveFocus());
     expect(document.title).toBe("Modules, PatchHive");
     expect(scrollTo).toHaveBeenCalledWith(0, 0);
-    expect(document.getElementById("main-content")).toHaveFocus();
   });
 
   it("leaves a link to a section of the page to the browser", async () => {
@@ -60,7 +61,8 @@ describe("RouteEffects", () => {
 
     await user.click(screen.getByRole("link", { name: "Filters" }));
 
-    expect(document.title).toBe("Modules, PatchHive");
+    expect(await screen.findByText("Modules screen")).toBeInTheDocument();
+    await waitFor(() => expect(document.title).toBe("Modules, PatchHive"));
     expect(scrollTo).not.toHaveBeenCalled();
     expect(document.getElementById("main-content")).not.toHaveFocus();
   });
@@ -72,7 +74,7 @@ describe("RouteEffects", () => {
 
     await user.click(link);
 
-    expect(screen.getByText("Rigs screen, one rig chosen")).toBeInTheDocument();
+    expect(await screen.findByText("Rigs screen, one rig chosen")).toBeInTheDocument();
     expect(document.title).toBe("Rigs, PatchHive");
     expect(scrollTo).not.toHaveBeenCalled();
     expect(link).toHaveFocus();
