@@ -11,7 +11,7 @@ PatchHive remains a modular monolith. Apply the single Alembic head before appli
 3. Run `alembic heads` and require a **single head**. As of 2026-07-26, head includes `20260726_module_registry_slugs` (after device registry + PDB wiring). Re-check on the release SHA; do not trust this note alone.
 4. Run PostgreSQL integration and migration tests (`alembic upgrade head` against Postgres 15). Deployed databases (Cloudflare staging and production) are migrated only by the manual `db-migrate.yml` workflow, run before deploying code that adds a migration. Container startup migrations are opt-in (`RUN_MIGRATIONS` exactly `true` or `1`; default off) and are not enabled on either Cloudflare Worker, so a cold start never mutates the database. Never use `init_db()`/`create_all()` as the production schema path.
 5. Generate and retain Python/npm CycloneDX SBOMs and build provenance (Security workflow artifacts).
-6. Run ledger reconciliation (`reconcile_ledger` or equivalent admin path) and require no anomalies.
+6. Run ledger reconciliation (`python -m canon.reconcile_all`, or the restore drill below) and require no mismatches.
 7. Verify all legacy feature flags are false (`ENABLE_LEGACY_SOCIAL`, `ENABLE_LEGACY_PUBLISHING`, `ENABLE_LEGACY_LEADERBOARDS`) and `ENABLE_REFERRALS` is false unless referrals are intended.
 8. Verify `STRIPE_TEST_MODE=true` and `ALLOW_PRODUCTION_PAYMENTS=false`.
 9. Perform the manual accessibility protocol ([ACCESSIBILITY.md](ACCESSIBILITY.md)).
@@ -121,6 +121,53 @@ python -m evidence.expire --apply   # soft-delete expired image_assets rows and 
 Output is one JSON line: `mode`, `as_of`, `soft_deleted`, `purged_files`, `purge_deferred`. In a dry run the counts are what `--apply` would do, assuming storage deletes succeed. The command uses `DATABASE_URL` and the configured storage backend, so point it at the intended environment first. Run the dry run first and compare. Exit code 1 means some storage deletes failed (`purge_deferred > 0`); those rows stay undeleted and the next run retries them.
 
 The database change is flushed before any stored bytes are deleted, so a failed flush never leaves deleted bytes behind. It writes only `image_assets.deleted_at` and deletes the stored image object. Bytes still referenced by a live asset with the same hash are kept. Append-only tables (classification evidence, receipts, ledgers) are not touched.
+
+## Database drills
+
+Three repeatable checks for the beta release gates. CI runs the first on every pull request; the owner dispatches the two workflows. None of them writes to a deployed `patchhive` database. Every artifact holds counts, revisions and hashes only, because this repo's Actions artifacts are public. Both workflows share the `neon-db-<env>` concurrency group with `db-migrate.yml` and `db-load.yml`, so they never overlap a migration or a load. A `workflow_dispatch` workflow can be dispatched only once its file is on `main`.
+
+### Acceptance suite
+
+The acceptance conftest truncates every public table before each test, so it refuses any URL whose database is `patchhive` (the database name on Neon staging and production).
+
+- **CI:** the `acceptance` job in `ci.yml` runs `backend/tests/acceptance` against its own service Postgres (`ACCEPTANCE_DATABASE_URL`, database `patchhive_acceptance`). The suite migrates it to head.
+- **Neon staging:** `acceptance-staging.yml` runs the same suite on Neon staging, in a throwaway database it creates, migrates to head and removes.
+
+```bash
+gh workflow run acceptance-staging.yml --repo Zero-State-LLC/Patch-Hive --ref main -f isolation=database
+```
+
+- `isolation=database` (default) creates `patchhive_acceptance_<run>_<attempt>` on the staging branch with the `PATCHHIVE_DATABASE_URL_STAGING` role, and drops it at the end. Nothing in `patchhive` is read or written.
+- `isolation=neon-branch` creates a child branch `acceptance-<run>-<attempt>` of `staging` through the Neon API, puts a throwaway database on it, and deletes the branch at the end. It needs a `NEON_API_KEY` secret in the `staging` environment and refuses without one. `NEON_PROJECT_ID` is an optional variable (default `polished-night-86976142`). Use it if `isolation=database` fails with `SQLSTATE 42501` (the role may not create databases).
+
+The run uses `ENVIRONMENT=staging` and fresh masked demo passwords, as `staging-walkthrough.yml` does. A cleanup step runs whatever happened, so a cancelled run does not leave a database or branch behind. Receipt: artifact `acceptance-staging-receipt` (`receipt.json`: alembic head and current, server major version, passed/failed/errors/skipped, teardown status).
+
+### Ledger reconcile
+
+```bash
+cd backend
+python -m canon.reconcile_all                      # one JSON line
+python -m canon.reconcile_all --json-out out.json  # also write it to a file
+```
+
+Runs `reconcile_ledger` for every user (every account, ledger entry and export owner) against `DATABASE_URL`, in a read-only transaction that is always rolled back. Output: `status`, `users_checked`, `users_with_ledger_entries`, `ledger_entries`, `exports`, `balance_total`, `export_debits_total`, `reversals_total`, `mismatch_count`, and `mismatches` (export id and anomaly; at most 100 listed). It never prints a user id, name or email. Exit code 0 means no mismatch, 1 means at least one, and 2 means the database could not be read (only the error class is printed). The restore drill runs it on a restored copy, which is the usual way to check a deployed database without connecting a shell to it.
+
+### Backup/restore drill
+
+```bash
+gh workflow run db-restore-drill.yml --repo Zero-State-LLC/Patch-Hive --ref main -f env=staging
+gh workflow run db-restore-drill.yml --repo Zero-State-LLC/Patch-Hive --ref main -f env=prod -f confirm_production="dump production read-only"
+```
+
+1. A gate job with no secrets refuses `env=prod` unless `confirm_production` is exactly `dump production read-only`. The `production` environment's own protection rules still apply.
+2. Counts every public table on the source (read-only) and reads its Postgres major version.
+3. `pg_dump --format=custom` of the source, with the client of that major version. The dump stays on the runner: only its size and sha256 are recorded, and it is deleted after the restore.
+4. Counts the source again, then `pg_restore --exit-on-error --single-transaction` into a Postgres container of the same major version on the runner.
+5. `alembic current` on the restored copy must equal this checkout's head. Dispatch from the ref the database was last migrated from (`db-migrate.yml`), or this step fails.
+6. `python -m canon.reconcile_all` on the restored copy must report no mismatch.
+7. The receipt compares restored row counts with the source. They must match table for table when the source did not change during the dump; if it did, the comparison is marked not conclusive, and every table must still exist.
+
+Receipt: artifact `restore-drill-receipt-<env>` (`receipt.json`: dump size and sha256, alembic head and current, per-table counts, reconcile counts, and `result`).
 
 ## Failure recovery
 
