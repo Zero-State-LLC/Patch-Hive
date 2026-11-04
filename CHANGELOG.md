@@ -4,6 +4,46 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.7](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.6...v0.3.0-alpha.7) (2026-11-04)
+
+
+### Added
+
+* **008:** operator driver for the readiness pin and the five-event replay ([#248](https://github.com/Zero-State-LLC/Patch-Hive/issues/248)) ([7a769b0](https://github.com/Zero-State-LLC/Patch-Hive/commit/7a769b0e3bb40befb466930571b2ef0461973683))
+
+
+### Fixed
+
+* **f5:** the rig builder reads rigs through the canon alias; the scanner sees split calls ([#243](https://github.com/Zero-State-LLC/Patch-Hive/issues/243)) ([bbdd871](https://github.com/Zero-State-LLC/Patch-Hive/commit/bbdd871a5ea9ceedb19b9444189fe225011a5b3f))
+* **home:** keep the brand inside a 320px screen before the display font loads ([#256](https://github.com/Zero-State-LLC/Patch-Hive/issues/256)) ([eb6062d](https://github.com/Zero-State-LLC/Patch-Hive/commit/eb6062de58eff79aebb62bcfbfea7a227a97c546))
+
+
+### Specifications
+
+* prep specs 001-005 for owner confirmation (status, plan drafts, 005 gaps) ([#251](https://github.com/Zero-State-LLC/Patch-Hive/issues/251)) ([9437177](https://github.com/Zero-State-LLC/Patch-Hive/commit/94371770030d002f0c7d0fd77f1aaf27c3e658b2))
+
+
+### Data
+
+* **catalog:** 003 T031 offline pass: whole-tag rules (74 rows), store taxonomy kept by feed adapters ([#253](https://github.com/Zero-State-LLC/Patch-Hive/issues/253)) ([1a636af](https://github.com/Zero-State-LLC/Patch-Hive/commit/1a636af88f6b0db096f5b0d0a68a7010a7da5678))
+* **catalog:** settle 9 two-category rows from committed data (category v2) ([#250](https://github.com/Zero-State-LLC/Patch-Hive/issues/250)) ([b45ddfc](https://github.com/Zero-State-LLC/Patch-Hive/commit/b45ddfc84da013ecc98917ed3f912613616b0c23))
+
+
+### Operations
+
+* acceptance in CI and on Neon staging, ledger reconcile CLI, restore drill ([#252](https://github.com/Zero-State-LLC/Patch-Hive/issues/252)) ([fd50806](https://github.com/Zero-State-LLC/Patch-Hive/commit/fd508061e769bd837903caf5cc9a53a3fc998a42))
+* **release:** skip creating a release that already exists ([#245](https://github.com/Zero-State-LLC/Patch-Hive/issues/245)) ([a0e5d25](https://github.com/Zero-State-LLC/Patch-Hive/commit/a0e5d2525ad0435c2f1f577be3fde0f011b73700))
+
+
+### Documentation
+
+* **evidence:** branch triage of 2026-11-03 and the 24 branches deleted ([#247](https://github.com/Zero-State-LLC/Patch-Hive/issues/247)) ([22d150b](https://github.com/Zero-State-LLC/Patch-Hive/commit/22d150b3326beba40d72155d96f007069b5f556a))
+* **evidence:** owner packet after the Project [#8](https://github.com/Zero-State-LLC/Patch-Hive/issues/8) Backlog remediation ([#249](https://github.com/Zero-State-LLC/Patch-Hive/issues/249)) ([a29a86f](https://github.com/Zero-State-LLC/Patch-Hive/commit/a29a86f1b6f34b7d5f8e75edc61994ff6e8cb4e7))
+* record the rig builder's canon reads and refresh the board mirror ([#255](https://github.com/Zero-State-LLC/Patch-Hive/issues/255)) ([7e07fd9](https://github.com/Zero-State-LLC/Patch-Hive/commit/7e07fd911267360ac79947b56cc563b2a44c490c))
+* record what the alpha.6 deploy settled across the roadmap, state and specs ([#242](https://github.com/Zero-State-LLC/Patch-Hive/issues/242)) ([ded89a4](https://github.com/Zero-State-LLC/Patch-Hive/commit/ded89a41af64a1536ca00681eb846500030acd29))
+* refresh the board mirror and the release priority after the alpha.6 deploy ([#241](https://github.com/Zero-State-LLC/Patch-Hive/issues/241)) ([b864a0a](https://github.com/Zero-State-LLC/Patch-Hive/commit/b864a0aeb1de362aeeda6eeec436443fcaa52607))
+* **state:** main at 9c42bd6 (0.3.0-alpha.6) deployed to staging and production ([#239](https://github.com/Zero-State-LLC/Patch-Hive/issues/239)) ([3688037](https://github.com/Zero-State-LLC/Patch-Hive/commit/368803746d8b5e219cc47a608bdda74034f89e06))
+
 ## [0.3.0-alpha.6](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.5...v0.3.0-alpha.6) (2026-11-03)
 
 
