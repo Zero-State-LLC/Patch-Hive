@@ -48,7 +48,7 @@ Status vocabulary:
 
 ### Residual (not blocking 0.2 classification)
 
-- Inventory HTTP still primarily `/api/racks` (CANON_SUPPORTING; dual-path F2–F5 planned). Update 2026-11-03: F2, F4 and the F5 list cutover are done; the rig builder's reads move to canon next
+- Inventory HTTP still primarily `/api/racks` (CANON_SUPPORTING; dual-path F2–F5 planned). Update 2026-11-03: F2, F4 and the F5 list cutover are done, and the rig builder reads through canon (#243). Writes stay on `/api/racks`
 - Named multi-tenant staging host **NOT_PERFORMED**. Update 2026-11-03: the Cloudflare staging pair is live (`staging.patch-hive.com`, `api-staging.patch-hive.com`)
 - Production deploy and live payments **NOT_GRANTED**. Update 2026-11-03: production (`patch-hive.com`) is deployed with test-mode payments; live payments stay **NOT_GRANTED**
 
@@ -90,7 +90,7 @@ Status vocabulary:
 4. Acceptance suite against staging Postgres. **Open:** a CI job and a throwaway-database staging workflow are next
 5. Backup/restore + ledger reconcile drill receipts. **Open:** an all-users reconcile CLI and a drill workflow are next
 6. Manual accessibility protocol — [ACCESSIBILITY.md](ACCESSIBILITY.md). **Open:** an automated pre-pass is next; the screen-reader pass needs a human
-7. Dual-path F2/F4/F5 thinning (no big-bang rack delete). F2, F4 and the F5 list cutover are done; the rig builder's reads move to canon next
+7. Dual-path F2/F4/F5 thinning (no big-bang rack delete). Done 2026-11-03: F2, F4, the F5 list cutover and the rig builder's reads (#243). Removing `backend/racks` (slice Z) stays deferred
 8. Playwright against staging or staging-like stack. **Open:** a read-only smoke suite for staging and production is next
 
 ### Exit criteria
@@ -173,7 +173,7 @@ Design: [evidence/DUAL_PATH_RETIREMENT_DESIGN.md](evidence/DUAL_PATH_RETIREMENT_
 | F3 generate dual-write audit | COMPLETE |
 | F2 thin `GET /api/canon/rigs` | COMPLETE |
 | F4 evidence canon aliases | COMPLETE |
-| F5 FE inventory list cutover | COMPLETE for list views (008 T010/T020); rig builder reads remaining |
+| F5 FE inventory list cutover | COMPLETE for list views (008 T010/T020) and the rig builder's reads (#243); writes stay on `/api/racks` |
 | Z delete `backend/racks` | DEFERRED (operator-only campaign) |
 
 ## Near-term sequence (next 2 weeks)

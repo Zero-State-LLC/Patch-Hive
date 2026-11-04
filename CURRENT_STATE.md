@@ -124,7 +124,7 @@
 | Health | `/health` liveness; `/health/ready` includes DB |
 | Local Compose staging | `docker-compose.staging.yml` + `scripts/staging/*` + `scripts/test/run.*` |
 | Test automation | `scripts/test/run.sh\|ps1` · CI runs unit, API and mocked-API e2e; the acceptance suite runs locally (11 PASS) and is not yet in CI (`acceptance-tests.yml` was removed in 5b85f58) |
-| Dual-path inventory | F0–F4 done; F5 list cutover done (008 T010/T020); the rig builder's reads move to canon next; Z deferred |
+| Dual-path inventory | F0–F4 done; F5 list cutover done (008 T010/T020); the rig builder reads through canon (#243), and its writes and compatibility check stay on `/api/racks`; Z deferred |
 | Named staging host | Cloudflare pair `staging.patch-hive.com` / `api-staging.patch-hive.com` (Neon `staging` branch), at `9c42bd6` since 2026-11-03 |
 | Payments | Test-mode only; sales deferred (004 OQ-13). Deployed 2026-11-03 with every flag off: Machine B credit checkout behind `ENABLE_CREDIT_CHECKOUT` (off; refuses live keys) with webhook fulfillment (#209), referral rewards on a verified provider purchase (#183, #210), and Admin reject and resolve for unresolved events (#184, #211). Subscription events stay `unresolved` (`HANDLER_NOT_IMPLEMENTED`) until T049; refunds (OQ-2) in progress |
 | Publishing | Drafts cannot be published (`PUBLICATION_BOOK_NOT_VALIDATED`) until the owner decides OQ-6 (002 T033) |
