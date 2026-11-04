@@ -4,14 +4,12 @@ Mirror of [org Project #8 "Patch-Hive"](https://github.com/orgs/Zero-State-LLC/p
 
 Columns (Status): Backlog → Ready → In progress → In review → Done. Spec tasks are titled `[NNN Txxx]`; Ready means every `depends_on` is done (`just spec-dag`). Slices are described in [docs/evidence/NEXT_SLICES_2026-10-28.md](evidence/NEXT_SLICES_2026-10-28.md); decision research is in each spec's `research.md` (001–008, 2026-10-29). Gap-closure tasks added on 2026-10-29 (001 T030–T034, 002 T030–T036, 003 T036–T039, 004 T040–T051, 005 T080–T085, 006 T100–T104, 007 T080–T083, 008 T070–T072) are in the spec `tasks.md` files and not yet on the board.
 
-Snapshot: 2026-11-03 (after the remediation PRs merged), 159 items.
+Snapshot: 2026-11-04 (after #259–#261 and the staging receipts), 159 items.
 
 ## Backlog
 
 - [#21](https://github.com/Zero-State-LLC/Patch-Hive/issues/21) Advance v0.3 alpha toward closed staging beta
 - [008 T050b] Pin readiness matrix + cutover checklist to walkthrough SHA
-- [beta] Acceptance suite against staging Postgres
-- [beta] Backup/restore + ledger reconcile drill receipts
 - [beta] Manual accessibility protocol
 - [005 T061 = 007 T030b+T040b] Propose and approve thresholds from baseline
 - [005 T062 = 007 T060b] Pin and retain SHA-pinned evaluation receipt
@@ -38,7 +36,6 @@ Snapshot: 2026-11-03 (after the remediation PRs merged), 159 items.
 
 ## Ready
 
-- [008 T030b] Verify seeded demo auth on the staging host
 - [001 T001] Confirm rig intelligence spec
 - [002 T001] Confirm patch-book publishing spec
 - [003 T001] Confirm catalog dataset pipeline spec
@@ -46,11 +43,9 @@ Snapshot: 2026-11-03 (after the remediation PRs merged), 159 items.
 - [007 T010b = 005 T061c] Promote rights-cleared cases and freeze corpus SHA
 - [ops] VirusTotal reanalysis and the nine vendor false-positive reports (frontend is deployed)
 - [ops] Rotate context.dev and OpenRouter API keys
-- [ops] Add RELEASE_PLEASE_TOKEN secret
 - [ops] Add PROJECT_TOKEN so new PRs reach Project #8
 - [ops] Real sign-up on production (operator)
 - [ops] Decide repo visibility vs the Actions budget
-- [ops] Review open PRs #106, #109, #110, #111
 - [003 T035] Scoped re-fetch of ~45 jumper-dependent pages (needs a cap: ~20–50 context.dev credits)
 
 ## In progress
@@ -69,11 +64,14 @@ _None._
 - [#25](https://github.com/Zero-State-LLC/Patch-Hive/pull/25) sync: bring personal repo main (964ce18) into org
 - [#26](https://github.com/Zero-State-LLC/Patch-Hive/pull/26) ci: real backend+frontend CI; fix project automation target
 - [#27](https://github.com/Zero-State-LLC/Patch-Hive/pull/27) specs: draft skeletons 001-004 + 005 gap list (stacked on #25)
+- [008 T030b] Verify seeded demo auth on the staging host
 - [008 T040b] Run Design Engine walkthrough on staging (test payments) and capture receipt
 - [alpha exit] No P0 regressions on main CI — green on main 2026-10-28 (repo public)
 - [beta] Operator staging host pick
 - [beta] Secrets, CORS, fail-closed payment flags — edge-secrets workflow, exact-origin CORS, test-mode payments
 - [beta] Design Engine staging enablement
+- [beta] Acceptance suite against staging Postgres
+- [beta] Backup/restore + ledger reconcile drill receipts
 - [beta] Dual-path F2/F4/F5 thinning
 - [beta] Playwright against staging
 - [ops] Org Actions budget or spending limit (needed before making the repo private again)
@@ -113,6 +111,7 @@ _None._
 - [#79](https://github.com/Zero-State-LLC/Patch-Hive/pull/79) fix(api): require an admin for module and case writes, and audit them
 - [#80](https://github.com/Zero-State-LLC/Patch-Hive/pull/80) feat(api): users own their racks
 - [003 T027] Load maker-crawl overlays to prod (operator) — done 2026-10-28, #112
+- [ops] Add RELEASE_PLEASE_TOKEN secret
 - [api] Count unknown module power per rail in rack budgets (slice A1)
 - [catalog] Six new crawl rows -> catalog-additions-v6 + power v14 (#121; the seventh was a Doepfer case)
 - [api] Verify registry snapshot ships in the API image — it didn't; registry reads module_catalog (#114)
@@ -158,6 +157,7 @@ _None._
 - [003 T030] Refuse shared homepages at crawl time (slice A2)
 - [api] Rack warning for tombstoned placements (slice A4)
 - [frontend] Skip the refresh call when signed out (slice A5)
+- [ops] Review open PRs #106, #109, #110, #111
 - [003 T028] Fill missing categories from crawl tags
 - [003 T029] Tombstone misattributed rows; re-add the 7 only they held
 - [ops] Production deploy: API and frontend from main

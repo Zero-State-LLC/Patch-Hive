@@ -87,11 +87,11 @@ Status vocabulary:
 1. Operator host pick (Compose VPS / Render / Fly / Azure) — [STAGING_HOST_PLAN.md](evidence/STAGING_HOST_PLAN.md). **Done:** the Cloudflare staging pair
 2. Secrets, CORS, fail-closed payment flags. **Done:** `edge-secrets` workflow, exact-origin CORS, test-mode payments
 3. Design Engine staging enablement — [PATCHBOOK_STAGING_ENABLEMENT.md](design/PATCHBOOK_STAGING_ENABLEMENT.md). **Done:** staging flags (#213), walkthrough PASS (#216)
-4. Acceptance suite against staging Postgres. **Open:** a CI job and a throwaway-database staging workflow are next
-5. Backup/restore + ledger reconcile drill receipts. **Open:** an all-users reconcile CLI and a drill workflow are next
-6. Manual accessibility protocol — [ACCESSIBILITY.md](ACCESSIBILITY.md). **Open:** an automated pre-pass is next; the screen-reader pass needs a human
+4. Acceptance suite against staging Postgres. **Done 2026-11-04:** a CI job and a throwaway-database staging workflow (#252, #259); from `main` it passed 38/38 on staging (run 41803435486, `6a31173`; [receipt](evidence/receipts/staging-acceptance-main-2026-11-04.json)) once #261 fixed the patch order it caught
+5. Backup/restore + ledger reconcile drill receipts. **Done 2026-11-04:** an all-users reconcile CLI and a drill workflow (#252); the staging drill passed (run 41768458329: 65 tables and 14,600 rows restored equal, 0 ledger mismatches; [receipt](evidence/receipts/staging-restore-drill-2026-11-04.json)). A production drill needs the owner's explicit yes
+6. Manual accessibility protocol — [ACCESSIBILITY.md](ACCESSIBILITY.md). **Open:** the automated pre-pass runs on CI (#246); the screen-reader and PDF pass needs a human
 7. Dual-path F2/F4/F5 thinning (no big-bang rack delete). Done 2026-11-03: F2, F4, the F5 list cutover and the rig builder's reads (#243). Removing `backend/racks` (slice Z) stays deferred
-8. Playwright against staging or staging-like stack. **Open:** a read-only smoke suite for staging and production is next
+8. Playwright against staging or staging-like stack. **Done 2026-11-04:** a read-only smoke suite (#244, `npm run test:smoke`) passes 9/9 on staging and production
 
 ### Exit criteria
 
@@ -178,14 +178,12 @@ Design: [evidence/DUAL_PATH_RETIREMENT_DESIGN.md](evidence/DUAL_PATH_RETIREMENT_
 
 ## Near-term sequence (next 2 weeks)
 
-Updated 2026-11-03; items 1–4 of the previous list are done.
+Updated 2026-11-04; the staging drills (beta #4, #5), the accessibility pre-pass and the Playwright smoke (beta #8) are done.
 
-1. Staging drills: acceptance suite, backup/restore and ledger reconcile (beta #4, #5)  
-2. Accessibility: automated pre-pass, then a human screen-reader pass (beta #6)  
-3. Playwright smoke against staging and production (beta #8)  
-4. Owner confirms specs 001–004 (T001) so their plans and convergence can close  
-5. Spec 007 evaluation chain (corpus photos, run, approve, pin, sign), then pin the readiness docs (008 T050b)  
-6. Tag `0.3.0-beta.1` (a `Release-As` footer) only when the beta exit criteria pass  
+1. Accessibility: the human screen-reader and PDF pass (beta #6)  
+2. Owner confirms specs 001–004 (T001) so their plans and convergence can close  
+3. Spec 007 evaluation chain (corpus photos, run, approve, pin, sign), then pin the readiness docs (008 T050b)  
+4. Tag `0.3.0-beta.1` (a `Release-As` footer) only when the beta exit criteria pass  
 
 ## Deferred beyond 1.0
 
