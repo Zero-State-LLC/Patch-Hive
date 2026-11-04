@@ -64,14 +64,14 @@ This one chain unblocks 7 cards: 005 T061/T062/T070, 007 T020b, 006 T060b, 008 T
    ```
 
 4. **006 T060b:** choose whether to verify the wired provider (NVIDIA through the Clef adapter) or to run a Clef evaluation too. Then re-run the check in [§ Item 3](OWNER_ACTIONS_2026-11-02.md).
-5. **Re-run the staging walkthrough at the deployed SHA** once #243 is merged and deployed. The current receipt (`b6cc917`) predates the rig builder's move to canon, so its FE evidence would fail the stricter scanner:
+5. **Done 2026-11-04:** the walkthrough passed at the deployed `6c234a6` (v0.3.0-alpha.7, run [41768209990](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41768209990); [receipts](STAGING_RECEIPTS_2026-11-04.md)). For a later re-run at a newer deployed SHA:
 
    ```bash
    gh workflow run staging-walkthrough.yml --repo Zero-State-LLC/Patch-Hive
    ```
 
 6. **Pin the readiness docs (008 T050b).** The driver comes from #248:
-   1. Put the walkthrough's source SHA into both readiness docs.
+   1. Put the walkthrough's source SHA into both readiness docs. Done for `6c234a6`; redo it only after a newer walkthrough.
    2. Run the three commands:
 
       ```bash

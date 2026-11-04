@@ -1,0 +1,27 @@
+{
+  "alembic": {
+    "at_head": true,
+    "current": "20261102_export_fair_use",
+    "head": "20261102_export_fair_use"
+  },
+  "isolation": "database",
+  "kind": "acceptance-staging",
+  "result": "pass",
+  "run_attempt": "1",
+  "run_id": "41769896663",
+  "server_major": 15,
+  "source_sha": "d31e6d97174e453b8329d4b6a8a2d9a6a67a26af",
+  "teardown": {
+    "status": "dropped"
+  },
+  "tests": {
+    "duration_seconds": 157.1,
+    "errors": 0,
+    "failed": 0,
+    "passed": 37,
+    "pytest_exit_code": 0,
+    "skipped": 0,
+    "total": 37
+  },
+  "throwaway": "created"
+}

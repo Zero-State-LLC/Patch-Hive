@@ -84,12 +84,12 @@ summary:
 
 ```yaml
 spec_008_design_walkthrough:
-  walkthrough_source_sha: PENDING_OPERATOR_WALKTHROUGH
-  walkthrough_receipt_sha256: PENDING_OPERATOR_WALKTHROUGH
+  walkthrough_source_sha: 6c234a6535d1f4a58924243254ca4b607be2f461  # v0.3.0-alpha.7, run 41768209990 (2026-11-04)
+  walkthrough_receipt_sha256: b2c295027be8eb8d805d88e9bde33700c576795d66f4c7ff8b1b2f1b838a819c
   enablement_receipt_007_sha256: PENDING_OPERATOR_WALKTHROUGH
   unresolved_p0: PENDING_OPERATOR_WALKTHROUGH
   production_payments_enabled: false
-  state: RECEIPT_PENDING  # BETA_ELIGIBLE only after core.ops.f5_cutover operator_pin accepts
+  state: RECEIPT_CAPTURED  # BETA_ELIGIBLE only after core.ops.f5_cutover operator_pin accepts
 ```
 
 The operator replaces each `PENDING_OPERATOR_WALKTHROUGH` value with the exact

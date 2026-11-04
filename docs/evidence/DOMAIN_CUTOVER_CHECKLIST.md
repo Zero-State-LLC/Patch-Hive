@@ -62,8 +62,8 @@ Use **local Docker staging**:
 Domain cutover stays blocked until the Design Engine staging walkthrough
 receipt is pinned here.
 
-- [ ] walkthrough_source_sha: PENDING_OPERATOR_WALKTHROUGH
-- [ ] walkthrough_receipt_sha256: PENDING_OPERATOR_WALKTHROUGH
+- [x] walkthrough_source_sha: 6c234a6535d1f4a58924243254ca4b607be2f461 (v0.3.0-alpha.7, run 41768209990, 2026-11-04)
+- [x] walkthrough_receipt_sha256: b2c295027be8eb8d805d88e9bde33700c576795d66f4c7ff8b1b2f1b838a819c
 - [ ] No unresolved P0 integrity regressions at that SHA
 - [ ] Production payments remain disabled (`ALLOW_PRODUCTION_PAYMENTS=false`)
 
