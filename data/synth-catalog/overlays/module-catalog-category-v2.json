@@ -1,0 +1,224 @@
+{
+ "dataset_version": "module-catalog-category-v2",
+ "generated_from": "hand review of the live rows scripts/build_category_overlay.py leaves empty because their tags point to two categories (--list-ambiguous)",
+ "reviewed_by": "Claude, offline, for the owner (no fetches)",
+ "reviewed_at": "2026-11-03",
+ "policy": "committed data only: maker crawl tags, names, maker URLs and image names, and sibling catalog rows; a tag that says how a module is built or played (passive, touch) yields to one that says what it does; fill-null only; rows the committed data does not settle stay empty; no ModularGrid",
+ "count": 9,
+ "entries": [
+  {
+   "slug": "beepboop-electronics-2hp-passive-touch-ctrl",
+   "brand": "BeepBoop Electronics",
+   "name": "2hp Passive Touch CTRL",
+   "category": "SEQ",
+   "basis": "review",
+   "tag_categories": [
+    "SEQ",
+    "UTIL"
+   ],
+   "tags": [
+    "passive",
+    "touch",
+    "control"
+   ],
+   "source_url": "https://beepboopelectronics.co.uk/product/2hp-passive-touch-ctrl/",
+   "content_sha256": "5de20bf3b9ccf638183123b8740d32cb3ba31b05c8293e60de49c9765cdc7e69",
+   "evidence": "The name ('Touch CTRL') and the tags touch and control name a hand controller, which the catalog files under SEQ (NAME_CATEGORY 'controller', TAG_CATEGORY 'controller|touch'). 'passive' describes the circuit, not the job: the brand's other passive rows take their function's category (2hp Passive LPG V1 is VCA; Passive Mult., Crossfader and Attenuator are UTIL).",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "overlays/catalog-additions-v3.json"
+   ]
+  },
+  {
+   "slug": "folktek-quiet",
+   "brand": "Folktek",
+   "name": "Quiet",
+   "category": "UTIL",
+   "basis": "review",
+   "tag_categories": [
+    "SEQ",
+    "UTIL"
+   ],
+   "tags": [
+    "mute",
+    "touch",
+    "CV",
+    "audio"
+   ],
+   "source_url": "https://folktek.com/products/quiet",
+   "content_sha256": "d131fe46e096547cd3ec9fe016c886d8170c2656f649684317f6f22af1ee6af0",
+   "evidence": "mute names the function (TAG_CATEGORY UTIL); touch is how it is played. The maker's own product image is named 'Folktek-Quiet-Mute_Front-Face' (image_url in catalog-additions-v2).",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "overlays/catalog-additions-v2.json"
+   ]
+  },
+  {
+   "slug": "jasmine-olive-trees-tour",
+   "brand": "Jasmine & Olive Trees",
+   "name": "Tour",
+   "category": "LFO",
+   "basis": "review",
+   "tag_categories": [
+    "LFO",
+    "UTIL"
+   ],
+   "tags": [
+    "random",
+    "expander",
+    "CV"
+   ],
+   "source_url": "https://jasmineandolivetrees.com/products/tour",
+   "content_sha256": "52016649ef4b528b403f77251612c83ad44f860ddd5d070ea9a22d44c1994f8f",
+   "evidence": "random is the only function tag (TAG_CATEGORY LFO). 'expander' names the companion product Tour Expander, a separate catalog row (jasmine-olive-trees-tour-expander, tags expander, CV, gate), not this module's job.",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "overlays/catalog-additions-v3.json"
+   ]
+  },
+  {
+   "slug": "jolin-getrekt",
+   "brand": "Jolin",
+   "name": "GETREKT",
+   "category": "FX",
+   "basis": "review",
+   "tag_categories": [
+    "FX",
+    "SEQ"
+   ],
+   "tags": [
+    "waveshaper",
+    "touch",
+    "CV",
+    "analog"
+   ],
+   "source_url": "https://jolin.tech/modules/getrekt",
+   "content_sha256": "458fb4f8616c3edcd5260be8044a6bdc72b6eda8aabba296531fa616abc30a81",
+   "evidence": "waveshaper names the function (TAG_CATEGORY FX); touch is how it is played. The maker's shop title for the same product reads 'GETREKT ⇝ touch waveshaper' (jolin-getrekt-touch-waveshaper; same HP and power).",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "overlays/catalog-additions-v3.json"
+   ]
+  },
+  {
+   "slug": "jolin-getrekt-touch-waveshaper",
+   "brand": "Jolin",
+   "name": "GETREKT ⇝ touch waveshaper",
+   "category": "FX",
+   "basis": "review",
+   "tag_categories": [
+    "FX",
+    "SEQ"
+   ],
+   "tags": [
+    "waveshaper",
+    "touch",
+    "CV",
+    "clipping"
+   ],
+   "source_url": "https://jolin.tech/shop/p/getrekt",
+   "content_sha256": "38e177b457b2aaf6d2d4ceed439b3b8abf291495bcfe0db51049f3e4cff4f897",
+   "evidence": "The title names a waveshaper (TAG_CATEGORY FX); touch is how it is played. Same product as jolin-getrekt (modules page); retiring this duplicate is proposed separately.",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "overlays/catalog-additions-v3.json"
+   ]
+  },
+  {
+   "slug": "plum-audio-ex2",
+   "brand": "Plum Audio",
+   "name": "ex2",
+   "category": "UTIL",
+   "basis": "review",
+   "tag_categories": [
+    "SEQ",
+    "UTIL"
+   ],
+   "tags": [
+    "CV",
+    "Expander",
+    "Controller",
+    "Soft Parameters"
+   ],
+   "source_url": "https://www.plum-audio.com/product-page/ex2-cv-expander",
+   "content_sha256": "f4b0869d34f718f8710d2df12dca05cc89c4e4ced14d0a5bbc9852406de0ea43",
+   "evidence": "Same maker URL (product-page/ex2-cv-expander) as plum-audio-ex2-cv-expander, which already holds UTIL from the v1 crawl (catalog-additions-v2). The sibling CV expanders ex6 and ex12 (exN-cv-expander URLs) are UTIL too.",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "overlays/catalog-additions-v2.json",
+    "overlays/catalog-additions-v3.json"
+   ]
+  },
+  {
+   "slug": "signs-modular-peq",
+   "brand": "Signs Modular",
+   "name": "pEq",
+   "category": "FX",
+   "basis": "review",
+   "tag_categories": [
+    "FX",
+    "UTIL"
+   ],
+   "tags": [
+    "equalizer",
+    "passive",
+    "drive",
+    "Pultec"
+   ],
+   "source_url": "https://signsmodular.com/peq.html",
+   "content_sha256": "0f42af595c0901cbea883b6e35e186924e6a57473ee2f262e9a76ad74f3f2581",
+   "evidence": "equalizer, drive and Pultec (an equalizer design) are FX tags; 'passive' describes the equalizer circuit. The brand's ampeq (preamp, eq, drive) is FX.",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "overlays/catalog-additions-v3.json"
+   ]
+  },
+  {
+   "slug": "tobinski-dynamics",
+   "brand": "Tobinski",
+   "name": "Dynamics",
+   "category": "FX",
+   "basis": "review",
+   "tag_categories": [
+    "FX",
+    "UTIL"
+   ],
+   "tags": [
+    "compressor",
+    "expander",
+    "eq",
+    "exciter"
+   ],
+   "source_url": "https://www.tobinski-audio.com/modules/dynamics",
+   "content_sha256": "531f5d7a742ee245222a7cf3e6e77f92691719f85c72601f7db7c8cf61e0d2e2",
+   "evidence": "compressor, eq and exciter are FX tags; next to compressor, 'expander' is the dynamics processor, not an add-on module. The name is 'Dynamics'.",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "overlays/catalog-additions-v2.json"
+   ]
+  },
+  {
+   "slug": "york-modular-vaclpgv2",
+   "brand": "York Modular",
+   "name": "VACLPGv2",
+   "category": "VCA",
+   "basis": "review",
+   "tag_categories": [
+    "UTIL",
+    "VCA"
+   ],
+   "tags": [
+    "low-pass gate",
+    "vactrol",
+    "passive"
+   ],
+   "source_url": "https://www.yorkmodular.co.uk/products/vaclpgv2-passive-vactrol-low-pass-gate-2hp",
+   "content_sha256": "3d7333284e9d2626ecf1487a8dac54f9dfd679c2dddb9e822d84c8b5e09816c6",
+   "evidence": "The maker's URL reads 'vaclpgv2-passive-vactrol-low-pass-gate-2hp'; a low-pass gate is VCA in the catalog (TAG_CATEGORY). 'passive' describes the circuit: BeepBoop's 2hp Passive LPG V1 is VCA.",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "overlays/catalog-additions-v3.json"
+   ]
+  }
+ ]
+}
