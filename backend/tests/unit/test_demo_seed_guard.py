@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 from pathlib import Path
 
@@ -69,3 +70,23 @@ def test_the_seeder_reads_the_environment_from_settings(monkeypatch) -> None:
 
     with pytest.raises(seed.DemoSeedRefused, match="production"):
         seed.seed_golden_demo(DB())
+
+
+def test_the_printed_result_never_includes_a_password(capsys) -> None:
+    """Staging runs this in a public Actions log, and its passwords are real."""
+    seed._print_result(
+        seed.SeedResult(
+            user_id=1,
+            username="golden_demo",
+            password="u" * 20,
+            rig_id=2,
+            run_id=3,
+            patch_count=4,
+            run_fingerprint="f",
+            admin_password="a" * 20,
+        )
+    )
+    printed = capsys.readouterr().out
+    assert "u" * 20 not in printed
+    assert "a" * 20 not in printed
+    assert json.loads(printed)["username"] == "golden_demo"

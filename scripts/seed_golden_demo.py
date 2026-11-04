@@ -510,7 +510,6 @@ def _print_result(result: SeedResult) -> None:
             {
                 "user_id": result.user_id,
                 "username": result.username,
-                "password": result.password,
                 "rig_id": result.rig_id,
                 "run_id": result.run_id,
                 "patch_count": result.patch_count,
