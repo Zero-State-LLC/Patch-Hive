@@ -2,7 +2,7 @@
 
 **Authoritative as of:** 2026-11-03  
 **Branch pin:** `main` on `Zero-State-LLC/Patch-Hive`  
-**HEAD:** `6c234a6` (#240, release 0.3.0-alpha.7); everything through #256 is merged, including the frontend redesign and its ten follow-up slices (#215–#238), the commerce work (#209–#224) and the Project #8 Backlog remediation (#241–#256). Database migrations are at head `20261102_export_fair_use` on both (staging run [41587791401](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41587791401), production run [41627413887](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41627413887)); alpha.7 adds none. **Staging and production both run `6c234a6`**, deployed and smoke-tested 2026-11-03: staging API Worker `1b2244cc` and frontend `1001f50a`, production API `4b92ecd0` and frontend `4a6c6ace`. `/health/ready` reports 0.3.0-alpha.7 with `database: ok` on both, and the live smoke suite (#244, `npm run test:smoke`) passes 9/9 on both. Payments stay in test mode on both; production sets no feature flags.  
+**HEAD:** `6c234a6` (#240, release 0.3.0-alpha.7); everything through #261 is merged except #254 (held for the owner's sign-off) and #258 (the next Release Please PR), including the frontend redesign and its ten follow-up slices (#215–#238), the commerce work (#209–#224) and the Project #8 Backlog remediation (#241–#256). Database migrations are at head `20261102_export_fair_use` on both (staging run [41587791401](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41587791401), production run [41627413887](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41627413887)); alpha.7 adds none. **Staging and production both run `6c234a6`**, deployed and smoke-tested 2026-11-03: staging API Worker `1b2244cc` and frontend `1001f50a`, production API `4b92ecd0` and frontend `4a6c6ace`. `/health/ready` reports 0.3.0-alpha.7 with `database: ok` on both, and the live smoke suite (#244, `npm run test:smoke`) passes 9/9 on both. Payments stay in test mode on both; production sets no feature flags.  
 **Recent work (2026-10-28):** gap-analysis fixes for specs 001–005 and P0/P1 security (#82–#105); Cloudflare edge for staging and production (#83–#87, #107); short-lived tokens, refresh cookie and an enforced CSP (#99, #100, #113); prod catalog load, Products page, category fill and catalog tombstones (#112–#116). 2026-10-29: slices A1–A5 (#118, #119, #121–#123) and a second retirement (#120); spec research (#134); lifecycle and decision fixes (#135); slices B1–B5 (#136–#140) and C1–C5 (#142–#146).  
 **Open PRs:** none.  
 **Board:** [Project #8](https://github.com/orgs/Zero-State-LLC/projects/8), mirrored in [docs/KANBAN.md](docs/KANBAN.md).  
@@ -123,9 +123,9 @@
 | Rig validation | Unknown draws are per rail (`POWER_RAIL_INCOMPLETE`, lower bounds); retired placements warn (`MODULE_TOMBSTONED`) on every rack read |
 | Health | `/health` liveness; `/health/ready` includes DB |
 | Local Compose staging | `docker-compose.staging.yml` + `scripts/staging/*` + `scripts/test/run.*` |
-| Test automation | `scripts/test/run.sh\|ps1` · CI runs unit, API and mocked-API e2e; the acceptance suite runs locally (11 PASS) and is not yet in CI (`acceptance-tests.yml` was removed in 5b85f58) |
+| Test automation | `scripts/test/run.sh\|ps1` · CI runs unit, API, mocked-API e2e and the acceptance suite on a service Postgres (#252); `acceptance-staging.yml` runs the acceptance suite on staging against a throwaway database (38/38 from `main`, 2026-11-04) |
 | Dual-path inventory | F0–F4 done; F5 list cutover done (008 T010/T020); the rig builder reads through canon (#243), and its writes and compatibility check stay on `/api/racks`; Z deferred |
-| Named staging host | Cloudflare pair `staging.patch-hive.com` / `api-staging.patch-hive.com` (Neon `staging` branch), at `9c42bd6` since 2026-11-03 |
+| Named staging host | Cloudflare pair `staging.patch-hive.com` / `api-staging.patch-hive.com` (Neon `staging` branch), at `6c234a6` (0.3.0-alpha.7) since 2026-11-03 |
 | Payments | Test-mode only; sales deferred (004 OQ-13). Deployed 2026-11-03 with every flag off: Machine B credit checkout behind `ENABLE_CREDIT_CHECKOUT` (off; refuses live keys) with webhook fulfillment (#209), referral rewards on a verified provider purchase (#183, #210), and Admin reject and resolve for unresolved events (#184, #211). Subscription events stay `unresolved` (`HANDLER_NOT_IMPLEMENTED`) until T049; refunds (OQ-2) in progress |
 | Publishing | Drafts cannot be published (`PUBLICATION_BOOK_NOT_VALIDATED`) until the owner decides OQ-6 (002 T033) |
 | Readiness gates | The approver public key `approver-2026-11` is committed (#204); a receipt verifies only once the operator signs the 007 chain (T083). On main, a decision provider outside development also needs that signed receipt (#185), and readiness pins are signed by the approver key (#186) |
@@ -157,7 +157,7 @@
    - confirm specs 001–004 (R6).
 
 **Local test automation:**
-`cd backend && pytest tests -q` with a local Postgres 15 for the population tests (1,045 passed, 2 skipped on #125) · acceptance suite separately (11 passed; #78 lets it run in the same invocation)
+`cd backend && pytest tests -q` with a local Postgres 15 for the population tests (1,045 passed, 2 skipped on #125) · acceptance suite separately with `pytest tests/acceptance` (38 tests; testcontainers Postgres, or `ACCEPTANCE_DATABASE_URL`)
 
 ## Authority boundary
 
