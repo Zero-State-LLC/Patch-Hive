@@ -325,8 +325,9 @@ async function mockBuilder(page: Page) {
     (url) => url.pathname.replace(/\/+$/, "").endsWith("/api/racks"),
     (route) => route.fulfill(json({ total: 1, racks: [BUILDER_RACK] })),
   );
+  // The builder reads its rig through the canon alias (F5) and writes through /api/racks.
   await page.route(
-    (url) => url.pathname.replace(/\/+$/, "").endsWith("/api/racks/1"),
+    (url) => /\/api\/(racks|canon\/rigs)\/1$/.test(url.pathname.replace(/\/+$/, "")),
     (route) => route.fulfill(json(BUILDER_RACK)),
   );
   await page.route("**/api/racks/1/compatibility**", (route) =>

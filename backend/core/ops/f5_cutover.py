@@ -84,17 +84,21 @@ REQUIRED_GATE_ROUTES: tuple[tuple[str, str], ...] = (
     ("POST", "/api/canon/rigs/{rack_id}/evidence/confirmations"),
 )
 
-# Active inventory list pages that must read the canon alias (T020).
+# Active inventory list pages that must read the canon alias (T020). The rig builder
+# lists rigs for its evidence picker, so it is one of them.
 REQUIRED_FE_LIST_PAGES: tuple[str, ...] = (
     "frontend/src/pages/Racks.tsx",
     "frontend/src/pages/Modules.tsx",
+    "frontend/src/pages/RackBuilder.tsx",
 )
 
 CANON_RIGS_PREFIX = "/api/canon/rigs"
 LEGACY_RACKS_PREFIX = "/api/racks"
 _WRITE_METHODS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
-_LEGACY_LIST_CALL = re.compile(r"\brackApi\.list\s*\(")
-_CANON_LIST_CALL = re.compile(r"\bcanonApi\.listRigs\s*\(")
+# Whitespace (newlines included) may sit around the dot: a formatter splits
+# `rackApi\n  .list(` over two lines, which the one-line pattern used to miss.
+_LEGACY_LIST_CALL = re.compile(r"\brackApi\s*\.\s*list\s*\(")
+_CANON_LIST_CALL = re.compile(r"\bcanonApi\s*\.\s*listRigs\s*\(")
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
 
 
