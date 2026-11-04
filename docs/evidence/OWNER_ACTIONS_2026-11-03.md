@@ -64,14 +64,14 @@ This one chain unblocks 7 cards: 005 T061/T062/T070, 007 T020b, 006 T060b, 008 T
    ```
 
 4. **006 T060b:** choose whether to verify the wired provider (NVIDIA through the Clef adapter) or to run a Clef evaluation too. Then re-run the check in [§ Item 3](OWNER_ACTIONS_2026-11-02.md).
-5. **Re-run the staging walkthrough at the deployed SHA** once #243 is merged and deployed. The current receipt (`b6cc917`) predates the rig builder's move to canon, so its FE evidence would fail the stricter scanner:
+5. **Done 2026-11-04:** the walkthrough passed at the deployed `6c234a6` (v0.3.0-alpha.7, run [41768209990](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41768209990); [receipts](STAGING_RECEIPTS_2026-11-04.md)). For a later re-run at a newer deployed SHA:
 
    ```bash
    gh workflow run staging-walkthrough.yml --repo Zero-State-LLC/Patch-Hive
    ```
 
 6. **Pin the readiness docs (008 T050b).** The driver comes from #248:
-   1. Put the walkthrough's source SHA into both readiness docs.
+   1. Put the walkthrough's source SHA into both readiness docs. For the alpha.7 walkthrough that is `6c234a6535d1f4a58924243254ca4b607be2f461`, receipt `b2c295027be8eb8d805d88e9bde33700c576795d66f4c7ff8b1b2f1b838a819c` (bundle `docs/evidence/receipts/staging-design-walkthrough-2026-11-04.json`). The docs keep `PENDING_OPERATOR_WALKTHROUGH` until this sitting; `test_repo_readiness_docs_are_not_pinned_to_an_invented_sha` holds them to it, so update that test in the same change.
    2. Run the three commands:
 
       ```bash
