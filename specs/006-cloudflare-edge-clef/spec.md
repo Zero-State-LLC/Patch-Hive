@@ -1,6 +1,6 @@
 # 006 — Cloudflare Edge Deploy with Clef Classifier
 
-**Status:** IMPLEMENTED in code (#50); operator deploy tasks T030–T050 and T060b DEFERRED (see DEPLOY_NOTES.md)  
+**Status:** IMPLEMENTED in code (#50); deployed to the Cloudflare staging and production pairs. T030 and T050 are done (#190); T040b waits on the R2 check (T055b); T060b waits on the signed spec 007 receipt (see DEPLOY_NOTES.md)  
 **Date:** 2026-10-24  
 **Depends on:** Spec 005 (DecisionProvider + DecisionPolicy + DecisionPacket), constitution authority boundaries, Neon staging branch, existing Vite frontend + FastAPI backend.
 

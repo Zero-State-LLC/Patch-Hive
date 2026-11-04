@@ -67,7 +67,7 @@ parent is done only when both are. `scripts/check_spec_dag.py` checks this file.
   - acceptance: feature flag remains default-off outside staging; no production traffic.
   - [x] T050a Implement `enable_staging` (`StagingEnablement`) authorization record (code).
     - depends_on: [T040a]
-  - [ ] T050b Authorize staging and set the provider flag in the staging environment only (operator).
+  - [ ] T050b Record the staging authorization (`enable-staging`) for the approved proposal (operator). No flag is set here: since #185 the container refuses provider flags without a signed receipt, so the flag waits for T085.
     - depends_on: [T040b, T050a]
 
 - [ ] T060 Retain SHA-pinned evaluation receipt covering corpus, harness, thresholds, and staging enablement.
@@ -96,3 +96,5 @@ From [research.md](research.md). Effort in brackets.
   - depends_on: [T060b, T082]
 - [x] T084 Operator driver for the chain: `scripts/staging/run_007_evaluation.py` runs freeze, run (live provider or `--dry-run` fixture), propose, approve, enable-staging, pin, sign and verify as commands over sealed JSON artifacts (owner guide 2026-11-02, finding 1) [S]. Done 2026-11-02; offline end-to-end and refusal tests in `backend/tests/integration/test_007_evaluation_driver.py`. The operator actions T010b to T083 are unchanged and still open.
   - depends_on: [T081]
+- [ ] T085 Set the provider flag in the staging environment only, pointing `DECISION_ENABLEMENT_RECEIPT_PATH` and `DECISION_ENABLEMENT_SIGNATURE_PATH` at the files signed in T083, then deploy staging (operator). Split from T050b on 2026-11-03: since #185 the container refuses provider flags without a signed receipt, so the flag can only be set after T083.
+  - depends_on: [T083]
