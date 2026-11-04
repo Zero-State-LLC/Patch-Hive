@@ -24,32 +24,32 @@ Why: monetization funds the product. Commerce must not leak into canon. Tier, cr
 - Evidence is not canon.
 - Commerce fails closed at trust boundaries.
 
-## Implementation status (2026-10-29)
+## Implementation status (2026-11-03)
 
-Checked against `main` at `95ca9ee`. Paths are under `backend/` unless shown otherwise. Totals: 15 Implemented, 10 Partial, 11 Missing. Gaps map to [research.md](research.md) and the Gap closure tasks in [tasks.md](tasks.md).
+Checked against the code on `main` at 3688037 (0.3.0-alpha.6). Paths are under `backend/` unless shown otherwise. The 2026-10-29 table had been patched row by row since; its rows counted 16 implemented, 10 partial and 10 missing. Machine B (#209, #210, #211, #214), Machine C (#219, #224), the event processor (#145) and the webhook hardening (#139) closed 16 of them. Totals: 32 implemented, 4 partial, 0 missing. "Implemented" means the code and its tests exist on `main`; every provider path is still off by default (`ENABLE_CREDIT_CHECKOUT`, `ENABLE_SUBSCRIPTION_CHECKOUT`, `STRIPE_TEST_MODE=true`, `ALLOW_PRODUCTION_PAYMENTS=false`; `core/config.py`) until T051, and the prices and credit counts stay unconfirmed (OQ-1, T001). Gaps map to [research.md](research.md) and the Gap closure tasks in [tasks.md](tasks.md).
 
 | FR | Status | Evidence |
 |---|---|---|
-| FR-001 | Partial | Tier names and Design Engine family floors exist. Since T050 (2026-11-02) a user with an entitled subscription (`active`, `trialing`, `past_due`; OQ-4) resolves to its tier, a user whose subscriptions are all lapsed to FREE, and a user who never subscribed to the configured default tier (`canon/entitlements.py`). Stays Partial until T049 and T050 close. |
-| FR-002 | Partial | Signup writes no ledger entry (`community/auth_routes.py`). "Demo mode only" is not defined, and the default tier is `core`. |
-| FR-003 | Missing | No per-period grant. T049. |
-| FR-004 | Partial | STUDIO period grants carry `unlimited=true` and a fair-use cap (T049); an export covered by one takes no debit and counts against the cap, refused 429 `FAIR_USE_CAP_REACHED` at the cap (T050, `canon/exports.py`). |
+| FR-001 | Implemented | Tier names and Design Engine family floors (`canon/entitlements.py`). Since T050 (#224) `resolve_user_tier` returns the tier of the newest subscription whose provider status is `active`, `trialing` or `past_due` (`ENTITLED_STATUSES`, OQ-4), FREE for a user whose subscriptions are all lapsed, and `design_engine_default_tier` for a user who never subscribed. Used by `get_design_entitlements` (`canon/routes.py`). |
+| FR-002 | Partial | Signup writes no ledger entry (`community/auth_routes.py`). "Demo mode only" is not defined, and the default tier for a user who never subscribed is `core` (`canon/entitlements.py`, `core/config.py`). |
+| FR-003 | Implemented | `invoice.paid` writes one `SubscriptionPeriodGrantRecord` per billing period, keyed `subscription-period:<subscription_id>:<period_start>`. CORE gets 25 and PRO 100 credits as a canonical `grant` (`SUBSCRIPTION_CREDITS_CORE/PRO`, provisional OQ-1; `canon/subscriptions.py`, `core/config.py`) and STUDIO gets the unlimited entitlement (#219). Prices stay unconfirmed (OQ-1). |
+| FR-004 | Implemented | STUDIO period grants carry `unlimited=true` and `fair_use_export_cap` (`SUBSCRIPTION_STUDIO_FAIR_USE_EXPORTS_PER_PERIOD`, default 100) and no credits; no numeric sentinel (`canon/subscriptions.py`, #219). An export covered by one takes no debit and counts against the cap, refused 429 `FAIR_USE_CAP_REACHED` at the cap (`canon/exports.py`, `canon/entitlements.py`, #224). |
 | FR-005 | Implemented | Server-set price `patchbook_export_cost = 3` (`core/config.py`, `canon/routes.py`); 503 `EXPORT_FULFILLMENT_UNAVAILABLE` before any debit (#129). |
-| FR-006 | Missing | No one-time checkout. T046. |
-| FR-007 | Partial | Legacy `credits_ledger` uses `Purchase`, `Spend`, `Grant`; the canonical ledger uses `grant`, `debit`, `reversal`, with no `purchase` type (`canon/exports.py`). T046. |
-| FR-008 | Partial | Code only inserts; no trigger or guard (`canon/models.py`). T042. |
-| FR-009 | Partial | `/api/canon/credits/balance` sums the canonical ledger; the legacy `/api/monetization/credits/balance` sums another ledger and disagrees. T044. |
+| FR-006 | Implemented | `credit_charge_cents` charges `max(minimum, credits * price)` with `credit_price_cents = 20` and `credit_minimum_charge_cents = 500`; `POST /api/canon/checkout/credits` behind `ENABLE_CREDIT_CHECKOUT` (`canon/checkout.py`, `canon/routes.py`, `core/config.py`, #209). The rule is provisional (OQ-1). |
+| FR-007 | Implemented | The canonical ledger writes `purchase` (`canon/checkout.py`), `debit` and `reversal` (`canon/exports.py`), `grant` (`canon/subscriptions.py`, referral rewards) and `refund` (`canon/checkout.py`, #214); `debit` is the spec's Spend. The legacy `credits_ledger` keeps `Purchase`, `Spend`, `Grant` (`monetization/referrals.py`). |
+| FR-008 | Partial | Postgres triggers reject `UPDATE` and `DELETE` on `canonical_credit_ledger` (migration `20261029_ledger_append_only`, #139). The legacy `credits_ledger`, `referrals`, `subscription_period_grants` have no database guard (`tasks.md` T010), and SQLite has no trigger. |
+| FR-009 | Implemented | One balance endpoint, `GET /api/canon/credits/balance`, sums the canonical ledger for the user (`canon/routes.py`, `canon/exports.py`). The legacy `/api/monetization/credits/balance` and `monetization/routes.py` are gone (#145). |
 | FR-010 | Implemented | No expiry field or logic in either ledger (`canon/models.py`, `monetization/models.py`). |
-| FR-011 | Missing | Webhook stores events as `received` and never processes them (`canon/routes.py`). T045, T046. |
-| FR-012 | Partial | Event-id replay safety and payload-hash conflict (`canon/exports.py`); no payment-id idempotency; a concurrent duplicate returns 500. T040, T046. |
-| FR-013 | Partial | Constant-time HMAC, 300 s tolerance, livemode gate (`canon/exports.py`); only the last `v1` is kept; live-mode events pass outside production with `STRIPE_TEST_MODE=false`. T040, T041. |
-| FR-014 | Missing | No unresolved state; `processed_at` is never set. T045. |
-| FR-015 | Missing | No subscription record. T049. |
-| FR-016 | Missing | No subscription grants. T049. |
-| FR-017 | Missing | No cancel route. T049. |
-| FR-018 | Missing | No subscription-deleted handling. T049. |
-| FR-019 | Implemented | `stripe_test_mode = True`, `allow_production_payments = False` by default (`core/config.py`); production webhook 403 `PRODUCTION_PAYMENTS_DISABLED` and the startup payment policy (`canon/routes.py`). |
-| FR-020 | Missing | No provider customer link. T046. |
+| FR-011 | Implemented | The webhook credits only on a verified `checkout.session.completed` with `payment_status` paid, or `async_payment_succeeded`, in the webhook transaction (`canon/checkout.py` `_credit`, `handle_checkout_session_event`, #209). Dispatch by `process_stripe_event` (`canon/webhook_events.py`, #145). |
+| FR-012 | Implemented | `provider_payments` is unique on the session id and the provider payment id; the canonical entry key is `purchase:<payment_intent>`; a repeat is `duplicate` (`canon/models.py`, `canon/checkout.py`, #209). Event-id replay safety and savepoint on a concurrent duplicate insert (`canon/exports.py`, #139). Subscription periods are unique on `grant_key` and `provider_invoice_id` (`canon/subscriptions.py`). |
+| FR-013 | Implemented | Constant-time HMAC over every `v1` value (secret rotation), 300 s tolerance, livemode gate rejecting live events outside production (`canon/exports.py`, #139); `validate_stripe_mode_startup_policy` refuses `STRIPE_TEST_MODE=false` outside production (`core/startup_policy.py`). |
+| FR-014 | Implemented | `process_stripe_event` sets every event to `processed`, `duplicate`, `unresolved` (reason code) or `ignored`, and sets `processed_at`; an unresolved outcome rolls its effects back (`canon/webhook_events.py`, migration `20261029_webhook_disposition`, #145). Machine B and C handlers raise reason codes for an unknown customer, an unmapped price, a bad payload and a missing payment id (`canon/checkout.py`, `canon/subscriptions.py`). An event type with no handler is `ignored` with no reason code (`canon/webhook_events.py`). |
+| FR-015 | Implemented | `ProviderSubscriptionRecord` holds tier, provider status, current period and `cancel_at_period_end`; `customer.subscription.created`/`updated` sync it (`canon/models.py`, `canon/subscriptions.py`, migration `20261102_subscriptions`, #219). |
+| FR-016 | Implemented | `invoice.paid` is the only grant trigger, once per period key; `customer.subscription.*` never grant (`canon/subscriptions.py` `handle_invoice_paid`, `handle_subscription_event`, #219). The Machine C table still names `subscription_created`, `subscription_updated` and `period_renewed`; see the proposed Machine C correction for T001. |
+| FR-017 | Implemented | `POST /api/canon/subscription/cancel` calls `request_subscription_cancel`, which sets `cancel_at_period_end` at the provider and locally for the user's `active` subscription (`canon/routes.py`, `canon/subscriptions.py`, #219). |
+| FR-018 | Implemented | `customer.subscription.deleted` sets `canceled`, final, and keeps granted credits (`canon/subscriptions.py`, #219). |
+| FR-019 | Implemented | `stripe_test_mode = True`, `allow_production_payments = False`, `enable_credit_checkout = False`, `enable_subscription_checkout = False` by default (`core/config.py`); production webhook 403 `PRODUCTION_PAYMENTS_DISABLED`; `checkout_gate` refuses a disabled flag, production without activation, a missing key and a live key outside activated production (`canon/checkout.py`, `canon/routes.py`). |
+| FR-020 | Implemented | `ProviderCustomerRecord` is unique on `user_id` and on the provider customer id; `get_or_create_customer` (`canon/models.py`, `canon/checkout.py`, #209). |
 | FR-021 | Partial | `users.referral_code` is unique and random, and `ensure_referral_code` sets it only when empty (`community/models.py`, `account/services.py`); nothing at the database blocks a change. |
 | FR-022 | Implemented | `/signup?ref=<code>` (`monetization/referrals.py`). |
 | FR-023 | Implemented | Behind `enable_referrals` (`community/auth_routes.py`). |
@@ -57,14 +57,14 @@ Checked against `main` at `95ca9ee`. Paths are under `backend/` unless shown oth
 | FR-025 | Implemented | `create_referral` rejects pending and rewarded users (`monetization/referrals.py`). |
 | FR-026 | Implemented | 3-credit `Grant` with the note and `referral_id`; the spendable canonical copy only for a provider-verified purchase (#131). |
 | FR-027 | Implemented | `purchase_count != 1` returns no reward (`monetization/referrals.py`). |
-| FR-028 | Missing | No provider caller of `record_purchase(payment_verified=True)`. T046, T047. |
+| FR-028 | Implemented | Both provider paths call `record_purchase(payment_verified=True)`: the one-time purchase in `_credit` (`canon/checkout.py`, #209, tested in #210) and a subscription's first paid invoice with `credits_delta=0` (`canon/subscriptions.py`, #219, OQ-3 `A_both`). `record_purchase` raises for an unverified purchase (`monetization/referrals.py`, #183). |
 | FR-029 | Partial | Code appends a `Rewarded` row and never edits `Pending`; no database guard (`alembic/versions/20240921_make_referrals_append_only.py` drops the unique pair only). |
-| FR-030 | Implemented | The Machine B refund path (T053, `canon/checkout.py`) reverses only the buyer's credits and never touches the referrer's grant or `Referral` rows. |
-| FR-031 | Implemented | `get_referral_summary` behind the flag (`community/routes.py`); `earned_credits` reads the legacy ledger (research R6, T044). |
-| FR-032 | Implemented | Row lock on the `Pending` row plus `uq_referrals_one_reward` (#98). |
-| FR-033 | Implemented | The legacy `POST /api/monetization/purchases` route and `PurchaseCreate` are deleted; no client can record a purchase (T043). |
-| FR-034 | Implemented | No generation module imports `monetization` or `canon.entitlements` (repo grep of `patchhive/`, `intelligence/`, `runs/`). |
-| FR-035 | Implemented | The tier is read only at export, to choose a template family (`canon/routes.py`); it is not a generation input. |
+| FR-030 | Implemented | The Machine B refund path (T053, `canon/checkout.py`, #214) reverses only the buyer's credits and never touches the referrer's grant or `Referral` rows. |
+| FR-031 | Implemented | `get_referral_summary` behind the flag (`community/routes.py`); `earned_credits` now sums canonical `referral-reward:<id>` grants (`monetization/referrals.py`, #145). |
+| FR-032 | Implemented | Row lock on the `Pending` row plus `uq_referrals_one_reward` (#98); concurrent first provider purchases write one reward (`tests/acceptance/test_referral_purchase_postgres.py`, #210). |
+| FR-033 | Implemented | The legacy `POST /api/monetization/purchases` route and `PurchaseCreate` are deleted (#150); `record_purchase` raises unless `payment_verified` (#183). The only callers are `canon/checkout.py` and `canon/subscriptions.py`. |
+| FR-034 | Implemented | No generation module imports `monetization` or `canon.entitlements` (repo grep of `patchhive/`, `intelligence/`, `runs/`, `core/`, `ingest/`). |
+| FR-035 | Implemented | The tier is read only at export, to choose a template family (`canon/routes.py`, `canon/entitlements.py`); it is not a generation input. |
 | FR-036 | Implemented | Codes come from `secrets.token_urlsafe`, not the email (`monetization/referrals.py`, `account/services.py`). |
 
 ## Scope
@@ -405,6 +405,71 @@ stateDiagram-v2
     Canceled --> [*]
     Abandoned --> [*]
 ```
+
+#### Proposed correction: Machine C grants on `invoice.paid` (for the owner at T001)
+
+> **PROPOSED, NOT SETTLED.** The Machine C table and diagram above stay the contract until the owner approves this block at T001. If the owner approves it, it replaces the table and diagram above. If the owner rejects it, the code must change to match the table. Drafted 2026-11-03 from the code on `main` at 3688037 (`backend/canon/subscriptions.py`, `backend/canon/webhook_events.py`, `backend/canon/entitlements.py`; T049 #219, T050 #224) and from OQ-4 `A_stripe_mapping` (decided 2026-11-01 by Jev, owner-delegated).
+
+**Why.** The table above grants on `subscription_created`, `subscription_updated` and `period_renewed`. The code grants only on `invoice.paid`, once per billing period. `customer.subscription.created`, `updated` and `deleted` only sync the record and never grant. That follows OQ-4 and [research 2026-11-01](../../docs/evidence/COMMERCE_BLOCKERS_RESEARCH_2026-11-01.md) §3. `backend/tests/unit/test_spec_004_transitions.py` already encodes the code's reading ("decided deviation from the table"). The table itself was never updated.
+
+**State mapping.** [INFERRED] The code stores the provider status, not these states. `Active` is status `active` with `cancel_at_period_end` false. `CancelScheduled` is status `active` with the flag set. `NotActive` is any other provider status. `Canceled` is `canceled`. `CheckoutOpen` and `Abandoned` are a `SubscriptionCheckoutRecord` reservation, not a subscription record. `Unresolved` is the stored event's disposition. This is the same mapping as `_c_state` in the transitions test.
+
+| from | event | guard | to | effect |
+|---|---|---|---|---|
+| NONE | choose_tier | `ENABLE_SUBSCRIPTION_CHECKOUT` and `checkout_gate` pass; the tier is CORE, PRO, or STUDIO and has a configured price; the user has no live subscription. | CheckoutOpen | Get or create the provider customer. Create a `subscription`-mode session for the tier's price. Write a reservation and no subscription record. A repeat reuses the open session. |
+| NONE | choose_tier | Disabled, invalid tier, no configured price (503 `SUBSCRIPTION_PRICE_MISSING`), or a live subscription exists (409 `SUBSCRIPTION_EXISTS`). | NONE | Refuse the request. |
+| CheckoutOpen | checkout_canceled_or_expired (`checkout.session.expired`) | The session has an open reservation. | Abandoned | Mark the reservation expired. Write no subscription record. |
+| NONE, CheckoutOpen | subscription_created (`customer.subscription.created`) | Verified. The customer is known. One item whose price maps to a tier. A provider status. | Active if the status is `active`, else NotActive | Record the subscription (tier from the provider price, status, period, cancel flag). Grant nothing. |
+| Active, NotActive, CancelScheduled | subscription_updated | Newer than the last applied event, and something changed. | Active, CancelScheduled or NotActive, from the new status and flag | Sync the fields. The tier always comes from the provider price (OQ-7). Grant nothing. |
+| Active, NotActive, CancelScheduled | subscription_updated | Older than the last applied event, or nothing changed. | Unchanged | `duplicate` (`STALE_EVENT`, `SUBSCRIPTION_UNCHANGED`). |
+| NONE, Active, NotActive, CancelScheduled | invoice_paid (`invoice.paid`) | Verified. The invoice is `paid` and `amount_paid > 0`. A non-proration line whose price maps to a tier. The customer matches. The period `subscription-period:<subscription_id>:<period_start>` has no grant. | Unchanged. A missing record is created as `active` (EC-2). | Grant once for the period. CORE and PRO get a canonical `grant` of the tier's credits. STUDIO gets the unlimited entitlement with the fair-use cap, and no credits (FR-004, OQ-8). The subscription's first paid invoice also records a purchase for Machine A (FR-028, OQ-3). |
+| any | invoice_paid | The period was already granted. | Unchanged | `duplicate` (`PERIOD_ALREADY_GRANTED`). Grant nothing. |
+| any | invoice_paid | The invoice has only proration lines. | Unchanged | `ignored` (`INVOICE_PRORATION_ONLY`). The new tier's credits come with the next period (OQ-7). |
+| any | invoice_paid | Not paid, a zero amount, no subscription, unknown customer or price, the same invoice already granted for another period, or a malformed payload. | Unresolved | Grant nothing. Keep the event with its reason code. |
+| CheckoutOpen, Active, NotActive, CancelScheduled | subscription_created or subscription_updated | Unknown customer, a price that maps to no tier, not exactly one item, a malformed period, a customer mismatch, or an unknown status. | Unresolved | Grant nothing. Keep the event with its reason code. |
+| Active | cancel_requested | The user's newest live subscription, with provider status exactly `active`. | CancelScheduled | Set cancel-at-period-end at the provider and locally. 404 `SUBSCRIPTION_NOT_FOUND` when there is none; 409 `SUBSCRIPTION_NOT_ACTIVE` for any other status. |
+| Active, NotActive, CancelScheduled | subscription_deleted | Verified. The customer matches. | Canceled | Set the status to `canceled`. Keep the granted credits. |
+| Canceled | subscription_created, subscription_updated or subscription_deleted | Any. | Canceled | `duplicate` (`SUBSCRIPTION_ALREADY_CANCELED`). |
+| Unresolved | operator_rejects | An admin, with a reason (OQ-5, T048). | Unresolved, closed as rejected | Grant nothing. Write one admin audit record. |
+| Unresolved | operator_resolves | Any. | Unchanged | Refused with 409 `RESOLVE_NOT_SUPPORTED`. This proposal removes the table's `operator_resolves` row. |
+
+An event whose signature does not verify is refused at intake, before any handler runs. Such an event is never stored and never becomes `Unresolved`. `invoice.payment_failed` has no handler, so it is stored as `ignored`; `past_due` arrives through `customer.subscription.updated`. Entitlement by status (OQ-4): `active`, `trialing` and `past_due` keep the paid tier; every other status resolves to FREE (`ENTITLED_STATUSES`).
+
+Illegal transitions (proposed; the first, third and fourth are unchanged):
+
+- A second grant for the same subscription and billing period.
+- `Canceled` to any other state through a `customer.subscription.*` event.
+- Any grant for an unknown tier or an unknown customer.
+- A tier change derived from client input instead of the provider price.
+
+```mermaid
+stateDiagram-v2
+    [*] --> NONE
+    NONE --> CheckoutOpen: choose_tier [enabled, priced tier, no live subscription]
+    CheckoutOpen --> Abandoned: checkout.session.expired
+    CheckoutOpen --> Active: subscription_created [known, active]
+    CheckoutOpen --> NotActive: subscription_created [known, not active]
+    NONE --> Active: invoice_paid [no record yet, EC-2] / grant once
+    Active --> Active: invoice_paid [new period] / grant once
+    NotActive --> NotActive: invoice_paid [new period] / grant once
+    CancelScheduled --> CancelScheduled: invoice_paid [new period] / grant once
+    Active --> NotActive: subscription_updated [not active]
+    NotActive --> Active: subscription_updated [active]
+    Active --> CancelScheduled: cancel_requested [status active]
+    Active --> Canceled: subscription_deleted
+    NotActive --> Canceled: subscription_deleted
+    CancelScheduled --> Canceled: subscription_deleted
+    Canceled --> [*]
+    Abandoned --> [*]
+```
+
+What the owner settles at T001 for this block:
+
+1. Approve `invoice.paid` as the only grant trigger, and these rows as the Machine C contract in place of the table above.
+2. Decide what a paid invoice on a `Canceled` subscription does. Today `handle_invoice_paid` does not read the record's status: it writes a period grant, and the record stays `canceled`. No test covers this case. The test for the illegal `Canceled` to `Active` row covers only `customer.subscription.updated`. Options: grant, because money was received, or refuse it as `Unresolved`. Either way, add the test.
+3. Keep operator resolve refused for Machine C, so an operator can only reject. The alternative is to build resolve.
+4. Decide whether a `trialing` or `past_due` subscription may schedule a cancel. Today only `active` can.
+5. Decide whether `invoice.payment_failed` stays ignored or is recorded.
 
 ## Security, privacy, observability, and rollback
 

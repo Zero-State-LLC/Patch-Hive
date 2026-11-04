@@ -21,56 +21,56 @@ This feature also specifies the historical publishing layer. That layer lets an 
 
 **Why:** Performers need a reproducible, accessible, printable manual that agrees with their confirmed inventory and canonical patch artifacts. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] Publishing lets owners share those artifacts with provenance. Moderation keeps the public surface accountable. [OBSERVED: PUBLISHING_IMPLEMENTATION.md]
 
-## Implementation status (2026-10-29)
+## Implementation status (2026-11-03)
 
-Checked against the code on `main` at 95ca9ee. Open gaps link to [research.md](research.md) and to the gap-closure tasks in [tasks.md](tasks.md). "Design Engine" means `backend/export/patchbook/design/`. Totals: compilation 7 implemented, 15 partial, 2 missing; publishing 17 implemented, 2 partial, 1 missing.
+Checked against the code on `main` at 3688037 (0.3.0-alpha.6). The 2026-10-29 table (at 95ca9ee) had compilation 7 implemented, 15 partial, 2 missing and publishing 17, 2, 1; #138, #143 and #197 moved FR-006, FR-016, FR-017, FR-036, FR-042 and FR-048. Open gaps link to [research.md](research.md) and to the open tasks in [tasks.md](tasks.md). "Design Engine" means `backend/export/patchbook/design/`; "engine.py" below is `backend/export/patchbook/design/engine.py`. Totals: compilation 10 implemented, 14 partial, 0 missing; publishing 19 implemented, 1 partial, 0 missing.
 
 | FR | Status | Evidence |
 |---|---|---|
-| FR-001 | Implemented | One execution page per patch. Overflow fails instead of continuing (#101) [OBSERVED: design/engine.py]. Plate mode is under FR-016. |
-| FR-002 | Implemented | No page has a QR code or companion link, so none can hold required content [OBSERVED: repo grep 2026-10-29]. |
+| FR-001 | Implemented | One execution page per patch. Overflow fails instead of continuing (#101) [OBSERVED: design/engine.py `layout_patch_page`]. Plate mode is under FR-016. |
+| FR-002 | Implemented | No page has a QR code or companion link, so none can hold required content [OBSERVED: repo grep 2026-11-03]. |
 | FR-003 | Implemented | Text wraps by measured width (#101). The legacy rig and patch PDFs wrap and continue on a new page (#133). |
-| FR-004 | Partial | Body, steps, cables, cover and colophon use the floor (#102). The cover disclaimer is drawn at 8 pt (R4, T035). |
-| FR-005 | Implemented | Dash pattern, number and label per signal; preflight `COLOR_ONLY_DIAGRAMS` [OBSERVED: design/diagram_svg.py, design/preflight.py]. |
-| FR-006 | Partial | `composition_hash` is computed from content hashes, but replay is never checked (R1, T030). |
-| FR-007 | Partial | Each patch gets one `design_engine` stage receipt. The page stages are not separate and leave no receipts [OBSERVED: design/content_spine.py]. |
-| FR-008 | Partial | Preflight checks the diagram region and execution footer only (`DIAGRAM_REGION_MISSING`, `EXECUTION_FOOTER_MISSING`). |
+| FR-004 | Partial | Body, steps, cables and the cover use the floor; the cover disclaimer wraps at `body_size_pt()` and the metadata block starts below it (#138, T035) [OBSERVED: design/engine.py `_render_execution_pdf`]. The colophon's patent disclaimer is still drawn at 8 pt (R4). |
+| FR-005 | Implemented | Dash pattern, number and label per signal; preflight `COLOR_ONLY_DIAGRAMS` [OBSERVED: design/diagram_svg.py, design/a11y.py]. |
+| FR-006 | Implemented | `validate_book` reloads the layout IR from disk and replays `composition_hash`; a mismatch fails `PATCH_BOOK_ASSET_HASH_MISMATCH` (#143, T030) [OBSERVED: design/engine.py `validate_book`]. Two runs give the same hash and the same receipt bytes [OBSERVED: tests/unit/test_patchbook_svg_goldens.py, test_patchbook_validate_book.py]. The replay re-hashes the stored IR; it does not recompile from source. |
+| FR-007 | Partial | The pack has one `validate_book` receipt (`validation/book.json`) that is kept on failure (#143). The page stages are not separate and leave no receipts; Path A patches now carry the canonical compiler's receipts (#142, spec 001) [OBSERVED: design/engine.py, design/dual_write.py]. |
+| FR-008 | Partial | Preflight checks the diagram region and execution footer only (`DIAGRAM_REGION_MISSING`, `EXECUTION_FOOTER_MISSING`) [OBSERVED: design/a11y.py]. |
 | FR-009 | Partial | The three classes are typed. Each family has one default, with no fallback to another class [OBSERVED: design/families/registry.py]. |
 | FR-010 | Implemented | Required content is never dropped; a page that can't hold it fails (#101). |
 | FR-011 | Partial | SVG first, numbered routes, arrows, dash encoding. Feedback cycles are not marked [OBSERVED: design/diagram_svg.py]. |
-| FR-012 | Partial | `CONTRAST_BELOW_AA`, `READING_ORDER_EMPTY`, a text companion and per-page JSON. No full WCAG 2.2 AA check. |
-| FR-013 | Partial | The legacy route refuses patches from another rig (#133). The Design Engine checks only for a patch with no cables. |
+| FR-012 | Partial | `CONTRAST_BELOW_AA`, `READING_ORDER_EMPTY`, a text companion and per-page JSON. No full WCAG 2.2 AA check [OBSERVED: design/a11y.py]. |
+| FR-013 | Partial | The legacy route refuses patches from another rig (#133). The Design Engine checks only for a patch with no cables (`NO_CABLES`) [OBSERVED: design/content_spine.py, backend/export/routes.py]. |
 | FR-014 | Partial | Same evidence as FR-013 [INFERRED]. |
 | FR-015 | Partial | Overflow codes (#101) and the font floor (#102). Label collisions and cable crossings are not checked (OQ-9). |
-| FR-016 | Missing | No book validation stage. In plate mode the manifest has 2N+2 pages and the PDF N+2 (R1, T030, T031). |
-| FR-017 | Missing | The manifest has no per-page entries (R1, T030). |
-| FR-018 | Partial | PDF, manifest, two-hash `checksums.json`, page JSON, diagram SVGs, library index, LICENSE, companion. No README and no per-file checksums (R1). |
-| FR-019 | Partial | Only a few section 15 codes exist. Preflight warnings are dropped (R5, T036). |
+| FR-016 | Implemented | `validate_book` checks PDF pages drawn against the manifest, patches against patch pages, page order, references, per-diagram hashes and composition replay, and fails with the three `PATCH_BOOK_*` codes plus remediation (#143, T030) [OBSERVED: design/engine.py `validate_book`]. Plate mode (flag off by default) fails `PATCH_BOOK_PAGE_COUNT_MISMATCH` until plates are drawn (T031). The book has no table of contents or index to resolve. |
+| FR-017 | Implemented | The manifest lists one entry per page: index, kind, page id, patch artifact id, page hash, SVG hash, status [OBSERVED: design/engine.py manifest `"pages"`]. The page number is the 0-based `index`. |
+| FR-018 | Partial | PDF, manifest with page entries, `checksums.json` with a SHA-256 per file (read back after writing), `validation/book.json`, page JSON, diagram SVGs, library index, LICENSE, companion [OBSERVED: design/engine.py]. No README (#143). |
+| FR-019 | Partial | Book codes carry remediation (#143), and every preflight warning is listed in `validation/book.json` and its codes in the manifest (T036, #138, #143). Only a few other section 15 codes exist. |
 | FR-020 | Implemented | Composition reads sealed compilations and writes only into the pack directory [INFERRED from design/engine.py]. |
 | FR-021 | Partial | The optional block goes first, then the export fails with a code (#101). No per-patch rejection and no other layout. |
 | FR-022 | Implemented | Cover and colophon are separate pages [OBSERVED: design/engine.py]. |
-| FR-023 | Partial | Stage receipts carry `determinism_class` and `operation_version`. No rune declares its schemas, side effects or test vectors [OBSERVED: canon/contracts.py]. |
-| FR-024 | Partial | No `COMPILE_PATCH_PAGE` stage. The preflight and overflow gates cover part of it. |
-| FR-030 | Implemented | The router is mounted only when the flag is set; the default is false [OBSERVED: backend/main.py, backend/core/config.py]. |
-| FR-031 | Implemented | The publishing pages, once quarantined under `frontend/src/legacy/`, are deleted, so no page can import them [OBSERVED: repo grep 2026-11-03]. |
-| FR-032 | Implemented | With the flag off every route is 404 and changes nothing (OQ-5). |
-| FR-033 | Implemented | 403 `Export ownership mismatch` on export and publication create [OBSERVED: backend/publishing/routes.py]. |
-| FR-034 | Implemented | `unique_publication_export`, and 400 on a second create [OBSERVED: backend/publishing/models.py, routes.py]. |
-| FR-035 | Implemented | `slug` is unique; `unique_slug` [OBSERVED: backend/publishing/models.py]. |
-| FR-036 | Partial | The gallery excludes unlisted. Create has no `unlisted` default (R3, T034). |
+| FR-023 | Partial | Stage receipts carry `determinism_class` and `operation_version`. The rune manifest declares full operation contracts, but only for the 8 generation operations, none for page or book compilation [OBSERVED: canon/contracts.py, patchhive/runes/manifest.json]. |
+| FR-024 | Partial | No `COMPILE_PATCH_PAGE` stage. The preflight, overflow gates and `validate_book` cover part of it. |
+| FR-030 | Implemented | The router is mounted only when the flag is set; the default is false [OBSERVED: backend/main.py:202, backend/core/config.py:62]. |
+| FR-031 | Implemented | The publishing pages are deleted; the frontend keeps only API types in `frontend/src/types/api.ts`, and no page uses them [OBSERVED: repo grep 2026-11-03]. |
+| FR-032 | Implemented | With the flag off every route is 404 and changes nothing (OQ-5). Every lifecycle event and `create` is tested against an app built with the flag off (2026-11-03) [OBSERVED: backend/tests/unit/test_spec_002_transitions.py]. |
+| FR-033 | Implemented | 403 `Export ownership mismatch` on export and publication create [OBSERVED: backend/publishing/routes.py:199,206,236]. |
+| FR-034 | Implemented | `unique_publication_export`, and 400 on a second create [OBSERVED: backend/publishing/models.py:60, routes.py]. |
+| FR-035 | Implemented | `slug` is unique [OBSERVED: backend/publishing/models.py:70]. |
+| FR-036 | Implemented | `PublicationCreate.visibility` defaults to `unlisted`; the gallery excludes unlisted (#138, T034) [OBSERVED: backend/publishing/schemas.py:40, routes.py `list_gallery`]. |
 | FR-037 | Implemented | `PublicationUpdate` has only the listed fields, and `status` takes only `published` or `hidden` [OBSERVED: backend/publishing/schemas.py]. |
-| FR-038 | Implemented | Only lifecycle pairs are accepted; anything else is 409 `INVALID_TRANSITION` (#101). |
-| FR-039 | Implemented | The public payload has no email or database id; the publisher shows as "PatchHive User" [OBSERVED: backend/publishing/routes.py]. |
+| FR-038 | Implemented | Only lifecycle pairs are accepted; anything else is 409 `INVALID_TRANSITION` (#101). The owner PATCH and admin hide and remove lock the row first (#197) and every row of the table is tested (#182) [OBSERVED: routes.py `OWNER_TRANSITIONS`, tests/unit/test_spec_002_transitions.py]. |
+| FR-039 | Implemented | The public payload has no email or database id; the publisher shows as "PatchHive User" [OBSERVED: backend/publishing/routes.py `get_publication`]. |
 | FR-040 | Implemented | License and `run_id`, `generated_at`, `patch_count`, `manifest_hash` [OBSERVED: same]. |
-| FR-041 | Implemented | 403 `Downloads disabled` when `allow_download` is false [OBSERVED: same]. |
-| FR-042 | Partial | `limit`, `recent_days` and `cursor` are checked. `export_type` takes any string (R3, T034). |
+| FR-041 | Implemented | 403 `Downloads disabled` when `allow_download` is false [OBSERVED: routes.py:410]. |
+| FR-042 | Implemented | `limit` (1-50), `recent_days` (1-365) and `cursor` are checked; `export_type` is `Literal["patch", "rack"]`, so anything else is 422 (#138, T034) [OBSERVED: routes.py:423-424]. |
 | FR-043 | Implemented | Read, download and report require `published`; the gallery also requires `public` [OBSERVED: same]. |
-| FR-044 | Implemented | `ReportCreate` needs a reason (3–200 characters); details are optional [OBSERVED: backend/publishing/schemas.py]. |
-| FR-045 | Implemented | `_audit_moderation` writes actor, action, target, delta and reason, and sets `moderation_audit_id` and `removed_reason` [OBSERVED: backend/publishing/routes.py]. |
-| FR-046 | Implemented | Removed is filtered from every read, and any PATCH is refused (#130). |
+| FR-044 | Implemented | `ReportCreate` needs a reason (3-200 characters); details are optional. The route is rate-limited per client address (10 per hour, 429 `REPORT_RATE_LIMIT`) and a signed-in reporter gets one report per publication (#197) [OBSERVED: backend/publishing/schemas.py, routes.py:485,511]. Anonymous reports are bounded only by the rate limit. Retention is undecided. |
+| FR-045 | Implemented | `_audit_moderation` writes actor, action, target, delta and reason, and sets `moderation_audit_id` and `removed_reason` [OBSERVED: backend/publishing/routes.py:622]. |
+| FR-046 | Implemented | Reads filter to `published`, and a removed publication refuses any PATCH with 409 (#130) [OBSERVED: routes.py:284]. |
 | FR-047 | Implemented | Separate `publication_exports` table [OBSERVED: backend/publishing/models.py]. |
-| FR-048 | Missing | Publish checks no book validation (R2, T032). |
-| FR-049 | Implemented | Publishing imports no decision-layer code [OBSERVED: repo grep 2026-10-29]. |
+| FR-048 | Partial | `draft` → `published` answers 409 `PUBLICATION_BOOK_NOT_VALIDATED` unless `_bound_to_validated_book` is true, and it always returns false, so nothing can publish (#143, T032) [OBSERVED: backend/publishing/routes.py:297, `_bound_to_validated_book`]. The guard fails closed. Binding a publication export to a validated pack does not exist (T033, OQ-6). |
+| FR-049 | Implemented | Publishing imports no decision-layer code [OBSERVED: repo grep 2026-11-03]. |
 
 ## Scope
 

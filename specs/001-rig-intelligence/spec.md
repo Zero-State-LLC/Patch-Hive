@@ -35,40 +35,40 @@ PatchHive turns a user's Eurorack rig into deterministic, validated patch artifa
 
 The goal is reproducible, auditable patch generation that never invents a module, jack, voltage, mode, or capability to make a patch work. [OBSERVED: constitution]
 
-## Implementation status (2026-10-29)
+## Implementation status (2026-11-03)
 
-Checked against the code on `main` at 95ca9ee. Open gaps link to [research.md](research.md) and to the gap-closure tasks in [tasks.md](tasks.md). Totals: 24 implemented, 5 partial, 2 missing.
+Checked against the code on `main` at 3688037 (0.3.0-alpha.6). The 2026-10-29 table (at 95ca9ee) had 24 implemented, 5 partial and 2 missing; the gap-closure tasks T030–T035 closed five of the partial rows and one missing row (#137, #142, #161). Open gaps link to [research.md](research.md) and [tasks.md](tasks.md). Totals: 30 implemented, 0 partial, 1 missing.
 
 | FR | Status | Evidence |
 |---|---|---|
-| FR-001 | Partial | Seeded engine [OBSERVED: backend/patches/engine.py]. The IR hash leaves out the inventory and engine version (R3, T033). |
+| FR-001 | Implemented | Seeded engine [OBSERVED: backend/patches/engine.py]. Since #137 (T033) the 32-character `generation_ir_hash` covers the modules, seed, every parameter and the engine and ABX-Core versions, and a module change changes it [OBSERVED: backend/core/ir.py, backend/patches/routes.py]. |
 | FR-002 | Implemented | `random.Random(seed)` only; time is read for durations and timestamps, never for choices [OBSERVED: backend/patches/engine.py]. |
 | FR-003 | Implemented | `name_patch_v2` picks words from a SHA-256 of the seed [OBSERVED: backend/core/naming.py]. |
-| FR-004 | Partial | The compiler is called only from tests. Runs get artifacts from the dual-write adapter instead (R1, T030). |
+| FR-004 | Implemented | Since #142 (T030) `run_generation` sends each validated patch through `canon.compiler.compile_patch`, which returns the graph, five-phase plan, report, variation, stage receipts and `ArtifactManifest` [OBSERVED: backend/export/patchbook/design/dual_write.py, backend/canon/compiler.py]. Export of a run with no sealed rows (runs from before #142) still takes the Path B fallback, which builds those artifacts outside the compiler [OBSERVED: backend/export/patchbook/design/content_spine.py]. |
 | FR-005 | Implemented | Readiness gate and confirmed-module filter (#88) [OBSERVED: backend/patches/inventory_gate.py]. Retired modules are warned with `MODULE_TOMBSTONED` (#122). |
 | FR-006 | Implemented | A provider that returns `USER_CONFIRMED` is refused [OBSERVED: backend/evidence/vision_provider.py]. |
 | FR-007 | Implemented | Only the owner's confirm, replace or manual-add decision sets `USER_CONFIRMED` [OBSERVED: backend/evidence/routes.py]. |
-| FR-008 | Implemented | Decision layer bounded by spec 005 (#104, #105) [OBSERVED: backend/intelligence/]. |
-| FR-009 | Implemented | `canon/contracts.py` imports no provider type [OBSERVED: repo grep 2026-10-29]. |
+| FR-008 | Implemented | Decision layer bounded by spec 005 (#104, #105, #135) [OBSERVED: backend/intelligence/]. |
+| FR-009 | Implemented | `canon/contracts.py` imports no provider type [OBSERVED: repo grep 2026-11-03]. |
 | FR-010 | Implemented | Upper-cased substring match; a module can join several classes [OBSERVED: backend/patches/engine.py `ModuleAnalyzer`]. |
 | FR-011 | Implemented | Feasibility checks per rule, plus six more rules (#96). |
 | FR-012 | Implemented | Five categories only (#94). |
-| FR-013 | Partial | `max_patches` is honoured. `allow_feedback` and `prefer_simple` are stored but never read (R2, T032). |
+| FR-013 | Implemented | Since #137 (T032) `allow_feedback=false` drops patches with a `FEEDBACK_LOOP` finding and `prefer_simple` sorts by cable count before the `max_patches` cut [OBSERVED: backend/patches/engine.py, backend/patches/validation.py]. |
 | FR-014 | Implemented | `ConnectionIR` has the two modules, the two ports and `cable_type` [OBSERVED: backend/core/ir.py]. |
-| FR-015 | Partial | Five phases exist only in the dual-write adapter, and they are filled mechanically (R1, T030). |
-| FR-016 | Partial | Blocking findings fail the run (#97). A missing seal phase is not checked on the run path (R1, T030). |
+| FR-015 | Implemented | The compiler plan has the five phases (#142), and `PatchPlan` refuses a plan that lacks any of them [OBSERVED: backend/canon/compiler.py, backend/canon/contracts.py `required_phases`]. |
+| FR-016 | Implemented | Blocking findings fail the run (#97). A plan without a seal phase cannot be built on the run path since #142 (`PatchPlan.required_phases`) [OBSERVED: backend/canon/contracts.py]. |
 | FR-017 | Implemented | Generic jacks are marked `unresolved` (#97). Unknown power is counted per rail, never as 0 mA (#118). |
 | FR-018 | Implemented | `queued` → `running` → `succeeded`, `failed` or `validation_failed` (#88, #97). Every run ends terminal (#131). |
-| FR-019 | Implemented | Transitions as tabled; admin rerun goes through the readiness gate and creates a new run (#131) [OBSERVED: backend/admin/routes.py]. |
+| FR-019 | Implemented | Transitions as tabled; admin rerun goes through the readiness gate and creates a new run (#131) [OBSERVED: backend/admin/routes.py]. The table is encoded where code exists for it (#182, `backend/tests/unit/test_spec_001_transitions.py`); T010 lists the rows with no handler. |
 | FR-020 | Implemented | Runs and generated patches are append-only (#92). A rack is soft-deleted (#93). |
 | FR-021 | Implemented | One `library-{source_run_id}` per run, written only on success [OBSERVED: backend/runs/bridge.py, backend/patches/routes.py]. |
 | FR-022 | Implemented | A `NOT_COMPUTABLE` attempt writes no run (#88). |
 | FR-023 | Implemented | List by rack, read by id, read patches, "Run not found" [OBSERVED: backend/runs/routes.py]. |
 | FR-024 | Implemented | Seed, version and config stored on every patch (#88) [OBSERVED: backend/patches/routes.py]. |
-| FR-025 | Implemented | Decision packets bind the evidence hash, provider version, schema version and policy version (spec 005) [OBSERVED: backend/intelligence/contracts.py, backend/intelligence/persistence.py]. |
+| FR-025 | Implemented | Decision packets bind the evidence hash, provider version, schema version and policy version (spec 005; `evidence_hash` is a SHA-256 of the packet and image since 005 T083, #146) [OBSERVED: backend/intelligence/contracts.py, backend/intelligence/persistence.py]. |
 | FR-026 | Implemented | Each run binds to `rig-rev-{content_hash}` (OQ-01) [OBSERVED: backend/runs/bridge.py]. |
-| FR-027 | Missing | No packet is emitted for a real rig. The canon contract has 3 of the 9 fields (R1, T031). |
-| FR-028 | Missing | No Abraxas feedback store exists (R7). Deferred until a bridge sends feedback. |
+| FR-027 | Implemented | Since #142 (T031) `run_generation` stores one `RigMetricsPacket` per rig revision with all nine fields [OBSERVED: backend/patches/routes.py `ensure_rig_metrics_packet`, backend/canon/rig_metrics.py]. Since #161 (T035, OQ-11 option 2) `routing_flex_score` and `performance_density_index` are computed; the other four are `NOT_COMPUTABLE` by owner decision [OBSERVED: backend/canon/rig_scores.py]. Most rigs still read `NOT_COMPUTABLE` for both scores, because few catalog modules carry `io_ports`. |
+| FR-028 | Missing | No Abraxas feedback store exists (R7) [OBSERVED: repo grep 2026-11-03]. Deferred until a bridge sends feedback. |
 | FR-029 | Implemented | `PatchUserOverlayRecord` and `/overlays/{patch_ref}` [OBSERVED: backend/canon/models.py, backend/canon/routes.py]. |
 | FR-030 | Implemented | The PDF labels it "Waveform Approximation" [OBSERVED: backend/export/pdf.py]. |
 | FR-031 | Implemented | No 001 surface renders a page. The legacy patch book is off by default (#133) [INFERRED]. |
