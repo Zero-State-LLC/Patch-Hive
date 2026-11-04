@@ -56,7 +56,8 @@
   --text-section: var(--text-xl);
   --text-title: var(--text-lg);
   --text-lead: var(--text-md);
-  --text-poster: clamp(3.5rem, 7.5vw, 6rem);
+  /* Below 373px the floor gives way to 15vw, so the brand fits a 320px screen in any fallback face */
+  --text-poster: clamp(min(3.5rem, 15vw), 7.5vw, 6rem);
   --tracking-display: -0.03em;
   --display-weight: 600;
 
