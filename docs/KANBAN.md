@@ -4,15 +4,20 @@ Mirror of [org Project #8 "Patch-Hive"](https://github.com/orgs/Zero-State-LLC/p
 
 Columns (Status): Backlog → Ready → In progress → In review → Done. Spec tasks are titled `[NNN Txxx]`; Ready means every `depends_on` is done (`just spec-dag`). Slices are described in [docs/evidence/NEXT_SLICES_2026-10-28.md](evidence/NEXT_SLICES_2026-10-28.md); decision research is in each spec's `research.md` (001–008, 2026-10-29). Gap-closure tasks added on 2026-10-29 (001 T030–T034, 002 T030–T036, 003 T036–T039, 004 T040–T051, 005 T080–T085, 006 T100–T104, 007 T080–T083, 008 T070–T072) are in the spec `tasks.md` files and not yet on the board.
 
-Snapshot: 2026-11-03 (after the Backlog remediation), 159 items.
+Snapshot: 2026-11-03 (after the remediation PRs merged), 159 items.
 
 ## Backlog
 
 - [#21](https://github.com/Zero-State-LLC/Patch-Hive/issues/21) Advance v0.3 alpha toward closed staging beta
 - [008 T050b] Pin readiness matrix + cutover checklist to walkthrough SHA
+- [beta] Acceptance suite against staging Postgres
+- [beta] Backup/restore + ledger reconcile drill receipts
+- [beta] Manual accessibility protocol
 - [005 T061 = 007 T030b+T040b] Propose and approve thresholds from baseline
 - [005 T062 = 007 T060b] Pin and retain SHA-pinned evaluation receipt
 - [005 T070 = 007 T050b+T085] Enable provider in staging after approval
+- [005] Close Spec Kit gaps (Workflows section, transitions table)
+- [triage] Review personal-only branches with unmerged work
 - [001 T002] Write plan.md (rig intelligence)
 - [001 T010] Encode transitions table as tests (rig intelligence)
 - [001 T090] Converge code against spec (rig intelligence)
@@ -28,13 +33,12 @@ Snapshot: 2026-11-03 (after the Backlog remediation), 159 items.
 - [006 T060b] Verify the decision-provider path on Neon-backed staging
 - [007 T020b = 005 T061d] Run baseline vs provider-assisted evaluation on frozen corpus
 - [decision] Maker permission metadata and stealth proxy sign-off
+- [003 T031] Classify the 632 live untagged rows: free offline pass first, paid only for the remainder
+- [catalog] Resolve the 20 live rows whose tags point to two categories
 
 ## Ready
 
 - [008 T030b] Verify seeded demo auth on the staging host
-- [beta] Acceptance suite against staging Postgres
-- [beta] Backup/restore + ledger reconcile drill receipts
-- [005] Close Spec Kit gaps (Workflows section, transitions table)
 - [001 T001] Confirm rig intelligence spec
 - [002 T001] Confirm patch-book publishing spec
 - [003 T001] Confirm catalog dataset pipeline spec
@@ -47,8 +51,6 @@ Snapshot: 2026-11-03 (after the Backlog remediation), 159 items.
 - [ops] Real sign-up on production (operator)
 - [ops] Decide repo visibility vs the Actions budget
 - [ops] Review open PRs #106, #109, #110, #111
-- [003 T031] Classify the 632 live untagged rows: free offline pass first, paid only for the remainder
-- [catalog] Resolve the 20 live rows whose tags point to two categories
 - [003 T035] Scoped re-fetch of ~45 jumper-dependent pages (needs a cap: ~20–50 context.dev credits)
 
 ## In progress
@@ -57,10 +59,7 @@ _None._
 
 ## In review
 
-- [beta] Manual accessibility protocol
-- [beta] Dual-path F2/F4/F5 thinning
-- [beta] Playwright against staging
-- [triage] Review personal-only branches with unmerged work
+_None._
 
 ## Done
 
@@ -75,6 +74,8 @@ _None._
 - [beta] Operator staging host pick
 - [beta] Secrets, CORS, fail-closed payment flags — edge-secrets workflow, exact-origin CORS, test-mode payments
 - [beta] Design Engine staging enablement
+- [beta] Dual-path F2/F4/F5 thinning
+- [beta] Playwright against staging
 - [ops] Org Actions budget or spending limit (needed before making the repo private again)
 - [ops] Add required status checks backend/frontend/Analyze once green
 - [release] Tag v0.4.0-alpha.1 after versioning PR merges
