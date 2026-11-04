@@ -291,7 +291,9 @@ class CanonicalExportRecord(Base):
     __table_args__ = (
         CheckConstraint("credit_cost >= 0", name="ck_canonical_exports_cost"),
         CheckConstraint(EXPORT_GRANT_SHAPE, name="ck_canonical_exports_grant_shape"),
-        UniqueConstraint("user_id", "idempotency_key", name="uq_canonical_exports_user_idempotency"),
+        UniqueConstraint(
+            "user_id", "idempotency_key", name="uq_canonical_exports_user_idempotency"
+        ),
     )
 
 
@@ -433,9 +435,7 @@ class ProviderSubscriptionRecord(Base):
     __table_args__ = (
         CheckConstraint(_TIER_CHECK, name="ck_provider_subscriptions_tier"),
         CheckConstraint(
-            "status IN ("
-            + ", ".join(f"'{status}'" for status in SUBSCRIPTION_STATUSES)
-            + ")",
+            "status IN (" + ", ".join(f"'{status}'" for status in SUBSCRIPTION_STATUSES) + ")",
             name="ck_provider_subscriptions_status",
         ),
         CheckConstraint(
@@ -525,9 +525,7 @@ class SubscriptionPeriodGrantRecord(Base):
         ),
         CheckConstraint(_TIER_CHECK, name="ck_subscription_period_grants_tier"),
         CheckConstraint(SUBSCRIPTION_GRANT_SHAPE, name="ck_subscription_period_grants_shape"),
-        CheckConstraint(
-            "period_end > period_start", name="ck_subscription_period_grants_period"
-        ),
+        CheckConstraint("period_end > period_start", name="ck_subscription_period_grants_period"),
     )
 
     id = Column(String(64), primary_key=True)

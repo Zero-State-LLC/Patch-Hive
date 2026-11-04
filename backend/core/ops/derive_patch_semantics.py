@@ -57,7 +57,6 @@ def derive_patch_semantics(
 
     for conn in connections:
         from_id = _get_attr(conn, "from_module_id")
-        to_id = _get_attr(conn, "to_module_id")
         cable_type = _get_attr(conn, "cable_type", "audio")
 
         from_module = modules_by_id.get(from_id)

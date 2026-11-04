@@ -81,6 +81,30 @@ jobs:
           PYTHONPATH: .
         run: python -m pytest tests/acceptance -q
 
+  backend-lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install backend
+        working-directory: backend
+        run: python -m pip install -e '.[dev]'
+      - name: Ruff
+        working-directory: backend
+        run: python -m ruff check canon evidence core patches/inventory_gate.py runs/bridge.py
+      - name: Black
+        working-directory: backend
+        run: python -m black --check canon evidence
+      - name: Mypy
+        working-directory: backend
+        run: python -m mypy canon/contracts.py canon/compiler.py canon/runes.py canon/downloads.py evidence/images.py
+      - name: No canon or evidence imports of patchhive
+        run: bash scripts/ai/check_no_canon_patchhive_imports.sh
+
   frontend:
     runs-on: ubuntu-24.04
     timeout-minutes: 20

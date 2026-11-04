@@ -1,0 +1,16 @@
+title = "PatchHive secret scanning"
+
+[extend]
+useDefault = true
+
+# Triaged 2026-11-04 (#264): no real secret in history. These match exact values, not paths,
+# so a real key in the same files is still reported. Triage a new hit before adding it here.
+
+[[allowlists]]
+description = "Fake values in backend tests: a Stripe-shaped key the tests assert never leaks, a webhook secret and an event id"
+regexes = ['''^sk_test_secretvalue$''', '''^whsec_t047_pg$''', '''^evt_api_refund_2$''']
+
+[[allowlists]]
+description = "SHA-256 content hashes of receipt records"
+regexTarget = "line"
+regexes = ['''"[a-z_]+_sha256": "[0-9a-f]{64}"''']

@@ -448,7 +448,9 @@ def list_rack_evidence_candidates(
 
         rows = (
             db.query(ClassificationEvidenceRecord, ImageAssetRecord.content_sha256)
-            .join(ImageAssetRecord, ImageAssetRecord.id == ClassificationEvidenceRecord.image_asset_id)
+            .join(
+                ImageAssetRecord, ImageAssetRecord.id == ClassificationEvidenceRecord.image_asset_id
+            )
             .filter(ClassificationEvidenceRecord.id.in_(evidence_hashes))
             .all()
         )

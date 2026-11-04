@@ -5,10 +5,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/scrimshawlife-ctrl/Patch-Hive/actions/workflows/backend-tests.yml"><img src="https://github.com/scrimshawlife-ctrl/Patch-Hive/actions/workflows/backend-tests.yml/badge.svg" alt="Backend tests" /></a>
-  <a href="https://github.com/scrimshawlife-ctrl/Patch-Hive/actions/workflows/code-quality.yml"><img src="https://github.com/scrimshawlife-ctrl/Patch-Hive/actions/workflows/code-quality.yml/badge.svg" alt="Code quality" /></a>
-  <a href="https://github.com/scrimshawlife-ctrl/Patch-Hive/actions/workflows/security.yml"><img src="https://github.com/scrimshawlife-ctrl/Patch-Hive/actions/workflows/security.yml/badge.svg" alt="Security" /></a>
-  <a href="https://github.com/scrimshawlife-ctrl/Patch-Hive/actions/workflows/engineering-quality.yml"><img src="https://github.com/scrimshawlife-ctrl/Patch-Hive/actions/workflows/engineering-quality.yml/badge.svg" alt="Engineering quality" /></a>
+  <a href="https://github.com/Zero-State-LLC/Patch-Hive/actions/workflows/ci.yml"><img src="https://github.com/Zero-State-LLC/Patch-Hive/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/Zero-State-LLC/Patch-Hive/actions/workflows/codeql.yml"><img src="https://github.com/Zero-State-LLC/Patch-Hive/actions/workflows/codeql.yml/badge.svg" alt="CodeQL" /></a>
+  <a href="https://github.com/Zero-State-LLC/Patch-Hive/actions/workflows/security.yml"><img src="https://github.com/Zero-State-LLC/Patch-Hive/actions/workflows/security.yml/badge.svg" alt="Security" /></a>
   <a href="docs/PRODUCTION_READINESS.md"><img src="https://img.shields.io/badge/production-NOT%20READY-red" alt="Production not ready" /></a>
   <a href="docs/FEATURE_FLAGS.md"><img src="https://img.shields.io/badge/payments-test%20mode%20only-orange" alt="Payments test mode only" /></a>
   <a href="docs/ROADMAP.md"><img src="https://img.shields.io/badge/release-v0.3.0--alpha-blue" alt="Release line v0.3.0-alpha" /></a>

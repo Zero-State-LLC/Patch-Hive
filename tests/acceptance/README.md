@@ -66,7 +66,7 @@ python scripts/seed_golden_demo.py --update-fixture
 
 ## CI
 
-Workflow: `.github/workflows/acceptance-tests.yml`  
-Sets `ACCEPTANCE_DATABASE_URL` against a Postgres 15 service container and runs `scripts/test/run.sh acceptance`.
+Workflow: the `acceptance` job in `.github/workflows/ci.yml`.  
+Sets `ACCEPTANCE_DATABASE_URL` against a Postgres 15 service container and runs `pytest tests/acceptance`.
 
 Payments remain fail-closed (`STRIPE_TEST_MODE=true`, `ALLOW_PRODUCTION_PAYMENTS=false`).

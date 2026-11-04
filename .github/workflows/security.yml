@@ -1,0 +1,81 @@
+name: Security and Supply Chain
+
+# docs/SECURITY.md and docs/OPERATIONS.md describe these checks. Removing one means changing
+# those docs and backend/tests/test_security_workflow.py too.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  secrets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # gitleaks-action needs a paid licence for organisations; the binary is MIT.
+      - name: Install gitleaks
+        env:
+          GITLEAKS_VERSION: 8.30.1
+          GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/gitleaks.tar.gz" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/gitleaks.tar.gz" | sha256sum --check --strict
+          tar xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP" gitleaks
+      - name: Secret scan (full history, values redacted)
+        run: |
+          "$RUNNER_TEMP/gitleaks" detect --source . --config .gitleaks.toml --redact --no-banner
+
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install backend
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+      - name: Python dependency audit
+        working-directory: backend
+        run: python -m pip_audit --progress-spinner off
+      - name: Bandit (medium and high severity)
+        working-directory: backend
+        run: python -m bandit -q -ll -r . -x ./.venv,./tests,./patchhive/tests,./patchhive/runes/tests
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Frontend dependency audit
+        working-directory: frontend
+        run: npm run audit
+      - name: Generate SBOMs
+        run: |
+          mkdir -p security-artifacts
+          (cd backend && cyclonedx-py environment --output-reproducible --output-file ../security-artifacts/python.cdx.json)
+          (cd frontend && npm sbom --sbom-format cyclonedx > ../security-artifacts/npm.cdx.json)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: patchhive-sboms
+          path: security-artifacts/*.json
+          if-no-files-found: error
