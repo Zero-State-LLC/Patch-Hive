@@ -52,7 +52,7 @@ def get_run_patches(
     if not run:
         raise HTTPException(status_code=404, detail="Run not found")
     readable_rack(db, run.rack_id, current_user, label="Run")
-    patches = db.query(Patch).filter(Patch.run_id == run_id).all()
+    patches = db.query(Patch).filter(Patch.run_id == run_id).order_by(Patch.id.asc()).all()
     return RunPatchesResponse(
         total=len(patches), patches=[build_patch_response(db, p) for p in patches]
     )
