@@ -66,7 +66,7 @@ Every patch on these branches is already in `main`, under another hash. They are
 | `ops/beta-staging-migrations-health` | 1 | 0 | 2026-07-26 feat(ops): Alembic-on-deploy, /health/ready, beta-staging evidence re |
 | `personal-archive/fix/spec-005-postmerge-verification` | 1 | 0 | 2026-09-25 test(intelligence): exercise malformed bounded candidate validation |
 
-## Work believed to have landed under other commits (20)
+## Work believed to have landed under other commits (19)
 
 Most of these are the 2026-09-25/26 `personal-archive/*` snapshots and July staging work. That work reached `main` through the personal repository sync (#25) and later squash merges, so `git cherry` cannot match it commit by commit. **Check each one before deleting it.**
 
@@ -91,15 +91,15 @@ Most of these are the 2026-09-25/26 `personal-archive/*` snapshots and July stag
 | `personal-archive/ops/jev-t070-preflight` | 1 | 1 | 2026-09-25 ci: add manual Jev T070 preflight |
 | `personal-archive/ops/t070-jev-preflight` | 4 | 4 | 2026-09-25 docs(evidence): record successful pinned-model Jev preflight |
 | `personal-archive/style/frontend-prettier-baseline` | 4 | 3 | 2026-09-25 ci(frontend): enforce Prettier after baseline |
-| `security/free-scanner-stack` (closed PR #4) | 2 | 2 | 2026-08-15 fix(ci): run gitleaks binary instead of the licensed action |
 
-## Not landed (5)
+## Not landed (6)
 
 | Branch | What it holds |
 |---|---|
 | `codex/case-catalog-normalization` | a case-catalog normalization doc and an import contract schema |
 | `claude/audit-export-tests-za0Lt`, `claude/generate-vl2-pack-kbY4K`, `claude/patchbook-computed-tiers-Dzu7u` | December 2025 experiments, from before the canon rewrite |
 | `archive/local-pdb-readiness-20260723` | a deliberate archive snapshot of the local PDB readiness work |
+| `security/free-scanner-stack` (closed PR #4) | a `.gitleaks.toml` and a gitleaks binary step; filed as landed until the 2026-11-04 review |
 
 | Branch | Commits outside main | Patches not in main | Last commit |
 | --- | --- | --- | --- |
@@ -108,3 +108,29 @@ Most of these are the 2026-09-25/26 `personal-archive/*` snapshots and July stag
 | `claude/generate-vl2-pack-kbY4K` | 1 | 1 | 2025-12-23 Add FastAPI/Pydantic backend integration for system packs |
 | `claude/patchbook-computed-tiers-Dzu7u` | 1 | 1 | 2025-12-23 Upgrade PatchBook to v1.1 with computed intelligence and monetization |
 | `codex/case-catalog-normalization` | 2 | 2 | 2026-07-21 feat(cases): add normalized import contract schema |
+| `security/free-scanner-stack` | 2 | 2 | 2026-08-15 fix(ci): run gitleaks binary instead of the licensed action |
+
+## Review, 2026-11-04
+
+For each branch, this counts the lines its own commits add since the merge base (ignoring lines under 12 characters) and how many of them appear anywhere on `main` at `dd67257`. A matching line doesn't prove the behaviour survived, so the largest gaps were then read by hand. Nothing was deleted.
+
+### The 6 not landed
+
+| Branch | Added lines on `main` | What `main` has | Recommendation |
+|---|---|---|---|
+| `codex/case-catalog-normalization` | 43 of 294 | All seven tables it specifies, in `backend/cases/models.py`. Only the contract doc and `schemas/case_catalog_import.v1.schema.json` never landed, and nothing on `main` reads that schema. | Drop |
+| `claude/audit-export-tests-za0Lt` | 170 of 739 | Determinism tests in `test_patchbook_unit.py` and the design-engine suites. The rest is a summary doc and Replit setup. | Drop |
+| `claude/generate-vl2-pack-kbY4K` | 55 of 448 | `SystemPackLoader` in `backend/ingest/system_packs.py`. The `POST /api/ingest/system-pack` route never landed, and no spec names it. | Drop |
+| `claude/patchbook-computed-tiers-Dzu7u` | 236 of 1126 | The same computations in `backend/export/patchbook/computation.py`, `book_analytics.py` and `tiers.py`. | Drop |
+| `archive/local-pdb-readiness-20260723` | 43425 of 44268 | Everything but `seed_catalog_from_synth.py` (deleted on purpose, spec 003 D5), later rewrites and two July debug notes. | Keep: a deliberate archive |
+| `security/free-scanner-stack` | 0 of 33 | Nothing. Main has had no secret scan in CI since `5b85f58` removed `security.yml` (2026-09-03). | Keep until the security workflow is back on `main` |
+
+### The 19 believed landed
+
+All 19 are confirmed: no branch holds product work that `main` lacks. 16 of them score 82% or higher. What doesn't match is later rewrites of the same code (`Login.tsx`, `RackBuilder.tsx`, `index.css`, `api.ts`, `design_engine_walkthrough.py`, `evaluation_enablement.py`), lockfile churn, acceptance checklists that have since been ticked, and files removed since (legacy pages, `seed_catalog_from_synth.py`, the workflows deleted in `5b85f58`). The three below that:
+
+- `personal-archive/ops/jev-t070-preflight` (45%): the first version of what is now `t070-jev-preflight.yml`.
+- `personal-archive/style/frontend-prettier-baseline` (64%): formatting of files that have since been rewritten or deleted.
+- `fix/shadow-fe-seed-type-safety` (69%): lockfile churn, rewrites of `Registry.tsx`, and files removed since.
+
+These 19 can go along with the 12 whose patches are already in `main`, on the owner's word.
