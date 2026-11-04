@@ -71,7 +71,7 @@ This one chain unblocks 7 cards: 005 T061/T062/T070, 007 T020b, 006 T060b, 008 T
    ```
 
 6. **Pin the readiness docs (008 T050b).** The driver comes from #248:
-   1. Put the walkthrough's source SHA into both readiness docs. Done for `6c234a6`; redo it only after a newer walkthrough.
+   1. Put the walkthrough's source SHA into both readiness docs. For the alpha.7 walkthrough that is `6c234a6535d1f4a58924243254ca4b607be2f461`, receipt `b2c295027be8eb8d805d88e9bde33700c576795d66f4c7ff8b1b2f1b838a819c` (bundle `docs/evidence/receipts/staging-design-walkthrough-2026-11-04.json`). The docs keep `PENDING_OPERATOR_WALKTHROUGH` until this sitting; `test_repo_readiness_docs_are_not_pinned_to_an_invented_sha` holds them to it, so update that test in the same change.
    2. Run the three commands:
 
       ```bash

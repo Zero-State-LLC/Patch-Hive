@@ -12,6 +12,6 @@ Runs dispatched by the agent on the owner's go-ahead ("you can continue"), after
 
 The two acceptance runs and the drill never touched staging's `patchhive` database except to read it: acceptance made and dropped its own database on the staging server, and the drill only dumped it. Once #259 is merged, re-run acceptance from `main` for a receipt at a `main` SHA.
 
-**008 T050b.** Both readiness docs now cite the walkthrough source SHA and receipt hash, and `scripts/staging/pin_readiness_008.py check` reaches `RECEIPT_CAPTURED`. Its one remaining blocker is the signed spec 007 receipt (007 T060b, T083). The 006 T060b evidence check was not run; it waits on the owner's provider choice.
+**008 T050b.** This walkthrough is the bundle for the pin. The readiness docs keep `PENDING_OPERATOR_WALKTHROUGH` until the owner's pin sitting (owner packet step 6). With the SHA written into both docs, `scripts/staging/pin_readiness_008.py check` on this bundle reaches `RECEIPT_CAPTURED`, and its one remaining blocker is the signed spec 007 receipt (007 T060b, T083). The 006 T060b evidence check was not run; it waits on the owner's provider choice.
 
 Side effects on the staging branch only: the demo users re-seeded (new passwords, not kept), the demo rack's runs recreated, one credit grant and one export debit, one design pack in the staging R2 bucket.
