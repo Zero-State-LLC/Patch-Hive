@@ -17,7 +17,7 @@ from __future__ import annotations
 import html
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urljoin, urlparse, urlunparse
 
@@ -42,6 +42,22 @@ class Candidate:
     url: str
     name: str | None = None
     text: str | None = None  # maker-published product text when the feed carries it
+    # The store's own product type, categories and tags, as the feed publishes them.
+    store_tags: list[str] = field(default_factory=list)
+
+
+def store_tags(*values) -> list[str]:
+    """Shopify tags arrive as a list or one comma-separated string; WooCommerce terms as
+    {"name": ...}. Unescaped, stripped, de-duplicated, in feed order."""
+    out: list[str] = []
+    for value in values:
+        items = value.split(",") if isinstance(value, str) else value or []
+        for item in items:
+            text = item.get("name") if isinstance(item, dict) else item
+            text = html.unescape(text).strip() if isinstance(text, str) else ""
+            if text and text.lower() not in {t.lower() for t in out}:
+                out.append(text)
+    return out
 
 
 def load_sources(path: Path = SOURCES) -> dict:
@@ -102,7 +118,10 @@ def _shopify(scraper, home: str, cfg: dict) -> list[Candidate]:
             label = f"{p.get('handle', '')} {p.get('title', '')} {p.get('product_type', '')}"
             if NOT_MODULE.search(label):
                 continue
-            out.append(Candidate(urljoin(home, f"/products/{p['handle']}"), p.get("title"), strip_html(p.get("body_html") or "")))
+            out.append(Candidate(
+                urljoin(home, f"/products/{p['handle']}"), p.get("title"), strip_html(p.get("body_html") or ""),
+                store_tags([p.get("product_type")], p.get("tags")),
+            ))
     return out
 
 
@@ -118,7 +137,8 @@ def _squarespace(scraper, home: str, cfg: dict) -> list[Candidate]:
                 if not item.get("fullUrl") or NOT_MODULE.search(f"{item.get('fullUrl')} {item.get('title', '')}"):
                     continue
                 body = strip_html(f"{item.get('excerpt') or ''} {item.get('body') or ''}")
-                out.append(Candidate(urljoin(home, item["fullUrl"]), item.get("title"), body))
+                tags = store_tags(item.get("categories"), item.get("tags"))
+                out.append(Candidate(urljoin(home, item["fullUrl"]), item.get("title"), body, tags))
             nxt = (data.get("pagination") or {}).get("nextPageUrl")
             url = urljoin(home, nxt) + ("&" if "?" in nxt else "?") + "format=json" if nxt else None
     return out
@@ -138,7 +158,8 @@ def _woocommerce(scraper, home: str, cfg: dict) -> list[Candidate]:
             if NOT_MODULE.search(f"{p.get('permalink', '')} {p.get('name', '')}"):
                 continue
             text = strip_html(f"{p.get('short_description') or ''} {p.get('description') or ''}")
-            out.append(Candidate(p["permalink"], html.unescape(p.get("name") or "") or None, text))
+            tags = store_tags(p.get("categories"), p.get("tags"))
+            out.append(Candidate(p["permalink"], html.unescape(p.get("name") or "") or None, text, tags))
     return out
 
 
