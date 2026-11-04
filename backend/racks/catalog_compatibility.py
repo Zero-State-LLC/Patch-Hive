@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any, Optional, Protocol, Sequence
 
 from sqlalchemy.orm import Session
@@ -17,6 +18,8 @@ from cases.models import Case
 from modules.models import PowerConfig
 from racks.models import Rack, RackModule
 from racks.schemas import RackValidationError
+
+logger = logging.getLogger(__name__)
 
 
 class _ModulePlacement(Protocol):
@@ -113,10 +116,11 @@ def evaluate_case_module_catalog_compatibility(
     )
     try:
         report: CompatibilityResponse = evaluate_catalog_compatibility(db, slug, request)
-    except LookupError as exc:
+    except LookupError:
+        logger.warning("catalog compatibility lookup failed for %s", slug, exc_info=True)
         return {
             "bridge_status": "conflict",
-            "message": str(exc),
+            "message": "Catalog case or revision not found",
             "catalog_slug": slug,
             "case_id": case.id,
             "compatibility": None,

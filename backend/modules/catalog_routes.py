@@ -5,6 +5,7 @@ Fast, lightweight catalog of all available modules.
 Full specs fetched on-demand when user adds to rack.
 """
 
+import logging
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -17,6 +18,8 @@ from community.models import User
 from core.database import get_db
 from modules.catalog import ModuleCatalog
 from modules.models import Module
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -365,8 +368,10 @@ def materialize_catalog_batch(
                     "status_code": str(exc.status_code),
                 }
             )
-        except Exception as exc:  # noqa: BLE001 — batch continues
-            failed.append({"catalog_slug": entry.slug, "error": str(exc)})
+        except Exception:  # noqa: BLE001 — batch continues
+            # The exception text can hold SQL or connection details, so it stays in the log.
+            logger.exception("module catalog materialize failed for %s", entry.slug)
+            failed.append({"catalog_slug": entry.slug, "error": "MATERIALIZE_FAILED"})
 
     return {
         "status": "success" if not failed else "partial",
