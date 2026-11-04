@@ -239,7 +239,8 @@ def provision_step(isolation: str, target_file: Path, receipt_out: Path) -> int:
 
 def suite_step(target_file: Path, receipt_out: Path) -> int:
     receipt = _read_receipt(receipt_out) or _new_receipt("unknown")
-    junit = receipt_out.parent / "acceptance-junit.xml"
+    # Absolute: pytest runs in backend/, so a relative path would land there instead
+    junit = receipt_out.resolve().parent / "acceptance-junit.xml"
     head = alembic_head()
     try:
         target = target_file.read_text(encoding="utf-8").strip()

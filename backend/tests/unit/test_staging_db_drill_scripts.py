@@ -100,8 +100,9 @@ def _fake_suite(monkeypatch, *, pytest_code: int = 0, current: str | None = None
     def fake_run(command, cwd, env, check):
         calls.append(command)
         if "pytest" in command:
+            # pytest resolves a relative --junitxml against its own working directory
             junit = next(arg for arg in command if arg.startswith("--junitxml="))
-            Path(junit.split("=", 1)[1]).write_text(JUNIT.replace('failures="1"', f'failures="{pytest_code}"'))
+            Path(cwd, junit.split("=", 1)[1]).write_text(JUNIT.replace('failures="1"', f'failures="{pytest_code}"'))
         return subprocess.CompletedProcess(command, pytest_code if "pytest" in command else 0)
 
     monkeypatch.setattr(acceptance.subprocess, "run", fake_run)
@@ -137,6 +138,21 @@ def test_provision_suite_cleanup_pass_and_leave_no_secret_behind(github_env, mon
     rendered = receipt_path.read_text() + (github_env / "summary.md").read_text() + capsys.readouterr().out
     for secret in ("s3cret-pw", "ep-cool-name-123", "owner"):
         assert secret not in rendered
+
+
+def test_the_workflows_relative_receipt_path_still_finds_the_junit_report(github_env, monkeypatch) -> None:
+    # The workflow passes acceptance-artifacts/receipt.json from the repo root, and pytest runs in backend/.
+    _fake_suite(monkeypatch)
+    backend = github_env / "backend"
+    backend.mkdir()
+    monkeypatch.setattr(acceptance, "BACKEND", backend)
+    monkeypatch.chdir(github_env)
+    target = github_env / "runner-temp" / "acceptance-target"
+    receipt = Path("acceptance-artifacts") / "receipt.json"
+
+    assert acceptance.provision_step("database", target, receipt) == 0
+    assert acceptance.suite_step(target, receipt) == 0
+    assert json.loads(receipt.read_text())["tests"]["total"] == 40
 
 
 def test_a_failing_suite_fails_the_suite_step_and_the_receipt(github_env, monkeypatch) -> None:
