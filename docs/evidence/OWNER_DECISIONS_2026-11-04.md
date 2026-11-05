@@ -1,6 +1,6 @@
 # Owner decisions, 2026-11-04
 
-The agent put 51 decisions to the owner over several rounds, each with a recommendation, and the owner answered "Yes to all" each time. Where this conflicts with [OWNER_ACTIONS_2026-11-03.md](OWNER_ACTIONS_2026-11-03.md) or an older guide, this record wins. Vocabulary is in [GLOSSARY.md](../../GLOSSARY.md).
+The agent put 53 decisions to the owner over several rounds, each with a recommendation, and the owner answered "Yes to all" each time. Where this conflicts with [OWNER_ACTIONS_2026-11-03.md](OWNER_ACTIONS_2026-11-03.md) or an older guide, this record wins. Vocabulary is in [GLOSSARY.md](../../GLOSSARY.md).
 
 
 ## Catalog and makers
@@ -77,3 +77,5 @@ Spec 001, 002, 003 and 004's T001 reviews (#282, #279, #284, #281) left these op
 | 49 | The 35 further video rows filed under other categories move to VIDEO. |
 | 50 | Mutable-derived rows that rest only on a reviewer's knowledge come out of the overlay until a maker page confirms each. |
 | 51 | Confirm and fix filled catalog rows keeping `modules.module_type` as UNKNOWN on a loaded database, before the catalog load. |
+| 52 | The API stops returning `modulargrid_url` and `modulargrid_id`, and the leftover ModularGrid text on the Modules page goes. The next load clears those URLs from the 179 `CatalogCandidate` rows on production and tags them `unknown` (FR-033). Clearing production data needs the owner's yes at that load. |
+| 53 | For the other 730 rows with no `access_basis`, the basis follows the source: the 721 maker-sourced rows become `official_publication` under decision 1, once each is checked to come from a maker's own site, and the 9 `SynthCatalogResearch` rows become `unknown`. |
