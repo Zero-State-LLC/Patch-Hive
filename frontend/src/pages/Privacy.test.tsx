@@ -1,6 +1,6 @@
 /**
  * The privacy notice has to stay honest and readable: marked as unreviewed, dated, plain about
- * the expiry job and the missing delete button, and never offering a contact as working until
+ * the expiry job, pointing at the real delete control, and never offering a contact as working until
  * it is.
  */
 import { render, screen, within } from "@testing-library/react";
@@ -73,17 +73,15 @@ describe("PrivacyPage", () => {
     expect(screen.getByText(/An expired photo is refused/)).toHaveTextContent(
       /That job isn.t scheduled yet/,
     );
-    expect(screen.getByText(/A photo you upload is decoded/)).toHaveTextContent(
-      /comment is copied into the stored file/,
-    );
+    expect(screen.getByText(/A photo you upload is decoded/)).toHaveTextContent(/any JPEG comment/);
   });
 
-  it("doesn't promise a delete button the account page doesn't have", () => {
+  it("points people to the delete control on the account page", () => {
     renderNotice();
 
-    expect(screen.getByText(/The site doesn.t have a delete button yet/)).toBeVisible();
+    expect(screen.getByText(/You can delete your account from the/)).toBeVisible();
     expect(screen.getByRole("link", { name: "account page" })).toHaveAttribute("href", "/account");
-    expect(screen.getByText("DELETE /api/me")).toBeVisible();
+    expect(screen.queryByText("DELETE /api/me")).toBeNull();
   });
 
   it("keeps the contact gap and names only the planned address, as not working yet", () => {
