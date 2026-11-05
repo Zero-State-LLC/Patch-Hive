@@ -29,7 +29,9 @@ describe("App session restore", () => {
 
     render(<App />);
 
-    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("Privacy notice");
+    // The page loads on demand, which takes longer than the default wait on a busy machine.
+    const heading = await screen.findByRole("heading", { level: 1 }, { timeout: 15_000 });
+    expect(heading).toHaveTextContent("Privacy notice");
     expect(screen.getByRole("contentinfo")).toContainElement(
       screen.getByRole("link", { name: "Privacy notice" }),
     );

@@ -131,9 +131,9 @@ export default function PrivacyPage() {
           <p>
             A photo you upload is decoded and saved again as a JPEG, at most 4096 pixels on its long
             side. That removes EXIF data, including any GPS location, as well as XMP data and colour
-            profiles. One thing survives today: if the original is a JPEG with a comment field, the
-            comment is copied into the stored file. Re-encoding doesn&apos;t change what the picture
-            shows, so anything visible in it stays.
+            profiles. One exception as of 2026-11-04: if the original is a JPEG with a comment
+            field, the comment is copied into the stored file. Re-encoding doesn&apos;t change what
+            the picture shows, so anything visible in it stays.
           </p>
           <p>
             The site&apos;s upload form keeps photos for 30 days and offers no other choice. The API
@@ -293,9 +293,10 @@ export default function PrivacyPage() {
               <strong>Gap: no contact address yet.</strong>
             </p>
             <p>
-              PatchHive has no contact address for privacy requests yet, so this page can&apos;t
-              give you one. Until it has one, the API request under Deleting your account is the
-              only route to deleting your data.
+              PatchHive has no working contact address for privacy requests yet. The address will be
+              privacy@patch-hive.com, but that mailbox hasn&apos;t been created, so it can&apos;t
+              receive anything today. Until it works, the API request under Deleting your account is
+              the only route to deleting your data.
             </p>
           </div>
         </section>

@@ -20,8 +20,9 @@ Facts only, each checked against the code. No legal conclusions, no invented rig
 
 ## Open questions
 
-- The account page has no delete control and there's no privacy contact, so the only deletion route is a signed-in API request. Owner to decide on both.
-- A JPEG comment field survives photo re-encoding. Owner to decide on a backend fix; the notice states it until then.
+- The account page has no delete control today, so the only deletion route is a signed-in API request. Decision 47 approves a control in its own PR. The notice's deletion and gap lines change when both are on `main`, whichever lands second.
+- `privacy@patch-hive.com` is the chosen contact (decision 48), but the owner hasn't created it and `patch-hive.com` has no MX record. The gap stays until it works.
+- A JPEG comment field survives photo re-encoding as of 2026-11-04. #287 fixes it; the notice's line changes once that ships.
 - Counsel's review of the notice (owner decision 24).
 
 ## Verified / assumed claims

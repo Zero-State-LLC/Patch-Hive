@@ -1,6 +1,7 @@
 /**
  * The privacy notice has to stay honest and readable: marked as unreviewed, dated, plain about
- * the expiry job and the missing delete button, and free of a contact it cannot verify.
+ * the expiry job and the missing delete button, and never offering a contact as working until
+ * it is.
  */
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -85,14 +86,22 @@ describe("PrivacyPage", () => {
     expect(screen.getByText("DELETE /api/me")).toBeVisible();
   });
 
-  it("names no contact address and makes no compliance claim", () => {
+  it("keeps the contact gap and names only the planned address, as not working yet", () => {
     const { container } = renderNotice();
     const text = container.textContent ?? "";
 
     expect(screen.getByText("Gap: no contact address yet.")).toBeVisible();
-    expect(text).not.toMatch(/[\w.+-]+@[\w-]+\.[\w.-]+/);
+    expect(text.match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g)).toEqual(["privacy@patch-hive.com"]);
+    expect(screen.getByText(/privacy@patch-hive\.com/)).toHaveTextContent(
+      /hasn.t been created, so it can.t receive anything today/,
+    );
     expect(container.querySelector('a[href^="mailto:"]')).toBeNull();
-    expect(text).not.toMatch(/GDPR|CCPA|complian/i);
+  });
+
+  it("makes no compliance claim", () => {
+    const { container } = renderNotice();
+
+    expect(container.textContent).not.toMatch(/GDPR|CCPA|complian/i);
   });
 
   it("says photos go to no outside AI provider on production", () => {
