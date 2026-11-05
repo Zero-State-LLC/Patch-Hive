@@ -77,7 +77,8 @@ export default function DeleteAccount({
   const submitButton = useRef<HTMLButtonElement>(null);
   const wasOpen = useRef(false);
 
-  const canSubmit = typedUsername.trim() === username && password.length > 0 && !submitting;
+  // Exact on purpose: a username can start or end with a space, and trimming locks that person out.
+  const canSubmit = typedUsername === username && password.length > 0 && !submitting;
 
   // Opening lands on the panel's heading, so the terms are read before the form; closing goes
   // back to the button that opened it.

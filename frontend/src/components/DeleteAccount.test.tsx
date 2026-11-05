@@ -98,6 +98,33 @@ describe("DeleteAccount", () => {
     expect(api.accountApi.deleteAccount).not.toHaveBeenCalled();
   });
 
+  it("compares the exact string, because a username can start or end with a space", async () => {
+    const spaced = " spaced name ";
+    const user = userEvent.setup();
+    render(<DeleteAccount username={spaced} onDeleted={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: "Delete account…" }));
+    await user.type(screen.getByLabelText("Current password"), PASSWORD);
+    const field = screen.getByLabelText(/Type your username/);
+
+    await user.type(field, spaced.trim());
+    expect(submit()).toBeDisabled();
+
+    await user.clear(field);
+    await user.type(field, spaced);
+    expect(field).toHaveValue(spaced);
+    expect(submit()).toBeEnabled();
+  });
+
+  it("doesn't accept extra spaces around a username that has none", async () => {
+    const { user } = renderControl();
+    await user.click(screen.getByRole("button", { name: "Delete account…" }));
+    await user.type(screen.getByLabelText("Current password"), PASSWORD);
+
+    await user.type(screen.getByLabelText(/Type your username/), `${USERNAME} `);
+
+    expect(submit()).toBeDisabled();
+  });
+
   it("doesn't send anything on Enter while the username doesn't match", async () => {
     const { user } = renderControl();
     await user.click(screen.getByRole("button", { name: "Delete account…" }));
