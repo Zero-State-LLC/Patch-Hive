@@ -3,6 +3,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DeleteAccount, { AccountDeleted } from "@/components/DeleteAccount";
 import { ListSkeleton, ReadoutSkeleton } from "@/components/Skeletons";
 import Hash from "@/components/Hash";
 import LoadFailure from "@/components/LoadFailure";
@@ -24,7 +25,8 @@ function safeHttpUrl(value: string): string | null {
 
 export default function AccountPage() {
   const navigate = useNavigate();
-  const { isAuthenticated, setUser } = useAuthStore();
+  const { isAuthenticated, setUser, user } = useAuthStore();
+  const [deleted, setDeleted] = useState(false);
   const [credits, setCredits] = useState<CreditsSummary | null>(null);
   const [exports, setExports] = useState<UserExportRecord[]>([]);
   const [referrals, setReferrals] = useState<ReferralSummary | null>(null);
@@ -143,6 +145,8 @@ export default function AccountPage() {
     setCopyStatus("Copied");
     setTimeout(() => setCopyStatus(""), 2000);
   };
+
+  if (deleted) return <AccountDeleted />;
 
   return (
     <section aria-labelledby="account-title">
@@ -353,6 +357,10 @@ export default function AccountPage() {
             </p>
           ) : null}
         </section>
+
+        {user ? (
+          <DeleteAccount username={user.username} onDeleted={() => setDeleted(true)} />
+        ) : null}
       </div>
     </section>
   );

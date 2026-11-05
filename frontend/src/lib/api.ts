@@ -828,6 +828,13 @@ export const accountApi = {
     };
   },
   getReferrals: () => api.get<ReferralSummary>("/me/referrals"),
+  /**
+   * Delete the signed-in account. The API re-checks the password, anonymizes the account, revokes
+   * every session and clears the refresh cookie, so the cookie needs credentials on this call.
+   * It removes stored photos before answering, which can outlast the usual timeout.
+   */
+  deleteAccount: (password: string) =>
+    api.delete<void>("/me", { data: { password }, withCredentials: true, timeout: 60_000 }),
 };
 
 // Registry / PDB API (Phase 2)

@@ -142,6 +142,54 @@
 .account-balance dd {
   font-size: var(--text-3xl);
 }
+/* Deleting the account sits apart across both columns, with its terms ahead of its form */
+.account-delete {
+  grid-column: 1 / -1;
+}
+.account-delete > .button {
+  justify-self: start;
+}
+.account-delete__panel {
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.account-delete__panel > p {
+  max-width: 65ch;
+}
+.account-delete__panel h4 {
+  margin: 0 0 var(--space-xs);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: var(--display-weight, 700);
+}
+.account-delete__terms {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: var(--space-md) var(--space-xl);
+}
+.account-delete__terms > div {
+  display: grid;
+  align-content: start;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.account-delete__list {
+  display: grid;
+  gap: var(--space-xs);
+  max-width: 65ch;
+  margin: 0;
+  padding-left: var(--space-lg);
+  list-style: disc;
+}
+.account-delete__name {
+  overflow-wrap: anywhere;
+}
+.account-delete__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
 /* The profile is a form, not a ledger: it sits in a well instead of under a rule */
 .ops-section--form {
   padding: var(--space-lg);
