@@ -1,0 +1,7753 @@
+{
+ "decision": "docs/evidence/OWNER_DECISIONS_2026-11-04.md decision 53, under docs/adr/0002",
+ "checked": "2026-11-05",
+ "rows": [
+  {
+   "slug": "1010-music-bitbox-micro-black-edition",
+   "brand": "1010 Music",
+   "name": "Bitbox Micro Black Edition",
+   "host": "1010music.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "1010-music-bitbox-mk2",
+   "brand": "1010 Music",
+   "name": "Bitbox mk2",
+   "host": "1010music.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "1010-music-bitbox-mk2-black-edition",
+   "brand": "1010 Music",
+   "name": "Bitbox mk2 black edition",
+   "host": "1010music.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "1010-music-waverazor-dual-oscillator",
+   "brand": "1010 Music",
+   "name": "Waverazor Dual Oscillator",
+   "host": "1010music.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "333modules-onevcf",
+   "brand": "333modules",
+   "name": "ONEVCF",
+   "host": "333modules.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "333modules-out-v2",
+   "brand": "333modules",
+   "name": "OUT v2",
+   "host": "333modules.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "333modules-rooter",
+   "brand": "333modules",
+   "name": "Rooter",
+   "host": "333modules.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "333modules-slooper",
+   "brand": "333modules",
+   "name": "SLOOPER",
+   "host": "333modules.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "4ms-company-looping-delay",
+   "brand": "4ms Company",
+   "name": "Looping Delay",
+   "host": "4mscompany.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "4ms-company-metamodule",
+   "brand": "4ms Company",
+   "name": "MetaModule",
+   "host": "4mscompany.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "abyss-devices-octamix",
+   "brand": "Abyss Devices",
+   "name": "Octamix",
+   "host": "abyssdevices.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "acl-discrete-core-ladder-vcf",
+   "brand": "ACL",
+   "name": "Discrete Core Ladder VCF",
+   "host": "acl-synth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "acl-mini-midi",
+   "brand": "ACL",
+   "name": "Mini MIDI",
+   "host": "acl-synth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "acl-pan-mix",
+   "brand": "ACL",
+   "name": "Pan Mix",
+   "host": "acl-synth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "acl-s-mix-out",
+   "brand": "ACL",
+   "name": "S-MIX-OUT",
+   "host": "acl-synth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "acl-variable-sync-vco",
+   "brand": "ACL",
+   "name": "Variable Sync VCO",
+   "host": "acl-synth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "acl-vc-dual-delay",
+   "brand": "ACL",
+   "name": "VC Dual Delay",
+   "host": "acl-synth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "acl-vc-panning-amplifier",
+   "brand": "ACL",
+   "name": "VC Panning Amplifier",
+   "host": "acl-synth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac103-t-networks",
+   "brand": "ADDAC System",
+   "name": "ADDAC103 T-Networks",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac106",
+   "brand": "ADDAC System",
+   "name": "ADDAC106",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac120pr-palm-rest",
+   "brand": "ADDAC System",
+   "name": "ADDAC120PR Palm Rest",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac124",
+   "brand": "ADDAC System",
+   "name": "ADDAC124",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac200b",
+   "brand": "ADDAC System",
+   "name": "ADDAC200B",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac200s",
+   "brand": "ADDAC System",
+   "name": "ADDAC200S",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac206-switching-sequencer",
+   "brand": "ADDAC System",
+   "name": "ADDAC206 Switching Sequencer",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac210-open-heart-surgery",
+   "brand": "ADDAC System",
+   "name": "ADDAC210 Open Heart Surgery",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac213c",
+   "brand": "ADDAC System",
+   "name": "ADDAC213C",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac219in",
+   "brand": "ADDAC System",
+   "name": "ADDAC219IN",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac219out",
+   "brand": "ADDAC System",
+   "name": "ADDAC219OUT",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac220-dual-envelope-follower",
+   "brand": "ADDAC System",
+   "name": "ADDAC220 Dual Envelope Follower+",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac301b-dual-expression-pedal-attenuator",
+   "brand": "ADDAC System",
+   "name": "ADDAC301B Dual Expression Pedal Attenuator",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac303-muscle-sensing",
+   "brand": "ADDAC System",
+   "name": "ADDAC303 Muscle Sensing",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac304",
+   "brand": "ADDAC System",
+   "name": "ADDAC304",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac307-heart-sensing",
+   "brand": "ADDAC System",
+   "name": "ADDAC307 Heart Sensing",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac308-light-to-cv",
+   "brand": "ADDAC System",
+   "name": "ADDAC308 Light to CV",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac320-servo-control",
+   "brand": "ADDAC System",
+   "name": "ADDAC320 Servo Control",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac401-gated-envelope-follower-vs2",
+   "brand": "ADDAC System",
+   "name": "ADDAC401 Gated Envelope Follower VS2",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac403-vc-time-signature-clock-sources",
+   "brand": "ADDAC System",
+   "name": "ADDAC403 VC Time Signature Clock Sources",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "addac-system-addac504-probabilistic-generator",
+   "brand": "ADDAC System",
+   "name": "ADDAC504 Probabilistic Generator",
+   "host": "addacsystem.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "after-later-audio-bosc",
+   "brand": "After Later Audio",
+   "name": "bOSC",
+   "host": "afterlateraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "after-later-audio-enigma-expander-for-alan-and-benjolin-v2",
+   "brand": "After Later Audio",
+   "name": "Enigma Expander for Alan and Benjolin V2",
+   "host": "afterlateraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "after-later-audio-envy",
+   "brand": "After Later Audio",
+   "name": "ENVy",
+   "host": "afterlateraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "after-later-audio-flip",
+   "brand": "After Later Audio",
+   "name": "Flip",
+   "host": "afterlateraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "after-later-audio-sum-inv",
+   "brand": "After Later Audio",
+   "name": "Sum+Inv",
+   "host": "afterlateraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "after-later-audio-threads-1u",
+   "brand": "After Later Audio",
+   "name": "Threads 1U",
+   "host": "afterlateraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "after-later-audio-typhoon",
+   "brand": "After Later Audio",
+   "name": "Typhoon",
+   "host": "afterlateraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "after-later-audio-uo-c",
+   "brand": "After Later Audio",
+   "name": "uO_C",
+   "host": "afterlateraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "after-later-audio-utides-v2",
+   "brand": "After Later Audio",
+   "name": "uTides v2",
+   "host": "afterlateraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "afterlife-laboratories-video-keyer",
+   "brand": "Afterlife Laboratories",
+   "name": "Video Keyer",
+   "host": "afterlifelaboratories.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "aircraft-designs-cascade-discrete-vca-compressor",
+   "brand": "Aircraft Designs",
+   "name": "Cascade Discrete VCA Compressor",
+   "host": "aircraftdesigns.info",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "aircraft-designs-dc-high-quality-power-supply",
+   "brand": "Aircraft Designs",
+   "name": "DC High-Quality Power Supply",
+   "host": "aircraftdesigns.info",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "aircraft-designs-horizon-discrete-program-equalizer",
+   "brand": "Aircraft Designs",
+   "name": "Horizon Discrete Program Equalizer",
+   "host": "aircraftdesigns.info",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ajh-synth-minimod-vca",
+   "brand": "AJH Synth",
+   "name": "MiniMod VCA",
+   "host": "ajhsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ajh-synth-multiburst-envelopes",
+   "brand": "AJH Synth",
+   "name": "MultiBurst Envelopes",
+   "host": "ajhsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ajh-synth-v-shape",
+   "brand": "AJH Synth",
+   "name": "V-Shape",
+   "host": "ajhsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alm-busy-circuits-axon-1",
+   "brand": "ALM Busy Circuits",
+   "name": "AXON-1",
+   "host": "busycircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alm-busy-circuits-mega-tang",
+   "brand": "ALM Busy Circuits",
+   "name": "MEGA-TANG",
+   "host": "busycircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alm-busy-circuits-mfx",
+   "brand": "ALM Busy Circuits",
+   "name": "MFX",
+   "host": "busycircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alm-busy-circuits-mt-ex1",
+   "brand": "ALM Busy Circuits",
+   "name": "MT-EX1",
+   "host": "busycircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alm-busy-circuits-mt-ex2",
+   "brand": "ALM Busy Circuits",
+   "name": "MT-EX2",
+   "host": "busycircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alm-busy-circuits-pamela-s-new-workout",
+   "brand": "ALM Busy Circuits",
+   "name": "Pamela's NEW Workout",
+   "host": "busycircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alm-busy-circuits-passive-mult",
+   "brand": "ALM Busy Circuits",
+   "name": "Passive Mult",
+   "host": "busycircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alm-busy-circuits-pip-lfo",
+   "brand": "ALM Busy Circuits",
+   "name": "Pip LFO",
+   "host": "busycircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alm-busy-circuits-pip-slope",
+   "brand": "ALM Busy Circuits",
+   "name": "Pip Slope",
+   "host": "busycircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alm-busy-circuits-stereo-sum",
+   "brand": "ALM Busy Circuits",
+   "name": "STEREO SUM",
+   "host": "busycircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alm-busy-circuits-tyso-daiko",
+   "brand": "ALM Busy Circuits",
+   "name": "Tyso Daiko",
+   "host": "busycircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alyseum-extractor",
+   "brand": "Alyseum",
+   "name": "EXTRACTOR",
+   "host": "alyseum.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alyseum-multi",
+   "brand": "Alyseum",
+   "name": "MULTI",
+   "host": "alyseum.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "alyseum-q-vca",
+   "brand": "Alyseum",
+   "name": "Q-VCA",
+   "host": "alyseum.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "analogue-systems-rs-100n-low-pass-dual-bus",
+   "brand": "Analogue Systems",
+   "name": "RS-100N Low Pass (Dual Bus)",
+   "host": "analoguesystems.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "analogue-systems-rs-100s",
+   "brand": "Analogue Systems",
+   "name": "RS-100S",
+   "host": "analoguesystems.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "analogue-systems-rs-110",
+   "brand": "Analogue Systems",
+   "name": "RS-110",
+   "host": "analoguesystems.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "analogue-systems-rs-110n",
+   "brand": "Analogue Systems",
+   "name": "RS-110N",
+   "host": "analoguesystems.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "analogue-systems-rs-180n-vca",
+   "brand": "Analogue Systems",
+   "name": "RS-180N VCA",
+   "host": "analoguesystems.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "analogue-systems-rs-220",
+   "brand": "Analogue Systems",
+   "name": "RS-220",
+   "host": "analoguesystems.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "analogue-systems-rs-240",
+   "brand": "Analogue Systems",
+   "name": "RS-240",
+   "host": "analoguesystems.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "analogue-systems-rs-340",
+   "brand": "Analogue Systems",
+   "name": "RS-340",
+   "host": "analoguesystems.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "analogue-systems-rs-380n",
+   "brand": "Analogue Systems",
+   "name": "RS-380N",
+   "host": "analoguesystems.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "analogue-systems-rs-610n-dual-ring-modulator",
+   "brand": "Analogue Systems",
+   "name": "RS-610N Dual Ring Modulator",
+   "host": "analoguesystems.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "analogue-systems-rs-650-echo-reverb",
+   "brand": "Analogue Systems",
+   "name": "RS-650 Echo Reverb",
+   "host": "analoguesystems.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "analogue-systems-rs-95n",
+   "brand": "Analogue Systems",
+   "name": "RS-95N",
+   "host": "analoguesystems.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "animal-factory-amplification-eurorack-vivisect-4-channel-cv-processor-offset-and-noise-source",
+   "brand": "Animal Factory Amplification",
+   "name": "Eurorack: Vivisect 4 Channel CV Processor/Offset and Noise Source",
+   "host": "animalfactoryamps.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "animodule-anvilope",
+   "brand": "AniModule",
+   "name": "AnVilope",
+   "host": "animodule.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "animodule-mixman-mixer-man",
+   "brand": "AniModule",
+   "name": "MixMan Mixer/Man",
+   "host": "animodule.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "animodule-shnoize",
+   "brand": "AniModule",
+   "name": "ShNoiZe",
+   "host": "animodule.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "animodule-v9a-vc-sequencer",
+   "brand": "AniModule",
+   "name": "V9a VC Sequencer",
+   "host": "animodule.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "animodule-voltage-controlled-scanner-switch-3u",
+   "brand": "AniModule",
+   "name": "Voltage Controlled Scanner/Switch 3U",
+   "host": "animodule.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "arc-artificial-neural-network-v2-0",
+   "brand": "ARC",
+   "name": "Artificial Neural Network v2.0",
+   "host": "analogueresearch.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "arc-modular-audio-mixer",
+   "brand": "ARC",
+   "name": "Modular Audio Mixer",
+   "host": "analogueresearch.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "arc-west-coast-processor",
+   "brand": "ARC",
+   "name": "West Coast Processor",
+   "host": "analogueresearch.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "arcaico-dominus-dual-complex-vco",
+   "brand": "Arcaico",
+   "name": "Dominus dual complex VCO",
+   "host": "arcaico.eu",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "arcaico-invictus-m-e-g-envelope-generator",
+   "brand": "Arcaico",
+   "name": "Invictus M.E.G. envelope generator",
+   "host": "arcaico.eu",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "arcaico-virgo-tone-generator-vco",
+   "brand": "Arcaico",
+   "name": "Virgo tone generator VCO",
+   "host": "arcaico.eu",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "archaea-polytip-expander",
+   "brand": "Archaea",
+   "name": "Polytip Expander",
+   "host": "archaea.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "arcus-audio-1u-buffered-multiple",
+   "brand": "Arcus Audio",
+   "name": "1U Buffered Multiple",
+   "host": "arcusaudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "arcus-audio-1u-dual-lin-exp-vca",
+   "brand": "Arcus Audio",
+   "name": "1U Dual LIN/EXP VCA",
+   "host": "arcusaudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "arcus-audio-buff-mult-with-attenuverters",
+   "brand": "Arcus Audio",
+   "name": "Buff Mult with Attenuverters",
+   "host": "arcusaudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "arcus-audio-passive-multiple",
+   "brand": "Arcus Audio",
+   "name": "Passive Multiple",
+   "host": "arcusaudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "at1-4-cv-channel",
+   "brand": "AT1",
+   "name": "4 CV CHANNEL",
+   "host": "at1-modular.company.site",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "at1-bms-01",
+   "brand": "AT1",
+   "name": "BMS-01",
+   "host": "at1-modular.company.site",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "at1-envelope-generator",
+   "brand": "AT1",
+   "name": "ENVELOPE GENERATOR",
+   "host": "at1-modular.company.site",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "at1-quad-vca",
+   "brand": "AT1",
+   "name": "QUAD VCA",
+   "host": "at1-modular.company.site",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "atonal-circuits-bit",
+   "brand": "Atonal Circuits",
+   "name": "BIT",
+   "host": "atonal.be",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "atonal-circuits-brick-sequencer",
+   "brand": "Atonal Circuits",
+   "name": "Brick Sequencer",
+   "host": "atonal.be",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "atonal-circuits-keys",
+   "brand": "Atonal Circuits",
+   "name": "KEYS",
+   "host": "atonal.be",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "atonal-circuits-noise-pattern-generator",
+   "brand": "Atonal Circuits",
+   "name": "Noise Pattern Generator",
+   "host": "atonal.be",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "atonal-circuits-od",
+   "brand": "Atonal Circuits",
+   "name": "OD",
+   "host": "atonal.be",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "atonal-circuits-see",
+   "brand": "Atonal Circuits",
+   "name": "SEE",
+   "host": "atonal.be",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "atonal-circuits-see-v1",
+   "brand": "Atonal Circuits",
+   "name": "SEE (V1)",
+   "host": "atonal.be",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "atonal-circuits-thru",
+   "brand": "Atonal Circuits",
+   "name": "µTHRU",
+   "host": "atonal.be",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "atovproject-dho",
+   "brand": "AtoVproject",
+   "name": "DHO",
+   "host": "atov.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "atovproject-faderpunk",
+   "brand": "AtoVproject",
+   "name": "Faderpunk",
+   "host": "atov.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "atovproject-mmx2",
+   "brand": "AtoVproject",
+   "name": "MMx2",
+   "host": "atov.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "audiospektri-guitar-analyser",
+   "brand": "Audiospektri",
+   "name": "Guitar Analyser",
+   "host": "audiospektri.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "auza-wave-packets",
+   "brand": "Auza",
+   "name": "Wave Packets",
+   "host": "auzaaudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "avalon-harmonics-alcove-printed-blank",
+   "brand": "Avalon Harmonics",
+   "name": "Alcove (Printed Blank)",
+   "host": "shop.avalon-harmonics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "avalon-harmonics-cvmod4",
+   "brand": "Avalon Harmonics",
+   "name": "CVMod4",
+   "host": "shop.avalon-harmonics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "avalon-harmonics-cvmod8-v2",
+   "brand": "Avalon Harmonics",
+   "name": "CVMod8 V2",
+   "host": "shop.avalon-harmonics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "avalon-harmonics-ivca",
+   "brand": "Avalon Harmonics",
+   "name": "iVCA",
+   "host": "shop.avalon-harmonics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "avalon-harmonics-logx",
+   "brand": "Avalon Harmonics",
+   "name": "LOGx",
+   "host": "shop.avalon-harmonics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "avalon-harmonics-r-f",
+   "brand": "Avalon Harmonics",
+   "name": "R&F",
+   "host": "shop.avalon-harmonics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "avonsynth-avs-adsr-1",
+   "brand": "AvonSynth",
+   "name": "AVS-ADSR-1",
+   "host": "avonsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "avonsynth-avs-mult-1",
+   "brand": "AvonSynth",
+   "name": "AVS-MULT-1",
+   "host": "avonsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "avonsynth-avs-xfade-1",
+   "brand": "AvonSynth",
+   "name": "AVS-XFADE-1",
+   "host": "avonsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "b-art-instruments-b-01-v2",
+   "brand": "b:art instruments",
+   "name": "b:01 v2",
+   "host": "bartinstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "b-art-instruments-b-09",
+   "brand": "b:art instruments",
+   "name": "b:09",
+   "host": "bartinstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "b-art-instruments-b-14",
+   "brand": "b:art instruments",
+   "name": "b:14",
+   "host": "bartinstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "b-art-instruments-b-15",
+   "brand": "b:art instruments",
+   "name": "b:15",
+   "host": "bartinstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "b-art-instruments-b-16",
+   "brand": "b:art instruments",
+   "name": "b:16",
+   "host": "bartinstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "b-sia-modular-eye-of-the-beholder",
+   "brand": "BÈSIA Modular",
+   "name": "Eye Of The Beholder",
+   "host": "besia.bigcartel.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host",
+    "reviewed"
+   ]
+  },
+  {
+   "slug": "bard-oscar-oscillator",
+   "brand": "Bard",
+   "name": "Oscar Oscillator",
+   "host": "bardsynthesizers.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "bard-vacuform-filter-old",
+   "brand": "Bard",
+   "name": "Vacuform Filter (Old)",
+   "host": "bardsynthesizers.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "barton-musical-circuits-bmc105-jfet-phaser",
+   "brand": "Barton Musical Circuits",
+   "name": "BMC105 JFET Phaser",
+   "host": "bartonmusicalcircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "barton-musical-circuits-bmc114-diode-break-shaper",
+   "brand": "Barton Musical Circuits",
+   "name": "BMC114 Diode Break shaper",
+   "host": "bartonmusicalcircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "barton-musical-circuits-bmc86-diode-hp-vcf",
+   "brand": "Barton Musical Circuits",
+   "name": "BMC86 Diode HP VCF",
+   "host": "bartonmusicalcircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "barton-musical-circuits-bmc87-vc-release",
+   "brand": "Barton Musical Circuits",
+   "name": "BMC87 VC Release",
+   "host": "bartonmusicalcircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "barton-musical-circuits-bmc97-rectifier-recombiner",
+   "brand": "Barton Musical Circuits",
+   "name": "BMC97 Rectifier/Recombiner",
+   "host": "bartonmusicalcircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "beast-tek-irukandji-glitch-drum-vco",
+   "brand": "Beast-Tek",
+   "name": "Irukandji Glitch Drum / VCO",
+   "host": "beast-tek.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "beepboop-electronics-12v-motor-drive",
+   "brand": "BeepBoop Electronics",
+   "name": "12V Motor Drive",
+   "host": "beepboopelectronics.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "beepboop-electronics-1u-analogue-vu-meter",
+   "brand": "BeepBoop Electronics",
+   "name": "1U Analogue VU Meter",
+   "host": "beepboopelectronics.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "beepboop-electronics-1u-headphones",
+   "brand": "BeepBoop Electronics",
+   "name": "1U Headphones",
+   "host": "beepboopelectronics.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "beepboop-electronics-2hp-active-mult",
+   "brand": "BeepBoop Electronics",
+   "name": "2hp Active Mult.",
+   "host": "beepboopelectronics.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "beepboop-electronics-lofi-utape-scrubber",
+   "brand": "BeepBoop Electronics",
+   "name": "LOFI uTape Scrubber",
+   "host": "beepboopelectronics.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "bela-pepper",
+   "brand": "Bela",
+   "name": "Pepper",
+   "host": "bela.io",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "biopower-audio-ao",
+   "brand": "Biopower Audio",
+   "name": "AO",
+   "host": "biopoweraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "biopower-audio-axe-razor-ribbon-controller-full-diy-kit",
+   "brand": "Biopower Audio",
+   "name": "Axe & Razor Ribbon Controller (Full DIY Kit)",
+   "host": "biopoweraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "biopower-audio-cerebellum",
+   "brand": "Biopower Audio",
+   "name": "Cerebellum",
+   "host": "biopoweraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "biopower-audio-hi-five-interface-diy",
+   "brand": "Biopower Audio",
+   "name": "Hi Five Interface (DIY)",
+   "host": "biopoweraudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "black-noise-cosmos",
+   "brand": "Black Noise",
+   "name": "COSMOS",
+   "host": "blacknoisemodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "black-noise-dual-combinator",
+   "brand": "Black Noise",
+   "name": "DUAL COMBINATOR",
+   "host": "blacknoisemodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "black-noise-eclipse",
+   "brand": "Black Noise",
+   "name": "ECLIPSE",
+   "host": "blacknoisemodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "black-noise-eg-lfo-ii",
+   "brand": "Black Noise",
+   "name": "EG-LFO II",
+   "host": "blacknoisemodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "black-noise-qbi-s",
+   "brand": "Black Noise",
+   "name": "QBI-S",
+   "host": "blacknoisemodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "black-noise-voltage-processor",
+   "brand": "Black Noise",
+   "name": "VOLTAGE PROCESSOR",
+   "host": "blacknoisemodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "blue-lantern-modules-acid-n-sons-filter",
+   "brand": "Blue Lantern Modules",
+   "name": "Acid N Sons Filter",
+   "host": "bluelanternstore.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "blue-lantern-modules-blm-accented-percussion-envelope-gen-module-ape",
+   "brand": "Blue Lantern Modules",
+   "name": "BLM Accented Percussion Envelope Gen. Module (APE)",
+   "host": "bluelanternstore.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "blue-lantern-modules-blm-lucky-7-ota-vcf",
+   "brand": "Blue Lantern Modules",
+   "name": "BLM Lucky 7 OTA VCF",
+   "host": "bluelanternstore.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "blue-lantern-modules-digital-adsr-envelope-v3",
+   "brand": "Blue Lantern Modules",
+   "name": "Digital ADSR Envelope V3",
+   "host": "bluelanternstore.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "blue-lantern-modules-shimm",
+   "brand": "Blue Lantern Modules",
+   "name": "Shimm",
+   "host": "bluelanternstore.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "david-haillant-piezo",
+   "brand": "David Haillant",
+   "name": "Piezo",
+   "host": "davidhaillant.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "david-haillant-simple-lfo",
+   "brand": "David Haillant",
+   "name": "Simple LFO",
+   "host": "davidhaillant.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "delptronics-delptronics-ldb-1e-analog-drums-eurorack-module",
+   "brand": "Delptronics",
+   "name": "Delptronics: LDB-1e Analog Drums Eurorack Module",
+   "host": "delptronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "delptronics-thunderclap",
+   "brand": "Delptronics",
+   "name": "Thunderclap",
+   "host": "delptronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "der-mann-mit-der-maschine-b32",
+   "brand": "Der Mann mit der Maschine",
+   "name": "B32",
+   "host": "shop.dermannmitdermaschine.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "der-mann-mit-der-maschine-convertible-multiple",
+   "brand": "Der Mann mit der Maschine",
+   "name": "Convertible multiple",
+   "host": "shop.dermannmitdermaschine.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "der-mann-mit-der-maschine-g8-v2",
+   "brand": "Der Mann mit der Maschine",
+   "name": "G8 v2",
+   "host": "shop.dermannmitdermaschine.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "der-mann-mit-der-maschine-p10",
+   "brand": "Der Mann mit der Maschine",
+   "name": "P10",
+   "host": "shop.dermannmitdermaschine.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "der-mann-mit-der-maschine-p8s8",
+   "brand": "Der Mann mit der Maschine",
+   "name": "P8S8",
+   "host": "shop.dermannmitdermaschine.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "die-systems-16-step-sequencer",
+   "brand": "DIE Systems",
+   "name": "16 STEP SEQUENCER",
+   "host": "die.systems",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "die-systems-m-s-a",
+   "brand": "DIE Systems",
+   "name": "M+S+A",
+   "host": "die.systems",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "die-systems-vcf",
+   "brand": "DIE Systems",
+   "name": "VCF",
+   "host": "die.systems",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "divergent-waves-rowan",
+   "brand": "Divergent Waves",
+   "name": "Rowan",
+   "host": "divergentwaves.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "divergent-waves-sycamore",
+   "brand": "Divergent Waves",
+   "name": "Sycamore",
+   "host": "divergentwaves.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "divkid-divskip",
+   "brand": "DivKid",
+   "name": "DivSkip",
+   "host": "divkidvideo.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "divkid-manic",
+   "brand": "DivKid",
+   "name": "MANIC",
+   "host": "divkidvideo.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "divkid-mutes",
+   "brand": "DivKid",
+   "name": "Mutes",
+   "host": "divkidvideo.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dnipro-modular-dot",
+   "brand": "Dnipro modular",
+   "name": "DOT",
+   "host": "dnipro-modular.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dnipro-modular-krait",
+   "brand": "Dnipro modular",
+   "name": "KRAIT",
+   "host": "dnipro-modular.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "doboz-mix123",
+   "brand": "Doboz",
+   "name": "MIX123",
+   "host": "doboz.audio",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "doboz-prizma-diy-kit",
+   "brand": "Doboz",
+   "name": "Prizma [DIY kit]",
+   "host": "doboz.audio",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "doepfer-a-106-5",
+   "brand": "Doepfer",
+   "name": "A-106-5",
+   "host": "doepfer.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "doepfer-a-110-1",
+   "brand": "Doepfer",
+   "name": "A-110-1",
+   "host": "doepfer.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dpw-design-av2-attenuverter-mixer-comparator",
+   "brand": "DPW Design",
+   "name": "AV2, Attenuverter, Mixer, Comparator",
+   "host": "dpw.se",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dpw-design-av3-attenuverter-mixer-comparator",
+   "brand": "DPW Design",
+   "name": "AV3, Attenuverter, Mixer, Comparator",
+   "host": "dpw.se",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dpw-design-d3-4-band-distortion-m-g",
+   "brand": "DPW Design",
+   "name": "D3, 4-Band Distortion, MÖG",
+   "host": "dpw.se",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dpw-design-dc1-dc-filter-diy",
+   "brand": "DPW Design",
+   "name": "DC1, DC Filter, DIY",
+   "host": "dpw.se",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dpw-design-l-1-limit-triple-limiter",
+   "brand": "DPW Design",
+   "name": "L-1 Limit, Triple Limiter",
+   "host": "dpw.se",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dpw-design-l-2-limit-triple-limiter",
+   "brand": "DPW Design",
+   "name": "L-2 Limit, Triple Limiter",
+   "host": "dpw.se",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dpw-design-p2-pedal-power",
+   "brand": "DPW Design",
+   "name": "P2, Pedal Power",
+   "host": "dpw.se",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dpw-design-sh-1-shape-spectral-enhancer",
+   "brand": "DPW Design",
+   "name": "SH-1 Shape, Spectral Enhancer",
+   "host": "dpw.se",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dpw-design-sw3-splice",
+   "brand": "DPW Design",
+   "name": "SW3 Splice",
+   "host": "dpw.se",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dpw-design-z-2-zero2-dual-zero-difference",
+   "brand": "DPW Design",
+   "name": "Z-2 Zero2 , Dual Zero Difference",
+   "host": "dpw.se",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dsp-coffee-2hp-fastest-envelope-in-the-west-og-ren-schmitz-2hp-kraakenstu",
+   "brand": "dsp.coffee",
+   "name": "2hp \"Fastest Envelope in the West\" [OG: René Schmitz / 2HP: Kraakenstu",
+   "host": "dsp.coffee",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "dsp-coffee-txn",
+   "brand": "dsp.coffee",
+   "name": "TXn",
+   "host": "dsp.coffee",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ear-modular-nightrain",
+   "brand": "Ear Modular",
+   "name": "Nightrain ・ 夜雨",
+   "host": "earmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "earthlink-modular-flume",
+   "brand": "Earthlink Modular",
+   "name": "Flume",
+   "host": "earthlink-modular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "empress-effects-zoia-euroburo",
+   "brand": "Empress Effects",
+   "name": "ZOIA Euroburo",
+   "host": "empresseffects.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "endorphin-es-cockpit-2",
+   "brand": "Endorphin.es",
+   "name": "COCKPIT 2",
+   "host": "endorphin.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "endorphin-es-cockpit-mk1",
+   "brand": "Endorphin.es",
+   "name": "COCKPIT MK1",
+   "host": "endorphin.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "endorphin-es-furthrrrr-generator",
+   "brand": "Endorphin.es",
+   "name": "FURTHRRRR GENERATOR",
+   "host": "endorphin.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "endorphin-es-shuttle-control",
+   "brand": "Endorphin.es",
+   "name": "SHUTTLE CONTROL",
+   "host": "endorphin.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "endorphin-es-shuttle-mate",
+   "brand": "Endorphin.es",
+   "name": "SHUTTLE MATE",
+   "host": "endorphin.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "endorphin-es-squawk-dirty-to-me",
+   "brand": "Endorphin.es",
+   "name": "SQUAWK DIRTY TO ME",
+   "host": "endorphin.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "endorphin-es-two-of-cups",
+   "brand": "Endorphin.es",
+   "name": "TWO OF CUPS",
+   "host": "endorphin.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "eowave-eo-310",
+   "brand": "Eowave",
+   "name": "EO-310",
+   "host": "eowave.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "eowave-magnetosphere",
+   "brand": "Eowave",
+   "name": "MAGNETOSPHERE",
+   "host": "eowave.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "eowave-o",
+   "brand": "Eowave",
+   "name": "O",
+   "host": "eowave.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "eowave-orage-mk1",
+   "brand": "Eowave",
+   "name": "ORAGE MK1",
+   "host": "eowave.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "eowave-quadrantid-swarm",
+   "brand": "Eowave",
+   "name": "QUADRANTID SWARM",
+   "host": "eowave.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "eowave-rayonnement",
+   "brand": "Eowave",
+   "name": "RAYONNEMENT",
+   "host": "eowave.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "eowave-source-mk3",
+   "brand": "Eowave",
+   "name": "SOURCE MK3",
+   "host": "eowave.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "eowave-swing",
+   "brand": "Eowave",
+   "name": "SWING",
+   "host": "eowave.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "erica-synths-black-output-module-v1",
+   "brand": "Erica Synths",
+   "name": "Black Output module V1",
+   "host": "ericasynths.lv",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "erica-synths-fusion-vco",
+   "brand": "Erica Synths",
+   "name": "Fusion VCO",
+   "host": "ericasynths.lv",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "erica-synths-lxr-drum-module",
+   "brand": "Erica Synths",
+   "name": "LXR Drum Module",
+   "host": "ericasynths.lv",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ethereal-electronics-shooting-stars",
+   "brand": "Ethereal Electronics",
+   "name": "Shooting Stars",
+   "host": "etherealelectronics.nl",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "eurorack-hardware-amix",
+   "brand": "Eurorack Hardware",
+   "name": "AMIX",
+   "host": "eurorackhardware.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "euterpe-itinera",
+   "brand": "Euterpe",
+   "name": "Itinera",
+   "host": "euterpesynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "existentialelectronics-cronch",
+   "brand": "ExistentialElectronics",
+   "name": "Cronch",
+   "host": "existentialelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "expert-sleepers-disting-nt",
+   "brand": "Expert Sleepers",
+   "name": "Disting NT",
+   "host": "expert-sleepers.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "expert-sleepers-es-2-cv-audio-interface",
+   "brand": "Expert Sleepers",
+   "name": "ES-2 CV/Audio Interface",
+   "host": "expert-sleepers.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "expert-sleepers-ntx-8cv",
+   "brand": "Expert Sleepers",
+   "name": "NTX-8CV",
+   "host": "expert-sleepers.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "feedback-cp3-mixer",
+   "brand": "Feedback",
+   "name": "CP3+ Mixer",
+   "host": "feedback-modules.myshopify.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "feedback-lo-fusion-vcf",
+   "brand": "Feedback",
+   "name": "LO-FUSION VCF",
+   "host": "feedback-modules.myshopify.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "feedback-pre-bx",
+   "brand": "Feedback",
+   "name": "PRE BX",
+   "host": "feedback-modules.myshopify.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "feedback-squeeze-2",
+   "brand": "Feedback",
+   "name": "Squeeze 2",
+   "host": "feedback-modules.myshopify.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "feedback-two59-vco",
+   "brand": "Feedback",
+   "name": "TWO59 VCO",
+   "host": "feedback-modules.myshopify.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "flight-of-harmony-facehugger",
+   "brand": "Flight of Harmony",
+   "name": "Facehugger",
+   "host": "flightofharmony.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "flight-of-harmony-sinner-module",
+   "brand": "Flight of Harmony",
+   "name": "Sinner Module",
+   "host": "flightofharmony.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "folktek-listen",
+   "brand": "Folktek",
+   "name": "Listen",
+   "host": "folktek.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "folktek-matter-ii",
+   "brand": "Folktek",
+   "name": "Matter II",
+   "host": "folktek.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "folktek-quiet",
+   "brand": "Folktek",
+   "name": "Quiet",
+   "host": "folktek.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "folktek-voices",
+   "brand": "Folktek",
+   "name": "Voices",
+   "host": "folktek.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "fonitronik-mh01-attenuverting-mixer",
+   "brand": "Fonitronik",
+   "name": "mh01 Attenuverting Mixer",
+   "host": "fonitronik.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "fonitronik-mh11-adc-pattern-sequencer",
+   "brand": "Fonitronik",
+   "name": "mh11 ADC Pattern sequencer",
+   "host": "fonitronik.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "fonitronik-mh31-voltage-controlled-modulator",
+   "brand": "Fonitronik",
+   "name": "mh31 Voltage Controlled Modulator",
+   "host": "fonitronik.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "foxing-hour-access",
+   "brand": "Foxing Hour",
+   "name": "ACCESS",
+   "host": "foxinghour.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "foxing-hour-felt",
+   "brand": "Foxing Hour",
+   "name": "FELT",
+   "host": "foxinghour.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "foxing-hour-multa",
+   "brand": "Foxing Hour",
+   "name": "MULTA",
+   "host": "foxinghour.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "foxing-hour-shutter",
+   "brand": "Foxing Hour",
+   "name": "SHUTTER",
+   "host": "foxinghour.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "fpb-1u-adapter",
+   "brand": "FPB",
+   "name": "1U-Adapter",
+   "host": "fpb-synths.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "fully-wired-electronics-dual-passive-switch",
+   "brand": "Fully Wired Electronics",
+   "name": "Dual Passive Switch",
+   "host": "fullywiredelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "fully-wired-electronics-octo-signal-buffer",
+   "brand": "Fully Wired Electronics",
+   "name": "Octo Signal Buffer",
+   "host": "fullywiredelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "fully-wired-electronics-quad-manual-gate",
+   "brand": "Fully Wired Electronics",
+   "name": "Quad Manual Gate",
+   "host": "fullywiredelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "fully-wired-electronics-quad-passive-converter",
+   "brand": "Fully Wired Electronics",
+   "name": "Quad Passive Converter",
+   "host": "fullywiredelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "futureretro-fr-transient-plus",
+   "brand": "Futureretro",
+   "name": "FR-Transient Plus",
+   "host": "future-retro.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ge0sync-synth-gs1-d",
+   "brand": "Ge0sync Synth",
+   "name": "GS1-D",
+   "host": "geosyncsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "ge0sync-synth-gs1-e",
+   "brand": "Ge0sync Synth",
+   "name": "GS1-E",
+   "host": "geosyncsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "ge0sync-synth-gs1-l",
+   "brand": "Ge0sync Synth",
+   "name": "GS1-L",
+   "host": "geosyncsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "ge0sync-synth-gs1-m",
+   "brand": "Ge0sync Synth",
+   "name": "GS1-M",
+   "host": "geosyncsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "ge0sync-synth-tb-o",
+   "brand": "Ge0sync Synth",
+   "name": "TB-O",
+   "host": "geosyncsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "ge0sync-synth-tb-super-o",
+   "brand": "Ge0sync Synth",
+   "name": "TB-Super-O",
+   "host": "geosyncsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "ghost-in-translation-drone",
+   "brand": "Ghost in Translation",
+   "name": "Drone",
+   "host": "ghostintranslation.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ginko-synthese-battle-diy-kit",
+   "brand": "Ginko Synthese",
+   "name": "BATTLE diy kit",
+   "host": "ginkosynthese.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ginko-synthese-battle-diy-kit-with-profader",
+   "brand": "Ginko Synthese",
+   "name": "BATTLE diy kit with PROFADER",
+   "host": "ginkosynthese.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ginko-synthese-sampleslicer-mkii",
+   "brand": "Ginko Synthese",
+   "name": "Sampleslicer MKII",
+   "host": "ginkosynthese.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ginko-synthese-sampleslicer-mkiii",
+   "brand": "Ginko Synthese",
+   "name": "SAMPLESLICER MKIII",
+   "host": "ginkosynthese.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "glasgow-synth-guild-oct-tone",
+   "brand": "Glasgow Synth Guild",
+   "name": "oct tone",
+   "host": "glasgowsynthguild.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "glasgow-synth-guild-procyon",
+   "brand": "Glasgow Synth Guild",
+   "name": "Procyon",
+   "host": "glasgowsynthguild.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "god-s-box-loose-fruit",
+   "brand": "God's Box",
+   "name": "Loose Fruit",
+   "host": "godsbox.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "gotharman-euroboard",
+   "brand": "Gotharman",
+   "name": "EuroBoard",
+   "host": "gotharman.dk",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "grayscale-grayscale-eurorack-modules",
+   "brand": "Grayscale",
+   "name": "Grayscale: Eurorack Modules",
+   "host": "grayscale.info",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "grayscale-synapse",
+   "brand": "Grayscale",
+   "name": "Synapse",
+   "host": "grayscale.info",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "guru-gara-synth-3340-vco-easy-build-eurorack-full-kit",
+   "brand": "Guru Gara Synth",
+   "name": "3340 VCO Easy Build Eurorack Full Kit",
+   "host": "gurugarasynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "guru-gara-synth-3340-vco-voltage-controlled-oscillator",
+   "brand": "Guru Gara Synth",
+   "name": "3340 VCO (Voltage Controlled Oscillator)",
+   "host": "gurugarasynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "guru-gara-synth-4024-sub-oszillator",
+   "brand": "Guru Gara Synth",
+   "name": "4024 Sub-Oszillator",
+   "host": "gurugarasynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "guru-gara-synth-drum-maker",
+   "brand": "Guru Gara Synth",
+   "name": "Drum Maker",
+   "host": "gurugarasynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "guru-gara-synth-dual-ring-modulator-eurorack-pcb-and-front-panel",
+   "brand": "Guru Gara Synth",
+   "name": "Dual Ring Modulator / Eurorack PCB and Front Panel",
+   "host": "gurugarasynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "guru-gara-synth-dual-ringmodulator",
+   "brand": "Guru Gara Synth",
+   "name": "Dual Ringmodulator",
+   "host": "gurugarasynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "guru-gara-synth-polarizing-mischer-pcb-und-frontplatte",
+   "brand": "Guru Gara Synth",
+   "name": "Polarizing Mischer / PCB und Frontplatte",
+   "host": "gurugarasynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "guru-gara-synth-vca-iv-quad-ota-vca",
+   "brand": "Guru Gara Synth",
+   "name": "VCA IV: Quad OTA VCA",
+   "host": "gurugarasynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "hakai-labs-turbocharger-high-speed-glitch-switch",
+   "brand": "Hakai Labs",
+   "name": "Turbocharger High Speed Glitch Switch",
+   "host": "hakailabs.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "happy-nerding-2xsam",
+   "brand": "Happy Nerding",
+   "name": "2xSAM",
+   "host": "happynerding.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "happy-nerding-fx-aid-pro",
+   "brand": "Happy Nerding",
+   "name": "FX AID Pro",
+   "host": "happynerding.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "happy-nerding-hn-vcf",
+   "brand": "Happy Nerding",
+   "name": "HN VCF",
+   "host": "happynerding.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "hermetic-modular-alchemy-lab",
+   "brand": "Hermetic Modular",
+   "name": "Alchemy Lab",
+   "host": "hermeticmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "hexdevices-hekate-diy",
+   "brand": "Hexdevices",
+   "name": "Hekate DIY",
+   "host": "hexdevices.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "hexdevices-thoth",
+   "brand": "Hexdevices",
+   "name": "Thoth",
+   "host": "hexdevices.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "holocene-electronics-non-linear-memory-machine",
+   "brand": "Holocene Electronics",
+   "name": "Non-Linear Memory Machine",
+   "host": "holocene-electronics.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "humble-audio-algo-expander",
+   "brand": "Humble Audio",
+   "name": "Algo expander",
+   "host": "humble.audio",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "infinite-digits-ectocore",
+   "brand": "Infinite Digits",
+   "name": "Ectocore",
+   "host": "infinitedigits.co",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "infinite-digits-ezeptocore",
+   "brand": "Infinite Digits",
+   "name": "EZEPTOCORE",
+   "host": "infinitedigits.co",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "infrasonic-audio-disentangler",
+   "brand": "Infrasonic Audio",
+   "name": "DISENTANGLER",
+   "host": "infrasonicaudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "infrasonic-audio-warp-core",
+   "brand": "Infrasonic Audio",
+   "name": "Warp Core",
+   "host": "infrasonicaudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "intellijel-quadrax",
+   "brand": "Intellijel",
+   "name": "Quadrax",
+   "host": "intellijel.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "intellijel-rubicon-2",
+   "brand": "Intellijel",
+   "name": "Rubicon 2",
+   "host": "intellijel.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "iron-ether-pithoprakta",
+   "brand": "Iron Ether",
+   "name": "Pithoprakta",
+   "host": "ironether.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "iron-ether-qwoso",
+   "brand": "Iron Ether",
+   "name": "Qwoso",
+   "host": "ironether.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "isobar-industries-plexus",
+   "brand": "Isobar Industries",
+   "name": "Plexus",
+   "host": "isobar.studio",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "isobar-industries-serratus",
+   "brand": "Isobar Industries",
+   "name": "Serratus",
+   "host": "isobar.studio",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "jake-s-custom-shop-kick-drum-pro-cv",
+   "brand": "Jake's Custom Shop",
+   "name": "Kick Drum Pro CV",
+   "host": "jakescustomshop.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "jasmine-olive-trees-prio",
+   "brand": "Jasmine & Olive Trees",
+   "name": "Prio",
+   "host": "jasmineandolivetrees.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "jolin-agogo",
+   "brand": "Jolin",
+   "name": "AGOGO",
+   "host": "jolin.tech",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "jolin-be2n",
+   "brand": "Jolin",
+   "name": "BE2N",
+   "host": "jolin.tech",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "jolin-gitgud",
+   "brand": "Jolin",
+   "name": "GITGUD",
+   "host": "jolin.tech",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "jolin-goblet",
+   "brand": "Jolin",
+   "name": "GOBLET",
+   "host": "jolin.tech",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "jolin-nexum",
+   "brand": "Jolin",
+   "name": "NEXUM",
+   "host": "jolin.tech",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "jolin-tabor",
+   "brand": "Jolin",
+   "name": "TABOR",
+   "host": "jolin.tech",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "joranalogue-audio-design-cycle-5",
+   "brand": "Joranalogue Audio Design",
+   "name": "Cycle 5",
+   "host": "joranalogue.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "joranalogue-audio-design-dim-2",
+   "brand": "Joranalogue Audio Design",
+   "name": "Dim 2",
+   "host": "joranalogue.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "joranalogue-audio-design-enhance-2",
+   "brand": "Joranalogue Audio Design",
+   "name": "Enhance 2",
+   "host": "joranalogue.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "joranalogue-audio-design-mix-3",
+   "brand": "Joranalogue Audio Design",
+   "name": "Mix 3",
+   "host": "joranalogue.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "joranalogue-audio-design-route-4",
+   "brand": "Joranalogue Audio Design",
+   "name": "Route 4",
+   "host": "joranalogue.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "joranalogue-audio-design-switch-4",
+   "brand": "Joranalogue Audio Design",
+   "name": "Switch 4",
+   "host": "joranalogue.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "joranalogue-audio-design-transmit-2",
+   "brand": "Joranalogue Audio Design",
+   "name": "Transmit 2",
+   "host": "joranalogue.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "joranalogue-audio-design-walk-4",
+   "brand": "Joranalogue Audio Design",
+   "name": "Walk 4",
+   "host": "joranalogue.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "joranalogue-filter-8",
+   "brand": "Joranalogue",
+   "name": "Filter 8",
+   "host": "joranalogue.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "joranalogue-generate-3",
+   "brand": "Joranalogue",
+   "name": "Generate 3",
+   "host": "joranalogue.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "jroo-music-machines-loop",
+   "brand": "jroo music machines",
+   "name": "loop",
+   "host": "jroo.co",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "laine-modular-vole",
+   "brand": "Laine Modular",
+   "name": "Vole",
+   "host": "laine.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "larix-elektro-audio-4toms",
+   "brand": "Larix Elektro",
+   "name": "AUDIO 4TOMS",
+   "host": "larix-elektro.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "larix-elektro-audio-dual-undula-oscillator",
+   "brand": "Larix Elektro",
+   "name": "AUDIO DUAL UNDULA OSCILLATOR",
+   "host": "larix-elektro.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "larix-elektro-controle-tricomp",
+   "brand": "Larix Elektro",
+   "name": "CONTROLE TRICOMP",
+   "host": "larix-elektro.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "larix-elektro-macro-4onoff",
+   "brand": "Larix Elektro",
+   "name": "MACRO 4ONOFF",
+   "host": "larix-elektro.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "larix-elektro-macro-4vca",
+   "brand": "Larix Elektro",
+   "name": "MACRO 4VCA",
+   "host": "larix-elektro.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "larix-elektro-ritournelle-canon",
+   "brand": "Larix Elektro",
+   "name": "RITOURNELLE CANON",
+   "host": "larix-elektro.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "larix-elektro-ritournelle-cv",
+   "brand": "Larix Elektro",
+   "name": "RITOURNELLE CV",
+   "host": "larix-elektro.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "larix-elektro-ritournelle-shift-r",
+   "brand": "Larix Elektro",
+   "name": "RITOURNELLE SHIFT-R",
+   "host": "larix-elektro.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "larix-elektro-ritournelle-time",
+   "brand": "Larix Elektro",
+   "name": "RITOURNELLE TIME",
+   "host": "larix-elektro.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "liivatera-mono-midi-interface",
+   "brand": "Liivatera",
+   "name": "Mono-MIDI Interface",
+   "host": "liivatera.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "little-fish-audio-555-envelope-generator",
+   "brand": "Little Fish Audio",
+   "name": "555 Envelope Generator",
+   "host": "littlefishaudio.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "lzx-industries-cadet-ii-rgb-encoder",
+   "brand": "LZX Industries",
+   "name": "Cadet II RGB Encoder",
+   "host": "lzxindustries.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "lzx-industries-keychain",
+   "brand": "LZX Industries",
+   "name": "Keychain",
+   "host": "lzxindustries.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "lzx-industries-prismatic-ray",
+   "brand": "LZX Industries",
+   "name": "Prismatic Ray",
+   "host": "lzxindustries.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "lzx-industries-sensory-translator",
+   "brand": "LZX Industries",
+   "name": "Sensory Translator",
+   "host": "lzxindustries.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "lzx-industries-tbc2-expander",
+   "brand": "LZX Industries",
+   "name": "TBC2 Expander",
+   "host": "lzxindustries.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "lzx-industries-war-of-the-ants",
+   "brand": "LZX Industries",
+   "name": "War Of The Ants",
+   "host": "lzxindustries.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "m-rk-modules-usb-power-1u-black-panel",
+   "brand": "Mörk Modules",
+   "name": "USB Power 1U black panel",
+   "host": "morkmodules.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "machineroom-bass-drum-2",
+   "brand": "MachineRoom",
+   "name": "Bass Drum 2",
+   "host": "machineroom.com.ua",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "machineroom-fm-aid",
+   "brand": "MachineRoom",
+   "name": "FM AID",
+   "host": "machineroom.com.ua",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "machineroom-fx-aid-pro",
+   "brand": "MachineRoom",
+   "name": "FX AID PRO",
+   "host": "machineroom.com.ua",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "machineroom-krait-black",
+   "brand": "MachineRoom",
+   "name": "Krait Black",
+   "host": "machineroom.com.ua",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "machineroom-metamorph-black",
+   "brand": "MachineRoom",
+   "name": "Metamorph Black",
+   "host": "machineroom.com.ua",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "machineroom-panmix",
+   "brand": "MachineRoom",
+   "name": "PanMix",
+   "host": "machineroom.com.ua",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "machineroom-s-h",
+   "brand": "MachineRoom",
+   "name": "S+H",
+   "host": "machineroom.com.ua",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "machineroom-time-apprentice",
+   "brand": "MachineRoom",
+   "name": "Time Apprentice",
+   "host": "machineroom.com.ua",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "machineroom-time-wizard",
+   "brand": "MachineRoom",
+   "name": "Time Wizard",
+   "host": "machineroom.com.ua",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "machineroom-tritone",
+   "brand": "MachineRoom",
+   "name": "TriTone",
+   "host": "machineroom.com.ua",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "majella-audio-mcvc",
+   "brand": "Majella Audio",
+   "name": "MCVC",
+   "host": "majella-audio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "make-noise-lxd",
+   "brand": "Make Noise",
+   "name": "LxD",
+   "host": "makenoisemusic.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "make-noise-mult",
+   "brand": "Make Noise",
+   "name": "MULT",
+   "host": "makenoisemusic.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "make-noise-qpas",
+   "brand": "Make Noise",
+   "name": "QPAS",
+   "host": "makenoisemusic.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "make-noise-ren",
+   "brand": "Make Noise",
+   "name": "René",
+   "host": "makenoisemusic.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "make-noise-rene-2",
+   "brand": "Make Noise",
+   "name": "Rene 2",
+   "host": "makenoisemusic.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "making-sound-machines-build",
+   "brand": "Making Sound Machines",
+   "name": "Build",
+   "host": "makingsoundmachines.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "making-sound-machines-farbshaper",
+   "brand": "Making Sound Machines",
+   "name": "Farbshaper",
+   "host": "makingsoundmachines.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "making-sound-machines-stolperbeats",
+   "brand": "Making Sound Machines",
+   "name": "Stolperbeats",
+   "host": "makingsoundmachines.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "making-sound-machines-tausend-db",
+   "brand": "Making Sound Machines",
+   "name": "Tausend dB",
+   "host": "makingsoundmachines.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "malstrom-mandrake",
+   "brand": "Malstrom",
+   "name": "Mandrake",
+   "host": "malstromaudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "manhattan-analog-ma35-vca-vcf",
+   "brand": "Manhattan Analog",
+   "name": "MA35 VCA/VCF",
+   "host": "manhattananalog.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "manikk-adsr",
+   "brand": "Manikk",
+   "name": "ADSR",
+   "host": "manikk.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "manikk-adsr-expander",
+   "brand": "Manikk",
+   "name": "ADSR Expander",
+   "host": "manikk.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "manikk-dual-3-channel-mixer",
+   "brand": "Manikk",
+   "name": "Dual 3 Channel Mixer",
+   "host": "manikk.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "manikk-midi-thru-prototype",
+   "brand": "Manikk",
+   "name": "MIDI THRU Prototype",
+   "host": "manikk.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "manikk-seq32",
+   "brand": "Manikk",
+   "name": "SEQ32",
+   "host": "manikk.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "manikk-shmix",
+   "brand": "Manikk",
+   "name": "SHMIX",
+   "host": "manikk.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mannequins-w",
+   "brand": "Mannequins",
+   "name": "W/",
+   "host": "whimsicalraps.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "mega-modular-corp-mailroom-adsr-vca",
+   "brand": "Mega Modular Corp.",
+   "name": "Mailroom ADSR/VCA",
+   "host": "megamodular.co",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mehr-music-machines-crossfaded",
+   "brand": "Mehr Music Machines",
+   "name": "Crossfaded",
+   "host": "mehrmusicmachines.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mehr-music-machines-deuxd",
+   "brand": "Mehr Music Machines",
+   "name": "Deuxd",
+   "host": "mehrmusicmachines.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mehr-music-machines-ramps",
+   "brand": "Mehr Music Machines",
+   "name": "Ramps",
+   "host": "mehrmusicmachines.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mehr-music-machines-runner",
+   "brand": "Mehr Music Machines",
+   "name": "Runner",
+   "host": "mehrmusicmachines.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mehr-music-machines-runner-diy",
+   "brand": "Mehr Music Machines",
+   "name": "Runner DIY",
+   "host": "mehrmusicmachines.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "melted-electronics-glitch-boy",
+   "brand": "Melted Electronics",
+   "name": "Glitch Boy",
+   "host": "meltedelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "michigan-synth-works-2hp2cv-usb-to-cv-adapter",
+   "brand": "Michigan Synth Works",
+   "name": "2HP2CV USB to CV Adapter",
+   "host": "michigansynthworks.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "michigan-synth-works-f8r-8-channel-fader-bank-with-cv-i2c-and-midi",
+   "brand": "Michigan Synth Works",
+   "name": "F8R 8 Channel Fader Bank with CV, I2C, and MIDI",
+   "host": "michigansynthworks.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "michigan-synth-works-microstreams",
+   "brand": "Michigan Synth Works",
+   "name": "MicroStreams",
+   "host": "michigansynthworks.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "michigan-synth-works-monsoon",
+   "brand": "Michigan Synth Works",
+   "name": "Monsoon",
+   "host": "michigansynthworks.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "michigan-synth-works-neutron-sound-qat-quad-attenuverter",
+   "brand": "Michigan Synth Works",
+   "name": "Neutron Sound QAT Quad Attenuverter",
+   "host": "michigansynthworks.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "michigan-synth-works-quarks-22hp-elements",
+   "brand": "Michigan Synth Works",
+   "name": "Quarks, 22HP Elements",
+   "host": "michigansynthworks.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "michigan-synth-works-swirls-1-1-pcb",
+   "brand": "Michigan Synth Works",
+   "name": "Swirls 1.1 PCB",
+   "host": "michigansynthworks.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "michigan-synth-works-twiigs",
+   "brand": "Michigan Synth Works",
+   "name": "Twiigs",
+   "host": "michigansynthworks.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "midcentury-modular-2xmod",
+   "brand": "MidCentury Modular",
+   "name": "2xMOD",
+   "host": "midcentury-modular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "midiphy-nexusmidi-quad-midi-din-expander",
+   "brand": "midiphy",
+   "name": "nexusMIDI quad MIDI DIN expander",
+   "host": "midiphy.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mnemonic-devices-md-001-juniper",
+   "brand": "mnemonic devices",
+   "name": "MD-001 Juniper",
+   "host": "mnemonicdevices.io",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "modbap-modular-transit",
+   "brand": "Modbap Modular",
+   "name": "Transit",
+   "host": "modbap.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "modulaire-maritime-blk-blx",
+   "brand": "Modulaire Maritime",
+   "name": "BLK BLX",
+   "host": "modulaire-maritime.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "modulaire-maritime-comintern",
+   "brand": "Modulaire Maritime",
+   "name": "COMINTERN",
+   "host": "modulaire-maritime.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "modulaire-maritime-ena",
+   "brand": "Modulaire Maritime",
+   "name": "ENA",
+   "host": "modulaire-maritime.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "modulaire-maritime-klaviatura-2",
+   "brand": "Modulaire Maritime",
+   "name": "Klaviatura 2",
+   "host": "modulaire-maritime.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "modulaire-maritime-r-k",
+   "brand": "Modulaire Maritime",
+   "name": "R / K",
+   "host": "modulaire-maritime.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "modulaire-maritime-total-sub",
+   "brand": "Modulaire Maritime",
+   "name": "TOTAL SUB",
+   "host": "modulaire-maritime.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "modulaire-maritime-victor-alpha-2",
+   "brand": "Modulaire Maritime",
+   "name": "Victor Alpha 2",
+   "host": "modulaire-maritime.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mordax-data",
+   "brand": "Mordax",
+   "name": "DATA",
+   "host": "mordax.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "morph-modular-cvio-breakout-1u",
+   "brand": "Morph Modular",
+   "name": "CVIO Breakout 1U",
+   "host": "morphmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "morph-modular-star-sailor",
+   "brand": "Morph Modular",
+   "name": "Star Sailor",
+   "host": "morphmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "morph-modular-wormhole-portal",
+   "brand": "Morph Modular",
+   "name": "Wormhole Portal",
+   "host": "morphmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mosaic-clock",
+   "brand": "Mosaic",
+   "name": "Clock",
+   "host": "mosaic1u.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mosaic-decimator",
+   "brand": "Mosaic",
+   "name": "Decimator",
+   "host": "mosaic1u.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mosaic-multiple",
+   "brand": "Mosaic",
+   "name": "Multiple",
+   "host": "mosaic1u.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mosaic-state-variable-filter",
+   "brand": "Mosaic",
+   "name": "State Variable Filter",
+   "host": "mosaic1u.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mosaic-tap",
+   "brand": "Mosaic",
+   "name": "Tap",
+   "host": "mosaic1u.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "motley-modular-aydabtu",
+   "brand": "Motley Modular",
+   "name": "AYDABTU",
+   "host": "motleymodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "motley-modular-disting-ex-flush-external-display",
+   "brand": "Motley Modular",
+   "name": "Disting EX Flush External Display",
+   "host": "motleymodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "motley-modular-dual-disting-display",
+   "brand": "Motley Modular",
+   "name": "Dual Disting Display",
+   "host": "motleymodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "motley-modular-towel",
+   "brand": "Motley Modular",
+   "name": "Towel",
+   "host": "motleymodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "motovilo-dsplit",
+   "brand": "Motovilo",
+   "name": "dSPLIT",
+   "host": "motovilo.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "motovilo-zlinein",
+   "brand": "Motovilo",
+   "name": "zLINEIN",
+   "host": "motovilo.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "mutable-instruments-braids",
+   "brand": "Mutable Instruments",
+   "name": "Braids",
+   "host": "pichenettes.github.io",
+   "access_basis": "official_publication",
+   "checks": [
+    "reviewed"
+   ]
+  },
+  {
+   "slug": "mutable-instruments-clouds",
+   "brand": "Mutable Instruments",
+   "name": "Clouds",
+   "host": "pichenettes.github.io",
+   "access_basis": "official_publication",
+   "checks": [
+    "reviewed"
+   ]
+  },
+  {
+   "slug": "mutable-instruments-marbles",
+   "brand": "Mutable Instruments",
+   "name": "Marbles",
+   "host": "pichenettes.github.io",
+   "access_basis": "official_publication",
+   "checks": [
+    "reviewed"
+   ]
+  },
+  {
+   "slug": "mutable-instruments-plaits",
+   "brand": "Mutable Instruments",
+   "name": "Plaits",
+   "host": "pichenettes.github.io",
+   "access_basis": "official_publication",
+   "checks": [
+    "reviewed"
+   ]
+  },
+  {
+   "slug": "mutable-instruments-rings",
+   "brand": "Mutable Instruments",
+   "name": "Rings",
+   "host": "pichenettes.github.io",
+   "access_basis": "official_publication",
+   "checks": [
+    "reviewed"
+   ]
+  },
+  {
+   "slug": "mutable-instruments-stages",
+   "brand": "Mutable Instruments",
+   "name": "Stages",
+   "host": "pichenettes.github.io",
+   "access_basis": "official_publication",
+   "checks": [
+    "reviewed"
+   ]
+  },
+  {
+   "slug": "nakedboards-cv-8",
+   "brand": "Nakedboards",
+   "name": "CV-8",
+   "host": "nakedboards.online",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "nakedboards-lfo",
+   "brand": "Nakedboards",
+   "name": "LFO",
+   "host": "nakedboards.online",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "nano-modules-ceq",
+   "brand": "NANO Modules",
+   "name": "CEQ",
+   "host": "nanoindustri.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "nano-modules-exp4",
+   "brand": "NANO Modules",
+   "name": "EXP4",
+   "host": "nanoindustri.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "nano-modules-mar",
+   "brand": "NANO Modules",
+   "name": "MAR",
+   "host": "nanoindustri.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "nano-modules-ona",
+   "brand": "NANO Modules",
+   "name": "ONA",
+   "host": "nanoindustri.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "nano-modules-quart",
+   "brand": "NANO Modules",
+   "name": "QUART",
+   "host": "nanoindustri.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "nano-modules-serra",
+   "brand": "NANO Modules",
+   "name": "SERRA",
+   "host": "nanoindustri.es",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "nanopolis-antigone",
+   "brand": "Nanopolis",
+   "name": "Antigone",
+   "host": "nanopol.is",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "nekyia-circuits-mezcal",
+   "brand": "Nekyia Circuits",
+   "name": "Mezcal",
+   "host": "nekyiacircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "nekyia-circuits-sosumi",
+   "brand": "Nekyia Circuits",
+   "name": "Sosumi",
+   "host": "nekyiacircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "nekyia-circuits-wand",
+   "brand": "Nekyia Circuits",
+   "name": "Wand",
+   "host": "nekyiacircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "neutral-labs-scrooge",
+   "brand": "Neutral Labs",
+   "name": "SCROOGE",
+   "host": "neutral-labs.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "new-systems-instruments-inertia",
+   "brand": "New Systems Instruments",
+   "name": "Inertia",
+   "host": "nsinstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "new-systems-instruments-triphase-oscillator",
+   "brand": "New Systems Instruments",
+   "name": "Triphase Oscillator",
+   "host": "nsinstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "no-bpm-mute-expander",
+   "brand": "NO BPM",
+   "name": "Mute Expander",
+   "host": "no-bpm.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "nocturnis-audio-evolving-patterns",
+   "brand": "Nocturnis Audio",
+   "name": "EVOLVING PATTERNS",
+   "host": "nocturnisaudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noh-modular-olive",
+   "brand": "NOH-modular",
+   "name": "Olive",
+   "host": "nohmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noise-engineering-basimilus-iteritas-legacy-hardware",
+   "brand": "Noise Engineering",
+   "name": ": Basimilus Iteritas (Legacy Hardware)",
+   "host": "noiseengineering.us",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noise-engineering-desmodus-versio",
+   "brand": "Noise Engineering",
+   "name": "Desmodus Versio",
+   "host": "noiseengineering.us",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noise-engineering-gamut-repetitor",
+   "brand": "Noise Engineering",
+   "name": ": Gamut Repetitor",
+   "host": "noiseengineering.us",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noise-engineering-multi-repetitor",
+   "brand": "Noise Engineering",
+   "name": ": Multi Repetitor",
+   "host": "noiseengineering.us",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noise-engineering-roti-pola",
+   "brand": "Noise Engineering",
+   "name": ": Roti Pola",
+   "host": "noiseengineering.us",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-4ca",
+   "brand": "NoisyFruitsLab",
+   "name": "4CA",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-4fo-quad-lfo",
+   "brand": "NoisyFruitsLab",
+   "name": "4FO Quad LFO",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-dual-attenuator-1u",
+   "brand": "NoisyFruitsLab",
+   "name": "Dual Attenuator 1U",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-dual-rotary-switch",
+   "brand": "NoisyFruitsLab",
+   "name": "Dual Rotary Switch",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-dual-vca",
+   "brand": "NoisyFruitsLab",
+   "name": "Dual VCA",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-eq-1u",
+   "brand": "NoisyFruitsLab",
+   "name": "EQ 1U",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-frufo",
+   "brand": "NoisyFruitsLab",
+   "name": "FruFo",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-kiwi",
+   "brand": "NoisyFruitsLab",
+   "name": "KIWI",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-manual-switch-diy",
+   "brand": "NoisyFruitsLab",
+   "name": "Manual Switch DIY",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-ms20-filter",
+   "brand": "NoisyFruitsLab",
+   "name": "MS20 Filter",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-multiple-dual-1u",
+   "brand": "NoisyFruitsLab",
+   "name": "Multiple Dual 1U",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-multiple-single-1u",
+   "brand": "NoisyFruitsLab",
+   "name": "Multiple Single 1U",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-ot2",
+   "brand": "NoisyFruitsLab",
+   "name": "OT2",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-panfade",
+   "brand": "NoisyFruitsLab",
+   "name": "PanFade",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-passive-multiple",
+   "brand": "NoisyFruitsLab",
+   "name": "Passive Multiple",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-powana",
+   "brand": "NoisyFruitsLab",
+   "name": "Powana",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "noisyfruitslab-vcf-ladder-single",
+   "brand": "NoisyFruitsLab",
+   "name": "VCF Ladder Single",
+   "host": "noisyfruitslab.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "nonlinearcircuits-gator",
+   "brand": "Nonlinearcircuits",
+   "name": "Gator",
+   "host": "nonlinearcircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "nonlinearcircuits-this-2-shall-pass",
+   "brand": "Nonlinearcircuits",
+   "name": "This 2 shall pass",
+   "host": "nonlinearcircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "nonlinearcircuits-tin-teardrop-vcf",
+   "brand": "Nonlinearcircuits",
+   "name": "Tin Teardrop VCF",
+   "host": "nonlinearcircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "north-coast-synthesis-msk-007-leapfrog-vcf",
+   "brand": "North Coast Synthesis",
+   "name": "MSK 007 Leapfrog VCF",
+   "host": "northcoastsynthesis.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "north-coast-synthesis-msk-007-leapfrog-vcf-sdiy-kit",
+   "brand": "North Coast Synthesis",
+   "name": "MSK 007 Leapfrog VCF SDIY Kit",
+   "host": "northcoastsynthesis.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "north-coast-synthesis-msk-008-dual-vc-octave-switch",
+   "brand": "North Coast Synthesis",
+   "name": "MSK 008 Dual VC Octave Switch",
+   "host": "northcoastsynthesis.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "north-coast-synthesis-msk-008-dual-vc-octave-switch-sdiy-kit",
+   "brand": "North Coast Synthesis",
+   "name": "MSK 008 Dual VC Octave Switch SDIY Kit",
+   "host": "northcoastsynthesis.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "north-coast-synthesis-msk-012-transistor-adsr",
+   "brand": "North Coast Synthesis",
+   "name": "MSK 012 Transistor ADSR",
+   "host": "northcoastsynthesis.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "north-coast-synthesis-msk-013-middle-path-vco",
+   "brand": "North Coast Synthesis",
+   "name": "MSK 013 Middle Path VCO",
+   "host": "northcoastsynthesis.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "north-coast-synthesis-msk-014-gracious-host-sdiy-kit",
+   "brand": "North Coast Synthesis",
+   "name": "MSK 014 Gracious Host SDIY Kit",
+   "host": "northcoastsynthesis.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "oficina-de-sonido-vco-chords",
+   "brand": "Oficina de Sonido",
+   "name": "VCO Chords",
+   "host": "oficinadesonido.org",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ohmforce-bohm",
+   "brand": "OhmForce",
+   "name": "Bohm",
+   "host": "ohmforce.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "okay-synthesizer-lowstepper",
+   "brand": "Okay Synthesizer",
+   "name": "Lowstepper",
+   "host": "okaysynthesizer.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "olivella-modular-foldist",
+   "brand": "Olivella Modular",
+   "name": "FOLDIST",
+   "host": "olivellamodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "olivella-modular-im-genes",
+   "brand": "Olivella Modular",
+   "name": "IMÁGENES",
+   "host": "olivellamodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "olivella-modular-st",
+   "brand": "Olivella Modular",
+   "name": "μSt",
+   "host": "olivellamodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "olivia-artz-modular-uncertainty",
+   "brand": "Olivia Artz Modular",
+   "name": "Uncertainty",
+   "host": "oamodular.org",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "omiindustriies-curtail",
+   "brand": "Omiindustriies",
+   "name": "Curtail",
+   "host": "omiindustriies.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "orpho-alpha-t-drum",
+   "brand": "Orpho",
+   "name": "alpha-t-drum",
+   "host": "orpho.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "orpho-orbformer",
+   "brand": "Orpho",
+   "name": "orbformer",
+   "host": "orpho.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "orpho-parapulse",
+   "brand": "Orpho",
+   "name": "parapulse",
+   "host": "orpho.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "orpho-pentridon",
+   "brand": "Orpho",
+   "name": "PENTRIDON",
+   "host": "orpho.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "orpho-scale-snap",
+   "brand": "Orpho",
+   "name": "Scale Snap",
+   "host": "orpho.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "orpho-vc-lfo",
+   "brand": "Orpho",
+   "name": "VC-LFO",
+   "host": "orpho.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "orpho-vlpf",
+   "brand": "Orpho",
+   "name": "VLPF",
+   "host": "orpho.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "orpho-voodoo-bd",
+   "brand": "Orpho",
+   "name": "Voodoo BD",
+   "host": "orpho.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "orthogonal-devices-er-102",
+   "brand": "Orthogonal Devices",
+   "name": "ER-102",
+   "host": "orthogonaldevices.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "orthogonal-devices-er-301",
+   "brand": "Orthogonal Devices",
+   "name": "ER-301",
+   "host": "orthogonaldevices.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "oxi-instruments-oxi-meta",
+   "brand": "Oxi Instruments",
+   "name": "OXI Meta",
+   "host": "oxiinstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "patching-panda-etna",
+   "brand": "Patching Panda",
+   "name": "ETNA",
+   "host": "patchingpanda.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "patching-panda-moon-phase",
+   "brand": "Patching Panda",
+   "name": "Moon Phase",
+   "host": "patchingpanda.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "patching-panda-petit-mix",
+   "brand": "Patching Panda",
+   "name": "PETIT MIX",
+   "host": "patchingpanda.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "patching-panda-rewire",
+   "brand": "Patching Panda",
+   "name": "REWIRE",
+   "host": "patchingpanda.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ph-modular-glide",
+   "brand": "ph modular",
+   "name": "GLIDE",
+   "host": "phmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ph-modular-minimix",
+   "brand": "ph modular",
+   "name": "miniMIX",
+   "host": "phmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ph-modular-mult-bg",
+   "brand": "ph modular",
+   "name": "Mult-BG",
+   "host": "phmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ph-modular-mult-bg-mg",
+   "brand": "ph modular",
+   "name": "Mult-BG-MG",
+   "host": "phmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ph-modular-multiple",
+   "brand": "ph modular",
+   "name": "Multiple",
+   "host": "phmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ph-modular-silence",
+   "brand": "ph modular",
+   "name": "silence",
+   "host": "phmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "pindsvik-audio-liho",
+   "brand": "Pindsvik Audio",
+   "name": "LIHO",
+   "host": "pindsvikaudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "pladask-elektrisk-stereo-dradd",
+   "brand": "Pladask Elektrisk",
+   "name": "STEREO DRADD",
+   "host": "pladaskelektrisk.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "plum-audio-apex-x",
+   "brand": "Plum Audio",
+   "name": "Apex X",
+   "host": "plum-audio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "plum-audio-ex2-cv-expander",
+   "brand": "Plum Audio",
+   "name": "ex2 CV Expander",
+   "host": "plum-audio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "plum-audio-rect",
+   "brand": "Plum Audio",
+   "name": "Rect",
+   "host": "plum-audio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "plum-audio-scillator",
+   "brand": "Plum Audio",
+   "name": "SCILLATOR",
+   "host": "plum-audio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "plum-audio-slew",
+   "brand": "Plum Audio",
+   "name": "SLEW",
+   "host": "plum-audio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "pusherman-toolbox-multifunction-utility-6hp",
+   "brand": "Pusherman",
+   "name": "TOOLBOX / Multifunction Utility / 6hp",
+   "host": "pushermanproductions.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "qu-bit-electronix-chord-v2",
+   "brand": "Qu-Bit Electronix",
+   "name": "Chord v2",
+   "host": "qubitelectronix.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "qu-bit-electronix-data-bender",
+   "brand": "Qu-Bit Electronix",
+   "name": "Data Bender",
+   "host": "qubitelectronix.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "quanalog-instruments-faktori",
+   "brand": "Quanalog Instruments",
+   "name": "Faktori",
+   "host": "quanalogdotcom.wordpress.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "radical-frequencies-12db-multi-vcf",
+   "brand": "Radical Frequencies",
+   "name": "12dB Multi VCF",
+   "host": "radicalfrequencies.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rain-city-modular-scs-c-sync-interface",
+   "brand": "Rain City Modular",
+   "name": "SCS.C Sync Interface",
+   "host": "raincitymodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rain-city-modular-scs-x-advanced-clock-parser",
+   "brand": "Rain City Modular",
+   "name": "SCS-X Advanced Clock Parser",
+   "host": "raincitymodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "random-works-wonky",
+   "brand": "Random Works",
+   "name": "wonky",
+   "host": "random-works.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rare-waves-grendel-dc2e",
+   "brand": "Rare Waves",
+   "name": "Grendel DC2e",
+   "host": "rarewaves.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rat-king-modular-cell",
+   "brand": "Rat King Modular",
+   "name": "CELL",
+   "host": "ratkingmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rat-king-modular-random-sequencer",
+   "brand": "Rat King Modular",
+   "name": "Random Sequencer",
+   "host": "ratkingmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rat-king-modular-tone",
+   "brand": "Rat King Modular",
+   "name": "TONE",
+   "host": "ratkingmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "recovery-effects-and-devices-shadows-of-saturn-dual-paraphonic-vco",
+   "brand": "Recovery Effects and Devices",
+   "name": "SHADOWS OF SATURN (Dual / Paraphonic VCO)",
+   "host": "recoveryeffects.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "reverse-landfill-jog",
+   "brand": "Reverse Landfill",
+   "name": "JOG",
+   "host": "reverselandfill.org",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "reverse-landfill-nerium",
+   "brand": "Reverse Landfill",
+   "name": "Nerium",
+   "host": "reverselandfill.org",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rides-in-the-storm-boc-mk2",
+   "brand": "Rides in the Storm",
+   "name": "BOC MK2",
+   "host": "rides-in-the-storm.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rides-in-the-storm-cli",
+   "brand": "Rides in the Storm",
+   "name": "CLI",
+   "host": "rides-in-the-storm.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rides-in-the-storm-dpm",
+   "brand": "Rides in the Storm",
+   "name": "DPM",
+   "host": "rides-in-the-storm.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rides-in-the-storm-ngm",
+   "brand": "Rides in the Storm",
+   "name": "NGM",
+   "host": "rides-in-the-storm.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rides-in-the-storm-qam-quad-active-multiple",
+   "brand": "Rides in the Storm",
+   "name": "QAM Quad Active Multiple",
+   "host": "rides-in-the-storm.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rides-in-the-storm-tul",
+   "brand": "Rides in the Storm",
+   "name": "TUL",
+   "host": "rides-in-the-storm.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ritual-electronics-diviser",
+   "brand": "Ritual Electronics",
+   "name": "Diviser",
+   "host": "ritualelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ritual-electronics-fascina",
+   "brand": "Ritual Electronics",
+   "name": "Fascina",
+   "host": "ritualelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rossum-electro-music-linnaeus",
+   "brand": "Rossum Electro-Music",
+   "name": "LINNAEUS",
+   "host": "rossum-electro.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "rossum-electro-music-mob-of-emus",
+   "brand": "Rossum Electro-Music",
+   "name": "MOB OF EMUS",
+   "host": "rossum-electro.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ryk-modular-night-rider",
+   "brand": "RYK Modular",
+   "name": "Night Rider",
+   "host": "ryk-modular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "ryk-modular-time-slice",
+   "brand": "RYK Modular",
+   "name": "Time Slice",
+   "host": "ryk-modular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "schlappi-engineering-boundary-layer",
+   "brand": "Schlappi Engineering",
+   "name": "Boundary Layer",
+   "host": "schlappiengineering.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "schlappi-engineering-btmx",
+   "brand": "Schlappi Engineering",
+   "name": "BTMX",
+   "host": "schlappiengineering.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "schlappi-engineering-cascade",
+   "brand": "Schlappi Engineering",
+   "name": "Cascade",
+   "host": "schlappiengineering.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "selestium-modular-combiner",
+   "brand": "selestium modular",
+   "name": "COMBINER",
+   "host": "modular.selestium.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "setonixsynth-noise-complaint-1u",
+   "brand": "SetonixSynth",
+   "name": "Noise Complaint 1U",
+   "host": "setonixsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "setonixsynth-skywave-segmented-vco",
+   "brand": "SetonixSynth",
+   "name": "SkyWave Segmented VCO",
+   "host": "setonixsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "setonixsynth-tidbit-audio-solar-voltages-two-channel-light-theremin",
+   "brand": "SetonixSynth",
+   "name": "Tidbit Audio Solar Voltages Two Channel Light Theremin",
+   "host": "setonixsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "shakmat-banshee-reach",
+   "brand": "Shakmat",
+   "name": "Banshee Reach",
+   "host": "shakmat.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "shkrjn-dual-low-pass-gate",
+   "brand": "shkrjn",
+   "name": "Dual Low Pass Gate",
+   "host": "shkrjn.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "shkrjn-duophonic-distribution",
+   "brand": "shkrjn",
+   "name": "Duophonic Distribution",
+   "host": "shkrjn.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "shkrjn-mix6",
+   "brand": "shkrjn",
+   "name": "Mix6",
+   "host": "shkrjn.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "shkrjn-multiple-feedback-low-pass-gate",
+   "brand": "shkrjn",
+   "name": "Multiple Feedback Low Pass Gate",
+   "host": "shkrjn.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "signs-modular-bbfg-v1-1",
+   "brand": "Signs Modular",
+   "name": "bbFG v1.1",
+   "host": "signsmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "signs-modular-octa-holdster",
+   "brand": "Signs Modular",
+   "name": "Octa Holdster",
+   "host": "signsmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "sitka-instruments-gravity-eurorack-clock-and-trigger-sequencer",
+   "brand": "Sitka Instruments",
+   "name": "Gravity Eurorack Clock and Trigger Sequencer",
+   "host": "sitkainstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "skull-circuits-scm-i03",
+   "brand": "Skull & Circuits",
+   "name": "SCM-I03",
+   "host": "skullandcircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "skull-circuits-scm-m01",
+   "brand": "Skull & Circuits",
+   "name": "SCM-M01",
+   "host": "skullandcircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "skull-circuits-scm-o01",
+   "brand": "Skull & Circuits",
+   "name": "SCM-O01",
+   "host": "skullandcircuits.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows"
+   ]
+  },
+  {
+   "slug": "softwire-synthesis-quad-voltage-control-switch",
+   "brand": "Softwire Synthesis",
+   "name": "Quad Voltage Control Switch",
+   "host": "softwiresynthesis.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "something-modular-pal",
+   "brand": "Something Modular",
+   "name": "PAL",
+   "host": "somethingmodular.fr",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "sonocurrent-c-gf4",
+   "brand": "Sonocurrent",
+   "name": "C GF4",
+   "host": "sonocurrent.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "soundmachines-ls1lightstrip",
+   "brand": "Soundmachines",
+   "name": "LS1lightstrip",
+   "host": "sound-machines.it",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "soundmachines-t-spectrum",
+   "brand": "Soundmachines",
+   "name": "t-spectrum",
+   "host": "sound-machines.it",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "soundmachines-ul1uloop",
+   "brand": "Soundmachines",
+   "name": "UL1uloop",
+   "host": "sound-machines.it",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "sovage-engineering-chicane",
+   "brand": "Sovage Engineering",
+   "name": "CHICANE",
+   "host": "sovageengineering.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "squarp-instruments-xp32",
+   "brand": "Squarp Instruments",
+   "name": "xp32",
+   "host": "squarp.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "st-modular-chiasso",
+   "brand": "ST Modular",
+   "name": "Chiasso",
+   "host": "st-modular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "st-modular-cv-pan",
+   "brand": "ST Modular",
+   "name": "CV Pan",
+   "host": "st-modular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "st-modular-dirty-dan",
+   "brand": "ST Modular",
+   "name": "Dirty Dan",
+   "host": "st-modular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "st-modular-efi",
+   "brand": "ST Modular",
+   "name": "EFI",
+   "host": "st-modular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "st-modular-envelope",
+   "brand": "ST Modular",
+   "name": "ENVELOPE",
+   "host": "st-modular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "st-modular-flitzem-def-r",
+   "brand": "ST Modular",
+   "name": "Flitzem Deför",
+   "host": "st-modular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "st-modular-karl",
+   "brand": "ST Modular",
+   "name": "Karl",
+   "host": "st-modular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "st-modular-push",
+   "brand": "ST Modular",
+   "name": "Push",
+   "host": "st-modular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "steady-state-fate-autodub",
+   "brand": "Steady State Fate",
+   "name": "Autodub",
+   "host": "steadystatefate.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "steady-state-fate-autodyne",
+   "brand": "Steady State Fate",
+   "name": "Autodyne",
+   "host": "steadystatefate.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "steady-state-fate-clone",
+   "brand": "Steady State Fate",
+   "name": "Clone",
+   "host": "steadystatefate.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "steady-state-fate-entity-percussion-synthesizer",
+   "brand": "Steady State Fate",
+   "name": "Entity Percussion Synthesizer",
+   "host": "steadystatefate.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "steady-state-fate-entity-ultra-perc",
+   "brand": "Steady State Fate",
+   "name": "Entity Ultra-Perc",
+   "host": "steadystatefate.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "steady-state-fate-impulse-dynamics",
+   "brand": "Steady State Fate",
+   "name": "Impulse Dynamics",
+   "host": "steadystatefate.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "steady-state-fate-positronic-transient-gate",
+   "brand": "Steady State Fate",
+   "name": "Positronic Transient Gate",
+   "host": "steadystatefate.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "steady-state-fate-steady-state-gate",
+   "brand": "Steady State Fate",
+   "name": "Steady State Gate",
+   "host": "steadystatefate.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "steady-state-fate-tape-op-distortion",
+   "brand": "Steady State Fate",
+   "name": "Tape-Op Distortion",
+   "host": "steadystatefate.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "steady-state-fate-zero-point-oscillator",
+   "brand": "Steady State Fate",
+   "name": "Zero Point Oscillator",
+   "host": "steadystatefate.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "stochastic-instruments-strange-r",
+   "brand": "Stochastic Instruments",
+   "name": "Strange-R",
+   "host": "stochasticinstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "stoel-music-systems-dual-morphing-lfo",
+   "brand": "Stoel Music Systems",
+   "name": "Dual Morphing LFO",
+   "host": "stoelmusicsystems.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "stoel-music-systems-vacuum-tube-distortion",
+   "brand": "Stoel Music Systems",
+   "name": "Vacuum Tube Distortion",
+   "host": "stoelmusicsystems.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "synquanon-ef-gate-trigger",
+   "brand": "SynQuaNon",
+   "name": "EF-Gate-Trigger",
+   "host": "synquanon.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "synquanon-hex-bypass",
+   "brand": "SynQuaNon",
+   "name": "Hex Bypass",
+   "host": "synquanon.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "synquanon-hex-ef-gate-trigger",
+   "brand": "SynQuaNon",
+   "name": "Hex EF-Gate-Trigger",
+   "host": "synquanon.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "synquanon-hex-fuzz-output-expander",
+   "brand": "SynQuaNon",
+   "name": "Hex Fuzz Output Expander",
+   "host": "synquanon.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "syntesla-diode-ladder-filter-dlf-v1",
+   "brand": "SynTesla",
+   "name": "Diode Ladder Filter DLF-V1",
+   "host": "syntesla.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "syntesla-frontiers-1-hp-coloured-light-module",
+   "brand": "SynTesla",
+   "name": "Frontiers : 1 hp Coloured light module",
+   "host": "syntesla.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "syntesla-frontiers-1hp-light-module-basic-kit",
+   "brand": "SynTesla",
+   "name": "Frontiers : 1HP light module Basic kit",
+   "host": "syntesla.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "syntesla-toolbox-stbx-10-mkii",
+   "brand": "SynTesla",
+   "name": "Toolbox STBX-10 MKII",
+   "host": "syntesla.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "synthrotek-308-distortion-module",
+   "brand": "Synthrotek",
+   "name": "308 Distortion Module",
+   "host": "synthrotek.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "synthrotek-4093-chaos-nand",
+   "brand": "Synthrotek",
+   "name": "4093 Chaos NAND",
+   "host": "synthrotek.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "synthrotek-dirt-filter",
+   "brand": "Synthrotek",
+   "name": "DIRT Filter",
+   "host": "synthrotek.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "synthrotek-nandamonium",
+   "brand": "Synthrotek",
+   "name": "Nandamonium",
+   "host": "synthrotek.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "synthrotek-passive-mult",
+   "brand": "Synthrotek",
+   "name": "Passive Mult",
+   "host": "synthrotek.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "synthrotek-passive-ring-modulator",
+   "brand": "Synthrotek",
+   "name": "Passive Ring Modulator",
+   "host": "synthrotek.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "synthrotek-usb-power",
+   "brand": "Synthrotek",
+   "name": "USB Power",
+   "host": "synthrotek.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "syntonie-combines",
+   "brand": "Syntonie",
+   "name": "Combines",
+   "host": "syntonie.fr",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "syntonie-courbes",
+   "brand": "Syntonie",
+   "name": "Courbes",
+   "host": "syntonie.fr",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "syntonie-ondes",
+   "brand": "Syntonie",
+   "name": "Ondes",
+   "host": "syntonie.fr",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "syntonie-vu001c",
+   "brand": "Syntonie",
+   "name": "VU001C",
+   "host": "syntonie.fr",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "system80-880",
+   "brand": "System80",
+   "name": "880",
+   "host": "system80.net",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tall-dog-clouds-se",
+   "brand": "Tall Dog",
+   "name": "µClouds SE",
+   "host": "tall-dog.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tangelo-audio-chain",
+   "brand": "Tangelo Audio",
+   "name": "CHAIN",
+   "host": "tangeloaudio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "teia-driftlog",
+   "brand": "Teia",
+   "name": "DriftLog",
+   "host": "teiasynthesizers.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "teia-vca-team",
+   "brand": "Teia",
+   "name": "vcA Team",
+   "host": "teiasynthesizers.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tenderfoot-electronics-chronicle",
+   "brand": "Tenderfoot Electronics",
+   "name": "Chronicle",
+   "host": "tenderfootelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tenderfoot-electronics-faff",
+   "brand": "Tenderfoot Electronics",
+   "name": "FAFF",
+   "host": "tenderfootelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tenderfoot-electronics-pinhl-2020",
+   "brand": "Tenderfoot Electronics",
+   "name": "Pinhl 2020",
+   "host": "tenderfootelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "this-is-not-rocket-science-nexttuesday-midi-expander",
+   "brand": "This is Not Rocket Science",
+   "name": "NextTuesday MIDI expander",
+   "host": "thisisnotrocketscience.nl",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "thonk-befaco-burst",
+   "brand": "Thonk",
+   "name": "Befaco ‘Burst’",
+   "host": "thonk.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "thonk-befaco-crush-delay-v3",
+   "brand": "Thonk",
+   "name": "Befaco 'Crush Delay v3'",
+   "host": "thonk.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "thonk-befaco-even-vco",
+   "brand": "Thonk",
+   "name": "Befaco 'Even VCO'",
+   "host": "thonk.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "thonk-befaco-rampage",
+   "brand": "Thonk",
+   "name": "Befaco Rampage",
+   "host": "thonk.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "thonk-music-thing-modular",
+   "brand": "Thonk",
+   "name": "Music Thing Modular",
+   "host": "thonk.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "thonk-turing-expander-voltages-panel-pcb",
+   "brand": "Thonk",
+   "name": "Turing Expander VOLTAGES Panel / PCB",
+   "host": "thonk.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tlm-audio-controller",
+   "brand": "TLM Audio",
+   "name": "CONTROLLER",
+   "host": "tlm-audio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tlm-audio-efi",
+   "brand": "TLM Audio",
+   "name": "EFI",
+   "host": "tlm-audio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tlm-audio-o-c-4-1",
+   "brand": "TLM Audio",
+   "name": "O_C 4.1",
+   "host": "tlm-audio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tlm-audio-pedal-pal-stereo",
+   "brand": "TLM Audio",
+   "name": "PEDAL PAL STEREO",
+   "host": "tlm-audio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tlm-audio-sl",
+   "brand": "TLM Audio",
+   "name": "SL",
+   "host": "tlm-audio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tobinski-dynamics",
+   "brand": "Tobinski",
+   "name": "Dynamics",
+   "host": "tobinski-audio.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tokyo-tape-music-center-dual-preamplifier-model-171",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Dual Preamplifier MODEL 171",
+   "host": "tokyo-tape-music-center.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tokyo-tape-music-center-dual-ring-modulator-model-111",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Dual Ring Modulator MODEL 111",
+   "host": "tokyo-tape-music-center.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tokyo-tape-music-center-dual-sine-sawtooth-generator-model-158-rev2-0",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Dual Sine Sawtooth Generator Model 158 REV2.0",
+   "host": "tokyo-tape-music-center.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tokyo-tape-music-center-dual-voltage-controlled-gate-model-110",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Dual Voltage Controlled Gate Model 110",
+   "host": "tokyo-tape-music-center.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tokyo-tape-music-center-frequency-shifter-model-185",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Frequency Shifter MODEL 185",
+   "host": "tokyo-tape-music-center.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tokyo-tape-music-center-touch-controlled-voltage-source-model-112",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Touch Controlled Voltage Source MODEL 112",
+   "host": "tokyo-tape-music-center.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tokyo-tape-music-center-touch-controlled-voltage-source-model-112-3",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Touch Controlled Voltage Source MODEL 112-3",
+   "host": "tokyo-tape-music-center.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tokyo-tape-music-center-voltage-controlled-filter-model-291",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Voltage Controlled Filter MODEL 291",
+   "host": "tokyo-tape-music-center.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "toppobrillo-cluster",
+   "brand": "Toppobrillo",
+   "name": "Cluster",
+   "host": "toppobrillo.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "touellskouarn-ar-merc-het-brao-tabletop",
+   "brand": "TouellSkouarn",
+   "name": "Ar Merc'het Brao Tabletop",
+   "host": "touellskouarn.fr",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "transient-modules-1f",
+   "brand": "Transient Modules",
+   "name": "1F",
+   "host": "transientmodules.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "transient-modules-2m",
+   "brand": "Transient Modules",
+   "name": "2M",
+   "host": "transientmodules.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "transient-modules-4r",
+   "brand": "Transient Modules",
+   "name": "4R",
+   "host": "transientmodules.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "transient-modules-8s",
+   "brand": "Transient Modules",
+   "name": "8S",
+   "host": "transientmodules.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tronix-audio-origami",
+   "brand": "Tronix-Audio",
+   "name": "Origami",
+   "host": "tronix-audio.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "tubeohm-sonic-potions",
+   "brand": "TubeOhm",
+   "name": "Sonic-Potions",
+   "host": "tubeohm.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "twang-modular-34u",
+   "brand": "Twang Modular",
+   "name": "34U",
+   "host": "twangmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "twang-modular-awg",
+   "brand": "Twang Modular",
+   "name": "AWG",
+   "host": "twangmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "twang-modular-cpp",
+   "brand": "Twang Modular",
+   "name": "CPP",
+   "host": "twangmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vaski-embedded-2z-dual-zone-drum-trigger-input",
+   "brand": "Vaski Embedded",
+   "name": "2Z Dual Zone Drum Trigger Input",
+   "host": "vaski.nl",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vaski-embedded-lights-stereo-visualizer",
+   "brand": "Vaski Embedded",
+   "name": "Lights Stereo Visualizer",
+   "host": "vaski.nl",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vaski-embedded-lights-stereo-visualizer-black",
+   "brand": "Vaski Embedded",
+   "name": "Lights Stereo Visualizer (Black)",
+   "host": "vaski.nl",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vbrazil-systems-adsr-generator",
+   "brand": "VBrazil Systems",
+   "name": "ADSR Generator",
+   "host": "vbrazilsystems.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vbrazil-systems-red-dragon-8-cv-to-midi-converter",
+   "brand": "VBrazil Systems",
+   "name": "Red Dragon 8 CV to MIDI Converter",
+   "host": "vbrazilsystems.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "verbos-electronics-complex-oscillator",
+   "brand": "Verbos Electronics",
+   "name": "Complex Oscillator",
+   "host": "verboselectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "verbos-electronics-foundation-oscillator",
+   "brand": "Verbos Electronics",
+   "name": "Foundation Oscillator",
+   "host": "verboselectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "verbos-electronics-mini-horse",
+   "brand": "Verbos Electronics",
+   "name": "Mini Horse",
+   "host": "verboselectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "verbos-electronics-polyphonic-envelope",
+   "brand": "Verbos Electronics",
+   "name": "Polyphonic Envelope",
+   "host": "verboselectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "verbos-electronics-voltage-multistage-16",
+   "brand": "Verbos Electronics",
+   "name": "Voltage Multistage 16",
+   "host": "verboselectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vermona-transfourmer",
+   "brand": "Vermona",
+   "name": "TRANSfourMER",
+   "host": "vermona.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "volt-a-tone-analog-delay",
+   "brand": "Volt-a-tone",
+   "name": "Analog Delay+",
+   "host": "voltatone.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vostok-instruments-ceres",
+   "brand": "Vostok Instruments",
+   "name": "Ceres",
+   "host": "vostokinstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vostok-instruments-halo",
+   "brand": "Vostok Instruments",
+   "name": "Halo",
+   "host": "vostokinstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vostok-instruments-sigma",
+   "brand": "Vostok Instruments",
+   "name": "Sigma",
+   "host": "vostokinstruments.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vpme-de-b32",
+   "brand": "vpme.de",
+   "name": "B32",
+   "host": "vpme.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vpme-de-convertible-multiple",
+   "brand": "vpme.de",
+   "name": "Convertible multiple",
+   "host": "vpme.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vpme-de-trig31",
+   "brand": "vpme.de",
+   "name": "trig31",
+   "host": "vpme.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vpme-de-trs-tool",
+   "brand": "vpme.de",
+   "name": "TRS Tool",
+   "host": "vpme.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "vpme-de-upwr",
+   "brand": "vpme.de",
+   "name": "UPWR",
+   "host": "vpme.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wackylab-dmx-extension-for-master-of-lights",
+   "brand": "Wackylab",
+   "name": "DMX extension for Master Of Lights",
+   "host": "wackylab.ch",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wackylab-lords-of-chaos",
+   "brand": "Wackylab",
+   "name": "Lords Of Chaos",
+   "host": "wackylab.ch",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wgd-modular-bagels",
+   "brand": "WGD Modular",
+   "name": "bagels",
+   "host": "wgdmodular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wgd-modular-melanzane-vca",
+   "brand": "WGD Modular",
+   "name": "melanzane VCA",
+   "host": "wgdmodular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wgd-modular-tequila",
+   "brand": "WGD Modular",
+   "name": "tequila",
+   "host": "wgdmodular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wgd-modular-tofu",
+   "brand": "WGD Modular",
+   "name": "tofu",
+   "host": "wgdmodular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wgd-modular-veggie-griller",
+   "brand": "WGD Modular",
+   "name": "veggie griller",
+   "host": "wgdmodular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wgd-modular-wgdmodular",
+   "brand": "WGD Modular",
+   "name": "wgdmodular",
+   "host": "wgdmodular.de",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wildfire-laboratories-rusty-hum",
+   "brand": "Wildfire Laboratories",
+   "name": "RUSTY HUM",
+   "host": "wildfirelaboratories.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wildfire-laboratories-sandevistan",
+   "brand": "Wildfire Laboratories",
+   "name": "SANDEVISTAN",
+   "host": "wildfirelaboratories.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wildfire-laboratories-sovereign",
+   "brand": "Wildfire Laboratories",
+   "name": "SOVEREIGN",
+   "host": "wildfirelaboratories.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wildsync-adsr4001",
+   "brand": "Wildsync",
+   "name": "ADSR4001",
+   "host": "wildsyncgear.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wildsync-analog69-vco",
+   "brand": "Wildsync",
+   "name": "ANALOG69 VCO",
+   "host": "wildsyncgear.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wildsync-djmeq-300",
+   "brand": "Wildsync",
+   "name": "DJMEQ-300",
+   "host": "wildsyncgear.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wildsync-ef-1-envelope-follower",
+   "brand": "Wildsync",
+   "name": "EF-1 Envelope Follower",
+   "host": "wildsyncgear.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wildsync-fatmoog-vcf",
+   "brand": "Wildsync",
+   "name": "FATMOOG VCF",
+   "host": "wildsyncgear.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wildsync-mix-6-2",
+   "brand": "Wildsync",
+   "name": "MIX 6.2",
+   "host": "wildsyncgear.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wildsync-noise",
+   "brand": "Wildsync",
+   "name": "NOISE",
+   "host": "wildsyncgear.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "winterbloom-helium",
+   "brand": "Winterbloom",
+   "name": "Helium",
+   "host": "winterbloom.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "winterbloom-hydrogen",
+   "brand": "Winterbloom",
+   "name": "Hydrogen",
+   "host": "winterbloom.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "winterbloom-speak-to-me-kit",
+   "brand": "Winterbloom",
+   "name": "Speak to Me Kit",
+   "host": "winterbloom.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wmd-arpitecht",
+   "brand": "WMD",
+   "name": "Arpitecht",
+   "host": "wmdevices.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wmd-axxent",
+   "brand": "WMD",
+   "name": "Axxent",
+   "host": "wmdevices.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wmd-c4rbn",
+   "brand": "WMD",
+   "name": "C4RBN",
+   "host": "wmdevices.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wmd-crater",
+   "brand": "WMD",
+   "name": "Crater",
+   "host": "wmdevices.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wmd-kraken",
+   "brand": "WMD",
+   "name": "Kraken",
+   "host": "wmdevices.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "wmd-metron",
+   "brand": "WMD",
+   "name": "Metron",
+   "host": "wmdevices.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "x1l3-midi-to-gate-generator",
+   "brand": "x1l3",
+   "name": "MIDI TO GATE GENERATOR",
+   "host": "x1l3.bigcartel.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "xaoc-devices-batumi",
+   "brand": "Xaoc Devices",
+   "name": "Batumi",
+   "host": "xaocdevices.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "xor-electronics-nerdseq",
+   "brand": "XOR Electronics",
+   "name": "Nerdseq",
+   "host": "xor-electronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "xor-electronics-xor-xor",
+   "brand": "XOR Electronics",
+   "name": "XOR XOR",
+   "host": "xor-electronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "xoxo-modular-ixo-trs-midi-i2c-breakout",
+   "brand": "XOXO Modular",
+   "name": "IXO TRS MIDI & I2C Breakout",
+   "host": "xoxomodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "xoxo-modular-makrophonie-triple-preamp-distortion",
+   "brand": "XOXO Modular",
+   "name": "Makrophonie Triple Preamp & Distortion",
+   "host": "xoxomodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "xoxo-modular-quadbool-quad-logic-module",
+   "brand": "XOXO Modular",
+   "name": "QUADBOOL Quad Logic Module",
+   "host": "xoxomodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "york-modular-am5-5-way-buffered-multiple-module-2hp",
+   "brand": "York Modular",
+   "name": "AM5: 5-way buffered multiple module (2HP",
+   "host": "yorkmodular.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "york-modular-ar2v2-single-channel-ar-envelope-generator-with-range-switch-2hp",
+   "brand": "York Modular",
+   "name": "AR2v2: single-channel AR envelope generator with range switch (2HP)",
+   "host": "yorkmodular.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "york-modular-diode-ladder-vcf-6hp",
+   "brand": "York Modular",
+   "name": "Diode ladder VCF (6HP)",
+   "host": "yorkmodular.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "york-modular-frisk-fixed-sallen-key-filter-bank-4hp",
+   "brand": "York Modular",
+   "name": "FRiSK: fixed Sallen-Key filter bank (4HP)",
+   "host": "yorkmodular.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "york-modular-pm4x4-4x4-passive-matrix-mixer",
+   "brand": "York Modular",
+   "name": "PM4x4: 4x4 passive matrix mixer",
+   "host": "yorkmodular.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "york-modular-pmx3-2",
+   "brand": "York Modular",
+   "name": "PMX3.2",
+   "host": "yorkmodular.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "york-modular-splerge-stereo-split-merge-module",
+   "brand": "York Modular",
+   "name": "SPLERGE: Stereo split/merge module",
+   "host": "yorkmodular.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "york-modular-tinydvcov2",
+   "brand": "York Modular",
+   "name": "TinyDVCOv2",
+   "host": "yorkmodular.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "york-modular-vacvcav2-vactrol-vca",
+   "brand": "York Modular",
+   "name": "VACVCAv2: Vactrol VCA",
+   "host": "yorkmodular.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "york-modular-vbst-signal-booster-amplifier-module",
+   "brand": "York Modular",
+   "name": "vBST: Signal booster/amplifier module",
+   "host": "yorkmodular.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "york-modular-vc2-voltage-controlled-2-way-switch-module",
+   "brand": "York Modular",
+   "name": "VC2: Voltage-controlled 2-way switch module",
+   "host": "yorkmodular.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "york-modular-yavcfv2-ms20-inspired-resonant-vcf-4hp",
+   "brand": "York Modular",
+   "name": "YaVCFv2: MS20-inspired resonant VCF (4HP",
+   "host": "yorkmodular.co.uk",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "zanysignals-altdoor",
+   "brand": "ZanySignals",
+   "name": "AltDoor",
+   "host": "zanysignals.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "zanysignals-magcontrol",
+   "brand": "ZanySignals",
+   "name": "MagControl",
+   "host": "zanysignals.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "zlosynth-instruments-kaseta",
+   "brand": "Zlosynth Instruments",
+   "name": "Kaseta",
+   "host": "zlosynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "zorx-1u-cv-bus-expander-mk-ii",
+   "brand": "Zorx",
+   "name": "1U CV Bus Expander MK II",
+   "host": "zorxelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "zorx-1u-through",
+   "brand": "Zorx",
+   "name": "1U Through",
+   "host": "zorxelectronics.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  }
+ ],
+ "left_out": [
+  {
+   "slug": "amsynths-am8008-sh05-vco",
+   "brand": "AMSynths",
+   "name": "AM8008 SH05 VCO",
+   "host": "amsynths.co.uk",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "amsynths-am8027-dual-vco",
+   "brand": "AMSynths",
+   "name": "AM8027 Dual VCO",
+   "host": "amsynths.co.uk",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "amsynths-am8071-snowfall-vcf",
+   "brand": "AMSynths",
+   "name": "AM8071 Snowfall VCF",
+   "host": "amsynths.co.uk",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "amsynths-am8104-jp-4-vcf",
+   "brand": "AMSynths",
+   "name": "AM8104 JP-4 VCF",
+   "host": "amsynths.co.uk",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "amsynths-am8106-juno-106-filter",
+   "brand": "AMSynths",
+   "name": "AM8106 Juno 106 Filter",
+   "host": "amsynths.co.uk",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "amsynths-am8107-sh07-hp-and-lp-filters",
+   "brand": "AMSynths",
+   "name": "AM8107 SH07 HP and LP Filters",
+   "host": "amsynths.co.uk",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "amsynths-am8109-jp-8-filter",
+   "brand": "AMSynths",
+   "name": "AM8109 JP-8 Filter",
+   "host": "amsynths.co.uk",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "amsynths-am8200",
+   "brand": "AMSynths",
+   "name": "AM8200",
+   "host": "amsynths.co.uk",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "befaco-hexmix-vca",
+   "brand": "Befaco",
+   "name": "Hexmix VCA",
+   "host": "befaco.org",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "encore-electronics-ueg",
+   "brand": "Encore Electronics",
+   "name": "UEG",
+   "host": "encoreelectronics.com",
+   "reason": "robots_unavailable_0"
+  },
+  {
+   "slug": "flatsix-modular-shroud-of-turing",
+   "brand": "FlatSix Modular",
+   "name": "Shroud Of Turing",
+   "host": "flatsixmodular.com",
+   "reason": "robots_unavailable_0"
+  },
+  {
+   "slug": "flatsix-modular-slight-of-hand",
+   "brand": "FlatSix Modular",
+   "name": "Slight Of Hand",
+   "host": "flatsixmodular.com",
+   "reason": "robots_unavailable_0"
+  },
+  {
+   "slug": "frap-tools-fumana",
+   "brand": "Frap Tools",
+   "name": "Fumana",
+   "host": "frap.tools",
+   "reason": "robots_unavailable_0"
+  },
+  {
+   "slug": "fruku-dis2-one-knob-dual-distortion",
+   "brand": "Fruku",
+   "name": "Dis2 /// One Knob Dual Distortion",
+   "host": "fruku.club",
+   "reason": "robots_unavailable_0"
+  },
+  {
+   "slug": "fruku-micate-1u-mixer-cable-tester",
+   "brand": "Fruku",
+   "name": "Micate /// 1U Mixer & Cable Tester",
+   "host": "fruku.club",
+   "reason": "robots_unavailable_0"
+  },
+  {
+   "slug": "fruku-mvca-vca-mult",
+   "brand": "Fruku",
+   "name": "MVCA /// VCA & Mult",
+   "host": "fruku.club",
+   "reason": "robots_unavailable_0"
+  },
+  {
+   "slug": "fruku-tlum-multiple",
+   "brand": "Fruku",
+   "name": "Tlum /// Multiple",
+   "host": "fruku.club",
+   "reason": "robots_unavailable_0"
+  },
+  {
+   "slug": "noise-engineering-basimilus-iteritas-alter",
+   "brand": "Noise Engineering",
+   "name": "Basimilus Iteritas Alter",
+   "host": "manualslib.com",
+   "reason": "maker_site_not_confirmed"
+  },
+  {
+   "slug": "pulp-logic-2180-vca",
+   "brand": "Pulp Logic",
+   "name": "2180 VCA",
+   "host": "pulplogic.com",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "pulp-logic-link-data",
+   "brand": "Pulp Logic",
+   "name": "Link Data",
+   "host": "pulplogic.com",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "pulp-logic-mix-a",
+   "brand": "Pulp Logic",
+   "name": "Mix-A",
+   "host": "pulplogic.com",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "pulp-logic-n-o-sw",
+   "brand": "Pulp Logic",
+   "name": "N.O. Sw",
+   "host": "pulplogic.com",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "pulp-logic-nsl-32-vca",
+   "brand": "Pulp Logic",
+   "name": "NSL-32 VCA",
+   "host": "pulplogic.com",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "pulp-logic-s-h",
+   "brand": "Pulp Logic",
+   "name": "S&H",
+   "host": "pulplogic.com",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "raw-analogue-sound-bonkers",
+   "brand": "Raw Analogue Sound",
+   "name": "bonkers",
+   "host": "rawanaloguesound.com",
+   "reason": "robots_unavailable_0"
+  },
+  {
+   "slug": "sssr-labs-asd-idiode",
+   "brand": "SSSR Labs",
+   "name": "ASD iDiode",
+   "host": "sssrlabs.com",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "sssr-labs-sm010-matrixarchate",
+   "brand": "SSSR Labs",
+   "name": "SM010 Matrixarchate",
+   "host": "sssrlabs.com",
+   "reason": "robots_unavailable_403"
+  },
+  {
+   "slug": "synthetic-sound-labs-v-gates-euro",
+   "brand": "Synthetic Sound Labs",
+   "name": "V-Gates Euro",
+   "host": "steamsynth.com",
+   "reason": "maker_site_not_confirmed"
+  },
+  {
+   "slug": "tin-man-synths-1u-toolbox",
+   "brand": "Tin Man Synths",
+   "name": "1u Toolbox",
+   "host": "tinmansynths.cn",
+   "reason": "robots_unavailable_0"
+  },
+  {
+   "slug": "unknown-devices-eisei",
+   "brand": "Unknown Devices",
+   "name": "Eisei",
+   "host": "unwn.dev",
+   "reason": "maker_site_not_confirmed"
+  }
+ ]
+}

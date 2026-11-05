@@ -54,6 +54,17 @@ def _summary(
                 f"left alone: {sync['left_alone_other_value']} with another value, "
                 f"{sync['left_alone_not_loader_row']} not loader rows"
             )
+        if basis := receipt.get("access_basis"):
+            # Decisions 52 and 53: the exact counts, for the owner's go-ahead on a production load.
+            lines.append(
+                f"- access_basis set: {basis['official_publication']} official_publication, "
+                f"{basis['leads_tagged_unknown']} unknown; "
+                f"{basis['left_out_by_overlay']} maker rows failed the check and stay as they are"
+            )
+            lines.append(
+                f"- ModularGrid URLs cleared: {basis['urls_cleared']}; "
+                f"on retired rows, left alone: {basis['left_alone_retired_with_url']}"
+            )
         lines.append("")
     lines += [
         "| table | before | after | delta |",

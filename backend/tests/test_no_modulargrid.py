@@ -61,3 +61,33 @@ def test_catalog_rows_never_expose_modulargrid_fields(db_session):
         app.dependency_overrides.clear()
     assert body.status_code == 200
     assert "modulargrid" not in body.text.lower()
+
+
+def test_module_rows_never_expose_a_modulargrid_reference(db_session):
+    """Owner decision 52 covers the same URL when it sits in `source_reference`."""
+    from fastapi.testclient import TestClient
+
+    from core import get_db
+    from main import app
+    from modules.models import Module
+
+    for name, reference in (
+        ("Lead", "https://www.modulargrid.net/e/acme-lead"),
+        ("Maker", "https://acme.example/maker"),
+    ):
+        db_session.add(
+            Module(brand="Acme", name=name, hp=4, module_type="VCO", source="Manual", source_reference=reference)
+        )
+    db_session.commit()
+
+    app.dependency_overrides[get_db] = lambda: db_session
+    try:
+        body = TestClient(app).get("/api/modules", params={"brand": "Acme"})
+    finally:
+        app.dependency_overrides.clear()
+    assert body.status_code == 200
+    assert "modulargrid" not in body.text.lower()
+    assert {row["name"]: row["source_reference"] for row in body.json()["modules"]} == {
+        "Lead": None,
+        "Maker": "https://acme.example/maker",
+    }

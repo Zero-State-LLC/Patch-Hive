@@ -143,6 +143,7 @@ class Plan:
     provenance: dict[str, dict[str, Any]] = field(default_factory=dict)
     power_configs: dict[str, Any] = field(default_factory=dict)
     module_type_sync: dict[str, Any] = field(default_factory=dict)
+    access_basis: dict[str, Any] = field(default_factory=dict)
 
     def add_insert(self, kind: str, op: Op) -> None:
         self.ops.append(op)
@@ -321,6 +322,7 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
 
     # After every fill, correction and retirement above, so it reads each row's final state.
     _schedule_module_type_sync(plan, catalog, modules)
+    _schedule_access_basis(plan, catalog, modules, _load_optional(ACCESS_BASIS_OVERLAY))
 
     # Jumper settings attach to module rows, so they run after every module insert and
     # retirement above (spec 003 D8, T034).
@@ -387,9 +389,10 @@ ARCHIVE_FIELDS = {
         "depth_mm",
         "verification_status",
         "verification_source_url",
+        "source_reference",
         "module_type",
     },
-    "module_catalog": {"hp", "category"},
+    "module_catalog": {"hp", "category", "modulargrid_url"},
 }
 NULLABLE = {"modules": set(POWER_FIELDS) | {"verification_source_url"}, "module_catalog": {"hp"}}
 ARCHIVE_ACTIONS = {"null", "keep", "flag", "relabel", "correct"}
@@ -879,7 +882,10 @@ def _verification_index(path: Path | None) -> dict[str, dict[str, Any]]:
 
 def _catalog_state(conn: Connection) -> dict[str, dict[str, Any]]:
     rows = conn.execute(
-        text("SELECT slug, brand, name, hp, hp_source, category, tombstoned_at, needs_reverify FROM module_catalog")
+        text(
+            "SELECT slug, brand, name, hp, hp_source, category, tombstoned_at, needs_reverify, "
+            "source, access_basis, manufacturer_url, modulargrid_url FROM module_catalog"
+        )
     ).mappings()
     return {
         row["slug"]: {
@@ -890,6 +896,10 @@ def _catalog_state(conn: Connection) -> dict[str, dict[str, Any]]:
             "category": row["category"],
             "tombstoned": row["tombstoned_at"] is not None,
             "needs_reverify": bool(row["needs_reverify"]),
+            "source": row["source"],
+            "access_basis": row["access_basis"],
+            "manufacturer_url": row["manufacturer_url"],
+            "modulargrid_url": row["modulargrid_url"],
             "_planned": False,
         }
         for row in rows
@@ -983,6 +993,10 @@ def _schedule_catalog(plan: Plan, catalog: dict[str, dict[str, Any]], row: dict[
         "name": name,
         "hp": row.get("hp"),
         "category": row.get("category"),
+        "source": row.get("source") or "SynthCatalogResearch",
+        "access_basis": row.get("access_basis"),
+        "manufacturer_url": row.get("manufacturer_url"),
+        "modulargrid_url": modulargrid_url,
         "_planned": True,
     }
     plan.add_insert(
@@ -1410,6 +1424,170 @@ def _schedule_module_type_sync(
         module["module_type"] = category
         stats["synced"] += 1
         _bump(stats["by_category"], category)
+
+
+# Owner decisions 52 and 53. The overlay lists the maker rows that passed ADR 0002's checks. Leads
+# are found by source, because the repo doesn't name ModularGrid-derived rows.
+ACCESS_BASIS_OVERLAY = CATALOG / "overlays" / "access-basis-v1.json"
+MAKER_ROW_SOURCES = ("ManufacturerCrawl", "ManufacturerVerified")
+LEAD_ROW_SOURCES = ("CatalogCandidate", "SynthCatalogResearch")
+LEAD_BASIS = "unknown"
+LEAD_EVIDENCE = "CATALOG_OBSERVED"
+MODULARGRID_CLEAR_BATCH = "modulargrid-clear-v1"
+MODULARGRID_CLEAR_SOURCE = "owner-decision-52"
+
+
+def _is_modulargrid(url: Any) -> bool:
+    return "modulargrid" in str(url or "").lower()
+
+
+def _url_host(url: Any) -> str:
+    return (urlparse(str(url or "")).hostname or "").lower().removeprefix("www.")
+
+
+def _schedule_access_basis(
+    plan: Plan,
+    catalog: dict[str, dict[str, Any]],
+    modules: dict[tuple[str, str], dict[str, Any]],
+    overlay: dict[str, Any],
+) -> None:
+    """Give rows with no access basis the one their source allows, and clear ModularGrid URLs.
+
+    A basis is only ever filled, never changed. The maker's host is compared again here, so a row
+    whose page moved after the check is reported rather than tagged. A cleared URL is archived
+    first, and no API serves the archive. A retired row is final.
+    """
+    stats: dict[str, Any] = {
+        "official_publication": 0,
+        "leads_tagged_unknown": {},
+        "urls_cleared": {"module_catalog.modulargrid_url": 0},
+        "left_out_by_overlay": len(overlay.get("left_out") or []),
+        "left_alone_retired_with_url": 0,
+    }
+    plan.access_basis = stats
+
+    for entry in overlay.get("rows") or []:
+        slug, brand, name = entry.get("slug"), entry.get("brand"), entry.get("name")
+        row = catalog.get(slug)
+        if row is None:
+            _bump(plan.unmatched, "access_basis")
+            continue
+        if row["brand"] != brand or row["name"] != name:
+            plan.conflict(table="module_catalog", slug=slug, reason="access_basis_identity_mismatch")
+            continue
+        if row.get("tombstoned") or row.get("access_basis") is not None:
+            continue
+        if row.get("source") not in MAKER_ROW_SOURCES or entry.get("access_basis") != "official_publication":
+            plan.conflict(table="module_catalog", slug=slug, reason="access_basis_not_a_maker_row")
+            continue
+        if _url_host(row.get("manufacturer_url")) != entry.get("host"):
+            plan.conflict(table="module_catalog", slug=slug, reason="access_basis_host_changed")
+            continue
+        row["access_basis"] = entry["access_basis"]
+        stats["official_publication"] += 1
+        plan.add_update(
+            "access_basis_official",
+            Op(
+                "update_access_basis",
+                """
+                UPDATE module_catalog
+                SET access_basis = :access_basis, updated_at = CURRENT_TIMESTAMP
+                WHERE slug = :slug AND brand = :brand AND name = :name
+                  AND access_basis IS NULL AND tombstoned_at IS NULL
+                """,
+                {"slug": slug, "brand": brand, "name": name, "access_basis": entry["access_basis"]},
+            ),
+        )
+
+    for slug, row in sorted(catalog.items()):
+        brand, name = row["brand"], row["name"]
+        if row.get("tombstoned"):
+            stats["left_alone_retired_with_url"] += int(_is_modulargrid(row.get("modulargrid_url")))
+            continue
+        if row.get("access_basis") is None and row.get("source") in LEAD_ROW_SOURCES:
+            row["access_basis"] = LEAD_BASIS
+            _bump(stats["leads_tagged_unknown"], str(row["source"]))
+            plan.add_update(
+                "access_basis_lead",
+                Op(
+                    "update_lead_basis",
+                    """
+                    UPDATE module_catalog
+                    SET access_basis = :access_basis, evidence_status = :evidence_status,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE slug = :slug AND brand = :brand AND name = :name
+                      AND access_basis IS NULL AND tombstoned_at IS NULL
+                    """,
+                    {
+                        "slug": slug,
+                        "brand": brand,
+                        "name": name,
+                        "access_basis": LEAD_BASIS,
+                        "evidence_status": LEAD_EVIDENCE,
+                    },
+                ),
+            )
+        if row.get("modulargrid_url"):
+            _archive_row(
+                plan,
+                MODULARGRID_CLEAR_BATCH,
+                "module_catalog",
+                slug,
+                brand,
+                name,
+                [{"field": "modulargrid_url", "action": "clear", "source_tag": MODULARGRID_CLEAR_SOURCE}],
+            )
+            plan.add_update(
+                "modulargrid_url_clear",
+                Op(
+                    "clear_modulargrid_url",
+                    """
+                    UPDATE module_catalog
+                    SET modulargrid_url = NULL, updated_at = CURRENT_TIMESTAMP
+                    WHERE slug = :slug AND brand = :brand AND name = :name AND tombstoned_at IS NULL
+                    """,
+                    {"slug": slug, "brand": brand, "name": name},
+                ),
+            )
+            row["modulargrid_url"] = None
+            stats["urls_cleared"]["module_catalog.modulargrid_url"] += 1
+
+    for (brand, name), module in sorted(modules.items()):
+        for column in ("source_reference", "verification_source_url"):
+            value = module.get(column)
+            if not _is_modulargrid(value):
+                continue
+            if module.get("status") == "tombstoned":
+                stats["left_alone_retired_with_url"] += 1
+                continue
+            _archive_row(
+                plan,
+                MODULARGRID_CLEAR_BATCH,
+                "modules",
+                module_row_key(brand, name),
+                brand,
+                name,
+                [{
+                    "field": column,
+                    "action": "clear",
+                    "only_if_value": value,
+                    "source_tag": MODULARGRID_CLEAR_SOURCE,
+                }],
+            )
+            plan.add_update(
+                f"modules_{column}_clear",
+                Op(
+                    f"clear_modules_{column}",
+                    f"""
+                    UPDATE modules
+                    SET {column} = NULL, updated_at = CURRENT_TIMESTAMP
+                    WHERE brand = :brand AND name = :name AND status <> 'tombstoned' AND {column} = :value
+                    """,
+                    {"brand": brand, "name": name, "value": value},
+                ),
+            )
+            module[column] = None
+            _bump(stats["urls_cleared"], f"modules.{column}")
 
 
 def _hp_update(slug: str, brand: str, name: str, hp: int) -> Op:
@@ -2078,6 +2256,12 @@ def provenance_counts(conn: Connection) -> dict[str, int]:
         "modules_verified": "SELECT COUNT(*) FROM modules WHERE verification_status = 'verified'",
         "modules_legacy_source_modulargrid": "SELECT COUNT(*) FROM modules WHERE source = 'ModularGrid'",
         "module_catalog_with_modulargrid_url": "SELECT COUNT(*) FROM module_catalog WHERE modulargrid_url IS NOT NULL",
+        "module_catalog_with_modulargrid_id": "SELECT COUNT(*) FROM module_catalog WHERE modulargrid_id IS NOT NULL",
+        "modules_with_modulargrid_url": (
+            "SELECT COUNT(*) FROM modules WHERE source_reference ILIKE '%modulargrid%' "
+            "OR verification_source_url ILIKE '%modulargrid%'"
+        ),
+        "module_catalog_no_access_basis": "SELECT COUNT(*) FROM module_catalog WHERE access_basis IS NULL",
     }
     return {key: int(conn.execute(text(sql)).scalar_one()) for key, sql in queries.items()}
 
@@ -2132,6 +2316,7 @@ def receipt_for(plan: Plan, *, database_url: str, apply: bool, cases: dict[str, 
         "provenance": plan.provenance,
         "power_configs": plan.power_configs,
         "module_type_sync": plan.module_type_sync,
+        "access_basis": plan.access_basis,
         "cases": cases,
         "destructive_sql": False,
     }

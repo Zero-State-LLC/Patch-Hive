@@ -5,7 +5,7 @@ Pydantic schemas for Module API.
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class IOPort(BaseModel):
@@ -77,6 +77,12 @@ class ModuleResponse(ModuleBase):
     imported_at: datetime
     created_at: datetime
     updated_at: datetime
+
+    @field_validator("source_reference")
+    @classmethod
+    def hide_modulargrid_reference(cls, value: Optional[str]) -> Optional[str]:
+        # A ModularGrid page is a discovery lead, never a source we serve (owner decision 52).
+        return None if value and "modulargrid" in value.lower() else value
 
     class Config:
         from_attributes = True

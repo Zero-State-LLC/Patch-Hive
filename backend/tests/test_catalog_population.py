@@ -5,6 +5,7 @@ Uses the local superuser credentials from CI. Refuses to touch patchhive_test.
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import shutil
@@ -20,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "data" / "synth-catalog"))
 
 from population import (  # noqa: E402
+    ACCESS_BASIS_OVERLAY,
     Op,
     Plan,
     assert_safe_sql,
@@ -570,6 +572,111 @@ def test_maker_corrections_v4_clear_the_re_sourced_markers(fresh_population_url,
         assert again["inserts"] == {} and again["updates"] == {}
     finally:
         engine.dispose()
+
+
+def test_decisions_52_and_53_set_the_basis_and_clear_modulargrid_urls(fresh_population_url, tmp_path):
+    """A basis is filled only under its checks, and a cleared URL lands in the archive."""
+    missing = tmp_path / "none.json"
+    populate(fresh_population_url, apply=True, verification_path=missing)
+    overlay = json.loads(ACCESS_BASIS_OVERLAY.read_text(encoding="utf-8"))
+    refill, keep, moved = (entry["slug"] for entry in overlay["rows"][:3])
+    lead_page = "https://modulargrid.example/e/lead"
+
+    def basis(conn, slug: str):
+        return conn.execute(
+            text("SELECT access_basis, evidence_status, modulargrid_url FROM module_catalog WHERE slug = :slug"),
+            {"slug": slug},
+        ).one()
+
+    engine = create_engine(fresh_population_url)
+    try:
+        with engine.begin() as conn:
+            assert basis(conn, refill).access_basis == "official_publication"  # a load from empty tags them
+            lead = conn.execute(text(
+                "SELECT c.slug, c.brand, c.name FROM module_catalog c "
+                "JOIN modules m ON m.brand = c.brand AND m.name = c.name "
+                "WHERE c.access_basis = 'unknown' AND c.tombstoned_at IS NULL AND m.status <> 'tombstoned' "
+                "ORDER BY c.slug LIMIT 1"
+            )).one()
+            retired = conn.execute(text(
+                "SELECT brand, name FROM modules WHERE status = 'tombstoned' ORDER BY brand, name LIMIT 1"
+            )).one()
+            conn.execute(text("UPDATE module_catalog SET access_basis = NULL WHERE slug = :s"), {"s": refill})
+            conn.execute(text("UPDATE module_catalog SET access_basis = 'maker_permission' WHERE slug = :s"), {"s": keep})
+            conn.execute(
+                text(
+                    "UPDATE module_catalog SET access_basis = NULL, manufacturer_url = 'https://elsewhere.example/x' "
+                    "WHERE slug = :s"
+                ),
+                {"s": moved},
+            )
+            conn.execute(
+                text(
+                    "UPDATE module_catalog SET source = 'CatalogCandidate', access_basis = NULL, "
+                    "evidence_status = NULL, modulargrid_url = :url WHERE slug = :s"
+                ),
+                {"url": lead_page, "s": lead.slug},
+            )
+            conn.execute(
+                text(
+                    "UPDATE modules SET source_reference = :url, verification_source_url = :url "
+                    "WHERE brand = :b AND name = :n"
+                ),
+                {"url": lead_page, "b": lead.brand, "n": lead.name},
+            )
+            conn.execute(
+                text("UPDATE modules SET source_reference = :url WHERE brand = :b AND name = :n"),
+                {"url": lead_page, "b": retired.brand, "n": retired.name},
+            )
+
+        receipt = populate(fresh_population_url, apply=True, verification_path=missing)
+        assert receipt["access_basis"]["official_publication"] == 1
+        assert receipt["access_basis"]["leads_tagged_unknown"] == {"CatalogCandidate": 1}
+        assert receipt["access_basis"]["urls_cleared"] == {
+            "module_catalog.modulargrid_url": 1,
+            "modules.source_reference": 1,
+            "modules.verification_source_url": 1,
+        }
+        assert receipt["access_basis"]["left_alone_retired_with_url"] == 1
+        assert [c["slug"] for c in receipt["conflicts"] if c["reason"] == "access_basis_host_changed"] == [moved]
+
+        with engine.connect() as conn:
+            assert basis(conn, refill).access_basis == "official_publication"
+            assert basis(conn, keep).access_basis == "maker_permission"
+            assert basis(conn, moved).access_basis is None
+            assert tuple(basis(conn, lead.slug)) == ("unknown", "CATALOG_OBSERVED", None)
+            module = conn.execute(
+                text("SELECT source_reference, verification_source_url FROM modules WHERE brand = :b AND name = :n"),
+                {"b": lead.brand, "n": lead.name},
+            ).one()
+            assert tuple(module) == (None, None)
+            archived = conn.execute(text(
+                "SELECT table_name, field, old_value, action FROM catalog_value_archive "
+                "WHERE batch = 'modulargrid-clear-v1' ORDER BY table_name, field"
+            )).all()
+            assert [tuple(row) for row in archived] == [
+                ("module_catalog", "modulargrid_url", lead_page, "clear"),
+                ("modules", "source_reference", lead_page, "clear"),
+                ("modules", "verification_source_url", lead_page, "clear"),
+            ]
+
+        again = populate(fresh_population_url, apply=False, verification_path=missing)
+        assert again["access_basis"]["official_publication"] == 0
+        assert again["access_basis"]["leads_tagged_unknown"] == {}
+        assert again["access_basis"]["urls_cleared"] == {"module_catalog.modulargrid_url": 0}
+        assert again["conflicts_total"] == 1  # the moved row is still reported and still untagged
+    finally:
+        engine.dispose()
+
+
+def test_the_access_basis_overlay_names_no_lead_and_passes_its_own_checks():
+    overlay = json.loads(ACCESS_BASIS_OVERLAY.read_text(encoding="utf-8"))
+    assert {row["access_basis"] for row in overlay["rows"]} == {"official_publication"}
+    assert all(row["checks"] for row in overlay["rows"])
+    assert not {row["slug"] for row in overlay["rows"]} & {row["slug"] for row in overlay["left_out"]}
+    left_out = {row["slug"]: row for row in overlay["left_out"]}
+    assert left_out["noise-engineering-basimilus-iteritas-alter"]["reason"] == "maker_site_not_confirmed"
+    assert {row["host"] for row in overlay["rows"]}.isdisjoint({"manualslib.com"})
 
 
 def test_jumper_settings_load_once_as_power_configs(fresh_population_url, tmp_path):
