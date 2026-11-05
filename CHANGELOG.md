@@ -4,6 +4,23 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.11](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.10...v0.3.0-alpha.11) (2026-11-05)
+
+
+### Added
+
+* **catalog:** set the access basis and clear ModularGrid URLs in the load ([#299](https://github.com/Zero-State-LLC/Patch-Hive/issues/299)) ([5efa122](https://github.com/Zero-State-LLC/Patch-Hive/commit/5efa12251c8c108e9871fc929ff6093341dcdaec))
+
+
+### Fixed
+
+* **ops:** give each design walkthrough run its own credit grant ([#298](https://github.com/Zero-State-LLC/Patch-Hive/issues/298)) ([ca210e7](https://github.com/Zero-State-LLC/Patch-Hive/commit/ca210e7562bc6545d66e73a41ca68bfa0518ce29))
+
+
+### Documentation
+
+* record the 0.3.0-alpha.10 deploy to staging and production ([#297](https://github.com/Zero-State-LLC/Patch-Hive/issues/297)) ([ed52509](https://github.com/Zero-State-LLC/Patch-Hive/commit/ed52509bde9937aee661744d66687da8a682d426))
+
 ## [0.3.0-alpha.10](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.9...v0.3.0-alpha.10) (2026-11-05)
 
 
