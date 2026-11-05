@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT / "data" / "synth-catalog"))
 import build_category_overlay as c  # noqa: E402
 
 OVERLAYS = ROOT / "data" / "synth-catalog" / "overlays"
-CATEGORIES = {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI"}
+CATEGORIES = {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI", "VIDEO", "SYSTEM"}
 
 T031 = OVERLAYS / "module-catalog-category-v3.json"
 
@@ -41,12 +41,16 @@ def test_t031_whole_tag_rules(tags, expected) -> None:
     "tags",
     [
         ["percussion", "dual decay", "CV"],  # a voice or an envelope: left empty
-        ["rectifier", "CV"],  # no rule: makers file rectifiers under FX and UTIL alike
         ["headphone", "feedback"],  # only the plural is the headphone-output utility
     ],
 )
 def test_t031_rules_leave_unsettled_rows_empty(tags) -> None:
     assert c.classify(tags, "Widget", "") is None
+
+
+def test_a_rectifier_now_follows_the_owner_convention() -> None:
+    # The pass left rectifiers empty because makers split them; owner decision 17 settled it.
+    assert c.classify(["rectifier", "CV"], "Widget", "") == ("UTIL", "owner_tag")
 
 
 def test_video_and_power_rows_are_held_for_the_owner() -> None:

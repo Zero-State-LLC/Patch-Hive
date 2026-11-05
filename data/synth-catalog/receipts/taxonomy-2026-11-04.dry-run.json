@@ -1,0 +1,121 @@
+{
+  "task": "owner taxonomy decisions 5, 6, 7, 14 and 17 (2026-11-04): category overlays v4 and v5, category-corrections-v1, catalog-retirements-v3",
+  "target": "throwaway Postgres 15.13 container, migrated to alembic head and loaded by import_catalog_population.py --apply from main at 007b437, then dry-run from this branch; removed afterwards",
+  "baseline_apply": {
+    "plan_hash": "6f3d1126db6ffe0cf85a493d32eb8e0678ba7fd00326499f27ecdf4f43a15383",
+    "inputs_hash": "8fd77e32c114f9ec940f0cd04667fdaed3d41a55f38c3d84cdd73db1f8118b83",
+    "conflicts_total": 0,
+    "unmatched": {
+      "hp": 31,
+      "power_depth": 38,
+      "retire_catalog": 1,
+      "retire_module": 1
+    }
+  },
+  "dry_run": {
+    "mode": "dry-run",
+    "database": "127.0.0.1:55473/ph_base",
+    "plan_hash": "377081ebdfb2a8bac4fdf0d60a32b7addc6ccb2c747c799228f3f8865d096eec",
+    "inputs_hash": "a7d66f17d8e32be3ef1fa7a0913431041c587dd664ceaaf4642afb270cbbfe42",
+    "inserts": {
+      "catalog_value_archive": 8,
+      "catalog_value_archive_markers": 1
+    },
+    "updates": {
+      "category_overlay": 62,
+      "module_catalog_correct": 5,
+      "modules_correct": 3,
+      "catalog_retire": 1,
+      "module_retire": 1
+    },
+    "conflicts_total": 0,
+    "unmatched": {
+      "hp": 31,
+      "power_depth": 38,
+      "retire_catalog": 1,
+      "retire_module": 1
+    },
+    "category_corrections": {
+      "archived_values": 8,
+      "already_archived": 0,
+      "rows_missing": 2,
+      "null_in_db": 0,
+      "by_action": {
+        "correct": 8
+      },
+      "nulled_values": 0,
+      "relabeled_rows": 0,
+      "flagged_rows": 0,
+      "rows_already_processed": 0,
+      "value_not_matched": 0,
+      "corrected_values": 8,
+      "refused_row_tombstoned": 0,
+      "reverify_clear_scheduled": 0
+    },
+    "destructive_sql": false,
+    "started_at": "2026-11-05T04:42:59+00:00",
+    "finished_at": "2026-11-05T04:43:01+00:00"
+  },
+  "apply_bound_to_those_hashes_on_a_copy": {
+    "updates": {
+      "category_overlay": 62,
+      "module_catalog_correct": 5,
+      "modules_correct": 3,
+      "catalog_retire": 1,
+      "module_retire": 1
+    },
+    "inserts": {
+      "catalog_value_archive": 8,
+      "catalog_value_archive_markers": 1
+    },
+    "conflicts_total": 0,
+    "second_dry_run": {
+      "inserts": {},
+      "updates": {},
+      "conflicts_total": 0
+    }
+  },
+  "load_from_empty": {
+    "plan_hash": "b1b96c3f8cb3e68a7a3f4bb3fef0b57aa1d29b6b3646357c2a1fcb3e2a790f1f",
+    "conflicts_total": 0,
+    "category_corrections": {
+      "archived_values": 8,
+      "already_archived": 0,
+      "rows_missing": 2,
+      "null_in_db": 0,
+      "by_action": {
+        "correct": 8
+      },
+      "nulled_values": 0,
+      "relabeled_rows": 0,
+      "flagged_rows": 0,
+      "rows_already_processed": 0,
+      "value_not_matched": 0,
+      "corrected_values": 8,
+      "refused_row_tombstoned": 0,
+      "reverify_clear_scheduled": 0
+    },
+    "second_dry_run": {
+      "inserts": {},
+      "updates": {},
+      "conflicts_total": 0
+    }
+  },
+  "observed_after_apply": {
+    "live_rows": {
+      "before": 3599,
+      "after": 3598
+    },
+    "live_rows_without_a_category": {
+      "before": 619,
+      "after": 557
+    },
+    "rows_deleted": 0,
+    "video_rows": 27,
+    "system_rows": 12,
+    "same_category_and_tombstone_on_every_catalog_row_in_both_loads": true,
+    "filled_rows_keeping_module_type_unknown_on_a_loaded_database": 62,
+    "filled_rows_keeping_module_type_unknown_on_a_load_from_empty": 0
+  },
+  "note": "plan_hash depends on the target database's state, so db-load.yml's own dry run on staging gives the hash to apply with; inputs_hash is a hash of the committed catalog inputs and matches any checkout of this commit."
+}

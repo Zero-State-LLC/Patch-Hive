@@ -2,10 +2,18 @@
 Tests for the deterministic patch generation engine.
 """
 
+import re
+from pathlib import Path
+from types import SimpleNamespace
+
 import pytest
 from sqlalchemy.orm import Session
 
+from core import naming
+from core.ops.derive_patch_semantics import _infer_output_kind
+from export.visualization import get_module_color
 from modules.models import Module
+from patches import engine
 from patches.engine import (
     Connection,
     ModuleAnalyzer,
@@ -14,7 +22,86 @@ from patches.engine import (
     PatchSpec,
     generate_patches_for_rack,
 )
-from racks.models import Rack
+from racks.models import Rack, RackModule
+
+
+def _placed(db_session: Session, rack: Rack, module_type: str, start_hp: int) -> Module:
+    """A module of this type, placed in the rack."""
+    module = Module(
+        brand="Test Mfg",
+        name=f"Test {module_type}",
+        module_type=module_type,
+        hp=4,
+        io_ports=[{"name": "Audio In", "type": "audio_in"}, {"name": "Audio Out", "type": "audio_out"}],
+        source="test",
+    )
+    db_session.add(module)
+    db_session.flush()
+    db_session.add(RackModule(rack_id=rack.id, module_id=module.id, row_index=1, start_hp=start_hp))
+    db_session.commit()
+    return module
+
+
+class TestModulesNoPatchUses:
+    """VIDEO and SYSTEM occupy HP but join no patch (owner decisions 5 and 14, 2026-11-04)."""
+
+    @pytest.mark.parametrize("category", ["VIDEO", "SYSTEM"])
+    def test_no_engine_keyword_matches_the_category(self, category: str):
+        source = Path(engine.__file__).read_text()
+        keywords = re.findall(r'"([A-Z]+)" in mtype', source)
+        assert {"VCO", "VCF", "VCA", "ENV", "LFO", "SEQ", "MIX", "FX", "UTIL", "NOISE"} <= set(keywords)
+        assert [keyword for keyword in keywords if keyword in category] == []
+
+    def test_the_analyzer_files_them_under_no_function(
+        self, db_session: Session, sample_rack_empty: Rack
+    ):
+        _placed(db_session, sample_rack_empty, "VIDEO", 0)
+        _placed(db_session, sample_rack_empty, "SYSTEM", 4)
+
+        analyzer = ModuleAnalyzer(db_session, sample_rack_empty)
+
+        assert {module.module_type for module in analyzer.all_modules} == {"VIDEO", "SYSTEM"}
+        for bucket in (
+            analyzer.vcos, analyzer.vcfs, analyzer.vcas, analyzer.envelopes, analyzer.lfos,
+            analyzer.sequencers, analyzer.mixers, analyzer.effects, analyzer.utilities, analyzer.noise_sources,
+        ):
+            assert bucket == []
+
+    def test_a_rack_of_only_these_generates_no_patches(self, db_session: Session, sample_rack_empty: Rack):
+        _placed(db_session, sample_rack_empty, "VIDEO", 0)
+        _placed(db_session, sample_rack_empty, "SYSTEM", 4)
+
+        assert generate_patches_for_rack(db_session, sample_rack_empty, seed=42) == []
+
+    def test_adding_them_changes_no_patch_wiring(self, db_session: Session, sample_rack_full: Rack):
+        # The name is left out: name_patch_v2 hashes how many modules the rack holds, whatever
+        # their type, so any placed module can change the name of a patch it isn't part of.
+        def wiring(specs: list[PatchSpec]) -> list[dict]:
+            return [{k: v for k, v in spec.to_dict().items() if k != "name"} for spec in specs]
+
+        before = wiring(generate_patches_for_rack(db_session, sample_rack_full, seed=42))
+        assert before
+
+        video = _placed(db_session, sample_rack_full, "VIDEO", 0)
+        system = _placed(db_session, sample_rack_full, "SYSTEM", 4)
+        after = wiring(generate_patches_for_rack(db_session, sample_rack_full, seed=42))
+
+        assert after == before
+        wired = {c["from_module_id"] for spec in after for c in spec["connections"]} | {
+            c["to_module_id"] for spec in after for c in spec["connections"]
+        }
+        assert not wired & {video.id, system.id}
+
+    @pytest.mark.parametrize("category", ["VIDEO", "SYSTEM"])
+    def test_other_module_type_readers_give_them_no_role(self, category: str):
+        module = SimpleNamespace(module_type=category, name="Widget")
+
+        assert naming._rig_role_from_module(module) == "Modular"
+        assert not naming._is_clock_module(module)
+        assert not naming._is_utility_module(module)
+        assert not naming._is_voice_module(module)
+        assert _infer_output_kind(module, "cv") == "cv"
+        assert get_module_color(category) == "#888888"
 
 
 class TestModuleAnalyzer:

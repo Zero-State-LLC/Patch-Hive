@@ -27,6 +27,11 @@ CATALOG = Path(__file__).resolve().parent
 ROOT = CATALOG.parents[1]
 VERIFICATION_STATUSES = {"verified", "corrected", "flagged", "unverified"}
 POWER_FIELDS = ("power_12v_ma", "power_neg12v_ma", "power_5v_ma", "depth_mm")
+# The Module Category vocabulary. VIDEO and SYSTEM are the owner's decisions 5 and 14
+# (2026-11-04). A category overlay or correction naming anything else is a conflict.
+MODULE_CATEGORIES = frozenset(
+    {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI", "VIDEO", "SYSTEM"}
+)
 AFFECTED_TABLES = (
     "catalog_value_archive",
     "manufacturers",
@@ -298,6 +303,15 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
                 continue
             _schedule_power(plan, catalog, modules, entry)
 
+    # Category corrections run after every insert and fill above, unlike the manifests at
+    # the top of this plan. On a fresh database those run while the catalog is still empty,
+    # and the fill-null overlays would then store the very value being corrected.
+    for manifest_path in CATEGORY_CORRECTION_MANIFESTS:
+        if manifest_path.is_file():
+            _schedule_provenance(
+                plan, catalog, modules, _load(manifest_path), _archive_state(conn, manifest_path), history
+            )
+
     # Retirements run last, so a row this plan inserts (a fresh database) is
     # tombstoned in the same transaction.
     for retirement_path in sorted((CATALOG / "overlays").glob("catalog-retirements-v*.json")):
@@ -351,6 +365,13 @@ PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "maker-corrections-v5.json",
     CATALOG / "provenance" / "maker-corrections-v6.json",
 )
+# Run after the category overlays and module inserts (see build_plan).
+CATEGORY_CORRECTION_MANIFESTS = (
+    CATALOG / "provenance" / "category-corrections-v1.json",
+)
+# A row's Module Category: module_catalog.category, and modules.module_type on the row the
+# patch engine reads. A manifest may only correct these, never null, flag or relabel them.
+CATEGORY_FIELDS = {"category", "module_type"}
 ARCHIVE_FIELDS = {
     "modules": {
         "hp",
@@ -360,8 +381,9 @@ ARCHIVE_FIELDS = {
         "depth_mm",
         "verification_status",
         "verification_source_url",
+        "module_type",
     },
-    "module_catalog": {"hp"},
+    "module_catalog": {"hp", "category"},
 }
 NULLABLE = {"modules": set(POWER_FIELDS) | {"verification_source_url"}, "module_catalog": {"hp"}}
 ARCHIVE_ACTIONS = {"null", "keep", "flag", "relabel", "correct"}
@@ -381,6 +403,8 @@ def _correction_problem(table: str, item: dict[str, Any]) -> str | None:
             return "correction_hp_outside_band"
     if item["field"] == "verification_source_url" and not str(item["value"]).startswith("https://"):
         return "correction_bad_url"
+    if item["field"] in CATEGORY_FIELDS and item["value"] not in MODULE_CATEGORIES:
+        return "correction_bad_category"
     return None
 ROW_MARKER = "*"
 
@@ -507,8 +531,10 @@ def _schedule_provenance(
             continue
         # A corrected row leaves FLAGGED once every flagged field is fixed (research R8).
         # Checked on every run, so a correction applied before this rule existed counts too.
+        # A flag is about HP or power, so correcting a category never clears one.
         if state is not None and state.get("needs_reverify") and any(
-            item.get("action") == "correct" for item in row.get("fields") or []
+            item.get("action") == "correct" and item.get("field") not in CATEGORY_FIELDS
+            for item in row.get("fields") or []
         ):
             resolved.append((table, row_key, brand, name, state))
         # A row is processed once per batch. Rows inserted later (or fields filled
@@ -529,6 +555,9 @@ def _schedule_provenance(
                 continue
             if action == "null" and field_name not in NULLABLE[table]:
                 plan.conflict(table=table, field=field_name, reason="not_nullable")
+                continue
+            if field_name in CATEGORY_FIELDS and action != "correct":
+                plan.conflict(table=table, field=field_name, reason="category_only_corrected")
                 continue
             if action == "correct" and (problem := _correction_problem(table, item)):
                 plan.conflict(table=table, field=field_name, reason=problem)
@@ -864,7 +893,7 @@ def _catalog_state(conn: Connection) -> dict[str, dict[str, Any]]:
 def _module_state(conn: Connection) -> dict[tuple[str, str], dict[str, Any]]:
     rows = conn.execute(
         text(
-            "SELECT brand, name, hp, power_12v_ma, power_neg12v_ma, power_5v_ma, depth_mm, "
+            "SELECT brand, name, hp, module_type, power_12v_ma, power_neg12v_ma, power_5v_ma, depth_mm, "
             "verification_status, verification_source_url, status, needs_reverify, source_reference "
             "FROM modules"
         )
@@ -1190,6 +1219,9 @@ def _schedule_category(plan: Plan, catalog: dict[str, dict[str, Any]], entry: di
     category = entry.get("category")
     if not category:
         return
+    if category not in MODULE_CATEGORIES:
+        plan.conflict(table="module_catalog", slug=slug, reason="category_outside_vocabulary")
+        return
     row = catalog.get(slug) if slug else None
     if row is None:
         _bump(plan.unmatched, "category")
@@ -1368,6 +1400,7 @@ def _schedule_module(plan: Plan, modules: dict[tuple[str, str], dict[str, Any]],
         "brand": brand,
         "name": name,
         "hp": int(row["hp"]),
+        "module_type": row.get("module_type") or "UNKNOWN",
         "power_12v_ma": row.get("power_12v_ma"),
         "power_neg12v_ma": row.get("power_neg12v_ma"),
         "power_5v_ma": row.get("power_5v_ma"),

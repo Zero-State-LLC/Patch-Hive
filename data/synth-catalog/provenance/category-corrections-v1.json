@@ -1,0 +1,181 @@
+{
+ "batch": "category-corrections-v1",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted. Each row is corrected in module_catalog and in modules, because the patch engine reads modules.module_type.",
+ "decided": "2026-11-04: owner decisions 5 and 17 (docs/evidence/OWNER_DECISIONS_2026-11-04.md, #278). No page was fetched: the Mutable quotes were read on 2026-10-30 and are committed in the cited overlay.",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "hive-mind-synthesis-video-gate-1u-10hp",
+   "brand": "Hive Mind Synthesis",
+   "name": "Video Gate 1U 10HP",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VIDEO",
+     "evidence_url": "https://hivemindsynthesis.com/shop/p/video-gate-1u-10hp",
+     "source_tag": "category-corrections-v1: owner decision 5 (2026-11-04); maker page tags video, passive, gate, 1u; UTIL came from v1's passive tag rule",
+     "maker_check": "owner_decision_and_crawl_tags"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Hive Mind Synthesis",
+   "name": "Video Gate 1U 10HP",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VIDEO",
+     "evidence_url": "https://hivemindsynthesis.com/shop/p/video-gate-1u-10hp",
+     "source_tag": "category-corrections-v1: owner decision 5 (2026-11-04); maker page tags video, passive, gate, 1u; UTIL came from v1's passive tag rule",
+     "maker_check": "owner_decision_and_crawl_tags"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "melted-electronics-glitch-boy",
+   "brand": "Melted Electronics",
+   "name": "Glitch Boy",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIDI",
+     "value": "VIDEO",
+     "evidence_url": "https://meltedelectronics.com/products/glitch-boy/",
+     "source_tag": "category-corrections-v1: owner decision 5 (2026-11-04); maker page tags video, glitch, chiptune, MIDI; MIDI came from v1's MIDI tag rule",
+     "maker_check": "owner_decision_and_crawl_tags"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Melted Electronics",
+   "name": "Glitch Boy",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIDI",
+     "value": "VIDEO",
+     "evidence_url": "https://meltedelectronics.com/products/glitch-boy/",
+     "source_tag": "category-corrections-v1: owner decision 5 (2026-11-04); maker page tags video, glitch, chiptune, MIDI; MIDI came from v1's MIDI tag rule",
+     "maker_check": "owner_decision_and_crawl_tags"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "syntonie-animate-exp",
+   "brand": "Syntonie",
+   "name": "Animate Exp",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/animate-exp",
+     "source_tag": "category-corrections-v1: owner decision 5 (2026-11-04); 12 of Syntonie's 23 crawled modules are tagged video; UTIL came from v1's expander tag rule",
+     "maker_check": "owner_decision_and_crawl_tags"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Syntonie",
+   "name": "Animate Exp",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/animate-exp",
+     "source_tag": "category-corrections-v1: owner decision 5 (2026-11-04); 12 of Syntonie's 23 crawled modules are tagged video; UTIL came from v1's expander tag rule",
+     "maker_check": "owner_decision_and_crawl_tags"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "mutable-instruments-ripples",
+   "brand": "Mutable Instruments",
+   "name": "Ripples",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VCF",
+     "evidence_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_original/",
+     "source_tag": "category-corrections-v1: \"Key data Liquid filter\" on the maker page (quoted in module-catalog-hp-v4); VCO came from the seed's research label",
+     "maker_check": "maker_quote_committed",
+     "maker_quote": "Key data Liquid filter Parameter Value Width 8HP",
+     "quote_source": "overlays/module-catalog-hp-v4.json"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Ripples",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VCF",
+     "evidence_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_original/",
+     "source_tag": "category-corrections-v1: \"Key data Liquid filter\" on the maker page (quoted in module-catalog-hp-v4); VCO came from the seed's research label",
+     "maker_check": "maker_quote_committed",
+     "maker_quote": "Key data Liquid filter Parameter Value Width 8HP",
+     "quote_source": "overlays/module-catalog-hp-v4.json"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "mutable-instruments-tides-2014-version",
+   "brand": "Mutable Instruments",
+   "name": "Tides (2014 version)",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "LFO",
+     "evidence_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_original/",
+     "source_tag": "category-corrections-v1: \"Key data Tidal modulator\" on the maker page (quoted in module-catalog-hp-v4); VCO came from the seed's research label",
+     "maker_check": "maker_quote_committed",
+     "maker_quote": "Revisions and variants 2014 2015 Key data Tidal modulator Parameter Value Width 14HP",
+     "quote_source": "overlays/module-catalog-hp-v4.json"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Tides (2014 version)",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "LFO",
+     "evidence_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_original/",
+     "source_tag": "category-corrections-v1: \"Key data Tidal modulator\" on the maker page (quoted in module-catalog-hp-v4); VCO came from the seed's research label",
+     "maker_check": "maker_quote_committed",
+     "maker_quote": "Revisions and variants 2014 2015 Key data Tidal modulator Parameter Value Width 14HP",
+     "quote_source": "overlays/module-catalog-hp-v4.json"
+    }
+   ]
+  }
+ ]
+}
