@@ -73,13 +73,15 @@ def brand_in_host(brand: str, host: str) -> bool:
 def read_robots(origin: str) -> tuple[int, str]:
     """(status, body). 0 is no answer. Only a 200 or a 404 may be read past, as in catalog_scrape."""
     request = urllib.request.Request(f"{origin}/robots.txt", headers={"User-Agent": USER_AGENT})
-    try:
-        with urllib.request.urlopen(request, timeout=25) as response:
-            return response.status, response.read(500_000).decode("utf-8", "ignore")
-    except urllib.error.HTTPError as exc:
-        return exc.code, ""
-    except (OSError, ValueError):
-        return 0, ""
+    for _ in range(2):  # one retry, so a passing timeout doesn't leave a maker out
+        try:
+            with urllib.request.urlopen(request, timeout=25) as response:
+                return response.status, response.read(500_000).decode("utf-8", "ignore")
+        except urllib.error.HTTPError as exc:
+            return exc.code, ""
+        except (OSError, ValueError):
+            continue
+    return 0, ""
 
 
 def robots_answer(answers: dict[str, tuple[int, str]], url: str) -> str | None:

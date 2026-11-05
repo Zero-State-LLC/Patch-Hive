@@ -2488,28 +2488,6 @@
    ]
   },
   {
-   "slug": "flatsix-modular-shroud-of-turing",
-   "brand": "FlatSix Modular",
-   "name": "Shroud Of Turing",
-   "host": "flatsixmodular.com",
-   "access_basis": "official_publication",
-   "checks": [
-    "official_rows",
-    "brand_in_host"
-   ]
-  },
-  {
-   "slug": "flatsix-modular-slight-of-hand",
-   "brand": "FlatSix Modular",
-   "name": "Slight Of Hand",
-   "host": "flatsixmodular.com",
-   "access_basis": "official_publication",
-   "checks": [
-    "official_rows",
-    "brand_in_host"
-   ]
-  },
-  {
    "slug": "flight-of-harmony-facehugger",
    "brand": "Flight of Harmony",
    "name": "Facehugger",
@@ -7629,6 +7607,20 @@
    "brand": "Encore Electronics",
    "name": "UEG",
    "host": "encoreelectronics.com",
+   "reason": "robots_unavailable_0"
+  },
+  {
+   "slug": "flatsix-modular-shroud-of-turing",
+   "brand": "FlatSix Modular",
+   "name": "Shroud Of Turing",
+   "host": "flatsixmodular.com",
+   "reason": "robots_unavailable_0"
+  },
+  {
+   "slug": "flatsix-modular-slight-of-hand",
+   "brand": "FlatSix Modular",
+   "name": "Slight Of Hand",
+   "host": "flatsixmodular.com",
    "reason": "robots_unavailable_0"
   },
   {
