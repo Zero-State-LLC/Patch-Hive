@@ -87,7 +87,8 @@ class RackResponse(RackBase):
     modules: list[RackModuleResponse] = []
     case: Optional[dict] = None  # Will contain case details
     vote_count: int = 0
-    # Soft advisories from the last write, plus MODULE_TOMBSTONED on every read
+    # Soft advisories from the last write, plus MODULE_TOMBSTONED and
+    # IN_RACK_SUPPLY_NOT_COUNTED on every read
     validation_warnings: list[RackValidationError] = Field(default_factory=list)
 
     class Config:

@@ -55,4 +55,21 @@ describe("canonRigAdapter", () => {
     expect(rack.case).toBeUndefined();
     expect(rack.generation_seed).toBeUndefined();
   });
+
+  it("carries the rig's warnings to the builder", () => {
+    const warning = {
+      field: "power",
+      message: "Any power supplied by the in-rack SYSTEM module Sim Power isn't counted.",
+      details: { code: "IN_RACK_SUPPLY_NOT_COUNTED" },
+    };
+    const rack = rigDetailToRack({
+      ...summary,
+      generation_seed: null,
+      modules: [],
+      case: null,
+      vote_count: 0,
+      validation_warnings: [warning],
+    });
+    expect(rack.validation_warnings).toEqual([warning]);
+  });
 });
