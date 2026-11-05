@@ -9,6 +9,7 @@ import LoadFailure from "@/components/LoadFailure";
 import { canonApi, moduleApi } from "@/lib/api";
 import { rigSummaryToRack } from "@/lib/canonRigAdapter";
 import { isCancelled } from "@/lib/loadError";
+import { useAuthStore } from "@/lib/store";
 import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import type { CatalogModule, CatalogModuleStats, Rack } from "@/types/api";
 
@@ -73,6 +74,28 @@ export default function ModulesPage() {
   const [pickRackId, setPickRackId] = useState<number | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
 
+  // What the catalog returns depends on whether the reader is signed in (owner decision 39).
+  // A change of reader drops what the last one got while rendering, so none of it reaches the
+  // screen, and the effects below ask again. A token renewal is not a change of reader.
+  const signedIn = useAuthStore((st) => st.isAuthenticated());
+  const [reader, setReader] = useState(signedIn);
+  if (reader !== signedIn) {
+    setReader(signedIn);
+    setModules([]);
+    setTotal(0);
+    setStats(null);
+    setBrands([]);
+    setCategories([]);
+    setPage(0);
+    setState("loading");
+    setError(null);
+    setActionMsg("");
+    setLastPrepared(null);
+    setExistingRacks([]);
+    setPickRackId(null);
+    setPickerOpen(false);
+  }
+
   // Keep URL in sync so filters are shareable / back-button friendly
   useEffect(() => {
     const next = new URLSearchParams();
@@ -101,11 +124,11 @@ export default function ModulesPage() {
   // The search asks once the typing pauses; the other filters ask at once.
   const searchTerm = useDebouncedValue(query.trim());
 
-  // Stats, brands and categories don't change with the filters: fetched once, and again on
-  // Retry only if they didn't arrive.
-  const metaLoaded = useRef(false);
+  // Stats, brands and categories don't change with the filters: fetched once per reader, and
+  // again on Retry only if they didn't arrive. The ref holds the reader they were loaded for.
+  const metaLoaded = useRef<boolean | null>(null);
   useEffect(() => {
-    if (metaLoaded.current) return;
+    if (metaLoaded.current === signedIn) return;
     let current = true;
     void Promise.allSettled([
       moduleApi.catalogStats(),
@@ -120,12 +143,13 @@ export default function ModulesPage() {
       if (catsRes.status === "fulfilled") {
         setCategories((catsRes.value.data.categories ?? []).map((c) => c.name).filter(Boolean));
       }
-      metaLoaded.current = [statsRes, brandsRes, catsRes].every((r) => r.status === "fulfilled");
+      const loaded = [statsRes, brandsRes, catsRes].every((r) => r.status === "fulfilled");
+      metaLoaded.current = loaded ? signedIn : null;
     });
     return () => {
       current = false;
     };
-  }, [attempt]);
+  }, [attempt, signedIn]);
 
   // The list: a change of filter cancels the request before it, so a slow earlier answer can
   // never replace the one asked for last.
@@ -175,6 +199,7 @@ export default function ModulesPage() {
     sourceFilter,
     availabilityFilter,
     attempt,
+    signedIn,
   ]);
 
   const clearFilters = () => {
