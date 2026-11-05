@@ -98,9 +98,8 @@ This one chain unblocks 7 cards: 005 T061/T062/T070, 007 T020b, 006 T060b, 008 T
   - add an approvals entry, with a cap, for any paid T031 remainder.
 - **Catalog loads:** a go-ahead for each `db-load.yml` apply, with the reviewed plan and inputs hashes.
 - **Branches** ([BRANCH_TRIAGE_2026-11-03.md](BRANCH_TRIAGE_2026-11-03.md)):
-  - delete the 12 whose patches are already in `main`;
-  - check the 20 believed landed elsewhere;
-  - keep or drop the 5 that never landed;
+  - delete the 12 whose patches are already in `main`, and the 19 believed landed elsewhere, now confirmed (review of 2026-11-04);
+  - of the 6 that never landed, the review recommends dropping 4 and keeping 2;
   - optionally turn on "Automatically delete head branches".
 - **Release:** merge the open Release Please PR (#240 today) right before a deploy that ships code, so the tag matches what runs. The beta line is decided: `0.3.0-beta.1` via a `Release-As` footer at beta exit.
 - **Optional:** make `frontend-e2e` a required check.
