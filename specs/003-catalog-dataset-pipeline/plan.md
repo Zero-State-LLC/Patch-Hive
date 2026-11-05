@@ -1,49 +1,94 @@
 # Plan: 003-catalog-dataset-pipeline
 
-> **DRAFT, pending T001 confirmation.** An agent wrote this on 2026-11-03 from spec.md and the code on `main` at 3688037 (0.3.0-alpha.6). The owner has not approved it. T002 stays open until the owner confirms the spec (T001) and accepts this plan. If T001 changes spec.md, copy the carried sections again.
+An agent wrote this plan on 2026-11-03 and finished it on 2026-11-04 (T002) from spec.md, the [T001 record](T001_CONFIRMATION_2026-11-04.md) and the code on `main` at 007b437 (0.3.0-alpha.8). The agent confirmed the spec under the owner's delegation. The owner has not read it and approves by merging. Where the sections carried from spec.md disagree with the T001 record, the record wins until T090 amends spec.md. "Row" below means a row of that record.
 
 ## Stack (as built)
 
-- Backend: Python (CI runs 3.12), FastAPI, SQLAlchemy 2, Alembic migrations, Pydantic 2 (`backend/pyproject.toml`).
-- Database: Postgres 15 (Neon in staging and production, a Postgres service in CI); unit tests use SQLite fixtures (`backend/tests/conftest.py`).
+- Backend: Python 3.11 (`backend/Dockerfile`, and the CI jobs `backend`, `migrations` and `acceptance`), FastAPI, SQLAlchemy 2, Alembic migrations, Pydantic 2 (`backend/pyproject.toml`). `db-load.yml`, `db-migrate.yml` and `backend-lint` run 3.12.
+- Database: Postgres 15 (Neon in staging and production, a `postgres:15.13` service in CI); unit tests use SQLite fixtures (`backend/tests/conftest.py`).
 - Frontend: React 18, TypeScript, Vite, React Router (`frontend/package.json`).
 - Edge: the Cloudflare Worker in `edge/api` fronts the API (spec 006).
-- CI: `.github/workflows/ci.yml`, jobs `backend`, `frontend` and `frontend-e2e`. `just spec-dag` runs the task DAG check.
+- CI: `.github/workflows/ci.yml`, jobs `backend`, `migrations`, `acceptance`, `backend-lint`, `frontend` and `frontend-e2e`. `just spec-dag` runs the task DAG check; no workflow runs it.
 
 ## Architecture
 
-- **Fetch.** `data/synth-catalog/catalog_scrape.py` is the shared router: free HTTP first, then a paid backend only with a key and an unexpired approval in `data/synth-catalog/receipts/fetch-approvals.json` (T040). It applies the transport limits (content type, 10 MiB, public redirects only) and the ModularGrid deny list. `scripts/hermes_hp_enrich_firecrawl.py` targets official product pages. `scripts/catalog_maker_crawl.py` crawls maker sites and refuses a shared homepage (D6).
-- **Evidence.** Fetch output stays `EVIDENCE_ONLY` under `data/synth-catalog/hermes-research/`. Nothing there is loaded.
-- **Overlays and manifests.** Versioned files in `data/synth-catalog/overlays/` (HP, category, power, retirements) and `data/synth-catalog/provenance/` (maker corrections). They are never edited in place.
-- **Loader.** `data/synth-catalog/population.py` `build_plan` and `populate`: insert-if-absent, fill-null, reviewed corrections (D4), retirements (D3), `hp_source` markers, and a plan bound to `plan_hash` and `inputs_hash`. `scripts/import_catalog_population.py` runs it locally. `.github/workflows/db-load.yml` runs a dry run, then an apply that must match the reviewed hashes.
+- **Fetch.** `data/synth-catalog/catalog_scrape.py` is the shared router: free HTTP first, then a paid backend only with a key and an unexpired approval in `data/synth-catalog/receipts/fetch-approvals.json` (T040). It applies the transport limits (content type, 10 MiB, public redirects only) and the ModularGrid deny list. `scripts/hermes_hp_enrich_firecrawl.py` targets official product pages. `scripts/catalog_maker_crawl.py` crawls maker sites and refuses a shared homepage (D6). Firecrawl's proxy tier defaults to `auto` until the owner decides (row 30).
+- **Evidence.** Fetch output stays `EVIDENCE_ONLY` under `data/synth-catalog/hermes-research/`. The loader does not read scrape results. Builders (`scripts/build_maker_overlays.py`, `build_category_overlay.py`, `build_reattribution.py`) turn crawl data into overlays that are reviewed and committed.
+- **Overlays and manifests.** Versioned files in `data/synth-catalog/overlays/` (HP, category, power, retirements) and `data/synth-catalog/provenance/` (maker corrections). Not editing an applied version is a review convention; no check enforces it yet (row 5).
+- **Loader.** `data/synth-catalog/population.py` `build_plan` and `populate`: insert-if-absent, fill-null, reviewed corrections (D4), retirements (D3), `hp_source` markers, cases through `plan_cases`, and a plan bound to `plan_hash` and `inputs_hash`. `scripts/import_catalog_population.py` runs it locally. `.github/workflows/db-load.yml` (through `scripts/catalog_actions_load.py`) runs a dry run, then an apply that must match the reviewed hashes.
 - **Read side.** `backend/modules/catalog_routes.py` serves `module_catalog` (live rows only). `backend/racks/validation.py` blocks placement of an HP that needs reverification and warns on a retired module.
+- **Batch lifecycle.** A description of the process, not code (OQ-9). Scripts and `db-load.yml` run the steps. Only the row lifecycle is enforced in code and encoded in tests.
+
+`data-model.md` and `contracts/README.md` stay stubs: this plan adds no API route, and only the rollback below may add a table, which T090 would record there.
 
 ## Remaining work
 
-- Partial and Missing FRs (spec.md table): FR-002, FR-010, FR-014 to FR-018, FR-023 to FR-026, FR-029, FR-034 Partial; FR-017 (residual targets) and FR-031 (rollback) Missing.
-- D5 drift: the admin importers and three `scripts/apply_*` scripts still write catalog rows (spec.md, under the status table).
-- T031: rebuild the maker-crawl page cache, only when a change needs the crawl re-parsed, under an approved cap.
-- T039: the rows still marked `legacy_unsourced`, then removal of `UNSOURCED_HP_OVERLAYS`.
-- T090: converge the code against the confirmed spec.
+### T010: transition tests
+
+`backend/tests/unit/test_spec_003_transitions.py` already covers the row lifecycle and the hash binding. T010 closes when it also covers these two conflicts, which no committed test names:
+
+- `not_nullable`: a `null` action on a NOT NULL field (row 28).
+- `identity_mismatch` from `_schedule_catalog` (row 20).
+
+The batch machine stays out of these tests (row 1). The seed state has nothing to test until its wording settles (rows 22, 36), and that does not hold T010.
+
+### T090: converge code and spec
+
+Spec text first, in one PR, no code:
+
+1. Mark the batch table as a process description, and drop REJECTED as a state (rows 1, 6).
+2. Amend FR-002 to "paid backends need keys" (row 2), narrow FR-003 and SC-005 to paid fetches (row 10), and narrow FR-029 to the admission FRs (row 16).
+3. Add the `SEEDED` row and retire the "sealed" wording (row 22). Final wording follows counsel (row 36).
+4. Amend line 372 (row 28), and drop SCRIBE and ADVERSARY from Workflows (row 24).
+5. Clear the stale text the T001 record lists.
+
+Then code, each in its own PR with tests:
+
+6. A budget or key refusal is recorded as a refusal, not `not_found`, and `--resume` retries it (row 3).
+7. Mark Frap refused in `maker-sources.json` (row 27).
+8. Remove the writers that bypass the loader: the three `scripts/apply_*` scripts and the admin importers (rows 8, 26). If one is in use, stop and ask the owner.
+9. A filter step and a residual targets file (rows 4, 11).
+10. A check that an applied overlay does not change (row 5).
+11. A lasting copy of each load receipt (row 12).
+12. Rollback by run: retire the run's inserted rows and restore archived values, deleting nothing (row 13).
+13. A threat-model section in spec 003 and a catalog injection test (row 19).
+14. The other Partial FRs in spec.md's status table: FR-016 (store the incoming observation), FR-023 (`source_reference` on `module_catalog`), FR-025 (mark an inferred category), FR-026 (`is_available` on the canonical row), FR-034 (update the tags when a maker page confirms a lead).
+
+### Other open work
+
+- **T031.** PR #253 ran the offline pass and PR #250 settled nine two-category rows; 619 live rows still have no category on a load from committed inputs. The rest waits on rows 29 and 33.
+- **T039.** The rows still marked `legacy_unsourced`, then removal of `UNSOURCED_HP_OVERLAYS`. Waits on rows 34 and 35.
+- **006 T101b.** An owner-only GitHub setting: `production` and `staging` have no protection rules today (row 12). T090 cannot close it.
+
+### Held for the owner
+
+Open calls. This plan does not decide them, and nothing above assumes an answer. Defaults are in the T001 record.
+
+- Rows 29, 30: no maker page or feed reads until the permission basis and proxy tier are signed off (PR #254).
+- Rows 31, 32: the video and power-supply rows stay held.
+- Row 33: no paid catalog fetch; no approval entry covers a catalog brand.
+- Rows 34, 35: the legacy HP values and Akemie's Castle stay as they are.
+- Rows 36, 37: counsel, on keeping the scraped names and on whether the paged catalog API is bulk publication. Build no export meanwhile.
 
 ## Verification
 
-- `cd backend && pytest tests/unit/test_spec_003_transitions.py tests/test_catalog_population.py tests/test_catalog_corrections.py -q`.
-- `tests/test_catalog_scrape_router.py`, `tests/test_catalog_transport_limits.py`, `tests/test_crawl_shared_homepages.py`.
-- A `db-load.yml` dry run on staging before any apply.
+- `cd backend && PYTHONPATH=. pytest tests/unit/test_spec_003_transitions.py tests/test_catalog_corrections.py tests/test_catalog_scrape_router.py tests/test_catalog_transport_limits.py tests/test_crawl_shared_homepages.py tests/test_maker_crawl.py tests/unit/test_003_source_scope.py -q`.
+- `tests/test_catalog_population.py`: needs the throwaway Postgres at `127.0.0.1:5432` (it skips otherwise) and takes minutes. CI runs it.
+- A `db-load.yml` dry run on staging before any apply, with a go-ahead for each apply.
 - `just spec-dag`.
 
-## What T001 settles for this spec
+## What T001 settled
 
-- Every remaining `[INFERRED]` label in spec.md, in one sitting (OQ-8 `one_sitting`), including the Workflows skeleton.
-- D5: remove the importers and `apply_*` scripts that bypass the loader, or amend D5.
-- FR-002: amend it to "paid backends need keys", or make the job refuse without credentials.
-- FR-031: whether a rollback path is required, or the pre-apply dump checksum plus `catalog_value_archive` is enough.
-- OQ-1: provisional; the owner confirms what happens to the legacy HP values no maker page confirms.
+- Every remaining `[INFERRED]` line is classified in the [T001 record](T001_CONFIRMATION_2026-11-04.md). The labels stay in spec.md until T090 clears them.
+- Workflows skeleton: skills and CI confirmed, owners amended (rows 23, 24).
+- D5 stands: T090 removes the other writers (row 26).
+- FR-002: amend the text (row 2).
+- FR-031 stands: the pre-apply checksum cannot restore anything and `catalog_value_archive` holds no inserts, so a rollback path is still owed (row 13).
+- OQ-1 is still open (row 34).
 
 ## Carried forward from spec.md
 
-The sections below are copied from [spec.md](spec.md) without change.
+The sections below are copied from [spec.md](spec.md) without change. The T001 record classifies their `[INFERRED]` lines.
 
 ## Workflows
 
@@ -158,11 +203,11 @@ Privacy: catalog data is public product specs. Keep any private source material 
 
 ## Addendum: catalog corrections and one loader (2026-10-29)
 
-Scoped plan for T032–T033. Decisions: D4, D5 in spec.md; evidence in research.md R1–R2.
+Scoped plan for T032–T033, both done. Decisions: D4, D5 in spec.md; evidence in research.md R1–R2.
 
 Stack (unchanged):
 - **Loader:** Python, `data/synth-catalog/population.py`, plain SQL through SQLAlchemy `text()`.
-- **Database:** Postgres 15 (Neon); loads through `db-load.yml` (dry run, then apply bound to `plan_hash`).
+- **Database:** Postgres 15 (Neon); loads through `db-load.yml` (dry run, then apply bound to `plan_hash` and `inputs_hash`).
 - **Placement guard:** `backend/racks/validation.py`.
 
 **T032 (D5)**
@@ -170,10 +215,10 @@ Stack (unchanged):
 - Nothing calls them; the registry reads `module_catalog` (#114).
 
 **T033 (D4, FR-038)**
-- `ARCHIVE_ACTIONS` gains `correct`. An entry needs `field`, `only_if_value`, `value` and `evidence_url`. HP values must lie in 1–42 (FR-007).
+- `ARCHIVE_ACTIONS` gains `correct`. An entry needs `field`, `only_if_value`, `value` and `evidence_url`. A corrected HP must lie in 1–84 (FR-038, widened 2026-10-30; extraction keeps 1–42 under FR-007).
 - `_schedule_provenance` archives the current value as for every action. A follow-up `UPDATE` sets the field to `value` only where the archived copy (action `correct`) equals the current value, so a re-run, or a value changed since review, writes nothing. The archive row keeps the evidence URL in `source_tag`.
 - `hp_needs_reverify` blocks only while an `hp` flag row exists and no `hp` correct row does.
-- New manifest `provenance/maker-corrections-v1.json`, appended to `PROVENANCE_MANIFESTS`.
+- New manifest `provenance/maker-corrections-v1.json`, appended to `PROVENANCE_MANIFESTS` (now through v6).
 - Row lifecycle transition `FLAGGED -correct-> LIVE` (spec.md, Row lifecycle).
 
 Verification:
