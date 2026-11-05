@@ -1,7 +1,7 @@
-"""The owner's catalog taxonomy decisions of 2026-11-04 (5, 6, 7, 14 and 17).
+"""The owner's catalog taxonomy decisions of 2026-11-04 (5, 6, 7, 14, 17, 49, 50 and 51).
 
 VIDEO and SYSTEM in the vocabulary, the whole-tag and noise rules, the reviewed Mutable table,
-the category corrections and the Jolin retirement.
+the category corrections, the Jolin retirement, and a category reaching modules.module_type.
 """
 
 from __future__ import annotations
@@ -20,6 +20,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "data" / "synth-catalog"))
 
 import build_category_overlay as c  # noqa: E402
+import build_maker_overlays as B  # noqa: E402
 import population as P  # noqa: E402
 from core.database import get_db  # noqa: E402
 from main import app  # noqa: E402
@@ -32,6 +33,8 @@ REVIEWED_PATH = OVERLAYS / "module-catalog-category-v5.json"
 REVIEWED = json.loads(REVIEWED_PATH.read_text())
 CORRECTIONS_PATH = CATALOG / "provenance" / "category-corrections-v1.json"
 CORRECTIONS = json.loads(CORRECTIONS_PATH.read_text())
+FURTHER_VIDEO_PATH = CATALOG / "provenance" / "category-corrections-v2.json"
+FURTHER_VIDEO = json.loads(FURTHER_VIDEO_PATH.read_text())
 RETIREMENTS = json.loads((OVERLAYS / "catalog-retirements-v3.json").read_text())
 
 CATEGORIES = {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI", "VIDEO", "SYSTEM"}
@@ -89,18 +92,62 @@ NOISE_ROWS = {
     "nonlinearcircuits-1u-reverse-sigmoid": ("LFO", "noise_rule_a3"),
 }
 MUTABLE_DERIVED = {
-    "michigan-synth-works-microstreams": "VCA",
     "michigan-synth-works-microtides-8hp-tides-version-2": "LFO",
     "michigan-synth-works-nanorings-nrings-8hp-rings": "VCO",
-    "michigan-synth-works-plancks-ii": "VCA",
-    "michigan-synth-works-quarks-22hp-elements": "VCO",
-    "michigan-synth-works-twiigs": "UTIL",
-    "michigan-synth-works-twist-6hp-warps": "FX",
-    "plum-audio-apex": "ENV",
     "tall-dog-plaits-se": "VCO",
     "tall-dog-rings-se": "VCO",
-    "tlm-audio-modax-mutable-instruments-elements-clone": "VCO",
     "tlm-audio-physc-mutable-instruments-rings-clone": "VCO",
+}
+# Decision 50: nothing committed says what these do, so they wait for a maker page.
+MUTABLE_DERIVED_WITHOUT_A_SOURCE = {
+    "michigan-synth-works-microstreams",
+    "michigan-synth-works-plancks-ii",
+    "michigan-synth-works-quarks-22hp-elements",
+    "michigan-synth-works-twiigs",
+    "michigan-synth-works-twist-6hp-warps",
+    "plum-audio-apex",
+    "tlm-audio-modax-mutable-instruments-elements-clone",
+}
+# Decision 49: the row's own maker page says video (Formes: RGB, a video signal).
+FURTHER_VIDEO_ROWS = {
+    "afterlife-laboratories-video-calculator",
+    "dave-jones-design-jones-mvip",
+    "foxing-hour-abc",
+    "foxing-hour-felt",
+    "foxing-hour-shutter",
+    "foxing-hour-veil",
+    "hive-mind-synthesis-dvm-1u-12hp-dirty-video-mixer",
+    "hive-mind-synthesis-dvmdx",
+    "hive-mind-synthesis-pvt",
+    "hive-mind-synthesis-video-downer-1u-2hp-fixed-attenuator-for-video-synthesis",
+    "hive-mind-synthesis-video-downer-3u-2hp-quad-fixed-attenuator-for-video-synthesis",
+    "lzx-industries-mapper",
+    "lzx-industries-passage",
+    "lzx-industries-pendulum",
+    "lzx-industries-prismatic-ray",
+    "lzx-industries-topogram",
+    "lzx-industries-war-of-the-ants",
+    "syntonie-cbv001",
+    "syntonie-d-tail",
+    "syntonie-formes",
+    "syntonie-ondes",
+    "syntonie-stable",
+    "syntonie-vu001b",
+    "syntonie-vu001c",
+}
+# Decision 49: only the brand links these to video, and their own tags name another function.
+WEAK_VIDEO_EVIDENCE = {
+    "afterlife-laboratories-castle-circuits-2-100-101-111-combined-module",
+    "lzx-industries-cyclops",
+    "lzx-industries-dc-distro-3a",
+    "lzx-industries-dc-distro-5a",
+    "lzx-industries-sensory-translator",
+    "syntonie-animate",
+    "syntonie-cadrans",
+    "syntonie-matrice",
+    "syntonie-seuils",
+    "syntonie-solaire",
+    "syntonie-vu006",
 }
 FIRMWARE_PLATFORMS = {
     "apf-audio-eurorack-pmod",
@@ -258,7 +305,7 @@ def test_every_row_the_t031_pass_held_now_has_its_category() -> None:
 
 def test_the_reviewed_table_names_each_mutable_derived_row() -> None:
     entries = {e["slug"]: e for e in REVIEWED["entries"]}
-    assert REVIEWED["reviewed_by"] and REVIEWED["count"] == len(REVIEWED["entries"]) == len(entries) == 14
+    assert REVIEWED["reviewed_by"] and REVIEWED["count"] == len(REVIEWED["entries"]) == len(entries) == 7
     derived = {slug: e["category"] for slug, e in entries.items() if not slug.startswith("mutable-instruments-")}
     assert derived == MUTABLE_DERIVED
     own = {slug: e["category"] for slug, e in entries.items() if slug.startswith("mutable-instruments-")}
@@ -270,12 +317,30 @@ def test_each_reviewed_entry_says_what_the_module_does_and_cites_it() -> None:
         assert entry["basis"] == "review" and entry["does"] and entry["evidence"], entry["slug"]
         assert entry["source_url"].startswith("https://") and entry["content_sha256"], entry["slug"]
         assert all((CATALOG / cite).is_file() for cite in entry["cites"]), entry["slug"]
-        if entry["does_source"] == "maker_wording":
-            # The quote must really be in the committed file it cites, not reworded from memory.
-            assert any(entry["maker_quote"] in (CATALOG / cite).read_text() for cite in entry["cites"]), entry["slug"]
-        else:
-            assert entry["does_source"] == "reviewer_knowledge" and "maker_quote" not in entry, entry["slug"]
+        # Decision 50: every row quotes the maker, and the quote must really be in the committed
+        # file it cites. What the row says the module does is the maker's word, nothing added.
+        assert entry["does_source"] == "maker_wording", entry["slug"]
+        assert any(entry["maker_quote"] in (CATALOG / cite).read_text() for cite in entry["cites"]), entry["slug"]
+        assert entry["does"] in entry["maker_quote"], entry["slug"]
     assert "modulargrid" not in json.dumps(REVIEWED["entries"]).lower()
+
+
+def test_a_quote_gives_its_category_by_the_catalogs_own_rule_or_the_row_says_it_follows_rings() -> None:
+    for entry in REVIEWED["entries"]:
+        if entry["derived_from"] == "Rings":
+            # "Resonator" names no category. These follow the catalog's own Rings row.
+            additions = json.loads((OVERLAYS / "catalog-additions-v1.json").read_text())["rows"]
+            (rings,) = [row for row in additions if row["name"] == "Rings"]
+            assert entry["category"] == rings["category"] and "overlays/catalog-additions-v1.json" in entry["cites"]
+        else:
+            assert B.category([entry["does"]], "") == entry["category"], entry["slug"]
+
+
+def test_the_own_mutable_rows_are_quoted_from_their_own_maker_page() -> None:
+    cited = {e["source_url"]: e["verification"] for e in json.loads((OVERLAYS / "module-catalog-hp-v4.json").read_text())["entries"]}
+    for entry in REVIEWED["entries"]:
+        if entry["slug"].startswith("mutable-instruments-"):
+            assert entry["maker_quote"] in cited[entry["source_url"]], entry["slug"]
 
 
 def test_a_reviewed_table_is_never_regenerated() -> None:
@@ -307,12 +372,15 @@ def test_firmware_platforms_stay_empty(fresh) -> None:
 
 def test_these_overlays_leave_the_open_rows_for_a_maker_page() -> None:
     filled = {e["slug"] for e in RULES["entries"] + REVIEWED["entries"]}
-    assert not filled & (FIRMWARE_PLATFORMS | NEEDS_MAKER_PAGE | {"nekyia-circuits-ouija"})
+    assert not filled & (
+        FIRMWARE_PLATFORMS | NEEDS_MAKER_PAGE | MUTABLE_DERIVED_WITHOUT_A_SOURCE | {"nekyia-circuits-ouija"}
+    )
 
 
 def test_video_and_system_hold_the_rows_the_owner_named(fresh) -> None:
     _, catalog, _ = fresh
-    assert VIDEO_ROWS | set(VIDEO_CORRECTIONS) <= {s for s, r in catalog.items() if r.get("category") == "VIDEO"}
+    held = VIDEO_ROWS | set(VIDEO_CORRECTIONS) | FURTHER_VIDEO_ROWS
+    assert held <= {s for s, r in catalog.items() if r.get("category") == "VIDEO"}
     assert POWER_ROWS | {"alyseum-eole"} <= {s for s, r in catalog.items() if r.get("category") == "SYSTEM"}
 
 
@@ -333,10 +401,11 @@ def test_the_manifest_names_the_three_video_rows_and_the_backed_mutable_rows() -
     assert not set(catalog_rows) & set(MUTABLE_DEFERRED)
 
 
-def test_each_correction_covers_both_tables_and_cites_its_page() -> None:
-    assert len(CORRECTIONS["rows"]) == 10
+@pytest.mark.parametrize("manifest,rows", [(CORRECTIONS, 10), (FURTHER_VIDEO, 48)])
+def test_each_correction_covers_both_tables_and_cites_its_page(manifest, rows) -> None:
+    assert len(manifest["rows"]) == rows
     by_identity: dict[tuple[str, str], dict[str, dict]] = {}
-    for row in CORRECTIONS["rows"]:
+    for row in manifest["rows"]:
         (item,) = row["fields"]
         assert item["action"] == "correct" and item["value"] in CATEGORIES
         assert item["evidence_url"].startswith("https://") and len(item["source_tag"]) <= 200
@@ -370,6 +439,34 @@ def test_a_fresh_load_ends_with_the_corrected_value_in_both_tables(fresh) -> Non
     # Every manifest row is corrected, or has no module row to correct.
     assert stats["corrected_values"] + stats["rows_missing"] == len(CORRECTIONS["rows"])
     assert stats["value_not_matched"] == 0 and stats["refused_row_tombstoned"] == 0
+
+
+def test_decision_49_moves_the_rows_whose_own_page_says_video_and_no_others() -> None:
+    assert FURTHER_VIDEO_PATH in P.CATEGORY_CORRECTION_MANIFESTS
+    catalog_rows = {r["slug"]: r["fields"][0] for r in FURTHER_VIDEO["rows"] if r["table"] == "module_catalog"}
+    assert set(catalog_rows) == FURTHER_VIDEO_ROWS and len(FURTHER_VIDEO_ROWS) == 24
+    assert not set(catalog_rows) & WEAK_VIDEO_EVIDENCE
+    assert len(FURTHER_VIDEO_ROWS) + len(WEAK_VIDEO_EVIDENCE) == 35
+
+    crawl = json.loads((CATALOG / "hermes-research" / "maker-crawl-v2.json").read_text())
+    crawled = {m["source_url"]: m for brand in crawl["brands"] for m in brand.get("modules") or []}
+    for slug, item in catalog_rows.items():
+        page = crawled[item["evidence_url"]]
+        assert item["maker_tags"] == page["tags"] and item["content_sha256"] == page["content_sha256"], slug
+        says = {tag.strip().lower() for tag in page["tags"]}
+        assert "video" in says or (slug == "syntonie-formes" and "rgb" in says), slug
+    for row in FURTHER_VIDEO["rows"]:
+        assert row["fields"][0]["value"] == "VIDEO"
+
+
+def test_a_fresh_load_moves_the_further_video_rows_in_both_tables(fresh) -> None:
+    plan, catalog, modules = fresh
+    for slug in FURTHER_VIDEO_ROWS:
+        row = catalog[slug]
+        assert row["category"] == "VIDEO", slug
+        assert modules[(row["brand"], row["name"])]["module_type"] == "VIDEO", slug
+    stats = plan.provenance["category-corrections-v2"]
+    assert stats["corrected_values"] == 48 and stats["value_not_matched"] == 0 and stats["rows_missing"] == 0
 
 
 def test_a_correction_runs_after_the_insert_and_fill_it_replaces(fresh) -> None:
@@ -462,6 +559,104 @@ def test_correcting_a_category_never_clears_an_hp_or_power_flag() -> None:
     plan = _plan(_correction(), _catalog(needs_reverify=True))
     assert "clear_reverify" not in [op.kind for op in plan.ops]
     assert plan.provenance["test-category"]["reverify_clear_scheduled"] == 0
+
+
+# --- a category reaches modules.module_type (decision 51) -------------------------------------
+
+
+def _sync(module_type="UNKNOWN", category="VCF", source="SynthCatalogResearch", catalog_extra=None, module_extra=None):
+    catalog = {"acme-gate": {"brand": "Acme", "name": "Gate", "category": category, **(catalog_extra or {})}}
+    modules = {("Acme", "Gate"): {"brand": "Acme", "name": "Gate", "module_type": module_type, "source": source,
+                                  "_duplicate": False, **(module_extra or {})}}
+    plan = P.Plan()
+    P._schedule_module_type_sync(plan, catalog, modules)
+    return plan, modules[("Acme", "Gate")]
+
+
+def test_the_placeholder_takes_the_catalog_category_and_is_archived_first() -> None:
+    plan, module = _sync()
+    assert [op.kind for op in plan.ops] == ["archive_values", "update_module_type"]
+    archive, update = plan.ops
+    assert archive.params["batch"] == "module-type-sync-v1" and archive.params["e0"] == "UNKNOWN"
+    assert update.params["category"] == "VCF" and module["module_type"] == "VCF"
+    # The statement re-checks both guards when it runs, not only when it was planned.
+    assert "module_type = :placeholder" in update.sql and "source IN (:source_a, :source_b)" in update.sql
+    assert "status <> 'tombstoned'" in update.sql
+    assert plan.updates == {"module_type_from_category": 1}
+    assert plan.module_type_sync["synced"] == 1 and plan.module_type_sync["by_category"] == {"VCF": 1}
+    P.assert_safe_sql(P.render_plan(plan))
+
+
+@pytest.mark.parametrize(
+    "kwargs,counter",
+    [
+        ({"module_type": "UTIL"}, "left_alone_other_value"),  # a person, an importer or a correction set it
+        ({"source": "Admin"}, "left_alone_not_loader_row"),
+        ({"source": "ModuleCatalog"}, "left_alone_not_loader_row"),
+        ({"module_extra": {"_duplicate": True}}, "skipped_duplicate_module_row"),
+        ({"category": "NOISE"}, "skipped_outside_vocabulary"),
+    ],
+)
+def test_a_value_it_may_not_touch_stays_and_is_counted(kwargs, counter) -> None:
+    before = kwargs.get("module_type", "UNKNOWN")
+    plan, module = _sync(**kwargs)
+    assert plan.ops == [] and module["module_type"] == before
+    assert plan.module_type_sync[counter] == 1 and plan.module_type_sync["synced"] == 0
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"category": None},
+        {"catalog_extra": {"tombstoned": True}},
+        {"module_extra": {"status": "tombstoned"}},
+        {"module_type": "VCF"},  # already agrees: nothing to do and nothing to report
+    ],
+)
+def test_nothing_is_planned_without_a_live_category_to_copy(kwargs) -> None:
+    plan, _ = _sync(**kwargs)
+    assert plan.ops == [] and plan.module_type_sync["synced"] == 0
+    assert plan.module_type_sync["left_alone_other_value"] == 0
+
+
+def test_two_catalog_rows_that_disagree_leave_the_placeholder() -> None:
+    catalog = {
+        "acme-gate": {"brand": "Acme", "name": "Gate", "category": "VCF"},
+        "acme-gate-2": {"brand": "Acme", "name": "Gate", "category": "VCA"},
+    }
+    modules = {("Acme", "Gate"): {"module_type": "UNKNOWN", "source": "SynthCatalogResearch", "_duplicate": False}}
+    plan = P.Plan()
+    P._schedule_module_type_sync(plan, catalog, modules)
+    assert plan.ops == [] and plan.module_type_sync["skipped_catalog_rows_disagree"] == 1
+
+
+def test_a_corrected_category_reaches_a_module_row_still_holding_the_placeholder() -> None:
+    # The correction can't match UNKNOWN, so it leaves the module row, and the sync then writes it.
+    catalog = _catalog()
+    modules = {("Acme", "Gate"): {"brand": "Acme", "name": "Gate", "module_type": "UNKNOWN",
+                                  "source": "SynthCatalogResearch", "_duplicate": False}}
+    manifest = _correction()
+    manifest["rows"].append({"table": "modules", "brand": "Acme", "name": "Gate",
+                             "fields": [_correction(field="module_type")["rows"][0]["fields"][0]]})
+    plan = _plan(manifest, catalog, modules)
+    assert plan.provenance["test-category"]["value_not_matched"] == 1
+    P._schedule_module_type_sync(plan, catalog, modules)
+    assert modules[("Acme", "Gate")]["module_type"] == "VIDEO"
+
+
+def test_a_reviewed_correction_is_never_overwritten_by_the_sync() -> None:
+    catalog = _catalog(category="VIDEO")
+    modules = {("Acme", "Gate"): {"module_type": "VCF", "source": "SynthCatalogResearch", "_duplicate": False}}
+    plan = P.Plan()
+    P._schedule_module_type_sync(plan, catalog, modules)
+    assert plan.ops == [] and modules[("Acme", "Gate")]["module_type"] == "VCF"
+
+
+def test_a_load_from_empty_needs_no_sync(fresh) -> None:
+    # The inserts already take the category, so only a loaded database has anything to catch up.
+    plan, _, _ = fresh
+    assert plan.module_type_sync["synced"] == 0
+    assert "module_type_from_category" not in plan.updates
 
 
 # --- the retirement --------------------------------------------------------------------------

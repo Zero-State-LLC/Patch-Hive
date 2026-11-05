@@ -1,0 +1,1128 @@
+{
+ "batch": "category-corrections-v2",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page whose committed tags state it. The old value is archived first; a value changed since review is left alone. Nothing is deleted. Each row is corrected in module_catalog and in modules, because the patch engine reads modules.module_type. A row whose only link to video is its brand stays out and is listed in docs/evidence/CATALOG_TAXONOMY_DECISIONS_2026-11-04.md.",
+ "decided": "2026-11-04: owner decision 49 (docs/evidence/OWNER_DECISIONS_2026-11-04.md, #278). No page was fetched: the tags are the committed crawl's (hermes-research/maker-crawl-v2.json).",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "afterlife-laboratories-video-calculator",
+   "brand": "Afterlife Laboratories",
+   "name": "Video Calculator",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VIDEO",
+     "evidence_url": "https://www.afterlifelaboratories.com/shop/p/ihcqwq1ozdtuc3axrldrk49zmihgmy",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags mixer, video, matrix, oscillator",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "mixer",
+      "video",
+      "matrix",
+      "oscillator"
+     ],
+     "content_sha256": "0531a53081f7f17c04347b77231e0aa1b057c9d7a6c6c5c588996cb782e5e03b"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Afterlife Laboratories",
+   "name": "Video Calculator",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VIDEO",
+     "evidence_url": "https://www.afterlifelaboratories.com/shop/p/ihcqwq1ozdtuc3axrldrk49zmihgmy",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags mixer, video, matrix, oscillator",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "mixer",
+      "video",
+      "matrix",
+      "oscillator"
+     ],
+     "content_sha256": "0531a53081f7f17c04347b77231e0aa1b057c9d7a6c6c5c588996cb782e5e03b"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "dave-jones-design-jones-mvip",
+   "brand": "Dave Jones Design",
+   "name": "Jones MVIP",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "FX",
+     "value": "VIDEO",
+     "evidence_url": "https://www.jonesvideo.com/prod_mvip.html",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, processor, effects",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "processor",
+      "effects"
+     ],
+     "content_sha256": "4369f9d636dceaf49143d007dac25ed2fc3ce8fb7b7ad3b04e54c0cf7cc838f7"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Dave Jones Design",
+   "name": "Jones MVIP",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "FX",
+     "value": "VIDEO",
+     "evidence_url": "https://www.jonesvideo.com/prod_mvip.html",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, processor, effects",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "processor",
+      "effects"
+     ],
+     "content_sha256": "4369f9d636dceaf49143d007dac25ed2fc3ce8fb7b7ad3b04e54c0cf7cc838f7"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "foxing-hour-abc",
+   "brand": "Foxing Hour",
+   "name": "ABC",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "VIDEO",
+     "evidence_url": "https://foxinghour.com/products/abc-dual-a-b-c-video-mixer",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, mixer, dual",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "mixer",
+      "dual"
+     ],
+     "content_sha256": "6662a19d3952cc6561c8321aaaaaf7d995fc47280be071a478e07962a260f7b2"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Foxing Hour",
+   "name": "ABC",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "VIDEO",
+     "evidence_url": "https://foxinghour.com/products/abc-dual-a-b-c-video-mixer",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, mixer, dual",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "mixer",
+      "dual"
+     ],
+     "content_sha256": "6662a19d3952cc6561c8321aaaaaf7d995fc47280be071a478e07962a260f7b2"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "foxing-hour-felt",
+   "brand": "Foxing Hour",
+   "name": "FELT",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "VIDEO",
+     "evidence_url": "https://foxinghour.com/products/felt",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, filter, state variable, voltage controlled",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "filter",
+      "state variable",
+      "voltage controlled"
+     ],
+     "content_sha256": "2a5f7d7e5e14903b01f5f222603a87ebdf7d26873bcb3f77fdfbd19859bfdb03"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Foxing Hour",
+   "name": "FELT",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "VIDEO",
+     "evidence_url": "https://foxinghour.com/products/felt",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, filter, state variable, voltage controlled",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "filter",
+      "state variable",
+      "voltage controlled"
+     ],
+     "content_sha256": "2a5f7d7e5e14903b01f5f222603a87ebdf7d26873bcb3f77fdfbd19859bfdb03"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "foxing-hour-shutter",
+   "brand": "Foxing Hour",
+   "name": "SHUTTER",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VIDEO",
+     "evidence_url": "https://foxinghour.com/products/shutter-triple-2-1-video-multiplexer",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, multiplexer, switch, VC",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "multiplexer",
+      "switch",
+      "VC"
+     ],
+     "content_sha256": "4e42f12ee288a3ce51cb2305ba32941a24e752026feb33a2d359db200ae7828d"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Foxing Hour",
+   "name": "SHUTTER",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VIDEO",
+     "evidence_url": "https://foxinghour.com/products/shutter-triple-2-1-video-multiplexer",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, multiplexer, switch, VC",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "multiplexer",
+      "switch",
+      "VC"
+     ],
+     "content_sha256": "4e42f12ee288a3ce51cb2305ba32941a24e752026feb33a2d359db200ae7828d"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "foxing-hour-veil",
+   "brand": "Foxing Hour",
+   "name": "VEIL",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "VIDEO",
+     "evidence_url": "https://foxinghour.com/products/veil-priority-layering-video-mixer-w-variable-opacity",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, mixer, compositor, layering",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "mixer",
+      "compositor",
+      "layering"
+     ],
+     "content_sha256": "f909c83b17bd284c8d2ec0a959063e64309117476e03ef2d5237feadaff0f8fd"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Foxing Hour",
+   "name": "VEIL",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "VIDEO",
+     "evidence_url": "https://foxinghour.com/products/veil-priority-layering-video-mixer-w-variable-opacity",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, mixer, compositor, layering",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "mixer",
+      "compositor",
+      "layering"
+     ],
+     "content_sha256": "f909c83b17bd284c8d2ec0a959063e64309117476e03ef2d5237feadaff0f8fd"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "hive-mind-synthesis-dvm-1u-12hp-dirty-video-mixer",
+   "brand": "Hive Mind Synthesis",
+   "name": "DVM 1U 12HP Dirty Video Mixer",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "VIDEO",
+     "evidence_url": "https://hivemindsynthesis.com/shop/p/dvm-1u-12hp-dirty-video-mixer",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, mixer, passive, 1U",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "mixer",
+      "passive",
+      "1U"
+     ],
+     "content_sha256": "aee92196fd3a6a91cafa1ee3a79e2e42a465f9bd05a2496fb929a6d9a62555bd"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Hive Mind Synthesis",
+   "name": "DVM 1U 12HP Dirty Video Mixer",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "VIDEO",
+     "evidence_url": "https://hivemindsynthesis.com/shop/p/dvm-1u-12hp-dirty-video-mixer",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, mixer, passive, 1U",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "mixer",
+      "passive",
+      "1U"
+     ],
+     "content_sha256": "aee92196fd3a6a91cafa1ee3a79e2e42a465f9bd05a2496fb929a6d9a62555bd"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "hive-mind-synthesis-dvmdx",
+   "brand": "Hive Mind Synthesis",
+   "name": "DVMDX",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "VIDEO",
+     "evidence_url": "https://hivemindsynthesis.com/shop/p/dvmdx-1u-14hp-dirty-video-mixer-deluxe",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, mixer, passive, 1u",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "mixer",
+      "passive",
+      "1u"
+     ],
+     "content_sha256": "336483f577ad17a2758dc2e66c956d4710a88c143393603d5b224829d1f3f943"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Hive Mind Synthesis",
+   "name": "DVMDX",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "VIDEO",
+     "evidence_url": "https://hivemindsynthesis.com/shop/p/dvmdx-1u-14hp-dirty-video-mixer-deluxe",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, mixer, passive, 1u",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "mixer",
+      "passive",
+      "1u"
+     ],
+     "content_sha256": "336483f577ad17a2758dc2e66c956d4710a88c143393603d5b224829d1f3f943"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "hive-mind-synthesis-pvt",
+   "brand": "Hive Mind Synthesis",
+   "name": "PVT",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "VIDEO",
+     "evidence_url": "https://hivemindsynthesis.com/shop/p/pvt-passive-video-toolbox-standalone-3u-16hp-video-multi-mixer-and-gate-combo",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, mixer, gate, passive",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "mixer",
+      "gate",
+      "passive"
+     ],
+     "content_sha256": "169aaed8126dca9796b3e8afa6e0ab1a64c1f9e5a61a691244492598ab755897"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Hive Mind Synthesis",
+   "name": "PVT",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "VIDEO",
+     "evidence_url": "https://hivemindsynthesis.com/shop/p/pvt-passive-video-toolbox-standalone-3u-16hp-video-multi-mixer-and-gate-combo",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, mixer, gate, passive",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "mixer",
+      "gate",
+      "passive"
+     ],
+     "content_sha256": "169aaed8126dca9796b3e8afa6e0ab1a64c1f9e5a61a691244492598ab755897"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "hive-mind-synthesis-video-downer-1u-2hp-fixed-attenuator-for-video-synthesis",
+   "brand": "Hive Mind Synthesis",
+   "name": "Video Downer 1U 2HP Fixed Attenuator for Video Synthesis",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VIDEO",
+     "evidence_url": "https://hivemindsynthesis.com/shop/p/video-downer-1u-2hp-fixed-attenuator-for-video-synthesis",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags attenuator, video, 1U, passive",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "attenuator",
+      "video",
+      "1U",
+      "passive"
+     ],
+     "content_sha256": "e7e1f9f38ba8863f46e87dac08ea6ba8726a06259402b22ba4fd97d73929715a"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Hive Mind Synthesis",
+   "name": "Video Downer 1U 2HP Fixed Attenuator for Video Synthesis",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VIDEO",
+     "evidence_url": "https://hivemindsynthesis.com/shop/p/video-downer-1u-2hp-fixed-attenuator-for-video-synthesis",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags attenuator, video, 1U, passive",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "attenuator",
+      "video",
+      "1U",
+      "passive"
+     ],
+     "content_sha256": "e7e1f9f38ba8863f46e87dac08ea6ba8726a06259402b22ba4fd97d73929715a"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "hive-mind-synthesis-video-downer-3u-2hp-quad-fixed-attenuator-for-video-synthesis",
+   "brand": "Hive Mind Synthesis",
+   "name": "Video Downer 3U 2HP Quad Fixed Attenuator for Video Synthesis",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VIDEO",
+     "evidence_url": "https://hivemindsynthesis.com/shop/p/video-downer-3u-2hp-quad-fixed-attenuator-for-video-synthesis",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags attenuator, video, passive, quad",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "attenuator",
+      "video",
+      "passive",
+      "quad"
+     ],
+     "content_sha256": "3f71864a3566f38042bb3852b91fce35921da5486979b5aabad069fc8a544695"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Hive Mind Synthesis",
+   "name": "Video Downer 3U 2HP Quad Fixed Attenuator for Video Synthesis",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VIDEO",
+     "evidence_url": "https://hivemindsynthesis.com/shop/p/video-downer-3u-2hp-quad-fixed-attenuator-for-video-synthesis",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags attenuator, video, passive, quad",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "attenuator",
+      "video",
+      "passive",
+      "quad"
+     ],
+     "content_sha256": "3f71864a3566f38042bb3852b91fce35921da5486979b5aabad069fc8a544695"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "lzx-industries-mapper",
+   "brand": "LZX Industries",
+   "name": "Mapper",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VIDEO",
+     "evidence_url": "https://lzxindustries.net/modules/mapper",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags utility, color, translator, video",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "utility",
+      "color",
+      "translator",
+      "video"
+     ],
+     "content_sha256": "55d40f039f836c1f23e4307f279dac5479fd8d53aa9e14019c2a2a4f6f6b4fd0"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "LZX Industries",
+   "name": "Mapper",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VIDEO",
+     "evidence_url": "https://lzxindustries.net/modules/mapper",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags utility, color, translator, video",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "utility",
+      "color",
+      "translator",
+      "video"
+     ],
+     "content_sha256": "55d40f039f836c1f23e4307f279dac5479fd8d53aa9e14019c2a2a4f6f6b4fd0"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "lzx-industries-passage",
+   "brand": "LZX Industries",
+   "name": "Passage",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "VIDEO",
+     "evidence_url": "https://lzxindustries.net/modules/passage",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags mixer, processor, video, voltage",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "mixer",
+      "processor",
+      "video",
+      "voltage"
+     ],
+     "content_sha256": "4cbdac0951db7ec0457b248f270be986146e51815bfa270be4b87c20f4684e83"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "LZX Industries",
+   "name": "Passage",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "VIDEO",
+     "evidence_url": "https://lzxindustries.net/modules/passage",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags mixer, processor, video, voltage",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "mixer",
+      "processor",
+      "video",
+      "voltage"
+     ],
+     "content_sha256": "4cbdac0951db7ec0457b248f270be986146e51815bfa270be4b87c20f4684e83"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "lzx-industries-pendulum",
+   "brand": "LZX Industries",
+   "name": "Pendulum",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VIDEO",
+     "evidence_url": "https://lzxindustries.net/modules/pendulum",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags oscillator, video, crossfader, modulation",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "oscillator",
+      "video",
+      "crossfader",
+      "modulation"
+     ],
+     "content_sha256": "d9e943503eb0f31a47e9815c7e91a820f799da080226ea4d2bea123198393756"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "LZX Industries",
+   "name": "Pendulum",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VIDEO",
+     "evidence_url": "https://lzxindustries.net/modules/pendulum",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags oscillator, video, crossfader, modulation",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "oscillator",
+      "video",
+      "crossfader",
+      "modulation"
+     ],
+     "content_sha256": "d9e943503eb0f31a47e9815c7e91a820f799da080226ea4d2bea123198393756"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "lzx-industries-prismatic-ray",
+   "brand": "LZX Industries",
+   "name": "Prismatic Ray",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VIDEO",
+     "evidence_url": "https://lzxindustries.net/modules/prismatic-ray",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, sync, analog",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "sync",
+      "analog"
+     ],
+     "content_sha256": "b1aab09b960749376bbf8901a9ee050ed14a6a52fdd0adea3b55110f7c1abf57"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "LZX Industries",
+   "name": "Prismatic Ray",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VIDEO",
+     "evidence_url": "https://lzxindustries.net/modules/prismatic-ray",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, sync, analog",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "sync",
+      "analog"
+     ],
+     "content_sha256": "b1aab09b960749376bbf8901a9ee050ed14a6a52fdd0adea3b55110f7c1abf57"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "lzx-industries-topogram",
+   "brand": "LZX Industries",
+   "name": "Topogram",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "LFO",
+     "value": "VIDEO",
+     "evidence_url": "https://lzxindustries.net/modules/topogram",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags colorizer, video, LFO, CV",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "colorizer",
+      "video",
+      "LFO",
+      "CV"
+     ],
+     "content_sha256": "d47622426b5f0b42dc74fe35151bafe1839fba6c49aeb24019886801b7802dac"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "LZX Industries",
+   "name": "Topogram",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "LFO",
+     "value": "VIDEO",
+     "evidence_url": "https://lzxindustries.net/modules/topogram",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags colorizer, video, LFO, CV",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "colorizer",
+      "video",
+      "LFO",
+      "CV"
+     ],
+     "content_sha256": "d47622426b5f0b42dc74fe35151bafe1839fba6c49aeb24019886801b7802dac"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "lzx-industries-war-of-the-ants",
+   "brand": "LZX Industries",
+   "name": "War Of The Ants",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "VIDEO",
+     "evidence_url": "https://lzxindustries.net/modules/war-of-the-ants",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags noise, video, texture, generator",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "noise",
+      "video",
+      "texture",
+      "generator"
+     ],
+     "content_sha256": "7b5c38a8ce8cda6b54b17504168349a86ad9bee8490902dc1906137ab27be8ac"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "LZX Industries",
+   "name": "War Of The Ants",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "VIDEO",
+     "evidence_url": "https://lzxindustries.net/modules/war-of-the-ants",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags noise, video, texture, generator",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "noise",
+      "video",
+      "texture",
+      "generator"
+     ],
+     "content_sha256": "7b5c38a8ce8cda6b54b17504168349a86ad9bee8490902dc1906137ab27be8ac"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "syntonie-cbv001",
+   "brand": "Syntonie",
+   "name": "CBV001",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "FX",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/cbv001-circuit-bent-video-enhancer",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, enhancer, CV, distortion",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "enhancer",
+      "CV",
+      "distortion"
+     ],
+     "content_sha256": "2876ef0dcb1120cd68f158f70cca92650790b372c67657405930d626c04d8348"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Syntonie",
+   "name": "CBV001",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "FX",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/cbv001-circuit-bent-video-enhancer",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, enhancer, CV, distortion",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "enhancer",
+      "CV",
+      "distortion"
+     ],
+     "content_sha256": "2876ef0dcb1120cd68f158f70cca92650790b372c67657405930d626c04d8348"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "syntonie-d-tail",
+   "brand": "Syntonie",
+   "name": "Détail",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/detail",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, filter, enhancer, softener",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "filter",
+      "enhancer",
+      "softener"
+     ],
+     "content_sha256": "80e13ed0a959a9789553aa2880f9bcf935a59ae94c98a6807b5433372ec74077"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Syntonie",
+   "name": "Détail",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/detail",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, filter, enhancer, softener",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "filter",
+      "enhancer",
+      "softener"
+     ],
+     "content_sha256": "80e13ed0a959a9789553aa2880f9bcf935a59ae94c98a6807b5433372ec74077"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "syntonie-formes",
+   "brand": "Syntonie",
+   "name": "Formes",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/formes-triple-wave-shaper",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags wave shaper, oscillator, ramps, RGB; RGB is a video signal; 12 of Syntonie's 23 crawled modules are tagged video",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "wave shaper",
+      "oscillator",
+      "ramps",
+      "RGB"
+     ],
+     "content_sha256": "c03ea9e364f418768ac55f5e2da12b210bb79300aa6e3f02b0c52a5b81159183"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Syntonie",
+   "name": "Formes",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/formes-triple-wave-shaper",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags wave shaper, oscillator, ramps, RGB; RGB is a video signal; 12 of Syntonie's 23 crawled modules are tagged video",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "wave shaper",
+      "oscillator",
+      "ramps",
+      "RGB"
+     ],
+     "content_sha256": "c03ea9e364f418768ac55f5e2da12b210bb79300aa6e3f02b0c52a5b81159183"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "syntonie-ondes",
+   "brand": "Syntonie",
+   "name": "Ondes",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/ondes-dual-video-rate-oscillator",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags oscillator, video, dual, sync",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "oscillator",
+      "video",
+      "dual",
+      "sync"
+     ],
+     "content_sha256": "e6fea09183d005d6f3afdd9c6f3d82ac5a0bada2efd4aea89bb002cdee82957d"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Syntonie",
+   "name": "Ondes",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/ondes-dual-video-rate-oscillator",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags oscillator, video, dual, sync",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "oscillator",
+      "video",
+      "dual",
+      "sync"
+     ],
+     "content_sha256": "e6fea09183d005d6f3afdd9c6f3d82ac5a0bada2efd4aea89bb002cdee82957d"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "syntonie-stable",
+   "brand": "Syntonie",
+   "name": "Stable",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCA",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/stable",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags amplifier, glitch, video, CV",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "amplifier",
+      "glitch",
+      "video",
+      "CV"
+     ],
+     "content_sha256": "35ddf0c2168935082da65e4d90c01ea302b21fd228c96c61564f6cc4edddf802"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Syntonie",
+   "name": "Stable",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCA",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/stable",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags amplifier, glitch, video, CV",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "amplifier",
+      "glitch",
+      "video",
+      "CV"
+     ],
+     "content_sha256": "35ddf0c2168935082da65e4d90c01ea302b21fd228c96c61564f6cc4edddf802"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "syntonie-vu001b",
+   "brand": "Syntonie",
+   "name": "VU001B",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCA",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/vu001b",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, distribution, amplifier, RCA",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "distribution",
+      "amplifier",
+      "RCA"
+     ],
+     "content_sha256": "e4100c1314ac5128c7149d41f62985ff15106a37fe9b1b6668735d7ec8818111"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Syntonie",
+   "name": "VU001B",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCA",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/vu001b",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, distribution, amplifier, RCA",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "distribution",
+      "amplifier",
+      "RCA"
+     ],
+     "content_sha256": "e4100c1314ac5128c7149d41f62985ff15106a37fe9b1b6668735d7ec8818111"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "syntonie-vu001c",
+   "brand": "Syntonie",
+   "name": "VU001C",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCA",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/vu001c",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, distribution, amplifier",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "distribution",
+      "amplifier"
+     ],
+     "content_sha256": "14c3f5f716adefa6872265c67bc8d459410278dbefe33f4dfccbfb13488506b5"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Syntonie",
+   "name": "VU001C",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCA",
+     "value": "VIDEO",
+     "evidence_url": "https://syntonie.fr/products/vu001c",
+     "source_tag": "category-corrections-v2: owner decision 49 (2026-11-04); maker page tags video, distribution, amplifier",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "video",
+      "distribution",
+      "amplifier"
+     ],
+     "content_sha256": "14c3f5f716adefa6872265c67bc8d459410278dbefe33f4dfccbfb13488506b5"
+    }
+   ]
+  }
+ ]
+}

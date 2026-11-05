@@ -142,6 +142,7 @@ class Plan:
     verification: dict[str, int] = field(default_factory=dict)
     provenance: dict[str, dict[str, Any]] = field(default_factory=dict)
     power_configs: dict[str, Any] = field(default_factory=dict)
+    module_type_sync: dict[str, Any] = field(default_factory=dict)
 
     def add_insert(self, kind: str, op: Op) -> None:
         self.ops.append(op)
@@ -318,6 +319,9 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
         for entry in _load_optional(retirement_path).get("rows") or []:
             _schedule_retirement(plan, catalog, modules, entry)
 
+    # After every fill, correction and retirement above, so it reads each row's final state.
+    _schedule_module_type_sync(plan, catalog, modules)
+
     # Jumper settings attach to module rows, so they run after every module insert and
     # retirement above (spec 003 D8, T034).
     if POWER_CONFIG_RECEIPT.is_file():
@@ -368,6 +372,7 @@ PROVENANCE_MANIFESTS = (
 # Run after the category overlays and module inserts (see build_plan).
 CATEGORY_CORRECTION_MANIFESTS = (
     CATALOG / "provenance" / "category-corrections-v1.json",
+    CATALOG / "provenance" / "category-corrections-v2.json",
 )
 # A row's Module Category: module_catalog.category, and modules.module_type on the row the
 # patch engine reads. A manifest may only correct these, never null, flag or relabel them.
@@ -893,7 +898,7 @@ def _catalog_state(conn: Connection) -> dict[str, dict[str, Any]]:
 def _module_state(conn: Connection) -> dict[tuple[str, str], dict[str, Any]]:
     rows = conn.execute(
         text(
-            "SELECT brand, name, hp, module_type, power_12v_ma, power_neg12v_ma, power_5v_ma, depth_mm, "
+            "SELECT brand, name, hp, module_type, source, power_12v_ma, power_neg12v_ma, power_5v_ma, depth_mm, "
             "verification_status, verification_source_url, status, needs_reverify, source_reference "
             "FROM modules"
         )
@@ -1311,6 +1316,101 @@ def _category_update(slug: str, brand: str, name: str, category: str) -> Op:
     )
 
 
+# Owner decision 51. The loader inserts a module row whose catalog row has no category with
+# this placeholder, and nothing else in the repo writes it. Only these sources are its own.
+MODULE_TYPE_PLACEHOLDER = "UNKNOWN"
+LOADER_MODULE_SOURCES = ("SynthCatalogResearch", "CatalogCandidate")
+MODULE_TYPE_SYNC_BATCH = "module-type-sync-v1"
+
+
+def _schedule_module_type_sync(
+    plan: Plan,
+    catalog: dict[str, dict[str, Any]],
+    modules: dict[tuple[str, str], dict[str, Any]],
+) -> None:
+    """Copy a live catalog row's category onto its module row, over the placeholder only.
+
+    Any other value stays, whoever set it: a reviewed correction, an admin edit, or the
+    importers' default. A row the loader didn't write stays too. The old value is archived
+    first, so the batch lists every row this changed.
+    """
+    stats: dict[str, Any] = {
+        "synced": 0,
+        "by_category": {},
+        "left_alone_other_value": 0,
+        "left_alone_not_loader_row": 0,
+        "skipped_duplicate_module_row": 0,
+        "skipped_catalog_rows_disagree": 0,
+        "skipped_outside_vocabulary": 0,
+    }
+    plan.module_type_sync = stats
+    live: dict[tuple[str, str], list[tuple[str, str]]] = {}
+    for slug, row in catalog.items():
+        if row.get("category") and not row.get("tombstoned"):
+            live.setdefault((row["brand"], row["name"]), []).append((slug, str(row["category"])))
+    for key, module in sorted(modules.items()):
+        matches = live.get(key)
+        if not matches or module.get("status") == "tombstoned":
+            continue
+        categories = {category for _, category in matches}
+        if module.get("module_type") != MODULE_TYPE_PLACEHOLDER:
+            if module.get("module_type") not in categories:
+                stats["left_alone_other_value"] += 1
+            continue
+        if module.get("source") not in LOADER_MODULE_SOURCES:
+            stats["left_alone_not_loader_row"] += 1
+            continue
+        if module.get("_duplicate"):
+            stats["skipped_duplicate_module_row"] += 1
+            continue
+        if len(categories) > 1:
+            stats["skipped_catalog_rows_disagree"] += 1
+            continue
+        slug, category = sorted(matches)[0]
+        if category not in MODULE_CATEGORIES:
+            stats["skipped_outside_vocabulary"] += 1
+            continue
+        brand, name = key
+        _archive_row(
+            plan,
+            MODULE_TYPE_SYNC_BATCH,
+            "modules",
+            module_row_key(brand, name),
+            brand,
+            name,
+            [{
+                "field": "module_type",
+                "action": "fill",
+                "only_if_value": MODULE_TYPE_PLACEHOLDER,
+                "source_tag": f"module_catalog:{slug}"[:200],
+                "maker_check": "catalog_category",
+            }],
+        )
+        plan.add_update(
+            "module_type_from_category",
+            Op(
+                "update_module_type",
+                """
+                UPDATE modules
+                SET module_type = :category, updated_at = CURRENT_TIMESTAMP
+                WHERE brand = :brand AND name = :name AND status <> 'tombstoned'
+                  AND module_type = :placeholder AND source IN (:source_a, :source_b)
+                """,
+                {
+                    "brand": brand,
+                    "name": name,
+                    "category": category,
+                    "placeholder": MODULE_TYPE_PLACEHOLDER,
+                    "source_a": LOADER_MODULE_SOURCES[0],
+                    "source_b": LOADER_MODULE_SOURCES[1],
+                },
+            ),
+        )
+        module["module_type"] = category
+        stats["synced"] += 1
+        _bump(stats["by_category"], category)
+
+
 def _hp_update(slug: str, brand: str, name: str, hp: int) -> Op:
     return Op(
         "update_hp",
@@ -1401,6 +1501,7 @@ def _schedule_module(plan: Plan, modules: dict[tuple[str, str], dict[str, Any]],
         "name": name,
         "hp": int(row["hp"]),
         "module_type": row.get("module_type") or "UNKNOWN",
+        "source": row.get("source") or "SynthCatalogResearch",
         "power_12v_ma": row.get("power_12v_ma"),
         "power_neg12v_ma": row.get("power_neg12v_ma"),
         "power_5v_ma": row.get("power_5v_ma"),
@@ -2029,6 +2130,7 @@ def receipt_for(plan: Plan, *, database_url: str, apply: bool, cases: dict[str, 
         "verification_on_planned_modules": plan.verification,
         "provenance": plan.provenance,
         "power_configs": plan.power_configs,
+        "module_type_sync": plan.module_type_sync,
         "cases": cases,
         "destructive_sql": False,
     }

@@ -1,32 +1,12 @@
 {
  "dataset_version": "module-catalog-category-v5",
- "generated_from": "hand review: the 12 Mutable-derived rows the T031 offline pass left empty, and the 2 empty Mutable rows whose maker wording is committed",
- "decided": "2026-11-04: owner decision 17 (docs/evidence/OWNER_DECISIONS_2026-11-04.md, #278)",
+ "generated_from": "hand review: the 5 Mutable-derived rows whose maker wording is committed, and the 2 empty Mutable rows quoted from their own maker page",
+ "decided": "2026-11-04: owner decisions 17 and 50 (docs/evidence/OWNER_DECISIONS_2026-11-04.md, #278)",
  "reviewed_by": "Claude, offline, for the owner (no fetches)",
  "reviewed_at": "2026-11-04",
- "policy": "what each module does, from the maker's wording where committed data has it (does_source maker_wording) and from the reviewer's knowledge otherwise (does_source reviewer_knowledge: the free-reads PR confirms these against maker pages); fill-null only; no ModularGrid",
- "count": 14,
+ "policy": "what each module does, quoted from the maker's wording in committed data. A row resting only on a reviewer's knowledge stays out until a maker page confirms it (decision 50). Fill-null only; no ModularGrid",
+ "count": 7,
  "entries": [
-  {
-   "slug": "michigan-synth-works-microstreams",
-   "brand": "Michigan Synth Works",
-   "name": "MicroStreams",
-   "category": "VCA",
-   "basis": "review",
-   "derived_from": "Streams",
-   "does": "A dynamics gate: a VCA and low-pass gate driven by an envelope follower.",
-   "does_source": "reviewer_knowledge",
-   "tags": [
-    "streams",
-    "mutable"
-   ],
-   "source_url": "https://michigansynthworks.com/products/ustreams-8hp-streams",
-   "content_sha256": "e774efdd8b70e2d2ddac018e206e7271a53b31e863be857d33425d1aaf0ca958",
-   "evidence": "The maker URL reads ustreams-8hp-streams and the tags say streams, mutable. Low-pass gates are VCA (TAG_CATEGORY), and 2 of the 3 rows tagged dynamics are VCA.",
-   "cites": [
-    "hermes-research/maker-crawl-v2.json"
-   ]
-  },
   {
    "slug": "michigan-synth-works-microtides-8hp-tides-version-2",
    "brand": "Michigan Synth Works",
@@ -34,7 +14,7 @@
    "category": "LFO",
    "basis": "review",
    "derived_from": "Tides",
-   "does": "A tidal modulator: a function generator used as an LFO or envelope, up to audio rate.",
+   "does": "Tidal modulator",
    "does_source": "maker_wording",
    "maker_quote": "Revisions and variants 2014 2015 Key data Tidal modulator Parameter Value Width 14HP",
    "tags": [
@@ -55,7 +35,7 @@
    "category": "VCO",
    "basis": "review",
    "derived_from": "Rings",
-   "does": "A modal resonator: sounds on its own when triggered, or resonates an input.",
+   "does": "Resonator",
    "does_source": "maker_wording",
    "maker_quote": "Key data Resonator Parameter Value Width 14HP",
    "tags": [
@@ -63,114 +43,11 @@
    ],
    "source_url": "https://michigansynthworks.com/products/nanorings-8hp-rings",
    "content_sha256": "40ba9e71bea70516b37dfb888da81747b08785534a883dc6caae9f4bf959057c",
-   "evidence": "The maker URL reads nanorings-8hp-rings and the tag says rings. Filed with the catalog's own Rings row, which stays VCO until the free-reads PR reads the maker's page (resonator rows are split across FX and VCF, so committed data doesn't move it). Plucked-string voices are VCO (TAG_CATEGORY). If Rings moves, this row moves with a correct entry.",
+   "evidence": "The maker URL reads nanorings-8hp-rings and the tag says rings. The wording doesn't name a category: this row follows the catalog's own Rings row (VCO, overlays/catalog-additions-v1.json), which the free-reads PR checks against the maker's page. If Rings moves, this row moves with a correct entry.",
    "cites": [
     "hermes-research/maker-crawl-v2.json",
-    "hermes-research/unmatched-pass.json"
-   ]
-  },
-  {
-   "slug": "michigan-synth-works-plancks-ii",
-   "brand": "Michigan Synth Works",
-   "name": "Plancks II",
-   "category": "VCA",
-   "basis": "review",
-   "derived_from": "Frames",
-   "does": "A keyframer: four VCA channels whose levels follow stored keyframes, mixed to one output.",
-   "does_source": "reviewer_knowledge",
-   "tags": [
-    "frames",
-    "mutable",
-    "derivative"
-   ],
-   "source_url": "https://michigansynthworks.com/products/planks-ii-8hp-frames",
-   "content_sha256": "f35e4e06e34c72aab54e6983850f0a06b91f9117cb31c11b2ee2da93b191e106",
-   "evidence": "The maker URL reads planks-ii-8hp-frames and the tags say frames, mutable, derivative. Filed with the catalog's own Frames row (VCA), which the free-reads PR checks against the maker's page.",
-   "cites": [
-    "hermes-research/maker-crawl-v2.json"
-   ]
-  },
-  {
-   "slug": "michigan-synth-works-quarks-22hp-elements",
-   "brand": "Michigan Synth Works",
-   "name": "Quarks, 22HP Elements",
-   "category": "VCO",
-   "basis": "review",
-   "derived_from": "Elements",
-   "does": "A modal synthesis voice with its own exciter and resonator.",
-   "does_source": "reviewer_knowledge",
-   "tags": [
-    "elements",
-    "open source"
-   ],
-   "source_url": "https://michigansynthworks.com/products/quarks-22hp-elements",
-   "content_sha256": "a94985ae1cc581332e09cd0eb88ebf1032273021f612bc86d2f5aa6199bc34be",
-   "evidence": "The maker URL reads quarks-22hp-elements and the tag says elements. Voices are VCO (CATEGORY).",
-   "cites": [
-    "hermes-research/maker-crawl-v2.json"
-   ]
-  },
-  {
-   "slug": "michigan-synth-works-twiigs",
-   "brand": "Michigan Synth Works",
-   "name": "Twiigs",
-   "category": "UTIL",
-   "basis": "review",
-   "derived_from": "Branches",
-   "does": "A Bernoulli gate: routes each incoming gate to one of two outputs at random.",
-   "does_source": "reviewer_knowledge",
-   "tags": [
-    "bernoulli",
-    "gate",
-    "quad"
-   ],
-   "source_url": "https://michigansynthworks.com/products/twiigs-quad-bernoulli-gate",
-   "content_sha256": "b563409ccbebd978213c4ac27ec7c6fbd9aff0d1bb65f2e6b802d849db1dac0c",
-   "evidence": "The maker URL reads twiigs-quad-bernoulli-gate and the tags say bernoulli, gate, quad. It processes gates and makes none, like the logic and switch rows that are UTIL (CATEGORY).",
-   "cites": [
-    "hermes-research/maker-crawl-v2.json"
-   ]
-  },
-  {
-   "slug": "michigan-synth-works-twist-6hp-warps",
-   "brand": "Michigan Synth Works",
-   "name": "Twist, 6HP Warps",
-   "category": "FX",
-   "basis": "review",
-   "derived_from": "Warps",
-   "does": "A meta-modulator: cross-modulates two inputs by ring modulation, XOR and similar algorithms.",
-   "does_source": "reviewer_knowledge",
-   "tags": [
-    "warps",
-    "micromodule"
-   ],
-   "source_url": "https://michigansynthworks.com/products/twist-6hp-warps",
-   "content_sha256": "48560128a7625ac26009a002c4c79533be771452c7c9150afa20601fb4af982a",
-   "evidence": "The maker URL reads twist-6hp-warps and the tag says warps. Ring modulators are FX (TAG_CATEGORY).",
-   "cites": [
-    "hermes-research/maker-crawl-v2.json"
-   ]
-  },
-  {
-   "slug": "plum-audio-apex",
-   "brand": "Plum Audio",
-   "name": "Apex",
-   "category": "ENV",
-   "basis": "review",
-   "derived_from": "Peaks",
-   "does": "A dual function generator: envelopes, LFOs and drum shapes, by firmware mode.",
-   "does_source": "reviewer_knowledge",
-   "tags": [
-    "1U",
-    "Intellijel",
-    "Peaks",
-    "DMC"
-   ],
-   "source_url": "https://www.plum-audio.com/product-page/apex",
-   "content_sha256": "374cbc4c8210f045621448e793d465ceb1eb41be29cde3d23a31357b754fe105",
-   "evidence": "The tags say Peaks and DMC, and 16 of the 20 rows tagged function generator are ENV. Two Peaks clones tagged drum (MSW Pique, TLM CURVS) hold VCO from v1; those are unchanged.",
-   "cites": [
-    "hermes-research/maker-crawl-v2.json"
+    "hermes-research/unmatched-pass.json",
+    "overlays/catalog-additions-v1.json"
    ]
   },
   {
@@ -180,7 +57,7 @@
    "category": "VCO",
    "basis": "review",
    "derived_from": "Plaits",
-   "does": "A macro-oscillator.",
+   "does": "Macro-oscillator",
    "does_source": "maker_wording",
    "maker_quote": "Key data Macro-oscillator Parameter Value Width 12HP",
    "tags": [
@@ -189,7 +66,7 @@
    ],
    "source_url": "https://www.tall-dog.com/uPlaits_SE.html",
    "content_sha256": "91a55cccbe20970ea241f3323ada0f7c7377e8ed855d2f87ab7ecea4b531534f",
-   "evidence": "The name says µPlaits and the tags say mutable. The catalog's Plaits row is VCO, and so is every Plaits derivative that holds a category.",
+   "evidence": "The name says µPlaits and the tags say mutable. The catalog's rule sends oscillat* to VCO (CATEGORY).",
    "cites": [
     "hermes-research/maker-crawl-v2.json",
     "hermes-research/unmatched-pass.json"
@@ -202,7 +79,7 @@
    "category": "VCO",
    "basis": "review",
    "derived_from": "Rings",
-   "does": "A modal resonator: sounds on its own when triggered, or resonates an input.",
+   "does": "Resonator",
    "does_source": "maker_wording",
    "maker_quote": "Key data Resonator Parameter Value Width 14HP",
    "tags": [
@@ -211,32 +88,11 @@
    ],
    "source_url": "https://www.tall-dog.com/uRings_SE.html",
    "content_sha256": "bee7dcdc6a76d9abeb0855fb6fac78efb2ad65c8bdf79eef5ab836ceac8dbc20",
-   "evidence": "The name says µRings and the tags say rings, resonator. Filed with the catalog's own Rings row, which stays VCO until the free-reads PR reads the maker's page (resonator rows are split across FX and VCF, so committed data doesn't move it). Plucked-string voices are VCO (TAG_CATEGORY). If Rings moves, this row moves with a correct entry.",
+   "evidence": "The name says µRings and the tags say rings, resonator. The wording doesn't name a category: this row follows the catalog's own Rings row (VCO, overlays/catalog-additions-v1.json), which the free-reads PR checks against the maker's page. If Rings moves, this row moves with a correct entry.",
    "cites": [
     "hermes-research/maker-crawl-v2.json",
-    "hermes-research/unmatched-pass.json"
-   ]
-  },
-  {
-   "slug": "tlm-audio-modax-mutable-instruments-elements-clone",
-   "brand": "TLM Audio",
-   "name": "MODAX (Mutable Instruments Elements Clone)",
-   "category": "VCO",
-   "basis": "review",
-   "derived_from": "Elements",
-   "does": "A modal synthesis voice with its own exciter and resonator.",
-   "does_source": "reviewer_knowledge",
-   "tags": [
-    "resonator",
-    "exciter",
-    "stereo",
-    "clone"
-   ],
-   "source_url": "https://www.tlm-audio.com/product-page/modax-mutable-instruments-elements-clone",
-   "content_sha256": "43e268b8f5e47975050fae011b91397c3d56178996150361fbd2e6ca1662dbc6",
-   "evidence": "The name says Elements Clone and the tags say resonator, exciter. Voices are VCO (CATEGORY).",
-   "cites": [
-    "hermes-research/maker-crawl-v2.json"
+    "hermes-research/unmatched-pass.json",
+    "overlays/catalog-additions-v1.json"
    ]
   },
   {
@@ -246,7 +102,7 @@
    "category": "VCO",
    "basis": "review",
    "derived_from": "Rings",
-   "does": "A modal resonator: sounds on its own when triggered, or resonates an input.",
+   "does": "Resonator",
    "does_source": "maker_wording",
    "maker_quote": "Key data Resonator Parameter Value Width 14HP",
    "tags": [
@@ -255,10 +111,11 @@
    ],
    "source_url": "https://www.tlm-audio.com/product-page/physc-mutable-instruments-rings-clone",
    "content_sha256": "b83434ae2841512381bc824f7bbe28f63854d4f253db16d031079727ea4e8b71",
-   "evidence": "The name says Rings Clone. Filed with the catalog's own Rings row, which stays VCO until the free-reads PR reads the maker's page (resonator rows are split across FX and VCF, so committed data doesn't move it). Plucked-string voices are VCO (TAG_CATEGORY). If Rings moves, this row moves with a correct entry.",
+   "evidence": "The name says Rings Clone. The wording doesn't name a category: this row follows the catalog's own Rings row (VCO, overlays/catalog-additions-v1.json), which the free-reads PR checks against the maker's page. If Rings moves, this row moves with a correct entry.",
    "cites": [
     "hermes-research/maker-crawl-v2.json",
-    "hermes-research/unmatched-pass.json"
+    "hermes-research/unmatched-pass.json",
+    "overlays/catalog-additions-v1.json"
    ]
   },
   {
@@ -268,13 +125,13 @@
    "category": "VCF",
    "basis": "review",
    "derived_from": "(Mutable's own row)",
-   "does": "A liquid filter.",
+   "does": "Liquid filter",
    "does_source": "maker_wording",
    "maker_quote": "Key data Liquid filter Parameter Value Width 8HP",
    "tags": [],
    "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_original/",
    "content_sha256": "1c7112733a514637a7d0dcbb8222c11bdd70f7f8828649a80ee9e244a56c381e",
-   "evidence": "The quote is from this row's own maker page. The other Ripples row gets the same category from category-corrections-v1.",
+   "evidence": "The quote is from this row's own maker page: module-catalog-hp-v4 cites this URL. The catalog's rule sends filter to VCF (CATEGORY).",
    "cites": [
     "hermes-research/maker-crawl-v2.json",
     "overlays/module-catalog-hp-v4.json"
@@ -287,13 +144,13 @@
    "category": "LFO",
    "basis": "review",
    "derived_from": "(Mutable's own row)",
-   "does": "A tidal modulator: a function generator used as an LFO or envelope, up to audio rate.",
+   "does": "Tidal modulator",
    "does_source": "maker_wording",
    "maker_quote": "Revisions and variants 2014 2015 Key data Tidal modulator Parameter Value Width 14HP",
    "tags": [],
    "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_original/",
    "content_sha256": "d70e1b713f6c04038c3f34cc824ea69f886f1336a9d0053ac7e3632679ba5cbe",
-   "evidence": "The quote is from this row's own maker page. The catalog's rule sends modulat* to LFO (CATEGORY), the same call as the Tides (2014 version) correction.",
+   "evidence": "The quote is from this row's own maker page: module-catalog-hp-v4 cites this URL. The catalog's rule sends modulat* to LFO (CATEGORY).",
    "cites": [
     "hermes-research/maker-crawl-v2.json",
     "overlays/module-catalog-hp-v4.json"
