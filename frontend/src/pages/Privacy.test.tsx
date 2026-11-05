@@ -73,9 +73,7 @@ describe("PrivacyPage", () => {
     expect(screen.getByText(/An expired photo is refused/)).toHaveTextContent(
       /That job isn.t scheduled yet/,
     );
-    expect(screen.getByText(/A photo you upload is decoded/)).toHaveTextContent(
-      /any JPEG comment/,
-    );
+    expect(screen.getByText(/A photo you upload is decoded/)).toHaveTextContent(/any JPEG comment/);
   });
 
   it("points people to the delete control on the account page", () => {
