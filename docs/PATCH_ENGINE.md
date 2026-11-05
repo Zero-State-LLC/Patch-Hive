@@ -104,6 +104,7 @@ analyzer.noise_sources # Noise generators
 - Based on `module.module_type` field (e.g., "VCO", "VCF", "VCA")
 - Case-insensitive substring matching
 - Modules can belong to multiple categories
+- VIDEO and SYSTEM match no keyword, so a module in either category occupies HP in the rack and joins no patch
 
 ### Step 2: Patch Type Selection
 

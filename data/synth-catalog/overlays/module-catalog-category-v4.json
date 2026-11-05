@@ -1,0 +1,682 @@
+{
+ "dataset_version": "module-catalog-category-v4",
+ "generated_from": "hermes-research/maker-crawl-v2.json",
+ "decided": "2026-11-04: owner decisions 5, 6, 14 and 17 (docs/evidence/OWNER_DECISIONS_2026-11-04.md, #278)",
+ "policy": "maker's own page tags and store taxonomy (whole-tag match), name and URL path; fill-null only; ambiguous rows left empty; video rows VIDEO and power rows SYSTEM; no ModularGrid",
+ "count": 48,
+ "entries": [
+  {
+   "slug": "afterlife-laboratories-video-keyer",
+   "brand": "Afterlife Laboratories",
+   "name": "Video Keyer",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "video",
+    "keyer",
+    "luma",
+    "voltage control"
+   ],
+   "source_url": "https://www.afterlifelaboratories.com/shop/p/hl4bv3y8wojoz25w26o9dwmoee97xh",
+   "content_sha256": "a11e83cd09b9d99c0a4e52b783ffe376794dac311b8c73ddf10de2183b997a82"
+  },
+  {
+   "slug": "aircraft-designs-dc-high-quality-power-supply",
+   "brand": "Aircraft Designs",
+   "name": "DC High-Quality Power Supply",
+   "category": "SYSTEM",
+   "basis": "owner_power",
+   "tags": [
+    "power supply",
+    "eurorack",
+    "low-noise"
+   ],
+   "source_url": "https://aircraftdesigns.info/dc",
+   "content_sha256": "758a472db5f17004171f2d9d451a55c0d7d8485136adc00f683fab4d6b3c6335"
+  },
+  {
+   "slug": "alyseum-eole",
+   "brand": "Alyseum",
+   "name": "EOLE",
+   "category": "SYSTEM",
+   "basis": "owner_tag",
+   "tags": [
+    "ventilation",
+    "temperature",
+    "fan",
+    "monitor"
+   ],
+   "source_url": "https://www.alyseum.com/eole.html",
+   "content_sha256": "e9b79e5291f432e77d9286f3430f9d02f7e28e94c52e4c5a5d6220a89ec5eaa2"
+  },
+  {
+   "slug": "eowave-source-d-energie",
+   "brand": "Eowave",
+   "name": "SOURCE D'ENERGIE",
+   "category": "SYSTEM",
+   "basis": "owner_power",
+   "tags": [
+    "power",
+    "supply"
+   ],
+   "source_url": "https://www.eowave.com/modules/source",
+   "content_sha256": "d195cc450f19468e680ff233e83fcd310c2e1ef50072a4543ece3ff14d5844f9"
+  },
+  {
+   "slug": "eowave-source-mk3",
+   "brand": "Eowave",
+   "name": "SOURCE MK3",
+   "category": "SYSTEM",
+   "basis": "owner_power",
+   "tags": [
+    "power",
+    "supply"
+   ],
+   "source_url": "https://www.eowave.com/modules/sourcemk3",
+   "content_sha256": "f462a2f949096800f587df24fbf278d2ea35824ef6a9d9a52d648a3e6e2b4625"
+  },
+  {
+   "slug": "feed-me-synthesis-parasitic-power",
+   "brand": "Feed me Synthesis",
+   "name": "parasitic power",
+   "category": "SYSTEM",
+   "basis": "owner_power",
+   "tags": [
+    "power"
+   ],
+   "source_url": "https://www.feed-me-synthesis.co.uk/product/parasitic-power",
+   "content_sha256": "ce52028239e2359004149f52cea951c94f7667b84cd6f5cce7f88275185e368b"
+  },
+  {
+   "slug": "feedback-reset",
+   "brand": "Feedback",
+   "name": "RESET",
+   "category": "SYSTEM",
+   "basis": "owner_power",
+   "tags": [
+    "power",
+    "on/off"
+   ],
+   "source_url": "https://feedback-modules.myshopify.com/products/reset",
+   "content_sha256": "1f937064122506928e971455b9a7de0b2b20842ec7e8434708bc918c11eca1db"
+  },
+  {
+   "slug": "lzx-industries-doorway",
+   "brand": "LZX Industries",
+   "name": "Doorway",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "video",
+    "keyer",
+    "compositor"
+   ],
+   "source_url": "https://lzxindustries.net/modules/doorway",
+   "content_sha256": "d0118cffb8c1827e176bd290751ace75e5f59dbd748a2ef92fca96d868d23132"
+  },
+  {
+   "slug": "lzx-industries-esg3",
+   "brand": "LZX Industries",
+   "name": "ESG3",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "video",
+    "sync",
+    "generator"
+   ],
+   "source_url": "https://lzxindustries.net/modules/esg3",
+   "content_sha256": "fcf97916947d2313a77dcfb566af2e1d73337332e55f9efd81f76126919b9986"
+  },
+  {
+   "slug": "lzx-industries-liquid-tv",
+   "brand": "LZX Industries",
+   "name": "Liquid TV",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "video",
+    "monitor",
+    "preview",
+    "driver"
+   ],
+   "source_url": "https://lzxindustries.net/modules/liquid-tv",
+   "content_sha256": "441a87851e0f017d96921ade0746e0efce9b0ad87f2a128879d420d92371482c"
+  },
+  {
+   "slug": "lzx-industries-marble-index",
+   "brand": "LZX Industries",
+   "name": "Marble Index",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "video",
+    "compositing",
+    "generator",
+    "depth"
+   ],
+   "source_url": "https://lzxindustries.net/modules/marble-index",
+   "content_sha256": "909af2f8ef8a15a4ef80e0c2b98e9613dfe4d256c309175042f2d1346b19035c"
+  },
+  {
+   "slug": "lzx-industries-navigator",
+   "brand": "LZX Industries",
+   "name": "Navigator",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "video",
+    "synthesis",
+    "analog",
+    "transform"
+   ],
+   "source_url": "https://lzxindustries.net/modules/navigator",
+   "content_sha256": "c3923ba3329211d2cd70b51a12d81c6334e5ccf8747eeb48eceadfcf24f585be"
+  },
+  {
+   "slug": "lzx-industries-p",
+   "brand": "LZX Industries",
+   "name": "P",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "slide pot"
+   ],
+   "source_url": "https://lzxindustries.net/modules/p",
+   "content_sha256": "0f9f4d2f9d9ab0a1c5dbd71fe12acfc927daee524c1ab28c6894a1bdd24e5f80"
+  },
+  {
+   "slug": "lzx-industries-pab",
+   "brand": "LZX Industries",
+   "name": "PAB",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "video",
+    "synthesis"
+   ],
+   "source_url": "https://lzxindustries.net/modules/pab",
+   "content_sha256": "e8ee1f3a63a7b4222d8672f7dd6a13162ba5a7a600c7bc35d6cf5e8daa55bed7"
+  },
+  {
+   "slug": "lzx-industries-polar-fringe",
+   "brand": "LZX Industries",
+   "name": "Polar Fringe",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "chroma key",
+    "analog",
+    "video",
+    "processor"
+   ],
+   "source_url": "https://lzxindustries.net/modules/polar-fringe",
+   "content_sha256": "8d31c0c1bc7ac9d52f375cbea543c071c6937904446d35a911e66cc2a621fb43"
+  },
+  {
+   "slug": "lzx-industries-prm",
+   "brand": "LZX Industries",
+   "name": "PRM",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "video",
+    "processor",
+    "synthesis"
+   ],
+   "source_url": "https://lzxindustries.net/modules/prm",
+   "content_sha256": "11fe66df43e9ea45811b8f3684b45d41fcf6b01765d96f65a81d020a16e427eb"
+  },
+  {
+   "slug": "lzx-industries-shapechanger",
+   "brand": "LZX Industries",
+   "name": "Shapechanger",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "analog",
+    "computing",
+    "video",
+    "processor"
+   ],
+   "source_url": "https://lzxindustries.net/modules/shapechanger",
+   "content_sha256": "384f70cb8829117ca9310a6a6760ab77259a863fab516a2ef695cfa727147229"
+  },
+  {
+   "slug": "lzx-industries-sumdist",
+   "brand": "LZX Industries",
+   "name": "SumDist",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "video",
+    "synthesis"
+   ],
+   "source_url": "https://lzxindustries.net/modules/sumdist",
+   "content_sha256": "5895c01afdf0b775a44e1186734401f69d9f33c3b8ce8ddb8b33c1369978faed"
+  },
+  {
+   "slug": "lzx-industries-swatch",
+   "brand": "LZX Industries",
+   "name": "Swatch",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "color",
+    "video",
+    "synthesis"
+   ],
+   "source_url": "https://lzxindustries.net/modules/swatch",
+   "content_sha256": "43a314a7cada866babf61c6fc70fbc23271843425ddcb48b235dfd906b43ffd5"
+  },
+  {
+   "slug": "lzx-industries-tbc2",
+   "brand": "LZX Industries",
+   "name": "TBC2",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "video",
+    "time-base",
+    "sync"
+   ],
+   "source_url": "https://lzxindustries.net/modules/tbc2",
+   "content_sha256": "1fab6da972cec7f6d9a57913b6e381656bdff350a36275f366576463ef127296"
+  },
+  {
+   "slug": "m-rk-modules-usb-power-1u-black-panel",
+   "brand": "Mörk Modules",
+   "name": "USB Power 1U black panel",
+   "category": "SYSTEM",
+   "basis": "owner_power",
+   "tags": [
+    "USB",
+    "power",
+    "1U"
+   ],
+   "source_url": "https://morkmodules.com/products/usb-power-1u-black-panel",
+   "content_sha256": "221fe9d05d372de91925da5f3bbe30e7a8e670e66f6850aea61ff5fc50ac23de"
+  },
+  {
+   "slug": "modulaire-maritime-r-k",
+   "brand": "Modulaire Maritime",
+   "name": "R / K",
+   "category": "MIX",
+   "basis": "owner_tag",
+   "tags": [
+    "crossfader",
+    "VC",
+    "1U"
+   ],
+   "source_url": "https://www.modulaire-maritime.com/product-page/r-k",
+   "content_sha256": "334796dcf637c30ace695a61450c14397bc606d5101a6e5b2267b0cfebefb7de"
+  },
+  {
+   "slug": "modulaire-maritime-vc-crossfader",
+   "brand": "Modulaire Maritime",
+   "name": "VC Crossfader",
+   "category": "MIX",
+   "basis": "owner_tag",
+   "tags": [
+    "crossfader",
+    "vc",
+    "1u"
+   ],
+   "source_url": "https://www.modulaire-maritime.com/fr/product-page/r-k",
+   "content_sha256": "4cec897767413fda69d1c13f180627ea6501896162b7b5c05f06c169491d8ae1"
+  },
+  {
+   "slug": "nonlinearcircuits-1u-difference-rectifier",
+   "brand": "Nonlinearcircuits",
+   "name": "1u Difference Rectifier",
+   "category": "UTIL",
+   "basis": "owner_tag",
+   "tags": [
+    "rectifier"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/1u-diff-rect",
+   "content_sha256": "027088420d59bc523fa698b1da56f8ecb2cd7d0f8636670b0672a5ab2a8bbc2b"
+  },
+  {
+   "slug": "nonlinearcircuits-1u-reverse-sigmoid",
+   "brand": "Nonlinearcircuits",
+   "name": "1u Reverse Sigmoid",
+   "category": "LFO",
+   "basis": "noise_rule_a3",
+   "tags": [
+    "chaos",
+    "CV",
+    "noise",
+    "1u"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/reversesigmoid",
+   "content_sha256": "48b3958bec33eb7fd175c8d0b87b32ee052fae88bc0139df391925bf652c7d09"
+  },
+  {
+   "slug": "nonlinearcircuits-genie",
+   "brand": "Nonlinearcircuits",
+   "name": "GENiE",
+   "category": "UTIL",
+   "basis": "owner_tag",
+   "tags": [
+    "neuron",
+    "extrapolator",
+    "rectifier"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/genie",
+   "content_sha256": "c91c514d7bb7f7a1d191d89f0ddfa576855a73920cd5f8839f6c7b9a3caff885"
+  },
+  {
+   "slug": "nonlinearcircuits-ldrama",
+   "brand": "Nonlinearcircuits",
+   "name": "LDRama",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "LDR",
+    "CV",
+    "video"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/ldrama",
+   "content_sha256": "b328e88d560808df95c239eb6b0bbf497632bb8f50c3a39395cb500bc4c7243c"
+  },
+  {
+   "slug": "nonlinearcircuits-let-s-splosh",
+   "brand": "Nonlinearcircuits",
+   "name": "Let’s Splosh",
+   "category": "UTIL",
+   "basis": "owner_tag",
+   "tags": [
+    "rectifier",
+    "CV",
+    "audio"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/lets-splosh",
+   "content_sha256": "a109e1106396883c2e22ce10e416ae680be305b3a9c68a84be7d04e7b6bebf2f"
+  },
+  {
+   "slug": "nonlinearcircuits-pseudo",
+   "brand": "Nonlinearcircuits",
+   "name": "PSEUDO",
+   "category": "LFO",
+   "basis": "noise_rule_a3",
+   "tags": [
+    "noise",
+    "random",
+    "pattern",
+    "generator"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/pseudo",
+   "content_sha256": "17c99d8fdde78549bdffc56b2d9bd016ee3d35da6db8d6e947ee608aaeebb07e"
+  },
+  {
+   "slug": "nonlinearcircuits-splish",
+   "brand": "Nonlinearcircuits",
+   "name": "SPLISH",
+   "category": "UTIL",
+   "basis": "owner_tag",
+   "tags": [
+    "CV",
+    "rectifier"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/splish",
+   "content_sha256": "098a7e7e2a54d1ba25cd7c687b056e27ebefe5ddb0796c2c22dbf1c4586f9d8e"
+  },
+  {
+   "slug": "rides-in-the-storm-cli",
+   "brand": "Rides in the Storm",
+   "name": "CLI",
+   "category": "UTIL",
+   "basis": "owner_tag",
+   "tags": [
+    "clipper",
+    "rectifier",
+    "matrix"
+   ],
+   "source_url": "https://rides-in-the-storm.de/modules/cli",
+   "content_sha256": "60eb950724a68e385c70e70cb35d313d24c1176dc7acfb29475128904218259f"
+  },
+  {
+   "slug": "sonocurrent-m-c3a",
+   "brand": "Sonocurrent",
+   "name": "M C3A",
+   "category": "MIX",
+   "basis": "owner_tag",
+   "tags": [
+    "crossfader",
+    "array",
+    "voltage-controlled"
+   ],
+   "source_url": "https://www.sonocurrent.com/mc3a",
+   "content_sha256": "bf22515d3587be53614954e5f0291ff73626ed9b2ea715e720d9ae4956b3da7b"
+  },
+  {
+   "slug": "soundmachines-silta",
+   "brand": "Soundmachines",
+   "name": "SILTA",
+   "category": "SYSTEM",
+   "basis": "owner_power",
+   "tags": [
+    "power supply",
+    "eurorack"
+   ],
+   "source_url": "https://www.sound-machines.it/product/silta/",
+   "content_sha256": "c2cc42466524bd358afddce126f3dca28b78a2219fd81d98c39539b0941c6dc9"
+  },
+  {
+   "slug": "st-modular-pow",
+   "brand": "ST Modular",
+   "name": "POW!",
+   "category": "SYSTEM",
+   "basis": "owner_power",
+   "tags": [
+    "power",
+    "usb",
+    "psu"
+   ],
+   "source_url": "https://www.st-modular.de/modules/pow!",
+   "content_sha256": "25480afa13218bef8e1ed104b02d0b0855b9b1a13895e0faf9465fcf1027a3a8"
+  },
+  {
+   "slug": "st-modular-usb",
+   "brand": "ST Modular",
+   "name": "USB",
+   "category": "SYSTEM",
+   "basis": "owner_power",
+   "tags": [
+    "USB",
+    "power"
+   ],
+   "source_url": "https://www.st-modular.de/modules/usb",
+   "content_sha256": "e67c623f456bbcb6cbea806ed5739acaa4167822ce4ee25363aa7d9d961d1a4f"
+  },
+  {
+   "slug": "steady-state-fate-quantum-rainbow-2",
+   "brand": "Steady State Fate",
+   "name": "Quantum Rainbow 2",
+   "category": "VCO",
+   "basis": "noise_rule_a2",
+   "tags": [
+    "noise",
+    "random"
+   ],
+   "source_url": "https://steadystatefate.com/products/quantum-rainbow-2",
+   "content_sha256": "9c935e7cc4c0061136d85dc4662889b34c69c8271433772293a6b7e3610ab505"
+  },
+  {
+   "slug": "syntonie-combines",
+   "brand": "Syntonie",
+   "name": "Combines",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "combiner",
+    "video",
+    "RGB",
+    "analog"
+   ],
+   "source_url": "https://syntonie.fr/products/combines-triple-analog-combiner",
+   "content_sha256": "9ba91043493e71cc30c83114450a1ab8c760650b1f0e141120939fe51d73a7be"
+  },
+  {
+   "slug": "syntonie-courbes",
+   "brand": "Syntonie",
+   "name": "Courbes",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "shaper",
+    "expo",
+    "log",
+    "triple"
+   ],
+   "source_url": "https://syntonie.fr/products/courbes",
+   "content_sha256": "1b761293f7f13614123aa849dd75fd846dde89e5706a8b1b7f0c6c7dbc0e422c"
+  },
+  {
+   "slug": "syntonie-entr-e",
+   "brand": "Syntonie",
+   "name": "Entrée",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "video",
+    "processor",
+    "RGB",
+    "luma"
+   ],
+   "source_url": "https://syntonie.fr/products/entree-component-to-rgb-luma-processor",
+   "content_sha256": "645fca56f1eb5f7f833f0b13145d4802b61131848c03eec8b1aa57425b391200"
+  },
+  {
+   "slug": "syntonie-isoh-lie",
+   "brand": "Syntonie",
+   "name": "Isohélie",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "posterizer",
+    "video",
+    "bitswap"
+   ],
+   "source_url": "https://syntonie.fr/products/isohelie",
+   "content_sha256": "9d7c5c8b50eae950903095a9a1a23d7b732460445824b4a03371939daffe5aa0"
+  },
+  {
+   "slug": "syntonie-rampes",
+   "brand": "Syntonie",
+   "name": "Rampes",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "ramp",
+    "sync",
+    "video",
+    "generator"
+   ],
+   "source_url": "https://syntonie.fr/products/rampes-ramp-generator-sync-extractor",
+   "content_sha256": "6195fabf369f407caff45a9bbc171158166a7eb29f9dfd01ca48216531d3063e"
+  },
+  {
+   "slug": "syntonie-sortie",
+   "brand": "Syntonie",
+   "name": "Sortie",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "sync",
+    "encoder",
+    "video",
+    "generator"
+   ],
+   "source_url": "https://syntonie.fr/products/sortie-sync-generator-rgb-encoder",
+   "content_sha256": "81e589d7a676a9919f56849a9292ee6e8c938e4909ec27c16fc0b38bf46795e2"
+  },
+  {
+   "slug": "syntonie-vu003b",
+   "brand": "Syntonie",
+   "name": "VU003B",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "video",
+    "decoder",
+    "luma",
+    "processor"
+   ],
+   "source_url": "https://syntonie.fr/products/vu003b-component-to-rgb-decoder-luma-processor",
+   "content_sha256": "27c730801690aa32ab3e69f5f4abbbee120a99ff8d03edc327417df4d6612071"
+  },
+  {
+   "slug": "syntonie-vu007",
+   "brand": "Syntonie",
+   "name": "VU007",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "encoder",
+    "RGB",
+    "component",
+    "DIY"
+   ],
+   "source_url": "https://syntonie.fr/products/vu007-rgb2component",
+   "content_sha256": "fc238b4587322c622974b5e414e2dc836338cb20cb3b714c4460a8b98f4a9dc9"
+  },
+  {
+   "slug": "syntonie-vu008",
+   "brand": "Syntonie",
+   "name": "VU008",
+   "category": "VIDEO",
+   "basis": "owner_video",
+   "tags": [
+    "phase shifter",
+    "ramp",
+    "dual"
+   ],
+   "source_url": "https://syntonie.fr/products/vu008-dual-ramp-phase-shifter",
+   "content_sha256": "7f74dd41252343e01d3763c03d0f8908233386d69dac394c2c9e93955c6c0ae8"
+  },
+  {
+   "slug": "vpme-de-upwr",
+   "brand": "vpme.de",
+   "name": "UPWR",
+   "category": "SYSTEM",
+   "basis": "owner_power",
+   "tags": [
+    "power",
+    "usb-c",
+    "supply"
+   ],
+   "source_url": "https://vpme.de/upwr/",
+   "content_sha256": "82d5b89d940bd896b26b22c97c0ae509732c069380031c57bd48ae407a6461f2"
+  },
+  {
+   "slug": "wgd-modular-stv",
+   "brand": "WGD Modular",
+   "name": "STV",
+   "category": "SYSTEM",
+   "basis": "owner_power",
+   "tags": [
+    "power",
+    "DIY",
+    "USB-C",
+    "supply"
+   ],
+   "source_url": "https://wgdmodular.de/module/stv/",
+   "content_sha256": "87cce86ca94a43669076b22df93406d98e34a9a0eb9d94b0de31e4536a6021e9"
+  },
+  {
+   "slug": "wildsync-noise",
+   "brand": "Wildsync",
+   "name": "NOISE",
+   "category": "VCO",
+   "basis": "noise_rule_a1",
+   "tags": [
+    "noise",
+    "random"
+   ],
+   "source_url": "https://wildsyncgear.com/wildsync-noise/",
+   "content_sha256": "c4553bda285028ec8af27883beb17ecf781d1e7f8affb536027bb34ec31e0cea"
+  }
+ ]
+}

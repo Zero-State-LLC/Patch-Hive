@@ -1,0 +1,92 @@
+{
+ "dataset_version": "module-catalog-category-v5",
+ "generated_from": "hand review: the 2 Mutable-derived rows whose maker wording gives their category, and the 2 empty Mutable rows quoted from their own maker page",
+ "decided": "2026-11-04: owner decisions 17, 50 and 55 (docs/evidence/OWNER_DECISIONS_2026-11-04.md, #278)",
+ "reviewed_by": "Claude, offline, for the owner (no fetches)",
+ "reviewed_at": "2026-11-04",
+ "policy": "what each module does, quoted from the maker's wording in committed data, with the category following from that wording by the catalog's own rule. A row resting only on a reviewer's knowledge, or on wording that names no category, stays out until a maker page settles it (decisions 50 and 55). Fill-null only; no ModularGrid",
+ "count": 4,
+ "entries": [
+  {
+   "slug": "michigan-synth-works-microtides-8hp-tides-version-2",
+   "brand": "Michigan Synth Works",
+   "name": "MicroTides, 8HP Tides Version 2",
+   "category": "LFO",
+   "basis": "review",
+   "derived_from": "Tides",
+   "does": "Tidal modulator",
+   "does_source": "maker_wording",
+   "maker_quote": "Revisions and variants 2014 2015 Key data Tidal modulator Parameter Value Width 14HP",
+   "tags": [
+    "Tides"
+   ],
+   "source_url": "https://michigansynthworks.com/products/microtides-8hp-tides-ii",
+   "content_sha256": "4b6c0951b8d35e7cd004ac2fe1e6a1aa5c76905da78e2e28eb52ca7832e1bc85",
+   "evidence": "The maker URL reads microtides-8hp-tides-ii and the tag says Tides. The wording is from Mutable's page for the first Tides. The catalog's rule sends modulat* to LFO (CATEGORY), the same call as the Tides (2014 version) correction.",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "overlays/module-catalog-hp-v4.json"
+   ]
+  },
+  {
+   "slug": "tall-dog-plaits-se",
+   "brand": "Tall Dog",
+   "name": "µPlaits SE",
+   "category": "VCO",
+   "basis": "review",
+   "derived_from": "Plaits",
+   "does": "Macro-oscillator",
+   "does_source": "maker_wording",
+   "maker_quote": "Key data Macro-oscillator Parameter Value Width 12HP",
+   "tags": [
+    "mutable",
+    "eurorack"
+   ],
+   "source_url": "https://www.tall-dog.com/uPlaits_SE.html",
+   "content_sha256": "91a55cccbe20970ea241f3323ada0f7c7377e8ed855d2f87ab7ecea4b531534f",
+   "evidence": "The name says µPlaits and the tags say mutable. The catalog's rule sends oscillat* to VCO (CATEGORY).",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "hermes-research/unmatched-pass.json"
+   ]
+  },
+  {
+   "slug": "mutable-instruments-ripples-original",
+   "brand": "Mutable instruments",
+   "name": "Ripples_Original",
+   "category": "VCF",
+   "basis": "review",
+   "derived_from": "(Mutable's own row)",
+   "does": "Liquid filter",
+   "does_source": "maker_wording",
+   "maker_quote": "Key data Liquid filter Parameter Value Width 8HP",
+   "tags": [],
+   "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_original/",
+   "content_sha256": "1c7112733a514637a7d0dcbb8222c11bdd70f7f8828649a80ee9e244a56c381e",
+   "evidence": "The quote is from this row's own maker page: module-catalog-hp-v4 cites this URL. The catalog's rule sends filter to VCF (CATEGORY).",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "overlays/module-catalog-hp-v4.json"
+   ]
+  },
+  {
+   "slug": "mutable-instruments-tides-original",
+   "brand": "Mutable instruments",
+   "name": "Tides_Original",
+   "category": "LFO",
+   "basis": "review",
+   "derived_from": "(Mutable's own row)",
+   "does": "Tidal modulator",
+   "does_source": "maker_wording",
+   "maker_quote": "Revisions and variants 2014 2015 Key data Tidal modulator Parameter Value Width 14HP",
+   "tags": [],
+   "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_original/",
+   "content_sha256": "d70e1b713f6c04038c3f34cc824ea69f886f1336a9d0053ac7e3632679ba5cbe",
+   "evidence": "The quote is from this row's own maker page: module-catalog-hp-v4 cites this URL. The catalog's rule sends modulat* to LFO (CATEGORY).",
+   "cites": [
+    "hermes-research/maker-crawl-v2.json",
+    "overlays/module-catalog-hp-v4.json"
+   ]
+  }
+ ]
+}

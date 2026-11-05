@@ -36,6 +36,21 @@ def test_db_load_workflow_contract() -> None:
     assert "neon-db-${{ inputs.target }}" in migrate
 
 
+def test_actions_summary_reports_the_module_type_sync() -> None:
+    # Decision 51: the summary is what the owner reads before approving a production load.
+    import sys
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import catalog_actions_load as loader
+
+    sync = {"synced": 55, "by_category": {"VIDEO": 24}, "left_alone_other_value": 3, "left_alone_not_loader_row": 1}
+    receipt = {"plan_hash": "a", "inputs_hash": "b", "conflicts_total": 0, "run_id": "r", "module_type_sync": sync}
+    summary = loader._summary({"modules": 1}, {"modules": 1}, "dry-run", "prod", receipt)
+    assert "module_type set from the catalog category: 55 {'VIDEO': 24}" in summary
+    assert "left alone: 3 with another value, 1 not loader rows" in summary
+    assert "row_key" not in summary  # counts only: the repo and its artifacts are public
+
+
 def test_actions_summary_shape(tmp_path: Path) -> None:
     import sys
 

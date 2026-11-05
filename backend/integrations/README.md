@@ -195,6 +195,8 @@ Supported `module_type` values:
 - `SAMP` - Sampler
 - `UTIL` - Utility
 - `QUAD` - Quad module (multiple identical units)
+- `VIDEO` - Video synthesis (joins no patch)
+- `SYSTEM` - Rack infrastructure such as power and fans (joins no patch)
 
 ## Adding New Modules
 

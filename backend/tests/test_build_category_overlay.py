@@ -16,7 +16,7 @@ import build_category_overlay as c  # noqa: E402
 import population as P  # noqa: E402
 
 OVERLAY = ROOT / "data" / "synth-catalog" / "overlays" / "module-catalog-category-v1.json"
-CATEGORIES = {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI"}
+CATEGORIES = {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI", "VIDEO", "SYSTEM"}
 
 
 @pytest.mark.parametrize(

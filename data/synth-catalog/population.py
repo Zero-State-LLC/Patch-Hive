@@ -27,6 +27,11 @@ CATALOG = Path(__file__).resolve().parent
 ROOT = CATALOG.parents[1]
 VERIFICATION_STATUSES = {"verified", "corrected", "flagged", "unverified"}
 POWER_FIELDS = ("power_12v_ma", "power_neg12v_ma", "power_5v_ma", "depth_mm")
+# The Module Category vocabulary. VIDEO and SYSTEM are the owner's decisions 5 and 14
+# (2026-11-04). A category overlay or correction naming anything else is a conflict.
+MODULE_CATEGORIES = frozenset(
+    {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI", "VIDEO", "SYSTEM"}
+)
 AFFECTED_TABLES = (
     "catalog_value_archive",
     "manufacturers",
@@ -137,6 +142,7 @@ class Plan:
     verification: dict[str, int] = field(default_factory=dict)
     provenance: dict[str, dict[str, Any]] = field(default_factory=dict)
     power_configs: dict[str, Any] = field(default_factory=dict)
+    module_type_sync: dict[str, Any] = field(default_factory=dict)
 
     def add_insert(self, kind: str, op: Op) -> None:
         self.ops.append(op)
@@ -298,11 +304,23 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
                 continue
             _schedule_power(plan, catalog, modules, entry)
 
+    # Category corrections run after every insert and fill above, unlike the manifests at
+    # the top of this plan. On a fresh database those run while the catalog is still empty,
+    # and the fill-null overlays would then store the very value being corrected.
+    for manifest_path in CATEGORY_CORRECTION_MANIFESTS:
+        if manifest_path.is_file():
+            _schedule_provenance(
+                plan, catalog, modules, _load(manifest_path), _archive_state(conn, manifest_path), history
+            )
+
     # Retirements run last, so a row this plan inserts (a fresh database) is
     # tombstoned in the same transaction.
     for retirement_path in sorted((CATALOG / "overlays").glob("catalog-retirements-v*.json")):
         for entry in _load_optional(retirement_path).get("rows") or []:
             _schedule_retirement(plan, catalog, modules, entry)
+
+    # After every fill, correction and retirement above, so it reads each row's final state.
+    _schedule_module_type_sync(plan, catalog, modules)
 
     # Jumper settings attach to module rows, so they run after every module insert and
     # retirement above (spec 003 D8, T034).
@@ -351,6 +369,15 @@ PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "maker-corrections-v5.json",
     CATALOG / "provenance" / "maker-corrections-v6.json",
 )
+# Run after the category overlays and module inserts (see build_plan).
+CATEGORY_CORRECTION_MANIFESTS = (
+    CATALOG / "provenance" / "category-corrections-v1.json",
+    CATALOG / "provenance" / "category-corrections-v2.json",
+    CATALOG / "provenance" / "category-corrections-v3.json",
+)
+# A row's Module Category: module_catalog.category, and modules.module_type on the row the
+# patch engine reads. A manifest may only correct these, never null, flag or relabel them.
+CATEGORY_FIELDS = {"category", "module_type"}
 ARCHIVE_FIELDS = {
     "modules": {
         "hp",
@@ -360,8 +387,9 @@ ARCHIVE_FIELDS = {
         "depth_mm",
         "verification_status",
         "verification_source_url",
+        "module_type",
     },
-    "module_catalog": {"hp"},
+    "module_catalog": {"hp", "category"},
 }
 NULLABLE = {"modules": set(POWER_FIELDS) | {"verification_source_url"}, "module_catalog": {"hp"}}
 ARCHIVE_ACTIONS = {"null", "keep", "flag", "relabel", "correct"}
@@ -381,6 +409,8 @@ def _correction_problem(table: str, item: dict[str, Any]) -> str | None:
             return "correction_hp_outside_band"
     if item["field"] == "verification_source_url" and not str(item["value"]).startswith("https://"):
         return "correction_bad_url"
+    if item["field"] in CATEGORY_FIELDS and item["value"] not in MODULE_CATEGORIES:
+        return "correction_bad_category"
     return None
 ROW_MARKER = "*"
 
@@ -507,8 +537,10 @@ def _schedule_provenance(
             continue
         # A corrected row leaves FLAGGED once every flagged field is fixed (research R8).
         # Checked on every run, so a correction applied before this rule existed counts too.
+        # A flag is about HP or power, so correcting a category never clears one.
         if state is not None and state.get("needs_reverify") and any(
-            item.get("action") == "correct" for item in row.get("fields") or []
+            item.get("action") == "correct" and item.get("field") not in CATEGORY_FIELDS
+            for item in row.get("fields") or []
         ):
             resolved.append((table, row_key, brand, name, state))
         # A row is processed once per batch. Rows inserted later (or fields filled
@@ -529,6 +561,9 @@ def _schedule_provenance(
                 continue
             if action == "null" and field_name not in NULLABLE[table]:
                 plan.conflict(table=table, field=field_name, reason="not_nullable")
+                continue
+            if field_name in CATEGORY_FIELDS and action != "correct":
+                plan.conflict(table=table, field=field_name, reason="category_only_corrected")
                 continue
             if action == "correct" and (problem := _correction_problem(table, item)):
                 plan.conflict(table=table, field=field_name, reason=problem)
@@ -864,7 +899,7 @@ def _catalog_state(conn: Connection) -> dict[str, dict[str, Any]]:
 def _module_state(conn: Connection) -> dict[tuple[str, str], dict[str, Any]]:
     rows = conn.execute(
         text(
-            "SELECT brand, name, hp, power_12v_ma, power_neg12v_ma, power_5v_ma, depth_mm, "
+            "SELECT brand, name, hp, module_type, source, power_12v_ma, power_neg12v_ma, power_5v_ma, depth_mm, "
             "verification_status, verification_source_url, status, needs_reverify, source_reference "
             "FROM modules"
         )
@@ -1190,6 +1225,9 @@ def _schedule_category(plan: Plan, catalog: dict[str, dict[str, Any]], entry: di
     category = entry.get("category")
     if not category:
         return
+    if category not in MODULE_CATEGORIES:
+        plan.conflict(table="module_catalog", slug=slug, reason="category_outside_vocabulary")
+        return
     row = catalog.get(slug) if slug else None
     if row is None:
         _bump(plan.unmatched, "category")
@@ -1277,6 +1315,101 @@ def _category_update(slug: str, brand: str, name: str, category: str) -> Op:
         """,
         {"slug": slug, "brand": brand, "name": name, "category": category[:50], "updated_at": _stamp()},
     )
+
+
+# Owner decision 51. The loader inserts a module row whose catalog row has no category with
+# this placeholder, and nothing else in the repo writes it. Only these sources are its own.
+MODULE_TYPE_PLACEHOLDER = "UNKNOWN"
+LOADER_MODULE_SOURCES = ("SynthCatalogResearch", "CatalogCandidate")
+MODULE_TYPE_SYNC_BATCH = "module-type-sync-v1"
+
+
+def _schedule_module_type_sync(
+    plan: Plan,
+    catalog: dict[str, dict[str, Any]],
+    modules: dict[tuple[str, str], dict[str, Any]],
+) -> None:
+    """Copy a live catalog row's category onto its module row, over the placeholder only.
+
+    Any other value stays, whoever set it: a reviewed correction, an admin edit, or the
+    importers' default. A row the loader didn't write stays too. The old value is archived
+    first, so the batch lists every row this changed.
+    """
+    stats: dict[str, Any] = {
+        "synced": 0,
+        "by_category": {},
+        "left_alone_other_value": 0,
+        "left_alone_not_loader_row": 0,
+        "skipped_duplicate_module_row": 0,
+        "skipped_catalog_rows_disagree": 0,
+        "skipped_outside_vocabulary": 0,
+    }
+    plan.module_type_sync = stats
+    live: dict[tuple[str, str], list[tuple[str, str]]] = {}
+    for slug, row in catalog.items():
+        if row.get("category") and not row.get("tombstoned"):
+            live.setdefault((row["brand"], row["name"]), []).append((slug, str(row["category"])))
+    for key, module in sorted(modules.items()):
+        matches = live.get(key)
+        if not matches or module.get("status") == "tombstoned":
+            continue
+        categories = {category for _, category in matches}
+        if module.get("module_type") != MODULE_TYPE_PLACEHOLDER:
+            if module.get("module_type") not in categories:
+                stats["left_alone_other_value"] += 1
+            continue
+        if module.get("source") not in LOADER_MODULE_SOURCES:
+            stats["left_alone_not_loader_row"] += 1
+            continue
+        if module.get("_duplicate"):
+            stats["skipped_duplicate_module_row"] += 1
+            continue
+        if len(categories) > 1:
+            stats["skipped_catalog_rows_disagree"] += 1
+            continue
+        slug, category = sorted(matches)[0]
+        if category not in MODULE_CATEGORIES:
+            stats["skipped_outside_vocabulary"] += 1
+            continue
+        brand, name = key
+        _archive_row(
+            plan,
+            MODULE_TYPE_SYNC_BATCH,
+            "modules",
+            module_row_key(brand, name),
+            brand,
+            name,
+            [{
+                "field": "module_type",
+                "action": "fill",
+                "only_if_value": MODULE_TYPE_PLACEHOLDER,
+                "source_tag": f"module_catalog:{slug}"[:200],
+                "maker_check": "catalog_category",
+            }],
+        )
+        plan.add_update(
+            "module_type_from_category",
+            Op(
+                "update_module_type",
+                """
+                UPDATE modules
+                SET module_type = :category, updated_at = CURRENT_TIMESTAMP
+                WHERE brand = :brand AND name = :name AND status <> 'tombstoned'
+                  AND module_type = :placeholder AND source IN (:source_a, :source_b)
+                """,
+                {
+                    "brand": brand,
+                    "name": name,
+                    "category": category,
+                    "placeholder": MODULE_TYPE_PLACEHOLDER,
+                    "source_a": LOADER_MODULE_SOURCES[0],
+                    "source_b": LOADER_MODULE_SOURCES[1],
+                },
+            ),
+        )
+        module["module_type"] = category
+        stats["synced"] += 1
+        _bump(stats["by_category"], category)
 
 
 def _hp_update(slug: str, brand: str, name: str, hp: int) -> Op:
@@ -1368,6 +1501,8 @@ def _schedule_module(plan: Plan, modules: dict[tuple[str, str], dict[str, Any]],
         "brand": brand,
         "name": name,
         "hp": int(row["hp"]),
+        "module_type": row.get("module_type") or "UNKNOWN",
+        "source": row.get("source") or "SynthCatalogResearch",
         "power_12v_ma": row.get("power_12v_ma"),
         "power_neg12v_ma": row.get("power_neg12v_ma"),
         "power_5v_ma": row.get("power_5v_ma"),
@@ -1996,6 +2131,7 @@ def receipt_for(plan: Plan, *, database_url: str, apply: bool, cases: dict[str, 
         "verification_on_planned_modules": plan.verification,
         "provenance": plan.provenance,
         "power_configs": plan.power_configs,
+        "module_type_sync": plan.module_type_sync,
         "cases": cases,
         "destructive_sql": False,
     }

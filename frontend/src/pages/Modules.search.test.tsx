@@ -55,7 +55,7 @@ function holdRequests() {
   return pending;
 }
 
-function renderPage(entry = "/modules") {
+function renderPage(entry = "/modules", categories: string[] = ["VCO"]) {
   catalogStats.mockResolvedValue({
     data: {
       total_modules: 2,
@@ -66,7 +66,9 @@ function renderPage(entry = "/modules") {
     },
   });
   catalogBrands.mockResolvedValue({ data: { total: 1, brands: [{ name: "Sim Co" }] } });
-  catalogCategories.mockResolvedValue({ data: { total: 1, categories: [{ name: "VCO" }] } });
+  catalogCategories.mockResolvedValue({
+    data: { total: categories.length, categories: categories.map((name) => ({ name })) },
+  });
   return render(
     <MemoryRouter initialEntries={[entry]}>
       <ModulesPage />
@@ -113,6 +115,23 @@ describe("module search", () => {
     await act(async () => {});
     expect(screen.getByText(/Showing 1 of 1/)).toBeInTheDocument();
     expect(screen.queryByText(/Showing 2 of 2/)).not.toBeInTheDocument();
+  });
+
+  it("offers whatever categories the catalog holds, VIDEO and SYSTEM included", async () => {
+    const pending = holdRequests();
+    const user = userEvent.setup();
+    renderPage("/modules", ["VCO", "VIDEO", "SYSTEM"]);
+    await waitFor(() => expect(pending).toHaveLength(1));
+    act(() => pending[0].resolve(page([row(1, "Oscillator")])));
+    await screen.findByText(/Showing 1 of 1/);
+
+    const filter = screen.getByRole("combobox", { name: "Category" });
+    await screen.findByRole("option", { name: "VIDEO" });
+    expect(screen.getByRole("option", { name: "SYSTEM" })).toBeInTheDocument();
+
+    await user.selectOptions(filter, "SYSTEM");
+    await waitFor(() => expect(pending).toHaveLength(2));
+    expect(catalog.mock.calls[1][0]).toMatchObject({ category: "SYSTEM" });
   });
 
   it("fetches stats, brands and categories once, however the list changes", async () => {

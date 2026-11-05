@@ -1,0 +1,18 @@
+{
+ "dataset_version": "catalog-retirements-v3",
+ "generated_from": "the draft entry in docs/evidence/CATALOG_TWO_CATEGORY_ROWS_2026-11-03.md",
+ "decided": "2026-11-04: owner decision 7 (docs/evidence/OWNER_DECISIONS_2026-11-04.md, #278)",
+ "policy": "tombstone, never delete: module_catalog.tombstoned_at + reason, modules.status='tombstoned'",
+ "count": 1,
+ "rows": [
+  {
+   "slug": "jolin-getrekt-touch-waveshaper",
+   "brand": "Jolin",
+   "name": "GETREKT ⇝ touch waveshaper",
+   "owner": "Jolin",
+   "evidence_url": "https://jolin.tech/shop/p/getrekt",
+   "reason": "duplicate: the maker's shop page for GETREKT, held as jolin-getrekt (same HP and power)",
+   "kept_as": "jolin-getrekt"
+  }
+ ]
+}

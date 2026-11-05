@@ -46,8 +46,15 @@ def _summary(
             + (" (apply with this too: the catalog inputs this plan was built from)" if mode == "dry-run" else ""),
             f"- conflicts: {receipt['conflicts_total']}",
             f"- run_id: {receipt['run_id']}",
-            "",
         ]
+        if sync := receipt.get("module_type_sync"):
+            # Decision 51: the exact count, for the owner's go-ahead on a production load.
+            lines.append(
+                f"- modules.module_type set from the catalog category: {sync['synced']} {sync['by_category']}; "
+                f"left alone: {sync['left_alone_other_value']} with another value, "
+                f"{sync['left_alone_not_loader_row']} not loader rows"
+            )
+        lines.append("")
     lines += [
         "| table | before | after | delta |",
         "|---|---:|---:|---:|",
