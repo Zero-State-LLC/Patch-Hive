@@ -38,6 +38,7 @@ from cases.catalog_schemas import (
 from cases.models import CaseCatalog, CaseRevision
 from admin.dependencies import require_admin_mutate
 from admin.utils import log_admin_action
+from community.auth import get_catalog_reader
 from community.models import User
 from core.database import get_db
 
@@ -266,6 +267,7 @@ def evaluate_case_compatibility(
     slug: str,
     body: CompatibilityRequest,
     db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
 ):
     """Physical fit, remaining capacity, rail headroom, connectors, +5V, and lid checks.
 
@@ -273,7 +275,7 @@ def evaluate_case_compatibility(
     case or module specs never invent capacity.
     """
     try:
-        return evaluate_catalog_compatibility(db, slug, body)
+        return evaluate_catalog_compatibility(db, slug, body, hide_unknown_basis=reader is None)
     except LookupError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 

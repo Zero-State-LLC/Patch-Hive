@@ -73,7 +73,14 @@ def test_catalog_api_returns_lead_tags(db_session: Session) -> None:
         ]
     )
     db_session.commit()
-    resp = _client(db_session).get("/api/modules/catalog", params={"sort_by": "brand"})
+    from tests.conftest import bearer_headers, make_user
+
+    # Signed in: owner decision 39 leaves these rows out of anonymous reads.
+    resp = _client(db_session).get(
+        "/api/modules/catalog",
+        params={"sort_by": "brand"},
+        headers=bearer_headers(make_user(db_session, "lead-reader")),
+    )
     app.dependency_overrides.clear()
     assert resp.status_code == 200, resp.text
     by_slug = {row["slug"]: row for row in resp.json()["modules"]}

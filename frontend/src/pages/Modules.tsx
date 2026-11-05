@@ -657,7 +657,16 @@ export default function ModulesPage() {
             <LoadFailure what="The module catalog" error={error} onRetry={reload} />
           ) : null}
 
-          {state === "empty" ? (
+          {state === "empty" && filtersActive ? (
+            <div className="screen-state">
+              <p className="status status-warning">No modules match these filters.</p>
+              <button className="button button-secondary" type="button" onClick={clearFilters}>
+                Clear filters
+              </button>
+            </div>
+          ) : null}
+
+          {state === "empty" && !filtersActive ? (
             <div className="screen-state">
               <p className="status status-warning">No modules in the catalog yet.</p>
               <p className="muted">

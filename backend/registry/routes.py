@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from admin.dependencies import require_admin_mutate
+from community.auth import get_catalog_reader
 from community.models import User
 from core.database import get_db
 from registry.models import Manufacturer
@@ -21,16 +22,23 @@ def list_manufacturers(
     limit: int = Query(100, le=500),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
 ):
     return {
         "total": services.count_manufacturers(db=db),
-        "items": services.list_manufacturers(limit=limit, offset=offset, db=db),
+        "items": services.list_manufacturers(
+            limit=limit, offset=offset, db=db, include_unknown_basis=reader is not None
+        ),
     }
 
 
 @router.get("/manufacturers/{slug}")
-def get_manufacturer(slug: str, db: Session = Depends(get_db)):
-    detail = services.get_manufacturer_detail(slug, db=db)
+def get_manufacturer(
+    slug: str,
+    db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
+):
+    detail = services.get_manufacturer_detail(slug, db=db, include_unknown_basis=reader is not None)
     if detail:
         return detail
     snapshot_manufacturer = services.get_manufacturer(slug)
@@ -45,13 +53,21 @@ def search(
     brand: Optional[str] = None,
     limit: int = Query(50, le=200),
     db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
 ):
-    return {"results": services.search_models(q=q, brand=brand, limit=limit, db=db)}
+    return {
+        "results": services.search_models(
+            q=q, brand=brand, limit=limit, db=db, include_unknown_basis=reader is not None
+        )
+    }
 
 
 @router.get("/coverage")
-def coverage(db: Session = Depends(get_db)):
-    return services.get_coverage_report(db=db)
+def coverage(
+    db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
+):
+    return services.get_coverage_report(db=db, include_unknown_basis=reader is not None)
 
 
 class ManufacturerCreate(BaseModel):
@@ -88,5 +104,10 @@ def models_for_manufacturer(
     slug: str,
     limit: int = Query(50, le=200),
     db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
 ):
-    return {"models": services.list_models_for_manufacturer(slug, limit=limit, db=db)}
+    return {
+        "models": services.list_models_for_manufacturer(
+            slug, limit=limit, db=db, include_unknown_basis=reader is not None
+        )
+    }

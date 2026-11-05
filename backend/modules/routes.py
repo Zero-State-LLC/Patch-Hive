@@ -11,9 +11,11 @@ from sqlalchemy.orm import Session
 
 from admin.dependencies import require_admin_mutate
 from admin.utils import log_admin_action
+from community.auth import get_catalog_reader
 from community.models import User
 from core import get_db
 
+from .catalog import MODULE_KNOWN_BASIS
 from .models import Module, PowerConfig
 from .schemas import (
     ModuleCreate,
@@ -24,6 +26,14 @@ from .schemas import (
 )
 
 router = APIRouter()
+
+
+def _readable_module(db: Session, module_id: int, reader: Optional[User]) -> Optional[Module]:
+    """The module, or None if it is missing or hidden from an anonymous caller."""
+    query = db.query(Module).filter(Module.id == module_id)
+    if reader is None:
+        query = query.filter(MODULE_KNOWN_BASIS)
+    return query.first()
 
 
 # Writes change the shared catalog every user's racks read, so they are admin-only and audited.
@@ -79,9 +89,12 @@ def list_modules(
     hp_max: Optional[int] = None,
     tag: Optional[str] = None,
     db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
 ):
     """List modules with optional filters."""
     query = db.query(Module).filter(Module.status != "tombstoned")
+    if reader is None:
+        query = query.filter(MODULE_KNOWN_BASIS)
 
     # Apply filters
     if brand:
@@ -102,22 +115,30 @@ def list_modules(
 
 
 @router.get("/{module_id}", response_model=ModuleResponse)
-def get_module(module_id: int, db: Session = Depends(get_db)):
+def get_module(
+    module_id: int,
+    db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
+):
     """Get a specific module by ID."""
-    module = db.query(Module).filter(Module.id == module_id).first()
+    module = _readable_module(db, module_id, reader)
     if not module:
         raise HTTPException(status_code=404, detail="Module not found")
     return module
 
 
 @router.get("/{module_id}/power-configs", response_model=list[PowerConfigResponse])
-def list_power_configs(module_id: int, db: Session = Depends(get_db)):
+def list_power_configs(
+    module_id: int,
+    db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
+):
     """The module's jumper settings, each with its own draws (spec 003 D8).
 
     Empty for a module whose draw does not depend on a jumper, or whose settings the
     maker page does not state clearly enough to load.
     """
-    if db.query(Module.id).filter(Module.id == module_id).first() is None:
+    if _readable_module(db, module_id, reader) is None:
         raise HTTPException(status_code=404, detail="Module not found")
     return (
         db.query(PowerConfig)
