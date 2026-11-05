@@ -33,7 +33,7 @@ A row must pass at least one of these to count as the maker's own site:
 
 | Check | Rows passing | Meaning |
 |---|---|---|
-| `brand_in_host` | 661 | The brand's name is in the site's name. I read the 149 rows that rest on this alone by brand and host |
+| `brand_in_host` | 661 | The brand's name is in the site's name. The 140 rows that rest on this alone were read by brand and host, 47 pairs in all |
 | `official_rows` | 546 | Rows already `official_publication` for this brand use the same site |
 | `maker_sources` | 75 | `maker-sources.json` lists the site for this brand |
 | `reviewed` | 7 | Read by hand: 6 on Mutable Instruments' documentation site, 1 on BÈSIA Modular's store |
