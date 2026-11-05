@@ -13,9 +13,10 @@ This allows:
 
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Index, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Index, Integer, String, exists
 
 from core.database import Base
+from modules.models import Module
 
 
 class ModuleCatalog(Base):
@@ -121,3 +122,17 @@ class ModuleCatalog(Base):
         combined = f"{brand}-{name}".lower()
         slug = re.sub(r"[^a-z0-9]+", "-", combined)
         return slug.strip("-")
+
+
+# What an anonymous read may return (owner decision 39, spec 003 FR-033): not a row whose access
+# basis is `unknown`. NULL is a row that was never tagged, which the decision does not cover; a
+# plain `!=` would drop those too.
+KNOWN_BASIS = ModuleCatalog.access_basis.is_distinct_from("unknown")
+
+# A `modules` row has no access basis of its own, so it takes that of the catalog row with its
+# brand and name. A rack reads its placed modules directly, so this never hides a placed module.
+MODULE_KNOWN_BASIS = ~exists().where(
+    ModuleCatalog.brand == Module.brand,
+    ModuleCatalog.name == Module.name,
+    ModuleCatalog.access_basis == "unknown",
+).correlate(Module)
