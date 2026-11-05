@@ -24,8 +24,8 @@ from urllib.parse import parse_qsl, urlencode, urljoin, urlparse, urlunparse
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ROOT / "data" / "synth-catalog" / "maker-sources.json"
 KINDS = ("shopify", "squarespace", "woocommerce", "listing")
-# EXTERNAL_SOURCE_POLICY access_basis values a maker crawl can record, plus maker_permission (the
-# maker said yes; proposed in docs/evidence/MAKER_PERMISSION_AND_PROXY_DECISION_2026-11-03.md).
+# The EXTERNAL_SOURCE_POLICY access_basis values a maker crawl can record. maker_permission means the
+# maker said yes (docs/evidence/MAKER_PERMISSION_AND_PROXY_DECISION_2026-11-03.md, decision 1).
 PERMISSION_BASES = ("official_publication", "maker_permission", "authorized_feed", "licensed_dataset", "unknown")
 FEED_PAGES = 20  # pages per store feed; 20 x 250 Shopify products is far beyond any maker
 HREF = re.compile(r"""href\s*=\s*["']?([^"'#\s>]+)""", re.I)

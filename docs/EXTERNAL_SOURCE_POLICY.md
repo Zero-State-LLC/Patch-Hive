@@ -39,6 +39,27 @@ Primary source for:
 
 Official sources may still conflict across revisions. Conflicts must be retained and resolved at the revision level.
 
+#### Crawling official spec pages
+
+The owner decided this on 2026-11-04 (option C, `docs/evidence/OWNER_DECISIONS_2026-11-04.md`, with the options in [the decision brief](evidence/MAKER_PERMISSION_AND_PROXY_DECISION_2026-11-03.md)).
+
+Official spec pages count as publication (`access_basis = official_publication`) for facts only: name, HP, power, depth and category. That holds only under these conditions:
+
+- Maker-owned domains only.
+- robots.txt is honoured.
+- No copied descriptions or images.
+- A per-host delay between requests.
+- No route around a block. Spec 003 FR-008 and D7 define what counts as a refusal.
+
+Permission comes first, recorded as `maker_permission`, for:
+
+- anything beyond those facts, such as descriptions, images or manual content
+- a maker whose terms forbid automated access; until that maker says yes, set it to `unknown`
+
+**Opt-out.** A maker who asks to be left out is set to `unknown` under `permission_basis.brands` in `data/synth-catalog/maker-sources.json` and left out. A contact address for these requests will follow once it exists.
+
+This is an engineering policy, not legal advice. Counsel reads it before anyone sells or bulk-exports the catalog.
+
 ### Official manuals
 
 Primary source for:
@@ -151,6 +172,7 @@ reviewed_at:
 Allowed `access_basis` values include:
 
 - `official_publication`
+- `maker_permission`
 - `authorized_feed`
 - `licensed_dataset`
 - `user_authorized_export`

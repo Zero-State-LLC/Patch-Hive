@@ -56,6 +56,12 @@ RETRY_STATUSES = {0, 429, 500, 502, 503, 504}
 CHALLENGE = re.compile(
     rb"(cf-chl-|challenge-platform|<title>\s*(?:Just a moment|Attention Required|Access denied|Are you a robot))", re.I
 )
+# The site said no (owner decision 3, 2026-11-04; spec 003 D7 and FR-008): recorded, never sent to a
+# paid backend. 429, 5xx and timeouts are load, not refusal, and stay eligible for a paid retry. A
+# refused connection is not listed because it cannot be told from a timeout: both are status 0.
+PAGE_REFUSAL_STATUSES = frozenset({401, 403, 451})
+ROBOTS_REFUSAL_STATUSES = frozenset({401, 403})
+REFUSAL_NOTES = frozenset({"refused", "challenge"})
 RECEIPT_KEYS = ("url", "method", "status", "sha256", "timestamp")
 
 
@@ -115,6 +121,11 @@ def public_http_url(url: str) -> bool:
 def denied_host(url: str) -> bool:
     host = (urlparse(url).hostname or "").lower().rstrip(".")
     return any(host == d or host.endswith("." + d) for d in DENY_HOSTS)
+
+
+def _origin(url: str) -> str:
+    parsed = urlparse(url)
+    return f"{parsed.scheme}://{parsed.netloc}"
 
 
 def _sha256(data: bytes) -> str:
@@ -362,6 +373,8 @@ class CatalogScraper:
         self._memory: dict[str, FetchResult] = {}
         self._next_ok: dict[str, float] = {}
         self._robots: dict[str, str | None] = {}
+        # Origins whose robots.txt refused us, with the status it answered.
+        self._robots_refused: dict[str, int] = {}
         self.paid_attempts = 0
         # Paid calls granted but not yet booked in the ledger. The approval check counts them,
         # so parallel workers cannot all pass on the same remaining allowance.
@@ -392,12 +405,21 @@ class CatalogScraper:
         render: bool = False,
         allow_paid: bool = True,
     ) -> FetchResult:
-        """Free first, then paid. `render=True` skips the free GET (robots still apply) for script-rendered
-        pages whose plain HTML is an empty shell, and ignores a cached copy that came from a free GET.
+        """Free first, then paid. `render=True` is for script-rendered pages whose plain HTML is an empty
+        shell: it returns the paid body and ignores a cached copy that came from a free GET. Robots still
+        apply, and one free GET still asks first, because only that can see the site refuse.
         `allow_paid=False` never falls back to a paid backend (used for the free search engine, whose
-        paid counterpart is the paid search API, not a scrape of its results page)."""
-        if url in self._memory and not (render and self._memory[url].receipt.get("method") == "free_http"):
-            cached = self._memory[url]
+        paid counterpart is the paid search API, not a scrape of its results page).
+
+        A refusal the router can see never reaches a paid backend. When robots.txt is unreadable for
+        another reason (5xx, 429, a timeout) the page is not fetched directly, so its own answer is unseen."""
+        cached = self._memory.get(url)
+        free_shell = (
+            cached is not None
+            and cached.receipt.get("method") == "free_http"
+            and cached.receipt.get("note") not in REFUSAL_NOTES
+        )
+        if cached is not None and not (render and free_shell):
             receipt = dict(cached.receipt)
             receipt["method"] = "cache"
             receipt["timestamp"] = _now_iso(self.wall_clock)
@@ -424,17 +446,26 @@ class CatalogScraper:
                 skipped = self._finish(url, "robots_unavailable", None, b"", ok=False, remember=False)
                 paid = self._paid_fetch(url, timeout) if allow_paid else None
                 return paid if paid is not None else skipped
+            if not allowed and reason == "robots_refused":
+                # The status belongs to robots.txt, not to this URL, so it goes in the note.
+                note = f"robots.txt answered {self._robots_refused[_origin(url)]}"
+                return self._finish(url, "robots_refused", None, b"", ok=False, note=note)
             if not allowed:
                 return self._finish(url, reason or "robots_disallowed", None, b"", ok=False)
 
         if render:
+            status, body = self._free_get(url, timeout, attempts=1)
+            refused = self._refusal(url, status, body)
+            if refused is not None:
+                return refused
+            self._finish(url, "free_http", status, b"", ok=False, note="render_check", remember=False)
             paid = self._paid_fetch(url, timeout) if allow_paid else None
             return paid if paid is not None else self._finish(url, "render_unavailable", None, b"", ok=False, remember=False)
 
         status, body = self._free_get(url, timeout)
-        if status == 200 and body and body.lstrip()[:1] == b"<" and CHALLENGE.search(body[:8000]):
-            # A bot check is the site saying no: never route around it (spec 003 D7).
-            return self._finish(url, "free_http", status, b"", ok=False, note="challenge", remember=False)
+        refused = self._refusal(url, status, body)
+        if refused is not None:
+            return refused
         if status == 200 and body:
             result = self._finish(url, "free_http", status, body, ok=True)
             self._write_cache(url, result, body)
@@ -447,6 +478,18 @@ class CatalogScraper:
         free_result = self._finish(url, "free_http", status, body, ok=False)
         paid = self._paid_fetch(url, timeout) if allow_paid else None
         return paid if paid is not None else free_result
+
+    def _refusal(self, url: str, status: int, body: bytes) -> FetchResult | None:
+        """The recorded refusal when a free answer is the site saying no (spec 003 D7), else None.
+        Remembered for this run, so no later call reaches a paid backend. Never written to the disk
+        cache, so the next run asks again."""
+        if status in PAGE_REFUSAL_STATUSES:
+            note = "refused"
+        elif status == 200 and body and body.lstrip()[:1] == b"<" and CHALLENGE.search(body[:8000]):
+            note = "challenge"
+        else:
+            return None
+        return self._finish(url, "free_http", status, b"", ok=False, note=note)
 
     def search(self, query: str, limit: int = 5, timeout: float = 25) -> SearchResult:
         limit = max(1, min(int(limit), 10))
@@ -591,8 +634,7 @@ class CatalogScraper:
 
     def robots_info(self, url: str, timeout: float = 25) -> tuple[bool, list[str], float]:
         """(robots readable, Sitemap: lines, crawl-delay for our UA or *) for the URL's origin."""
-        parsed = urlparse(url)
-        origin = f"{parsed.scheme}://{parsed.netloc}"
+        origin = _origin(url)
         self._robots_allow(origin + "/", timeout)
         rules = self._robots.get(origin)
         if rules is None:
@@ -634,10 +676,11 @@ class CatalogScraper:
             return 0, b""
         return response.status, response.body
 
-    def _free_get(self, url: str, timeout: float) -> tuple[int, bytes]:
+    def _free_get(self, url: str, timeout: float, attempts: int | None = None) -> tuple[int, bytes]:
         status = 0
         body = b""
-        for attempt in range(self.max_retries):
+        attempts = self.max_retries if attempts is None else attempts
+        for attempt in range(attempts):
             self._wait(url)
             try:
                 response = self.transport(
@@ -654,13 +697,13 @@ class CatalogScraper:
             status, body = response.status, response.body
             if status not in RETRY_STATUSES:
                 break
-            if attempt + 1 < self.max_retries:
+            if attempt + 1 < attempts:
                 self.sleeper(0.5 * (2**attempt) + random.uniform(0, 0.05))
         return status, body
 
     def _robots_allow(self, url: str, timeout: float) -> tuple[bool, str | None]:
         parsed = urlparse(url)
-        origin = f"{parsed.scheme}://{parsed.netloc}"
+        origin = _origin(url)
         if origin not in self._robots:
             robots_url = origin + "/robots.txt"
             status, body = self._free_get(robots_url, timeout)
@@ -669,7 +712,13 @@ class CatalogScraper:
             elif status == 200:
                 self._robots[origin] = _decode(body)
             else:
+                # In this order: a worker sharing this scraper must not see "unreadable" (which may
+                # still use a paid backend) before it can see the refusal.
+                if status in ROBOTS_REFUSAL_STATUSES:
+                    self._robots_refused[origin] = status
                 self._robots[origin] = None
+        if origin in self._robots_refused:
+            return False, "robots_refused"
         rules = self._robots[origin]
         if rules is None:
             return False, "robots_unavailable"
@@ -736,7 +785,7 @@ class CatalogScraper:
         if method == "free_http":
             self._bump_ledger("free_http", 0)
         elif method in {"skipped_no_key", "skipped_paid_cap", "skipped_no_approval", "skipped_proxy_unapproved",
-                        "robots_disallowed", "robots_unavailable", "blocked_url"}:
+                        "robots_disallowed", "robots_unavailable", "robots_refused", "blocked_url"}:
             self._bump_ledger(method, 0)
         return result
 

@@ -815,8 +815,8 @@ def crawl_brand(brand: str, cap: int, r: dict | None = None) -> dict:
     rec["status"] = rec["status"] or "done"
     seen: set[str] = set()
     rec["modules"] = [m for m in rec["modules"] if not (norm_name(brand, m["name"]) in seen or seen.add(norm_name(brand, m["name"])))]
-    # The access basis this maker's pages were fetched under (EXTERNAL_SOURCE_POLICY); unknown
-    # until the owner records one, and an unknown basis blocks bulk publication.
+    # The access basis this maker's pages were fetched under (EXTERNAL_SOURCE_POLICY). unknown marks
+    # a maker who opted out or whose terms forbid automated access, and blocks bulk publication.
     rec["permission_basis"] = maker_adapters.permission_basis(SOURCES, brand)
     for row in rec["modules"] + rec["unconfirmed"]:
         row["permission_basis"] = rec["permission_basis"]

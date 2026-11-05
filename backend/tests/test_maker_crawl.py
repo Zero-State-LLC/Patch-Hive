@@ -427,11 +427,23 @@ def test_curated_sources_are_maker_sites_only() -> None:
     assert {h["status"] for h in data["homepages"].values()} <= set(data["status_meaning"])
 
 
-def test_no_maker_has_a_permission_basis_until_the_owner_signs_one_off() -> None:
+def test_official_publication_is_the_recorded_default_basis() -> None:
+    """Owner decision 1 (2026-11-04, option C): official spec pages count as publication for facts."""
     data = maker_adapters.load_sources()
-    assert data["permission_basis"]["default"] == "unknown"
-    assert data["permission_basis"]["brands"] == {}
-    assert maker_adapters.permission_basis(data, "Make Noise") == "unknown"
+    assert data["permission_basis"]["default"] == "official_publication"
+    assert maker_adapters.permission_basis(data, "A brand with no entry") == "official_publication"
+
+
+def test_a_maker_who_opts_out_is_recorded_as_unknown() -> None:
+    sources = {"permission_basis": {"default": "official_publication", "brands": {"Acme": "unknown"}}}
+    assert maker_adapters.permission_basis(sources, "Acme") == "unknown"
+    assert maker_adapters.permission_basis(sources, "Other") == "official_publication"
+
+
+def test_every_crawl_basis_is_allowed_by_the_source_policy() -> None:
+    policy = (ROOT / "docs" / "EXTERNAL_SOURCE_POLICY.md").read_text(encoding="utf-8")
+    missing = [basis for basis in maker_adapters.PERMISSION_BASES if f"- `{basis}`" not in policy]
+    assert missing == []
 
 
 def test_an_unlisted_permission_basis_is_refused(tmp_path: Path) -> None:
@@ -623,7 +635,7 @@ def test_no_model_paid_run_keeps_generic_rows_unconfirmed(
     assert "openrouter.ai" not in " ".join(site.calls)
 
 
-def test_render_skips_the_free_get_but_not_robots(
+def test_render_uses_the_paid_body_and_still_applies_robots(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setenv("CONTEXT_DEV_API_KEY", "ctx-test")
@@ -638,8 +650,11 @@ def test_render_skips_the_free_get_but_not_robots(
     scraper = _scraper(tmp_path, site, max_paid_fetches=2)
     res = scraper.fetch("https://js.example/modules", render=True)
     assert res.ok and "/p/x" in res.text and res.receipt["method"] == "context_dev"
-    assert "https://js.example/modules" not in site.calls  # no free GET of the shell
+    # One free GET, only to see whether the site refuses (owner decision 3, 2026-11-04). It answers 404
+    # here and the paid body is what comes back.
+    assert site.calls.count("https://js.example/modules") == 1
     assert not scraper.fetch("https://js.example/private/x", render=True).ok  # robots still applies
+    assert "https://js.example/private/x" not in site.calls
     assert scraper.paid_attempts == 1
 
 

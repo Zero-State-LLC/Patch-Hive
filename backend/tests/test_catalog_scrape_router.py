@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 import pytest
@@ -12,9 +14,11 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "data" / "synth-catalog"))
 
 from catalog_scrape import (  # noqa: E402
+    CONTEXT_SCRAPE_URL,
     CatalogScraper,
     HttpRequest,
     HttpResponse,
+    default_transport,
     parse_robots,
 )
 
@@ -233,9 +237,9 @@ def _gated(tmp_path: Path, entries: list, transport: FakeTransport, ledger: dict
     return _scraper(tmp_path, transport, max_paid_fetches=5, approvals_path=approvals, **kwargs)
 
 
-def _blocked_site() -> FakeTransport:
+def _overloaded_site() -> FakeTransport:
     transport = FakeTransport()
-    transport.routes["https://ex.com/p"] = (403, b"no")
+    transport.routes["https://ex.com/p"] = (503, b"busy")
     return transport
 
 
@@ -247,7 +251,7 @@ def test_paid_fetch_refused_without_matching_entry(tmp_path, monkeypatch):
     monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
     monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
     for entries in ([], [_approval(expires_at="2000-01-01T00:00:00Z")], [_approval(brands=["Other"])], [_approval(approver="")]):
-        transport = _blocked_site()
+        transport = _overloaded_site()
         scraper = _gated(tmp_path, entries, transport, brands=("Acme",))
         scraper.fetch("https://ex.com/p")
         assert _paid_calls(transport) == []
@@ -256,7 +260,7 @@ def test_paid_fetch_refused_without_matching_entry(tmp_path, monkeypatch):
 
 def test_paid_fetch_refused_when_approvals_file_missing(tmp_path, monkeypatch):
     monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
-    transport = _blocked_site()
+    transport = _overloaded_site()
     scraper = _scraper(tmp_path, transport, max_paid_fetches=5, approvals_path=tmp_path / "absent.json")
     scraper.fetch("https://ex.com/p")
     assert _paid_calls(transport) == []
@@ -265,7 +269,7 @@ def test_paid_fetch_refused_when_approvals_file_missing(tmp_path, monkeypatch):
 def test_paid_fetch_allowed_with_matching_entry(tmp_path, monkeypatch):
     monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
     monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
-    transport = _blocked_site()
+    transport = _overloaded_site()
     transport.routes["https://api.context.dev/v1/web/scrape"] = (200, json.dumps({"html": "<html>paid</html>"}))
     scraper = _gated(tmp_path, [_approval()], transport, brands=("Acme",))
     assert scraper.fetch("https://ex.com/p").ok
@@ -275,7 +279,7 @@ def test_paid_fetch_allowed_with_matching_entry(tmp_path, monkeypatch):
 def test_wildcard_entry_covers_unscoped_run(tmp_path, monkeypatch):
     monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
     monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
-    transport = _blocked_site()
+    transport = _overloaded_site()
     scraper = _gated(tmp_path, [_approval(brands=["*"])], transport)
     scraper.fetch("https://ex.com/p")
     assert len(_paid_calls(transport)) == 1
@@ -290,7 +294,7 @@ def test_ledger_at_entry_cap_blocks_paid_fetch(tmp_path, monkeypatch):
         # Spend before the approval (baseline) does not count against the cap.
         ({"paid_fetches": 105, "credits_by_backend": {"context_dev": 1}}, {"ledger_baseline_fetches": 100}),
     ):
-        transport = _blocked_site()
+        transport = _overloaded_site()
         scraper = _gated(tmp_path, [_approval(**over)], transport, ledger=ledger, brands=("Acme",))
         scraper.fetch("https://ex.com/p")
         assert _paid_calls(transport) == []
@@ -299,7 +303,7 @@ def test_ledger_at_entry_cap_blocks_paid_fetch(tmp_path, monkeypatch):
 def test_ledger_baseline_leaves_headroom(tmp_path, monkeypatch):
     monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
     monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
-    transport = _blocked_site()
+    transport = _overloaded_site()
     ledger = {"paid_fetches": 102, "credits_by_backend": {"context_dev": 50}}
     scraper = _gated(
         tmp_path, [_approval(ledger_baseline_fetches=100, ledger_baseline_credits=48)], transport,
@@ -406,7 +410,7 @@ def test_a_blocked_free_search_is_not_scraped_through_a_paid_backend(tmp_path, m
 
 
 def _firecrawl_site() -> FakeTransport:
-    transport = _blocked_site()
+    transport = _overloaded_site()
     transport.routes["https://api.firecrawl.dev/v1/scrape"] = (200, json.dumps({"data": {"html": "<p>12 HP</p>"}}))
     return transport
 
@@ -459,3 +463,155 @@ def test_a_bot_challenge_is_never_sent_to_a_paid_backend(tmp_path, monkeypatch):
     assert not result.ok and result.text is None
     assert _paid_calls(transport) == []
     assert [r.get("note") for r in scraper.receipts] == ["challenge"]
+
+
+# ---- Owner decision 3 (2026-11-04), spec 003 D7 and FR-008: a refusal never reaches a paid backend ----
+
+PAGE = "https://ex.com/p"
+BOT_CHECK = b"<html><title>Just a moment...</title>cf-chl-x</html>"
+PAID_ANSWER = json.dumps({"markdown": {"success": True, "data": "observed spec"}, "credits": 1})
+
+
+@pytest.fixture
+def paid_keys(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    monkeypatch.setenv("FIRECRAWL_API_KEY", "fc")
+
+
+def _would_pay(tmp_path: Path, transport: FakeTransport) -> CatalogScraper:
+    """Keys set, budget left and an approval for every brand and tier: only the refusal can stop it."""
+    entries = [_approval(brands=["*"], proxy_tier="stealth")]
+    return _gated(tmp_path, entries, transport, firecrawl_proxy="stealth")
+
+
+@pytest.mark.parametrize("status", [401, 403, 451])
+def test_a_refused_page_never_reaches_a_paid_backend(tmp_path, paid_keys, status):
+    transport = FakeTransport()
+    transport.routes[PAGE] = (status, b"no")
+    scraper = _would_pay(tmp_path, transport)
+    result = scraper.fetch(PAGE)
+    assert not result.ok and result.text is None
+    assert _paid_calls(transport) == []
+    assert scraper.paid_attempts == 0
+    assert [(r["method"], r["status"], r.get("note")) for r in scraper.receipts] == [
+        ("free_http", status, "refused")
+    ]
+
+
+@pytest.mark.parametrize("answer", [(401, b"no"), (403, b"no"), (451, b"no"), (200, BOT_CHECK)])
+def test_a_refused_page_is_not_rendered_through_a_paid_backend_later(tmp_path, paid_keys, answer):
+    """render=True skips the free GET, so it must not forget a refusal this run already saw."""
+    transport = FakeTransport()
+    transport.routes[PAGE] = answer
+    scraper = _would_pay(tmp_path, transport)
+    scraper.fetch(PAGE)
+    result = scraper.fetch(PAGE, render=True)
+    assert not result.ok and result.text is None
+    assert result.receipt["note"] in {"refused", "challenge"}
+    assert _paid_calls(transport) == []
+    assert [c.url for c in transport.calls].count(PAGE) == 1
+
+
+@pytest.mark.parametrize(
+    ("answer", "note"),
+    [((401, b"no"), "refused"), ((403, b"no"), "refused"), ((451, b"no"), "refused"), ((200, BOT_CHECK), "challenge")],
+)
+def test_render_asks_the_site_first_and_stops_on_a_refusal(tmp_path, paid_keys, answer, note):
+    """An adapter with `render` must not route around a refusal it never asked about. Befaco's does,
+    and www.befaco.org answered 403 to a plain GET (docs/evidence/OWNER_ACTIONS_2026-11-02.md)."""
+    transport = FakeTransport()
+    transport.routes[PAGE] = answer
+    scraper = _would_pay(tmp_path, transport)
+    result = scraper.fetch(PAGE, render=True)
+    assert not result.ok and result.text is None
+    assert _paid_calls(transport) == []
+    assert scraper.paid_attempts == 0
+    assert [(r["method"], r["status"], r.get("note")) for r in scraper.receipts] == [("free_http", answer[0], note)]
+
+
+@pytest.mark.parametrize("answer", [(200, b"<html><div id=app></div></html>"), (503, b"busy"), (404, b"gone")])
+def test_render_still_renders_when_the_site_does_not_refuse(tmp_path, monkeypatch, answer):
+    """One free request records what the site said; its body is not used and it is not retried."""
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    transport = FakeTransport()
+    transport.routes[PAGE] = answer
+    transport.routes[CONTEXT_SCRAPE_URL] = (200, PAID_ANSWER)
+    scraper = _scraper(tmp_path, transport, max_paid_fetches=1)
+    result = scraper.fetch(PAGE, render=True)
+    assert result.ok and result.receipt["method"] == "context_dev" and result.text == "observed spec"
+    assert [c.url for c in transport.calls].count(PAGE) == 1
+    assert [(r["method"], r["status"], r.get("note")) for r in scraper.receipts][0] == (
+        "free_http", answer[0], "render_check"
+    )
+
+
+def test_a_refusal_is_not_kept_for_the_next_run(tmp_path, paid_keys):
+    """Only this run remembers it: a maker that lifts the block can be read again."""
+    transport = FakeTransport()
+    transport.routes[PAGE] = (403, b"no")
+    assert not _would_pay(tmp_path, transport).fetch(PAGE).ok
+    transport.routes[PAGE] = (200, b"<html>12 HP</html>")
+    assert _would_pay(tmp_path, transport).fetch(PAGE).ok
+
+
+@pytest.mark.parametrize("render", [False, True])
+@pytest.mark.parametrize("status", [401, 403])
+def test_a_refused_robots_txt_never_reaches_a_paid_backend(tmp_path, paid_keys, status, render):
+    transport = FakeTransport()
+    transport.routes["https://ex.com/robots.txt"] = (status, b"no")
+    scraper = _would_pay(tmp_path, transport)
+    result = scraper.fetch(PAGE, render=render)
+    assert not result.ok and result.text is None
+    assert _paid_calls(transport) == []
+    assert scraper.paid_attempts == 0
+    assert [c.url for c in transport.calls] == ["https://ex.com/robots.txt"]  # nor is the page fetched
+    assert [(r["method"], r.get("note")) for r in scraper.receipts] == [
+        ("robots_refused", f"robots.txt answered {status}")
+    ]
+    ledger = json.loads((tmp_path / "ledger.json").read_text())
+    assert ledger["calls_by_method"]["robots_refused"] == 1
+
+
+def test_a_refused_robots_txt_refuses_every_page_on_that_origin(tmp_path, paid_keys):
+    transport = FakeTransport()
+    transport.routes["https://ex.com/robots.txt"] = (403, b"no")
+    scraper = _would_pay(tmp_path, transport)
+    assert scraper.robots_info(PAGE) == (False, [], 0.0)
+    assert not scraper.fetch(PAGE).ok
+    assert not scraper.fetch("https://ex.com/q", render=True).ok
+    assert _paid_calls(transport) == []
+    assert [c.url for c in transport.calls] == ["https://ex.com/robots.txt"]
+
+
+@pytest.mark.parametrize("status", [429, 500, 503])
+def test_load_is_not_a_refusal_and_stays_eligible_for_a_paid_retry(tmp_path, monkeypatch, status):
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    transport = FakeTransport()
+    transport.routes[PAGE] = (status, b"busy")
+    transport.routes[CONTEXT_SCRAPE_URL] = (200, PAID_ANSWER)
+    result = _scraper(tmp_path, transport, max_paid_fetches=1).fetch(PAGE)
+    assert result.ok and result.receipt["method"] == "context_dev"
+
+
+@pytest.mark.parametrize("error", [ConnectionRefusedError("refused"), TimeoutError("timed out")])
+def test_a_refused_connection_cannot_be_told_from_a_timeout(tmp_path, monkeypatch, error):
+    """Decision 3 leaves refused connections out until the transport can tell them apart. Both are
+    status 0 today, so both stay eligible for a paid retry, and such a host stays excluded by name (D7)."""
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+
+    class Opener:
+        def open(self, *_args, **_kwargs):
+            raise urllib.error.URLError(error)
+
+    monkeypatch.setattr(urllib.request, "build_opener", lambda *_handlers: Opener())
+    answer = default_transport(HttpRequest("GET", PAGE, {}, None, 1.0))
+    assert (answer.status, answer.body, answer.headers) == (0, b"", {})
+
+    def fail(_request: HttpRequest) -> HttpResponse:
+        raise error
+
+    transport = FakeTransport()
+    transport.routes[PAGE] = fail
+    transport.routes[CONTEXT_SCRAPE_URL] = (200, PAID_ANSWER)
+    result = _scraper(tmp_path, transport, max_paid_fetches=1).fetch(PAGE)
+    assert result.ok and result.receipt["method"] == "context_dev"
