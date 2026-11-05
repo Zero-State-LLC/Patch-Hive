@@ -674,8 +674,9 @@ def test_the_access_basis_overlay_names_no_lead_and_passes_its_own_checks():
     assert {row["access_basis"] for row in overlay["rows"]} == {"official_publication"}
     assert all(row["checks"] for row in overlay["rows"])
     assert not {row["slug"] for row in overlay["rows"]} & {row["slug"] for row in overlay["left_out"]}
-    assert "manualslib.com" in {row["host"] for row in overlay["left_out"]}
-    assert "manualslib.com" not in {row["host"] for row in overlay["rows"]}
+    left_out = {row["slug"]: row for row in overlay["left_out"]}
+    assert left_out["noise-engineering-basimilus-iteritas-alter"]["reason"] == "maker_site_not_confirmed"
+    assert {row["host"] for row in overlay["rows"]}.isdisjoint({"manualslib.com"})
 
 
 def test_jumper_settings_load_once_as_power_configs(fresh_population_url, tmp_path):
