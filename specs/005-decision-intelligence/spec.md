@@ -91,6 +91,15 @@ The evaluation harness reports:
 
 The feature is not eligible for normal VSI traffic until all contracts, policy tests, failure tests, provenance tests, and evaluation gates in `acceptance.md` pass.
 
+## Workflows
+
+Status: INFERRED (added 2026-11-03 in the shape of specs 001–004). The owner confirms it. It names process workflows only. The domain flows WF-001 to WF-005 stay in [workflows.md](workflows.md), and the state machines are in [state-machines.md](state-machines.md).
+
+- Governing workflows (skills): anti-slop-code, production-systems, google-developer-style.
+- Owners: FORGE decomposes, a cloud agent implements, SCRIBE files the compact artifact, ADVERSARY reviews the threat model ([security.md](security.md); the provider boundary is modelled in [spec 001](../001-rig-intelligence/spec.md#adversary-threat-model-provider-and-evidence-boundary)). The evaluation gate (T061, T062, T070) needs operator approval through Spec 007.
+- CI: reuse `.github/workflows/ci.yml` (job `backend` runs the decision, resolution-machine, provider and enablement-gate tests under `backend/tests/unit` and `backend/tests/api`). `.github/workflows/t070-jev-preflight.yml` is the manual staging preflight for T070. Do not add a new CI path.
+- Spec DAG: `just spec-dag` runs `scripts/check_spec_dag.py --strict` on `tasks.md`.
+
 ## Implementation status (2026-10-29)
 
 Checked against `main` at 95ca9ee. Decision research is in [research.md](research.md).

@@ -325,8 +325,9 @@ async function mockBuilder(page: Page) {
     (url) => url.pathname.replace(/\/+$/, "").endsWith("/api/racks"),
     (route) => route.fulfill(json({ total: 1, racks: [BUILDER_RACK] })),
   );
+  // The builder reads its rig through the canon alias (F5) and writes through /api/racks.
   await page.route(
-    (url) => url.pathname.replace(/\/+$/, "").endsWith("/api/racks/1"),
+    (url) => /\/api\/(racks|canon\/rigs)\/1$/.test(url.pathname.replace(/\/+$/, "")),
     (route) => route.fulfill(json(BUILDER_RACK)),
   );
   await page.route("**/api/racks/1/compatibility**", (route) =>
@@ -570,5 +571,99 @@ test.describe("theme memory", () => {
     await page.getByRole("button", { name: "Use dark theme" }).click();
     await expect(html).toHaveAttribute("data-theme", "dark");
     await expect(themeColor).toHaveAttribute("content", "#08090b");
+  });
+});
+
+/**
+ * The automated half of the accessibility protocol (docs/ACCESSIBILITY.md): reflow at
+ * 320 CSS px and at 640 (a 1280 px window at 200% zoom), focus that stays visible, a skip
+ * link that reaches the workspace, and no running animation under reduced motion. Screen
+ * readers and PDF reading order stay a human pass.
+ */
+const PROTOCOL_SCREENS = SCREENS.filter((s) =>
+  [
+    "home",
+    "sign in",
+    "modules",
+    "cases",
+    "patches",
+    "account",
+    "rig detail",
+    "rig builder, placement",
+  ].includes(s.name),
+);
+
+test.describe("accessibility protocol pre-pass", () => {
+  for (const screen of PROTOCOL_SCREENS) {
+    for (const width of [320, 640]) {
+      test(`${screen.name} reflows at ${width} px with visible focus`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 800 });
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        await mockApi(page, { signedIn: screen.signedIn });
+        await screen.mock?.(page);
+        await arrive(page, screen);
+        await expect(page.locator("main")).toBeVisible();
+        await expect(page.locator(".skeleton")).toHaveCount(0);
+
+        // Reflow: nothing scrolls the page sideways.
+        expect(await overflowing(page), "elements past the viewport").toEqual([]);
+        const sideways = await page.evaluate(
+          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        );
+        expect(sideways, "horizontal page scroll").toBeLessThanOrEqual(1);
+
+        // Focus stays visible on the first controls a keyboard reaches. The ring is read
+        // once the browser has painted the new focus.
+        for (let i = 0; i < 4; i += 1) {
+          await page.keyboard.press("Tab");
+          // A short page can run out of tab stops; that ends the walk, not the check.
+          const left = await page.evaluate(
+            () => !document.activeElement || document.activeElement === document.body,
+          );
+          if (left && i > 0) break;
+          await expect
+            .poll(
+              () =>
+                page.evaluate(() => {
+                  const el = document.activeElement as HTMLElement | null;
+                  if (!el || el === document.body) return "nothing focused";
+                  const style = getComputedStyle(el);
+                  const outline =
+                    style.outlineStyle !== "none" && parseFloat(style.outlineWidth) > 0;
+                  return outline || style.boxShadow !== "none"
+                    ? "visible"
+                    : `${el.tagName}.${el.className} outline=${style.outlineStyle}/${style.outlineWidth} focus-visible=${el.matches(":focus-visible")}`;
+                }),
+              { message: `focus ring on tab stop ${i + 1}`, timeout: 2000 },
+            )
+            .toBe("visible");
+        }
+      });
+    }
+  }
+
+  test("the skip link is the first tab stop and moves focus to the workspace", async ({ page }) => {
+    await mockApi(page, { signedIn: false });
+    await page.goto("/modules");
+    await expect(page.locator("main")).toBeVisible();
+    await page.keyboard.press("Tab");
+    const skip = page.getByRole("link", { name: "Skip to workspace" });
+    await expect(skip).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page.locator("#main-content")).toBeFocused();
+  });
+
+  test("reduced motion leaves no running animation", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await mockApi(page, { signedIn: false });
+    await page.goto("/");
+    await expect(page.locator(".home-rig .patch-cable").first()).toBeVisible();
+    const long = await page.evaluate(() =>
+      document
+        .getAnimations()
+        .map((a) => Number(a.effect?.getTiming().duration ?? 0))
+        .filter((ms) => ms > 1),
+    );
+    expect(long, "animations longer than 1 ms").toEqual([]);
   });
 });

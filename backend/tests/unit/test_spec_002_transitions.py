@@ -4,21 +4,26 @@ The table below is copied from specs/002-patch-book-publishing/spec.md, "Statefu
 "Publication lifecycle machine". Any (state, event) pair it does not list must be rejected
 and leave the publication unchanged (the rule at the top of that section; SC-007).
 
+The global guard (every event requires ``ENABLE_LEGACY_PUBLISHING=true``) is encoded by firing
+each event at an app that main.py builds with the flag off.
+
 The page compilation machine and the book compilation machine have no implementation in the
 backend (no stage states, events or guards exist in code), so they are not encoded here.
 """
 
 from __future__ import annotations
 
+import importlib.util
 from datetime import datetime
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
+import main
 from admin.models import AdminAuditLog
 from community.models import User
-from core import get_db
+from core import get_db, settings
 from main import app
 from patches.models import Patch
 from publishing.models import Export, Publication, PublicationReport
@@ -69,6 +74,13 @@ ILLEGAL = [
 # The last row is a no-op re-set of "published", not an illegal pair: drop it.
 ILLEGAL = ILLEGAL[:-1]
 
+# Spec "Illegal transitions": any event while ENABLE_LEGACY_PUBLISHING is off. Every listed
+# (from, event) pair, plus `draft --publish-->` (PATCH status=published, fired as owner_unhide).
+FLAG_OFF = sorted(
+    {(start, moderated, event) for start, moderated, event, _, _ in LISTED}
+    | {("draft", False, "owner_unhide")}
+)
+
 
 @pytest.fixture
 def client(db_session: Session):
@@ -78,6 +90,25 @@ def client(db_session: Session):
     app.dependency_overrides[get_db] = override_get_db
     yield TestClient(app)
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def flag_off_client(db_session: Session, monkeypatch):
+    """The app as main.py builds it with ENABLE_LEGACY_PUBLISHING off.
+
+    main.py mounts the publishing router at import time, and the suite runs with the flag on
+    (tests/conftest.py), so a second copy of main.py is loaded with the flag patched off.
+    """
+    monkeypatch.setattr(settings, "enable_legacy_publishing", False)
+    spec = importlib.util.spec_from_file_location("main_publishing_off", main.__file__)
+    flag_off = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(flag_off)
+
+    def override_get_db():
+        yield db_session
+
+    flag_off.app.dependency_overrides[get_db] = override_get_db
+    yield TestClient(flag_off.app)
 
 
 @pytest.fixture
@@ -185,6 +216,33 @@ def test_illegal_transition_is_rejected_without_change(
     assert pub.moderation_audit_id == audit_before
     assert pub.removed_reason is None
     assert _reports(db_session, pub) == 0
+
+
+@pytest.mark.parametrize(("start", "moderated", "event"), FLAG_OFF)
+def test_event_with_the_flag_off_is_404_without_change(
+    flag_off_client, db_session, world, start, moderated, event
+):
+    pub = _publication(db_session, world, start, moderated)
+    audit_before = pub.moderation_audit_id
+    resp = _fire(flag_off_client, world, pub, event)
+    assert resp.status_code == 404, resp.text
+    db_session.refresh(pub)
+    assert pub.status == start
+    assert pub.title == "Before"
+    assert pub.moderation_audit_id == audit_before
+    assert pub.removed_reason is None
+    assert _reports(db_session, pub) == 0
+
+
+def test_create_with_the_flag_off_is_404_and_writes_nothing(flag_off_client, db_session, world):
+    export = _export(db_session, world["owner"], world["patch"])
+    body = {"export_id": export.id, "title": "Mine", "visibility": "public",
+            "allow_download": True, "allow_remix": False}
+    resp = flag_off_client.post(
+        "/api/me/publications", json=body, headers=bearer_headers(world["owner"])
+    )
+    assert resp.status_code == 404, resp.text
+    assert db_session.query(Publication).filter_by(export_id=export.id).count() == 0
 
 
 def test_create_makes_a_draft_and_a_second_create_is_rejected(client, db_session, world):

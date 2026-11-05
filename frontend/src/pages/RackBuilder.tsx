@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
+  canonApi,
   caseApi,
   caseCatalogApi,
   moduleApi,
@@ -8,6 +9,7 @@ import {
   rackApi,
   type EvidenceCandidate,
 } from "@/lib/api";
+import { rigDetailToRack, rigSummaryToRack } from "@/lib/canonRigAdapter";
 import CaseStep from "@/components/builder/CaseStep";
 import EvidenceStep, {
   type CandidateStatus,
@@ -373,12 +375,14 @@ export default function RackBuilderPage() {
       setSelectedRackId(rackId);
       return;
     }
-    rackApi
-      .list({ limit: 50 })
+    // Spec 008 F5: inventory reads go through the canon alias; writes stay on rackApi.
+    canonApi
+      .listRigs({ limit: 50 })
       .then((res) => {
-        setRacks(res.data.racks ?? []);
-        if (res.data.racks?.length && selectedRackId == null) {
-          setSelectedRackId(res.data.racks[0].id);
+        const rows = (res.data.rigs ?? []).map(rigSummaryToRack);
+        setRacks(rows);
+        if (rows.length && selectedRackId == null) {
+          setSelectedRackId(rows[0].id);
         }
       })
       .catch(() => {
@@ -490,11 +494,12 @@ export default function RackBuilderPage() {
 
   /** Reloads the rig; `isCurrent` lets a superseded save skip writing its stale answer. */
   const refreshLiveRack = async (id: number, isCurrent: () => boolean = () => true) => {
-    const res = await rackApi.get(id);
+    const res = await canonApi.getRig(id);
     if (!isCurrent()) return;
-    setLiveRack(res.data);
+    const rig = rigDetailToRack(res.data);
+    setLiveRack(rig);
     setPlacementModules(
-      (res.data.modules ?? []).map((m) => ({
+      (rig.modules ?? []).map((m) => ({
         module_id: m.module_id,
         row_index: m.row_index,
         start_hp: m.start_hp,

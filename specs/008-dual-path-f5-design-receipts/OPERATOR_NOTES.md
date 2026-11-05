@@ -1,11 +1,15 @@
 # Spec 008 Operator Notes (Dual-Path F5 Cutover & Design Engine Staging Receipts)
 
-Status: the code paths for T010-T060 are implemented and tested in-repo. The
-walkthrough was run in-process (FastAPI TestClient, SQLite, synthetic golden
-demo seed) only. No staging host walkthrough has been run, no receipt has been
-captured on staging, and the readiness docs are NOT pinned: they carry the
-placeholder `PENDING_OPERATOR_WALKTHROUGH`. No runtime config, routing, DNS, or
-payment setting is changed by this repository.
+Status (2026-11-04): the code paths for T010-T060 are implemented and tested in-repo.
+The walkthrough passed on the staging host first at `b6cc917` (T040b, run 41557808902,
+receipt from #216) and again at `6c234a6` (v0.3.0-alpha.7, run 41768209990), after the
+rig builder's reads moved to canon (#243); demo auth matches the seed there (T030b).
+The readiness docs still carry the placeholder `PENDING_OPERATOR_WALKTHROUGH`; the
+operator writes the alpha.7 SHA into them at the T050b sitting, which waits on the signed
+spec 007 receipt (007:T060b, T083). With the SHA in both docs, `pin_readiness_008.py
+check` on the alpha.7 bundle reaches `RECEIPT_CAPTURED` with that receipt as its only
+blocker (checked 2026-11-04). No runtime config, routing, DNS, or payment setting is changed
+by this repository.
 
 T001 (feature tree and `specs/README.md` index line) was already satisfied on main
 by the spec PR that added `tasks.md`; no further change was needed.

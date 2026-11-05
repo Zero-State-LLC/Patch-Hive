@@ -4,6 +4,75 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.8](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.7...v0.3.0-alpha.8) (2026-11-05)
+
+
+### Fixed
+
+* **api:** keep exception text out of catalog and compatibility responses ([#267](https://github.com/Zero-State-LLC/Patch-Hive/issues/267)) ([29196c8](https://github.com/Zero-State-LLC/Patch-Hive/commit/29196c88741aa97e854daebc2b28a1bdd45ae486))
+* **ci:** name the database secrets instead of looking them up by expression ([#273](https://github.com/Zero-State-LLC/Patch-Hive/issues/273)) ([40117bc](https://github.com/Zero-State-LLC/Patch-Hive/commit/40117bc4a2ebde2a95f5bda6b9be5c4faa7ebb13))
+* **deps:** override minimatch to 11 for GHSA-g3hv-75wg-m249 ([#263](https://github.com/Zero-State-LLC/Patch-Hive/issues/263)) ([dd67257](https://github.com/Zero-State-LLC/Patch-Hive/commit/dd672572bd55be495dd432927f7bcee76c04f98f))
+* **ops:** find the acceptance JUnit report when the receipt path is relative ([#259](https://github.com/Zero-State-LLC/Patch-Hive/issues/259)) ([2bf82c1](https://github.com/Zero-State-LLC/Patch-Hive/commit/2bf82c18f5bd0e0952874dee70e752cd9b5d7cfa))
+* **runs:** return a run's patches in generation order ([#261](https://github.com/Zero-State-LLC/Patch-Hive/issues/261)) ([6a31173](https://github.com/Zero-State-LLC/Patch-Hive/commit/6a31173df0a07c93432bb48edb88c9c9faf81d62))
+* **security:** remove the undeployed legacy HTTP API ([#269](https://github.com/Zero-State-LLC/Patch-Hive/issues/269)) ([219a822](https://github.com/Zero-State-LLC/Patch-Hive/commit/219a8224b71c2eea644bb0f0612fb6cd6f737a63))
+* **seed:** stop printing the demo password ([#268](https://github.com/Zero-State-LLC/Patch-Hive/issues/268)) ([1330a9a](https://github.com/Zero-State-LLC/Patch-Hive/commit/1330a9a1780606297326409d7b2f692378f4a9f8))
+
+
+### Operations
+
+* **codeql:** scan the workflows again ([#270](https://github.com/Zero-State-LLC/Patch-Hive/issues/270)) ([c24ce86](https://github.com/Zero-State-LLC/Patch-Hive/commit/c24ce8669f004818c7ee8268a58ee7d7b83b9075))
+* restore the security and backend lint gates removed in 5b85f58 ([#266](https://github.com/Zero-State-LLC/Patch-Hive/issues/266)) ([43459fd](https://github.com/Zero-State-LLC/Patch-Hive/commit/43459fd10444e10ce82fab88a80ebe5c5728e107))
+* test on the Python production runs, and round-trip migrations ([#271](https://github.com/Zero-State-LLC/Patch-Hive/issues/271)) ([b98c243](https://github.com/Zero-State-LLC/Patch-Hive/commit/b98c243f1fa6a24210afad7c427033e998bc6ac1))
+
+
+### Documentation
+
+* acceptance receipt from main, beta drills done, board mirror for 2026-11-04 ([#262](https://github.com/Zero-State-LLC/Patch-Hive/issues/262)) ([be6b728](https://github.com/Zero-State-LLC/Patch-Hive/commit/be6b7283e13a1747b461ccf38eef5fc0272bfb89))
+* **evidence:** alpha.7 staging receipts (walkthrough, restore drill, acceptance) ([#260](https://github.com/Zero-State-LLC/Patch-Hive/issues/260)) ([5d0b6e5](https://github.com/Zero-State-LLC/Patch-Hive/commit/5d0b6e57a7d8a53dd0700c5a82d55620c0dc3838))
+* record the 0.3.0-alpha.7 deploy to staging and production ([#257](https://github.com/Zero-State-LLC/Patch-Hive/issues/257)) ([c36fcdf](https://github.com/Zero-State-LLC/Patch-Hive/commit/c36fcdf761d667d5f9b41366c812e8f53a0e7688))
+* record the restored CI gates and what's left to decide ([#272](https://github.com/Zero-State-LLC/Patch-Hive/issues/272)) ([ac9d2f5](https://github.com/Zero-State-LLC/Patch-Hive/commit/ac9d2f57594994079e4cc6bb4bd2635219fe9909))
+* review the unlanded branches and tie T101c to T101b ([#265](https://github.com/Zero-State-LLC/Patch-Hive/issues/265)) ([86a0a29](https://github.com/Zero-State-LLC/Patch-Hive/commit/86a0a2984241cd583d80bb8ce2566b33a7573d3e))
+
+## [0.3.0-alpha.7](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.6...v0.3.0-alpha.7) (2026-11-04)
+
+
+### Added
+
+* **008:** operator driver for the readiness pin and the five-event replay ([#248](https://github.com/Zero-State-LLC/Patch-Hive/issues/248)) ([7a769b0](https://github.com/Zero-State-LLC/Patch-Hive/commit/7a769b0e3bb40befb466930571b2ef0461973683))
+
+
+### Fixed
+
+* **f5:** the rig builder reads rigs through the canon alias; the scanner sees split calls ([#243](https://github.com/Zero-State-LLC/Patch-Hive/issues/243)) ([bbdd871](https://github.com/Zero-State-LLC/Patch-Hive/commit/bbdd871a5ea9ceedb19b9444189fe225011a5b3f))
+* **home:** keep the brand inside a 320px screen before the display font loads ([#256](https://github.com/Zero-State-LLC/Patch-Hive/issues/256)) ([eb6062d](https://github.com/Zero-State-LLC/Patch-Hive/commit/eb6062de58eff79aebb62bcfbfea7a227a97c546))
+
+
+### Specifications
+
+* prep specs 001-005 for owner confirmation (status, plan drafts, 005 gaps) ([#251](https://github.com/Zero-State-LLC/Patch-Hive/issues/251)) ([9437177](https://github.com/Zero-State-LLC/Patch-Hive/commit/94371770030d002f0c7d0fd77f1aaf27c3e658b2))
+
+
+### Data
+
+* **catalog:** 003 T031 offline pass: whole-tag rules (74 rows), store taxonomy kept by feed adapters ([#253](https://github.com/Zero-State-LLC/Patch-Hive/issues/253)) ([1a636af](https://github.com/Zero-State-LLC/Patch-Hive/commit/1a636af88f6b0db096f5b0d0a68a7010a7da5678))
+* **catalog:** settle 9 two-category rows from committed data (category v2) ([#250](https://github.com/Zero-State-LLC/Patch-Hive/issues/250)) ([b45ddfc](https://github.com/Zero-State-LLC/Patch-Hive/commit/b45ddfc84da013ecc98917ed3f912613616b0c23))
+
+
+### Operations
+
+* acceptance in CI and on Neon staging, ledger reconcile CLI, restore drill ([#252](https://github.com/Zero-State-LLC/Patch-Hive/issues/252)) ([fd50806](https://github.com/Zero-State-LLC/Patch-Hive/commit/fd508061e769bd837903caf5cc9a53a3fc998a42))
+* **release:** skip creating a release that already exists ([#245](https://github.com/Zero-State-LLC/Patch-Hive/issues/245)) ([a0e5d25](https://github.com/Zero-State-LLC/Patch-Hive/commit/a0e5d2525ad0435c2f1f577be3fde0f011b73700))
+
+
+### Documentation
+
+* **evidence:** branch triage of 2026-11-03 and the 24 branches deleted ([#247](https://github.com/Zero-State-LLC/Patch-Hive/issues/247)) ([22d150b](https://github.com/Zero-State-LLC/Patch-Hive/commit/22d150b3326beba40d72155d96f007069b5f556a))
+* **evidence:** owner packet after the Project [#8](https://github.com/Zero-State-LLC/Patch-Hive/issues/8) Backlog remediation ([#249](https://github.com/Zero-State-LLC/Patch-Hive/issues/249)) ([a29a86f](https://github.com/Zero-State-LLC/Patch-Hive/commit/a29a86f1b6f34b7d5f8e75edc61994ff6e8cb4e7))
+* record the rig builder's canon reads and refresh the board mirror ([#255](https://github.com/Zero-State-LLC/Patch-Hive/issues/255)) ([7e07fd9](https://github.com/Zero-State-LLC/Patch-Hive/commit/7e07fd911267360ac79947b56cc563b2a44c490c))
+* record what the alpha.6 deploy settled across the roadmap, state and specs ([#242](https://github.com/Zero-State-LLC/Patch-Hive/issues/242)) ([ded89a4](https://github.com/Zero-State-LLC/Patch-Hive/commit/ded89a41af64a1536ca00681eb846500030acd29))
+* refresh the board mirror and the release priority after the alpha.6 deploy ([#241](https://github.com/Zero-State-LLC/Patch-Hive/issues/241)) ([b864a0a](https://github.com/Zero-State-LLC/Patch-Hive/commit/b864a0aeb1de362aeeda6eeec436443fcaa52607))
+* **state:** main at 9c42bd6 (0.3.0-alpha.6) deployed to staging and production ([#239](https://github.com/Zero-State-LLC/Patch-Hive/issues/239)) ([3688037](https://github.com/Zero-State-LLC/Patch-Hive/commit/368803746d8b5e219cc47a608bdda74034f89e06))
+
 ## [0.3.0-alpha.6](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.5...v0.3.0-alpha.6) (2026-11-03)
 
 

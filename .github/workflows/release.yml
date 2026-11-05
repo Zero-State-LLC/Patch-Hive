@@ -33,6 +33,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
+          # Release Please creates the release together with its tag, so on its tags the
+          # release already exists; only a hand-pushed tag needs one made here.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; nothing to create."
+            exit 0
+          fi
           flags=(--generate-notes --verify-tag)
           [[ "$TAG" == *-* ]] && flags+=(--prerelease)
           gh release create "$TAG" --title "$TAG" "${flags[@]}"

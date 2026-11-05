@@ -1,0 +1,4 @@
+- [x] Workflows section present (spec.md "Workflows", added 2026-11-03; INFERRED, the owner confirms it)
+- [x] State machine complete (states, events, guards, initial and final states, illegal transitions) ([state-machines.md](../state-machines.md), derived from `backend/intelligence/resolution_machine.py`; the earlier narrative states are kept there as drift)
+- [x] No stack in spec.md (the requirements name no language, framework or database; file paths appear only as evidence in the implementation-status table and in Workflows)
+- [ ] User stories have acceptance criteria (spec.md lists user outcomes, not user stories; [acceptance.md](../acceptance.md) groups criteria by area, not by outcome)

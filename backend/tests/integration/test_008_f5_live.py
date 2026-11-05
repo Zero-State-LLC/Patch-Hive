@@ -55,7 +55,11 @@ from tests.f5008_helpers import f5008_approver_allowlist  # noqa: F401  (autouse
 
 REPO = Path(__file__).resolve().parents[3]
 FE_PAGES = REPO / "frontend" / "src" / "pages"
-FE_LIST_PAGES = ("frontend/src/pages/Racks.tsx", "frontend/src/pages/Modules.tsx")
+FE_LIST_PAGES = (
+    "frontend/src/pages/Racks.tsx",
+    "frontend/src/pages/Modules.tsx",
+    "frontend/src/pages/RackBuilder.tsx",
+)
 E = CutoverEventType
 
 

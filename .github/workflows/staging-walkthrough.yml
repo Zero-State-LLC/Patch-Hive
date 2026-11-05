@@ -55,8 +55,7 @@ jobs:
           DATABASE_URL: ${{ secrets.PATCHHIVE_DATABASE_URL_STAGING }}
         run: |
           if [ -z "$DATABASE_URL" ]; then echo "::error::PATCHHIVE_DATABASE_URL_STAGING is not set"; exit 1; fi
-          # The seeder prints its result with the password; keep everything but that.
-          python scripts/seed_golden_demo.py | jq 'del(.password)'
+          python scripts/seed_golden_demo.py
       - name: Design Engine walkthrough (T040b)
         if: inputs.checks != 'evidence'
         env:

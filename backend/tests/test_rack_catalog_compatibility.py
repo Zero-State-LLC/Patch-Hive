@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -12,6 +14,9 @@ from integrations.case_catalog_populator import import_records
 from main import app
 from modules.models import Module
 from racks.models import Rack, RackModule
+
+
+INTERNAL_DETAIL = "postgresql://ops:hunter2@db.internal/patchhive"
 
 
 def _case() -> dict:
@@ -107,6 +112,53 @@ def test_rack_compatibility_endpoint(client: TestClient, wired_rack: Rack) -> No
     assert body["module_count"] == 1
     assert body["compatibility"]["overall_status"] in {"verified", "incomplete"}
     assert body["compatibility"]["format_check"]["status"] == "verified"
+
+
+def test_rack_compatibility_keeps_exception_text_out_of_the_response(
+    client: TestClient,
+    wired_rack: Rack,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    def fail(*_args, **_kwargs):
+        raise LookupError(INTERNAL_DETAIL)
+
+    monkeypatch.setattr("racks.catalog_compatibility.evaluate_catalog_compatibility", fail)
+    with caplog.at_level(logging.WARNING, logger="racks.catalog_compatibility"):
+        resp = client.get(f"/api/racks/{wired_rack.id}/compatibility")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["bridge_status"] == "conflict"
+    assert body["message"] == "Catalog case or revision not found"
+    assert INTERNAL_DETAIL not in resp.text
+    assert INTERNAL_DETAIL in caplog.text
+
+
+def test_materialize_batch_keeps_exception_text_out_of_the_response(
+    client: TestClient,
+    db_session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    assert import_records(db_session, [_case()])["inserted"] == 1
+    from tests.conftest import bearer_headers, make_user
+
+    def fail(*_args, **_kwargs):
+        raise RuntimeError(INTERNAL_DETAIL)
+
+    monkeypatch.setattr("cases.materialize.materialize_legacy_case", fail)
+    with caplog.at_level(logging.ERROR, logger="cases.materialize"):
+        resp = client.post(
+            "/api/cases/catalog/materialize-batch",
+            params={"format_family": "eurorack"},
+            headers=bearer_headers(make_user(db_session, "catalog-ops", "Ops")),
+        )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "partial"
+    assert body["failures"] == [{"catalog_slug": "full-co-dual-84", "error": "MATERIALIZE_FAILED"}]
+    assert INTERNAL_DETAIL not in resp.text
+    assert INTERNAL_DETAIL in caplog.text
 
 
 def test_materialize_batch(client: TestClient, db_session: Session) -> None:

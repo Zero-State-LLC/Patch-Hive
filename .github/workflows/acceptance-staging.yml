@@ -1,0 +1,87 @@
+name: Acceptance on staging
+
+# Manual only, staging only. Runs backend/tests/acceptance against Neon staging, but
+# never against its `patchhive` database: the suite truncates every table, so it gets
+# a throwaway database that this run creates, migrates to head and removes.
+#   isolation=database     CREATE DATABASE patchhive_acceptance_<run>_<attempt> on the
+#                          staging branch; DROP DATABASE at the end.
+#   isolation=neon-branch  a child branch acceptance-<run>-<attempt> of `staging` made
+#                          through the Neon API, with a throwaway database on it; the
+#                          branch is deleted at the end. Needs the NEON_API_KEY secret
+#                          and refuses with a clear message without it.
+# The conftest and the script both refuse any URL whose database is `patchhive`.
+# Demo passwords are generated per run and masked. The receipt holds counts only,
+# because this repo's artifacts are public. DATABASE_URL secrets are never echoed.
+on:
+  workflow_dispatch:
+    inputs:
+      isolation:
+        description: Where the throwaway database lives
+        required: true
+        type: choice
+        default: database
+        options: [database, neon-branch]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neon-db-staging
+  cancel-in-progress: false
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment: staging
+    env:
+      ISOLATION: ${{ inputs.isolation }}
+      # As deployed staging runs. The golden demo seeder also seeds a hosted database only
+      # when it is declared staging and given strong passwords (set below).
+      ENVIRONMENT: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install backend
+        working-directory: backend
+        run: python -m pip install -e '.[dev]'
+      - name: Demo passwords for this run
+        run: |
+          for name in PATCHHIVE_DEMO_USER_PASSWORD PATCHHIVE_DEMO_ADMIN_PASSWORD; do
+            value="$(openssl rand -base64 33 | tr -d '\n/+=')"
+            printf '::add-mask::%s\n' "$value"
+            printf '%s=%s\n' "$name" "$value" >> "$GITHUB_ENV"
+          done
+      - name: Mask the staging connection string's parts
+        env:
+          STAGING_SOURCE_URL: ${{ secrets.PATCHHIVE_DATABASE_URL_STAGING }}
+        run: bash scripts/staging/mask_db_url.sh STAGING_SOURCE_URL
+      - name: Create the throwaway database or branch
+        env:
+          STAGING_SOURCE_URL: ${{ secrets.PATCHHIVE_DATABASE_URL_STAGING }}
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+          NEON_PARENT_BRANCH: staging
+        run: python scripts/staging/acceptance_staging.py provision --isolation "$ISOLATION" --target-file "$RUNNER_TEMP/acceptance-target" --receipt-out acceptance-artifacts/receipt.json
+      - name: Mask the throwaway connection string's parts
+        run: TARGET_URL="$(cat "$RUNNER_TEMP/acceptance-target")" bash scripts/staging/mask_db_url.sh TARGET_URL
+      - name: Migrate to head and run the suite
+        run: python scripts/staging/acceptance_staging.py suite --target-file "$RUNNER_TEMP/acceptance-target" --receipt-out acceptance-artifacts/receipt.json
+      - name: Remove the throwaway database or branch
+        if: always()
+        env:
+          STAGING_SOURCE_URL: ${{ secrets.PATCHHIVE_DATABASE_URL_STAGING }}
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+        run: python scripts/staging/acceptance_staging.py cleanup --isolation "$ISOLATION" --target-file "$RUNNER_TEMP/acceptance-target" --receipt-out acceptance-artifacts/receipt.json
+      - name: Keep the counts-only receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: acceptance-staging-receipt
+          path: acceptance-artifacts/receipt.json
+          if-no-files-found: warn
+          retention-days: 90

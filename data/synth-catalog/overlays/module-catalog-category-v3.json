@@ -1,0 +1,1463 @@
+{
+ "dataset_version": "module-catalog-category-v3",
+ "generated_from": "hermes-research/maker-crawl-v2.json",
+ "policy": "maker's own page tags and store taxonomy (whole-tag match), name and URL path; fill-null only; ambiguous rows left empty; video and power-supply rows held for the owner; no ModularGrid",
+ "count": 74,
+ "entries": [
+  {
+   "slug": "acl-m-s-matrix",
+   "brand": "ACL",
+   "name": "M/S-MATRIX",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "stereo",
+    "matrix"
+   ],
+   "source_url": "https://acl-synth.com/products/ms-matrix",
+   "content_sha256": "76f5727fc0ed9c8526ff3702a3d8f5bc04ed14067430714b11f236192f59cfd1"
+  },
+  {
+   "slug": "aircraft-designs-ember-analog-mid-side-saturator",
+   "brand": "Aircraft Designs",
+   "name": "Ember Analog Mid/Side Saturator",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "saturator",
+    "mid/side",
+    "analog"
+   ],
+   "source_url": "https://aircraftdesigns.info/ember",
+   "content_sha256": "dbdeba25a46e7dfd36ae68a59940bcb775fcb54b56081afc969d605bbabdf72a"
+  },
+  {
+   "slug": "ajh-synth-triple-cross-xfader",
+   "brand": "AJH Synth",
+   "name": "Triple Cross Xfader",
+   "category": "MIX",
+   "basis": "crawl_tag",
+   "tags": [
+    "xfader",
+    "panning",
+    "stereo"
+   ],
+   "source_url": "https://ajhsynth.com/TripleCross.html",
+   "content_sha256": "8e7c2f7f8f4fd5b39ecd06310c5e57c78adccf18c58c30d2f38b04c68eb9fc72"
+  },
+  {
+   "slug": "apf-audio-tiliqua-screen",
+   "brand": "apf.audio",
+   "name": "tiliqua-screen",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "display",
+    "screen",
+    "eurorack"
+   ],
+   "source_url": "https://apf.audio/modules/current/tiliquascreen/",
+   "content_sha256": "904d0057bb5dda323170180cbe709daeac1eab61f1d7a289f46042b89964ea33"
+  },
+  {
+   "slug": "arc-klangumwandler",
+   "brand": "ARC",
+   "name": "Klangumwandler",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "frequency shifter",
+    "analogue computer",
+    "Bode",
+    "Dome"
+   ],
+   "source_url": "https://www.analogueresearch.com/products/klangumwandler",
+   "content_sha256": "7aa50a2461549a094dc69befecc363869ed02f792596d8bbaecb9dbb3280808c"
+  },
+  {
+   "slug": "atonal-circuits-k7",
+   "brand": "Atonal Circuits",
+   "name": "K7",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "encoder",
+    "high frequencies",
+    "dry/wet"
+   ],
+   "source_url": "https://www.atonal.be/store/K7-p491231595",
+   "content_sha256": "eb2d21cb83e1b21bc5485e2c868bbffb78f8b88a03f807648f0f71427956530e"
+  },
+  {
+   "slug": "atonal-circuits-see",
+   "brand": "Atonal Circuits",
+   "name": "SEE",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "display"
+   ],
+   "source_url": "https://www.atonal.be/store/SEE-p551033267",
+   "content_sha256": "b38cbabdb2fe6ae80ee0792b17b46e913424da314ecda31e588a3f74baffe581"
+  },
+  {
+   "slug": "avonsynth-avs-glide-1",
+   "brand": "AvonSynth",
+   "name": "AVS-GLIDE-1",
+   "category": "ENV",
+   "basis": "crawl_tag",
+   "tags": [
+    "glide",
+    "quad",
+    "voltage controlled",
+    "analog"
+   ],
+   "source_url": "https://avonsynth.com/products/avs-glide-1/",
+   "content_sha256": "2331ca2d3f164058afccaef4c123d5fb567fc651569744560e32b89b28159c5f"
+  },
+  {
+   "slug": "beepboop-electronics-1u-analogue-vu-meter",
+   "brand": "BeepBoop Electronics",
+   "name": "1U Analogue VU Meter",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "VU meter",
+    "1U"
+   ],
+   "source_url": "https://beepboopelectronics.co.uk/product/1u-analogue-vu-meter/",
+   "content_sha256": "0d39f8ebd785551bdb2fefa98fadede251a24d9759560b2f06cdf8f7935b4404"
+  },
+  {
+   "slug": "beepboop-electronics-1u-headphones",
+   "brand": "BeepBoop Electronics",
+   "name": "1U Headphones",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "headphones",
+    "monitoring",
+    "stereo",
+    "1U"
+   ],
+   "source_url": "https://beepboopelectronics.co.uk/product/1u-headphones/",
+   "content_sha256": "c3d29c5c1a21c580631d77981f2c90b45209722d307b5788c71599a3b3fb1b96"
+  },
+  {
+   "slug": "beepboop-electronics-2hp-intercom-mic",
+   "brand": "BeepBoop Electronics",
+   "name": "2hp Intercom MIC",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "microphone",
+    "gain"
+   ],
+   "source_url": "https://beepboopelectronics.co.uk/product/2hp-intercom-mic/",
+   "content_sha256": "ce4015436672efabbf4602a533c5dfd2ff5bcbdc1e25050fe8d7f3887c753ff3"
+  },
+  {
+   "slug": "beepboop-electronics-eurostack-sound-system-v2",
+   "brand": "BeepBoop Electronics",
+   "name": "Eurostack Sound System V2",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "speaker",
+    "feedback",
+    "display"
+   ],
+   "source_url": "https://beepboopelectronics.co.uk/product/eurostack-sound-system-v2/",
+   "content_sha256": "c541e2b00e6d630f853f8b58a014cab40a4c635c46a4a6f088776385cb80d2b8"
+  },
+  {
+   "slug": "beepboop-electronics-samsara",
+   "brand": "BeepBoop Electronics",
+   "name": "Samsara",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "CV controller",
+    "bipolar",
+    "electromechanical"
+   ],
+   "source_url": "https://beepboopelectronics.co.uk/product/samsara-bipolar-cv-controller/",
+   "content_sha256": "2abdf6c90a166d7ac9ac544a77032e1f3fe8ca6509a45b2af324ff3d1556351c"
+  },
+  {
+   "slug": "bitbybit-synths-waveboy-diy-edition",
+   "brand": "BitByBit Synths",
+   "name": "WaveBoy DIY Edition",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "Chiptune",
+    "GameBoy",
+    "WaveBoy",
+    "DIY"
+   ],
+   "source_url": "https://www.bitbybitsynths.com/shop/waveboy-diy/",
+   "content_sha256": "d781418b64b481ca0ed02df4eb5f351194bc4ac5bb05a5a43ded3536d3ff9101"
+  },
+  {
+   "slug": "dave-jones-design-otool-scope-and-audio-tools",
+   "brand": "Dave Jones Design",
+   "name": "Otool Scope and Audio Tools",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "oscilloscope",
+    "meter",
+    "spectrum"
+   ],
+   "source_url": "https://www.jonesvideo.com/prod_otool.html",
+   "content_sha256": "6b9a8e68b789d26f1a0c2fa5158c6b128abf3568aa3074b5c56ef4a3ff0b6866"
+  },
+  {
+   "slug": "der-mann-mit-der-maschine-trs-split",
+   "brand": "Der Mann mit der Maschine",
+   "name": "TRS Split",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "splitter",
+    "stereo",
+    "mono"
+   ],
+   "source_url": "https://shop.dermannmitdermaschine.de/products/trs-split",
+   "content_sha256": "eaeb6a11e7064e6e5300366cf1fddd833a4f5e56f5c87ec3f01e0339e069cd45"
+  },
+  {
+   "slug": "divergent-waves-dice",
+   "brand": "Divergent Waves",
+   "name": "Dice",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "router",
+    "probabilistic",
+    "dice",
+    "cv"
+   ],
+   "source_url": "https://www.divergentwaves.co.uk/module/dice",
+   "content_sha256": "fa46b56f7cb38a8ff3b06adabd305a1360500a3e85dbcdfdbe3d1a2c13c26b04"
+  },
+  {
+   "slug": "feedback-phonez",
+   "brand": "Feedback",
+   "name": "PhoneZ",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "headphone amp",
+    "stereo",
+    "mono"
+   ],
+   "source_url": "https://feedback-modules.myshopify.com/products/phonez",
+   "content_sha256": "fc8b963fe474dfbc763ec955322d44251ebfff487ec1383dade96a50299250f8"
+  },
+  {
+   "slug": "fully-wired-electronics-quad-manual-gate",
+   "brand": "Fully Wired Electronics",
+   "name": "Quad Manual Gate",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "manual gate",
+    "gate"
+   ],
+   "source_url": "https://www.fullywiredelectronics.com/product-page/quad-manual-gate",
+   "content_sha256": "046fbfa42dc4aa6e6bd32f32332d3f91470737edd7d905a14b895644bc8f218d"
+  },
+  {
+   "slug": "ginko-synthese-phono-preamp-assembled",
+   "brand": "Ginko Synthese",
+   "name": "PHONO PREAMP assembled",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "phono",
+    "preamp",
+    "RIAA"
+   ],
+   "source_url": "https://www.ginkosynthese.com/product/2463873/phono-preamp-assembled",
+   "content_sha256": "49620504a922614e72340f276e4d057e602da13698fb5e88e3024d2e1bca1f66"
+  },
+  {
+   "slug": "gregsbrain-xvox-eurorack-pitch-shifter-module-diy-kit",
+   "brand": "gregsbrain",
+   "name": "xVox Eurorack pitch shifter module DIY kit",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "pitch shifter",
+    "DIY kit"
+   ],
+   "source_url": "https://www.gregsbrain.co/c/products/xvox-diy-kit",
+   "content_sha256": "81d7bca67c713818c136e4584c9a2d4d0fccc97fa94497f4d3a21244de4e168d"
+  },
+  {
+   "slug": "hinton-instruments-signal-matrix",
+   "brand": "Hinton Instruments",
+   "name": "Signal Matrix",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "matrix",
+    "stereo",
+    "encoder"
+   ],
+   "source_url": "https://www.hinton-instruments.co.uk/paprod/modular/signalmatrix/index.htm",
+   "content_sha256": "254009c19cc03a7146a75bbaaeb3bac9b4e277a8a9dec8f4b90d7b6269810506"
+  },
+  {
+   "slug": "hive-mind-synthesis-ind",
+   "brand": "Hive Mind Synthesis",
+   "name": "IND",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "indicator",
+    "LED",
+    "signal"
+   ],
+   "source_url": "https://hivemindsynthesis.com/shop/p/ind-indicator-megabit",
+   "content_sha256": "d283a86ccd052a82f24f6c6362041d3734dce67b28ac5f758e55d4ffedcc1635"
+  },
+  {
+   "slug": "jolin-nexum",
+   "brand": "Jolin",
+   "name": "NEXUM",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "tester",
+    "cable"
+   ],
+   "source_url": "https://jolin.tech/shop/p/nexum",
+   "content_sha256": "b8fcf7e4384d39508963bd86e00dd09b7db2ee2e8b740bc6aee1dfb15cf517ba"
+  },
+  {
+   "slug": "larix-elektro-ritournelle-shift-r",
+   "brand": "Larix Elektro",
+   "name": "RITOURNELLE SHIFT-R",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "shift register"
+   ],
+   "source_url": "https://www.larix-elektro.com/PRODUCT_RITOURNELLE_SHIFT-R.html",
+   "content_sha256": "c5d93305b5970903cb4fc0d093c81ab63e9ca8e45012d9bddeaa973e4d23c977"
+  },
+  {
+   "slug": "manikk-drm7",
+   "brand": "Manikk",
+   "name": "DRM7",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "percussion"
+   ],
+   "source_url": "https://manikk.com/product/drm7/",
+   "content_sha256": "5ed0eb07b7ea10c6e8a6e39e46a3cb4b29f7785a7444101225124f0153947685"
+  },
+  {
+   "slug": "melawati-modular-oddity",
+   "brand": "Melawati Modular",
+   "name": "Oddity",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "groovebox",
+    "pattern"
+   ],
+   "source_url": "https://www.melawatimodular.com/",
+   "content_sha256": "19837b0dbcf7ff06c74c84c1e5802feb5976a2f7e0adb1482b90205753369045"
+  },
+  {
+   "slug": "michigan-synth-works-beehive-8hp-plaits",
+   "brand": "Michigan Synth Works",
+   "name": "Beehive, 8HP Plaits",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "Plaits"
+   ],
+   "source_url": "https://michigansynthworks.com/products/beehive-8hp-plaits",
+   "content_sha256": "2f95dd6abcc1c441ad443d18e2422280697da4729fa3f00a0dbe11d831adea02"
+  },
+  {
+   "slug": "michigan-synth-works-microbraids-ii",
+   "brand": "Michigan Synth Works",
+   "name": "MicroBraids II",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "braids",
+    "eurorack"
+   ],
+   "source_url": "https://michigansynthworks.com/products/microbraids-ii-8hp-braids",
+   "content_sha256": "d2baff84ff7854943f9eeb6354a112ff56936502c64cec2679a6e40bb0c0f008"
+  },
+  {
+   "slug": "michigan-synth-works-microburst-uburst-8hp-clouds",
+   "brand": "Michigan Synth Works",
+   "name": "Microburst (uBurst), 8HP Clouds",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "clouds",
+    "eurorack"
+   ],
+   "source_url": "https://michigansynthworks.com/products/microburst-8hp-clouds",
+   "content_sha256": "06927318159419821ad3f11dd9ae555be548026e1048b945159b9ce60dffe2bd"
+  },
+  {
+   "slug": "michigan-synth-works-monsoon",
+   "brand": "Michigan Synth Works",
+   "name": "Monsoon",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "clouds",
+    "clone"
+   ],
+   "source_url": "https://michigansynthworks.com/products/monsoon-10hp-clouds-with-independent-parameter-controls",
+   "content_sha256": "d8c5d3c4e04db923d65d72cae334ec4b5c282ca30a856a4af7ddb2f0cdcc841e"
+  },
+  {
+   "slug": "motley-modular-disting-ex-flush-external-display",
+   "brand": "Motley Modular",
+   "name": "Disting EX Flush External Display",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "display",
+    "external",
+    "1U"
+   ],
+   "source_url": "https://www.motleymodular.com/disting-ex-flush-external-display/",
+   "content_sha256": "8c750c18529cec5f7a4407b4a43bd339a50ea5845f004b6357a485abf8bb25dd"
+  },
+  {
+   "slug": "motley-modular-dual-disting-display",
+   "brand": "Motley Modular",
+   "name": "Dual Disting Display",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "display",
+    "dual",
+    "OLED"
+   ],
+   "source_url": "https://www.motleymodular.com/dual-disting-display/",
+   "content_sha256": "1fa227c036087955a2eae800e0e837c6e54b276d703f6954172610216893fb18"
+  },
+  {
+   "slug": "nonlinearcircuits-beat-freqs",
+   "brand": "Nonlinearcircuits",
+   "name": "BEAT FREQS",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "gate",
+    "pattern",
+    "generator",
+    "LED"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/beatfreqs",
+   "content_sha256": "9eed9f1cb637408e810c3158dab8cdbc08ab17bbf08e0e37dd1f832b3a63f009"
+  },
+  {
+   "slug": "nonlinearcircuits-cellular-automata",
+   "brand": "Nonlinearcircuits",
+   "name": "Cellular Automata",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "gate",
+    "pattern",
+    "generator",
+    "CV"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/cellular-automata",
+   "content_sha256": "7044f2d304d8e8f295ff4748b8b3908f6a58ee8c1b6491c0e8aa53cfd7c7411d"
+  },
+  {
+   "slug": "nonlinearcircuits-encephalo-adjuster",
+   "brand": "Nonlinearcircuits",
+   "name": "Encephalo Adjuster",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "phaser",
+    "LDR",
+    "feedback",
+    "CV"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/encephaloadjuster",
+   "content_sha256": "ff4e12e8fa2f992d2ee2216479d56e2b3966433fb553621c3b69a559cb56d298"
+  },
+  {
+   "slug": "nonlinearcircuits-fourier",
+   "brand": "Nonlinearcircuits",
+   "name": "FOURIER",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "Fourier",
+    "synthesis",
+    "drone",
+    "soundscape"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/fourier",
+   "content_sha256": "15a377e9d6e8d0f986b388a82ee2352c7c592bd546d4e87323d4d4132708eba3"
+  },
+  {
+   "slug": "nonlinearcircuits-is-carp-lust-wrong",
+   "brand": "Nonlinearcircuits",
+   "name": "Is Carp Lust Wrong?",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "plucked string",
+    "glitch"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/carplust",
+   "content_sha256": "b7aae1e689356b8fb9c577a0fb7539dce2149f7c988a1ffb50e0073790a08d42"
+  },
+  {
+   "slug": "nonlinearcircuits-more",
+   "brand": "Nonlinearcircuits",
+   "name": "MORE",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "cowbell"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/more",
+   "content_sha256": "a3ecdd06db8c746afb467733f374409d5dd7c82a8bdecda8079d1301e37e0968"
+  },
+  {
+   "slug": "nonlinearcircuits-the-suppository-of-all-wisdom",
+   "brand": "Nonlinearcircuits",
+   "name": "The Suppository of all Wisdom",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "phase shifter",
+    "phaser"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/suppository",
+   "content_sha256": "7a31dc7c7e2347a99dd14567291eb55d488013ae36b927804b42ac4732e2bbc5"
+  },
+  {
+   "slug": "olivia-artz-modular-ledvu-by-thawney",
+   "brand": "Olivia Artz Modular",
+   "name": "LEDVU by Thawney",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "VU meter",
+    "visualization",
+    "LED"
+   ],
+   "source_url": "https://oamodular.org/products/ledvu",
+   "content_sha256": "e269f6fb9d5d6e0e8e1cd54a1706306ed574555eb20d57810b6eb019a8dc4986"
+  },
+  {
+   "slug": "omiindustriies-curtail",
+   "brand": "Omiindustriies",
+   "name": "Curtail",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "voltage scaler"
+   ],
+   "source_url": "https://www.omiindustriies.com/webstore/curtail",
+   "content_sha256": "5779a7f921d65b3c04abf24b5b410f712f239939cb40244c36c2d986ac0ff27e"
+  },
+  {
+   "slug": "pindsvik-audio-liho",
+   "brand": "Pindsvik Audio",
+   "name": "LIHO",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "line-in",
+    "stereo"
+   ],
+   "source_url": "https://pindsvikaudio.com/shop/liho-2",
+   "content_sha256": "05ed83c8a54493ba6686c0a6b4844e07f63cd41d51a842a58c8ebaa8ef89db06"
+  },
+  {
+   "slug": "polaxis-talko-1-assembled",
+   "brand": "Polaxis",
+   "name": "Talko 1 assembled",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "speech",
+    "synthesizer",
+    "usb",
+    "arduino"
+   ],
+   "source_url": "https://www.polaxis.be/product/talko-assembled-module/",
+   "content_sha256": "0112504493bce0689507752f8757e9301c6d9315dbdb2dd97ee0702df27c2699"
+  },
+  {
+   "slug": "polaxis-talko-1-diy",
+   "brand": "Polaxis",
+   "name": "Talko 1 DIY",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "speech",
+    "synthesizer",
+    "LPC",
+    "DIY"
+   ],
+   "source_url": "https://www.polaxis.be/product/talko-kit/",
+   "content_sha256": "00da04fa6eb3070b6b63a84b97042a45cec69130d2599eb4e62df6a3a6c2237e"
+  },
+  {
+   "slug": "pusherman-cv-pan-stereo-panning",
+   "brand": "Pusherman",
+   "name": "CV PAN / stereo panning",
+   "category": "MIX",
+   "basis": "crawl_tag",
+   "tags": [
+    "panning",
+    "stereo",
+    "cv"
+   ],
+   "source_url": "https://pushermanproductions.com/products/st-modular-cv-pan",
+   "content_sha256": "851d7934eae5f2cd5c6b80a0e6e2074af72676f5e08bf19ceea13ffb160f6af7"
+  },
+  {
+   "slug": "pusherman-klangmaschine-dual-digital-fm-synthesizer-16-hp",
+   "brand": "Pusherman",
+   "name": "KLANGMASCHINE / dual digital fm synthesizer / 16 HP",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "fm",
+    "synthesizer",
+    "digital",
+    "dual"
+   ],
+   "source_url": "https://pushermanproductions.com/products/st-modular-klangmaschine",
+   "content_sha256": "4af74f69e014bcef99740e2f38548ca351a00b439fd7acc953bf6510330a8b5c"
+  },
+  {
+   "slug": "rides-in-the-storm-ipt-dual-inverter-precision-adder",
+   "brand": "Rides in the Storm",
+   "name": "IPT Dual Inverter & Precision Adder",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "inverter",
+    "adder"
+   ],
+   "source_url": "https://rides-in-the-storm.de/modules/ipt",
+   "content_sha256": "a8effde9efa619c49c020fc20d070d99be46af2e0c489c9fe31fe39fea7e3df6"
+  },
+  {
+   "slug": "selestium-modular-combiner",
+   "brand": "selestium modular",
+   "name": "COMBINER",
+   "category": "MIX",
+   "basis": "crawl_tag",
+   "tags": [
+    "summing"
+   ],
+   "source_url": "https://modular.selestium.net/modules/combiner/",
+   "content_sha256": "f15f0691c43a4212280f16bc30526f4171f4eed90e423429286683751f131925"
+  },
+  {
+   "slug": "selestium-modular-quiverer-m5",
+   "brand": "selestium modular",
+   "name": "QUIVERER (M5)",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "drone",
+    "string"
+   ],
+   "source_url": "https://modular.selestium.net/modules/quiverer_m5/",
+   "content_sha256": "f741cdc2becb5599f241449bde6439ba36c3cfea24406747ee112e7dc80f790f"
+  },
+  {
+   "slug": "signs-modular-trp",
+   "brand": "Signs Modular",
+   "name": "trp",
+   "category": "ENV",
+   "basis": "crawl_tag",
+   "tags": [
+    "trapezoid",
+    "decay",
+    "CV"
+   ],
+   "source_url": "https://signsmodular.com/trp.html",
+   "content_sha256": "ebcaa951257f11aee8b0bf036fa8fb0e2091037ceff846ef36e85a09e886220c"
+  },
+  {
+   "slug": "skull-circuits-scm-a01",
+   "brand": "Skull & Circuits",
+   "name": "SCM-A01",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "level control",
+    "aux",
+    "monitoring",
+    "VU"
+   ],
+   "source_url": "https://www.skullandcircuits.com/shop/scm-a01-scm-a01-37",
+   "content_sha256": "7ae2aa853f534c5d6cdf0a339a3ac4850d2d27d65c9f18ef972f6b96b691b23e"
+  },
+  {
+   "slug": "something-modular-pal",
+   "brand": "Something Modular",
+   "name": "PAL",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "stereo",
+    "adapter",
+    "pedal"
+   ],
+   "source_url": "https://somethingmodular.fr/articles/",
+   "content_sha256": "16141e4b90b6c6376706e022f709c182e0250363180d9d79a100e541af0d36de"
+  },
+  {
+   "slug": "sonoclast-heartbeat",
+   "brand": "Sonoclast",
+   "name": "Heartbeat",
+   "category": "SEQ",
+   "basis": "crawl_tag",
+   "tags": [
+    "rhythmic",
+    "gate",
+    "loop",
+    "CV"
+   ],
+   "source_url": "https://sonoclast.com/products/heartbeat/",
+   "content_sha256": "3d3f35f202ca96d680a60c504c04a6b1b60cbc0e3b114e69d99c5dc1dd1b7689"
+  },
+  {
+   "slug": "sovage-engineering-chicane",
+   "brand": "Sovage Engineering",
+   "name": "CHICANE",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "drive",
+    "clipper",
+    "stereo"
+   ],
+   "source_url": "https://www.sovageengineering.com/product-page/chicane",
+   "content_sha256": "908ae82860f52e84328c840d17c679af816a4e1860b3f7edeb1bb990c689b368"
+  },
+  {
+   "slug": "st-modular-cv-pan",
+   "brand": "ST Modular",
+   "name": "CV Pan",
+   "category": "MIX",
+   "basis": "crawl_tag",
+   "tags": [
+    "panning",
+    "stereo",
+    "CV"
+   ],
+   "source_url": "https://www.st-modular.de/modules/cv-pan",
+   "content_sha256": "ebfbded2e24c449e6ffbd0c7f536322e9681bc5d84167c66f756c65e04a079be"
+  },
+  {
+   "slug": "st-modular-emoo",
+   "brand": "ST Modular",
+   "name": "Emoo",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "adapter",
+    "guitar pedal",
+    "MOOER",
+    "Eurorack"
+   ],
+   "source_url": "https://www.st-modular.de/modules/emoo",
+   "content_sha256": "eb19729e039c84f1a4419a26bdf54265e2f9e5976a8b869e802d0eaa51234a4e"
+  },
+  {
+   "slug": "st-modular-pae",
+   "brand": "ST Modular",
+   "name": "PAE",
+   "category": "MIX",
+   "basis": "crawl_tag",
+   "tags": [
+    "pan",
+    "fade",
+    "cv",
+    "stereo"
+   ],
+   "source_url": "https://www.st-modular.de/modules/pae",
+   "content_sha256": "2d7025c9b466ae72638cd85b375f36e832596f807ca3a8a18664f9a849e87f95"
+  },
+  {
+   "slug": "st-modular-send",
+   "brand": "ST Modular",
+   "name": "SEND",
+   "category": "MIX",
+   "basis": "crawl_tag",
+   "tags": [
+    "aux send",
+    "return",
+    "tone control",
+    "performance"
+   ],
+   "source_url": "https://www.st-modular.de/modules/send",
+   "content_sha256": "681a34f052df43dafc40d9d6d66d622c760066f65bae45135b3ba2a0b2d4bb20"
+  },
+  {
+   "slug": "studiokat-r2r-dac-v1",
+   "brand": "StudioKAT",
+   "name": "R2R DAC v1",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "DAC",
+    "CV"
+   ],
+   "source_url": "https://www.studiokat.jp/items/126123361",
+   "content_sha256": "093f300c20baf75ea20b236022e52cf250bc4d3a7814dc3f8113d0a888827d01"
+  },
+  {
+   "slug": "studiokat-r2r-dac-v2",
+   "brand": "StudioKAT",
+   "name": "R2R DAC v2",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "DAC",
+    "CV"
+   ],
+   "source_url": "https://www.studiokat.jp/items/149564763",
+   "content_sha256": "d2cfa3f4ae805554292b51260fa93b4e68c11f1f172f881d0959a0fbadf3a737"
+  },
+  {
+   "slug": "thawney-ledvu",
+   "brand": "Thawney",
+   "name": "LEDVU",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "VU meter",
+    "LED",
+    "visualization"
+   ],
+   "source_url": "https://www.thawney.com/shop/p/ledvu",
+   "content_sha256": "531134ae07f4a3681cf54f66353cfb1033814567efda18c4dd4086db6743f61c"
+  },
+  {
+   "slug": "tlm-audio-klangmaschine",
+   "brand": "TLM Audio",
+   "name": "KLANGMASCHINE",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "fm",
+    "synthesizer",
+    "digital",
+    "dual"
+   ],
+   "source_url": "https://www.tlm-audio.com/product-page/st-modular-klangmaschine",
+   "content_sha256": "215d2e975af320ed23be262a15b1f847fa00ff99de254ba29913151905614a17"
+  },
+  {
+   "slug": "tokyo-tape-music-center-control-voltage-inverter-model-157",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Control Voltage Inverter Model 157",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "inverter",
+    "CV",
+    "Buchla"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/control-voltage-inverter-model-157/",
+   "content_sha256": "d2e6857cc2353009744f522096b241fb3d607cbe4350c9274839b71997a4a890"
+  },
+  {
+   "slug": "tokyo-tape-music-center-dual-integrator-model-155",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Dual Integrator Model 155",
+   "category": "ENV",
+   "basis": "crawl_tag",
+   "tags": [
+    "integrator",
+    "dual",
+    "eurorack",
+    "cv"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/dual-integrator-model-155/",
+   "content_sha256": "a9af45011abd01ebf4c54218792a4349bdaebe9086dc762364b4fa4960ff701b"
+  },
+  {
+   "slug": "tokyo-tape-music-center-frequency-shifter-model-185",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Frequency Shifter MODEL 185",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "frequency shifter",
+    "discrete",
+    "Buchla",
+    "100 series"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/frequency-shifter-model-185/",
+   "content_sha256": "2e41f100a82548ab9cd8218298a27cee2e373c806a527d3119a795080a187b76"
+  },
+  {
+   "slug": "tokyo-tape-music-center-phase-shifter-model-196",
+   "brand": "Tokyo Tape Music Center",
+   "name": "Phase Shifter Model 196",
+   "category": "FX",
+   "basis": "crawl_tag",
+   "tags": [
+    "phase shifter",
+    "eurorack"
+   ],
+   "source_url": "https://tokyo-tape-music-center.com/product/phase-shifter-model-196/",
+   "content_sha256": "1e7c096ae7f17bb079c82d43a4c378a2346b086f4e891e8859fc978f5d346bab"
+  },
+  {
+   "slug": "ult-sound-msm-4x4",
+   "brand": "Ult-Sound",
+   "name": "MSM-4x4",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "matrix",
+    "router",
+    "stereo",
+    "CV"
+   ],
+   "source_url": "https://www.ult-sound.com/product-page/ult-sound-msm-4x4",
+   "content_sha256": "53303fbc1ca20e6589fa2f37a7de181c8c8115e017b6b18f6ba6c03d2e1916ac"
+  },
+  {
+   "slug": "vaski-embedded-lights-stereo-visualizer-black",
+   "brand": "Vaski Embedded",
+   "name": "Lights Stereo Visualizer (Black)",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "visualizer",
+    "display",
+    "stereo",
+    "cv"
+   ],
+   "source_url": "https://www.vaski.nl/product/lights-stereo-visualizer-black/",
+   "content_sha256": "1be537f8fb4789590f495e1fee2335f0f6ebfa986c6ad08dc8649fbd0f9bb022"
+  },
+  {
+   "slug": "vaski-embedded-lights-stereo-visualizer-silver",
+   "brand": "Vaski Embedded",
+   "name": "Lights Stereo Visualizer (Silver)",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "visualizer",
+    "display",
+    "stereo",
+    "cv"
+   ],
+   "source_url": "https://www.vaski.nl/product/lights-stereo-visualizer-silver/",
+   "content_sha256": "d4564c0bef53ebb0da1f5231761e11be14dd0cccc02f5fa7b09cc5a099925f20"
+  },
+  {
+   "slug": "vostok-instruments-path",
+   "brand": "Vostok Instruments",
+   "name": "Path",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "router",
+    "morphing",
+    "CV",
+    "audio"
+   ],
+   "source_url": "https://www.vostokinstruments.com/path",
+   "content_sha256": "476d01d387fb7fe985a0d729802a73f66be9e7549fec284ef00ec10b17d4faeb"
+  },
+  {
+   "slug": "vpme-de-trs-split",
+   "brand": "vpme.de",
+   "name": "TRS Split",
+   "category": "UTIL",
+   "basis": "crawl_tag",
+   "tags": [
+    "splitter",
+    "stereo",
+    "mono"
+   ],
+   "source_url": "https://vpme.de/trs-split/",
+   "content_sha256": "e696554fdac08b1ea388420f11042dc679f51b44438abebef698ce87aaaf0901"
+  },
+  {
+   "slug": "wgd-modular-kaoya",
+   "brand": "WGD Modular",
+   "name": "kaoya",
+   "category": "VCO",
+   "basis": "crawl_tag",
+   "tags": [
+    "kick",
+    "duck",
+    "rhythm",
+    "DIY"
+   ],
+   "source_url": "https://wgdmodular.de/module/kaoya/",
+   "content_sha256": "dc9e99b176dc0ce7f46e249b0b0678c141ff804c1a9732c570da972135dd58d6"
+  },
+  {
+   "slug": "wgd-modular-lemon",
+   "brand": "WGD Modular",
+   "name": "Lemon",
+   "category": "MIX",
+   "basis": "crawl_tag",
+   "tags": [
+    "panning",
+    "stereo",
+    "amplitude",
+    "routing"
+   ],
+   "source_url": "https://wgdmodular.de/module/lemon/",
+   "content_sha256": "dcf34988e550ba1944037cdf20c683d847d84c19a43ed68a9a50f9691e98a991"
+  }
+ ],
+ "held": [
+  {
+   "slug": "afterlife-laboratories-video-keyer",
+   "brand": "Afterlife Laboratories",
+   "name": "Video Keyer",
+   "held_for": "video",
+   "tags": [
+    "video",
+    "keyer",
+    "luma",
+    "voltage control"
+   ],
+   "source_url": "https://www.afterlifelaboratories.com/shop/p/hl4bv3y8wojoz25w26o9dwmoee97xh"
+  },
+  {
+   "slug": "aircraft-designs-dc-high-quality-power-supply",
+   "brand": "Aircraft Designs",
+   "name": "DC High-Quality Power Supply",
+   "held_for": "power",
+   "tags": [
+    "power supply",
+    "eurorack",
+    "low-noise"
+   ],
+   "source_url": "https://aircraftdesigns.info/dc"
+  },
+  {
+   "slug": "eowave-source-d-energie",
+   "brand": "Eowave",
+   "name": "SOURCE D'ENERGIE",
+   "held_for": "power",
+   "tags": [
+    "power",
+    "supply"
+   ],
+   "source_url": "https://www.eowave.com/modules/source"
+  },
+  {
+   "slug": "eowave-source-mk3",
+   "brand": "Eowave",
+   "name": "SOURCE MK3",
+   "held_for": "power",
+   "tags": [
+    "power",
+    "supply"
+   ],
+   "source_url": "https://www.eowave.com/modules/sourcemk3"
+  },
+  {
+   "slug": "feed-me-synthesis-parasitic-power",
+   "brand": "Feed me Synthesis",
+   "name": "parasitic power",
+   "held_for": "power",
+   "tags": [
+    "power"
+   ],
+   "source_url": "https://www.feed-me-synthesis.co.uk/product/parasitic-power"
+  },
+  {
+   "slug": "feedback-reset",
+   "brand": "Feedback",
+   "name": "RESET",
+   "held_for": "power",
+   "tags": [
+    "power",
+    "on/off"
+   ],
+   "source_url": "https://feedback-modules.myshopify.com/products/reset"
+  },
+  {
+   "slug": "lzx-industries-doorway",
+   "brand": "LZX Industries",
+   "name": "Doorway",
+   "held_for": "video",
+   "tags": [
+    "video",
+    "keyer",
+    "compositor"
+   ],
+   "source_url": "https://lzxindustries.net/modules/doorway"
+  },
+  {
+   "slug": "lzx-industries-esg3",
+   "brand": "LZX Industries",
+   "name": "ESG3",
+   "held_for": "video",
+   "tags": [
+    "video",
+    "sync",
+    "generator"
+   ],
+   "source_url": "https://lzxindustries.net/modules/esg3"
+  },
+  {
+   "slug": "lzx-industries-liquid-tv",
+   "brand": "LZX Industries",
+   "name": "Liquid TV",
+   "held_for": "video",
+   "tags": [
+    "video",
+    "monitor",
+    "preview",
+    "driver"
+   ],
+   "source_url": "https://lzxindustries.net/modules/liquid-tv"
+  },
+  {
+   "slug": "lzx-industries-marble-index",
+   "brand": "LZX Industries",
+   "name": "Marble Index",
+   "held_for": "video",
+   "tags": [
+    "video",
+    "compositing",
+    "generator",
+    "depth"
+   ],
+   "source_url": "https://lzxindustries.net/modules/marble-index"
+  },
+  {
+   "slug": "lzx-industries-navigator",
+   "brand": "LZX Industries",
+   "name": "Navigator",
+   "held_for": "video",
+   "tags": [
+    "video",
+    "synthesis",
+    "analog",
+    "transform"
+   ],
+   "source_url": "https://lzxindustries.net/modules/navigator"
+  },
+  {
+   "slug": "lzx-industries-p",
+   "brand": "LZX Industries",
+   "name": "P",
+   "held_for": "video",
+   "tags": [
+    "slide pot"
+   ],
+   "source_url": "https://lzxindustries.net/modules/p"
+  },
+  {
+   "slug": "lzx-industries-pab",
+   "brand": "LZX Industries",
+   "name": "PAB",
+   "held_for": "video",
+   "tags": [
+    "video",
+    "synthesis"
+   ],
+   "source_url": "https://lzxindustries.net/modules/pab"
+  },
+  {
+   "slug": "lzx-industries-polar-fringe",
+   "brand": "LZX Industries",
+   "name": "Polar Fringe",
+   "held_for": "video",
+   "tags": [
+    "chroma key",
+    "analog",
+    "video",
+    "processor"
+   ],
+   "source_url": "https://lzxindustries.net/modules/polar-fringe"
+  },
+  {
+   "slug": "lzx-industries-prm",
+   "brand": "LZX Industries",
+   "name": "PRM",
+   "held_for": "video",
+   "tags": [
+    "video",
+    "processor",
+    "synthesis"
+   ],
+   "source_url": "https://lzxindustries.net/modules/prm"
+  },
+  {
+   "slug": "lzx-industries-shapechanger",
+   "brand": "LZX Industries",
+   "name": "Shapechanger",
+   "held_for": "video",
+   "tags": [
+    "analog",
+    "computing",
+    "video",
+    "processor"
+   ],
+   "source_url": "https://lzxindustries.net/modules/shapechanger"
+  },
+  {
+   "slug": "lzx-industries-sumdist",
+   "brand": "LZX Industries",
+   "name": "SumDist",
+   "held_for": "video",
+   "tags": [
+    "video",
+    "synthesis"
+   ],
+   "source_url": "https://lzxindustries.net/modules/sumdist"
+  },
+  {
+   "slug": "lzx-industries-swatch",
+   "brand": "LZX Industries",
+   "name": "Swatch",
+   "held_for": "video",
+   "tags": [
+    "color",
+    "video",
+    "synthesis"
+   ],
+   "source_url": "https://lzxindustries.net/modules/swatch"
+  },
+  {
+   "slug": "lzx-industries-tbc2",
+   "brand": "LZX Industries",
+   "name": "TBC2",
+   "held_for": "video",
+   "tags": [
+    "video",
+    "time-base",
+    "sync"
+   ],
+   "source_url": "https://lzxindustries.net/modules/tbc2"
+  },
+  {
+   "slug": "m-rk-modules-usb-power-1u-black-panel",
+   "brand": "Mörk Modules",
+   "name": "USB Power 1U black panel",
+   "held_for": "power",
+   "tags": [
+    "USB",
+    "power",
+    "1U"
+   ],
+   "source_url": "https://morkmodules.com/products/usb-power-1u-black-panel"
+  },
+  {
+   "slug": "nonlinearcircuits-ldrama",
+   "brand": "Nonlinearcircuits",
+   "name": "LDRama",
+   "held_for": "video",
+   "tags": [
+    "LDR",
+    "CV",
+    "video"
+   ],
+   "source_url": "https://www.nonlinearcircuits.com/modules/p/ldrama"
+  },
+  {
+   "slug": "soundmachines-silta",
+   "brand": "Soundmachines",
+   "name": "SILTA",
+   "held_for": "power",
+   "tags": [
+    "power supply",
+    "eurorack"
+   ],
+   "source_url": "https://www.sound-machines.it/product/silta/"
+  },
+  {
+   "slug": "st-modular-pow",
+   "brand": "ST Modular",
+   "name": "POW!",
+   "held_for": "power",
+   "tags": [
+    "power",
+    "usb",
+    "psu"
+   ],
+   "source_url": "https://www.st-modular.de/modules/pow!"
+  },
+  {
+   "slug": "st-modular-usb",
+   "brand": "ST Modular",
+   "name": "USB",
+   "held_for": "power",
+   "tags": [
+    "USB",
+    "power"
+   ],
+   "source_url": "https://www.st-modular.de/modules/usb"
+  },
+  {
+   "slug": "syntonie-combines",
+   "brand": "Syntonie",
+   "name": "Combines",
+   "held_for": "video",
+   "tags": [
+    "combiner",
+    "video",
+    "RGB",
+    "analog"
+   ],
+   "source_url": "https://syntonie.fr/products/combines-triple-analog-combiner"
+  },
+  {
+   "slug": "syntonie-courbes",
+   "brand": "Syntonie",
+   "name": "Courbes",
+   "held_for": "video",
+   "tags": [
+    "shaper",
+    "expo",
+    "log",
+    "triple"
+   ],
+   "source_url": "https://syntonie.fr/products/courbes"
+  },
+  {
+   "slug": "syntonie-entr-e",
+   "brand": "Syntonie",
+   "name": "Entrée",
+   "held_for": "video",
+   "tags": [
+    "video",
+    "processor",
+    "RGB",
+    "luma"
+   ],
+   "source_url": "https://syntonie.fr/products/entree-component-to-rgb-luma-processor"
+  },
+  {
+   "slug": "syntonie-isoh-lie",
+   "brand": "Syntonie",
+   "name": "Isohélie",
+   "held_for": "video",
+   "tags": [
+    "posterizer",
+    "video",
+    "bitswap"
+   ],
+   "source_url": "https://syntonie.fr/products/isohelie"
+  },
+  {
+   "slug": "syntonie-rampes",
+   "brand": "Syntonie",
+   "name": "Rampes",
+   "held_for": "video",
+   "tags": [
+    "ramp",
+    "sync",
+    "video",
+    "generator"
+   ],
+   "source_url": "https://syntonie.fr/products/rampes-ramp-generator-sync-extractor"
+  },
+  {
+   "slug": "syntonie-sortie",
+   "brand": "Syntonie",
+   "name": "Sortie",
+   "held_for": "video",
+   "tags": [
+    "sync",
+    "encoder",
+    "video",
+    "generator"
+   ],
+   "source_url": "https://syntonie.fr/products/sortie-sync-generator-rgb-encoder"
+  },
+  {
+   "slug": "syntonie-vu003b",
+   "brand": "Syntonie",
+   "name": "VU003B",
+   "held_for": "video",
+   "tags": [
+    "video",
+    "decoder",
+    "luma",
+    "processor"
+   ],
+   "source_url": "https://syntonie.fr/products/vu003b-component-to-rgb-decoder-luma-processor"
+  },
+  {
+   "slug": "syntonie-vu007",
+   "brand": "Syntonie",
+   "name": "VU007",
+   "held_for": "video",
+   "tags": [
+    "encoder",
+    "RGB",
+    "component",
+    "DIY"
+   ],
+   "source_url": "https://syntonie.fr/products/vu007-rgb2component"
+  },
+  {
+   "slug": "syntonie-vu008",
+   "brand": "Syntonie",
+   "name": "VU008",
+   "held_for": "video",
+   "tags": [
+    "phase shifter",
+    "ramp",
+    "dual"
+   ],
+   "source_url": "https://syntonie.fr/products/vu008-dual-ramp-phase-shifter"
+  },
+  {
+   "slug": "vpme-de-upwr",
+   "brand": "vpme.de",
+   "name": "UPWR",
+   "held_for": "power",
+   "tags": [
+    "power",
+    "usb-c",
+    "supply"
+   ],
+   "source_url": "https://vpme.de/upwr/"
+  },
+  {
+   "slug": "wgd-modular-stv",
+   "brand": "WGD Modular",
+   "name": "STV",
+   "held_for": "power",
+   "tags": [
+    "power",
+    "DIY",
+    "USB-C",
+    "supply"
+   ],
+   "source_url": "https://wgdmodular.de/module/stv/"
+  }
+ ]
+}

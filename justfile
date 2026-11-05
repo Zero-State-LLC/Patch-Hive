@@ -35,8 +35,9 @@ lint:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	cd "{{root}}/backend"
-	python -m ruff check canon evidence core patches/inventory_gate.py runs/bridge.py || python3 -m ruff check canon evidence
-	python -m black --check canon evidence || true
+	python -m ruff check canon evidence core patches/inventory_gate.py runs/bridge.py
+	python -m black --check canon evidence
+	python -m mypy canon/contracts.py canon/compiler.py canon/runes.py canon/downloads.py evidence/images.py
 	cd "{{root}}/frontend"
 	npm run lint
 	npm run type-check

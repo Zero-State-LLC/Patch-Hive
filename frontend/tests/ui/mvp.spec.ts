@@ -20,6 +20,9 @@ async function signIn(page: Page, role = "User") {
   });
 }
 
+/** Rig 7 as the builder reads it: its canon detail (F5) and the legacy rack routes it writes. */
+const RIG_7 = (url: URL) => /\/api\/(racks|canon\/rigs)\/7(\/|$)/.test(url.pathname);
+
 test.describe("PatchHive canonical workspace", () => {
   test.beforeEach(async ({ page }) => {
     // Slice B: run list is served from /api/canon/runs?rig_id=
@@ -407,7 +410,7 @@ test.describe("PatchHive canonical workspace", () => {
   });
 
   test("rack builder edit shows dual-gate panel and power completeness", async ({ page }) => {
-    await page.route("**/api/racks/7**", async (route) => {
+    await page.route(RIG_7, async (route) => {
       const url = route.request().url();
       if (url.includes("/compatibility")) {
         await route.fulfill({
@@ -473,7 +476,10 @@ test.describe("PatchHive canonical workspace", () => {
         });
         return;
       }
-      if (route.request().method() === "GET" && /\/api\/racks\/7\/?$/.test(new URL(url).pathname)) {
+      if (
+        route.request().method() === "GET" &&
+        /\/api\/(racks|canon\/rigs)\/7\/?$/.test(new URL(url).pathname)
+      ) {
         await route.fulfill({
           json: {
             id: 7,
@@ -618,7 +624,7 @@ test.describe("PatchHive canonical workspace", () => {
   test("rack builder batch place packs selected modules in one save", async ({ page }) => {
     let putBody: { modules?: { module_id: number; row_index: number; start_hp: number }[] } | null =
       null;
-    await page.route("**/api/racks/7**", async (route) => {
+    await page.route(RIG_7, async (route) => {
       const url = route.request().url();
       if (url.includes("/compatibility")) {
         await route.fulfill({
@@ -686,7 +692,10 @@ test.describe("PatchHive canonical workspace", () => {
         });
         return;
       }
-      if (route.request().method() === "GET" && /\/api\/racks\/7\/?$/.test(new URL(url).pathname)) {
+      if (
+        route.request().method() === "GET" &&
+        /\/api\/(racks|canon\/rigs)\/7\/?$/.test(new URL(url).pathname)
+      ) {
         await route.fulfill({
           json: {
             id: 7,
@@ -813,7 +822,7 @@ test.describe("PatchHive canonical workspace", () => {
         power_5v_ma: 500,
       },
     });
-    await page.route("**/api/racks/7**", async (route) => {
+    await page.route(RIG_7, async (route) => {
       const request = route.request();
       if (request.url().includes("/compatibility")) {
         await route.fulfill({ json: { bridge_status: "ok", message: "ok", compatibility: null } });
@@ -922,9 +931,9 @@ test.describe("PatchHive canonical workspace", () => {
   test("rack builder keeps the gallery's module_id in the select and batch list", async ({
     page,
   }) => {
-    await page.route("**/api/racks/7**", async (route) => {
+    await page.route(RIG_7, async (route) => {
       const path = new URL(route.request().url()).pathname;
-      if (route.request().method() === "GET" && /\/api\/racks\/7\/?$/.test(path)) {
+      if (route.request().method() === "GET" && /\/api\/(racks|canon\/rigs)\/7\/?$/.test(path)) {
         await route.fulfill({
           json: {
             id: 7,

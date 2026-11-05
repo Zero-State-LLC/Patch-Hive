@@ -1,7 +1,7 @@
 {
   "name": "patchhive-frontend",
   "private": true,
-  "version": "0.3.0-alpha.6",
+  "version": "0.3.0-alpha.8",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -15,6 +15,7 @@
     "audit": "node --test scripts/audit-dependencies.node-test.mjs && node scripts/audit-dependencies.mjs",
     "type-check": "tsc --noEmit",
     "test:e2e": "playwright test -c tests/ui/playwright.config.ts",
+    "test:smoke": "playwright test -c tests/smoke/playwright.config.ts",
     "format": "prettier . --write",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"*.{js,ts,json}\""
   },
@@ -47,5 +48,8 @@
     "typescript": "5.9.3",
     "vite": "8.3.5",
     "vitest": "4.1.12"
+  },
+  "overrides": {
+    "minimatch": "^11.0.1"
   }
 }

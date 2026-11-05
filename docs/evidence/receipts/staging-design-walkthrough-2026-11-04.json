@@ -1,0 +1,204 @@
+{
+  "alias_evidence": {
+    "canon_ids_sha256": "080a9ed428559ef602668b4c00f114f1a11c3f6b02a435f0bdc154578e4d7f22",
+    "canon_write_routes": [
+      "DELETE /api/canon/rigs/{rack_id}/evidence/images/{asset_id}",
+      "POST /api/canon/rigs/{rack_id}/evidence/confirmations",
+      "POST /api/canon/rigs/{rack_id}/evidence/images"
+    ],
+    "legacy_ids_sha256": "080a9ed428559ef602668b4c00f114f1a11c3f6b02a435f0bdc154578e4d7f22",
+    "missing_alias_routes": [],
+    "new_write_surface": [],
+    "record_sha256": "a95e9f8deb836b927159b7e1c0d9abcabb5097147d480f3ac517cfe605ab5983",
+    "rig_count": 1,
+    "same_set": true,
+    "schema_version": "patchhive.f5-alias-evidence.v1"
+  },
+  "fe_cutover": {
+    "alias_evidence_sha256": "a95e9f8deb836b927159b7e1c0d9abcabb5097147d480f3ac517cfe605ab5983",
+    "canon_list_callers": [
+      "frontend/src/pages/Modules.tsx",
+      "frontend/src/pages/RackBuilder.tsx",
+      "frontend/src/pages/Racks.tsx"
+    ],
+    "dual_write": {
+      "failures": [],
+      "passed": true
+    },
+    "fe_detail_route": "GET /api/canon/rigs/{rig_id}",
+    "fe_list_route": "GET /api/canon/rigs",
+    "legacy_list_callers": [],
+    "missing_gate_routes": [],
+    "record_sha256": "a84098bab6627c2c806976f6b5a7a40c9840dac2c1bbd7413bf8cbff8b49aeb3",
+    "scanned_files": [
+      "frontend/src/pages/Account.tsx",
+      "frontend/src/pages/CaseDetail.tsx",
+      "frontend/src/pages/Cases.tsx",
+      "frontend/src/pages/Home.test.tsx",
+      "frontend/src/pages/Home.tsx",
+      "frontend/src/pages/Login.returnTo.test.tsx",
+      "frontend/src/pages/Login.tsx",
+      "frontend/src/pages/Modules.search.test.tsx",
+      "frontend/src/pages/Modules.tsx",
+      "frontend/src/pages/NotFound.tsx",
+      "frontend/src/pages/PatchBookStyleStudio.tsx",
+      "frontend/src/pages/PatchDetail.test.tsx",
+      "frontend/src/pages/PatchDetail.tsx",
+      "frontend/src/pages/Patches.tsx",
+      "frontend/src/pages/RackBuilder.tsx",
+      "frontend/src/pages/Racks.deepLink.test.tsx",
+      "frontend/src/pages/Racks.detailRetry.test.tsx",
+      "frontend/src/pages/Racks.tsx",
+      "frontend/src/pages/Registry.tsx",
+      "frontend/src/pages/RigDetail.tsx",
+      "frontend/src/pages/admin/AdminDashboard.tsx",
+      "frontend/src/pages/admin/AdminExports.tsx",
+      "frontend/src/pages/admin/AdminGallery.tsx",
+      "frontend/src/pages/admin/AdminGuard.tsx",
+      "frontend/src/pages/admin/AdminLeaderboards.tsx",
+      "frontend/src/pages/admin/AdminModules.tsx",
+      "frontend/src/pages/admin/AdminNav.tsx",
+      "frontend/src/pages/admin/AdminRuns.tsx",
+      "frontend/src/pages/admin/AdminUsers.tsx",
+      "frontend/src/pages/racksPageUtils.test.ts",
+      "frontend/src/pages/racksPageUtils.ts"
+    ],
+    "schema_version": "patchhive.f5-fe-cutover.v1"
+  },
+  "flags_source": "GET /api/admin/ops/runtime-flags",
+  "receipt": {
+    "fe_cutover_sha256": "a84098bab6627c2c806976f6b5a7a40c9840dac2c1bbd7413bf8cbff8b49aeb3",
+    "flags": {
+      "allow_production_payments": false,
+      "enable_canon_export_fulfillment": true,
+      "enable_inline_export_fulfillment": true,
+      "enable_patchbook_design_engine": true,
+      "enable_patchbook_publication_profile": false,
+      "environment": "staging",
+      "stripe_test_mode": true
+    },
+    "health": {
+      "database": "ok",
+      "http_status": 200,
+      "status": "healthy"
+    },
+    "outcome": {
+      "composition_hash": "4264470e607d3a09995b8820468e94fbef9c15f82664fe11f59ee646dfa05668",
+      "export_id": "export-ae632b9afb527df9e877371a",
+      "export_status": "succeeded",
+      "pack_manifest_hash": "dc4e76706d9e8da3659fbb0172a3f87ee9633aec2d8e522b01ea87d431e9632d",
+      "pack_zip_sha256": "32701ff7d1bef74d083121bb309d90237444333fb89860908c2de1a6ad53cb47",
+      "steps": [
+        {
+          "http_status": 200,
+          "name": "health_ready",
+          "passed": true
+        },
+        {
+          "http_status": 200,
+          "name": "login_user",
+          "passed": true
+        },
+        {
+          "http_status": 200,
+          "name": "login_admin",
+          "passed": true
+        },
+        {
+          "http_status": 200,
+          "name": "preview",
+          "passed": true
+        },
+        {
+          "http_status": 201,
+          "name": "grant_credits",
+          "passed": true
+        },
+        {
+          "http_status": 201,
+          "name": "export_debit",
+          "passed": true
+        },
+        {
+          "http_status": null,
+          "name": "fulfillment",
+          "passed": true
+        },
+        {
+          "http_status": 200,
+          "name": "download_token",
+          "passed": true
+        },
+        {
+          "http_status": 200,
+          "name": "download_pack",
+          "passed": true
+        }
+      ]
+    },
+    "outcome_passed": true,
+    "production_payments_enabled": false,
+    "record_sha256": "b2c295027be8eb8d805d88e9bde33700c576795d66f4c7ff8b1b2f1b838a819c",
+    "schema_version": "patchhive.design-walkthrough-receipt.v1",
+    "seed_auth": {
+      "accounts": [
+        {
+          "exists": true,
+          "expected_role": "User",
+          "password_matches": true,
+          "role_matches": true,
+          "username": "golden_demo"
+        },
+        {
+          "exists": true,
+          "expected_role": "Admin",
+          "password_matches": true,
+          "role_matches": true,
+          "username": "admin_demo"
+        }
+      ],
+      "aligned": true,
+      "record_sha256": "716598372842a92762c3ef251227db15cadda0c583accc02953e976b3778fffa",
+      "schema_version": "patchhive.seed-auth-check.v1"
+    },
+    "seed_auth_aligned": true,
+    "seed_auth_sha256": "716598372842a92762c3ef251227db15cadda0c583accc02953e976b3778fffa",
+    "source_commit_sha": "6c234a6535d1f4a58924243254ca4b607be2f461",
+    "walkthrough_start_sha256": "016ff170280f0d56309744a0793472124428153b650e1c0e468e33ccd5a408fc"
+  },
+  "seed_auth": {
+    "accounts": [
+      {
+        "exists": true,
+        "expected_role": "User",
+        "password_matches": true,
+        "role_matches": true,
+        "username": "golden_demo"
+      },
+      {
+        "exists": true,
+        "expected_role": "Admin",
+        "password_matches": true,
+        "role_matches": true,
+        "username": "admin_demo"
+      }
+    ],
+    "aligned": true,
+    "record_sha256": "716598372842a92762c3ef251227db15cadda0c583accc02953e976b3778fffa",
+    "schema_version": "patchhive.seed-auth-check.v1"
+  },
+  "walkthrough_start": {
+    "fe_cutover_sha256": "a84098bab6627c2c806976f6b5a7a40c9840dac2c1bbd7413bf8cbff8b49aeb3",
+    "flags": {
+      "allow_production_payments": false,
+      "enable_canon_export_fulfillment": true,
+      "enable_inline_export_fulfillment": true,
+      "enable_patchbook_design_engine": true,
+      "enable_patchbook_publication_profile": false,
+      "environment": "staging",
+      "stripe_test_mode": true
+    },
+    "record_sha256": "016ff170280f0d56309744a0793472124428153b650e1c0e468e33ccd5a408fc",
+    "schema_version": "patchhive.design-walkthrough-start.v1"
+  }
+}

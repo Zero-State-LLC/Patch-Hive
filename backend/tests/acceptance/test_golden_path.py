@@ -163,6 +163,50 @@ def test_generate_patch_library_deterministic(
     assert any(h not in hashes_1 for h in hashes_3)
 
 
+def test_run_patches_keep_generation_order_after_an_update(
+    api_client, login, db_session: Session, create_user, seed_minimal_modules
+):
+    # Postgres moves an updated row to a new slot, so an unordered read returns it last.
+    create_user("user_order", "pass123")
+    api_client.headers["Authorization"] = f"Bearer {login('user_order', 'pass123')}"
+
+    rack_resp = api_client.post(
+        "/api/racks",
+        json={
+            "case_id": seed_minimal_modules["case"].id,
+            "name": None,
+            "description": "Order rig",
+            "tags": [],
+            "is_public": False,
+            "generation_seed": 4242,
+            "modules": _build_modules_payload(
+                seed_minimal_modules["modules"][:8],
+                seed_minimal_modules["case"].hp_per_row[0],
+            ),
+        },
+    )
+    rack_resp.raise_for_status()
+    gen_resp = api_client.post(
+        f"/api/patches/generate/{rack_resp.json()['id']}",
+        json={"seed": 4242, "max_patches": 12, "allow_feedback": True},
+    )
+    gen_resp.raise_for_status()
+    run_id = gen_resp.json()["run_id"]
+
+    ids = [
+        patch.id
+        for patch in db_session.query(Patch).filter(Patch.run_id == run_id).order_by(Patch.id)
+    ]
+    assert len(ids) >= 2
+    first = db_session.get(Patch, ids[0])
+    first.description = f"{first.description or ''} (edited)"
+    db_session.commit()
+
+    run_resp = api_client.get(f"/api/runs/{run_id}/patches")
+    run_resp.raise_for_status()
+    assert [patch["id"] for patch in run_resp.json()["patches"]] == ids
+
+
 def test_patch_naming_humor_gating(api_client, login, seed_minimal_modules, create_user):
     create_user("user3", "pass123")
     api_client.headers["Authorization"] = f"Bearer {login('user3', 'pass123')}"

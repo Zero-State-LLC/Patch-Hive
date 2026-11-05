@@ -15,6 +15,7 @@ from alembic import command
 from alembic.config import Config
 from cases.models import Case
 from community.models import User
+from core.ops.throwaway_db import refuse_real_database
 from core.security import get_password_hash
 from modules.models import Module
 
@@ -45,6 +46,8 @@ def postgres_container() -> Generator[PostgresContainer | None, None, None]:
 def database_url(postgres_container: PostgresContainer | None) -> str:
     external = _external_database_url()
     if external:
+        # Every test truncates every public table (_clean_db), so never the deployed database.
+        refuse_real_database(external)
         return external
     assert postgres_container is not None
     return postgres_container.get_connection_url()

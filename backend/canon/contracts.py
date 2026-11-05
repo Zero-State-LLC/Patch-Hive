@@ -186,7 +186,7 @@ class RigRevision(CanonicalContract):
     created_at: datetime
 
 
-NOT_COMPUTABLE = "NOT_COMPUTABLE"
+NOT_COMPUTABLE: Literal["NOT_COMPUTABLE"] = "NOT_COMPUTABLE"
 
 # A score is a number, or ``NOT_COMPUTABLE`` while its formula is undefined (spec 001 OQ-11).
 MetricScore = Annotated[float, Field(ge=0)] | Literal["NOT_COMPUTABLE"]
