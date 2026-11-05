@@ -121,3 +121,51 @@ def test_a3_overlays_hold_only_the_new_crawl_rows() -> None:
         for r in json.loads(path.read_text())["rows"]
     }
     assert not A3_ROWS & earlier
+
+
+# --- The opt-out (spec 003 FR-040): the basis comes from maker-sources.json, and unknown leaves a maker out
+
+
+def _crawled(brand: str, name: str) -> dict:
+    url = f"https://{brand.lower()}.example/{name.lower()}"
+    return {
+        "brand": brand, "name": name, "hp": 10, "tags": [], "source_url": url, "sources": {"power_12v_ma": url},
+        "power_12v_ma": 60, "content_sha256": "abc", "fetch_method": "free_http", "extracted_by": "regex",
+    }
+
+
+def _build(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, basis: dict) -> tuple[list[dict], list[dict]]:
+    catalog = tmp_path / "catalog"
+    (catalog / "overlays").mkdir(parents=True)
+    (catalog / "hermes-research").mkdir()
+    (catalog / "maker-sources.json").write_text(json.dumps({"adapters": {}, "permission_basis": basis}))
+    (catalog / "hermes-research" / "crawl.json").write_text(json.dumps({"brands": [
+        {"brand": "Acme", "homepage": "https://acme.example/", "modules": [_crawled("Acme", "VCO")]},
+        {"brand": "Keep", "homepage": "https://keep.example/", "modules": [_crawled("Keep", "VCA")]},
+    ]}))
+    monkeypatch.setattr(b, "CATALOG", catalog)
+    monkeypatch.setattr(b, "existing_index", lambda outputs: {})
+    assert b.main(["--crawl", "crawl.json", "--additions-version", "90", "--power-version", "91"]) == 0
+    additions = json.loads((catalog / "overlays" / "catalog-additions-v90.json").read_text())["rows"]
+    entries = json.loads((catalog / "overlays" / "module-power-depth-v91.json").read_text())["entries"]
+    return additions, entries
+
+
+def test_a_built_row_takes_its_basis_from_the_sources(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    basis = {"default": "official_publication", "brands": {"Keep": "maker_permission"}}
+    additions, _ = _build(tmp_path, monkeypatch, basis)
+    assert {r["brand"]: r["access_basis"] for r in additions} == {"Acme": "official_publication", "Keep": "maker_permission"}
+
+
+@pytest.mark.parametrize("spelling", ["Acme", "ACME"])
+def test_a_left_out_maker_gets_no_built_rows(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture, spelling: str
+) -> None:
+    additions, entries = _build(tmp_path, monkeypatch, {"default": "official_publication", "brands": {spelling: "unknown"}})
+    assert [r["brand"] for r in additions] == ["Keep"]
+    assert [e["brand"] for e in entries] == ["Keep"]
+    assert json.loads(capsys.readouterr().out)["skipped_left_out"] == 1
+
+
+def test_an_unknown_default_builds_nothing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    assert _build(tmp_path, monkeypatch, {"default": "unknown", "brands": {}}) == ([], [])

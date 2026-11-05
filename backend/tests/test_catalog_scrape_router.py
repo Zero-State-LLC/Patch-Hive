@@ -171,23 +171,6 @@ def test_robots_disallow_does_not_escalate_to_paid(tmp_path: Path, monkeypatch: 
     assert not any(call.url.startswith("https://api.") for call in transport.calls)
 
 
-def test_robots_unavailable_may_use_paid_backend(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "ctxt_secret_test")
-    monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
-    transport = FakeTransport()
-    transport.routes["https://example.com/robots.txt"] = (503, b"nope")
-    transport.routes["https://api.context.dev/v1/web/scrape"] = (
-        200,
-        json.dumps({"markdown": {"success": True, "data": "observed spec"}, "credits": 1}).encode(),
-    )
-    scraper = _scraper(tmp_path, transport, max_paid_fetches=1)
-    result = scraper.fetch("https://example.com/module")
-    assert result.ok
-    assert result.receipt["method"] == "context_dev"
-    assert not any(call.url == "https://example.com/module" for call in transport.calls)
-    assert "ctxt_secret_test" not in json.dumps(scraper.receipts)
-
-
 def test_parse_robots_star_group() -> None:
     rules = "User-agent: *\nDisallow: /private\nAllow: /private/ok\n"
     assert parse_robots(rules, "PatchHiveCatalogBot/1.0", "/e/module")
@@ -478,10 +461,10 @@ def paid_keys(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("FIRECRAWL_API_KEY", "fc")
 
 
-def _would_pay(tmp_path: Path, transport: FakeTransport) -> CatalogScraper:
+def _would_pay(tmp_path: Path, transport: FakeTransport, **kwargs) -> CatalogScraper:
     """Keys set, budget left and an approval for every brand and tier: only the refusal can stop it."""
     entries = [_approval(brands=["*"], proxy_tier="stealth")]
-    return _gated(tmp_path, entries, transport, firecrawl_proxy="stealth")
+    return _gated(tmp_path, entries, transport, firecrawl_proxy="stealth", **kwargs)
 
 
 @pytest.mark.parametrize("status", [401, 403, 451])
@@ -615,3 +598,133 @@ def test_a_refused_connection_cannot_be_told_from_a_timeout(tmp_path, monkeypatc
     transport.routes[CONTEXT_SCRAPE_URL] = (200, PAID_ANSWER)
     result = _scraper(tmp_path, transport, max_paid_fetches=1).fetch(PAGE)
     assert result.ok and result.receipt["method"] == "context_dev"
+
+
+# ---- robots.txt fails closed: a host whose robots.txt cannot be read gets no fetch, free or paid ----
+
+ROBOTS = "https://ex.com/robots.txt"
+
+
+@pytest.mark.parametrize("render", [False, True])
+@pytest.mark.parametrize("status", [451, 429, 500, 502, 503, 504, 400, 410])
+def test_an_unreadable_robots_txt_means_no_fetch_of_that_host(tmp_path, paid_keys, status, render):
+    transport = FakeTransport()
+    transport.routes[ROBOTS] = (status, b"nope")
+    scraper = _would_pay(tmp_path, transport)
+    result = scraper.fetch(PAGE, render=render)
+    assert not result.ok and result.text is None
+    assert _paid_calls(transport) == []
+    assert scraper.paid_attempts == 0
+    assert {c.url for c in transport.calls} == {ROBOTS}  # nor is the page fetched
+    assert [(r["method"], r.get("note")) for r in scraper.receipts] == [
+        ("robots_unavailable", f"robots.txt answered {status}")
+    ]
+
+
+@pytest.mark.parametrize("render", [False, True])
+@pytest.mark.parametrize("error", [TimeoutError("timed out"), ConnectionRefusedError("refused")])
+def test_a_robots_txt_that_does_not_answer_means_no_fetch_of_that_host(tmp_path, paid_keys, error, render):
+    """A timeout and a refused connection are both status 0, so this covers both. A host that
+    refuses every connection (Frap) gets no paid fetch even without being excluded by name."""
+
+    def fail(_request: HttpRequest) -> HttpResponse:
+        raise error
+
+    transport = FakeTransport()
+    transport.routes[ROBOTS] = fail
+    scraper = _would_pay(tmp_path, transport)
+    result = scraper.fetch(PAGE, render=render)
+    assert not result.ok and result.text is None
+    assert _paid_calls(transport) == []
+    assert scraper.paid_attempts == 0
+    assert {c.url for c in transport.calls} == {ROBOTS}
+    assert [(r["method"], r.get("note")) for r in scraper.receipts] == [
+        ("robots_unavailable", "robots.txt did not answer")
+    ]
+
+
+def test_an_unreadable_robots_txt_blocks_every_page_of_the_host_for_the_run(tmp_path, paid_keys):
+    transport = FakeTransport()
+    transport.routes[ROBOTS] = (503, b"nope")
+    scraper = _would_pay(tmp_path, transport)
+    assert not scraper.fetch(PAGE).ok
+    asked = len(transport.calls)
+    assert not scraper.fetch("https://ex.com/q").ok
+    assert not scraper.fetch("https://ex.com/r", render=True).ok
+    assert len(transport.calls) == asked  # robots.txt is not asked again, and no page is fetched
+    assert _paid_calls(transport) == []
+    assert [r["method"] for r in scraper.receipts] == ["robots_unavailable"] * 3
+
+
+def test_a_readable_robots_txt_keeps_paid_retries_for_load_on_the_page(tmp_path, monkeypatch):
+    """Failing closed is about robots.txt. A 404 means no rules, and a busy page may still retry."""
+    monkeypatch.setenv("CONTEXT_DEV_API_KEY", "k")
+    transport = FakeTransport()
+    transport.routes[ROBOTS] = (404, b"")
+    transport.routes[PAGE] = (503, b"busy")
+    transport.routes[CONTEXT_SCRAPE_URL] = (200, PAID_ANSWER)
+    result = _scraper(tmp_path, transport, max_paid_fetches=1).fetch(PAGE)
+    assert result.ok and result.receipt["method"] == "context_dev"
+
+
+# ---- The opt-out: a left-out maker's host is never fetched, whichever script or brand name asks ----
+
+
+def test_a_left_out_host_is_never_fetched_or_served_from_cache(tmp_path, paid_keys):
+    transport = FakeTransport()
+    transport.routes["https://maker.example/p"] = (200, b"<html>12 HP</html>")
+    assert _scraper(tmp_path, transport).fetch("https://maker.example/p").ok  # now in the disk cache
+    transport.calls.clear()
+    scraper = _would_pay(tmp_path, transport, left_out_hosts=frozenset({"maker.example"}))
+    for url in ("https://maker.example/p", "https://www.maker.example/q", "https://shop.maker.example/r"):
+        result = scraper.fetch(url)
+        assert not result.ok and result.text is None
+        assert result.receipt["method"] == "left_out"
+        assert not scraper.fetch(url + "/render", render=True).ok
+        assert scraper.robots_info(url) == (False, [], 0.0)
+    assert transport.calls == []
+    assert scraper.paid_attempts == 0
+
+
+def test_a_left_out_host_does_not_block_a_lookalike(tmp_path):
+    transport = FakeTransport()
+    scraper = _scraper(tmp_path, transport, left_out_hosts=frozenset({"maker.example"}))
+    assert scraper.fetch("https://notmaker.example/p").ok
+
+
+def test_left_out_hosts_come_from_the_sources_and_the_committed_crawl(tmp_path):
+    import catalog_scrape as cs
+
+    crawl = tmp_path / "crawl.json"
+    crawl.write_text(json.dumps({"brands": [
+        {"brand": "Gamma", "homepage": "https://gamma.example/"},
+        {"brand": "Delta", "homepage": "https://delta.example/"},
+        {"brand": "Refused", "homepage": None},
+    ]}))
+    sources = {
+        "adapters": {"Alpha": {"homepage": "https://www.alpha.example/", "kind": "listing"}},
+        "homepages": {
+            "Beta": {"homepage": "https://beta.example/", "status": "candidate"},
+            "Keep": {"homepage": "https://keep.example/", "status": "verified_free"},
+        },
+        "permission_basis": {
+            "default": "official_publication",
+            "brands": {"alpha": "unknown", "Beta": "unknown", "GAMMA": "unknown", "Refused": "unknown", "Keep": "maker_permission"},
+        },
+    }
+    assert cs.left_out_hosts(sources, crawl) == {"alpha.example", "beta.example", "gamma.example"}
+
+
+def test_no_opt_outs_mean_no_left_out_hosts(tmp_path):
+    import catalog_scrape as cs
+
+    sources = {"permission_basis": {"default": "official_publication", "brands": {}}}
+    assert cs.left_out_hosts(sources, tmp_path / "absent.json") == frozenset()
+
+
+def test_every_repo_scraper_gets_the_left_out_hosts(monkeypatch):
+    """The HP enrichment, the unmatched pass and the corpus photo search come through for_repo."""
+    import catalog_scrape as cs
+
+    monkeypatch.setattr(cs, "left_out_hosts", lambda sources, crawl: frozenset({"maker.example"}))
+    assert cs.CatalogScraper.for_repo().left_out_hosts == {"maker.example"}

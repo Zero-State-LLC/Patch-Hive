@@ -18,6 +18,7 @@ import random
 import re
 import threading
 import time
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -57,8 +58,9 @@ CHALLENGE = re.compile(
     rb"(cf-chl-|challenge-platform|<title>\s*(?:Just a moment|Attention Required|Access denied|Are you a robot))", re.I
 )
 # The site said no (owner decision 3, 2026-11-04; spec 003 D7 and FR-008): recorded, never sent to a
-# paid backend. 429, 5xx and timeouts are load, not refusal, and stay eligible for a paid retry. A
-# refused connection is not listed because it cannot be told from a timeout: both are status 0.
+# paid backend. On a page, 429, 5xx and timeouts are load, not refusal, and stay eligible for a paid
+# retry. A refused connection is not listed because it cannot be told from a timeout: both are
+# status 0. robots.txt is stricter: any answer but 200 or 404, or none, stops all fetching of the host.
 PAGE_REFUSAL_STATUSES = frozenset({401, 403, 451})
 ROBOTS_REFUSAL_STATUSES = frozenset({401, 403})
 REFUSAL_NOTES = frozenset({"refused", "challenge"})
@@ -126,6 +128,51 @@ def denied_host(url: str) -> bool:
 def _origin(url: str) -> str:
     parsed = urlparse(url)
     return f"{parsed.scheme}://{parsed.netloc}"
+
+
+def _bare_host(url: str) -> str:
+    return (urlparse(url).hostname or "").lower().rstrip(".").removeprefix("www.")
+
+
+def _brand_key(brand: str) -> str:
+    """"Instruō", "Instruo" and "INSTRUO " are one maker: a spelling must not get past an opt-out."""
+    plain = unicodedata.normalize("NFKD", brand).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]", "", plain.lower()) or brand.strip().casefold()
+
+
+def permission_basis(sources: dict, brand: str) -> str:
+    """The access basis recorded for a maker's pages (EXTERNAL_SOURCE_POLICY): its own entry, else the
+    default. Sources with no basis at all fail closed to unknown, and so does a conflict between
+    two spellings of one maker."""
+    basis = sources.get("permission_basis") or {}
+    key = _brand_key(brand)
+    own = [value for name, value in (basis.get("brands") or {}).items() if _brand_key(name) == key]
+    if own:
+        return "unknown" if "unknown" in own else own[0]
+    return basis.get("default") or "unknown"
+
+
+def left_out(sources: dict, brand: str) -> bool:
+    """A maker who opted out, or whose terms forbid automated access: not fetched, not built."""
+    return permission_basis(sources, brand) == "unknown"
+
+
+def left_out_hosts(sources: dict, crawl_path: Path) -> frozenset[str]:
+    """The hosts of left-out makers, from the curated sources and the committed crawl, so that another
+    script or a second brand name cannot reach them. The v1 crawl's homepages are not used: it gave
+    brands other makers' sites."""
+    basis = sources.get("permission_basis") or {}
+    if "unknown" not in {basis.get("default") or "unknown", *(basis.get("brands") or {}).values()}:
+        return frozenset()
+    homepages = [
+        (brand, cfg.get("homepage"))
+        for section in ("adapters", "homepages")
+        for brand, cfg in (sources.get(section) or {}).items()
+    ]
+    if crawl_path.is_file():
+        crawl = json.loads(crawl_path.read_text(encoding="utf-8"))
+        homepages += [(b["brand"], b.get("homepage")) for b in crawl.get("brands") or []]
+    return frozenset(_bare_host(home) for brand, home in homepages if home and left_out(sources, brand))
 
 
 def _sha256(data: bytes) -> str:
@@ -348,8 +395,10 @@ class CatalogScraper:
         on_receipt: Callable[[dict], None] | None = None,
         approvals_path: Path | None = None,
         brands: tuple[str, ...] = (),
+        left_out_hosts: frozenset[str] = frozenset(),
     ) -> None:
         self.firecrawl_proxy = firecrawl_proxy_tier(firecrawl_proxy)
+        self.left_out_hosts = left_out_hosts
         self.cache_dir = cache_dir
         self.ledger_path = ledger_path
         self.max_paid_fetches = max(0, int(max_paid_fetches))
@@ -373,8 +422,8 @@ class CatalogScraper:
         self._memory: dict[str, FetchResult] = {}
         self._next_ok: dict[str, float] = {}
         self._robots: dict[str, str | None] = {}
-        # Origins whose robots.txt refused us, with the status it answered.
-        self._robots_refused: dict[str, int] = {}
+        # What an origin's robots.txt answered when it could not be read (0: no answer).
+        self._robots_status: dict[str, int] = {}
         self.paid_attempts = 0
         # Paid calls granted but not yet booked in the ledger. The approval check counts them,
         # so parallel workers cannot all pass on the same remaining allowance.
@@ -388,11 +437,13 @@ class CatalogScraper:
     def for_repo(cls, max_paid_fetches: int = 0, **kwargs: object) -> CatalogScraper:
         root = Path(__file__).resolve().parents[2]
         catalog = root / "data" / "synth-catalog"
+        sources = json.loads((catalog / "maker-sources.json").read_text(encoding="utf-8"))
         return cls(
             cache_dir=catalog / ".cache" / "http",
             ledger_path=catalog / "receipts" / "scrape-ledger.json",
             max_paid_fetches=max_paid_fetches,
             approvals_path=catalog / "receipts" / "fetch-approvals.json",
+            left_out_hosts=left_out_hosts(sources, catalog / "hermes-research" / "maker-crawl-v2.json"),
             **kwargs,  # type: ignore[arg-type]
         )
 
@@ -411,8 +462,7 @@ class CatalogScraper:
         `allow_paid=False` never falls back to a paid backend (used for the free search engine, whose
         paid counterpart is the paid search API, not a scrape of its results page).
 
-        A refusal the router can see never reaches a paid backend. When robots.txt is unreadable for
-        another reason (5xx, 429, a timeout) the page is not fetched directly, so its own answer is unseen."""
+        A refusal never reaches a paid backend, and neither does a host whose robots.txt cannot be read."""
         cached = self._memory.get(url)
         free_shell = (
             cached is not None
@@ -440,16 +490,12 @@ class CatalogScraper:
 
         if check_robots:
             allowed, reason = self._robots_allow(url, timeout)
-            if not allowed and reason == "robots_unavailable":
-                # Do not free-fetch when robots.txt could not be read. A paid
-                # backend may still run when a key is set and the cap allows.
-                skipped = self._finish(url, "robots_unavailable", None, b"", ok=False, remember=False)
-                paid = self._paid_fetch(url, timeout) if allow_paid else None
-                return paid if paid is not None else skipped
-            if not allowed and reason == "robots_refused":
-                # The status belongs to robots.txt, not to this URL, so it goes in the note.
-                note = f"robots.txt answered {self._robots_refused[_origin(url)]}"
-                return self._finish(url, "robots_refused", None, b"", ok=False, note=note)
+            if not allowed and reason in ("robots_refused", "robots_unavailable"):
+                # Fail closed: no free GET and no paid backend for a host whose robots.txt cannot be
+                # read. The status belongs to robots.txt, not to this URL, so it goes in the note.
+                status = self._robots_status[_origin(url)]
+                note = f"robots.txt answered {status}" if status else "robots.txt did not answer"
+                return self._finish(url, reason, None, b"", ok=False, note=note, remember=False)
             if not allowed:
                 return self._finish(url, reason or "robots_disallowed", None, b"", ok=False)
 
@@ -634,6 +680,8 @@ class CatalogScraper:
 
     def robots_info(self, url: str, timeout: float = 25) -> tuple[bool, list[str], float]:
         """(robots readable, Sitemap: lines, crawl-delay for our UA or *) for the URL's origin."""
+        if self._block_reason(url):
+            return False, [], 0.0
         origin = _origin(url)
         self._robots_allow(origin + "/", timeout)
         rules = self._robots.get(origin)
@@ -712,16 +760,13 @@ class CatalogScraper:
             elif status == 200:
                 self._robots[origin] = _decode(body)
             else:
-                # In this order: a worker sharing this scraper must not see "unreadable" (which may
-                # still use a paid backend) before it can see the refusal.
-                if status in ROBOTS_REFUSAL_STATUSES:
-                    self._robots_refused[origin] = status
+                # In this order: a worker sharing this scraper reads the status once it sees None.
+                self._robots_status[origin] = status
                 self._robots[origin] = None
-        if origin in self._robots_refused:
-            return False, "robots_refused"
         rules = self._robots[origin]
         if rules is None:
-            return False, "robots_unavailable"
+            refused = self._robots_status[origin] in ROBOTS_REFUSAL_STATUSES
+            return False, "robots_refused" if refused else "robots_unavailable"
         path = parsed.path or "/"
         if parsed.query:
             path = path + "?" + parsed.query
@@ -744,6 +789,9 @@ class CatalogScraper:
     def _block_reason(self, url: str) -> str | None:
         if denied_host(url):
             return "denied_host"
+        host = _bare_host(url)
+        if any(host == blocked or host.endswith("." + blocked) for blocked in self.left_out_hosts):
+            return "left_out"
         if not public_http_url(url):
             return "blocked_url"
         if not self.resolve_hosts:
@@ -785,7 +833,7 @@ class CatalogScraper:
         if method == "free_http":
             self._bump_ledger("free_http", 0)
         elif method in {"skipped_no_key", "skipped_paid_cap", "skipped_no_approval", "skipped_proxy_unapproved",
-                        "robots_disallowed", "robots_unavailable", "robots_refused", "blocked_url"}:
+                        "robots_disallowed", "robots_unavailable", "robots_refused", "blocked_url", "left_out"}:
             self._bump_ledger(method, 0)
         return result
 

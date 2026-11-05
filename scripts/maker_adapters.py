@@ -17,11 +17,16 @@ from __future__ import annotations
 import html
 import json
 import re
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urljoin, urlparse, urlunparse
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "data" / "synth-catalog"))
+
+from catalog_scrape import left_out, permission_basis  # noqa: E402,F401  (the router also needs them)
+
 SOURCES = ROOT / "data" / "synth-catalog" / "maker-sources.json"
 KINDS = ("shopify", "squarespace", "woocommerce", "listing")
 # The EXTERNAL_SOURCE_POLICY access_basis values a maker crawl can record. maker_permission means the
@@ -245,9 +250,3 @@ def enumerate_products(scraper, cfg: dict) -> list[Candidate]:
             seen.add(cand.url)
             out.append(cand)
     return out[: int(cfg.get("max_pages") or 10_000)]
-
-
-def permission_basis(sources: dict, brand: str) -> str:
-    """The access basis recorded for a maker's crawled pages: its own entry, else the default."""
-    basis = sources.get("permission_basis") or {}
-    return (basis.get("brands") or {}).get(brand) or basis.get("default") or "unknown"

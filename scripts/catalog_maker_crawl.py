@@ -45,7 +45,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import build_maker_overlays  # noqa: E402
 import maker_adapters  # noqa: E402
-from catalog_scrape import CatalogScraper, check_paid_approval, firecrawl_proxy_tier  # noqa: E402
+from catalog_scrape import CatalogScraper, check_paid_approval, firecrawl_proxy_tier, left_out_hosts  # noqa: E402
 
 WORK = CATALOG / ".cache" / "maker-crawl"
 OUT = CATALOG / "hermes-research"
@@ -552,7 +552,10 @@ def brand_on_page(brand: str, text: str) -> bool:
 
 
 def resolve_brand(brand: str) -> dict:
-    """Homepage in order: adapter, curated list, the v1 crawl's resolved site, then search."""
+    """Homepage in order: adapter, curated list, the v1 crawl's resolved site, then search. A maker
+    who is left out is not resolved at all, because resolving can fetch its pages and search for it."""
+    if maker_adapters.left_out(SOURCES, brand):
+        return {"brand": brand, "homepage": None, "status": "left_out"}
     adapter = (SOURCES.get("adapters") or {}).get(brand)
     if adapter:
         return {"brand": brand, "homepage": adapter["homepage"], "status": "resolved", "how": f"adapter:{adapter['kind']}"}
@@ -791,6 +794,9 @@ def guard_shared_homepages(resolved: dict[str, dict], known: dict[str, str]) -> 
 
 def crawl_brand(brand: str, cap: int, r: dict | None = None) -> dict:
     rec = {"brand": brand, "modules": [], "unconfirmed": [], "pages": 0, "status": None, "methods": {}, "ambiguous_hp": 0}
+    # The access basis this maker's pages are fetched under (EXTERNAL_SOURCE_POLICY). unknown marks a
+    # maker who opted out or whose terms forbid automated access: it is left out, not crawled.
+    rec["permission_basis"] = maker_adapters.permission_basis(SOURCES, brand)
     if not BUDGET.can_spend():
         rec["status"] = "budget_stop"
         return rec
@@ -801,6 +807,9 @@ def crawl_brand(brand: str, cap: int, r: dict | None = None) -> dict:
         for key in ("candidate", "owner", "shared_with"):
             if r.get(key):
                 rec[key] = r[key]
+        return rec
+    if rec["permission_basis"] == "unknown":
+        rec["status"] = "left_out"
         return rec
     home = rec["homepage"] = r["homepage"]
     readable, _, delay = FETCH.robots_info(home)
@@ -815,9 +824,6 @@ def crawl_brand(brand: str, cap: int, r: dict | None = None) -> dict:
     rec["status"] = rec["status"] or "done"
     seen: set[str] = set()
     rec["modules"] = [m for m in rec["modules"] if not (norm_name(brand, m["name"]) in seen or seen.add(norm_name(brand, m["name"])))]
-    # The access basis this maker's pages were fetched under (EXTERNAL_SOURCE_POLICY). unknown marks
-    # a maker who opted out or whose terms forbid automated access, and blocks bulk publication.
-    rec["permission_basis"] = maker_adapters.permission_basis(SOURCES, brand)
     for row in rec["modules"] + rec["unconfirmed"]:
         row["permission_basis"] = rec["permission_basis"]
     return rec
@@ -920,6 +926,7 @@ def main(argv: list[str] | None = None) -> int:
             return 2
     BUDGET = Budget(args.cap, args.ctx_start, args.fc_start)
     WORK.mkdir(parents=True, exist_ok=True)
+    SOURCES = maker_adapters.load_sources()
     SCRAPER = CatalogScraper(
         cache_dir=CATALOG / ".cache" / "http",
         # A dry run keeps its call counts out of the committed spend ledger.
@@ -931,8 +938,8 @@ def main(argv: list[str] | None = None) -> int:
         on_receipt=_account,
         approvals_path=None if DRY_RUN else RECEIPTS / "fetch-approvals.json",
         brands=approved_brands,
+        left_out_hosts=left_out_hosts(SOURCES, OUT / "maker-crawl-v2.json"),
     )
-    SOURCES = maker_adapters.load_sources()
     if PRIOR_CRAWL.is_file():
         PRIOR = {b["brand"]: b["homepage"] for b in json.loads(PRIOR_CRAWL.read_text())["brands"] if b.get("homepage") and b.get("status") == "done"}
     brands = json.loads((CATALOG / "seed-phase2-v1.json").read_text())["brands"] + list(SOURCES.get("extra_brands") or [])

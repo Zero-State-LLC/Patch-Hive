@@ -6,11 +6,15 @@ Defaults rebuild the v1 overlays; T025 uses
 `--additions-version 4 --power-version 12 --brands "4ms Company,Erica Synths,Pittsburgh Modular"`.
 
 - catalog-additions-vN.json: modules not already in the catalog (insert-if-absent),
-  tagged `access_basis = official_publication`.
+  tagged with the maker's `access_basis` from maker-sources.json.
 - module-power-depth-vM.json: verified specs for crawled modules, keyed to the
   existing catalog name when one matches. The loader fills nulls only and flags
   rows whose stored values disagree.
 Every value was parsed deterministically or found verbatim on the maker's page.
+
+A maker whose basis is unknown (it opted out, or its terms forbid automated access) gets
+no rows in either file. An opt-out does not reach rows already in a committed overlay:
+those need a retirement manifest (spec 003 D3).
 """
 
 from __future__ import annotations
@@ -24,6 +28,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG = ROOT / "data" / "synth-catalog"
 sys.path.insert(0, str(CATALOG))
+sys.path.insert(0, str(ROOT / "scripts"))
+
+import maker_adapters  # noqa: E402
 
 CATEGORY = [
     ("SAMP", r"sampl|looper"), ("SEQ", r"sequenc|clock|trigger|gate gen|euclid"), ("VCO", r"oscillat|vco|voice|drum|wavetable"),
@@ -198,9 +205,10 @@ def main(argv: list[str] | None = None) -> int:
     additions_name = f"catalog-additions-v{args.additions_version}.json"
     power_name = f"module-power-depth-v{args.power_version}.json"
     crawl = json.loads((CATALOG / "hermes-research" / args.crawl).read_text())
+    sources = maker_adapters.load_sources(CATALOG / "maker-sources.json")
     idx = existing_index((additions_name, power_name))
     additions, entries = [], []
-    stats = {"crawled_modules": 0, "matched_existing": 0, "new": 0, "skipped_dupe_in_crawl": 0, "skipped_hp_range": 0, "skipped_not_module": 0, "skipped_shared_homepage": 0}
+    stats = {"crawled_modules": 0, "matched_existing": 0, "new": 0, "skipped_dupe_in_crawl": 0, "skipped_hp_range": 0, "skipped_not_module": 0, "skipped_shared_homepage": 0, "skipped_left_out": 0}
     shared = shared_homepage_skips(crawl["brands"])
     for b in crawl["brands"]:
         if (only and b["brand"] not in only) or b["brand"] in skip:
@@ -208,6 +216,10 @@ def main(argv: list[str] | None = None) -> int:
         if b["brand"] in shared:
             stats["skipped_shared_homepage"] += len(b.get("modules") or [])
             continue
+        if maker_adapters.left_out(sources, b["brand"]):
+            stats["skipped_left_out"] += len(b.get("modules") or [])
+            continue
+        basis = maker_adapters.permission_basis(sources, b["brand"])
         seen = set()
         for m in b.get("modules") or []:
             stats["crawled_modules"] += 1
@@ -236,7 +248,7 @@ def main(argv: list[str] | None = None) -> int:
                     "brand": m["brand"], "name": name, "hp": m["hp"], "category": category(m.get("tags") or [], name),
                     "manufacturer_url": m["source_url"], "image_url": m.get("image_url"), "is_available": "available",
                     "source": "ManufacturerCrawl", "source_reference": m["source_url"], "tags": m.get("tags") or [],
-                    "access_basis": "official_publication",
+                    "access_basis": basis,
                     "content_sha256": m["content_sha256"], "fetch_method": m["fetch_method"],
                 })
             entry = {

@@ -14,6 +14,8 @@ OBSERVED means read in the checkout on `main` at `3688037`; INFERRED means reaso
 | 2 | Firecrawl proxy tier | `basic` by default; `stealth` or `auto` only under an unexpired fetch-approvals entry that names the tier |
 | 3 | What counts as a block | A bot-check page; 401, 403 and 451 on a page; 401 or 403 on robots.txt. None of these reach a paid backend. Refused connections stay out of scope, because the code cannot tell them from timeouts |
 
+This PR also goes further than the decisions in one place: a robots.txt that cannot be read stops that host, free and paid (see decision 3).
+
 ## Where things stood before this PR (OBSERVED)
 
 **Permission.** The policy says "bulk operations fail closed without permission metadata", and that "an unknown or disputed access basis blocks bulk publication" ([EXTERNAL_SOURCE_POLICY.md](../EXTERNAL_SOURCE_POLICY.md), release gates and the provenance packet).
@@ -51,7 +53,11 @@ OBSERVED means read in the checkout on `main` at `3688037`; INFERRED means reaso
 **Decided: C.**
 
 - `permission_basis.default` in `data/synth-catalog/maker-sources.json` is now `official_publication`.
-- When a maker opts out, or its terms forbid automated access, set that brand to `unknown` under `brands`.
+- When a maker opts out, or its terms forbid automated access, set that brand to `unknown` under `brands`. That is enforced:
+  - the crawl does not resolve or fetch the brand, under any spelling of its name (`Instruo` and `Instruō` are both in the committed crawl);
+  - the router refuses the maker's known hosts for every script, so a second brand name, the HP enrichment or the unmatched pass cannot reach them;
+  - `build_maker_overlays.py` and `build_reattribution.py` read the basis from `maker-sources.json` and give that maker no rows.
+- An opt-out does not reach rows already in committed overlays. Those keep `official_publication` and still load, until a retirement manifest removes them (spec 003 D3).
 - The conditions and the opt-out rule are in [EXTERNAL_SOURCE_POLICY.md](../EXTERNAL_SOURCE_POLICY.md). The opt-out contact address follows once the owner has created it.
 - If PatchHive sells or exports the catalog in bulk, counsel reads the policy first. That is the point where "publication" matters most.
 
@@ -79,13 +85,15 @@ A refusal is remembered for the run, and it is not written to the disk cache, so
 
 `render=True` used to skip the free GET, so it could never see a page refuse. It now makes one free GET first, with no retry and without using the body. The decision does not hold without this: the Befaco adapter uses `render`, and `www.befaco.org` answered 403 to a plain GET ([OWNER_ACTIONS_2026-11-02.md](OWNER_ACTIONS_2026-11-02.md)). The cost is one more request per rendered page. It also changed an assertion in an existing test, which had required no free GET (now `test_render_uses_the_paid_body_and_still_applies_robots`).
 
-429, 5xx and timeouts stay eligible for a paid retry: those are load, not refusal.
+On a page, 429, 5xx and timeouts stay eligible for a paid retry: those are load, not refusal.
 
-**Not covered:**
+**robots.txt fails closed.** This goes further than the owner's decision. A robots.txt that gives any answer but 200 or 404, or no answer, means no fetch of that host for the run, free or paid. It is recorded as `robots_unavailable` with a note such as `robots.txt answered 503` or `robots.txt did not answer`. 401 and 403 keep their own `robots_refused` record from the decision.
 
-- **Refused connections (Frap).** The code cannot tell these from timeouts: `default_transport` and `_free_get` turn every transport error into status 0. Telling them apart needs the transport to report the error kind. Until then, a host that refuses connections stays excluded by name, as D7 does now.
-- **A robots.txt that is unreadable for another reason.** After a 5xx, a 429 or a timeout on robots.txt, the page is not fetched directly, so its own answer is unseen, and a paid backend may still run (`test_robots_unavailable_may_use_paid_backend`).
-- **451 on robots.txt.** The decision names 401 and 403 there, so a 451 stays `robots_unavailable`, which may still use a paid backend.
+This covers 451, 429, 5xx, other 4xx, timeouts and refused connections on robots.txt. The last two are both status 0, so it does not matter that the code cannot tell them apart there. A host that refuses every connection (Frap) now stops at robots.txt, and stays excluded by name as well.
+
+The cost is yield, and nothing was fetched to measure it. In the committed crawl, 34 of 703 brands (89 module rows, including Befaco's 26 and Instruo's) have `robots_unavailable` results, and 38 curated homepages are noted as inconclusive for that reason. Their committed rows stay. If their robots.txt still cannot be read, those hosts cannot be re-fetched, and those homepages cannot be confirmed. The T035 makers (4ms Company, Dave Jones Design, Velectronic) have no `robots_unavailable` results.
+
+**Not covered: a refused connection on a page.** `default_transport` and `_free_get` turn every transport error into status 0. So if robots.txt was readable and the page then gives status 0, it stays eligible for a paid retry, whether that was a timeout or a refusal. Telling them apart needs the transport to report the error kind.
 
 ## What this PR changes
 
@@ -95,9 +103,13 @@ A refusal is remembered for the run, and it is not written to the disk cache, so
   - `_reserve_paid` refuses a non-basic Firecrawl call without such an entry.
   - A bot-check page, a page answering 401, 403 or 451, and a robots.txt answering 401 or 403 return a recorded refusal with no paid fallback (`PAGE_REFUSAL_STATUSES`, `ROBOTS_REFUSAL_STATUSES`).
   - `render=True` makes one free GET first, recorded with the note `render_check` unless it is a refusal.
+  - A robots.txt that cannot be read stops the host, with the reason recorded.
+  - `left_out_hosts` and `_block_reason` refuse a left-out maker's known hosts, before the disk cache and in `robots_info`.
 - `scripts/catalog_maker_crawl.py`:
   - The paid-run gate passes the configured tier.
   - Every crawl row, and the brand record, carry `permission_basis`.
+  - A left-out brand is recorded with the status `left_out` and is not resolved or crawled.
+- `scripts/build_maker_overlays.py` and `scripts/build_reattribution.py`: the basis comes from `maker-sources.json`, and a left-out maker gets no rows.
 - `scripts/maker_adapters.py` and `data/synth-catalog/maker-sources.json`: a `permission_basis` block (`default: official_publication`, `brands: {}`), validated on load.
 - `receipts/fetch-approvals.json`: `proxy_tier` is documented in `entry_format`. The committed corpus-photos entry is unchanged and stays basic.
 - Docs:
@@ -107,17 +119,86 @@ A refusal is remembered for the run, and it is not written to the disk cache, so
 
 Nothing is fetched or loaded. The committed crawl and overlays are unchanged.
 
+## What this does to committed overlay output
+
+Both builders delete and rewrite overlay files, so they were run on throwaway copies of the repo at `54c96a5`, with the old code and the new code, using the invocations recorded in `SCRAPING_ARCHITECTURE.md` and the A3 intent. No overlay in this PR was regenerated.
+
+**This PR's change to the builders alters no output.** With no maker opted out, old and new builders wrote byte-identical files for all four builds.
+
+**A rebuild, by either builder, would change committed data.** This drift predates this PR. Later overlays and later builder rules change what the older versions come out as:
+
+| Build | File | Against the committed file |
+|---|---|---|
+| T025 | `catalog-additions-v3.json` | Differs: 2,492 rows rebuilt, 2,737 committed; 1 only in the rebuild, 246 only in the committed file |
+| T025 | `module-power-depth-v11.json` | Differs: 3,114 rows rebuilt, 3,241 committed; 139 only in the rebuild, 266 only in the committed file |
+| T026 | `catalog-additions-v4.json` | Differs: 134 rows rebuilt, 136 committed; 2 only in the committed file |
+| T026 | `module-power-depth-v12.json` | Same |
+| A3 | `catalog-additions-v6.json`, `module-power-depth-v14.json` | Same |
+| Reattribution v2 | `catalog-retirements-v2.json` | Same |
+| Reattribution v2 | `module-power-depth-v15.json` | **Deleted.** It is the hand-built Endorphin.es overlay from #178, on a version number `build_reattribution.py --version 2 --rebuild` also claims |
+
+**An opt-out does what it should.** With Befaco set to `unknown` on a throwaway copy, the T025 build lost 21 additions rows and 25 power rows, all Befaco, and gained none. The committed files would not change until someone rebuilt them, and rebuilding them brings the drift above with it. So use a retirement manifest for an opt-out, not a rebuild.
+
+## The 26 Befaco rows
+
+Flagged because the adapter uses `render`, and `www.befaco.org` answered 403 to a plain GET ([OWNER_ACTIONS_2026-11-02.md](OWNER_ACTIONS_2026-11-02.md)). This PR does not change them.
+
+**Recorded (OBSERVED):**
+
+- All 26 are in `hermes-research/maker-crawl-v2.json` with `fetch_method: cache` and `extracted_by: regex`. That crawl is dated 2026-10-27.
+- The brand's record shows `adapter:listing`, 89 pages discovered, and fetch results of 40 `cache` and 49 `robots_unavailable`.
+- The T024 paid run was context.dev only, in three passes. The last used `--max-paid-fetches 0` on cached pages, which fits `cache` here.
+- The adapter's note then read "unreachable over free HTTP from the dev box; needs the paid tier".
+- No entry in `receipts/fetch-approvals.json` names Befaco. That file's committed entry covers the corpus photos.
+- `catalog-additions-v3` and `module-power-depth-v11` were loaded to staging and production (tasks T025, T027).
+
+**Not recorded:** which backend first fetched each page, and what robots.txt answered at the time. `robots_unavailable` says only that it was neither 200 nor 404. The disk cache holding each page's first method is gitignored and is not on this machine.
+
+**Inferred:** these pages probably came from a paid context.dev render. The router makes no free GET when robots.txt cannot be read, and the adapter asked for a render. If the 403 seen on 2026-11-02 also held on 2026-10-27, these rows came through what decision 3 now calls a refusal. Nothing here proves that it did.
+
+The first row looks wrong: "Befaco" at 18 HP, from `/feed/`, is not a module. The builder already drops it, so no overlay holds it.
+
+| Crawl row | HP | Page on www.befaco.org | Overlays holding that name |
+|---|---|---|---|
+| Befaco | 18 | `/feed/` | none |
+| 1 U Motion MTR | 34 | `/1u-motion-mtr/` | additions v3, power v11 |
+| 1U OUT | 16 | `/1u-out/` | additions v3, power v11 |
+| 1U STMIX | 28 | `/1u-stmix/` | additions v3, power v11 |
+| 1U ST AMP | 10 | `/1u-st-amp/` | additions v3, power v11 |
+| 1U TRS | 6 | `/1u-trs/` | additions v3, power v11 |
+| A\*B+C | 6 | `/axbc/` | additions v3, power v11 |
+| ARK | 40 | `/ark/` | additions v3, power v11 |
+| Atte | 4 | `/atte/` | additions v3, power v11 |
+| Bandit | 8 | `/bandit/` | power v11 |
+| BF-22 | 17 | `/bf-22/` | additions v3, power v11 |
+| Burst | 8 | `/burst-2/` | additions v3, power v11 |
+| Chopping Kinky | 8 | `/chopping-kinky/` | power v11 |
+| Crush Delay V3 | 11 | `/crush-delay-v3/` | additions v3, power v11 |
+| Even VCO | 8 | `/even-vco/` | power v11 |
+| FX BOY | 12 | `/fx-boy/` | additions v3, power v11 |
+| Hexmix | 28 | `/hexmix/` | additions v3, power v11 |
+| Hexmix VCA | 14 | `/hexmix-vca/` | additions v1, power v8, power v11 |
+| Hexpander | 28 | `/hexpander/` | additions v3, power v11 |
+| I4 | 8 | `/i4-instrument-interface/` | additions v3, power v11 |
+| InAmp | 4 | `/inamp/` | additions v3, power v11 |
+| VC ADSR | 8 | `/vc-adsr/` | additions v3, power v11 |
+| VCMC | 20 | `/vcmc-2/` | additions v3, power v11 |
+| Voltio | 6 | `/voltio/` | additions v3, power v11 |
+| Oneiroi | 42 | `/oneiroi-pod/` | additions v3, power v11 |
+| Trolley Bus | 4 | `/trolley-bus/` | additions v3, power v11 |
+
+A name in an older overlay can have come from another source: Hexmix VCA is in `catalog-additions-v1`, which predates this crawl.
+
 ## After merge
 
 1. Catalog fetching can resume under FR-003 approvals:
    - the T031 feed re-crawl (281 untagged rows, [#253](https://github.com/Zero-State-LLC/Patch-Hive/pull/253));
    - the maker-page pass (the 7 rows in [#250](https://github.com/Zero-State-LLC/Patch-Hive/pull/250), the Plum ex2 HP, and the 59 rows #253 lists).
 2. Follow-ups:
-   - make the crawl leave out a brand set to `unknown`: today it records `unknown` on the rows but still fetches the brand;
-   - make `build_maker_overlays.py` and `build_reattribution.py` copy the crawl row's `permission_basis` instead of hard-coding `official_publication`;
    - publish the opt-out contact address in the policy once the owner has created it;
-   - check the terms of the top makers, and set any that forbid automated access to `unknown`. This needs reading their pages, so it was not done here.
-3. For the owner to review: the committed crawl holds 26 Befaco rows from the `render` adapter, and that brand's record shows 40 `cache` and 49 `robots_unavailable` results. It does not record how those pages first came in, or what robots.txt answered. This PR leaves those rows unchanged.
+   - check the terms of the top makers, and set any that forbid automated access to `unknown`. This needs reading their pages, so it was not done here;
+   - give `module-power-depth-v15.json` or the reattribution builder another version number, so `--rebuild` cannot delete it.
+3. For the owner to decide: whether to keep the 26 Befaco rows above.
 
 ## Wording applied to spec 003
 

@@ -12,9 +12,11 @@ The maker crawl has no recorded permission basis, though the source policy says 
   - allows `stealth` or `auto` only under a fetch-approvals entry that names the tier;
   - never sends a bot-check page, a page answering 401, 403 or 451, or a robots.txt answering 401 or 403 to a paid backend;
   - records `permission_basis` on every crawl row (`official_publication` by default, `unknown` for a maker who opted out);
+  - leaves a maker set to `unknown` out of the crawl, the router and the overlay builders;
+  - stops all fetching of a host whose robots.txt cannot be read;
   - updates spec 003 and the source policy to match.
 
-Out of scope: any fetch, any load, making the crawl skip a brand set to `unknown`, and changing the hard-coded `official_publication` in the overlay builders (follow-ups after this PR).
+Out of scope: any fetch, any load, regenerating committed overlays, and changing the 26 committed Befaco rows.
 
 ## Affected users / systems
 
@@ -43,6 +45,9 @@ The owner answered these on 2026-11-04 (`docs/evidence/OWNER_DECISIONS_2026-11-0
 | A bot-check page reaches no paid backend | `OBSERVED` | `tests/test_catalog_scrape_router.py`, `tests/test_maker_crawl.py` |
 | A page answering 401, 403 or 451, and a robots.txt answering 401 or 403, reach no paid backend | `OBSERVED` | `tests/test_catalog_scrape_router.py` |
 | A refused connection cannot be told from a timeout | `OBSERVED` | `catalog_scrape.py` `default_transport`, `_free_get`; `tests/test_catalog_scrape_router.py` |
+| A robots.txt that cannot be read stops the host, free and paid | `OBSERVED` | `tests/test_catalog_scrape_router.py` |
+| A maker set to `unknown` is not fetched and gets no built rows | `OBSERVED` | `tests/test_maker_crawl.py`, `tests/test_build_maker_overlays.py`, `tests/test_catalog_tombstones.py` |
+| With no maker opted out, the new builders write the same bytes as the old ones | `OBSERVED` | Old and new builders run on scratch copies at `54c96a5`; see the brief |
 | Treating official spec pages as publication for facts is low risk | `INFERRED` | Not legal advice; counsel should review before any bulk sale or export |
 
 ## Author / date

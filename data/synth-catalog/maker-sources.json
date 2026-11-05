@@ -3,7 +3,7 @@
  "checked": "2026-10-27",
  "policy": "Maker-owned sites only (spec 003 D2). Every fetch goes through data/synth-catalog/catalog_scrape.py: robots.txt, the deny list, per-host delay, cache, then context.dev and Firecrawl under one paid cap.",
  "permission_basis": {
-  "meaning": "The access basis each crawl row records (EXTERNAL_SOURCE_POLICY access_basis). Owner decision 2026-11-04, option C: official spec pages count as publication for facts, under the policy's conditions. Under brands, set a maker who opts out, or whose terms forbid automated access, to unknown, which blocks bulk publication; set a maker who gave permission to maker_permission (docs/evidence/MAKER_PERMISSION_AND_PROXY_DECISION_2026-11-03.md).",
+  "meaning": "The access basis each crawl row records (EXTERNAL_SOURCE_POLICY access_basis). Owner decision 2026-11-04, option C: official spec pages count as publication for facts, under the policy's conditions. Under brands, set a maker who opts out, or whose terms forbid automated access, to unknown: the crawl and the fetch router then leave it alone, the overlay builders give it no rows, and bulk publication is blocked. Set a maker who gave permission to maker_permission (docs/evidence/MAKER_PERMISSION_AND_PROXY_DECISION_2026-11-03.md).",
   "default": "official_publication",
   "brands": {}
  },
