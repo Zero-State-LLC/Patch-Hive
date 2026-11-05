@@ -1,0 +1,6160 @@
+{
+ "paid_attempts": 0,
+ "rows": 601,
+ "outcomes": {
+  "read": 517,
+  "no_url": 63,
+  "robots.txt did not answer": 2,
+  "robots.txt answered 403": 16,
+  "free_http": 2,
+  "cache": 1
+ },
+ "feed_products": 547,
+ "reads": [
+  {
+   "slug": "2hp-arp",
+   "url": "https://www.twohp.com/modules/p/arp",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3e0b05f699f06eb5d76bf1f1d19d3e338af1e7b77fa6fe239e1beb83c0d7c478",
+   "timestamp": "2026-11-05T21:03:13Z"
+  },
+  {
+   "slug": "2hp-blur",
+   "url": "https://www.twohp.com/modules/p/blur",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "28afed8a4455cad3ae0b57dfdf9b9d07600b4f28fc5c8baa0d021d1871a05437",
+   "timestamp": "2026-11-05T21:03:14Z"
+  },
+  {
+   "slug": "2hp-buff",
+   "url": "https://www.twohp.com/modules/p/buff",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "bd165f76b0434e1b5539a1be37e84507633a3be5e1fccb5de1695a5c9ef19906",
+   "timestamp": "2026-11-05T21:03:15Z"
+  },
+  {
+   "slug": "2hp-comp",
+   "url": "https://www.twohp.com/modules/p/comp",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "bc1e118d2f48a6390992438aed341662e67a18b8045167c337492703477adff5",
+   "timestamp": "2026-11-05T21:03:16Z"
+  },
+  {
+   "slug": "2hp-dc",
+   "url": "https://www.twohp.com/modules/p/dc",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9e776dec326556a499448675a8dbec1b335c1b8e42ad36f096cadec3204e8df5",
+   "timestamp": "2026-11-05T21:03:17Z"
+  },
+  {
+   "slug": "2hp-grain",
+   "url": "https://www.twohp.com/modules/p/grain",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "30bd7707b1fd36fcda606ac31a7b84cfa99a728076acf86eea4f6805045b9073",
+   "timestamp": "2026-11-05T21:03:18Z"
+  },
+  {
+   "slug": "2hp-hat",
+   "url": "https://www.twohp.com/modules/p/hat",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "4045aa07d19d82e1dee5eedecfa5ef691145a9d55a4c656f9d419ef14f1448b6",
+   "timestamp": "2026-11-05T21:03:19Z"
+  },
+  {
+   "slug": "2hp-lo-fi",
+   "url": "https://www.twohp.com/modules/p/lo-fi",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "71e8acab6ba4c398db64ee3d9a9a4e3bd0ff3269aa867ca99dc198bf4b1ed2e9",
+   "timestamp": "2026-11-05T21:03:20Z"
+  },
+  {
+   "slug": "2hp-loop",
+   "url": "https://www.twohp.com/modules/p/loop",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "60cf2691fde52076432b8321d12ad90ce1c4ec4b35c41a7ef908022d56d06561",
+   "timestamp": "2026-11-05T21:03:21Z"
+  },
+  {
+   "slug": "2hp-mmf",
+   "url": "https://www.twohp.com/modules/p/mmf",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ce80e6c270ef13e055fa88f07ee5c120cd9cd8ccfc95a53756126ad8cbae62bf",
+   "timestamp": "2026-11-05T21:03:22Z"
+  },
+  {
+   "slug": "2hp-out",
+   "url": "https://www.twohp.com/modules/p/out",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ffed8c38c7e2aabada36edaba3fb703c6b833e7bb0f2b89bdbfab1776e59eb9f",
+   "timestamp": "2026-11-05T21:03:23Z"
+  },
+  {
+   "slug": "2hp-pitch",
+   "url": "https://www.twohp.com/modules/p/pitch",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2bebd50d4908e5d699ad7528f539fea081b944b8ec0d61945e726974301db265",
+   "timestamp": "2026-11-05T21:03:24Z"
+  },
+  {
+   "slug": "2hp-pluck",
+   "url": "https://www.twohp.com/modules/p/pluck",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0f4fe1308c06239ce492c3814d55a92972ba384076cc709c794fb9a062d4d596",
+   "timestamp": "2026-11-05T21:03:25Z"
+  },
+  {
+   "slug": "2hp-sine",
+   "url": "https://www.twohp.com/modules/p/sine",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "657a7c6e0e01911f891aa094e809e6c8d6dca889f62e7f1cb113a4d223868f59",
+   "timestamp": "2026-11-05T21:03:26Z"
+  },
+  {
+   "slug": "2hp-slice",
+   "url": "https://www.twohp.com/modules/p/slice",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "cc3a4e105b331c9a627121234743c07573a9646f47cfccdb5c0e86916ffd670e",
+   "timestamp": "2026-11-05T21:03:27Z"
+  },
+  {
+   "slug": "2hp-swarm",
+   "url": "https://www.twohp.com/modules/p/swarm",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "51198815ea3adc93e392fa6a3d61b441b04bc09affa7d1a70bc068fe99193259",
+   "timestamp": "2026-11-05T21:03:28Z"
+  },
+  {
+   "slug": "2hp-tape-stop",
+   "url": "https://www.twohp.com/modules/p/tape-stop",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "11407175548f3345463bae3b459ff94da379a5310e2260336d1e99f71e7aa427",
+   "timestamp": "2026-11-05T21:03:29Z"
+  },
+  {
+   "slug": "2hp-verb",
+   "url": "https://www.twohp.com/modules/p/verb",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "280cdc1b62a64b28f02da4cf305f79d926a63c621d0aff671abb74d38c398d22",
+   "timestamp": "2026-11-05T21:03:30Z"
+  },
+  {
+   "slug": "2hp-vowel",
+   "url": "https://www.twohp.com/modules/p/vowel",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "80fbcd93561ac6d8e8699194e3e3157ecc82f26cfb607757016dbd5cb3b992ec",
+   "timestamp": "2026-11-05T21:03:31Z"
+  },
+  {
+   "slug": "4ms-company-4ms-eurorack-swash",
+   "url": "https://4mscompany.com/p.php?p=562&c=21",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ce8c85f454e6be55a7eea2714194c0f8ee55fe60cf9a3babcdd2679a993dc6be",
+   "timestamp": "2026-11-05T21:03:33Z"
+  },
+  {
+   "slug": "4ms-company-listen-four",
+   "url": "https://4mscompany.com/p.php?p=813&c=5",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7071b37d8b095236feaffd63802d3c61c1892ce3b21b2170e0567619d0b41031",
+   "timestamp": "2026-11-05T21:03:33Z"
+  },
+  {
+   "slug": "4ms-company-listen-four-quarters",
+   "url": "https://4mscompany.com/p.php?p=818&c=5",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0b71bc256897f77bb82123e592d3aeb4c451044f9971c8ca90dc89f902aa044a",
+   "timestamp": "2026-11-05T21:03:34Z"
+  },
+  {
+   "slug": "4ms-company-listen-io",
+   "url": "https://4mscompany.com/p.php?p=889&c=5",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d9493685d5bb79cc77926704ab9091cff01ed64acb997bfa6538d14a01dca140",
+   "timestamp": "2026-11-05T21:03:35Z"
+  },
+  {
+   "slug": "4ms-company-listen-up",
+   "url": "https://4mscompany.com/p.php?p=933&c=5",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "21293dc4a040cddf7b361153d375ee49c49b0a8cc3e7d9738ed16651be5c6ca9",
+   "timestamp": "2026-11-05T21:03:36Z"
+  },
+  {
+   "slug": "4ms-company-mesa",
+   "url": "https://4mscompany.com/p.php?p=1112&c=5",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "dfe54b9351fff62720c14f6ba0f319f2814fe2f9d6163658681ebe04a8ddd2db",
+   "timestamp": "2026-11-05T21:03:37Z"
+  },
+  {
+   "slug": "4ms-company-metamodule",
+   "url": "https://4mscompany.com/p.php?p=990&c=5",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "cf49e83b9940c32bec51a5265aeb34eb0435429abd483ef99307c640a4c0a7f8",
+   "timestamp": "2026-11-05T21:03:38Z"
+  },
+  {
+   "slug": "4ms-company-scm-plus",
+   "url": "https://4mscompany.com/p.php?p=1050&c=5",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5a08ffa71c37a667562c4fe156a6b1ebb60c9b3530cb78bb0a4a6beeb0d7d815",
+   "timestamp": "2026-11-05T21:03:40Z"
+  },
+  {
+   "slug": "4ms-company-shifting-inverting-signal-mingler",
+   "url": "https://4mscompany.com/p.php?p=679&c=5",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "547578bbde18adda6cae090b18279d994bf9d63565a275531bf0d74c6c6e3c0b",
+   "timestamp": "2026-11-05T21:03:40Z"
+  },
+  {
+   "slug": "acl-fcvs-4",
+   "url": "https://acl-synth.com/products/fcvs-4",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ca6b9bddb6fc3f92d1b4b8e74f17e205dfb99c2b26ca26fd84b7e5f2b8966a3e",
+   "timestamp": "2026-11-05T21:03:46Z"
+  },
+  {
+   "slug": "addac-system-addac003-vcc-manual-inputs",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "addac-system-addac005-vcc-gate-outputs",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "addac-system-addac101-wav-player",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "addac-system-addac200pi",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "addac-system-addac200s-size-matter-black",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "addac-system-addac203-cv-mapping",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "addac-system-addac213c",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "addac-system-addac303-muscle-sensing",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "addac-system-addac308-light-to-cv",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "addac-system-addac320-servo-control",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "addac-system-addac501b-complex-random-expansion",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "addac-system-addac504-probabilistic-generator",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "alm-busy-circuits-asq-1",
+   "url": "https://busycircuits.com/products/alm035",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c5315c886c7108eb6f8f50e6b8084c75acb2e697d2d619a7e99325eb49ab3ef7",
+   "timestamp": "2026-11-05T21:03:48Z"
+  },
+  {
+   "slug": "alm-busy-circuits-axon-2",
+   "url": "https://busycircuits.com/products/alm040",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "fdda2ff1f788189d4a840b27849a75b641e168c2d594d7404323fed945e945af",
+   "timestamp": "2026-11-05T21:03:48Z"
+  },
+  {
+   "slug": "alm-busy-circuits-akemie-s-castle",
+   "url": "https://busycircuits.com/products/alm011",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3a2dc58a967eae71cd9b249443d391a4bb4d80a78509f24ee6d2837893e86359",
+   "timestamp": "2026-11-05T21:03:49Z"
+  },
+  {
+   "slug": "alm-busy-circuits-akemie-s-taiko",
+   "url": "https://busycircuits.com/products/alm015",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "188aabe5c267f1b7f39d3982fbdab588a2a84664579416f7bfb549b158a13909",
+   "timestamp": "2026-11-05T21:03:50Z"
+  },
+  {
+   "slug": "alm-busy-circuits-boss-bow-two",
+   "url": "https://busycircuits.com/products/alm027",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e431a23f6f01e8bd24951c7e9f18266973f8aaf9fbb8e3c89daf83ff32a68d6f",
+   "timestamp": "2026-11-05T21:03:51Z"
+  },
+  {
+   "slug": "alm-busy-circuits-beast-s-chalkboard",
+   "url": "https://busycircuits.com/products/alm002",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "defaec852ebdcd004f4baa0c5fd13a835cdbaf77faef668f12a6237bab2afad4",
+   "timestamp": "2026-11-05T21:03:52Z"
+  },
+  {
+   "slug": "alm-busy-circuits-cizzle",
+   "url": "https://busycircuits.com/products/alm042",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1fb2d312eddf330c30775656c2d12b8fa3254cd8791dd95833da8c54d68ac7b0",
+   "timestamp": "2026-11-05T21:03:53Z"
+  },
+  {
+   "slug": "alm-busy-circuits-fmco",
+   "url": "https://busycircuits.com/products/alm045",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "82e484918a7e158e84f5ba3ca186680c35d1204732843388bb581c841b40d8c7",
+   "timestamp": "2026-11-05T21:03:54Z"
+  },
+  {
+   "slug": "alm-busy-circuits-hpo",
+   "url": "https://busycircuits.com/products/alm019",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "303e2f4708ccbd66f762bedc9d4549713c5ec36b3a628ec9d5806eb299256822",
+   "timestamp": "2026-11-05T21:03:55Z"
+  },
+  {
+   "slug": "alm-busy-circuits-jumble-henge",
+   "url": "https://busycircuits.com/products/alm029",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "24725b0b5162dff5f163ffbe6e47792087d2cdc78ad345ce78472ec956e58af1",
+   "timestamp": "2026-11-05T21:03:56Z"
+  },
+  {
+   "slug": "alm-busy-circuits-mco",
+   "url": "https://busycircuits.com/products/alm046",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8b3ed3896b38fb44a299eabba343f8048fed7e22bf16f1099e7ae210aedff400",
+   "timestamp": "2026-11-05T21:03:57Z"
+  },
+  {
+   "slug": "alm-busy-circuits-mco-legacy",
+   "url": "https://busycircuits.com/products/alm021",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ca1dbbb4f877d2b27997ae3c14955676ea2349f53b03d52f2c6377629434d117",
+   "timestamp": "2026-11-05T21:03:58Z"
+  },
+  {
+   "slug": "alm-busy-circuits-mega-milton",
+   "url": "https://busycircuits.com/products/alm037",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d518aa7d93628b23e620d92bea37fdc99e80d2c15d99a94ca06bfb7e313ebcaf",
+   "timestamp": "2026-11-05T21:03:59Z"
+  },
+  {
+   "slug": "alm-busy-circuits-mfd",
+   "url": "https://busycircuits.com/products/alm044",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7fcf9875e5016b740d88d1147a8fba591e16cbffcdd002ad90cdbcd6a528bb25",
+   "timestamp": "2026-11-05T21:04:00Z"
+  },
+  {
+   "slug": "alm-busy-circuits-mt-ex2",
+   "url": "https://busycircuits.com/products/alm033-ex2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c6da3f4357ae8b3e3fbfd3381e9d0059fadf1eb819ed8cfa9134f0dd3b31b3ea",
+   "timestamp": "2026-11-05T21:04:01Z"
+  },
+  {
+   "slug": "alm-busy-circuits-mum-m8",
+   "url": "https://busycircuits.com/products/alm018",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "545d886bff498501cab3a171ecfd6d5d53c4a6a0b76ab95b8213e7e05af408f8",
+   "timestamp": "2026-11-05T21:04:02Z"
+  },
+  {
+   "slug": "alm-busy-circuits-o-a-x2",
+   "url": "https://busycircuits.com/products/alm010",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7fc1583e636f3d78d7660d07c3500e3f535379d925589004b8d0023e2f1532fb",
+   "timestamp": "2026-11-05T21:04:03Z"
+  },
+  {
+   "slug": "alm-busy-circuits-pe-1",
+   "url": "https://busycircuits.com/products/alm016",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "306a3b268d6bd3377d8fb33eaee11fe522acf65412431f9337698595ab45fe44",
+   "timestamp": "2026-11-05T21:04:04Z"
+  },
+  {
+   "slug": "alm-busy-circuits-ppexp1",
+   "url": "https://busycircuits.com/products/alm034-ex1",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7ccbc98e1efa4d9bf054b248bb75bc46262cc71b2676a14261eb9ef1b770817c",
+   "timestamp": "2026-11-05T21:04:05Z"
+  },
+  {
+   "slug": "alm-busy-circuits-ppexp2",
+   "url": "https://busycircuits.com/products/alm034-ex2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "71e182e9ebfb6dcff448c8f7095c218d4392867d1e8df4daa5c99cbf84248137",
+   "timestamp": "2026-11-05T21:04:06Z"
+  },
+  {
+   "slug": "alm-busy-circuits-pamela-s-disco",
+   "url": "https://busycircuits.com/products/alm049",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0ad7044450284a590a1c71f8168b1ca1ccbe5a50160c956f4c8463c0d0128170",
+   "timestamp": "2026-11-05T21:04:07Z"
+  },
+  {
+   "slug": "alm-busy-circuits-quaid-megaslope",
+   "url": "https://busycircuits.com/products/alm020",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "444d5c2ebc02ab95b3a94ee9082fda963bdf473841eee05958ded527d3645709",
+   "timestamp": "2026-11-05T21:04:08Z"
+  },
+  {
+   "slug": "alm-busy-circuits-s-b-g",
+   "url": "https://busycircuits.com/products/alm006",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3a88d17ee511f225418da57936af4a3be38d15af8a280b2da76795923e92fcfe",
+   "timestamp": "2026-11-05T21:04:09Z"
+  },
+  {
+   "slug": "alm-busy-circuits-s-b-g-pro",
+   "url": "https://busycircuits.com/products/alm041",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e9645a08af105769d912392eaacb55f7a262e708d440f4a9d13580298e60f5e6",
+   "timestamp": "2026-11-05T21:04:10Z"
+  },
+  {
+   "slug": "alm-busy-circuits-squid-salmple",
+   "url": "https://busycircuits.com/products/alm022",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5f2c91152cf67f6585848d063b4111221b82d279025235b2fb30cb494c590174",
+   "timestamp": "2026-11-05T21:04:11Z"
+  },
+  {
+   "slug": "alm-busy-circuits-stem-ripper",
+   "url": "https://busycircuits.com/products/alm050",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "984d2ed4a2667c22dce80ea48d160d5e4fbba5d9dd3b9dedc0bf555de6166c37",
+   "timestamp": "2026-11-05T21:04:12Z"
+  },
+  {
+   "slug": "alm-busy-circuits-stem-ripper-thru",
+   "url": "https://busycircuits.com/products/alm050-ex1",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b6fc275aa2f8e209dacb1c9ac4c4e348e16878f0b7e14ee0c339727ee3dd2148",
+   "timestamp": "2026-11-05T21:04:13Z"
+  },
+  {
+   "slug": "alm-busy-circuits-tazm-o",
+   "url": "https://busycircuits.com/products/alm036",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6b6991d9b8ed7c11581988beb9ca7d8b93d70bfb80a46c87597d3fa9bc802f73",
+   "timestamp": "2026-11-05T21:04:14Z"
+  },
+  {
+   "slug": "alm-busy-circuits-tangle-quartet",
+   "url": "https://busycircuits.com/products/alm009",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "49b64b492accced9651e5912d6ebf1a193e7587f037052103338fafcdbb308b4",
+   "timestamp": "2026-11-05T21:04:15Z"
+  },
+  {
+   "slug": "alm-busy-circuits-mmt",
+   "url": "https://busycircuits.com/products/alm023-ex1",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "cf800b584914d2368b4175d633f8dc92df2c2257000eea88bbc239ee8ccd8d9e",
+   "timestamp": "2026-11-05T21:04:16Z"
+  },
+  {
+   "slug": "at1-4-cv-channel",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "after-later-audio-alan-1u-micro-turing-machine",
+   "url": "https://afterlateraudio.com/products/alan-1u-micro-turing-machine",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0905b505a27b6351a25c710bfc1debb58699f814009c020b1297b4a317b0819e",
+   "timestamp": "2026-11-05T21:04:16Z"
+  },
+  {
+   "slug": "after-later-audio-alan-3u-micro-turing-machine",
+   "url": "https://afterlateraudio.com/products/alan",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "85b43a78f992ea4cd66a68a0dd774caf5d65fd22dec5b7155da994002a91955a",
+   "timestamp": "2026-11-05T21:04:17Z"
+  },
+  {
+   "slug": "after-later-audio-atom-uelements",
+   "url": "https://afterlateraudio.com/products/atom-uelements",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "53d82ede44c9d783524e956fe50644683b686ece2975383ab797733cee56c842",
+   "timestamp": "2026-11-05T21:04:18Z"
+  },
+  {
+   "slug": "after-later-audio-blend",
+   "url": "https://afterlateraudio.com/products/blend",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "708a8d23d2cc10cf15a7932f09d85f8b0c62f5372a7eefe70568a28559ce0db6",
+   "timestamp": "2026-11-05T21:04:19Z"
+  },
+  {
+   "slug": "after-later-audio-baker",
+   "url": "https://afterlateraudio.com/products/baker",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9b650b0959be4f0b02b181b57b7e7b13c7ab2f17af40b625867a00fc8c3e357e",
+   "timestamp": "2026-11-05T21:04:20Z"
+  },
+  {
+   "slug": "after-later-audio-bal-outs",
+   "url": "https://afterlateraudio.com/products/bal-outs",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8597961924c4985c7355928df3b674c590a69d8bdb3c2deabb68e7c56b2bdf12",
+   "timestamp": "2026-11-05T21:04:21Z"
+  },
+  {
+   "slug": "after-later-audio-barback",
+   "url": "https://afterlateraudio.com/products/barback",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "20bcd320a7a7bba7e40d8bb790b05bdbbe55e80a1da9b7c44a035ca8e3d4fd22",
+   "timestamp": "2026-11-05T21:04:22Z"
+  },
+  {
+   "slug": "after-later-audio-bartender",
+   "url": "https://afterlateraudio.com/products/bartender",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1b9b019168724c9ded04fac7e5ed26a4373818961cb7fcc1db036c85c134fefc",
+   "timestamp": "2026-11-05T21:04:23Z"
+  },
+  {
+   "slug": "after-later-audio-benjolin-v2",
+   "url": "https://afterlateraudio.com/products/benjolin-v2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d70c8353ab8fd82c55660a6a3a2930e20f6d244f5281925c36c7368b0f4a6ff3",
+   "timestamp": "2026-11-05T21:04:24Z"
+  },
+  {
+   "slug": "after-later-audio-bleep-bloop-2000",
+   "url": "https://afterlateraudio.com/products/bleep-bloop-2000",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0cde0ac618c905be9aeab7783b32b15561a3fa1392feb9d6cb7f6195dcf568ef",
+   "timestamp": "2026-11-05T21:04:25Z"
+  },
+  {
+   "slug": "after-later-audio-bog",
+   "url": "https://afterlateraudio.com/products/bog",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b784393234fed99760d39e01efe2e3444d64fc0865a01edbb14a513356b6d4d0",
+   "timestamp": "2026-11-05T21:04:26Z"
+  },
+  {
+   "slug": "after-later-audio-brooks",
+   "url": "https://afterlateraudio.com/products/brooks",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0795708ca5c2a502fcd44ed5b725d63b1bf2d0bb3f631cd9be2669e0404463da",
+   "timestamp": "2026-11-05T21:04:27Z"
+  },
+  {
+   "slug": "after-later-audio-canyon",
+   "url": "https://afterlateraudio.com/products/canyon",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9f3735002aada9bf6b68108009b499676e15e2ce57bf78ac208be7fcb5d15819",
+   "timestamp": "2026-11-05T21:04:28Z"
+  },
+  {
+   "slug": "after-later-audio-cara-umarbles",
+   "url": "https://afterlateraudio.com/products/cara-umarbles",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3df31b763e393a01f7880bbf4660f32fc74aeed5caf9997968b978cb5b3c9ab0",
+   "timestamp": "2026-11-05T21:04:29Z"
+  },
+  {
+   "slug": "after-later-audio-cascades",
+   "url": "https://afterlateraudio.com/products/cascades",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f03d3135d3c89e4fc9754a5bf832435a79023afbdbc64a62b95943cbecc19950",
+   "timestamp": "2026-11-05T21:04:30Z"
+  },
+  {
+   "slug": "after-later-audio-cast-iron",
+   "url": "https://afterlateraudio.com/products/cast-iron",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2f20a86123cedc2e86ba6e826fae10e9b3555d835a9ba6ab265e47515e4bd7d3",
+   "timestamp": "2026-11-05T21:04:31Z"
+  },
+  {
+   "slug": "after-later-audio-cloaks",
+   "url": "https://afterlateraudio.com/products/cloaks",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "474def0ad1328b1fdfe834c7e3eaf8359008d0a9c749007345a332bd18c27911",
+   "timestamp": "2026-11-05T21:04:32Z"
+  },
+  {
+   "slug": "after-later-audio-cloverleaf",
+   "url": "https://afterlateraudio.com/products/cloverleaf",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "520ded5bef47b32119856517a9e048385f259afd96e842bb30099741c879d4d9",
+   "timestamp": "2026-11-05T21:04:33Z"
+  },
+  {
+   "slug": "after-later-audio-compactor",
+   "url": "https://afterlateraudio.com/products/compactor",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f032809897c6e00d655616777d25ea765f338f90bc2c17aae72884f7418c5643",
+   "timestamp": "2026-11-05T21:04:34Z"
+  },
+  {
+   "slug": "after-later-audio-cumulus",
+   "url": "https://afterlateraudio.com/products/cumulus",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e02c53604f54885c89c307ce99cb2356ab1bef6104f2d23fedc794e343c5c646",
+   "timestamp": "2026-11-05T21:04:35Z"
+  },
+  {
+   "slug": "after-later-audio-currents",
+   "url": "https://afterlateraudio.com/products/currents",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9241ce36d9a6f05cabac9b8797d9726fef7cec503886f41c04b83f9532444b5f",
+   "timestamp": "2026-11-05T21:04:36Z"
+  },
+  {
+   "slug": "after-later-audio-darv",
+   "url": "https://afterlateraudio.com/products/darv",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "94a5485071de8be7f75111e3dc85b4a7261516e4a4c231a78f5ffe768ab3df0a",
+   "timestamp": "2026-11-05T21:04:37Z"
+  },
+  {
+   "slug": "after-later-audio-dice",
+   "url": "https://afterlateraudio.com/products/dice",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f9995d00b0a3e299185bcc52a8f6f7a42b408bdaac042b9810068d55c184f097",
+   "timestamp": "2026-11-05T21:04:38Z"
+  },
+  {
+   "slug": "after-later-audio-dirty-laundry",
+   "url": "https://afterlateraudio.com/products/dirty-laundry",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0b76c4d300256e566159327aebaa90f58dfc82ecc0e3d2093c3bf4955384f31f",
+   "timestamp": "2026-11-05T21:04:39Z"
+  },
+  {
+   "slug": "after-later-audio-ffs",
+   "url": "https://afterlateraudio.com/products/ffs",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "dd19882de322278b981efb37d1dc718700a2b1c05884bc7a12fccc99095b5aaf",
+   "timestamp": "2026-11-05T21:04:40Z"
+  },
+  {
+   "slug": "after-later-audio-filthy",
+   "url": "https://afterlateraudio.com/products/filthy",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3e7cd96f911822c838b4e86060c0372328ad0f55be1283fa0f766bdeb16aa6d1",
+   "timestamp": "2026-11-05T21:04:41Z"
+  },
+  {
+   "slug": "after-later-audio-filthy-1u",
+   "url": "https://afterlateraudio.com/products/filthy-1u",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "efa4f8a047e2647bd191514ad516398387857cd51e3cbcfab7cc861b1d36b15f",
+   "timestamp": "2026-11-05T21:04:42Z"
+  },
+  {
+   "slug": "after-later-audio-flip",
+   "url": "https://afterlateraudio.com/products/flip",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8086f390674515023b955bf1d6c9b7ad3bc67807e7152344c6f81369ab4a5377",
+   "timestamp": "2026-11-05T21:04:43Z"
+  },
+  {
+   "slug": "after-later-audio-fuse",
+   "url": "https://afterlateraudio.com/products/fuse",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e013de8d85037155769958d059267fbe172ee1ef055f8a25495bf0757cedf495",
+   "timestamp": "2026-11-05T21:04:44Z"
+  },
+  {
+   "slug": "after-later-audio-inserts",
+   "url": "https://afterlateraudio.com/products/inserts",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2c225ce7251607e48f2126e2a9093d3cc94dcd1b474cf3273314aa60c2ff6d4b",
+   "timestamp": "2026-11-05T21:04:45Z"
+  },
+  {
+   "slug": "after-later-audio-keanu",
+   "url": "https://afterlateraudio.com/products/keanu",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "747df68240805603a01c93869e012f887c53d894e1f1a04baaddd958451dc7a6",
+   "timestamp": "2026-11-05T21:04:46Z"
+  },
+  {
+   "slug": "after-later-audio-knit-uplaits",
+   "url": "https://afterlateraudio.com/products/knit-uplaits",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a6c9938df4e58b9f1fafd6827e98599a0b772ba21673f236626717349b8dbeea",
+   "timestamp": "2026-11-05T21:04:47Z"
+  },
+  {
+   "slug": "after-later-audio-merge",
+   "url": "https://afterlateraudio.com/products/merge",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "cd0466572029416301a74d7cb4e362322b15cde6f55ead0cd182f1392fbd914a",
+   "timestamp": "2026-11-05T21:04:48Z"
+  },
+  {
+   "slug": "after-later-audio-mingles",
+   "url": "https://afterlateraudio.com/products/mingles",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a2518db11473d441d2c6819396d5d8570700a6883ce6cbdd420e4cd7d5eeced2",
+   "timestamp": "2026-11-05T21:04:49Z"
+  },
+  {
+   "slug": "after-later-audio-monocle",
+   "url": "https://afterlateraudio.com/products/monocle",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b0429eada657eb57941d0c03402402f1752b5a06716f3c2ca7d4327e15b7d0fe",
+   "timestamp": "2026-11-05T21:04:50Z"
+  },
+  {
+   "slug": "after-later-audio-monsoon",
+   "url": "https://afterlateraudio.com/products/monsoon",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "81b06cd98a5b4b54ba5d62c2921bda35405e0637e63292ba39971bcf7071ab58",
+   "timestamp": "2026-11-05T21:04:51Z"
+  },
+  {
+   "slug": "after-later-audio-ornate-criminal",
+   "url": "https://afterlateraudio.com/products/ornate-criminal",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a44469150ccf1f6a368cc982ffd792e7398b03961500aeaaba417e3def9255a1",
+   "timestamp": "2026-11-05T21:04:52Z"
+  },
+  {
+   "slug": "after-later-audio-outs",
+   "url": "https://afterlateraudio.com/products/outs",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ab8c0ff1950debbb9bd058f7e568bd700c6ebea32a1516bcf22ad0570f075ee7",
+   "timestamp": "2026-11-05T21:04:53Z"
+  },
+  {
+   "slug": "after-later-audio-pachinko",
+   "url": "https://afterlateraudio.com/products/pachinko",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "edf37e9748710fcb8f2592d2ee79b91ab20d0f1b7ff46abac9ff584aba7da607",
+   "timestamp": "2026-11-05T21:04:54Z"
+  },
+  {
+   "slug": "after-later-audio-peaks",
+   "url": "https://afterlateraudio.com/products/peaks",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0ab959879b373f4cf33309ac7ae09df7871c0847faa34731ab8e5910320308c9",
+   "timestamp": "2026-11-05T21:04:55Z"
+  },
+  {
+   "slug": "after-later-audio-pique-upeaks",
+   "url": "https://afterlateraudio.com/products/pique-1u-intellijel-format",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "24be83dad137056117f361e2f7280cef9f76cce50fe645812a08b330fd8ad9c5",
+   "timestamp": "2026-11-05T21:04:56Z"
+  },
+  {
+   "slug": "after-later-audio-pixie",
+   "url": "https://afterlateraudio.com/products/pixie",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0e85232d0c745706881eeafcbe19d3b5c33d081322b92c8084f3abd0406d8438",
+   "timestamp": "2026-11-05T21:04:57Z"
+  },
+  {
+   "slug": "after-later-audio-popple",
+   "url": "https://afterlateraudio.com/products/popple-presale",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9408d0509c45fe7e758d9c18e0c56103c30b5b1ee1dfbb9785cd40e2d5b4e856",
+   "timestamp": "2026-11-05T21:04:58Z"
+  },
+  {
+   "slug": "after-later-audio-qarv",
+   "url": "https://afterlateraudio.com/products/qarv",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ce114de2ba1ed032348362c916421a59b9e5286cbbd3e51399076a9db5296a0f",
+   "timestamp": "2026-11-05T21:04:59Z"
+  },
+  {
+   "slug": "after-later-audio-quarks",
+   "url": "https://afterlateraudio.com/products/quarks",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e0e905c8ab205e43b76154babfa337a758748a354311ade1e0834f1d0bbc742b",
+   "timestamp": "2026-11-05T21:05:00Z"
+  },
+  {
+   "slug": "after-later-audio-rainier",
+   "url": "https://afterlateraudio.com/products/rainier",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7d3758f6878f5d1cb752b30a1dc38d1ceab5fd31b262d37036083b747dec0d00",
+   "timestamp": "2026-11-05T21:05:01Z"
+  },
+  {
+   "slug": "after-later-audio-razor",
+   "url": "https://afterlateraudio.com/products/razor",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "eb07c772af7d9b9f349ceb7b2bc55b60347f973fc35c78e0d03886923a8e44da",
+   "timestamp": "2026-11-05T21:05:02Z"
+  },
+  {
+   "slug": "after-later-audio-shth",
+   "url": "https://afterlateraudio.com/products/shth",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "571985a708eec55aaf7e7eadcb384f23a6b05e78501787d04d050a5cf37357c4",
+   "timestamp": "2026-11-05T21:05:03Z"
+  },
+  {
+   "slug": "after-later-audio-shth-1u",
+   "url": "https://afterlateraudio.com/products/shth-1u",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c8565d98118c414ea272f0e0e29bec4ad34ffaafec4a8d8e650515e141813862",
+   "timestamp": "2026-11-05T21:05:04Z"
+  },
+  {
+   "slug": "after-later-audio-steps",
+   "url": "https://afterlateraudio.com/products/steps",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b18cc7f7a9e9d05d68322f547f317f2a8015f4adce264de3faad2b8cc304496e",
+   "timestamp": "2026-11-05T21:05:05Z"
+  },
+  {
+   "slug": "after-later-audio-steps-1u",
+   "url": "https://afterlateraudio.com/products/steps-1u",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ea286665bbb42388bd3e0296b4c0ab9bec04e9c824d87fb44863636b653a0d6a",
+   "timestamp": "2026-11-05T21:05:06Z"
+  },
+  {
+   "slug": "after-later-audio-scenes",
+   "url": "https://afterlateraudio.com/products/scenes",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "56e4101a264f5748ca5fbed430f9848a678876f0b244dbf39b822fea3d238353",
+   "timestamp": "2026-11-05T21:05:07Z"
+  },
+  {
+   "slug": "after-later-audio-sends",
+   "url": "https://afterlateraudio.com/products/sends",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8bf6c16363b37d404d43c7809033194e459dc27d9ba0662c88eebb0d39280d03",
+   "timestamp": "2026-11-05T21:05:08Z"
+  },
+  {
+   "slug": "after-later-audio-smoosher",
+   "url": "https://afterlateraudio.com/products/smoosher",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f446049bb0d4cfe7029684f445f7ed86a7ca60a4e7597d7bdf5e4bac080ae7e3",
+   "timestamp": "2026-11-05T21:05:09Z"
+  },
+  {
+   "slug": "after-later-audio-stairs",
+   "url": "https://afterlateraudio.com/products/stairs",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "bde399c13802fe8b9d37f6880fd61da7a347be769a01e4271df772fb31c94825",
+   "timestamp": "2026-11-05T21:05:10Z"
+  },
+  {
+   "slug": "after-later-audio-sum-inv",
+   "url": "https://afterlateraudio.com/products/sum-inv",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c2e0be5f5cbd485fa52474e30f2f9950d786f204896dc4880ad509f487cd80b4",
+   "timestamp": "2026-11-05T21:05:11Z"
+  },
+  {
+   "slug": "after-later-audio-tilt",
+   "url": "https://afterlateraudio.com/products/tilt",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5f40ebe9900a7ee8c53dc462ab6cebe4f68492be93fd2da2af4394395e789899",
+   "timestamp": "2026-11-05T21:05:12Z"
+  },
+  {
+   "slug": "after-later-audio-threads-1u",
+   "url": "https://afterlateraudio.com/products/threads-1u",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3bd6df86cbe0d6dd2ae40de6852dd30967250686b1f62b50ac340542590078f4",
+   "timestamp": "2026-11-05T21:05:13Z"
+  },
+  {
+   "slug": "after-later-audio-valley",
+   "url": "https://afterlateraudio.com/products/valley",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9ae8d06993e2d6d9b088806856ff4976f5273cce4e5a9c55cae8095301324fdd",
+   "timestamp": "2026-11-05T21:05:14Z"
+  },
+  {
+   "slug": "after-later-audio-waves",
+   "url": "https://afterlateraudio.com/products/waves",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8946aac29c5f6148e93fd9a2f2a899cdf434e5afb7b6198c30eae18835d78fcb",
+   "timestamp": "2026-11-05T21:05:15Z"
+  },
+  {
+   "slug": "after-later-audio-nrings",
+   "url": "https://afterlateraudio.com/products/nrings",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1449d3e06cae9413a9f3b2419ef6ac9e53b4e414b2c5c32673f29584c2681105",
+   "timestamp": "2026-11-05T21:05:16Z"
+  },
+  {
+   "slug": "after-later-audio-uburst",
+   "url": "https://afterlateraudio.com/products/uburst",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "46c4660927ba2986118dea861ce81b5c0c6921234892c8a36029092446ee939a",
+   "timestamp": "2026-11-05T21:05:17Z"
+  },
+  {
+   "slug": "after-later-audio-ugrids",
+   "url": "https://afterlateraudio.com/products/ugrids",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5b786c81154978db4a31f322aa82d1ec8ff75a8f747e254bc81e1704719a95f7",
+   "timestamp": "2026-11-05T21:05:18Z"
+  },
+  {
+   "slug": "after-later-audio-uo-c-1u",
+   "url": "https://afterlateraudio.com/products/uo_c-1u",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1568a10b61a66c3ab63c95a1c066ffd082cc086a21e357a80d92aee1270cfb7b",
+   "timestamp": "2026-11-05T21:05:19Z"
+  },
+  {
+   "slug": "after-later-audio-ut-u",
+   "url": "https://afterlateraudio.com/products/ut_u",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "02896effe93ad5eb478d2fdcfba4c6baf881a16a32679dd05d883c317e0876ea",
+   "timestamp": "2026-11-05T21:05:20Z"
+  },
+  {
+   "slug": "alyseum-push",
+   "url": "https://www.alyseum.com/push.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a27885f540b7ceb83d7080a60ea2d4245452a34762ad11ddad69bdd7930ac62f",
+   "timestamp": "2026-11-05T21:05:23Z"
+  },
+  {
+   "slug": "analogue-systems-rs-250",
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs250",
+   "outcome": "robots.txt did not answer",
+   "status": null,
+   "method": "robots_unavailable",
+   "note": "robots.txt did not answer",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:05:27Z"
+  },
+  {
+   "slug": "analogue-systems-rs-260",
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs260",
+   "outcome": "robots.txt did not answer",
+   "status": null,
+   "method": "robots_unavailable",
+   "note": "robots.txt did not answer",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:05:27Z"
+  },
+  {
+   "slug": "atonal-circuits-a-r",
+   "url": "https://www.atonal.be/store/A&R-p825525290",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6c2cb6beb95e62d2ad570036d281578195ab59451dacd7b0d725193a19bdae7d",
+   "timestamp": "2026-11-05T21:05:30Z"
+  },
+  {
+   "slug": "atonal-circuits-keys",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "atonal-circuits-noise-pattern-generator",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "audiothingies-ced",
+   "url": "https://www.audiothingies.com/ced/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8c5e614cf58e186c01599db76dbe4cfda73e87f120e621ec0aaf6e290c35fa23",
+   "timestamp": "2026-11-05T21:05:33Z"
+  },
+  {
+   "slug": "avalon-harmonics-alcove-printed-blank",
+   "url": "https://shop.avalon-harmonics.com/products/avalon-harmonics-alcove",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5219e176473aff7ec93838057870ec4af2b892f8aa2e9ae0d81c63d30a80fb58",
+   "timestamp": "2026-11-05T21:05:34Z"
+  },
+  {
+   "slug": "barton-musical-circuits-bmc114-diode-break-shaper",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "barton-musical-circuits-bmc97-rectifier-recombiner",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "bastl-instruments-1983",
+   "url": "https://bastl-instruments.com/eurorack/modules/1983",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1e3d1487f3b601cd36f1a08f76bba44577a8c5fa8ecc43feb2e5de6e864d9409",
+   "timestamp": "2026-11-05T21:05:36Z"
+  },
+  {
+   "slug": "bastl-instruments-aikido",
+   "url": "https://bastl-instruments.com/eurorack/modules/aikido",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "456b2656ce94c7a6585bdce4532ed7333e2479e0099e3459487893c313c2f7b5",
+   "timestamp": "2026-11-05T21:05:37Z"
+  },
+  {
+   "slug": "bastl-instruments-basil",
+   "url": "https://bastl-instruments.com/eurorack/modules/basil",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0c65cb1f5bf0586745ff8bc9950c8709d80882325bd993d1158124033d21b67f",
+   "timestamp": "2026-11-05T21:05:38Z"
+  },
+  {
+   "slug": "bastl-instruments-buddy",
+   "url": "https://bastl-instruments.com/eurorack/modules/buddy",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c588337cfbc5d1609f8086b871f148ce277c70456bacade24b59208a1256b10a",
+   "timestamp": "2026-11-05T21:05:39Z"
+  },
+  {
+   "slug": "bastl-instruments-crust",
+   "url": "https://bastl-instruments.com/eurorack/modules/crust",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "803ca319b3daf61549e8248cc15f2c8bb0611f857b32023e346a7501f7c32330",
+   "timestamp": "2026-11-05T21:05:40Z"
+  },
+  {
+   "slug": "bastl-instruments-cv-trinity-exp",
+   "url": "https://bastl-instruments.com/eurorack/modules/cv-trinity-exp",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "4debee6fc0de30b78f0f0b9fb042fe7872ccf585bdc2cbaf79ca5b79358ba2d9",
+   "timestamp": "2026-11-05T21:05:41Z"
+  },
+  {
+   "slug": "bastl-instruments-citadel-alchemist",
+   "url": "https://bastl-instruments.com/eurorack/modules/citadel-alchemist",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "cf9b59430b261cd7d350c6b680105941b0ec1c0e7ea1720a4ff8df000dc59227",
+   "timestamp": "2026-11-05T21:05:42Z"
+  },
+  {
+   "slug": "bastl-instruments-citadel-wave-bard",
+   "url": "https://bastl-instruments.com/eurorack/modules/citadel-wave-bard",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "38aabde5daca0e2385725fd81e40f0118132ff6bf3b45d9f7f422134e7d9eba2",
+   "timestamp": "2026-11-05T21:05:43Z"
+  },
+  {
+   "slug": "bastl-instruments-dup-dup",
+   "url": "https://bastl-instruments.com/eurorack/modules/dup-dup",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "4117300c5fa319ec87310e73bfe2bd42a387cd2520a2bd036c4f5bfd604c1bd4",
+   "timestamp": "2026-11-05T21:05:44Z"
+  },
+  {
+   "slug": "bastl-instruments-dynamo",
+   "url": "https://bastl-instruments.com/eurorack/modules/dynamo",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5b5d534823cff40eb86bcf3a07daba8359175aa786df158267cabba10e797818",
+   "timestamp": "2026-11-05T21:05:45Z"
+  },
+  {
+   "slug": "bastl-instruments-d-j-vu",
+   "url": "https://bastl-instruments.com/eurorack/modules/deja-vu",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "95c97fa184696ca2433677ba7bd1645f00eae3ccc3a2adea738b516e02cf4b9b",
+   "timestamp": "2026-11-05T21:05:46Z"
+  },
+  {
+   "slug": "bastl-instruments-hendrikson",
+   "url": "https://bastl-instruments.com/eurorack/modules/hendrikson",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0288cc449c81a3f7c9d8481e88627399fe47c2ab00ea6cd460883113e3c4ca46",
+   "timestamp": "2026-11-05T21:05:47Z"
+  },
+  {
+   "slug": "bastl-instruments-knit-rider-exp",
+   "url": "https://bastl-instruments.com/eurorack/modules/knit-rider-exp",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b313e3db640779bcd7e88ced1024bff01e5a3ef3199509ad3406b135e4668a57",
+   "timestamp": "2026-11-05T21:05:48Z"
+  },
+  {
+   "slug": "bastl-instruments-kompas",
+   "url": "https://bastl-instruments.com/eurorack/modules/kompas",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "330db6b6c0f9d6f7956aa0ac777f75eb2eda115bf74109086f8421f20b49b75d",
+   "timestamp": "2026-11-05T21:05:49Z"
+  },
+  {
+   "slug": "bastl-instruments-kong",
+   "url": "https://bastl-instruments.com/eurorack/modules/kong",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9dcd1ec9d2c2a12e81b679195965f39329015105acad4000b7c742c46a16b467",
+   "timestamp": "2026-11-05T21:05:50Z"
+  },
+  {
+   "slug": "bastl-instruments-lol",
+   "url": "https://bastl-instruments.com/eurorack/modules/lol",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3609e766b6fadeb92b5cbe1a18b8e6cd0dc5ac70bff21b3af65675a5a23be682",
+   "timestamp": "2026-11-05T21:05:51Z"
+  },
+  {
+   "slug": "bastl-instruments-popcorn",
+   "url": "https://bastl-instruments.com/eurorack/modules/popcorn",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "596aac158c0a2cc9bb7fb2f24639567717821087ac829e9ccec9496cde2f9acd",
+   "timestamp": "2026-11-05T21:05:52Z"
+  },
+  {
+   "slug": "bastl-instruments-popcorn-cv-exp",
+   "url": "https://bastl-instruments.com/eurorack/modules/popcorn-cv-exp",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8b78d83bfaf68e10421ab52ab6065c79dca9485bac8889f69feccb4ba4751764",
+   "timestamp": "2026-11-05T21:05:53Z"
+  },
+  {
+   "slug": "bastl-instruments-popcorn-gate-exp",
+   "url": "https://bastl-instruments.com/eurorack/modules/popcorn-gate-exp",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "fbf0d66ab9246db089f78655396985992cf8c57f666aab624f6bd79342f5814c",
+   "timestamp": "2026-11-05T21:05:54Z"
+  },
+  {
+   "slug": "bastl-instruments-solenoid-exp",
+   "url": "https://bastl-instruments.com/eurorack/modules/solenoid-exp",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "bd577d851649ab12d7e465405ac27bf74f7179644efab0ff51a680570267492a",
+   "timestamp": "2026-11-05T21:05:55Z"
+  },
+  {
+   "slug": "bastl-instruments-timber",
+   "url": "https://bastl-instruments.com/eurorack/modules/timber",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "38b6e93d35a25a43961651641cb1c7ec4c261729d05ded5e140ffebfd29484e5",
+   "timestamp": "2026-11-05T21:05:56Z"
+  },
+  {
+   "slug": "bastl-instruments-troms",
+   "url": "https://bastl-instruments.com/eurorack/modules/tromso",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d83d74da10b19962a7ea40a087efa5762b77b5fb88db17dc8b0321345ef0dbae",
+   "timestamp": "2026-11-05T21:05:57Z"
+  },
+  {
+   "slug": "beepboop-electronics-12v-motor-drive",
+   "url": "https://beepboopelectronics.co.uk/product/12v-motor-drive/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "48160b33882782fbf1b0c49e26a78ee42c3814ea78a73b5f39c454134cdf79f4",
+   "timestamp": "2026-11-05T21:06:00Z"
+  },
+  {
+   "slug": "befaco-1-u-motion-mtr",
+   "url": "https://www.befaco.org/1u-motion-mtr/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-1u-out",
+   "url": "https://www.befaco.org/1u-out/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-1u-st-amp",
+   "url": "https://www.befaco.org/1u-st-amp/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-1u-trs",
+   "url": "https://www.befaco.org/1u-trs/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-a-b-c",
+   "url": "https://www.befaco.org/axbc/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-ark",
+   "url": "https://www.befaco.org/ark/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-atte",
+   "url": "https://www.befaco.org/atte/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-bf-22",
+   "url": "https://www.befaco.org/bf-22/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-burst",
+   "url": "https://www.befaco.org/burst-2/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-dual-atenuverter",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "befaco-inamp",
+   "url": "https://www.befaco.org/inamp/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-mixer",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "befaco-oneiroi",
+   "url": "https://www.befaco.org/oneiroi-pod/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-trolley-bus",
+   "url": "https://www.befaco.org/trolley-bus/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-vcmc",
+   "url": "https://www.befaco.org/vcmc-2/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "befaco-voltio",
+   "url": "https://www.befaco.org/voltio/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:06:21Z"
+  },
+  {
+   "slug": "behringer-eurorack-rack",
+   "url": "https://www.behringer.com/en/products/0720-ABJ",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "20ba3eded2c22082aeb499c0fa83e7f680320ff44ba0dad6c197d709c7717924",
+   "timestamp": "2026-11-05T21:06:23Z"
+  },
+  {
+   "slug": "bela-pepper",
+   "url": "https://bela.io/products/pepper/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b89f1d9f9ec0edde2652367fa8075b91e0f8031ee0db18fce7c91ff2bfcaf3dc",
+   "timestamp": "2026-11-05T21:06:24Z"
+  },
+  {
+   "slug": "black-noise-qbi-s",
+   "url": "https://blacknoisemodular.com/products/qbi-s",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8888a9da8d9328f7ef602978a6b032c62322e4dcc60b29c388a65aeb06d25c19",
+   "timestamp": "2026-11-05T21:06:26Z"
+  },
+  {
+   "slug": "blue-lantern-modules-4hp-subharmonic-generator",
+   "url": "https://www.bluelanternstore.com/store/p1/4hp_Subharmonic_Generator_Module.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3c9e20c5fe46b08e95c0a83db55a8fd503cb1f5562c4dccf2e7429677c1a6bb0",
+   "timestamp": "2026-11-05T21:06:27Z"
+  },
+  {
+   "slug": "blue-lantern-modules-blm-ddk",
+   "url": "https://www.bluelanternstore.com/store/p121/BLM_DDK.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "710885bc0fe3e3a2f9d16aa3a02750bfafadbc7b0b98b35becf94c5606130ce4",
+   "timestamp": "2026-11-05T21:06:28Z"
+  },
+  {
+   "slug": "blue-lantern-modules-scaler",
+   "url": "https://www.bluelanternstore.com/store/p139/Scaler.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ee224261cfa05ef90dc26487226c58eb0fb4a522798bad33318ce7a3d0edffec",
+   "timestamp": "2026-11-05T21:06:30Z"
+  },
+  {
+   "slug": "cwejman-d-lfo",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "dpw-design-p2-pedal-power",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "divkid-mutes",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "doepfer-a-100-systeme",
+   "url": "https://www.doepfer.de/a100s_d.htm",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1d257ec2b06557560fa22614f8ef9876e63bc268c7292b7ef5ad08917f0a8e4b",
+   "timestamp": "2026-11-05T21:06:31Z"
+  },
+  {
+   "slug": "doepfer-a-101-4",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "doepfer-a-178",
+   "url": "https://www.doepfer.de/a178.htm",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "de1a8955a0e1ff6a25ca3a825e2b63dc031a14e2a11933e5482fb3ba7405ecd8",
+   "timestamp": "2026-11-05T21:06:32Z"
+  },
+  {
+   "slug": "endorphin-es-2hp-power",
+   "url": "https://www.endorphin.es/modules/p/2hp-power",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a2163f33d768f7704e099fa40ec70c2c34d17458cfc5af0d16edcff1b04e4924",
+   "timestamp": "2026-11-05T21:06:33Z"
+  },
+  {
+   "slug": "endorphin-es-airstreamer-4",
+   "url": "https://www.endorphin.es/modules/p/airstreamer-4",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ffed0311073afdabac125a85198045b43aa2d19f21ccad2322f1658152b0a3e6",
+   "timestamp": "2026-11-05T21:06:34Z"
+  },
+  {
+   "slug": "endorphin-es-autopilot",
+   "url": "https://www.endorphin.es/modules/p/autopilot",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "73b22e13e7d3b95684d75afc2cae113c9a7c11d066d4ecb31f77c5dda2c4a330",
+   "timestamp": "2026-11-05T21:06:35Z"
+  },
+  {
+   "slug": "endorphin-es-blck-noir",
+   "url": "https://www.endorphin.es/modules/p/blck-noir",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d3f260c61249d3d4e4d6751d2be425963f3ddccdc1efecade4bb846902107c80",
+   "timestamp": "2026-11-05T21:06:36Z"
+  },
+  {
+   "slug": "endorphin-es-cockpit-x-1u",
+   "url": "https://www.endorphin.es/modules/p/cockpit-x-1u",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a784b7f56a67abdfa68b0210f59b3024daa9fffd0d401c913d253c79f27e4c07",
+   "timestamp": "2026-11-05T21:06:37Z"
+  },
+  {
+   "slug": "endorphin-es-ghost",
+   "url": "https://www.endorphin.es/modules/p/ghost",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "149a73e910ae0934735d6900c25a1f27689d5887d837c5b28835107ca726a976",
+   "timestamp": "2026-11-05T21:06:38Z"
+  },
+  {
+   "slug": "endorphin-es-godspeed",
+   "url": "https://www.endorphin.es/modules/p/new-godspeed",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8aa6c62217e8aeda617e6b1d18c0404d0e8488d84c5c5baf619105d884c31fba",
+   "timestamp": "2026-11-05T21:06:39Z"
+  },
+  {
+   "slug": "endorphin-es-grand-terminal",
+   "url": "https://www.endorphin.es/modules/p/grand-terminal",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c752aae26d8009548dfd5105f56738cad12068321f284f1197708322bc5fc5b3",
+   "timestamp": "2026-11-05T21:06:40Z"
+  },
+  {
+   "slug": "endorphin-es-ground-control",
+   "url": "https://www.endorphin.es/modules/p/ground-control",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "03832b49e360b1e5b30431c9836751a96cb81380eb7bd39a506495f56557f582",
+   "timestamp": "2026-11-05T21:06:41Z"
+  },
+  {
+   "slug": "endorphin-es-ground-control-standalone",
+   "url": "https://www.endorphin.es/modules/p/ground-control-standalone",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3599b71b48b40a66ab87385518946b58d76b67b0601a589ba5444153679034d9",
+   "timestamp": "2026-11-05T21:06:42Z"
+  },
+  {
+   "slug": "endorphin-es-queen-of-pentacles",
+   "url": "https://www.endorphin.es/modules/p/queen-of-pentacles",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "093ff200a1053cc5c21f9cd718c2b1e94db7a9f7ada2d1060bb283c9d91ec881",
+   "timestamp": "2026-11-05T21:06:43Z"
+  },
+  {
+   "slug": "endorphin-es-shuttle-control",
+   "url": "https://www.endorphin.es/modules/p/shuttle-control",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a9778b8884c78d3a24f8b245250dbc281b0ab68ff793ed4488e8ef05363a97be",
+   "timestamp": "2026-11-05T21:06:44Z"
+  },
+  {
+   "slug": "endorphin-es-squawk-dirty-to-me-1u",
+   "url": "https://www.endorphin.es/modules/p/squawk-dirty-to-me-1u",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f2dc519ab510d5f97e91538792797b00a6b06b88630164ab3d498a7c5b5be782",
+   "timestamp": "2026-11-05T21:06:45Z"
+  },
+  {
+   "slug": "endorphin-es-total-recall",
+   "url": "https://www.endorphin.es/modules/p/total-recall",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "51fb53212322982bacfd3b6f2b2e76e6953ad1e4f51e1a6bcfb6f9c83e8cf367",
+   "timestamp": "2026-11-05T21:06:46Z"
+  },
+  {
+   "slug": "eowave-eo-311",
+   "url": "https://www.eowave.com/modules/eo-311",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "57e92b53c3a0ed96f94e930633e7cbc50d82f0a5c9c4f124c3425c8785b37d7b",
+   "timestamp": "2026-11-05T21:06:48Z"
+  },
+  {
+   "slug": "eowave-source-mk3",
+   "url": "https://www.eowave.com/modules/sourcemk3",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f462a2f949096800f587df24fbf278d2ea35824ef6a9d9a52d648a3e6e2b4625",
+   "timestamp": "2026-11-05T21:06:49Z"
+  },
+  {
+   "slug": "erica-synths-graphic-resonant-fb",
+   "url": "https://www.ericasynths.lv/graphic-resonant-fb-3158/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e21d39602ca723692dd5ce37aa6ab8f013850720f4bb92f77847e6fa7337a42f",
+   "timestamp": "2026-11-05T21:06:51Z"
+  },
+  {
+   "slug": "erica-synths-hexinverter-mutant-machine",
+   "url": "https://www.ericasynths.lv/hexinverter-mutant-machine-2926/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "449e3a5dcf962310ca3db460e13856baa2c093a2389673399f1eae5dc7091563",
+   "timestamp": "2026-11-05T21:06:52Z"
+  },
+  {
+   "slug": "erica-synths-link",
+   "url": "https://www.ericasynths.lv/link-369/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e54f198799ab0a2d0e35a2936863c910828b22424fd627ae87b7c126af72b183",
+   "timestamp": "2026-11-05T21:06:53Z"
+  },
+  {
+   "slug": "erogenous-tones-blip",
+   "url": "https://erogenous-tones.com/erogenous-tones-blip.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "748a33870c1246c52c65dbf55cc3958f3f75724829f20fe9cd5b59ac5feb3651",
+   "timestamp": "2026-11-05T21:06:54Z"
+  },
+  {
+   "slug": "ethereal-electronics-starlight-16hp",
+   "url": "https://etherealelectronics.nl/products/starlight",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "bab235d522d8a41fe4c348853167bdce9a9fb104c6f90fd0842cd949dce3678e",
+   "timestamp": "2026-11-05T21:06:56Z"
+  },
+  {
+   "slug": "ethereal-electronics-starlight-8hp",
+   "url": "https://etherealelectronics.nl/products/starlight-8hp",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3972a04aa580556ea42372a04920f8be9ee4e622ad3655f58f95241b6af76f03",
+   "timestamp": "2026-11-05T21:06:57Z"
+  },
+  {
+   "slug": "expert-sleepers-aloysius",
+   "url": "https://www.expert-sleepers.co.uk/aloysius.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8b0114cc7a80d2fa201a72a1b43c8fc20fc149860e3472335481d0443bf880b0",
+   "timestamp": "2026-11-05T21:07:00Z"
+  },
+  {
+   "slug": "expert-sleepers-amelia",
+   "url": "https://www.expert-sleepers.co.uk/amelia.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0167c081f3993d41006c6f1d367f217e102f527c972142bb7e53a587d46b8330",
+   "timestamp": "2026-11-05T21:07:01Z"
+  },
+  {
+   "slug": "expert-sleepers-beatrix",
+   "url": "https://www.expert-sleepers.co.uk/beatrix.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "15e6c91ed2505e1326d6f3b7a43f4e3302d85b616deb74f45bbaf2734e12630a",
+   "timestamp": "2026-11-05T21:07:02Z"
+  },
+  {
+   "slug": "expert-sleepers-cicely",
+   "url": "https://www.expert-sleepers.co.uk/cicely.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "cd9d5b5feb74d3b27d2b3d2992859fe45cf70a418677e363b07a30c9e05a7a43",
+   "timestamp": "2026-11-05T21:07:03Z"
+  },
+  {
+   "slug": "expert-sleepers-forever",
+   "url": "https://www.expert-sleepers.co.uk/forever.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f517c2aaf4d53b643719ad90d4e985ff553816d670ac75411105b01b6e9b8bf9",
+   "timestamp": "2026-11-05T21:07:04Z"
+  },
+  {
+   "slug": "expert-sleepers-general-cv",
+   "url": "https://www.expert-sleepers.co.uk/generalcv.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "cc80072d29fc739e8944603ee1d98a07c7b7be8e78ca1286509bf97ddd3eba31",
+   "timestamp": "2026-11-05T21:07:05Z"
+  },
+  {
+   "slug": "expert-sleepers-ivo",
+   "url": "https://www.expert-sleepers.co.uk/ivo.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ba29448996c2d8af28a3a93b22747a70d30554c2bd351f500d20ad86da08cd48",
+   "timestamp": "2026-11-05T21:07:06Z"
+  },
+  {
+   "slug": "expert-sleepers-little-mikey",
+   "url": "https://www.expert-sleepers.co.uk/littlemikey.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "321cc1dd20c31bdf45487c9631648f14dd46d6eebe2b13a21b954f6b4539cef0",
+   "timestamp": "2026-11-05T21:07:07Z"
+  },
+  {
+   "slug": "expert-sleepers-lorelei",
+   "url": "https://www.expert-sleepers.co.uk/lorelei.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f3e5d5a70b4a29ddcd955eb9e02f5e4e2281020c15db16b78f7960edc6642a37",
+   "timestamp": "2026-11-05T21:07:08Z"
+  },
+  {
+   "slug": "expert-sleepers-ntx-8cv",
+   "url": "https://www.expert-sleepers.co.uk/ntx8cv.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7f8471f9d996293afdf404cf55ed5b9e77f1233d7f23f9c2c9b94235a029d9e9",
+   "timestamp": "2026-11-05T21:07:09Z"
+  },
+  {
+   "slug": "expert-sleepers-otterley",
+   "url": "https://www.expert-sleepers.co.uk/otterley.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b42ac4cc786ef0fb4868195ba2fad12b28b75ad6b8c70b6eb62b28f295dc2d08",
+   "timestamp": "2026-11-05T21:07:10Z"
+  },
+  {
+   "slug": "expert-sleepers-pandora",
+   "url": "https://www.expert-sleepers.co.uk/pandora.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d896ef31407c55dc243cfdfeb48d93bdbddeaa08f6827372f6fc3707df03d56a",
+   "timestamp": "2026-11-05T21:07:11Z"
+  },
+  {
+   "slug": "expert-sleepers-persephone",
+   "url": "https://www.expert-sleepers.co.uk/persephone.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d0695717e59a565562b1bf4bf6f427a71f58dc216d73a36cf86bf4219fe9d284",
+   "timestamp": "2026-11-05T21:07:12Z"
+  },
+  {
+   "slug": "expert-sleepers-sleepers",
+   "url": "https://www.expert-sleepers.co.uk/es40.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "60890742351448a06f5a50f1f3e507458660902dc75beb4c2ae2ff03bc95cabf",
+   "timestamp": "2026-11-05T21:07:13Z"
+  },
+  {
+   "slug": "foxing-hour-gamma",
+   "url": "https://foxinghour.com/products/gamma-dual-square-and-logarithm",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2f5e548d32e9e58a971f40a8b1d9612689850f48aa9cdd82a8ace87639186a67",
+   "timestamp": "2026-11-05T21:07:14Z"
+  },
+  {
+   "slug": "free-modular-modular",
+   "url": "https://freemodular.org/modules/RNG",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5e480bb292c5f62b17a9e2eb8eea0bc5ea07796f530410ffb03420f785196b22",
+   "timestamp": "2026-11-05T21:07:16Z"
+  },
+  {
+   "slug": "ge0sync-synth-gs1-o",
+   "url": "https://geosyncsynth.com/2023/02/25/gs1-o/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1aa9413de55281cda2b0a01523a93aa9518ef7ffadc1c42569332096d707f272",
+   "timestamp": "2026-11-05T21:07:17Z"
+  },
+  {
+   "slug": "ginko-synthese-battle-assembled-with-profader",
+   "url": "https://www.ginkosynthese.com/product/2463910/battle-assembled-with-profader",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e1ca2720078ac28371a3e76e73784c65c5493f9e2a62bb52f9203cef2f336179",
+   "timestamp": "2026-11-05T21:07:20Z"
+  },
+  {
+   "slug": "ginko-synthese-battle-diy-kit",
+   "url": "https://www.ginkosynthese.com/product/2463882/battle-diy-kit",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "70e2ece69f00d8a049e0114bf86b1f0acb6986047878e13bfcba987ae02accae",
+   "timestamp": "2026-11-05T21:07:21Z"
+  },
+  {
+   "slug": "ginko-synthese-battle-diy-kit-with-profader",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "grayscale-grayscale-eurorack-modules",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "hive-mind-synthesis-usbee",
+   "url": "https://hivemindsynthesis.com/shop/p/usbee-2hp-usb-port-moving-module",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d7dfa8c8f362d12af706e69343521b4f43a7e1cb4cc7bc73e22466823bd72416",
+   "timestamp": "2026-11-05T21:07:23Z"
+  },
+  {
+   "slug": "humble-audio-audio",
+   "url": "https://humble.audio/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2ee7323d05e18a445d440674ba211116d04a30edc595687f206244b427295ac8",
+   "timestamp": "2026-11-05T21:07:24Z"
+  },
+  {
+   "slug": "infinite-machinery-pmbp",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "infrasonic-audio-disentangler",
+   "url": "https://infrasonicaudio.com/products/disentangler",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3b0a88d55bef5769c8e357d3726d73bdf9bd853df9ae70c967a61ee80ab6bee6",
+   "timestamp": "2026-11-05T21:07:26Z"
+  },
+  {
+   "slug": "instruo-d-il",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "intellijel-amps",
+   "url": "https://intellijel.com/shop/eurorack/amps/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "4008ac6c203ec0ca4f2fe7134f0d9b4b1f930eccc7b0ee10879c068dddebae30",
+   "timestamp": "2026-11-05T21:07:27Z"
+  },
+  {
+   "slug": "intellijel-atlantix",
+   "url": "https://intellijel.com/shop/eurorack/atlantix/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "63d251efcd2cdcdd77dd7424d45a2630719d040584f43945ef3c1d11f33aa14a",
+   "timestamp": "2026-11-05T21:07:29Z"
+  },
+  {
+   "slug": "intellijel-atlx",
+   "url": "https://intellijel.com/shop/eurorack/atlx/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5f00880af40b433566ceec65bef00210ad8ae5e6e4d36ea2f36e31610d3bd852",
+   "timestamp": "2026-11-05T21:07:31Z"
+  },
+  {
+   "slug": "intellijel-audio-i-o-2023",
+   "url": "https://intellijel.com/shop/eurorack/audio-i-o-2023/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f4245c552263475343da66d91331b09dbc07bf12dcd42a4f4c7f20c7160a6e98",
+   "timestamp": "2026-11-05T21:07:32Z"
+  },
+  {
+   "slug": "intellijel-azimuth-ii",
+   "url": "https://intellijel.com/shop/legacy/azimuth-ii/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a2f1ca90a20923f4537f232a4867354288ac67846074b990b050ccd5126ec95f",
+   "timestamp": "2026-11-05T21:07:35Z"
+  },
+  {
+   "slug": "intellijel-boombox",
+   "url": "https://intellijel.com/shop/legacy/boombox/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0fb4dee4be58ea998a166e0f25e507e70cf1ee843feb2e5943262076933a618f",
+   "timestamp": "2026-11-05T21:07:37Z"
+  },
+  {
+   "slug": "intellijel-dr-octature-ii",
+   "url": "https://intellijel.com/shop/legacy/dr-octature-ii/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0fb4dee4be58ea998a166e0f25e507e70cf1ee843feb2e5943262076933a618f",
+   "timestamp": "2026-11-05T21:07:40Z"
+  },
+  {
+   "slug": "intellijel-flurry",
+   "url": "https://intellijel.com/shop/eurorack/flurry/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9c7269c385da47203b4abd6850df91c9adf80d1b6c8bace51a85132b4a7a452f",
+   "timestamp": "2026-11-05T21:07:41Z"
+  },
+  {
+   "slug": "intellijel-gx",
+   "url": "https://intellijel.com/shop/eurorack/gx/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "cf3cea8cba1a781fc6670efc901cfb2ae877530f972508cb08c4a9389673117e",
+   "timestamp": "2026-11-05T21:07:43Z"
+  },
+  {
+   "slug": "intellijel-korgasmatron-ii",
+   "url": "https://intellijel.com/shop/legacy/korgasmatron-ii/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0fb4dee4be58ea998a166e0f25e507e70cf1ee843feb2e5943262076933a618f",
+   "timestamp": "2026-11-05T21:07:47Z"
+  },
+  {
+   "slug": "intellijel-metropolix",
+   "url": "https://intellijel.com/shop/eurorack/metropolix/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d5a8f54eecfc7f0365dbf51a5a005805eee05084d3f700d3959c22a51f5a54c9",
+   "timestamp": "2026-11-05T21:07:48Z"
+  },
+  {
+   "slug": "intellijel-mixup",
+   "url": "https://intellijel.com/shop/eurorack/mixup/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c6c03f43ea81acbe560588b3fd73d9cab026c42dc5df08f19442c8de0ea4026f",
+   "timestamp": "2026-11-05T21:07:49Z"
+  },
+  {
+   "slug": "intellijel-morgasmatron",
+   "url": "https://intellijel.com/shop/eurorack/morgasmatron/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "049a5f0dff97ed6a60f8c7de4a829625596eff6e819347080be3c1d460eb1c2f",
+   "timestamp": "2026-11-05T21:07:51Z"
+  },
+  {
+   "slug": "intellijel-or",
+   "url": "https://intellijel.com/shop/eurorack/or/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "69842071660e03c805d986239402cf53f5873a3f72d9f97f450e066ef3424e36",
+   "timestamp": "2026-11-05T21:07:52Z"
+  },
+  {
+   "slug": "intellijel-outs",
+   "url": "https://intellijel.com/shop/eurorack/outs/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "18e26ae822c247bc480f7baae6b8a73d512bcf588c708450b781e34562058a1e",
+   "timestamp": "2026-11-05T21:07:53Z"
+  },
+  {
+   "slug": "intellijel-plonk",
+   "url": "https://intellijel.com/shop/eurorack/plonk/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ec269e85386e5c723f13cc06cf301ced205c7f2cda7a9e090f3f5da418ea4401",
+   "timestamp": "2026-11-05T21:07:55Z"
+  },
+  {
+   "slug": "intellijel-polaris",
+   "url": "https://intellijel.com/shop/eurorack/polaris/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "677bb1afabcb8121ea220c3f79f04559a00c897a4f3ae071251cfe1cb60f8989",
+   "timestamp": "2026-11-05T21:07:57Z"
+  },
+  {
+   "slug": "intellijel-power-entry",
+   "url": "https://intellijel.com/shop/eurorack/power-entry/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3c9e95fd88ad46200817436dd6901fa1eca1db538b668d8c5016d1ce46957fc6",
+   "timestamp": "2026-11-05T21:07:58Z"
+  },
+  {
+   "slug": "intellijel-quad-inverter",
+   "url": "https://intellijel.com/shop/eurorack/quad-inverter/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0fb4dee4be58ea998a166e0f25e507e70cf1ee843feb2e5943262076933a618f",
+   "timestamp": "2026-11-05T21:08:01Z"
+  },
+  {
+   "slug": "intellijel-quadra-expander",
+   "url": "https://intellijel.com/shop/legacy/quadra-expander/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0fb4dee4be58ea998a166e0f25e507e70cf1ee843feb2e5943262076933a618f",
+   "timestamp": "2026-11-05T21:08:03Z"
+  },
+  {
+   "slug": "intellijel-qx",
+   "url": "https://intellijel.com/shop/eurorack/qx/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "14cba0c14919b72cdab92b1b47762e2062561ac97fec0200a024e5b0a15d4e83",
+   "timestamp": "2026-11-05T21:08:05Z"
+  },
+  {
+   "slug": "intellijel-rainmaker",
+   "url": "https://intellijel.com/shop/eurorack/cylonix-rainmaker/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "99c5e0bf5bcb6900a618764b6b99c596cfd073871fe852fac119ff98127fa6ee",
+   "timestamp": "2026-11-05T21:08:06Z"
+  },
+  {
+   "slug": "intellijel-scales",
+   "url": "https://intellijel.com/shop/eurorack/scales/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a16fe47e03fb77cf43c38d3af8a300870f23b09fc9f616f831069a5dd3025ff9",
+   "timestamp": "2026-11-05T21:08:08Z"
+  },
+  {
+   "slug": "intellijel-sealegs",
+   "url": "https://intellijel.com/shop/eurorack/sealegs/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b91fa279ca1e2856b92b5847307b48551c487a783cc4347c545437a2c973d55e",
+   "timestamp": "2026-11-05T21:08:09Z"
+  },
+  {
+   "slug": "intellijel-shapeshifter",
+   "url": "https://intellijel.com/shop/eurorack/cylonix-shapeshifter/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "76cc9744a03d978410c0bf314d57e8801253bcf0bb1a10d9451db6920918a17b",
+   "timestamp": "2026-11-05T21:08:10Z"
+  },
+  {
+   "slug": "intellijel-shifty",
+   "url": "https://intellijel.com/shop/eurorack/shifty/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "840f33f1c1fd42bb95105f86b520c732d7047a8305450c7cd157f2ad55e7482e",
+   "timestamp": "2026-11-05T21:08:11Z"
+  },
+  {
+   "slug": "intellijel-springray",
+   "url": "https://intellijel.com/shop/eurorack/springray-2/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "30764f3709dcff82753023ceee5f8a8fdb1f7322aa94062cfe5a9e0c283a44db",
+   "timestamp": "2026-11-05T21:08:13Z"
+  },
+  {
+   "slug": "intellijel-steppy",
+   "url": "https://intellijel.com/shop/eurorack/steppy/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d107f09b96f73ee6d49418785848a219f82ef076e988edb8f17703b63cbd8991",
+   "timestamp": "2026-11-05T21:08:14Z"
+  },
+  {
+   "slug": "intellijel-stomp",
+   "url": "https://intellijel.com/shop/eurorack/stomp/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3c271a24f5d071ab88207803c12853b7bc0bc15ab66bf4e4b25fae76e846a4f1",
+   "timestamp": "2026-11-05T21:08:16Z"
+  },
+  {
+   "slug": "intellijel-tangrams",
+   "url": "https://intellijel.com/shop/eurorack/tangrams/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "027f9d516190df3d6503d5f67b1d9cceb2f0805e8449e29b39b8ad7f1536b12c",
+   "timestamp": "2026-11-05T21:08:18Z"
+  },
+  {
+   "slug": "intellijel-tetrapad",
+   "url": "https://intellijel.com/shop/eurorack/tetrapad/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "87170051790d227d513c47c78daa67b876f9f1be03dadda603d1b19dda4cc3c9",
+   "timestamp": "2026-11-05T21:08:19Z"
+  },
+  {
+   "slug": "intellijel-triplatt",
+   "url": "https://intellijel.com/shop/eurorack/triplatt/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5abf9037be89eb12c5c3180e5d4f9078b0a5279dbf2b0147e90b78b47348b30f",
+   "timestamp": "2026-11-05T21:08:21Z"
+  },
+  {
+   "slug": "intellijel-t-te",
+   "url": "https://intellijel.com/shop/eurorack/tete/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "736af9eb8a05049c1535b0a608c062e8117c9f08e3413d4a5899f9e204296535",
+   "timestamp": "2026-11-05T21:08:22Z"
+  },
+  {
+   "slug": "intellijel-usb-extender",
+   "url": "https://intellijel.com/shop/eurorack/usb-extender/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "38eee9083b6ea98d0b3cd25e2a427bc0582b93231e44eae8d2f25e52cad4a716",
+   "timestamp": "2026-11-05T21:08:24Z"
+  },
+  {
+   "slug": "intellijel-att",
+   "url": "https://intellijel.com/shop/legacy/uatt/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0fb4dee4be58ea998a166e0f25e507e70cf1ee843feb2e5943262076933a618f",
+   "timestamp": "2026-11-05T21:08:26Z"
+  },
+  {
+   "slug": "iron-ether-qwoso",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "isobar-industries-plexus",
+   "url": "https://isobar.studio/plexus",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ec9124b6210d0f552d60df576e8e419dd407cd3ba64897acea0377f8737b1406",
+   "timestamp": "2026-11-05T21:08:28Z"
+  },
+  {
+   "slug": "jasmine-olive-trees-light",
+   "url": "https://jasmineandolivetrees.com/products/light",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9aa5180ad005653c15508cc9aabbe4ac7b1b750b0924388d3ac0f6490fd69c33",
+   "timestamp": "2026-11-05T21:08:30Z"
+  },
+  {
+   "slug": "jolin-ocelot",
+   "url": "https://jolin.tech/shop/p/ocelot",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "dd2b436989efc5b7c0d2db35bde926b224dea72bdf397d15f7695e40a6111b0c",
+   "timestamp": "2026-11-05T21:08:32Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-add-2",
+   "url": "https://joranalogue.com/products/add-2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7bd3892862635c629a8ced1414a8666749753a6c28542af12590ed2e1ad85797",
+   "timestamp": "2026-11-05T21:08:32Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-bias-2",
+   "url": "https://joranalogue.com/products/bias-2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "313e6081d54e29b91d211042a4e50e1883bbdfb084c7d1a1ee5ffe1f110d9adc",
+   "timestamp": "2026-11-05T21:08:33Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-collide-4",
+   "url": "https://joranalogue.com/products/collide-4",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "dcb7e4b46ae16087baaaa5c2664e539b3ba840b60102a97b302f1f6d9ebee4b4",
+   "timestamp": "2026-11-05T21:08:34Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-compare-2",
+   "url": "https://joranalogue.com/products/compare-2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5c9d87bd563a4eef5fcc51c8554f1659d7d3ad2e5559f8c9ff392b23bef68561",
+   "timestamp": "2026-11-05T21:08:35Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-contour-1",
+   "url": "https://joranalogue.com/products/contour-1",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d5c494f1de0f23743e7a49472a2ca06f1fb701ea4275b672e5f6ac64965b2997",
+   "timestamp": "2026-11-05T21:08:36Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-dim-2",
+   "url": "https://joranalogue.com/products/dim-2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9150856828e0a5b43e8e234e7735abe3a47cbaa849931d53c0adc4ce7d169532",
+   "timestamp": "2026-11-05T21:08:37Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-flow-3",
+   "url": "https://joranalogue.com/products/flow-3",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "58155bffafef2d1b247a98d8b4ed7ebc0eaf3d43c715294034ce137e0979157e",
+   "timestamp": "2026-11-05T21:08:38Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-generate-3",
+   "url": "https://joranalogue.com/products/generate-3",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "681f6a5f1d9933198979a8b980902493e1bb169c16ddfb4c07cf23bbcc7a037f",
+   "timestamp": "2026-11-05T21:08:39Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-link-2",
+   "url": "https://joranalogue.com/products/link-2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "dc33095062064af835c467aaf8744b0ee8c2189fe871058f6d51f1bde613b14a",
+   "timestamp": "2026-11-05T21:08:40Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-morph-4",
+   "url": "https://joranalogue.com/products/morph-4",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7509dea052ae655ca893f68cc5693c26cee63a1808f5e9c037b01bff268eabd3",
+   "timestamp": "2026-11-05T21:08:41Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-orbit-3",
+   "url": "https://joranalogue.com/products/orbit-3",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1a62d94ba665a8231c405c4c9e21b15c0d8d1f49a905f3632d00251cbe69f6d4",
+   "timestamp": "2026-11-05T21:08:42Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-pivot-2",
+   "url": "https://joranalogue.com/products/pivot-2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1e818f3c45d36c12de092b3a475f0c282a2029f5785c589d72bf4cd06c760f34",
+   "timestamp": "2026-11-05T21:08:43Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-receive-2",
+   "url": "https://joranalogue.com/products/receive-2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3bab1cba6cbd3ca02df65be37ae8e954292146cb7d3df5775196e3cdd3c60adf",
+   "timestamp": "2026-11-05T21:08:44Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-select-2",
+   "url": "https://joranalogue.com/products/select-2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "cca6eaa7056108a0c88e1532eab6ce27075f02af020ea006705630159c5316c0",
+   "timestamp": "2026-11-05T21:08:45Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-step-8",
+   "url": "https://joranalogue.com/products/step-8",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ae88b19d5e8020a53e86d5d7929bd501943c75df2381e1001306eea1d9363f17",
+   "timestamp": "2026-11-05T21:08:46Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-test-3",
+   "url": "https://joranalogue.com/products/test-3",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a6a95c18b65e6e1925aededc05b338f125987eaede801dd6b4aeeff58451f1cc",
+   "timestamp": "2026-11-05T21:08:47Z"
+  },
+  {
+   "slug": "joranalogue-audio-design-warp-1",
+   "url": "https://joranalogue.com/products/warp-1",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e411d29d60eaf4336c7287f677f8bfc9af2f2a47a901fc9c34d5fcbfe26db5a2",
+   "timestamp": "2026-11-05T21:08:48Z"
+  },
+  {
+   "slug": "lzx-industries-cadet-ii-rgb-encoder",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "lzx-industries-cyclops",
+   "url": "https://lzxindustries.net/modules/cyclops",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "87a524f650b1debc7955578b3dad2a706177e0472751fd5a4dce09141ed418dc",
+   "timestamp": "2026-11-05T21:08:50Z"
+  },
+  {
+   "slug": "lzx-industries-keychain",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "lzx-industries-sensory-translator",
+   "url": "https://lzxindustries.net/modules/sensory-translator",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "01b1951ff88b98c7cf40cf2dc38957cd8050de105473195ae8694736c1089252",
+   "timestamp": "2026-11-05T21:08:51Z"
+  },
+  {
+   "slug": "laine-modular-vole",
+   "url": "https://www.laine.uk/products/p/vole",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7581b7dac3a4306c08602fb447eeddee8b5d5ead0f0dcec9b65c544e66d9f82b",
+   "timestamp": "2026-11-05T21:08:53Z"
+  },
+  {
+   "slug": "larix-elektro-ritournelle-canon",
+   "url": "https://www.larix-elektro.com/PRODUCT_RITOURNELLE_CANON.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7e9396d4182a6470ca177c7cf1c09a3e23fe35d23915cdc1cdf9627aacc8196e",
+   "timestamp": "2026-11-05T21:08:55Z"
+  },
+  {
+   "slug": "machineroom-fm-aid",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "machineroom-krait-black",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "machineroom-metamorph-black",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "machineroom-time-wizard",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "make-noise-analog-memory",
+   "url": "https://www.makenoisemusic.com/retired/retired-modules/analog-memory/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "4c7cc2a8f303e470fa0d9c2223fb1144f9bec6b2363bf061139088d6849b3a46",
+   "timestamp": "2026-11-05T21:08:57Z"
+  },
+  {
+   "slug": "make-noise-bruxa",
+   "url": "https://www.makenoisemusic.com/modules/bruxa/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0a38f4f97daeafe5e17741f53a7af2e3ac74026007814f4db55b71674eea1234",
+   "timestamp": "2026-11-05T21:08:58Z"
+  },
+  {
+   "slug": "make-noise-ch-svr",
+   "url": "https://www.makenoisemusic.com/modules/ch-svr/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "afeeb6e0942c459e7fb9f44cfe997c45f60fe5ad007ebfb7d50e859b8aa82a92",
+   "timestamp": "2026-11-05T21:08:59Z"
+  },
+  {
+   "slug": "make-noise-contour",
+   "url": "https://www.makenoisemusic.com/retired/retired-modules/contour/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ef8f5ca069a978d56aafc0eb96cde6c43bcf2e460200c1afcd4b695e84df01c5",
+   "timestamp": "2026-11-05T21:09:00Z"
+  },
+  {
+   "slug": "make-noise-dxg",
+   "url": "https://www.makenoisemusic.com/modules/dxg/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c155cd315453716515f3f7849b3196576825516f7efd548dc6cbe3f38b16e11c",
+   "timestamp": "2026-11-05T21:09:01Z"
+  },
+  {
+   "slug": "make-noise-gte",
+   "url": "https://www.makenoisemusic.com/modules/gte/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "576fd6ddf68d5eaca64709b0f58bdae24d279f0a442e264bba66907e81f0ba80",
+   "timestamp": "2026-11-05T21:09:02Z"
+  },
+  {
+   "slug": "make-noise-jumbler",
+   "url": "https://www.makenoisemusic.com/modules/jumbler/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b55cb2721df0ecbcc37372ae331a43aabfbb81ef2ba65c466931e788b22da388",
+   "timestamp": "2026-11-05T21:09:03Z"
+  },
+  {
+   "slug": "make-noise-lxd",
+   "url": "https://www.makenoisemusic.com/modules/lxd/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5ae8382c4ce70b3133172b9ad387d64ea71861ba414ed2a031c776b4d4e9dc47",
+   "timestamp": "2026-11-05T21:09:04Z"
+  },
+  {
+   "slug": "make-noise-maths-classic",
+   "url": "https://www.makenoisemusic.com/retired/retired-modules/maths-classic/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a25b6d6aeae76da688b45f4e0737ab4edf9deb716d6c85ac5c541d1138b1f2b3",
+   "timestamp": "2026-11-05T21:09:05Z"
+  },
+  {
+   "slug": "make-noise-mmg",
+   "url": "https://www.makenoisemusic.com/retired/retired-modules/mmg/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "68880e5524c923193017f009682a8f7117704d39559fca9e097c2b833a576e14",
+   "timestamp": "2026-11-05T21:09:06Z"
+  },
+  {
+   "slug": "make-noise-mysteron",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "make-noise-plexiphon",
+   "url": "https://www.makenoisemusic.com/modules/plexiphon/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "57dfe5bfc1670864d291f8d8636d21e28289303ff1f90aedee09b023768741d5",
+   "timestamp": "2026-11-05T21:09:07Z"
+  },
+  {
+   "slug": "make-noise-polimaths",
+   "url": "https://www.makenoisemusic.com/modules/polimaths/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2f2da7a9bccc981aa9501a7daa226b9ac884ade3fb6ff4a4fd0312ae5d799e6c",
+   "timestamp": "2026-11-05T21:09:08Z"
+  },
+  {
+   "slug": "make-noise-prsspnt",
+   "url": "https://www.makenoisemusic.com/modules/prsspnt/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5c87324ec14b40712a754388bdcf348d507bbc22c147b675436332094492e895",
+   "timestamp": "2026-11-05T21:09:09Z"
+  },
+  {
+   "slug": "make-noise-qxg",
+   "url": "https://www.makenoisemusic.com/modules/qxg/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e8065a54212d418cafb797f8086fe0630f4ac59db32644a7319f6f50bf170151",
+   "timestamp": "2026-11-05T21:09:10Z"
+  },
+  {
+   "slug": "make-noise-ren-classic",
+   "url": "https://www.makenoisemusic.com/retired/retired-modules/rene-classic/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "873e8435f032de41fb9fe9d92714661dc68e80db2aee4d7e92ca26fefe5ced2e",
+   "timestamp": "2026-11-05T21:09:11Z"
+  },
+  {
+   "slug": "make-noise-rosie",
+   "url": "https://www.makenoisemusic.com/retired/retired-modules/rosie/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "80031920dfbd0927505f1df4c1cbc418f7ae274bd1b3c889bf58b1f5aa1ea3fa",
+   "timestamp": "2026-11-05T21:09:12Z"
+  },
+  {
+   "slug": "make-noise-sto",
+   "url": "https://www.makenoisemusic.com/modules/sto/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "074134fae7bb07dfab50c0674e7a11785b8d1cee421cf1c5e6037479c42cca85",
+   "timestamp": "2026-11-05T21:09:13Z"
+  },
+  {
+   "slug": "make-noise-spectraphon",
+   "url": "https://www.makenoisemusic.com/modules/spectraphon/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e7d5bce7e2d3962c99e812abaf1c5df1d8f405af61f67b2b5ede7edd1f30833f",
+   "timestamp": "2026-11-05T21:09:14Z"
+  },
+  {
+   "slug": "make-noise-strega",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "make-noise-tempi",
+   "url": "https://www.makenoisemusic.com/modules/tempi/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9a8d6157f022634a64bafe3ef6d3c6e115b9d92ffd0b1cafc1fad836d6129800",
+   "timestamp": "2026-11-05T21:09:15Z"
+  },
+  {
+   "slug": "make-noise-teleplexer",
+   "url": "https://www.makenoisemusic.com/retired/retired-modules/teleplexer/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7f08f61735c2adb67691047f8da8330aa6f7de096ac99759a56ab2a0733d0331",
+   "timestamp": "2026-11-05T21:09:16Z"
+  },
+  {
+   "slug": "make-noise-wiard-wogglebug",
+   "url": "https://www.makenoisemusic.com/retired/retired-modules/wiard-wogglebug/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "79dceebac466dae3453fe47f401377fc1cb10a74cfef901b0d9cfbe1261f8358",
+   "timestamp": "2026-11-05T21:09:17Z"
+  },
+  {
+   "slug": "make-noise-x-pan",
+   "url": "https://www.makenoisemusic.com/modules/x-pan/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "00d0b92c42ec4fdfbd3b041ac8c02d0a0eb884bd9c2079a628127d61af652ae9",
+   "timestamp": "2026-11-05T21:09:18Z"
+  },
+  {
+   "slug": "make-noise-xoh",
+   "url": "https://www.makenoisemusic.com/modules/xoh/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6f8f878f896e0d4f91f4160ce90de4158e9873c442185b02c2b3ac92a5c30e7c",
+   "timestamp": "2026-11-05T21:09:19Z"
+  },
+  {
+   "slug": "make-noise-xpo",
+   "url": "https://www.makenoisemusic.com/modules/xpo/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6f40e7f0be2529d51b141e1d57268486b899a65abcfd3bbbbbdb563cd6d1e34d",
+   "timestamp": "2026-11-05T21:09:20Z"
+  },
+  {
+   "slug": "make-noise-telharmonic",
+   "url": "https://www.makenoisemusic.com/retired/retired-modules/telharmonic/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a7b8635142393e5e2dbcc72b30727df7b9545b859892b68c589e0905afa36055",
+   "timestamp": "2026-11-05T21:09:21Z"
+  },
+  {
+   "slug": "making-sound-machines-build",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "mannequins-cold-mac",
+   "url": "https://www.whimsicalraps.com/products/cold-mac",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2a562765412586824ca5ca26cbb61914bb63a222b4471c3c7b27c1087445c067",
+   "timestamp": "2026-11-05T21:09:21Z"
+  },
+  {
+   "slug": "mannequins-just-friends",
+   "url": "https://www.whimsicalraps.com/products/just-friends",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "afb576435e6f577c1296beba073bdc84038909b6a316bb162255c86268e30c08",
+   "timestamp": "2026-11-05T21:09:22Z"
+  },
+  {
+   "slug": "mannequins-rip",
+   "url": "https://www.whimsicalraps.com/products/rip",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "74d4676097157c143ccdb5a4c7265ab637f9a55c4bad3c5910a3a9bd20dc3e94",
+   "timestamp": "2026-11-05T21:09:23Z"
+  },
+  {
+   "slug": "mannequins-silhouette",
+   "url": "https://www.whimsicalraps.com/products/silhouette",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "599dcbccbc9b46292bf57329f3be3d088557c22fa6cb6d285706e72a8268f307",
+   "timestamp": "2026-11-05T21:09:24Z"
+  },
+  {
+   "slug": "mannequins-sisters",
+   "url": "https://www.whimsicalraps.com/products/sisters",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c903391f6375a48fdd8f9461bad92cbe70a182e4e12dfc82b77b3bd95ae622c7",
+   "timestamp": "2026-11-05T21:09:25Z"
+  },
+  {
+   "slug": "michigan-synth-works-microstreams",
+   "url": "https://michigansynthworks.com/products/ustreams-8hp-streams",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "08a29e96527c6e896df477821bd77d5a97aab5287c80d9c363bcad9b6b69f618",
+   "timestamp": "2026-11-05T21:09:27Z"
+  },
+  {
+   "slug": "michigan-synth-works-nanorings-nrings-8hp-rings",
+   "url": "https://michigansynthworks.com/products/nanorings-8hp-rings",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e1eabf635b41ec5a0279b9b152fbf3ad2f106072370725ca5eef9fe6eda69122",
+   "timestamp": "2026-11-05T21:09:28Z"
+  },
+  {
+   "slug": "michigan-synth-works-plancks-ii",
+   "url": "https://michigansynthworks.com/products/planks-ii-8hp-frames",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a99c4a8d2c6b91f84f1b38b1cd89910f76ee8b118e124e8c437f7fa86d5000fc",
+   "timestamp": "2026-11-05T21:09:29Z"
+  },
+  {
+   "slug": "michigan-synth-works-quarks-22hp-elements",
+   "url": "https://michigansynthworks.com/products/quarks-22hp-elements",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f87cc7a77a671b35f1d832556e07da51d45c0050da48077522e63584e3a61d88",
+   "timestamp": "2026-11-05T21:09:30Z"
+  },
+  {
+   "slug": "michigan-synth-works-swirls-1-1-pcb",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "michigan-synth-works-twiigs",
+   "url": "https://michigansynthworks.com/products/twiigs-quad-bernoulli-gate",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6cbd532191e1d945e352c83be338e0672d55df592d7a0f7291d7bf4aefecbd6a",
+   "timestamp": "2026-11-05T21:09:31Z"
+  },
+  {
+   "slug": "michigan-synth-works-twist-6hp-warps",
+   "url": "https://michigansynthworks.com/products/twist-6hp-warps",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "99713c49d031eda32c09cd2b431bd3f09106305a34baa2a80fd6db4f546e5261",
+   "timestamp": "2026-11-05T21:09:31Z"
+  },
+  {
+   "slug": "modulaire-maritime-essaim",
+   "url": "https://www.modulaire-maritime.com/product-page/essaim-ѳ",
+   "outcome": "free_http",
+   "status": 0,
+   "method": "free_http",
+   "note": null,
+   "sha256": null,
+   "timestamp": "2026-11-05T21:09:35Z"
+  },
+  {
+   "slug": "morph-modular-star-sailor",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "morph-modular-wormhole-portal",
+   "url": "https://morphmodular.com/product/wormhole-portal/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "000ff00098c2fdc7427d6df22acbf49d9d3c8bf0584957adbe1768722c94f4a4",
+   "timestamp": "2026-11-05T21:09:38Z"
+  },
+  {
+   "slug": "mosaic-led",
+   "url": "https://www.mosaic1u.com/shop/p/led",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3de5601c23802020cf50755f101464f9c5fd2da72c86759207b486cf4ed2952b",
+   "timestamp": "2026-11-05T21:09:39Z"
+  },
+  {
+   "slug": "mutable-instruments-anushri-eurorack",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/anushri/",
+   "outcome": "free_http",
+   "status": 404,
+   "method": "free_http",
+   "note": null,
+   "sha256": "095f7a03fec25f8ad2b41188a723771cc9ea961cb15e3434813abfff5e2bdef1",
+   "timestamp": "2026-11-05T21:09:41Z"
+  },
+  {
+   "slug": "mutable-instruments-edges",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/edges/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b975a27d2d0372df5d1022e00c875a0466834f4332fea7aae76dfba3e056da9f",
+   "timestamp": "2026-11-05T21:09:42Z"
+  },
+  {
+   "slug": "mutable-instruments-frames",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/frames/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5fbafa109d5d02f467d3e9dd01ce23bee9a9300fe1a1cce20a3630a9ee214c50",
+   "timestamp": "2026-11-05T21:09:43Z"
+  },
+  {
+   "slug": "mutable-instruments-grids",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/grids/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d2e37a1131c5d9cb571e63b3aa9852013f06dd34683b1720a1f5ebaf8999050c",
+   "timestamp": "2026-11-05T21:09:44Z"
+  },
+  {
+   "slug": "mutable-instruments-links",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/links/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f3795a446be6a2961d80d09b7b12128cc398025a76da44e0dbd4ff2e404a5a4c",
+   "timestamp": "2026-11-05T21:09:45Z"
+  },
+  {
+   "slug": "mutable-instruments-rings",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/rings/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "394f99b71845e926de20ed029d76d0f70744f74c33b157b7713f8471a68c9521",
+   "timestamp": "2026-11-05T21:09:46Z"
+  },
+  {
+   "slug": "mutable-instruments-yarns",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/yarns/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a75e6a97598c4d335b45e6f432f172436bc8c5ccce42b967bbc95e9ba4abb658",
+   "timestamp": "2026-11-05T21:09:47Z"
+  },
+  {
+   "slug": "mutable-instruments-anushri-exp",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/anushri/",
+   "outcome": "cache",
+   "status": 404,
+   "method": "cache",
+   "note": null,
+   "sha256": "095f7a03fec25f8ad2b41188a723771cc9ea961cb15e3434813abfff5e2bdef1",
+   "timestamp": "2026-11-05T21:09:47Z"
+  },
+  {
+   "slug": "mutable-instruments-beads",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/beads/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "31884fa893da165268501fc6098dcdaf6a68eaea4911835bd73f6de0368ac871",
+   "timestamp": "2026-11-05T21:09:48Z"
+  },
+  {
+   "slug": "mutable-instruments-blades",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/blades/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1565d830e6105dbc9c18e29842877b6545551cede319329ea19ab1db3c1a4150",
+   "timestamp": "2026-11-05T21:09:49Z"
+  },
+  {
+   "slug": "mutable-instruments-blinds",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/blinds/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b5f8074fc0882a0a9a7433c5b538ca682ffa3f11dc9058fa0d682c929c1e4527",
+   "timestamp": "2026-11-05T21:09:50Z"
+  },
+  {
+   "slug": "mutable-instruments-branches",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/branches/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7dba1cfff9288ebe801739fe409b3ce422cbc751876a67db1d1db7a3f4126094",
+   "timestamp": "2026-11-05T21:09:51Z"
+  },
+  {
+   "slug": "mutable-instruments-ears",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ears/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e8723c8e6bb5a314ad984c0222b1dee797f7dd0577a77de6ba0c58a0d9bb7229",
+   "timestamp": "2026-11-05T21:09:52Z"
+  },
+  {
+   "slug": "mutable-instruments-elements",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/elements/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "bbb54e7cf6b90c253758237468ab9147eaca624d96a428967e30d2de762bfd1f",
+   "timestamp": "2026-11-05T21:09:53Z"
+  },
+  {
+   "slug": "mutable-instruments-kinks",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/kinks/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f2a363c80882501dfd5039eea2ce22d738bd5d24c00dfa15e9e6b0b45224f022",
+   "timestamp": "2026-11-05T21:09:54Z"
+  },
+  {
+   "slug": "mutable-instruments-peaks",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/peaks/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5465baafc7fcc372b50d8b865bdb878125011644c9dd4db4284feb8329d678df",
+   "timestamp": "2026-11-05T21:09:55Z"
+  },
+  {
+   "slug": "mutable-instruments-ripples-2020",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_2020/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "807b2ccf4ee118c844912ae5958484a8687a3f7bb4cb89bf02f5d21159078784",
+   "timestamp": "2026-11-05T21:09:56Z"
+  },
+  {
+   "slug": "mutable-instruments-shades-2020",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shades_2020/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "fa0fa054f545379211a0485e00a22fcfca7252579ef83bdae15ef2f77735b83e",
+   "timestamp": "2026-11-05T21:09:57Z"
+  },
+  {
+   "slug": "mutable-instruments-shades-original",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shades_original/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1d24a9a001e6f63a3b80f88bd10ca7c5cecbba0e68fe084b4b8f77401aa30856",
+   "timestamp": "2026-11-05T21:09:58Z"
+  },
+  {
+   "slug": "mutable-instruments-shelves",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/shelves/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "200bc7fbc796e0507cf31822af83a6ec0f3cdfa8fd5a7ebebf46d2f2dbc45975",
+   "timestamp": "2026-11-05T21:09:59Z"
+  },
+  {
+   "slug": "mutable-instruments-streams",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/streams/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "107de67c31de9cf672ff9459c27d75c17a3f14685c93248acd82aace9bf0d9b4",
+   "timestamp": "2026-11-05T21:10:00Z"
+  },
+  {
+   "slug": "mutable-instruments-tides-2018",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_2018/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5a6f79c786312c0bc21f5de8b7a0d0d1cfacbe7335406bb40bccfba19697cca7",
+   "timestamp": "2026-11-05T21:10:01Z"
+  },
+  {
+   "slug": "mutable-instruments-veils-2020",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/veils_2020/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1caed341f6b281a236de38d34640f4cd42e304743303c656fec2e0174c83e82b",
+   "timestamp": "2026-11-05T21:10:02Z"
+  },
+  {
+   "slug": "mutable-instruments-veils-original",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/veils_original/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c94a37e52cbfb66f91195c0225e6296d570754066a2d140a4b08a55a432b0f64",
+   "timestamp": "2026-11-05T21:10:03Z"
+  },
+  {
+   "slug": "mutable-instruments-warps",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/warps/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e611c320e9bbad90773d223a564b7316db12796f5f3a42ad1906049febea2222",
+   "timestamp": "2026-11-05T21:10:04Z"
+  },
+  {
+   "slug": "noh-modular-olive",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "nekyia-circuits-ouija",
+   "url": "https://nekyiacircuits.com/product/ouija",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "658bf2f3b7c97c1442a915489ada607b5affcdcfb816bed35921ffc8d79f8fa4",
+   "timestamp": "2026-11-05T21:10:08Z"
+  },
+  {
+   "slug": "new-systems-instruments-quad-mid-side",
+   "url": "https://nsinstruments.com/modules/QMS.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "54b5d9973d7aec36e2c7d1bb7a0b14007f71e7c72db810d0acf8e7747b3536db",
+   "timestamp": "2026-11-05T21:10:09Z"
+  },
+  {
+   "slug": "noise-engineering-adigo-metric",
+   "url": "https://noiseengineering.us/products/adigo-metric",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "acb179d02141fcdc047e82013b8032e27ca0c9872ffe4dca92cab2f629924ff6",
+   "timestamp": "2026-11-05T21:10:10Z"
+  },
+  {
+   "slug": "noise-engineering-alia",
+   "url": "https://noiseengineering.us/products/alia",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2f75fcd95d908a66579d00111fb93c7eb7dd149935fb6eed70c3ad2a4aa94c4d",
+   "timestamp": "2026-11-05T21:10:11Z"
+  },
+  {
+   "slug": "noise-engineering-ataraxic-iteritas",
+   "url": "https://noiseengineering.us/products/ataraxic-iteritas",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1fb619f3ff8e2942907d39b396ce038207bd2b51643dec3fc6d67ecd9c49664b",
+   "timestamp": "2026-11-05T21:10:12Z"
+  },
+  {
+   "slug": "noise-engineering-ataraxic-translatron",
+   "url": "https://noiseengineering.us/products/ataraxic-translatron",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "856f75e242873687cca759b75eca66e4dd80ee2193678bb66c06d9adfbd8b674",
+   "timestamp": "2026-11-05T21:10:13Z"
+  },
+  {
+   "slug": "noise-engineering-clep-diaz",
+   "url": "https://noiseengineering.us/products/clep-diaz",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5846c1f2232571f79a4e5af83899d06ef1acbc8c67a983dff7662b94ba16fa17",
+   "timestamp": "2026-11-05T21:10:14Z"
+  },
+  {
+   "slug": "noise-engineering-confundo-funkidos",
+   "url": "https://noiseengineering.us/products/confundo-funkidos",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6b87ffb4c92eebe6117e7305b7585bd6521d4fe0d057ff8db5f78a255c3e9dcb",
+   "timestamp": "2026-11-05T21:10:15Z"
+  },
+  {
+   "slug": "noise-engineering-confundo-funkitus",
+   "url": "https://noiseengineering.us/products/confundo-funkitus",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b5914eaf4711c7cd0dc18517f0d1894522756bfe009a7c19db89d238e77adb15",
+   "timestamp": "2026-11-05T21:10:16Z"
+  },
+  {
+   "slug": "noise-engineering-cursus-iteritas",
+   "url": "https://noiseengineering.us/products/cursus-iteritas",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3aabe0e6b596e8bed7d00735c4ae4f47df4eac9c47eb743ff41be6d827b46020",
+   "timestamp": "2026-11-05T21:10:17Z"
+  },
+  {
+   "slug": "noise-engineering-cursus-iteritas-percido",
+   "url": "https://noiseengineering.us/products/cursus-iteritas-percido",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "eff1a351599b868b737910e9b5d3f75fe98779f3f696bbcfb4c8d3fae5608f8e",
+   "timestamp": "2026-11-05T21:10:18Z"
+  },
+  {
+   "slug": "noise-engineering-expando-expandi",
+   "url": "https://noiseengineering.us/products/expando-expandi",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1075e09d24b29ea434f396c1818c679d492a4dff88090f319b6c972af746ae29",
+   "timestamp": "2026-11-05T21:10:19Z"
+  },
+  {
+   "slug": "noise-engineering-extra-mullet",
+   "url": "https://noiseengineering.us/products/extra-mullet",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7f2d6da50a8f3bb52d2f995c79a2eac380733bef8cceee06200d47ca87b004fa",
+   "timestamp": "2026-11-05T21:10:20Z"
+  },
+  {
+   "slug": "noise-engineering-fractio-solum",
+   "url": "https://noiseengineering.us/products/fractio-solum",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "126deffce8d18a998ea2ca0b4a7bd50b85ad901fc81623efb9ae4861c59b99f5",
+   "timestamp": "2026-11-05T21:10:21Z"
+  },
+  {
+   "slug": "noise-engineering-integra-funkitus",
+   "url": "https://noiseengineering.us/products/integra-funkitus",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9d1b48684163fbcf2720e21bdafabbd91c1af71a439b4776bc59088558ba29a7",
+   "timestamp": "2026-11-05T21:10:22Z"
+  },
+  {
+   "slug": "noise-engineering-integra-solum",
+   "url": "https://noiseengineering.us/products/integra-solum",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "22a197ad407fe2099adaf1ade026fdc20785c359b071fde66408344f82587dfc",
+   "timestamp": "2026-11-05T21:10:23Z"
+  },
+  {
+   "slug": "noise-engineering-jam-jam",
+   "url": "https://noiseengineering.us/products/jam-jam",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "4de6815f3e8a10395d9b46a9cc166678bc191c58d09c120a7cf8860224926fe3",
+   "timestamp": "2026-11-05T21:10:24Z"
+  },
+  {
+   "slug": "noise-engineering-kith-ruina",
+   "url": "https://noiseengineering.us/products/kith-ruina",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "94019226b4c7092e8f529c396ef97c95899b560df0c5e2068db1092e862e9a9e",
+   "timestamp": "2026-11-05T21:10:25Z"
+  },
+  {
+   "slug": "noise-engineering-lapsus-os",
+   "url": "https://noiseengineering.us/products/lapsus-os",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "edaab480e260509a41dd1f3e7a38d27c59945a182daab42f4b34554bbb107ab9",
+   "timestamp": "2026-11-05T21:10:26Z"
+  },
+  {
+   "slug": "noise-engineering-legio",
+   "url": "https://noiseengineering.us/products/legio",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f690ec041cdfd4a1b0832a0cbe2f1e67fcf9f270815df25d4a50976ae1582652",
+   "timestamp": "2026-11-05T21:10:27Z"
+  },
+  {
+   "slug": "noise-engineering-loquelic-iteritas",
+   "url": "https://noiseengineering.us/products/loquelic-iteritas",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9beb597bf87e0c921952611893123cf22ca552c57877a7be5c980a609227e4da",
+   "timestamp": "2026-11-05T21:10:28Z"
+  },
+  {
+   "slug": "noise-engineering-loquelic-iteritas-percido",
+   "url": "https://noiseengineering.us/products/loquelic-iteritas-percido",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f78d0f0a141450cb8486ab8b6f3d0546dec32043de7d37ae91b5e5d7a46670fb",
+   "timestamp": "2026-11-05T21:10:29Z"
+  },
+  {
+   "slug": "noise-engineering-manis-iteritas",
+   "url": "https://noiseengineering.us/products/manis-iteritas",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2d9ea41ce48a524d9f7da7ae243cbac1d4827685ef92e2f464064c2ec5623148",
+   "timestamp": "2026-11-05T21:10:30Z"
+  },
+  {
+   "slug": "noise-engineering-mimetic-digitalis",
+   "url": "https://noiseengineering.us/products/mimetic-digitalis",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ae8ae1ac7762c25d05afcf1d4b8fdbcb659aa90bc65363b17802d4e0729b33f8",
+   "timestamp": "2026-11-05T21:10:31Z"
+  },
+  {
+   "slug": "noise-engineering-mimetic-digitwolis",
+   "url": "https://noiseengineering.us/products/mimetic-digitwolis",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "39f1379d3c18befb1aee64654a8849037d1c15bec091b60d4b1362be6f0fc475",
+   "timestamp": "2026-11-05T21:10:32Z"
+  },
+  {
+   "slug": "noise-engineering-muta-jovis",
+   "url": "https://noiseengineering.us/products/muta-jovis",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "665b3f81fa57790eb3a8473c0003dc97e4c21aaf9381e741a641b89ed002cd6c",
+   "timestamp": "2026-11-05T21:10:33Z"
+  },
+  {
+   "slug": "noise-engineering-nive-grad",
+   "url": "https://noiseengineering.us/products/nive-grad",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "283c5a67ebe88de9ac2192c296c956e211691259199a332cdba1588e6fa9134b",
+   "timestamp": "2026-11-05T21:10:34Z"
+  },
+  {
+   "slug": "noise-engineering-numeric-repetitor",
+   "url": "https://noiseengineering.us/products/numeric-repetitor",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8fb365f924578abde55aaf4bd0fa713d44cfea2096a599fea629df6ac5229076",
+   "timestamp": "2026-11-05T21:10:35Z"
+  },
+  {
+   "slug": "noise-engineering-opp-ned",
+   "url": "https://noiseengineering.us/products/opp-ned",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "17182af53bdd43b86170357e6cfb1bda004974bb1391a8f6c788b94af044bd67",
+   "timestamp": "2026-11-05T21:10:36Z"
+  },
+  {
+   "slug": "noise-engineering-pons-asinorum",
+   "url": "https://noiseengineering.us/products/pons-asinorum",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "4b6f393e36c0b9084fa125a0e0d5614383fda526d7f00083bd01a245c06117a9",
+   "timestamp": "2026-11-05T21:10:37Z"
+  },
+  {
+   "slug": "noise-engineering-pura-ruina",
+   "url": "https://noiseengineering.us/products/pura-ruina",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c8b1f3e10eb447e05d2b3a75deed578b70cd628232b9492f6ca5f94e7bd30007",
+   "timestamp": "2026-11-05T21:10:38Z"
+  },
+  {
+   "slug": "noise-engineering-quantic-fictus",
+   "url": "https://noiseengineering.us/products/quantic-fictus",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e37e49e7a214e661fc3c16ef97c03f82b23e1a0c1c11da897e72bdd99da664d3",
+   "timestamp": "2026-11-05T21:10:39Z"
+  },
+  {
+   "slug": "noise-engineering-quantus-ampla",
+   "url": "https://noiseengineering.us/products/quantus-ampla",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "4a0bf1313300358c8db5ee7d6770b00b08e07d63d579ddb45303f964ac3fdf4a",
+   "timestamp": "2026-11-05T21:10:40Z"
+  },
+  {
+   "slug": "noise-engineering-quantus-pax",
+   "url": "https://noiseengineering.us/products/quantus-pax",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9232e0184345b1052e95ed799458cd292824ee863edba6b35a0e5f3e92b168c6",
+   "timestamp": "2026-11-05T21:10:41Z"
+  },
+  {
+   "slug": "noise-engineering-quantus-trajecta",
+   "url": "https://noiseengineering.us/products/quantus-trajecta",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "70b184175135a405a9b5bbec67ce7c3c7c1a671013ff995827fcd15f7de057f7",
+   "timestamp": "2026-11-05T21:10:42Z"
+  },
+  {
+   "slug": "noise-engineering-seca-ruina",
+   "url": "https://noiseengineering.us/products/seca-ruina",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "da95d37c77a4cf85296b75d4c68e17d148f16e8207fac76c1cd4a1df70588fbc",
+   "timestamp": "2026-11-05T21:10:43Z"
+  },
+  {
+   "slug": "noise-engineering-sinc-bucina",
+   "url": "https://noiseengineering.us/products/sinc-bucina",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "bcc429f6477409f53bc5897c81bc14d72eca55651db624faa9e1d599b30cd60c",
+   "timestamp": "2026-11-05T21:10:44Z"
+  },
+  {
+   "slug": "noise-engineering-sinc-defero",
+   "url": "https://noiseengineering.us/products/sinc-defero",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e9c64f15feba59e13bfcabbafee6b9455cee833ff227936c31f8a3db454c8387",
+   "timestamp": "2026-11-05T21:10:45Z"
+  },
+  {
+   "slug": "noise-engineering-sinc-iter",
+   "url": "https://noiseengineering.us/products/sinc-iter",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "91fc0d3641748d5ba13edad48776d8a1ade20c0ee454bfe18f9022bec85c3bc3",
+   "timestamp": "2026-11-05T21:10:46Z"
+  },
+  {
+   "slug": "noise-engineering-sinc-pravus",
+   "url": "https://noiseengineering.us/products/sinc-pravus",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "347ccd61e54f50a0baa672bfb94a4df1cc19ca6e3712ed8e22c28d6bb6d58542",
+   "timestamp": "2026-11-05T21:10:47Z"
+  },
+  {
+   "slug": "noise-engineering-sinclastic-empulatrix",
+   "url": "https://noiseengineering.us/products/sinclastic-empulatrix",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "17d0adc412de9eba762bc8c95694ba49d4c78e873064bcf37a98b0d295d18be2",
+   "timestamp": "2026-11-05T21:10:48Z"
+  },
+  {
+   "slug": "noise-engineering-soleo-vero",
+   "url": "https://noiseengineering.us/products/soleo-vero",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8af50610f23c5a1d06976810c02678dac642cd46ed7aa2e4455ae3186fc26159",
+   "timestamp": "2026-11-05T21:10:49Z"
+  },
+  {
+   "slug": "noise-engineering-sono-abitus",
+   "url": "https://noiseengineering.us/products/sono-abitus",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7b503c1bfbba17af4584c82331e917764e5b83159f9adea7004ec6fe8092813b",
+   "timestamp": "2026-11-05T21:10:50Z"
+  },
+  {
+   "slug": "noise-engineering-terci-ruina",
+   "url": "https://noiseengineering.us/products/terci-ruina",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9f4ee20fcee764553679c91e731e15189d039ad6ba2866fc1976d831f3d3128d",
+   "timestamp": "2026-11-05T21:10:51Z"
+  },
+  {
+   "slug": "noise-engineering-the-mullet",
+   "url": "https://noiseengineering.us/products/the-mullet",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "799cb1212f8f47cc52a75808a4611bc2e3d3081802b422df06e9539b1962cfc1",
+   "timestamp": "2026-11-05T21:10:52Z"
+  },
+  {
+   "slug": "noise-engineering-tonnetz-sequent",
+   "url": "https://noiseengineering.us/products/tonnetz-sequent",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "fbabe9aa4b1ee3da506438097ffcc9d0a73ae4afd16562b8312b70e7f54801fe",
+   "timestamp": "2026-11-05T21:10:53Z"
+  },
+  {
+   "slug": "noise-engineering-univer-inter",
+   "url": "https://noiseengineering.us/products/univer-inter",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7e84a2a2854ede654d9ba44ff5168ff2691327b36360f7db19c2c1e682303c03",
+   "timestamp": "2026-11-05T21:10:54Z"
+  },
+  {
+   "slug": "noise-engineering-variatic-basicus",
+   "url": "https://noiseengineering.us/products/variatic-basicus",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c2caf649f82626c4658297137d0625ccdfdcd2e98706fa491cae31ae6d75d2f9",
+   "timestamp": "2026-11-05T21:10:55Z"
+  },
+  {
+   "slug": "noise-engineering-variatic-erumption",
+   "url": "https://noiseengineering.us/products/variatic-erumption",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9a68fd28895582f5489e12f3812e4cac378fcc033f30a0f10189fff52829f8c7",
+   "timestamp": "2026-11-05T21:10:56Z"
+  },
+  {
+   "slug": "noise-engineering-versio",
+   "url": "https://noiseengineering.us/products/versio",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "86af0cac05af03c3689287ea284bc26bbb6d8d2f2c1e2e3b8dd62337bf1e9ba2",
+   "timestamp": "2026-11-05T21:10:57Z"
+  },
+  {
+   "slug": "noise-engineering-vice-virga",
+   "url": "https://noiseengineering.us/products/vice-virga",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b60f0c851114809848783d226b6eb8bff737e37facc48a23b0984de094d20ecf",
+   "timestamp": "2026-11-05T21:10:58Z"
+  },
+  {
+   "slug": "noise-engineering-viol-ruina",
+   "url": "https://noiseengineering.us/products/viol-ruina",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f7daf9b78b01be35204c37881eebd556d0094a8daa14959d364615595d41e474",
+   "timestamp": "2026-11-05T21:10:59Z"
+  },
+  {
+   "slug": "noise-engineering-vox-digitalis",
+   "url": "https://noiseengineering.us/products/vox-digitalis",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "17bdf885cd20812ed12b1627871a65d2702c57ade6a0073d69b8baeb1889650b",
+   "timestamp": "2026-11-05T21:11:00Z"
+  },
+  {
+   "slug": "noise-engineering-xer-dualis",
+   "url": "https://noiseengineering.us/products/xer-dualis",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "60d1717ac213fb0bee67045fa204e824ef60ebb090da9019442353f79205e654",
+   "timestamp": "2026-11-05T21:11:01Z"
+  },
+  {
+   "slug": "noise-engineering-xer-mixa",
+   "url": "https://noiseengineering.us/products/xm",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "77c7ee037e44df1f77f7adb77f16f6058215e407c21460b31116fc370fc92b7c",
+   "timestamp": "2026-11-05T21:11:02Z"
+  },
+  {
+   "slug": "noise-engineering-xerest-pola",
+   "url": "https://noiseengineering.us/products/xerest-pola",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "86343cbc0539db54bd84209e7d1726609f36f445960aa320c09fb736a113651a",
+   "timestamp": "2026-11-05T21:11:03Z"
+  },
+  {
+   "slug": "noise-engineering-zularic-repetitor",
+   "url": "https://noiseengineering.us/products/zularic-repetitor",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "edfa972e9819765eda1834a14b82e795bf597e30b952b41f836543b4f4eade10",
+   "timestamp": "2026-11-05T21:11:04Z"
+  },
+  {
+   "slug": "noisyfruitslab-eq-1u",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "noisyfruitslab-ot2",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "noisyfruitslab-powana",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "nonlinearcircuits-coupled-comparators",
+   "url": "https://www.nonlinearcircuits.com/modules/p/coupledcomparators",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "91652bf1f0d69018da646c84f0e87d51f6b49be64dd1f3c3bf39b7d89f88b0c3",
+   "timestamp": "2026-11-05T21:11:06Z"
+  },
+  {
+   "slug": "nonlinearcircuits-lux",
+   "url": "https://www.nonlinearcircuits.com/modules/p/lux",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0970946103a328c6510189c54e3ac403747ac153392ab40b9ce77a49b441ab39",
+   "timestamp": "2026-11-05T21:11:07Z"
+  },
+  {
+   "slug": "nonlinearcircuits-numberwang",
+   "url": "https://www.nonlinearcircuits.com/modules/p/numberwang",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b7d2bef2e3bb6da4a25e0a4067538b6a05eb12a1a4f45c6c8c5868b56432cca3",
+   "timestamp": "2026-11-05T21:11:08Z"
+  },
+  {
+   "slug": "nonlinearcircuits-razors",
+   "url": "https://www.nonlinearcircuits.com/modules/p/razors",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "47a9b09ce2451ffeafd8ab4acf0c3c4dd779d1d7fcec3457eefefc31508206e7",
+   "timestamp": "2026-11-05T21:11:09Z"
+  },
+  {
+   "slug": "nonlinearcircuits-spasm",
+   "url": "https://www.nonlinearcircuits.com/modules/p/spasm",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "fc92f83b0c90fde9cd114022f13501d4991267367280e460f042a72be2f16a54",
+   "timestamp": "2026-11-05T21:11:10Z"
+  },
+  {
+   "slug": "nonlinearcircuits-timbre-timbre",
+   "url": "https://www.nonlinearcircuits.com/modules/p/timbre-and-timbre",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1be08043272756df289edf3bc4ce66151d44ca021478b990c289abfe89d3c0a5",
+   "timestamp": "2026-11-05T21:11:11Z"
+  },
+  {
+   "slug": "nonlinearcircuits-timbre",
+   "url": "https://www.nonlinearcircuits.com/modules/p/timbre",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e38c7019c36210740088d5b67d48549b8a8b6d39cb6cfa914a854182943091db",
+   "timestamp": "2026-11-05T21:11:12Z"
+  },
+  {
+   "slug": "north-coast-synthesis-msk-014-gracious-host",
+   "url": "https://northcoastsynthesis.com/products/msk-014-gracious-host.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6b670d590e251870762f3d5fe833d2cedd714992005a5c12e2c03c713b9aa720",
+   "timestamp": "2026-11-05T21:11:13Z"
+  },
+  {
+   "slug": "north-coast-synthesis-msk-014-gracious-host-sdiy-kit",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "nozo-d-nozori-expansion-panel",
+   "url": "https://nozoid.com/product/nozori-expansion-panel/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e66ee50dfc4d7491273f23a53767acafc7a57b49bc6f748197ec16ae4c7d3f7a",
+   "timestamp": "2026-11-05T21:11:16Z"
+  },
+  {
+   "slug": "p4l-modular-cvt2",
+   "url": "https://p4l-store.com/products/cvt2-built-module",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d9383c9dd5554133d82e17040b6049312c9f4987a9a1558bfe78bfd469a3ac2b",
+   "timestamp": "2026-11-05T21:11:17Z"
+  },
+  {
+   "slug": "p4l-modular-pikocoreuro-built",
+   "url": "https://p4l-store.com/products/pikocoreuro-built-module",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "083e460165cd3ee96ca720dda01715c92f1751ba1b90cfcef27a261794196f80",
+   "timestamp": "2026-11-05T21:11:18Z"
+  },
+  {
+   "slug": "p4l-modular-rosetta",
+   "url": "https://p4l-store.com/products/rosetta-built-module",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7ab852d6da9085997e6310808591b948513a3734996fc1aaac8366bcda77d225",
+   "timestamp": "2026-11-05T21:11:19Z"
+  },
+  {
+   "slug": "p4l-modular-rvs",
+   "url": "https://p4l-store.com/products/rvs-built-module",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e23b5b2e7b524aed1090d0157fce6f7fbe5ddb805b8502e178fd6357bb208c19",
+   "timestamp": "2026-11-05T21:11:20Z"
+  },
+  {
+   "slug": "p4l-modular-swt",
+   "url": "https://p4l-store.com/products/swt-built-module",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c50868ff8d19a78bc181e4d6aabc639d31950252451da4e401b25edbf61cdd47",
+   "timestamp": "2026-11-05T21:11:21Z"
+  },
+  {
+   "slug": "p4l-modular-timbre",
+   "url": "https://p4l-store.com/products/timbre-built-module",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "011c69ca9dfa7b9c09245390d2ebfa7d3a6ee4f4e417a24e9d771263c840539e",
+   "timestamp": "2026-11-05T21:11:22Z"
+  },
+  {
+   "slug": "patching-panda-ephemere",
+   "url": "https://patchingpanda.com/shop/ephemere/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9199bcf334db3876ff4dc70be693d80b7d2c1af410c5c5d34f440a60aa65dccb",
+   "timestamp": "2026-11-05T21:11:27Z"
+  },
+  {
+   "slug": "patching-panda-particles",
+   "url": "https://patchingpanda.com/shop/particles/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b9ee42f1658b277be75f661e15748929cad54594bb7aa576aa816bb658034518",
+   "timestamp": "2026-11-05T21:11:30Z"
+  },
+  {
+   "slug": "pittsburgh-modular-bender",
+   "url": "https://pittsburghmodular.com/bender",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "eb9b5f25e0fa29dc6fda519a127bc7bbd62438ac08c09dec357d96a74a55d902",
+   "timestamp": "2026-11-05T21:11:32Z"
+  },
+  {
+   "slug": "pittsburgh-modular-chain-reactor",
+   "url": "https://pittsburghmodular.com/chain-reactor",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1427fa18b6faaf67f85c29d67fd993f656ffc11f63dfa05938c21704e19a7b40",
+   "timestamp": "2026-11-05T21:11:33Z"
+  },
+  {
+   "slug": "pittsburgh-modular-collapse",
+   "url": "https://pittsburghmodular.com/collapse",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6d68ea055d2ef8d5e9683dddea89ece20be5dbbf79f64124d7bb17b6d57c9116",
+   "timestamp": "2026-11-05T21:11:34Z"
+  },
+  {
+   "slug": "pittsburgh-modular-crush",
+   "url": "https://pittsburghmodular.com/crush",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "288d79861a5e6284d7f432bb948f94f9ca84ca44b60c3182ceac1f08ec73d1c8",
+   "timestamp": "2026-11-05T21:11:35Z"
+  },
+  {
+   "slug": "pittsburgh-modular-dna-symbiotic-waves",
+   "url": "https://pittsburghmodular.com/dna-symbiotic-waves",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "60ef9901ac71bb71b6f069867ee27eda132175558d1e2d574bf7e9ed800a9717",
+   "timestamp": "2026-11-05T21:11:36Z"
+  },
+  {
+   "slug": "pittsburgh-modular-detect",
+   "url": "https://pittsburghmodular.com/detect",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c4c46c4abdcfa5258cacab04a0872cde98f2bffe322eddfea95db7e7b61d9827",
+   "timestamp": "2026-11-05T21:11:37Z"
+  },
+  {
+   "slug": "pittsburgh-modular-dual-ring",
+   "url": "https://pittsburghmodular.com/dual-ring",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1a476f3e96fdefb58de52bf9763fb5e08c86488eabbd2bfdec15960a31627170",
+   "timestamp": "2026-11-05T21:11:38Z"
+  },
+  {
+   "slug": "pittsburgh-modular-fltr",
+   "url": "https://pittsburghmodular.com/fltr",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6d981b4c1e57b21271ec8fd87c0d44b89e147630d67d4409b50711b5ca559fb1",
+   "timestamp": "2026-11-05T21:11:39Z"
+  },
+  {
+   "slug": "pittsburgh-modular-generator",
+   "url": "https://pittsburghmodular.com/generator",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e541e8d27dc3a0355824c1c9370ebcebaf7df802692687895995d1a5ba3be846",
+   "timestamp": "2026-11-05T21:11:40Z"
+  },
+  {
+   "slug": "pittsburgh-modular-genxpander",
+   "url": "https://pittsburghmodular.com/genxpander",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d3b2c00dce7915ab6360a87c4377ea2faf17ea70295103528954f60861174eb7",
+   "timestamp": "2026-11-05T21:11:41Z"
+  },
+  {
+   "slug": "pittsburgh-modular-inout",
+   "url": "https://pittsburghmodular.com/inout",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c0b29ac333045dce45f2038bd24303368d87ccb5763f8a2f1a7367061e16d18d",
+   "timestamp": "2026-11-05T21:11:42Z"
+  },
+  {
+   "slug": "pittsburgh-modular-lfo2",
+   "url": "https://pittsburghmodular.com/lfo2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "66b13735db9adf99723b8aa851b9d6e1cc795e17b5488042090db23f377be796",
+   "timestamp": "2026-11-05T21:11:43Z"
+  },
+  {
+   "slug": "pittsburgh-modular-lifeforms-hp-6",
+   "url": "https://pittsburghmodular.com/lifeforms-hp6",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d7ac59040b3f06aefee9cb0d5679c5a45b5b8ab55de5401c6f34534e04eb5a19",
+   "timestamp": "2026-11-05T21:11:44Z"
+  },
+  {
+   "slug": "pittsburgh-modular-lifeforms-mod-tools",
+   "url": "https://pittsburghmodular.com/lifeforms-mod-tools",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3b7583fa49ea7966fa973362c854b42064579a1811992cdc73a9fe854515b6c3",
+   "timestamp": "2026-11-05T21:11:45Z"
+  },
+  {
+   "slug": "pittsburgh-modular-lifeforms-outs",
+   "url": "https://pittsburghmodular.com/lifeforms-outs",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e931ad73bba68df6d25a9e0b989faa83ac26e360fee816bf624a484d30f82857",
+   "timestamp": "2026-11-05T21:11:46Z"
+  },
+  {
+   "slug": "pittsburgh-modular-m3",
+   "url": "https://pittsburghmodular.com/m3",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "88ae7f28bb3aec5bccc93ce46ccf6a3e30fa4526a9f2dd945ce67d0f01ea16ec",
+   "timestamp": "2026-11-05T21:11:47Z"
+  },
+  {
+   "slug": "pittsburgh-modular-outs",
+   "url": "https://pittsburghmodular.com/outs",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "58460c3b588a4a980fca8e17ace80660bd05a63b0ed53eb7a4be4adb817625af",
+   "timestamp": "2026-11-05T21:11:48Z"
+  },
+  {
+   "slug": "pittsburgh-modular-phase-shifter",
+   "url": "https://pittsburghmodular.com/phase-shifter",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2d6cfed2632df73903162ebdf5b5668a99d9b2546bf2b96e74c0f62397964d9c",
+   "timestamp": "2026-11-05T21:11:49Z"
+  },
+  {
+   "slug": "pittsburgh-modular-time-runner",
+   "url": "https://pittsburghmodular.com/timerunner",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "82546e6f59ac3dbd9a5cc65a7f2fd5b0be0ed999d281d99e1847bf93ff852c15",
+   "timestamp": "2026-11-05T21:11:50Z"
+  },
+  {
+   "slug": "pittsburgh-modular-timetable",
+   "url": "https://pittsburghmodular.com/timetable",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "354d6e7295da03a08c4d925cdb61d6172bd43f05fbfe287d1a69f1de1de7e49c",
+   "timestamp": "2026-11-05T21:11:51Z"
+  },
+  {
+   "slug": "pittsburgh-modular-toolbox",
+   "url": "https://pittsburghmodular.com/toolbox",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "07d5916080ef2e4d8f2cadab802b2fdbe0a9e20ade1ca5e7246577878d49ca01",
+   "timestamp": "2026-11-05T21:11:52Z"
+  },
+  {
+   "slug": "pittsburgh-modular-vc-bend",
+   "url": "https://pittsburghmodular.com/vc-bend",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d299cc1199c811a4aa805b01ed54b552b9af65610a54c33dff5adbc3d65ff4bb",
+   "timestamp": "2026-11-05T21:11:53Z"
+  },
+  {
+   "slug": "pittsburgh-modular-vilfo",
+   "url": "https://pittsburghmodular.com/vilfo",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b0f966dc6e005fafa78b981999e4a27ac51110d394822e952dd196719157a5e0",
+   "timestamp": "2026-11-05T21:11:54Z"
+  },
+  {
+   "slug": "pittsburgh-modular-verbtronic",
+   "url": "https://pittsburghmodular.com/verbtronic",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9d792a8034a8ffeff0d0b53943b245faa1bbd75c3c2c7dc009ce110fc35ccea7",
+   "timestamp": "2026-11-05T21:11:55Z"
+  },
+  {
+   "slug": "plankton-electronics-nutone",
+   "url": "https://www.planktonelectronics.com/store/nutone/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3a62712b488307cb4b792c04775d441b26717628113df227a543a53f30edea18",
+   "timestamp": "2026-11-05T21:11:56Z"
+  },
+  {
+   "slug": "plankton-electronics-nutone-diy-kit",
+   "url": "https://www.planktonelectronics.com/store/nutone-diy-kit/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5578c6d00872adff029aa365d1d1d30edf7c61d48fc33552e60d2f8b499905a7",
+   "timestamp": "2026-11-05T21:11:58Z"
+  },
+  {
+   "slug": "plankton-electronics-nutone-pcb-panel",
+   "url": "https://www.planktonelectronics.com/store/nutone-pcb-panel/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b4c4588378a4c6cd7e780bf37e339b96017dbb1632616bab5bab853b5d76e1e2",
+   "timestamp": "2026-11-05T21:11:58Z"
+  },
+  {
+   "slug": "plankton-electronics-nutone-pcb-only",
+   "url": "https://www.planktonelectronics.com/store/nutone-pcb-only/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "caef52241acd37297bb576de24f1d05ef27af0caf1427a77d10c246a1988d612",
+   "timestamp": "2026-11-05T21:12:00Z"
+  },
+  {
+   "slug": "plum-audio-apex",
+   "url": "https://www.plum-audio.com/product-page/apex",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ffe6af5d04579d54e6c7e2139c0f9b490bbccbb24b3de66211b83e76a91af8f1",
+   "timestamp": "2026-11-05T21:12:01Z"
+  },
+  {
+   "slug": "pulp-logic-link-data",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "qu-bit-electronix-aurora",
+   "url": "https://www.qubitelectronix.com/shop/p/aurora",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d6336baed2febd7462255e0e707a0f987e8a2a98f33268311c8b0c4ac44927d8",
+   "timestamp": "2026-11-05T21:12:02Z"
+  },
+  {
+   "slug": "qu-bit-electronix-bloom-v2",
+   "url": "https://www.qubitelectronix.com/shop/p/bloom-v2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0a0b3b67cc6f0e7930a1c185fd80caa0325e75912940756ac9a232c009a0ac20",
+   "timestamp": "2026-11-05T21:12:03Z"
+  },
+  {
+   "slug": "qu-bit-electronix-chord",
+   "url": "https://www.qubitelectronix.com/shop/p/chord-v2",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9f59f6dbeb4d286ad839245fd9726fce4ca1342c9948d72af9811f74f07648ba",
+   "timestamp": "2026-11-05T21:12:04Z"
+  },
+  {
+   "slug": "qu-bit-electronix-mojave",
+   "url": "https://www.qubitelectronix.com/shop/p/mojave",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "61e3c14b042fa62dd86fbbe644f0a54e125da7475dab7e7adcbd0e0eb88b88a2",
+   "timestamp": "2026-11-05T21:12:05Z"
+  },
+  {
+   "slug": "qu-bit-electronix-nautilus",
+   "url": "https://www.qubitelectronix.com/shop/p/nautilus",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "cb85c3e8653e3f0b541a483d6196f44a1eea07403c15c60aaf58142c3f288059",
+   "timestamp": "2026-11-05T21:12:06Z"
+  },
+  {
+   "slug": "qu-bit-electronix-nebulae",
+   "url": "https://www.qubitelectronix.com/shop/p/nebulae",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7db26c6be182262004f888ac4ee976d0cea58617e4d1e13fe692c7adf48dded4",
+   "timestamp": "2026-11-05T21:12:07Z"
+  },
+  {
+   "slug": "qu-bit-electronix-prism",
+   "url": "https://www.qubitelectronix.com/shop/p/prism",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "69e87a8e23dc0a21113a8f0e7069814b1b2c9d653a6ff856931c63bd2a8b44d3",
+   "timestamp": "2026-11-05T21:12:08Z"
+  },
+  {
+   "slug": "qu-bit-electronix-stardust",
+   "url": "https://www.qubitelectronix.com/shop/p/stardust",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3fa35caf257387522f290281e1eda7df3a00d1034a40f5c924c2b21fb15c2074",
+   "timestamp": "2026-11-05T21:12:09Z"
+  },
+  {
+   "slug": "qu-bit-electronix-surface",
+   "url": "https://www.qubitelectronix.com/shop/p/surface",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "fa51cca15d0278fb55ec24ece830f522e6f1100781e172c7d5f1f48370ae45ba",
+   "timestamp": "2026-11-05T21:12:10Z"
+  },
+  {
+   "slug": "rat-king-modular-cell",
+   "url": "https://ratkingmodular.com/cell/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d9a8f5cf559310e1191108a91f6cc4c64f142fc4bcc808199c89f5ec57d26141",
+   "timestamp": "2026-11-05T21:12:12Z"
+  },
+  {
+   "slug": "rebel-technology-genius",
+   "url": "https://www.rebeltech.org/product/genius/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8d0ef994a54c0a7ea1ef5dfef091af694cb2d01591b43f8b76e1bff21bacf8bf",
+   "timestamp": "2026-11-05T21:12:14Z"
+  },
+  {
+   "slug": "rebel-technology-owl-modular",
+   "url": "https://www.rebeltech.org/product/owl-modular/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6e564af534121f98a690cf1514a69013430d82134bb8455adef3d166f00db564",
+   "timestamp": "2026-11-05T21:12:16Z"
+  },
+  {
+   "slug": "rebel-technology-open-sound",
+   "url": "https://www.rebeltech.org/product/open-sound-module/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "262f76f52bb9c0f6572d5efb130994128947d61b1fd57ddc0c7c111ac029638d",
+   "timestamp": "2026-11-05T21:12:17Z"
+  },
+  {
+   "slug": "rebel-technology-tonic",
+   "url": "https://www.rebeltech.org/product/tonic/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1fa0041aae4b586517b6f492a5cbbed16ee32ff707c76fa67a3fd59ea9aae57f",
+   "timestamp": "2026-11-05T21:12:18Z"
+  },
+  {
+   "slug": "reverse-landfill-jog",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "rossum-electro-music-control-forge",
+   "url": "https://www.rossum-electro.com/products/control-forge",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2b74199a729501e3225af887877cea57908575a96e269ee3018a8b4424bc3299",
+   "timestamp": "2026-11-05T21:12:20Z"
+  },
+  {
+   "slug": "rossum-electro-music-mob-of-emus",
+   "url": "https://www.rossum-electro.com/products/mob-of-emus",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "d70d5a045ed4502e7e6a1a8c18fbb9a6692795ca8963f78a1306470cf226c208",
+   "timestamp": "2026-11-05T21:12:21Z"
+  },
+  {
+   "slug": "rossum-electro-music-panharmonium-mutating-spectral-resynthesizer",
+   "url": "https://www.rossum-electro.com/products/panharmonium",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "dc659a33eb5838dbd2f1f299cf9836f3b6cc4afb19be3ddf3e7e726f950e680c",
+   "timestamp": "2026-11-05T21:12:22Z"
+  },
+  {
+   "slug": "rossum-electro-music-satellite-universal-cv-generator-extender",
+   "url": "https://www.rossum-electro.com/products/satellite",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "0fe62d73db05b4a1d0d9ae6eb1bd49e7452961de0b387746e05bf18a9230c07f",
+   "timestamp": "2026-11-05T21:12:22Z"
+  },
+  {
+   "slug": "sssr-labs-vc-divider",
+   "url": "https://www.sssrlabs.com/store/vc_divider/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:12:43Z"
+  },
+  {
+   "slug": "st-modular-eurokastle",
+   "url": "https://www.st-modular.de/modules/eurokastle",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "193063ff9e8b7f33b6972a4f5bdd2756ea5c64c342ec6d6d66fc6d2bd7e1ca17",
+   "timestamp": "2026-11-05T21:12:46Z"
+  },
+  {
+   "slug": "schlappi-engineering-100-grit",
+   "url": "https://schlappiengineering.com/products/100-grit",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2ff40ccf940520f023edbbb9c21479bda01d5c076c23fe4e0de3366a595dd5b1",
+   "timestamp": "2026-11-05T21:12:46Z"
+  },
+  {
+   "slug": "schlappi-engineering-angle-grinder",
+   "url": "https://schlappiengineering.com/products/angle-grinder",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ae274bada61079e4214214f005a436b7dfd2db8a1d257615c50669c7c0003d80",
+   "timestamp": "2026-11-05T21:12:47Z"
+  },
+  {
+   "slug": "schlappi-engineering-btfld",
+   "url": "https://schlappiengineering.com/products/btfld",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "81fc65226af34d0cbf01fb5dc0bd0fdb2ae14932c0fcd93c92e46a3af65e7c14",
+   "timestamp": "2026-11-05T21:12:48Z"
+  },
+  {
+   "slug": "schlappi-engineering-boundary",
+   "url": "https://schlappiengineering.com/products/boundary",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "da1e82f0ca5030793570211a1bb8a736aac6929640c791fb95530976304600a9",
+   "timestamp": "2026-11-05T21:12:49Z"
+  },
+  {
+   "slug": "schlappi-engineering-interstellar-radio",
+   "url": "https://schlappiengineering.com/products/interstellar-radio",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "16db2177f855778b29b24cc9ac3f646f45a83b906153c096aa971da61be9268f",
+   "timestamp": "2026-11-05T21:12:50Z"
+  },
+  {
+   "slug": "schlappi-engineering-nibbler",
+   "url": "https://schlappiengineering.com/products/nibbler-preorder",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "52680975e40fc27271ecd9ec3137d8351a48875f181c31f3ecd621cc17d63435",
+   "timestamp": "2026-11-05T21:12:51Z"
+  },
+  {
+   "slug": "schlappi-engineering-three-body",
+   "url": "https://schlappiengineering.com/products/three-body",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f5eb91bcca2d0b52983988c1b55c141ad6d79065e6d312b5ade3b2d24949f699",
+   "timestamp": "2026-11-05T21:12:52Z"
+  },
+  {
+   "slug": "setonixsynth-tidbit-audio-solar-voltages-two-channel-light-theremin",
+   "url": "https://www.setonixsynth.com/shop/p/solar-voltages",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a8545f7d35b8d53fb14c6e34224f7ed8bbec74f52ea09974a9c0001fc5e52bcd",
+   "timestamp": "2026-11-05T21:12:54Z"
+  },
+  {
+   "slug": "sfeo-pushr",
+   "url": "http://www.sfeo.fr/pushr.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "33cc0f3067ce276de04cd2e775eb972568a4bf88c46b3bb1ea963731681fd571",
+   "timestamp": "2026-11-05T21:13:16Z"
+  },
+  {
+   "slug": "sonic-potions-potions",
+   "url": "https://www.sonic-potions.com/descent",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1726e86edda25e4a1a20682c8fc75494f3d27684ceecbdfbaf37ef119f5829e1",
+   "timestamp": "2026-11-05T21:13:56Z"
+  },
+  {
+   "slug": "soundmachines-ls1lightstrip",
+   "url": "https://www.sound-machines.it/product/ls1lightstrip/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "96401ce70dde5790ad8ef10e71d523c67cedbca850225cfdfb5ccacdef844e8a",
+   "timestamp": "2026-11-05T21:13:59Z"
+  },
+  {
+   "slug": "studiokat-st-amp-1u",
+   "url": "https://www.studiokat.jp/items/122696529",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "4c680653029c675fab004c8d2e725c482228acf53f694a3a0cb4b3d9ed395ef4",
+   "timestamp": "2026-11-05T21:14:02Z"
+  },
+  {
+   "slug": "synquanon-hex-bypass",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "syntesla-frontiers-1-hp-coloured-light-module",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "syntesla-frontiers-1hp-light-module-basic-kit",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "synthrotek-4093-chaos-nand",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "synthrotek-nandamonium",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "synthrotek-usb-power",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "syntonie-animate",
+   "url": "https://syntonie.fr/products/animate",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7fa177b3306cff6d0f19f8065daddea94e09cc051b8bb85417d9d11ac45bbbb1",
+   "timestamp": "2026-11-05T21:14:04Z"
+  },
+  {
+   "slug": "syntonie-cadrans",
+   "url": "https://syntonie.fr/products/cadrans",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ca467c292344ebb351b3cca8ac1a6bebf84b7985c21c4c6b246a922b4d6fedfb",
+   "timestamp": "2026-11-05T21:14:05Z"
+  },
+  {
+   "slug": "syntonie-matrice",
+   "url": "https://syntonie.fr/products/matrice-1x3-matrix-mixer-triple-vca",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e4b353d69f55d96916756b802c0d6737abda52dddf55cadee114b250bdab422a",
+   "timestamp": "2026-11-05T21:14:06Z"
+  },
+  {
+   "slug": "syntonie-seuils",
+   "url": "https://syntonie.fr/products/seuils-triple-comparator-boolean-logic-ramp-shifter",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "fa0ba4ee61d9dfd68b6609a24a65bc65015279ea982170e06a413af51cfe0b5e",
+   "timestamp": "2026-11-05T21:14:07Z"
+  },
+  {
+   "slug": "syntonie-solaire",
+   "url": "https://syntonie.fr/products/solaire-full-wave-rectifier-21-mixer",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "4003d81c85e3bc1cdefcbfac0f4122ad66e270e71b075a18d977b19789b49eeb",
+   "timestamp": "2026-11-05T21:14:08Z"
+  },
+  {
+   "slug": "syntonie-vu006",
+   "url": "https://syntonie.fr/products/vu006-quadrature-oscillator",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f7d8342832ae47c597e6495eb59e5da6c56368d9cd1c142bfa912c39104e9451",
+   "timestamp": "2026-11-05T21:14:09Z"
+  },
+  {
+   "slug": "tlm-audio-cv-pan",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "tlm-audio-modax-mutable-instruments-elements-clone",
+   "url": "https://www.tlm-audio.com/product-page/modax-mutable-instruments-elements-clone",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "12f535ff45937cf78f55b2e7a20a25a7c7ac06cdb6d0f7f5ee0b0084181f4bb2",
+   "timestamp": "2026-11-05T21:14:14Z"
+  },
+  {
+   "slug": "tlm-audio-physc-mutable-instruments-rings-clone",
+   "url": "https://www.tlm-audio.com/product-page/physc-mutable-instruments-rings-clone",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "138fe1979e705bab5921b74aed9fb8f0a59b370199554896ddb474372f53dc50",
+   "timestamp": "2026-11-05T21:14:16Z"
+  },
+  {
+   "slug": "tall-dog-rings-se",
+   "url": "https://www.tall-dog.com/uRings_SE.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "bee7dcdc6a76d9abeb0855fb6fac78efb2ad65c8bdf79eef5ab836ceac8dbc20",
+   "timestamp": "2026-11-05T21:14:18Z"
+  },
+  {
+   "slug": "tall-dog-o-c-se",
+   "url": "https://www.tall-dog.com/uo_C_SE.html",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "f6940707381ed52c0bb201108d5159e759caacafecbb9bfbfd43b38c0deb391b",
+   "timestamp": "2026-11-05T21:14:19Z"
+  },
+  {
+   "slug": "teia-driftlog",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "tenderfoot-electronics-morse",
+   "url": "https://tenderfootelectronics.com/products/morse",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9796ef6d585aa792c4787b521ec6b9e297ced8235a6aae317c0fb54a19a74f85",
+   "timestamp": "2026-11-05T21:14:20Z"
+  },
+  {
+   "slug": "thonk-befaco-burst",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "tokyo-tape-music-center-dual-control-voltage-processor-model-156",
+   "url": "https://tokyo-tape-music-center.com/product/dual-control-voltage-processor-model-156/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6214990057d6ac8321c644f7d08cf156259ba67c9d1f9b2460a630a9bd380399",
+   "timestamp": "2026-11-05T21:15:01Z"
+  },
+  {
+   "slug": "tokyo-tape-music-center-timbre-single",
+   "url": "https://tokyo-tape-music-center.com/product/timbre-single/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "507008c386248dad3ac031cf137c049fd69f153c61ddf548187cb55a31e0cacd",
+   "timestamp": "2026-11-05T21:15:21Z"
+  },
+  {
+   "slug": "tokyo-tape-music-center-timing-pulse-generator-model-140",
+   "url": "https://tokyo-tape-music-center.com/product/timing-pulse-generator-model-140/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9a7434737a4916c29f6d3269fa440fb9470e2a1dc5f812e2496d72f32fa902cb",
+   "timestamp": "2026-11-05T21:15:42Z"
+  },
+  {
+   "slug": "touellskouarn-ar-merc-het-brao-tabletop",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "tronix-audio-mimic",
+   "url": "https://tronix-audio.de/mimic/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "c16438508702af050dead2b6e532edaf78730d9ea40034dd4af10a76c69210c0",
+   "timestamp": "2026-11-05T21:15:49Z"
+  },
+  {
+   "slug": "tsyklon-labs-chaos-divider-hv",
+   "url": "https://tsyklon.com/chaos-divider-hv-sacrament-edition/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3d40999eadcb6721a7ae5c0124427719af0069d35b7a76f058391aae76f7c33a",
+   "timestamp": "2026-11-05T21:15:51Z"
+  },
+  {
+   "slug": "tubeohm-sonic-potions",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "twang-modular-34u",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "twang-modular-cpp",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "vaski-embedded-lights-stereo-visualizer",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "verbos-electronics-amp-tone-2020-version",
+   "url": "https://verboselectronics.com/amp-tone-2020-version/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "fd8bfe9b4f1a4026ef4b9a6f5c1fbeab56e00135c551e864668ab52c54e3c639",
+   "timestamp": "2026-11-05T21:16:04Z"
+  },
+  {
+   "slug": "verbos-electronics-control-voltage-processor",
+   "url": "https://verboselectronics.com/control-voltage-processor/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "5750091b9dcb2d0d6b501477df818f9a9db0c75f407bb9debf22eb292440200d",
+   "timestamp": "2026-11-05T21:16:08Z"
+  },
+  {
+   "slug": "verbos-electronics-dual-four-pole",
+   "url": "https://verboselectronics.com/dual-four-pole/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "a0188d9e566b2ccea3552f33af92e5216e79d1abb52958e2ffa41b2f76316b68",
+   "timestamp": "2026-11-05T21:16:09Z"
+  },
+  {
+   "slug": "verbos-electronics-haas-zone-processor",
+   "url": "https://verboselectronics.com/haas-zone-processor/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "fdbe1ff3ba64eac6def7e41d9569dcc67cb183c4a74b86dcadcc9316ed3b1d99",
+   "timestamp": "2026-11-05T21:16:13Z"
+  },
+  {
+   "slug": "verbos-electronics-mini-horse",
+   "url": "https://verboselectronics.com/mini-horse/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1b38f4e6d6959d68cad76542fd9aa608258be19e1f65bf9ef6768d849cb25841",
+   "timestamp": "2026-11-05T21:16:17Z"
+  },
+  {
+   "slug": "verbos-electronics-sawtoooth-stack",
+   "url": "https://verboselectronics.com/sawtoooth-stack/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "22e1ed42ae63fcc101b8906e16811a5461b6b7f0ae057dbc6df438703d2059c7",
+   "timestamp": "2026-11-05T21:16:20Z"
+  },
+  {
+   "slug": "verbos-electronics-scan-pan",
+   "url": "https://verboselectronics.com/scan-pan/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "eb601643dbd924efa344e019adf0fa29afa6b7808bd3501060d41265494b5043",
+   "timestamp": "2026-11-05T21:16:22Z"
+  },
+  {
+   "slug": "wgd-modular-carciofo",
+   "url": "https://wgdmodular.de/module/carciofo/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b83844fc650e0029474f9e2710466c140bacdb3dd962d75fd770d2b4f285b21d",
+   "timestamp": "2026-11-05T21:16:24Z"
+  },
+  {
+   "slug": "wgd-modular-ramen",
+   "url": "https://wgdmodular.de/module/ramen/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "986a3fbc8747b8d493f92e2e6dc58a9e8e61a9c050a6d6f5353f45c03acecde7",
+   "timestamp": "2026-11-05T21:16:25Z"
+  },
+  {
+   "slug": "wmd-4tten",
+   "url": "https://www.wmdevices.com/products/4tten",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "255f9e5556dc5503d02fc32fc42a7a31be28e82204bf6d60498da5bd7941307e",
+   "timestamp": "2026-11-05T21:16:26Z"
+  },
+  {
+   "slug": "wmd-axys",
+   "url": "https://www.wmdevices.com/products/axys",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8d548d5252c096442321be0511133cd2b1c058604a10f9afc673957d50a7b9cc",
+   "timestamp": "2026-11-05T21:16:27Z"
+  },
+  {
+   "slug": "wmd-arpitecht-triad",
+   "url": "https://www.wmdevices.com/products/arpitecht-triad",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "cf1d520796c9f0bbc34ac7c69e87a17686f118df7dcf572c93f5910f01ef62ac",
+   "timestamp": "2026-11-05T21:16:28Z"
+  },
+  {
+   "slug": "wmd-black-panels-for-wmd",
+   "url": "https://www.wmdevices.com/products/black-panels",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "861bd80704f6a80c91eca95964601012c9b0e26e1bc3a1bd77dacfe3f2a372f7",
+   "timestamp": "2026-11-05T21:16:29Z"
+  },
+  {
+   "slug": "wmd-bus-rider",
+   "url": "https://www.wmdevices.com/products/bus-rider",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "bd8088374635b414d02641c103f4b669c1e433c3bf0ebd3097ae63c0088c337a",
+   "timestamp": "2026-11-05T21:16:30Z"
+  },
+  {
+   "slug": "wmd-chnl-srfr-channel-surfer",
+   "url": "https://www.wmdevices.com/products/channel-surfer",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "1056e7843a27331d56227a1ad2b22c962ab319ba561ff13ae71b44108a30df41",
+   "timestamp": "2026-11-05T21:16:31Z"
+  },
+  {
+   "slug": "wmd-chimera",
+   "url": "https://www.wmdevices.com/products/chimera",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3552519cd13cdf1fbcc30f558a8c453b255fc103fc15324452dd83a217826442",
+   "timestamp": "2026-11-05T21:16:32Z"
+  },
+  {
+   "slug": "wmd-clutch",
+   "url": "https://www.wmdevices.com/products/clutch",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6aff75a48d3f10dfc013af5096dcf5614fb3d0422b934f1358087a8b2f9cd739",
+   "timestamp": "2026-11-05T21:16:33Z"
+  },
+  {
+   "slug": "wmd-cosmic-debris",
+   "url": "https://www.wmdevices.com/products/cosmic-debris",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "fa35ac3236e4a96d60715cb6ae33a85095290835dd9d51a4855b5811fcaaf8b8",
+   "timestamp": "2026-11-05T21:16:34Z"
+  },
+  {
+   "slug": "wmd-crucible",
+   "url": "https://www.wmdevices.com/products/crucible",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "da240c806d209ba474dbbef3b364396211adddf2bd43a1ee0f85d3c88c447811",
+   "timestamp": "2026-11-05T21:16:35Z"
+  },
+  {
+   "slug": "wmd-fracture",
+   "url": "https://www.wmdevices.com/products/fracture",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "49fe0a9fdd4b2036a35eecd75c26e3d162fdab0a70f8abc69800d9400bc17cb2",
+   "timestamp": "2026-11-05T21:16:36Z"
+  },
+  {
+   "slug": "wmd-javelin",
+   "url": "https://www.wmdevices.com/products/javelin",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b27a4ad6fc4bba77a36fdafa57cabaed858c705063254df8b6ac611b607963c7",
+   "timestamp": "2026-11-05T21:16:37Z"
+  },
+  {
+   "slug": "wmd-legion",
+   "url": "https://www.wmdevices.com/products/legion",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ad05e54548ddb485c4319a54a1b133bfb269a06722f08f055022941367ae85f5",
+   "timestamp": "2026-11-05T21:16:38Z"
+  },
+  {
+   "slug": "wmd-mscl",
+   "url": "https://www.wmdevices.com/products/mscl",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7cd1b17613892e3fbe40d2cfa15a5672930e7d54b6a64f2db445269eb048b596",
+   "timestamp": "2026-11-05T21:16:39Z"
+  },
+  {
+   "slug": "wmd-modbox-mkii",
+   "url": "https://www.wmdevices.com/products/modbox-mkii",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "cdcd421f2ede7bbcb6e04de741a95820aa539b65464916af056cc9a4fa8a7f86",
+   "timestamp": "2026-11-05T21:16:40Z"
+  },
+  {
+   "slug": "wmd-osd-or-sum-dif",
+   "url": "https://www.wmdevices.com/products/osd-or-sum-dif",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6dbb0fd9fba5ee1f0376505c2c0e442c7e92b177c5da7055f0bd5cadaafe2818",
+   "timestamp": "2026-11-05T21:16:41Z"
+  },
+  {
+   "slug": "wmd-orion",
+   "url": "https://www.wmdevices.com/products/orion",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "7ecce6cc9186a5b09ea8290ad51c9f9e512fcd3ee124449d2bb405041c943de2",
+   "timestamp": "2026-11-05T21:16:42Z"
+  },
+  {
+   "slug": "wmd-pm-channels-mkii",
+   "url": "https://www.wmdevices.com/products/pm-channels-mkii",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8ace741a6f2467ffffd80e4009ffb74bccab4b392e708803f11951e78be806cd",
+   "timestamp": "2026-11-05T21:16:43Z"
+  },
+  {
+   "slug": "wmd-pm-db25-mkii",
+   "url": "https://www.wmdevices.com/products/pm-db25-mkii",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "fd70c8aafac745cb7f8ab6c06b05989040c05b67b2e4231af5bb8b86714c9a20",
+   "timestamp": "2026-11-05T21:16:44Z"
+  },
+  {
+   "slug": "wmd-pm-mkii-direct-outs-expansion",
+   "url": "https://www.wmdevices.com/products/pm-mkii-direct-outs-expansion-8-stereo-channels-pre-or-post",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "e539a4698adc65bad9b2ca3d9dc6d8e39f647fd4ed6fc56eec50d9f188f020b8",
+   "timestamp": "2026-11-05T21:16:45Z"
+  },
+  {
+   "slug": "wmd-pm-mkii-returns",
+   "url": "https://www.wmdevices.com/products/pm-mkii-returns-3-additional-aux-returns-for-pm-mkii",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "70d03f2de7d71a7133849f63668abe829d1a6ded8fd05029b959ac5d5ca32989",
+   "timestamp": "2026-11-05T21:16:46Z"
+  },
+  {
+   "slug": "wmd-sclpl",
+   "url": "https://www.wmdevices.com/products/sclpl",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6eb80be7168238f94d2da0780a14afec011c47cf9f145dcd0e97ff0ce22d622a",
+   "timestamp": "2026-11-05T21:16:47Z"
+  },
+  {
+   "slug": "wmd-sl3kt",
+   "url": "https://www.wmdevices.com/products/sl3kt",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3c14942851fb26f5ca5c5192a1da0ace33fcf1429ed1b50315eaa068238cf4f7",
+   "timestamp": "2026-11-05T21:16:48Z"
+  },
+  {
+   "slug": "wmd-skorpion",
+   "url": "https://www.wmdevices.com/products/skorpion-waveform-reanimator",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "9f387114b0b4dab3d9525090a637f211cd8ca2af39c5c8494aa4f4176d596a20",
+   "timestamp": "2026-11-05T21:16:49Z"
+  },
+  {
+   "slug": "wmd-subway",
+   "url": "https://www.wmdevices.com/products/subway",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "adb5e374491a77867a68055c862457bf8c9397d59cee75d438ee03e7a4996659",
+   "timestamp": "2026-11-05T21:16:50Z"
+  },
+  {
+   "slug": "wmd-time-warp",
+   "url": "https://www.wmdevices.com/products/time-warp",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "8f332955d407837c07bd4bba8b7d2939df3778f0d8db8bd8d5a4bea665b17d49",
+   "timestamp": "2026-11-05T21:16:51Z"
+  },
+  {
+   "slug": "wmd-volt",
+   "url": "https://www.wmdevices.com/products/volt",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "6751081bc85be2ea3b545e6f7f55a18e6f20d49c360d5c7b410ff2859560cd12",
+   "timestamp": "2026-11-05T21:16:52Z"
+  },
+  {
+   "slug": "wmd-voltera",
+   "url": "https://www.wmdevices.com/products/voltera",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3ec221c564f15af7cbb54354c1dfe0695bc8153c43e8766df818f1adae97566e",
+   "timestamp": "2026-11-05T21:16:53Z"
+  },
+  {
+   "slug": "wackylab-dmx-extension-for-master-of-lights",
+   "url": "https://www.wackylab.ch/product/master-of-lights-dmx-ext/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "926bfaaa08e6ef9f901365dbed5c33106a91bedaaf668e8770cbcd8c13aa1b6b",
+   "timestamp": "2026-11-05T21:16:58Z"
+  },
+  {
+   "slug": "wackylab-lords-of-chaos-4hp",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "winterbloom-speak-to-me-kit",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "x-audio-systems-vcradio",
+   "url": "https://xaudiosystems.com/vcradio/",
+   "outcome": "robots.txt answered 403",
+   "status": null,
+   "method": "robots_refused",
+   "note": "robots.txt answered 403",
+   "sha256": null,
+   "timestamp": "2026-11-05T21:17:18Z"
+  },
+  {
+   "slug": "apf-audio-eurorack-pmod",
+   "url": "https://apf.audio/modules/current/pmod/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3728f2eff49ad0a8aaa4846d7f7bdbb37d485c04d1ee2befea3b5fc624d28617",
+   "timestamp": "2026-11-05T21:17:20Z"
+  },
+  {
+   "slug": "apf-audio-eurorack-pmod-r3-1",
+   "url": "https://apf.audio/modules/past/pmod-r31/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b0cb696070e061ad220684df6243a9191a1d4f7117e577cf3acf2b6d0cd8162b",
+   "timestamp": "2026-11-05T21:17:20Z"
+  },
+  {
+   "slug": "b-art-instruments-b-15",
+   "url": "https://bartinstruments.com/products/b-15",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "2382f9d4bd75e227ecf3505c1c1455bec8000ef7fc279146ce4607226d1bf2f4",
+   "timestamp": "2026-11-05T21:17:22Z"
+  },
+  {
+   "slug": "dotred-audio-designs-blonx",
+   "url": "https://www.dotred-audio-designs.com/de/product-page/blonx",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "ef2222a5ca228aaa0c9b076055eab2bdc4f29ea2454f74c624a52c35e6625648",
+   "timestamp": "2026-11-05T21:17:26Z"
+  },
+  {
+   "slug": "ph-modular-silence",
+   "url": null,
+   "outcome": "no_url",
+   "status": null,
+   "method": null,
+   "note": null,
+   "sha256": null,
+   "timestamp": null
+  },
+  {
+   "slug": "selestium-modular-osculatrix-for-the-times-intersect-in-ways-we-cannot-fathom",
+   "url": "https://modular.selestium.net/modules/osculatrix_times/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "3ebcdfabfb04f2b4263a6c521692914948e4706ee42330c7b50f0e2e20316539",
+   "timestamp": "2026-11-05T21:17:28Z"
+  },
+  {
+   "slug": "vpme-de-upwr",
+   "url": "https://vpme.de/upwr/",
+   "outcome": "read",
+   "status": 200,
+   "method": "free_http",
+   "note": null,
+   "sha256": "b3bf8a21ed2a6d55459b0d24c97cb10b033015929a8be69bae3c0a38b5853aef",
+   "timestamp": "2026-11-05T21:17:41Z"
+  }
+ ],
+ "named_pages": [
+  {
+   "url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200pi",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "6a06a67d2fabaf033af66facbe2824cc0bca09619cbd5ae2b7cc4dffc6dd0198"
+  },
+  {
+   "url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200s",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "ce345b391d069db4fb692a2332dd05db73842535ed6a1043d23746707e830bee"
+  },
+  {
+   "url": "https://www.addacsystem.com/en/products/modules/addac500-series/addac501b",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "475c8a15e55f5dce2ec32c30eb3cb7adc483e70933ee342407ba28fb206190d8"
+  },
+  {
+   "url": "https://www.addacsystem.com/en/products/modules/addac100-series/addac101",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "a4b378ee147e4bd77bd0fa1552956fd8bb1890d00716777b593457abd6705b16"
+  },
+  {
+   "url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac203",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "22f7392a9a7a30639f078bb85c41f70a2d9dae87638b20ea610290c69abb4b1b"
+  },
+  {
+   "url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac001",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "5b6dd591e3240508f112321d8f7f7aa9bde8b82768c1e80d6591f4f3639e287c"
+  },
+  {
+   "url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac003",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "db5ae1c73d40ce91dab60e766cd3224d7de8051a2adde0a6054a4f5cc14199f4"
+  },
+  {
+   "url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac005",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "2f7b548a3d40479d650f9831ef2e2b9b3d264c8cd6f17d85d1e51f0be27e353f"
+  },
+  {
+   "url": "https://doepfer.de/a1014.htm",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "d82e268d5c937cdbceb96425b29a0e587c03c86e4612c72be239ea6595fb4b91"
+  },
+  {
+   "url": "https://www.makenoisemusic.com/modules/strega/",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "187a509f370f1a6578b8bdae4bafa8ad55ec3fffb0e5cd4ac7e3f8a841f950d4"
+  },
+  {
+   "url": "https://www.makenoisemusic.com/modules/mysteron/",
+   "outcome": "cache",
+   "status": 404,
+   "note": null,
+   "sha256": "067d4e31a8739ab708498d1324be0a2282696566c41042092cc35c940c145923"
+  },
+  {
+   "url": "https://www.cwejman.net/d-lfo.htm",
+   "outcome": "robots.txt answered 522",
+   "status": null,
+   "note": "robots.txt answered 522",
+   "sha256": null
+  },
+  {
+   "url": "https://www.instruomodular.com/product/dail/",
+   "outcome": "robots.txt answered 202",
+   "status": null,
+   "note": "robots.txt answered 202",
+   "sha256": null
+  },
+  {
+   "url": "https://aircraftdesigns.info/dc",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "758a472db5f17004171f2d9d451a55c0d7d8485136adc00f683fab4d6b3c6335"
+  },
+  {
+   "url": "https://www.st-modular.de/modules/pow!",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "dcb81902023a921d63bd9fc6aa2fd91dee8682aa6aa068b6d47d14c428518d5d"
+  },
+  {
+   "url": "https://www.st-modular.de/modules/usb",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "f7dc00e32d3d33e5fe3128fee7da29de29b425ed5c4165e30496b68e5bf208e7"
+  },
+  {
+   "url": "https://wgdmodular.de/module/stv/",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "d03546a754b0461143ab64a4ac9c7b616986ecd2275e8d223b5988be5d87edc2"
+  },
+  {
+   "url": "http://www.hexinverter.net/mutant-chicken",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "016618cf29779b0961efbf474a102e80f0e4ec91ffc7fbc04140b9d4db604ab3"
+  },
+  {
+   "url": "https://www.afterlifelaboratories.com/shop/p/zomplr8fkppggyayn1yz9zczuclakq",
+   "outcome": "read",
+   "status": 200,
+   "note": null,
+   "sha256": "5d21a51e800c05d3fc4296d1633ec8ce2dccd8dac0b8b19efcba6e4dc6d5b168"
+  }
+ ]
+}

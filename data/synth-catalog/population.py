@@ -370,12 +370,14 @@ PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "maker-corrections-v4.json",
     CATALOG / "provenance" / "maker-corrections-v5.json",
     CATALOG / "provenance" / "maker-corrections-v6.json",
+    CATALOG / "provenance" / "maker-corrections-v7.json",
 )
 # Run after the category overlays and module inserts (see build_plan).
 CATEGORY_CORRECTION_MANIFESTS = (
     CATALOG / "provenance" / "category-corrections-v1.json",
     CATALOG / "provenance" / "category-corrections-v2.json",
     CATALOG / "provenance" / "category-corrections-v3.json",
+    CATALOG / "provenance" / "category-corrections-v4.json",
 )
 # A row's Module Category: module_catalog.category, and modules.module_type on the row the
 # patch engine reads. A manifest may only correct these, never null, flag or relabel them.

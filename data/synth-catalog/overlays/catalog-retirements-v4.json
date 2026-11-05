@@ -1,0 +1,97 @@
+{
+ "dataset_version": "catalog-retirements-v4",
+ "generated_from": "hand review of the free reads of 2026-11-05",
+ "decided": "2026-11-04: owner decisions 4, 13 and 14 (docs/evidence/OWNER_DECISIONS_2026-11-04.md)",
+ "policy": "tombstone, never delete: module_catalog.tombstoned_at + reason, modules.status='tombstoned'",
+ "count": 11,
+ "rows": [
+  {
+   "slug": "avalon-harmonics-alcove-printed-blank",
+   "brand": "Avalon Harmonics",
+   "name": "Alcove (Printed Blank)",
+   "owner": "Avalon Harmonics",
+   "evidence_url": "https://shop.avalon-harmonics.com/products/avalon-harmonics-alcove",
+   "reason": "a Blank Panel, not a Module (decisions 13, 14). The page says \"Blank for storing manuals\""
+  },
+  {
+   "slug": "ethereal-electronics-starlight-16hp",
+   "brand": "Ethereal Electronics",
+   "name": "Starlight 16HP",
+   "owner": "Ethereal Electronics",
+   "evidence_url": "https://etherealelectronics.nl/products/starlight",
+   "reason": "a lit Blank Panel, not a Module (decisions 13, 14). The page says \"Blanks don't have to be filled\""
+  },
+  {
+   "slug": "ethereal-electronics-starlight-8hp",
+   "brand": "Ethereal Electronics",
+   "name": "Starlight 8HP",
+   "owner": "Ethereal Electronics",
+   "evidence_url": "https://etherealelectronics.nl/products/starlight-8hp",
+   "reason": "a lit Blank Panel, not a Module (decisions 13, 14). The page says \"Blanks don't have to be filled\""
+  },
+  {
+   "slug": "morph-modular-wormhole-portal",
+   "brand": "Morph Modular",
+   "name": "Wormhole Portal",
+   "owner": "Morph Modular",
+   "evidence_url": "https://morphmodular.com/product/wormhole-portal/",
+   "reason": "a Blank Panel, not a Module (decisions 13, 14). The page says \"blank panel\""
+  },
+  {
+   "slug": "plankton-electronics-nutone-pcb-only",
+   "brand": "Plankton Electronics",
+   "name": "NUTONE PCB only",
+   "owner": "Plankton Electronics",
+   "evidence_url": "https://www.planktonelectronics.com/store/nutone-pcb-only/",
+   "reason": "a bare PCB that never occupies HP (decision 14). The page says \"PCB\""
+  },
+  {
+   "slug": "pittsburgh-modular-lifeforms-hp-6",
+   "brand": "Pittsburgh Modular",
+   "name": "Lifeforms HP-6",
+   "owner": "Pittsburgh Modular",
+   "evidence_url": "https://pittsburghmodular.com/lifeforms-hp6",
+   "reason": "a Blank Panel, not a Module (decisions 13, 14). The page says \"Blank Logo Panel\""
+  },
+  {
+   "slug": "wmd-black-panels-for-wmd",
+   "brand": "WMD",
+   "name": "Black Panels for WMD",
+   "owner": "WMD",
+   "evidence_url": "https://www.wmdevices.com/products/black-panels",
+   "reason": "replacement panels, not a working unit (decision 13). The page says \"replacement panels\""
+  },
+  {
+   "slug": "behringer-eurorack-rack",
+   "brand": "Behringer",
+   "name": "EURORACK RACK",
+   "owner": "Behringer",
+   "evidence_url": "https://www.behringer.com/en/products/0720-ABJ",
+   "reason": "a case, not a Module (decision 4). The page says \"case kit\""
+  },
+  {
+   "slug": "doepfer-a-100-systeme",
+   "brand": "Doepfer",
+   "name": "A-100 Systeme",
+   "owner": "Doepfer",
+   "evidence_url": "https://www.doepfer.de/a100s_d.htm",
+   "reason": "a page listing complete systems, not a Module (decision 4). The page says \"Komplettsysteme\""
+  },
+  {
+   "slug": "free-modular-modular",
+   "brand": "Free Modular",
+   "name": "Modular",
+   "owner": "Free Modular",
+   "evidence_url": "https://freemodular.org/modules/RNG",
+   "reason": "a collection of DIY designs, not a Module (decision 4). The page says \"collection of free\""
+  },
+  {
+   "slug": "humble-audio-audio",
+   "brand": "Humble Audio",
+   "name": "Audio",
+   "owner": "Humble Audio",
+   "evidence_url": "https://humble.audio/",
+   "reason": "the maker's home page, not a Module (decision 4). The page says \"Makers of\""
+  }
+ ]
+}

@@ -487,7 +487,12 @@ def test_decision_54_moves_the_dc_distros_to_system_and_no_other_weak_row(fresh)
         assert modules[(row["brand"], row["name"])]["module_type"] == "SYSTEM", slug
     stats = plan.provenance["category-corrections-v3"]
     assert stats["corrected_values"] == 4 and stats["value_not_matched"] == 0 and stats["rows_missing"] == 0
-    named = {r.get("slug") for path in P.CATEGORY_CORRECTION_MANIFESTS for r in json.loads(path.read_text())["rows"]}
+    # Decision 54: these stay as they are until a maker page says otherwise. v4 is that page.
+    maker_page = CATALOG / "provenance" / "category-corrections-v4.json"
+    named = {
+        r.get("slug") for path in P.CATEGORY_CORRECTION_MANIFESTS if path != maker_page
+        for r in json.loads(path.read_text())["rows"]
+    }
     assert not named & WEAK_VIDEO_EVIDENCE
 
 
