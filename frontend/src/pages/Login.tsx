@@ -207,6 +207,13 @@ export default function LoginPage() {
                 </p>
               ) : null}
 
+              {mode === "register" ? (
+                <p className="auth-back muted">
+                  What PatchHive stores about you is in the{" "}
+                  <Link to="/privacy">privacy notice</Link>.
+                </p>
+              ) : null}
+
               <button
                 type="submit"
                 className="button button-primary auth-submit"

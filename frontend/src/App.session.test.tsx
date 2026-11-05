@@ -23,6 +23,24 @@ afterEach(() => {
 });
 
 describe("App session restore", () => {
+  it("serves the privacy notice and links it from the footer", async () => {
+    session.restoreSession.mockResolvedValue(null);
+    window.history.pushState({}, "", "/privacy");
+
+    render(<App />);
+
+    // The page loads on demand, which takes longer than the default wait on a busy machine.
+    const heading = await screen.findByRole("heading", { level: 1 }, { timeout: 15_000 });
+    expect(heading).toHaveTextContent("Privacy notice");
+    expect(screen.getByRole("contentinfo")).toContainElement(
+      screen.getByRole("link", { name: "Privacy notice" }),
+    );
+    expect(screen.getByRole("link", { name: "Privacy notice" })).toHaveAttribute(
+      "href",
+      "/privacy",
+    );
+  });
+
   it("holds the routes back while the restore is pending, and renders them once it settles", async () => {
     let settle: (token: string | null) => void = () => {};
     session.restoreSession.mockReturnValue(new Promise((resolve) => (settle = resolve)));
