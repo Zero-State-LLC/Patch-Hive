@@ -176,13 +176,23 @@ Loaded from branch `catalog/free-reads`, before merge. The owner confirmed this 
 
 Reading staging's public API afterwards: the catalog total went from 3,171 to 3,160, public rows with no category from 555 to 278, and none of the rows mentions ModularGrid. UPWR, SOURCE MK3 and POW! show no draw, ST Modular USB keeps its 8 mA, and the retired rows are gone. Yarns, Frames, Edges, ADDAC200PI and Akemie's Castle are hidden from anonymous reads, so only the receipt shows those changes.
 
-## Production, not yet loaded
+## Production
 
-Dry run [42119014963](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42119014963), from the same branch, wrote nothing. Its plan matches staging's.
+Loaded from `main` at `9f2458f`, after [#304](https://github.com/Zero-State-LLC/Patch-Hive/pull/304) merged, on the owner's yes with these hashes. The owner also accepted again what decision 56 accepted for the last load: the same revision and seed can give different patches ([#295](https://github.com/Zero-State-LLC/Patch-Hive/issues/295)).
 
 - `plan_hash`: `95e8c235c4c47f5b3cf3c6a9572b8a23bd39f94621d5b3c40a75b2a7d801cdd8`
 - `inputs_hash`: `2097e4cb323d894d81f8d3e16615d9ceeb48c35784eca27bb99222c587e5cab9`
 - 0 conflicts, no destructive SQL.
+
+| Step | Run | Result |
+|---|---|---|
+| Dry run, branch | [42119014963](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42119014963) | Wrote nothing |
+| Dry run, `main` | [42121471720](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42121471720) | Same hashes |
+| Apply | [42121922244](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42121922244) | The counts above. The archive went from 4,978 to 5,306 rows |
+| Second dry run | [42122862766](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42122862766) | Plans nothing |
+| Smoke | [42122884099](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42122884099) | 10/10 |
+
+Reading production's public API afterwards: the catalog total went from 3,171 to 3,160, public rows with no category from 555 to 278, and none of the rows mentions ModularGrid. All 5 supplies show no draw, and the retired rows are gone. Every public row matches staging's, apart from `imported_at`. Rows anonymous reads leave out weren't compared.
 
 ## Not in this change
 
