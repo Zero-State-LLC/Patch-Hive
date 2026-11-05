@@ -1,0 +1,62 @@
+{
+  "api": "https://api-staging.patch-hive.com",
+  "checked_at": "2026-11-05T03:52:18Z",
+  "evidence_id": "ev-e0dee366c91648afa9c3",
+  "image_asset_id": "img-5ca5374f8ba4465f9cb9",
+  "image_sha256": "033b8bef2fae67395f37529fabdcdb9568393e8ccd0bad440e723f154b1a5a2d",
+  "outcome": "PASS",
+  "rack_id": 1,
+  "receipt_sha256": "bea87d16a17ab5c4e7c89d93881d46787fa0a79cb64c40894167020980a273e3",
+  "resolution": {
+    "code": "DECISION_INTELLIGENCE_DISABLED",
+    "disposition": null,
+    "selected_choice": null,
+    "status": 409
+  },
+  "schema_version": "patchhive.staging-evidence-resolution-check.v1",
+  "source_commit_sha": "d2102d798f2fc7dab09e4d0ee237c9be45571bc7",
+  "steps": [
+    {
+      "code": null,
+      "ok": true,
+      "status": 200,
+      "step": "login_user"
+    },
+    {
+      "code": null,
+      "ok": true,
+      "status": 200,
+      "step": "list_private_racks"
+    },
+    {
+      "code": null,
+      "ok": true,
+      "status": 201,
+      "step": "upload_evidence"
+    },
+    {
+      "code": null,
+      "ok": true,
+      "status": 200,
+      "step": "list_candidates"
+    },
+    {
+      "code": "DECISION_INTELLIGENCE_DISABLED",
+      "ok": true,
+      "status": 409,
+      "step": "decision_resolution_1"
+    },
+    {
+      "code": "DECISION_INTELLIGENCE_DISABLED",
+      "ok": true,
+      "status": 409,
+      "step": "decision_resolution_2"
+    },
+    {
+      "code": null,
+      "ok": true,
+      "status": null,
+      "step": "idempotent_replay"
+    }
+  ]
+}

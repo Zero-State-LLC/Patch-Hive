@@ -10,6 +10,7 @@ import type { PowerSummary } from "@/lib/powerBudget";
 import type { CompatibilityResponse, Module, Rack, RackModule, RackModuleSpec } from "@/types/api";
 import PlacementRail from "./PlacementRail";
 import PowerMeters from "./PowerMeters";
+import RackWarnings from "./RackWarnings";
 
 /** A placed module as the rig returns it, or the gallery record while the rig reloads. */
 export type PlacedModule = NonNullable<RackModule["module"]> | Module;
@@ -208,6 +209,8 @@ export default function PlacementStep({
         {placements.length > 0 || rackCase ? (
           <PowerMeters summary={powerSummary} caseRails={rackCase} />
         ) : null}
+
+        <RackWarnings warnings={rack?.validation_warnings} />
 
         {retired.length > 0 ? (
           <div className="status status-warning builder-retired" role="status">

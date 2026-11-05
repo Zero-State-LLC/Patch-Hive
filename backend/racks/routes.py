@@ -22,7 +22,13 @@ from .catalog_compatibility import (
 )
 from .models import Rack, RackModule
 from .schemas import RackCreate, RackListResponse, RackResponse, RackUpdate
-from .validation import tombstone_note, tombstone_warning, validate_rack_configuration
+from .validation import (
+    IN_RACK_SUPPLY_CODE,
+    in_rack_supply_warning,
+    tombstone_note,
+    tombstone_warning,
+    validate_rack_configuration,
+)
 
 router = APIRouter()
 
@@ -243,8 +249,11 @@ def build_rack_response(
     rack_modules = db.query(RackModule).filter(RackModule.rack_id == rack.id).all()
     modules_response = []
     warnings = list(validation_warnings or [])
+    placed = []
     for index, rm in enumerate(rack_modules):
         module = db.query(Module).filter(Module.id == rm.module_id).first()
+        if module:
+            placed.append(module)
         # A tombstoned module stays placed; every read says so (not only the last write).
         note = tombstone_note(db, module) if module else None
         if note:
@@ -281,6 +290,12 @@ def build_rack_response(
                 ),
             }
         )
+
+    # Every read says this too; a write that changed placements has already added it.
+    if not any((w.details or {}).get("code") == IN_RACK_SUPPLY_CODE for w in warnings):
+        supply_warning = in_rack_supply_warning(placed)
+        if supply_warning:
+            warnings.append(supply_warning)
 
     # Count votes
     from community.models import Vote

@@ -11,8 +11,11 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 import pytest
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from account.deletion import anonymize_user
+from admin.models import AdminAuditLog
 from canon.contracts import ExportRequest
 from canon.exports import ExportBoundaryError, credit_balance, request_export
 from canon.models import CanonicalCreditLedgerEntryRecord
@@ -48,6 +51,15 @@ def _referred_pair(session: Session) -> tuple[User, User, Referral]:
     referral = create_referral(session, referrer=referrer, referred=referred)
     session.commit()
     return referrer, referred, referral
+
+
+def _delete_account(session: Session, user: User) -> None:
+    anonymize_user(session, user)
+    session.commit()
+
+
+def _withheld_traces(session: Session) -> list[AdminAuditLog]:
+    return session.query(AdminAuditLog).filter_by(action_type="referral_reward_withheld").all()
 
 
 def _export(user_id: int, key: str) -> ExportRequest:
@@ -168,3 +180,89 @@ def test_an_unresolved_purchase_writes_no_reward(db_session: Session) -> None:
     assert _referral_grants(db_session) == []
     assert {r.status for r in db_session.query(Referral)} == {"Pending"}
     assert credit_balance(db_session, referrer.id) == 0
+
+
+# --- Owner decision 44: a deleted referrer ------------------------------------------------
+
+
+def test_a_deleted_referrer_gets_no_reward_and_the_buyer_keeps_their_purchase(
+    db_session: Session,
+) -> None:
+    referrer, referred, referral = _referred_pair(db_session)
+    payment = _open_checkout(db_session, referred)
+    _delete_account(db_session, referrer)
+
+    intake = _deliver(
+        db_session, "evt_d44_first", "checkout.session.completed", _session_object(payment)
+    )
+
+    # The buyer's purchase is untouched.
+    assert (intake.record.status, intake.record.reason_code) == ("processed", None)
+    assert credit_balance(db_session, referred.id) == payment.credits
+    purchase = db_session.query(CreditsLedger).filter_by(change_type="Purchase").one()
+    assert (purchase.user_id, purchase.credits_delta) == (referred.id, payment.credits)
+    # No grant in either ledger, and the referral stays Pending.
+    assert _referral_grants(db_session) == []
+    assert db_session.query(CreditsLedger).filter_by(change_type="Grant").count() == 0
+    assert credit_balance(db_session, referrer.id) == 0
+    assert {r.status for r in db_session.query(Referral)} == {"Pending"}
+    # One auditable trace, with no personal data in it.
+    (trace,) = _withheld_traces(db_session)
+    assert (trace.actor_user_id, trace.actor_role) == (None, "System")
+    assert (trace.target_type, trace.target_id) == ("referral", str(referral.id))
+    assert trace.reason == "REFERRER_ACCOUNT_DELETED"
+    assert trace.delta_json == {
+        "credits_withheld": REFERRAL_REWARD_CREDITS,
+        "first_purchase_id": purchase.id,
+    }
+
+
+def test_a_deleted_referrer_is_traced_once_across_redelivery_and_later_purchases(
+    db_session: Session,
+) -> None:
+    referrer, referred, _referral = _referred_pair(db_session)
+    first = _open_checkout(db_session, referred)
+    second = _open_checkout(db_session, referred, credits=40)
+    _delete_account(db_session, referrer)
+    obj = _session_object(first)
+    _deliver(db_session, "evt_d44_a", "checkout.session.completed", obj)
+
+    redelivered = _deliver(db_session, "evt_d44_a2", "checkout.session.completed", obj)
+    later = _deliver(db_session, "evt_d44_b", "checkout.session.completed", _session_object(second))
+
+    assert (redelivered.record.status, later.record.status) == ("duplicate", "processed")
+    assert len(_withheld_traces(db_session)) == 1
+    assert _referral_grants(db_session) == []
+    assert credit_balance(db_session, referred.id) == first.credits + second.credits
+
+
+def test_a_failed_trace_does_not_cost_the_buyer_their_purchase(db_session: Session) -> None:
+    referrer, referred, _referral = _referred_pair(db_session)
+    payment = _open_checkout(db_session, referred)
+    _delete_account(db_session, referrer)
+    db_session.execute(text("DROP TABLE admin_audit_log"))
+    db_session.commit()
+
+    intake = _deliver(
+        db_session, "evt_d44_trace", "checkout.session.completed", _session_object(payment)
+    )
+
+    assert intake.record.status == "processed"
+    assert credit_balance(db_session, referred.id) == payment.credits
+    assert _referral_grants(db_session) == []
+    assert credit_balance(db_session, referrer.id) == 0
+
+
+def test_a_reward_paid_before_the_referrer_deleted_their_account_stays(
+    db_session: Session,
+) -> None:
+    """The ledger is append-only, so decision 44 stops new payouts and revokes nothing."""
+    referrer, referred, _referral = _referred_pair(db_session)
+    payment = _open_checkout(db_session, referred)
+    _deliver(db_session, "evt_d44_paid", "checkout.session.completed", _session_object(payment))
+
+    _delete_account(db_session, referrer)
+
+    assert credit_balance(db_session, referrer.id) == REFERRAL_REWARD_CREDITS
+    assert db_session.query(Referral).filter_by(status="Rewarded").count() == 1
+    assert _withheld_traces(db_session) == []

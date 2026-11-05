@@ -1,46 +1,101 @@
 # Plan: 001-rig-intelligence
 
-> **DRAFT, pending T001 confirmation.** An agent wrote this on 2026-11-03 from spec.md and the code on `main` at 3688037 (0.3.0-alpha.6). The owner has not approved it. T002 stays open until the owner confirms the spec (T001) and accepts this plan. If T001 changes spec.md, copy the carried sections again.
+> An agent finished this plan on 2026-11-04 under the owner's delegation, from [spec.md](spec.md), the [T001 record](T001_CONFIRMATION_2026-11-04.md) and the code on `main` at 007b437 (0.3.0-alpha.8). The owner has not read the spec. They accept this plan by merging the PR that adds it. If a later decision changes spec.md, copy the carried sections again.
+
+IDs such as D3 and O1 refer to the [T001 record](T001_CONFIRMATION_2026-11-04.md).
 
 ## Stack (as built)
 
-- Backend: Python (CI runs 3.12), FastAPI, SQLAlchemy 2, Alembic migrations, Pydantic 2 (`backend/pyproject.toml`).
+- Backend: Python 3.11 (`backend/Dockerfile` and the CI test jobs; `backend-lint` runs 3.12), FastAPI, SQLAlchemy 2, Alembic migrations, Pydantic 2 (`backend/pyproject.toml`).
 - Database: Postgres 15 (Neon in staging and production, a Postgres service in CI); unit tests use SQLite fixtures (`backend/tests/conftest.py`).
 - Frontend: React 18, TypeScript, Vite, React Router (`frontend/package.json`).
 - Edge: the Cloudflare Worker in `edge/api` fronts the API (spec 006).
-- CI: `.github/workflows/ci.yml`, jobs `backend`, `frontend` and `frontend-e2e`. `just spec-dag` runs the task DAG check.
+- CI: `.github/workflows/ci.yml`, jobs `backend`, `migrations`, `acceptance`, `backend-lint`, `frontend` and `frontend-e2e`. `just spec-dag` runs the task DAG check.
 
 ## Architecture
 
-- **Readiness gate.** `backend/patches/inventory_gate.py` and `backend/canon/inventory.py` decide whether a rack can generate: at least one `USER_CONFIRMED` module and one confirmed catalog module (OQ-09). A failed gate answers `NOT_COMPUTABLE` and writes no run (FR-022).
-- **Run lifecycle.** `backend/patches/routes.py` `run_generation` creates the `runs` row (`backend/runs/models.py`) and commits `queued`, `running`, then `succeeded`, `failed` or `validation_failed` (FR-018, FR-019). It has no state-machine module: the status is assigned inline.
+- **Readiness gate.** `backend/patches/inventory_gate.py` and `backend/canon/inventory.py` decide whether a rack can generate: at least one `USER_CONFIRMED` module and one confirmed catalog module (OQ-09). A module its owner placed on the rack counts as confirmed. A failed gate answers `NOT_COMPUTABLE` and writes no run, only the inventory revision it checked (FR-022).
+- **Run lifecycle.** `backend/patches/routes.py` `run_generation` creates the `runs` row (`backend/runs/models.py`), binds it to its rig revision, and commits `queued`, `running`, then `succeeded`, `failed` or `validation_failed` (FR-018, FR-019). The request handler does all of this. There is no worker and no state-machine module: the status is assigned inline, and those assignments are its only writers.
 - **Engine.** `backend/patches/engine.py` (seeded `random.Random`, `ModuleAnalyzer`, the patch rules) writes `ConnectionIR` and the generation IR with `generation_ir_hash` (`backend/core/ir.py`). Names come from `backend/core/naming.py`.
-- **Validation.** `backend/patches/validation.py` resolves generic jacks, marks unknown facts `unresolved`, and fails a run on a contradiction (FR-016, FR-017).
-- **Canonical compiler.** `backend/canon/compiler.py` `compile_patch` emits the graph, five-phase plan, report, variation, stage receipts and manifest (`backend/canon/contracts.py`). `backend/export/patchbook/design/dual_write.py` runs it for each validated patch and stores sealed `GeneratedPatchRecord` rows (Path A). Export of an older run uses the Path B fallback in `content_spine.py`.
-- **Bridge.** `backend/runs/bridge.py` binds each run to `rig-rev-{content_hash}` and one `library-{source_run_id}`. `backend/canon/rig_metrics.py` and `rig_scores.py` write one `RigMetricsPacket` per rig revision.
-- **Evidence boundary.** `backend/evidence/` stores uploads and owner decisions; `backend/intelligence/` (spec 005) ranks candidates and never confirms.
-- **Overlay.** `PatchUserOverlayRecord` and `/overlays/{patch_ref}` (`backend/canon/models.py`, `backend/canon/routes.py`).
+- **Validation.** `backend/patches/validation.py` resolves generic jacks, marks unknown facts `unresolved`, and fails a run on a contradiction (FR-016, FR-017). It flags only a direct self-cable as feedback (D9).
+- **Canonical compiler.** `backend/canon/compiler.py` `compile_patch` emits the graph, five-phase plan, report, variation, stage receipts and manifest (`backend/canon/contracts.py`). `backend/export/patchbook/design/dual_write.py` runs it for each validated patch and stores sealed `GeneratedPatchRecord` rows and their stage receipts (Path A). It does not store the manifest (D6). Export of an older run uses the Path B fallback in `content_spine.py`.
+- **Bridge.** `backend/runs/bridge.py` binds each run to `rig-rev-{content_hash}`, hashed from the rack's current layout, and to one `library-{source_run_id}`, written on success. `backend/canon/rig_metrics.py` and `rig_scores.py` write one `RigMetricsPacket` per rig revision.
+- **Evidence boundary.** `backend/evidence/` stores uploads and owner decisions. A confirm writes an `inv-rev-*` row, which generation does not read yet (D3). `backend/intelligence/` (spec 005) ranks candidates and never confirms.
+- **Overlay.** `PatchUserOverlayRecord` and `/overlays/{patch_ref}` (`backend/canon/models.py`, `backend/canon/routes.py`). `backend/account/deletion.py` removes overlays and expires evidence images when an account closes.
+
+## What T001 settled
+
+The [T001 record](T001_CONFIRMATION_2026-11-04.md) gives the status of every `[INFERRED]` line, under delegation.
+
+- **OQ-01:** confirmed. A `Rack` is the mutable rig, and a rig revision is its immutable snapshot.
+- **OQ-09:** confirmed as built. Whether to require a case is moot, because `racks.case_id` is NOT NULL.
+- **OQ-10:** stays open (O3). A lawyer must confirm it.
+- **Run lifecycle:** the `queued` to terminal path the code runs is the contract for T010. `spec.md` keeps its table until T090 edits it.
+- **Evidence lifecycle:** the rules stay, and they map onto the spec 005 machine and the confirm decisions. No second state machine.
+
+### Run lifecycle: spec state to code
+
+| Spec state | Code |
+|---|---|
+| `IDLE`, `RIG_LOADED` | None. A generate request starts here (D1). |
+| `QUEUED` | `runs.status = queued` |
+| `RUNNING` | `runs.status = running`, inside the request (D4) |
+| `SUCCEEDED` | `runs.status = succeeded` |
+| `FAILED` | `runs.status = failed` or `validation_failed` |
+| `NOT_COMPUTABLE` | `generation_status` in the answer, with no run row |
+
+### Evidence lifecycle: spec state to code
+
+| Spec state | Code |
+|---|---|
+| `EVIDENCE_RECEIVED` | `ClassificationEvidenceRecord` row |
+| `PROPOSED` | A listed candidate, never `USER_CONFIRMED`; machine state `AUTO_PROPOSE` or `USER_REVIEW` |
+| `UNRESOLVED` | Machine state `UNRESOLVED`; a `defer` decision or no decision lists the candidate in `unresolved_candidate_ids` |
+| `CONFIRMED` | `USER_CONFIRMED` item in an `inv-rev-*` row; machine state `CONFIRMED` |
+| `REJECTED` | A `reject` decision, not recorded today (D8) |
 
 ## Remaining work
 
+No step adds audio processing or hardware control. D3 keeps the path image, evidence, user confirm, inventory. A hardware fact that is unknown stays `unresolved` or `NOT_COMPUTABLE`.
+
+### T010 (unblocked by T002)
+
+- Keep the run lifecycle tests that exist, and map them with the table above.
+- Mark `rig_selected`, `worker_started` and `retry` as de-scoped, with a pointer to D1 and D4. They have no handler to test.
+- Record the illegal pairs as held by construction: nothing attempts them, so there is no rejection to assert.
+- Encode the evidence rules through the mapping: a provider cannot confirm, a confirm needs a known candidate, and low-confidence absence stays unresolved. `tests/unit/test_resolution_machine.py` and `tests/unit/test_visual_system_intelligence.py` already hold most of this.
+- Assert stage receipts on the success path, as they are today.
+
+### T090 (after T010)
+
+Each code step brings a test that fails before it and passes after it. Bump `patch_engine_version` if a golden output changes.
+
+1. D2: return the gate's message in the `NOT_COMPUTABLE` answer.
+2. D5: keep a reason on a `failed` run, and write receipts for failed and zero-patch runs.
+3. D6: store the compiler's manifest. The `artifact_manifests` table exists and has no writer.
+4. D8: record every reject decision and any later reversal.
+5. D3, after O1: make a confirmed module reach generation, with a test that confirms and then generates. Fix `ready_for_generation` in the same step.
+6. D9, after O2: catch a loop through a second module when `allow_feedback` is false.
+7. D1, D4, D7, D10, D11: edit `spec.md`, say in the spec how the code meets the ADR 0001 selection cost, and copy the carried sections below again.
+
+### Outside T010 and T090
+
 - FR-028: no Abraxas feedback store. Deferred until a bridge sends feedback (research R7).
-- FR-004: drop the Path B fallback once every exported run has sealed rows, or keep it as the documented legacy path (owner choice).
-- T010: the run lifecycle has no handler for `rig_selected`, `retry` or the illegal pairs, and the module evidence disposition lifecycle has no implementation. T001 decides whether those rows are kept as the contract (then build them) or replaced (then edit the tables).
-- Threat-model tasks 1 to 5 (spec.md, "Adversary threat model"): a production image scanner, a body-size cap before `upload.read()`, a provider response cap and host allowlist, a `context` field list with injection fixtures, and per-user rate limits.
-- T090: converge the code against the confirmed spec.
+- FR-004: the default is to keep the Path B fallback. Removing it would break export of runs from before #142, unless a production query shows none are left. That query has not been run.
+- Threat-model tasks 1 to 5 (spec.md, "Adversary threat model"): a production image scanner, a body-size cap before `upload.read()`, a provider response cap and host allowlist, a `context` field list with injection fixtures, and per-user rate limits. A grep at 007b437 shows all five still open. They are not yet in `tasks.md`.
+
+### Owner decisions
+
+O1, O2 and O3 in the record, plus the production image scanner (spec line 284). None blocks T010. O1 blocks T090 step 5, and O2 blocks step 6. O3 needs a lawyer and blocks no step here.
 
 ## Verification
 
 - `cd backend && pytest tests/unit/test_spec_001_transitions.py -q` (the run lifecycle rows that have code).
 - `tests/api/test_generate_compiler_path.py` (compiler on the generation path), `tests/unit/test_canon_compiler.py`, `tests/unit/test_canon_contracts.py`.
+- `tests/api/test_evidence_confirmations.py`, `tests/unit/test_resolution_machine.py`, `tests/unit/test_visual_system_intelligence.py` (the evidence rules).
 - `just spec-dag`.
 
-## What T001 settles for this spec
-
-- Every `[INFERRED]` label in spec.md, including the Workflows skeleton (skills, owners, CI).
-- The generation run lifecycle: keep `IDLE`, `RIG_LOADED` and the `retry` event as contract, or cut them to the `queued` to terminal path the code runs.
-- The module evidence disposition lifecycle: keep its five states, or replace it with the spec 005 resolution machine (`backend/intelligence/resolution_machine.py`), which uses other states.
-- OQ-01 (a one-word confirmation), OQ-09 (whether a case is required), and OQ-10 (provisional retention; the owner and a lawyer confirm).
+The carried sections below keep their draft labels, such as "INFERRED skeleton", because they are an exact copy. The T001 record gives their status.
 
 ## Carried forward from spec.md
 

@@ -1,47 +1,61 @@
 # Plan: 002-patch-book-publishing
 
-> **DRAFT, pending T001 confirmation.** An agent wrote this on 2026-11-03 from spec.md and the code on `main` at 3688037 (0.3.0-alpha.6). The owner has not approved it. T002 stays open until the owner confirms the spec (T001) and accepts this plan. If T001 changes spec.md, copy the carried sections again.
+An agent wrote this plan from spec.md and the code on `main` at 007b437 (0.3.0-alpha.8), on 2026-11-04. An agent also ran T001, under the owner's delegation; see [T001_CONFIRMATION_2026-11-04.md](T001_CONFIRMATION_2026-11-04.md). The owner has not read the spec, and approves this plan by merging it. D and O numbers below refer to that record.
+
+Publishing stays off. Nothing here enables it.
 
 ## Stack (as built)
 
-- Backend: Python (CI runs 3.12), FastAPI, SQLAlchemy 2, Alembic migrations, Pydantic 2 (`backend/pyproject.toml`).
-- Database: Postgres 15 (Neon in staging and production, a Postgres service in CI); unit tests use SQLite fixtures (`backend/tests/conftest.py`).
-- Frontend: React 18, TypeScript, Vite, React Router (`frontend/package.json`).
+- Backend: Python 3.11 (`backend/Dockerfile`, CI), FastAPI, SQLAlchemy 2, Alembic migrations, Pydantic 2 (`backend/pyproject.toml`).
+- Database: Postgres 15 (Neon in staging and production, a Postgres service in CI); unit tests use SQLite fixtures (`backend/tests/conftest.py`). The publishing tables have no migration (D13).
+- Frontend: React 18, TypeScript, Vite, React Router (`frontend/package.json`). No page uses publishing; only its API types remain, in `frontend/src/types/api.ts`.
 - Edge: the Cloudflare Worker in `edge/api` fronts the API (spec 006).
-- CI: `.github/workflows/ci.yml`, jobs `backend`, `frontend` and `frontend-e2e`. `just spec-dag` runs the task DAG check.
+- CI: `.github/workflows/ci.yml`, jobs `backend`, `migrations`, `acceptance`, `backend-lint`, `frontend` and `frontend-e2e`. `just spec-dag` runs the task DAG check; no CI job runs it.
 
 ## Architecture
 
-- **Design Engine.** `backend/export/patchbook/design/` composes a book: `content_spine.py` loads sealed compilations (Path A, from spec 001) or compiles on export (Path B). `layout_ir.py`, `diagram_svg.py` and the template families in `families/` lay out each page. `engine.py` draws the PDF, writes the pack, and runs `validate_book` (page counts, order, references, asset hashes, composition replay). `preflight.py` and `a11y.py` check page fit and accessibility. It sits behind `ENABLE_PATCHBOOK_DESIGN_ENGINE`, and the multi-page profile behind `ENABLE_PATCHBOOK_PUBLICATION_PROFILE` (both off by default).
+- **Design Engine.** `backend/export/patchbook/design/` composes a book: `content_spine.py` loads sealed compilations (Path A, from spec 001) or compiles on export (Path B). `layout_ir.py`, `diagram_svg.py` and the template families in `families/` lay out each page. `engine.py` draws the PDF, writes the pack, and runs `validate_book` (page counts, order, references, asset hashes, composition replay). `preflight.py` and `a11y.py` check page fit and accessibility. `ENABLE_PATCHBOOK_DESIGN_ENGINE` gates style recipes and the Studio, `ENABLE_CANON_EXPORT_FULFILLMENT` gates composing the pack after debit, and `ENABLE_PATCHBOOK_PUBLICATION_PROFILE` gates the multi-page profile (all off by default). Spec 002 owns the compile rules here; style recipes and the Studio belong to spec 008 (D4).
+- **Compile machines.** The page and book machines in the tables below are the target, not built behavior. No stage states exist. `validate_book` is the one book-level stage, and a patch that does not fit fails the whole export (D3, O6).
 - **Legacy export.** `backend/export/routes.py` and `backend/export/pdf.py`. The two-page legacy book is off (`ENABLE_LEGACY_PATCHBOOK_EXPORT`, #133).
-- **Publishing.** `backend/publishing/routes.py`, `models.py` and `schemas.py` implement the publication lifecycle. `main.py` mounts the router only when `ENABLE_LEGACY_PUBLISHING` is on, so every route is 404 when it is off (OQ-5). The owner PATCH and admin hide and remove lock the row (#197). Reports are rate-limited and deduplicated (#197). `_bound_to_validated_book` is the FR-048 guard and returns false until T033.
+- **Publishing.** `backend/publishing/routes.py`, `models.py` and `schemas.py` implement the publication lifecycle. `main.py` mounts the router only when `ENABLE_LEGACY_PUBLISHING` is on, so no publishing handler runs when it is off (OQ-5, D1). The owner PATCH and admin hide and remove lock the row (#197). Reports are rate-limited and deduplicated (#197). `_bound_to_validated_book` is the FR-048 guard and returns false until T033. `backend/account/deletion.py` also sets `removed` when an account closes (D2).
 - **Moderation audit.** `AdminAuditLog` rows written by `_audit_moderation`.
 
-## Remaining work
+## Work, in order
 
-- Compilation FRs still Partial (spec.md table): FR-004 (colophon disclaimer at 8 pt), FR-007 (page stages and their receipts), FR-008, FR-009, FR-011, FR-012, FR-013, FR-014, FR-015, FR-018 (no README in the pack), FR-019, FR-021, FR-023, FR-024 (no `COMPILE_PATCH_PAGE` stage).
-- FR-048 and T033: bind a publication export to a validated pack, or keep publishing closed (OQ-6 `keep_off`).
-- T010: the page and book compilation machines have no implementation, so their rows are not encoded. T001 decides whether to build them as stage states or to replace the tables with the `validate_book` checks the code runs.
-- The threat model's open tasks (spec.md, "Adversary threat model"): slug length, `noindex` and `no-store`, download headers, SVG escaping, and `cover_image_url` validation.
-- T090: converge the code against the confirmed spec.
+1. **T010: encode what can be encoded.** The publication table is done in `test_spec_002_transitions.py`. Still to add: a hidden read and draft and hidden rows in the gallery (record row 3), the `account_deleted` row (D2), the two owner no-ops (D9), and both `/me/exports` paths with the flag off (D1). The compile machines cannot be encoded until O6 is answered (D11).
+2. **T090: correct the spec text.** D1, D2, D4, D5, D8, D9, D10 and D12, and record D13. T001 left spec.md unchanged, so these are still open. Copy the carried sections below again afterwards.
+3. **T090: converge the code.**
+   - An admin who acts second still ends with a hold (D6).
+   - A missing fact is an error, not a placeholder (D7, FR-014).
+   - Compilation FRs still Partial (spec.md table): FR-004 (colophon disclaimer at 8 pt), FR-007 (page stages and their receipts), FR-008, FR-009, FR-011, FR-012, FR-013, FR-015 (thresholds wait on O4), FR-018 (no README in the pack), FR-019, FR-021, FR-023, FR-024 (no `COMPILE_PATCH_PAGE` stage). FR-007, FR-021 and FR-024 depend on O6.
+   - T090 cannot close until O6 is answered.
+4. **Threat model tasks (spec.md, "Adversary threat model").** Slug length, `noindex` and `no-store`, download headers, SVG escaping, and `cover_image_url` validation. They are not yet in `tasks.md`. The rate limit exists only on the report route (#197). SVG escaping is a code defect and does not wait for T033. The others gate T033.
+5. **T033: only if the owner wants publishing back (O1).** Bind a publication export to a canon export whose pack passed `validate_book`. It also needs a migration for the publishing tables (D13), licence terms (O2), retention (O3) and the threat model tasks. Until then every publish answers 409 `PUBLICATION_BOOK_NOT_VALIDATED`.
+6. **Compile machines: only after O6.** Build the stage states, or replace the tables with what `validate_book` checks.
+
+## Open, and the default this plan follows
+
+The owner decides these, with counsel on O1 to O3. Merging this plan does not answer them.
+
+| Item | Default |
+|---|---|
+| O1: publishing back (OQ-6, T033) | Stays off. |
+| O2: licence terms and `allow_remix` (OQ-12) | Deferred. No schema change. |
+| O3: retention of reports and audit logs (OQ-13) | Undecided. Keep what is built. |
+| O4: crossing, ambiguity and visual-diff thresholds (OQ-9) | `NOT_COMPUTABLE` until measured and approved. |
+| O5: publication profile against the one-page law (OQ-11) | Flag off, plates undrawn, failing by design. |
+| O6: build the compile machines, or replace their tables | Build nothing now. A patch that does not fit keeps failing the whole export, with compensation. |
+| O7: truncated source text (OQ-14) | Accept the spec. Carry the listed gaps at T090. |
 
 ## Verification
 
-- `cd backend && pytest tests/unit/test_spec_002_transitions.py -q`, which covers the publication lifecycle, including every event with the flag off.
-- `tests/unit/test_spec_002_report_limits_and_locks.py`, `tests/unit/test_patchbook_validate_book.py`, `tests/unit/test_patchbook_svg_goldens.py`.
+- `cd backend && PYTHONPATH=. python -m pytest tests/unit/test_spec_002_transitions.py tests/unit/test_spec_002_report_limits_and_locks.py tests/api/test_publishing_api.py tests/api/test_account_deletion.py tests/unit/test_patchbook_validate_book.py tests/unit/test_patchbook_svg_goldens.py tests/unit/test_patchbook_page_fit.py tests/unit/test_patchbook_publication_dual.py -q`
+- Row locks are a no-op on the SQLite fixtures. No test runs them on Postgres.
 - `just spec-dag`.
-
-## What T001 settles for this spec
-
-- Every `[INFERRED]` label in spec.md, including the Workflows skeleton and OQ-15 (whether ADVERSARY threat-models the publishing surfaces).
-- The page and book compilation machines: build them, or replace them with what `validate_book` checks.
-- FR-048 and OQ-6: confirm that nothing can publish until a publication export binds to a validated pack.
-- OQ-12 (license terms) and OQ-13 (report retention): provisional; the owner and a lawyer confirm.
-- OQ-14: the operator supplies the source text that was truncated, or accepts the spec without it.
 
 ## Carried forward from spec.md
 
-The sections below are copied from [spec.md](spec.md) without change.
+The sections below are copied from [spec.md](spec.md) without change. Their `[INFERRED]` labels and "Status: INFERRED skeleton" line are spec.md's wording; the T001 record gives each claim its status. D2, D6 and D9 apply to the publication table, D3, D10 and O6 to the page and book machines, and D8 to the Workflows section.
 
 ## Workflows
 

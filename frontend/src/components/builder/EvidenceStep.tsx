@@ -4,6 +4,8 @@
  * Candidates that did not come from the user's photos are labelled Demo.
  */
 import { Link } from "react-router-dom";
+import ModulesToPlace from "@/components/builder/ModulesToPlace";
+import type { ModuleToPlace } from "@/lib/api";
 import type { Rack } from "@/types/api";
 
 export type EvidenceState = "idle" | "ready" | "uploading" | "review" | "confirmed" | "error";
@@ -76,6 +78,7 @@ interface EvidenceStepProps {
   onCreateRevision: () => void;
   revisionId: string | null;
   readyForGeneration: boolean;
+  modulesToPlace: ModuleToPlace[];
 }
 
 const RECONCILE_WORDS: Record<string, string> = {
@@ -135,6 +138,7 @@ export default function EvidenceStep({
   onCreateRevision,
   revisionId,
   readyForGeneration,
+  modulesToPlace,
 }: EvidenceStepProps) {
   const reviewing = state === "review" || state === "confirmed";
   const locked = state === "confirmed";
@@ -416,16 +420,24 @@ export default function EvidenceStep({
             </button>
 
             {revisionId ? (
-              <p className="status status-success" role="status">
-                Inventory revision ready: {revisionId}
-                {readyForGeneration ? ", ready for generation" : ", not ready for generation"}.
-                {targetRackId != null ? (
-                  <>
-                    {" "}
-                    <Link to={`/rigs/${targetRackId}`}>Generate patches on this rig</Link>
-                  </>
-                ) : null}
-              </p>
+              <>
+                <p
+                  className={`status status-${readyForGeneration ? "success" : "warning"}`}
+                  role="status"
+                >
+                  Inventory revision sealed: {revisionId}
+                  {readyForGeneration ? ", ready for generation" : ", not ready for generation"}.
+                  {targetRackId != null ? (
+                    <>
+                      {" "}
+                      <Link to={`/rigs/${targetRackId}`}>
+                        {readyForGeneration ? "Generate patches on this rig" : "Open this rig"}
+                      </Link>
+                    </>
+                  ) : null}
+                </p>
+                <ModulesToPlace modules={modulesToPlace} rackId={targetRackId} />
+              </>
             ) : null}
           </div>
         </section>

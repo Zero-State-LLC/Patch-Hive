@@ -31,3 +31,33 @@ def test_fetch_layer_denies_modulargrid():
     assert denied_host("https://www.modulargrid.net/e/x")
     assert denied_host("https://modulargrid.net/")
     assert not denied_host("https://www.doepfer.de/a100.htm")
+
+
+def test_catalog_rows_never_expose_modulargrid_fields(db_session):
+    from fastapi.testclient import TestClient
+
+    from core import get_db
+    from main import app
+    from modules.catalog import ModuleCatalog
+
+    row = ModuleCatalog(
+        slug="acme-lead",
+        brand="Acme",
+        name="Lead",
+        modulargrid_id=123,
+        modulargrid_url="https://modulargrid.net/e/acme-lead",
+        source="Manual",
+        access_basis="official_publication",
+    )
+    db_session.add(row)
+    db_session.commit()
+
+    assert not [key for key in row.to_dict() if "modulargrid" in key]
+
+    app.dependency_overrides[get_db] = lambda: db_session
+    try:
+        body = TestClient(app).get("/api/modules/catalog", params={"limit": 50})
+    finally:
+        app.dependency_overrides.clear()
+    assert body.status_code == 200
+    assert "modulargrid" not in body.text.lower()

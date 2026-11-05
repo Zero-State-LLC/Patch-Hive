@@ -209,6 +209,9 @@ def inventory_ready_for_generation(inventory: SystemInventoryRevision) -> bool:
 
     Unresolved candidates may remain for later review; they do not block generation
     of patches that only use confirmed modules.
+
+    This reads one revision. Generation reads the Rig's placements, so what the API reports
+    as ready comes from ``patches.inventory_gate.evaluate_rack_inventory_gate``.
     """
 
     return any(item.resolution is ResolutionStatus.USER_CONFIRMED for item in inventory.items)

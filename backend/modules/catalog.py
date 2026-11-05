@@ -13,9 +13,10 @@ This allows:
 
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Index, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Index, Integer, String, exists
 
 from core.database import Base
+from modules.models import Module
 
 
 class ModuleCatalog(Base):
@@ -93,7 +94,6 @@ class ModuleCatalog(Base):
         """Convert to dictionary."""
         return {
             "id": self.id,
-            "modulargrid_id": self.modulargrid_id,
             "slug": self.slug,
             "brand": self.brand,
             "name": self.name,
@@ -101,7 +101,6 @@ class ModuleCatalog(Base):
             "hp_source": self.hp_source,
             "category": self.category,
             "image_url": self.image_url,
-            "modulargrid_url": self.modulargrid_url,
             "manufacturer_url": self.manufacturer_url,
             "registry_manufacturer_slug": self.registry_manufacturer_slug,
             "registry_device_slug": self.registry_device_slug,
@@ -123,3 +122,17 @@ class ModuleCatalog(Base):
         combined = f"{brand}-{name}".lower()
         slug = re.sub(r"[^a-z0-9]+", "-", combined)
         return slug.strip("-")
+
+
+# What an anonymous read may return (owner decision 39, spec 003 FR-033): not a row whose access
+# basis is `unknown`. NULL is a row that was never tagged, which the decision does not cover; a
+# plain `!=` would drop those too.
+KNOWN_BASIS = ModuleCatalog.access_basis.is_distinct_from("unknown")
+
+# A `modules` row has no access basis of its own, so it takes that of the catalog row with its
+# brand and name. A rack reads its placed modules directly, so this never hides a placed module.
+MODULE_KNOWN_BASIS = ~exists().where(
+    ModuleCatalog.brand == Module.brand,
+    ModuleCatalog.name == Module.name,
+    ModuleCatalog.access_basis == "unknown",
+).correlate(Module)
