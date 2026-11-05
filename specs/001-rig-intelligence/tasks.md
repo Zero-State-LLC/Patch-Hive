@@ -2,8 +2,8 @@
 
 ## Setup
 
-- [ ] T001 Confirm the spec with the operator (it is INFERRED today)
-- [ ] T002 Write plan.md
+- [x] T001 Confirm the spec with the operator (it is INFERRED today). Done 2026-11-04 by an agent under the owner's delegation, not by the owner reading it: [T001_CONFIRMATION_2026-11-04.md](T001_CONFIRMATION_2026-11-04.md).
+- [x] T002 Write plan.md. Done 2026-11-04 under the same delegation: [plan.md](plan.md), no longer a draft; three owner calls stay open in the T001 record.
   - depends_on: [T001]
 
 ## Foundational
