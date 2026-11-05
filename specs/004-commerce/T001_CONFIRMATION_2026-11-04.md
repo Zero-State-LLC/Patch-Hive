@@ -154,3 +154,8 @@ Not decided here. Each default is a recommendation only.
 
 - Live environment flags, production data and the provider account were not read. So the live flag values, and whether referral codes issued before 2026-10-29 reveal an email (FR-036), are unknown here.
 - SC-006 and SC-007 have no direct committed test. Their rows rest on code search and a probe.
+
+## Decided since this review
+
+The owner settled these later on 2026-11-04 (`docs/evidence/OWNER_DECISIONS_2026-11-04.md`), and #292 built the first three: a paid invoice on a canceled subscription keeps granting (42); `active`, `trialing` and `past_due` can schedule a cancel (43); no reward goes to a deleted referrer (44). Before sales open, never-subscribed and lapsed users both get FREE (45). The STUDIO cap and operator resolve for subscription events wait for sales, and provider-data disclosure and retention after deletion go to counsel (46). Prices stay not ratified (32).
+

@@ -14,9 +14,10 @@ from sqlalchemy.orm import Session
 
 from admin.dependencies import require_admin_mutate
 from admin.utils import log_admin_action
+from community.auth import get_catalog_reader
 from community.models import User
 from core.database import get_db
-from modules.catalog import ModuleCatalog
+from modules.catalog import KNOWN_BASIS, ModuleCatalog
 from modules.models import Module
 
 logger = logging.getLogger(__name__)
@@ -28,9 +29,27 @@ router = APIRouter()
 LIVE = ModuleCatalog.tombstoned_at.is_(None)
 
 
+def _browsable(reader: Optional[User]):
+    """The live rows this caller may browse. Anonymous callers do not get `unknown` access-basis
+    rows (owner decision 39, spec 003 FR-033); anyone signed in gets them all."""
+    return LIVE if reader else and_(LIVE, KNOWN_BASIS)
+
+
+def _readable_row(db: Session, slug: str, reader: Optional[User]) -> ModuleCatalog:
+    """The row at this slug, or the same 404 whether it is missing or hidden from this caller."""
+    query = db.query(ModuleCatalog).filter(ModuleCatalog.slug == slug)
+    if reader is None:
+        query = query.filter(KNOWN_BASIS)
+    row = query.first()
+    if not row:
+        raise HTTPException(status_code=404, detail=f"Module '{slug}' not found in catalog")
+    return row
+
+
 @router.get("/catalog")
 def browse_module_catalog(
     db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
     # Search
     search: Optional[str] = Query(None, description="Search in brand/name"),
     brand: Optional[str] = Query(None, description="Filter by brand"),
@@ -70,7 +89,7 @@ def browse_module_catalog(
     query = db.query(ModuleCatalog)
 
     # Apply filters
-    filters = [LIVE]
+    filters = [_browsable(reader)]
 
     if search:
         search_term = f"%{search}%"
@@ -121,13 +140,16 @@ def browse_module_catalog(
 
 
 @router.get("/catalog/brands")
-def list_catalog_brands(db: Session = Depends(get_db)):
+def list_catalog_brands(
+    db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
+):
     """Get list of all brands in catalog with module counts."""
     from sqlalchemy import func
 
     brands = (
         db.query(ModuleCatalog.brand, func.count(ModuleCatalog.id).label("count"))
-        .filter(LIVE)
+        .filter(_browsable(reader))
         .group_by(ModuleCatalog.brand)
         .order_by(ModuleCatalog.brand)
         .all()
@@ -140,13 +162,16 @@ def list_catalog_brands(db: Session = Depends(get_db)):
 
 
 @router.get("/catalog/categories")
-def list_catalog_categories(db: Session = Depends(get_db)):
+def list_catalog_categories(
+    db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
+):
     """Get list of all categories with module counts."""
     from sqlalchemy import func
 
     categories = (
         db.query(ModuleCatalog.category, func.count(ModuleCatalog.id).label("count"))
-        .filter(LIVE)
+        .filter(_browsable(reader))
         .group_by(ModuleCatalog.category)
         .order_by(func.count(ModuleCatalog.id).desc())
         .all()
@@ -159,23 +184,27 @@ def list_catalog_categories(db: Session = Depends(get_db)):
 
 
 @router.get("/catalog/stats")
-def get_catalog_stats(db: Session = Depends(get_db)):
+def get_catalog_stats(
+    db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
+):
     """Get catalog statistics including HP coverage for research seeds."""
     from sqlalchemy import func
 
-    total_modules = db.query(func.count(ModuleCatalog.id)).filter(LIVE).scalar() or 0
-    total_brands = db.query(func.count(func.distinct(ModuleCatalog.brand))).filter(LIVE).scalar() or 0
+    visible = _browsable(reader)
+    total_modules = db.query(func.count(ModuleCatalog.id)).filter(visible).scalar() or 0
+    total_brands = db.query(func.count(func.distinct(ModuleCatalog.brand))).filter(visible).scalar() or 0
     total_categories = (
-        db.query(func.count(func.distinct(ModuleCatalog.category))).filter(LIVE).scalar() or 0
+        db.query(func.count(func.distinct(ModuleCatalog.category))).filter(visible).scalar() or 0
     )
 
     # HP distribution (among known only)
-    avg_hp = db.query(func.avg(ModuleCatalog.hp)).filter(LIVE).scalar()
-    min_hp = db.query(func.min(ModuleCatalog.hp)).filter(LIVE).scalar()
-    max_hp = db.query(func.max(ModuleCatalog.hp)).filter(LIVE).scalar()
+    avg_hp = db.query(func.avg(ModuleCatalog.hp)).filter(visible).scalar()
+    min_hp = db.query(func.min(ModuleCatalog.hp)).filter(visible).scalar()
+    max_hp = db.query(func.max(ModuleCatalog.hp)).filter(visible).scalar()
     hp_known = (
         db.query(func.count(ModuleCatalog.id))
-        .filter(LIVE, ModuleCatalog.hp.isnot(None))
+        .filter(visible, ModuleCatalog.hp.isnot(None))
         .scalar()
         or 0
     )
@@ -184,7 +213,7 @@ def get_catalog_stats(db: Session = Depends(get_db)):
     # Availability
     available_count = (
         db.query(func.count(ModuleCatalog.id))
-        .filter(LIVE, ModuleCatalog.is_available == "available")
+        .filter(visible, ModuleCatalog.is_available == "available")
         .scalar()
         or 0
     )
@@ -193,7 +222,7 @@ def get_catalog_stats(db: Session = Depends(get_db)):
 
     source_rows = (
         db.query(ModuleCatalog.source, func.count(ModuleCatalog.id).label("count"))
-        .filter(LIVE)
+        .filter(visible)
         .group_by(ModuleCatalog.source)
         .order_by(func.count(ModuleCatalog.id).desc())
         .all()
@@ -414,25 +443,29 @@ def materialize_module_catalog_batch(
 
 
 @router.post("/catalog/{slug}/materialize")
-def materialize_module_from_catalog(slug: str, db: Session = Depends(get_db)) -> Dict[str, Any]:
+def materialize_module_from_catalog(
+    slug: str,
+    db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
+) -> Dict[str, Any]:
     """
     Materialize a lightweight catalog row into a full ``modules`` record for rack placement.
 
     Fails with 422 when HP is unknown (never invents width).
     """
+    _readable_row(db, slug, reader)
     return materialize_catalog_entry(db, slug)
 
 
 @router.get("/catalog/{slug}")
-def get_catalog_module(slug: str, db: Session = Depends(get_db)):
+def get_catalog_module(
+    slug: str,
+    db: Session = Depends(get_db),
+    reader: Optional[User] = Depends(get_catalog_reader),
+):
     """
     Get catalog entry for specific module.
 
     Returns lightweight catalog info. Use /modules/{id} for full specs.
     """
-    module = db.query(ModuleCatalog).filter(ModuleCatalog.slug == slug).first()
-
-    if not module:
-        raise HTTPException(status_code=404, detail=f"Module '{slug}' not found in catalog")
-
-    return module.to_dict()
+    return _readable_row(db, slug, reader).to_dict()

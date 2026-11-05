@@ -18,7 +18,8 @@ describe("edge routes", () => {
     expect(isAppRoute("/cases/eurorack-104")).toBe(true);
     expect(isAppRoute("/racks/12/edit")).toBe(true);
     expect(isAppRoute("/racks/12/edit/x")).toBe(false);
-    expect(isAppRoute("/privacy")).toBe(false);
+    expect(isAppRoute("/privacy")).toBe(true);
+    expect(isAppRoute("/no-such-page")).toBe(false);
   });
 
   it("tells files from pages", () => {
@@ -42,8 +43,14 @@ describe("edge worker", () => {
     expect(res.status).toBe(200);
   });
 
-  it("answers 404 with the shell for an unknown page", async () => {
+  it("serves the shell with 200 for the privacy notice", async () => {
     const res = await worker.fetch(new Request("https://patch-hive.com/privacy"), env());
+    expect(res.status).toBe(200);
+    expect(await res.text()).toContain("id=root");
+  });
+
+  it("answers 404 with the shell for an unknown page", async () => {
+    const res = await worker.fetch(new Request("https://patch-hive.com/no-such-page"), env());
     expect(res.status).toBe(404);
     expect(await res.text()).toContain("id=root");
   });

@@ -8,7 +8,15 @@ import PatchRail from "@/components/PatchRail";
 import RigRail from "@/components/RigRail";
 import Tabs from "@/components/Tabs";
 import { ChainSkeleton, ListSkeleton } from "@/components/Skeletons";
-import { canonApi, evidenceApi, patchApi, runApi, type InventoryRevisionSummary } from "@/lib/api";
+import ModulesToPlace from "@/components/builder/ModulesToPlace";
+import {
+  canonApi,
+  evidenceApi,
+  patchApi,
+  runApi,
+  type InventoryRevisionSummary,
+  type ModuleToPlace,
+} from "@/lib/api";
 import { rigDetailToRack } from "@/lib/canonRigAdapter";
 import { formatDateTime, runLabel, shortHash } from "@/lib/format";
 import { describeEmptyGeneration } from "@/lib/generateOutcome";
@@ -79,6 +87,7 @@ export default function RigDetailPage() {
   const [exporting, setExporting] = useState(false);
   const [patchesLoading, setPatchesLoading] = useState(false);
   const [latestInventory, setLatestInventory] = useState<InventoryRevisionSummary | null>(null);
+  const [modulesToPlace, setModulesToPlace] = useState<ModuleToPlace[]>([]);
   const [inventoryError, setInventoryError] = useState("");
   const [generating, setGenerating] = useState(false);
   // Generating writes to the rig, which belongs to its owner (the server enforces it).
@@ -143,11 +152,14 @@ export default function RigDetailPage() {
     evidenceApi
       .listInventory(rigIdNum)
       .then((res) => {
-        if (current) setLatestInventory(res.data.latest ?? null);
+        if (!current) return;
+        setLatestInventory(res.data.latest ?? null);
+        setModulesToPlace(res.data.modules_to_place ?? []);
       })
       .catch(() => {
         if (!current) return;
         setLatestInventory(null);
+        setModulesToPlace([]);
         setInventoryError("Inventory receipt unavailable.");
       });
     return () => {
@@ -310,6 +322,7 @@ export default function RigDetailPage() {
       try {
         const inv = await evidenceApi.listInventory(rigIdNum);
         setLatestInventory(inv.data.latest ?? null);
+        setModulesToPlace(inv.data.modules_to_place ?? []);
         setInventoryError("");
       } catch {
         /* keep prior inventory */
@@ -368,9 +381,11 @@ export default function RigDetailPage() {
       title: "Confirm inventory",
       state: inventoryReady
         ? "Sealed and ready"
-        : inventorySealed
-          ? "Sealed, candidates open"
-          : "Not sealed yet",
+        : modulesToPlace.length
+          ? `Confirmed, ${modulesToPlace.length} still to place`
+          : inventorySealed
+            ? "Sealed, candidates open"
+            : "Not sealed yet",
       detail: "Photo evidence or manual placements, never auto-confirmed.",
     },
     {
@@ -380,7 +395,7 @@ export default function RigDetailPage() {
         : hasRuns
           ? `${runs.length} run${runs.length === 1 ? "" : "s"}`
           : "No runs yet",
-      detail: "Uses confirmed modules only. With none confirmed, nothing can be generated.",
+      detail: "Uses modules placed on the rig only. With none placed, nothing can be generated.",
     },
     {
       title: "Review and export",
@@ -578,16 +593,17 @@ export default function RigDetailPage() {
                   No sealed inventory revision yet. Confirm photo or manual candidates first.
                 </p>
               ) : null}
+              <ModulesToPlace modules={modulesToPlace} rackId={rigIdNum || null} />
             </div>
 
             <div className="panel" aria-label="Generate patches from inventory">
               <h3>Generate patches</h3>
               <p id="generate-help" className="muted">
                 {inventoryReady
-                  ? "Sealed inventory is ready. Generation uses confirmed modules only."
+                  ? "Sealed inventory is ready. Generation uses modules placed on the rig only."
                   : inventorySealed
                     ? "Inventory is sealed but not ready for generation: resolve candidates or place modules, then retry."
-                    : "No sealed inventory yet. You can still open evidence confirmation; generation fails closed if no confirmed modules exist on the rig."}
+                    : "No sealed inventory yet. You can still open evidence confirmation; generation fails closed if no modules are placed on the rig."}
               </p>
               <div className="page-hero-actions">
                 <button

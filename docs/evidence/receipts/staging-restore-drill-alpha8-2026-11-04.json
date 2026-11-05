@@ -1,0 +1,367 @@
+{
+  "alembic": {
+    "at_head": true,
+    "current": "20261102_export_fair_use",
+    "head": "20261102_export_fair_use"
+  },
+  "counts": {
+    "conclusive": true,
+    "mismatched_tables": [],
+    "missing_tables": [],
+    "ok": true,
+    "source_stable_during_dump": true,
+    "tables": {
+      "account_referrals": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "admin_audit_log": {
+        "restored": 2,
+        "source_after": 2,
+        "source_before": 2
+      },
+      "alembic_version": {
+        "restored": 1,
+        "source_after": 1,
+        "source_before": 1
+      },
+      "artifact_manifests": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "canonical_admin_audit_events": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "canonical_credit_ledger": {
+        "restored": 3,
+        "source_after": 3,
+        "source_before": 3
+      },
+      "canonical_exports": {
+        "restored": 2,
+        "source_after": 2,
+        "source_before": 2
+      },
+      "capabilities": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "case_catalog": {
+        "restored": 50,
+        "source_after": 50,
+        "source_before": 50
+      },
+      "case_features": {
+        "restored": 68,
+        "source_after": 68,
+        "source_before": 68
+      },
+      "case_power_systems": {
+        "restored": 50,
+        "source_after": 50,
+        "source_before": 50
+      },
+      "case_prices": {
+        "restored": 32,
+        "source_after": 32,
+        "source_before": 32
+      },
+      "case_revisions": {
+        "restored": 50,
+        "source_after": 50,
+        "source_before": 50
+      },
+      "case_rows": {
+        "restored": 73,
+        "source_after": 73,
+        "source_before": 73
+      },
+      "case_source_policy_packets": {
+        "restored": 635,
+        "source_after": 635,
+        "source_before": 635
+      },
+      "case_sources": {
+        "restored": 635,
+        "source_after": 635,
+        "source_before": 635
+      },
+      "cases": {
+        "restored": 1,
+        "source_after": 1,
+        "source_before": 1
+      },
+      "catalog_value_archive": {
+        "restored": 3869,
+        "source_after": 3869,
+        "source_before": 3869
+      },
+      "classification_evidence_records": {
+        "restored": 1,
+        "source_after": 1,
+        "source_before": 1
+      },
+      "comments": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "controls": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "credit_ledger_entries": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "credits_ledger": {
+        "restored": 2,
+        "source_after": 2,
+        "source_before": 2
+      },
+      "decision_receipt_keys": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "decision_receipts": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "device_families": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "device_models": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "device_revisions": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "export_records": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "exports": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "gallery_revisions": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "generated_patches": {
+        "restored": 4,
+        "source_after": 4,
+        "source_before": 4
+      },
+      "generation_jobs": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "generation_runs": {
+        "restored": 4,
+        "source_after": 4,
+        "source_before": 4
+      },
+      "image_assets": {
+        "restored": 1,
+        "source_after": 1,
+        "source_before": 1
+      },
+      "licenses": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "manufacturers": {
+        "restored": 703,
+        "source_after": 703,
+        "source_before": 703
+      },
+      "module_catalog": {
+        "restored": 4184,
+        "source_after": 4184,
+        "source_before": 4184
+      },
+      "module_revisions": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "modules": {
+        "restored": 4154,
+        "source_after": 4154,
+        "source_before": 4154
+      },
+      "patch_libraries": {
+        "restored": 4,
+        "source_after": 4,
+        "source_before": 4
+      },
+      "patch_user_overlays": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "patches": {
+        "restored": 4,
+        "source_after": 4,
+        "source_before": 4
+      },
+      "pending_functions": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "ports": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "power_configs": {
+        "restored": 21,
+        "source_after": 21,
+        "source_before": 21
+      },
+      "provider_customers": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "provider_payments": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "provider_subscriptions": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "rack_modules": {
+        "restored": 11,
+        "source_after": 11,
+        "source_before": 11
+      },
+      "racks": {
+        "restored": 1,
+        "source_after": 1,
+        "source_before": 1
+      },
+      "referrals": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "refresh_tokens": {
+        "restored": 13,
+        "source_after": 13,
+        "source_before": 13
+      },
+      "rig_metrics_packets": {
+        "restored": 1,
+        "source_after": 1,
+        "source_before": 1
+      },
+      "rig_revisions": {
+        "restored": 1,
+        "source_after": 1,
+        "source_before": 1
+      },
+      "runs": {
+        "restored": 2,
+        "source_after": 2,
+        "source_before": 2
+      },
+      "stage_receipts": {
+        "restored": 12,
+        "source_after": 12,
+        "source_before": 12
+      },
+      "stripe_event_records": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "subscription_checkouts": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "subscription_period_grants": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "system_inventory_revisions": {
+        "restored": 4,
+        "source_after": 4,
+        "source_before": 4
+      },
+      "user_patch_annotations": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "user_style_recipes": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      },
+      "users": {
+        "restored": 2,
+        "source_after": 2,
+        "source_before": 2
+      },
+      "votes": {
+        "restored": 0,
+        "source_after": 0,
+        "source_before": 0
+      }
+    }
+  },
+  "dump": {
+    "bytes": 675412,
+    "format": "custom",
+    "sha256": "1dd381c0563726c1ae117270583b85b0b585d7d711dbaf094689fba5d4a7f07e"
+  },
+  "env": "staging",
+  "kind": "restore-drill",
+  "problems": [],
+  "reconcile": {
+    "balance_total": 4,
+    "export_debits_total": 6,
+    "exports": 2,
+    "ledger_entries": 3,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "mismatches_truncated": false,
+    "reversals_total": 0,
+    "status": "ok",
+    "users_checked": 2,
+    "users_with_ledger_entries": 1
+  },
+  "result": "pass",
+  "run_attempt": "1",
+  "run_id": "41961653806",
+  "server_major": 15,
+  "source_sha": "007b437bcb18f725f067a6e0f933f430c6302ebb"
+}

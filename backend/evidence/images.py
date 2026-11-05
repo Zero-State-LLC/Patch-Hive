@@ -88,6 +88,8 @@ def prepare_image_evidence(
             normalized = ImageOps.exif_transpose(source)
             normalized.thumbnail((NORMALIZED_MAX_DIMENSION, NORMALIZED_MAX_DIMENSION))
             normalized = normalized.convert("RGB")
+            # A JPEG comment would otherwise be written back out.
+            normalized.info.clear()
             output = io.BytesIO()
             normalized.save(output, format="JPEG", quality=90, optimize=True, progressive=False)
             cleaned = output.getvalue()

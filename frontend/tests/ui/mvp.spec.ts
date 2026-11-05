@@ -137,12 +137,15 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(page.getByRole("list", { name: "Ranked module candidates" })).toBeVisible();
     const createRevision = page.getByRole("button", { name: "Create immutable rig revision" });
     await expect(createRevision).toBeDisabled();
-    // Resolve every ranked candidate (confirm + reject) so inventory is ready.
+    // Resolve every ranked candidate (confirm + reject) so the revision can be sealed.
     await page.getByRole("button", { name: "Confirm match" }).first().click();
     await page.getByRole("button", { name: "Reject" }).last().click();
     await expect(createRevision).toBeEnabled();
     await createRevision.click();
-    await expect(page.getByText(/Inventory revision ready/i)).toBeVisible();
+    // This demo has no rig, so generation has nothing to accept.
+    const sealed = page.getByText(/Inventory revision sealed/i);
+    await expect(sealed).toBeVisible();
+    await expect(sealed).toContainText("not ready for generation");
   });
 
   test("export boundary explains zero-credit state", async ({ page }) => {
@@ -530,6 +533,14 @@ test.describe("PatchHive canonical workspace", () => {
               power_neg12v_ma: 1200,
               power_5v_ma: 500,
             },
+            validation_warnings: [
+              {
+                field: "power",
+                message:
+                  "Any power supplied by the in-rack SYSTEM module Sim Supply isn't counted. This Rig's power budget is only what its Case supplies.",
+                details: { code: "IN_RACK_SUPPLY_NOT_COUNTED" },
+              },
+            ],
           },
         });
         return;
@@ -589,6 +600,7 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(page.getByRole("heading", { name: "Module placement" })).toBeVisible({
       timeout: 15000,
     });
+    await expect(page.getByText(/Sim Supply isn't counted/)).toBeVisible();
     await expect(page.getByLabel("Builder steps")).toBeVisible();
     await expect(page.getByText("Place modules").first()).toBeVisible();
     await expect(page.getByLabel("Row HP usage")).toBeVisible();

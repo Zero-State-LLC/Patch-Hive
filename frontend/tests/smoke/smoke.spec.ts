@@ -84,6 +84,7 @@ test("deep links serve the app and unknown paths answer 404", async ({ request }
     "/patches",
     "/racks",
     "/login",
+    "/privacy",
     "/admin/leaderboards",
   ]) {
     const res = await request.get(`${BASE}${path}`);
@@ -128,6 +129,14 @@ const PAGES: { path: string; check: (page: Page) => Promise<void> }[] = [
     path: "/login",
     check: async (page) => {
       await expect(page.getByRole("tab", { name: "Sign in" })).toBeVisible();
+    },
+  },
+  {
+    path: "/privacy",
+    check: async (page) => {
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText("Privacy notice");
+      await expect(page.getByText("Not yet reviewed by counsel")).toBeVisible();
+      await expect(page.getByRole("table")).toBeVisible();
     },
   },
   {

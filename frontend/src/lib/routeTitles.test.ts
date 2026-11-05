@@ -13,6 +13,7 @@ describe("titleFor", () => {
     ["/rigs/7", "Rig workspace, PatchHive"],
     ["/rigs/7/patchbook-studio", "Patch book style, PatchHive"],
     ["/cases/sim-co-sim-84", "Case, PatchHive"],
+    ["/privacy", "Privacy notice, PatchHive"],
     ["/admin", "Ops, PatchHive"],
     ["/admin/exports", "Ops exports, PatchHive"],
   ])("names %s", (path, title) => {

@@ -90,6 +90,8 @@ CANCELED = "canceled"
 # A user with a subscription in one of these statuses cannot open a second checkout:
 # two live subscriptions would bill and grant twice.
 TERMINAL_STATUSES = frozenset({"canceled", "incomplete_expired"})
+# Owner decision 43 (2026-11-04): the statuses that can schedule a cancel at period end.
+CANCELABLE_STATUSES = frozenset({"active", "trialing", "past_due"})
 # Provider session lifetime (Stripe allows 30 minutes to 24 hours).
 CHECKOUT_TTL_SECONDS = 3600
 
@@ -351,13 +353,14 @@ def request_subscription_cancel(
     provider: SubscriptionProvider,
     app_settings: Any,
 ) -> ProviderSubscriptionRecord:
-    """Machine C ``Active --cancel_requested--> CancelScheduled`` (FR-017). Caller commits.
+    """Machine C ``cancel_requested`` to ``CancelScheduled`` (FR-017). Caller commits.
 
-    The user's own ``active`` subscription is flagged to end at the period end, at the
-    provider and locally; access and granted credits stay until then. Already flagged:
-    returned as is, with no provider call. Refused (``SubscriptionRefusedError``):
-    ``SUBSCRIPTION_NOT_FOUND`` (404) with no live subscription, ``SUBSCRIPTION_NOT_ACTIVE``
-    (409) when its provider status is not ``active``.
+    The user's own subscription, if its provider status is in ``CANCELABLE_STATUSES``, is
+    flagged to end at the period end, at the provider and locally; the provider status,
+    access and granted credits stay until then, and period grants still follow
+    ``invoice.paid``. Already flagged: returned as is, with no provider call. Refused
+    (``SubscriptionRefusedError``): ``SUBSCRIPTION_NOT_FOUND`` (404) with no subscription
+    outside ``TERMINAL_STATUSES``, ``SUBSCRIPTION_NOT_ACTIVE`` (409) for any other status.
     """
 
     checkout_gate(app_settings, flag=SUBSCRIPTION_FLAG)
@@ -373,7 +376,7 @@ def request_subscription_cancel(
     )
     if record.cancel_at_period_end:
         return record
-    if record.status != "active":
+    if record.status not in CANCELABLE_STATUSES:
         raise SubscriptionRefusedError("SUBSCRIPTION_NOT_ACTIVE")
     body = provider.cancel_subscription_at_period_end(
         subscription_id=record.provider_subscription_id,

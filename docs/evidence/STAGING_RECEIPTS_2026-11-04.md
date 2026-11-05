@@ -17,3 +17,17 @@ The four acceptance runs and the drill never touched staging's `patchhive` datab
 **008 T050b.** This walkthrough is the bundle for the pin. The readiness docs keep `PENDING_OPERATOR_WALKTHROUGH` until the owner's pin sitting (owner packet step 6). With the SHA written into both docs, `scripts/staging/pin_readiness_008.py check` on this bundle reaches `RECEIPT_CAPTURED`, and its one remaining blocker is the signed spec 007 receipt (007 T060b, T083). The 006 T060b evidence check was not run; it waits on the owner's provider choice.
 
 Side effects on the staging branch only: the demo users re-seeded (new passwords, not kept), the demo rack's runs recreated, one credit grant and one export debit, one design pack in the staging R2 bucket.
+
+## 0.3.0-alpha.8
+
+Runs dispatched by the agent on the owner's go-ahead ("Yes, run the drill", "you can do all of this"), after 0.3.0-alpha.8 was deployed from `v0.3.0-alpha.8` (`d2102d7`).
+
+| Check | Run | Result | Receipt |
+|---|---|---|---|
+| Backup/restore drill, staging | [41961653806](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41961653806), source `007b437` | **Pass.** First run of #273's named secret lookup, on its staging side: the dump size and all 65 table counts match the earlier staging drill. Reconcile found 0 mismatches. | [staging-restore-drill-alpha8-2026-11-04.json](receipts/staging-restore-drill-alpha8-2026-11-04.json) |
+| 008 walkthrough and evidence check, staging (`checks=both`) | [41964091108](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41964091108), dispatched on `v0.3.0-alpha.8` | **Pass** at `d2102d7`. The evidence check reads `PASS`: the upload works, and decision-resolution answers 409 `DECISION_INTELLIGENCE_DISABLED`, as expected until a signed 007 receipt exists, so this doesn't close 006 T060b. First run since #268 stopped the seeder printing passwords, so the seed step no longer needs a filter. | [walkthrough](receipts/staging-design-walkthrough-alpha8-2026-11-04.json), [evidence](receipts/staging-t060b-alpha8-2026-11-04.json) |
+| Acceptance on staging, `isolation=database` | [41964388378](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41964388378), dispatched on `v0.3.0-alpha.8` | **Pass.** 38 of 38; the throwaway database migrated to head and was dropped. | [staging-acceptance-alpha8-2026-11-04.json](receipts/staging-acceptance-alpha8-2026-11-04.json) |
+
+The production side of #273's lookup still hasn't run.
+
+Side effects on the staging branch only: the demo users re-seeded (new passwords, not kept), the demo rack's runs recreated, one credit grant, one export and its debit, one design pack and one test image in the staging R2 bucket.

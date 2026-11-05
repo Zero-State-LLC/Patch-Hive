@@ -47,7 +47,7 @@ jobs:
         working-directory: backend
         env:
           PYTHONPATH: .
-        run: python -m pytest tests --ignore=tests/acceptance -q
+        run: python -m pytest tests --ignore=tests/acceptance -q --cov=canon --cov=evidence --cov-report=term
 
   migrations:
     runs-on: ubuntu-24.04
@@ -79,6 +79,12 @@ jobs:
           python -m alembic upgrade head
           python -m alembic downgrade base
           python -m alembic upgrade head
+      - name: Case catalog seeds pass a dry run (writes rolled back)
+        working-directory: backend
+        run: |
+          python -m integrations.case_catalog_populator --input ../data/cases/schema.example.json --dry-run --receipt "$RUNNER_TEMP/example.json"
+          python -m integrations.case_catalog_populator --input ../data/cases/seed-v1.json --dry-run --receipt "$RUNNER_TEMP/seed-v1.json"
+          python ../scripts/check_case_catalog_receipt.py "$RUNNER_TEMP/seed-v1.json" ../data/cases/seed-v1.json
 
   acceptance:
     runs-on: ubuntu-24.04

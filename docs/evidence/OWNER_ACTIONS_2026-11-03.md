@@ -55,7 +55,7 @@ After each confirmation, the agent ticks T001, finalises plan.md (T002), encodes
 
 This one chain unblocks 7 cards: 005 T061/T062/T070, 007 T020b, 006 T060b, 008 T050b and #21.
 
-1. **Corpus (007 T010b).** Supply 50–100 rights-cleared module photos with labels; open web search found 2 usable images in 300. The validator must say `ADMITTED_FOR_BASELINE`.
+1. **Corpus (007 T010b).** Supply 50–100 rights-cleared module photos with labels, following [CORPUS_SHOT_LIST_2026-11-04.md](CORPUS_SHOT_LIST_2026-11-04.md); open web search found 2 usable images in 300. The validator must say `ADMITTED_FOR_BASELINE`.
 2. **Run, propose, approve, pin, sign** with `scripts/staging/run_007_evaluation.py`: commands in [§ Item 2](OWNER_ACTIONS_2026-11-02.md). Signing (T083) uses your offline key `approver-2026-11`.
 3. **Enable on staging (007 T085, new in #242).** The flag step now comes after signing, because the container refuses provider flags without a signed receipt. The agent commits the receipt and the staging vars; you deploy staging:
 
@@ -64,14 +64,14 @@ This one chain unblocks 7 cards: 005 T061/T062/T070, 007 T020b, 006 T060b, 008 T
    ```
 
 4. **006 T060b:** choose whether to verify the wired provider (NVIDIA through the Clef adapter) or to run a Clef evaluation too. Then re-run the check in [§ Item 3](OWNER_ACTIONS_2026-11-02.md).
-5. **Done 2026-11-04:** the walkthrough passed at the deployed `6c234a6` (v0.3.0-alpha.7, run [41768209990](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41768209990); [receipts](STAGING_RECEIPTS_2026-11-04.md)). For a later re-run at a newer deployed SHA:
+5. **Done 2026-11-04:** the walkthrough passed at the deployed `d2102d7` (v0.3.0-alpha.8, run [41964091108](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/41964091108); [receipts](STAGING_RECEIPTS_2026-11-04.md)). For a later re-run at a newer deployed SHA:
 
    ```bash
    gh workflow run staging-walkthrough.yml --repo Zero-State-LLC/Patch-Hive
    ```
 
 6. **Pin the readiness docs (008 T050b).** The driver comes from #248:
-   1. Put the walkthrough's source SHA into both readiness docs. For the alpha.7 walkthrough that is `6c234a6535d1f4a58924243254ca4b607be2f461`, receipt `b2c295027be8eb8d805d88e9bde33700c576795d66f4c7ff8b1b2f1b838a819c` (bundle `docs/evidence/receipts/staging-design-walkthrough-2026-11-04.json`). The docs keep `PENDING_OPERATOR_WALKTHROUGH` until this sitting; `test_repo_readiness_docs_are_not_pinned_to_an_invented_sha` holds them to it, so update that test in the same change.
+   1. Put the walkthrough's source SHA into both readiness docs. For the alpha.8 walkthrough that is `d2102d798f2fc7dab09e4d0ee237c9be45571bc7`, receipt `909ee70c28bb28b3710c584bde44ed95ef4d48d466b37024390fbb8e4b985942` (bundle `docs/evidence/receipts/staging-design-walkthrough-alpha8-2026-11-04.json`). Any later deploy needs a new walkthrough first. The docs keep `PENDING_OPERATOR_WALKTHROUGH` until this sitting; `test_repo_readiness_docs_are_not_pinned_to_an_invented_sha` holds them to it, so update that test in the same change.
    2. Run the three commands:
 
       ```bash
@@ -99,9 +99,9 @@ This one chain unblocks 7 cards: 005 T061/T062/T070, 007 T020b, 006 T060b, 008 T
 - **Catalog loads:** a go-ahead for each `db-load.yml` apply, with the reviewed plan and inputs hashes.
 - **Branches** ([BRANCH_TRIAGE_2026-11-03.md](BRANCH_TRIAGE_2026-11-03.md)):
   - delete the 12 whose patches are already in `main`, and the 19 believed landed elsewhere, now confirmed (review of 2026-11-04);
-  - of the 6 that never landed, the review recommends dropping 4 and keeping 2;
+  - of the 6 that never landed, the review recommends dropping 5 and keeping the archive snapshot;
   - optionally turn on "Automatically delete head branches".
-- **Release:** merge the open Release Please PR (#258 today) right before a deploy that ships code, so the tag matches what runs. The beta line is decided: `0.3.0-beta.1` via a `Release-As` footer at beta exit.
+- **Release:** merge the open Release Please PR (#275 today) right before a deploy that ships code, so the tag matches what runs. The beta line is decided: `0.3.0-beta.1` via a `Release-As` footer at beta exit.
 - **Optional:** make `frontend-e2e`, `backend-lint`, `migrations`, `secrets` and `audit` required checks. Requiring `migrations` means every future migration must be reversible.
 - **CI gates still off (#264):** decide whether to bring back the coverage gate on `canon` and `evidence`, and the case-catalog seed dry runs.
 
@@ -111,4 +111,5 @@ This one chain unblocks 7 cards: 005 T061/T062/T070, 007 T020b, 006 T060b, 008 T
 - **Cloudflare and GitHub** (commands in [OWNER_ACTIONS_2026-11-02.md § Operations 3 and 4](OWNER_ACTIONS_2026-11-02.md)):
   - T055b: R2 token scope and the restart-persistence check;
   - T101b: protect the `production` environment.
-- **Production:** a real sign-up, plus the VirusTotal reanalysis ([§ Decisions 4](OWNER_ACTIONS_2026-11-02.md)).
+- **Production:** a real sign-up ([§ Decisions 4](OWNER_ACTIONS_2026-11-02.md)).
+- **VirusTotal:** reanalysed 2026-11-04; nine vendors still flag the root URL. Submit the reports listed in [VIRUSTOTAL_2026-11-04.md](VIRUSTOTAL_2026-11-04.md).

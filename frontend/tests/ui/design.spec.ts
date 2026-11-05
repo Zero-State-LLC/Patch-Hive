@@ -354,6 +354,7 @@ interface Screen {
 const SCREENS: Screen[] = [
   { path: "/", name: "home", signedIn: false, signature: ".home-rig .patch-cable" },
   { path: "/login", name: "sign in", signedIn: false },
+  { path: "/privacy", name: "privacy notice", signedIn: false },
   { path: "/no-such-route", name: "not found", signedIn: false, signature: ".broken-patch" },
   { path: "/modules", name: "modules", signedIn: true, signature: ".module-mockup" },
   { path: "/cases", name: "cases", signedIn: true },
@@ -540,6 +541,38 @@ test.describe("API down", () => {
       expect(await axeViolations(page), "axe violations").toEqual([]);
     });
   }
+});
+
+test.describe("privacy notice", () => {
+  test.use({ viewport: { width: 320, height: 640 } });
+
+  test("reads at 320 px with no horizontal scroll, and the footer reaches it", async ({ page }) => {
+    await mockApi(page, { signedIn: false });
+    await page.goto("/modules");
+    await page.getByRole("contentinfo").getByRole("link", { name: "Privacy notice" }).click();
+    await expect(page).toHaveURL(/\/privacy$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Privacy notice");
+    await expect(page.getByText("Not yet reviewed by counsel")).toBeVisible();
+    await expect(page.locator("main h1")).toHaveCount(1);
+    await expect(page.getByRole("table")).toBeVisible();
+
+    expect(await overflowing(page), "elements past the viewport").toEqual([]);
+    const { scrollWidth, clientWidth } = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
+    expect(scrollWidth).toBeLessThanOrEqual(clientWidth);
+    expect(await axeViolations(page), "axe violations").toEqual([]);
+  });
+
+  test("the sign-up form links it", async ({ page }) => {
+    await mockApi(page, { signedIn: false });
+    await page.goto("/login");
+    await page.getByRole("tab", { name: "Create account" }).click();
+    await page.locator("main").getByRole("link", { name: "privacy notice" }).click();
+    await expect(page).toHaveURL(/\/privacy$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Privacy notice");
+  });
 });
 
 test.describe("theme memory", () => {
