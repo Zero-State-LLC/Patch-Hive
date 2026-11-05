@@ -1,6 +1,6 @@
 {
   "task": "owner taxonomy decisions 5, 6, 7, 14, 17, 49, 50, 51, 54 and 55 (2026-11-04): category overlays v4 and v5, category-corrections-v1 to -v3, catalog-retirements-v3, module-type sync",
-  "target": "throwaway Postgres 15.13 container, migrated to alembic head and loaded by import_catalog_population.py --apply from main at 537ac0a, then dry-run from this branch; removed afterwards",
+  "target": "throwaway Postgres 15.13 container, migrated to alembic head and loaded by import_catalog_population.py --apply from main at bab6520, then dry-run from this branch; removed afterwards",
   "baseline_apply": {
     "plan_hash": "6f3d1126db6ffe0cf85a493d32eb8e0678ba7fd00326499f27ecdf4f43a15383",
     "inputs_hash": "8fd77e32c114f9ec940f0cd04667fdaed3d41a55f38c3d84cdd73db1f8118b83",
@@ -107,8 +107,8 @@
       }
     },
     "destructive_sql": false,
-    "started_at": "2026-11-05T07:27:09+00:00",
-    "finished_at": "2026-11-05T07:27:16+00:00"
+    "started_at": "2026-11-05T09:06:05+00:00",
+    "finished_at": "2026-11-05T09:06:13+00:00"
   },
   "apply_bound_to_those_hashes_on_a_copy": {
     "updates": {

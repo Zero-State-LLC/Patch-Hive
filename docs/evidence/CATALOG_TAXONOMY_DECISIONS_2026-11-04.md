@@ -1,6 +1,6 @@
 # Catalog taxonomy decisions applied (2026-11-04)
 
-This applies the owner's catalog calls from committed data: decisions 5, 6, 7, 14, 17, 49, 50, 51, 54, 55 and 56 in `docs/evidence/OWNER_DECISIONS_2026-11-04.md` ([#278](https://github.com/Zero-State-LLC/Patch-Hive/pull/278), open when this was written). No maker page, feed or listing was fetched, nothing was paid for, and nothing was loaded to a deployed database.
+This applies the owner's catalog calls from committed data: decisions 5, 6, 7, 14, 17, 49, 50, 51, 54, 55 and 56 in [OWNER_DECISIONS_2026-11-04.md](OWNER_DECISIONS_2026-11-04.md). No maker page, feed or listing was fetched, nothing was paid for, and nothing was loaded to a deployed database.
 
 OBSERVED means read in this checkout or measured on a throwaway load. INFERRED means reasoned from it. Counts are for a load from the committed inputs over main's data, unless a row says otherwise. Production also holds 137 database-only rows that this checkout cannot see.
 
@@ -232,7 +232,7 @@ Decision 14 retires whatever never occupies HP, and a Blank Panel isn't a Module
 
 ## Dry run
 
-The target was a throwaway Postgres 15.13 container: migrated to alembic head, then loaded by `import_catalog_population.py --apply` from main at 537ac0a (the baseline), then dry-run from this branch. Receipt: [`receipts/taxonomy-2026-11-04.dry-run.json`](../../data/synth-catalog/receipts/taxonomy-2026-11-04.dry-run.json).
+The target was a throwaway Postgres 15.13 container: migrated to alembic head, then loaded by `import_catalog_population.py --apply` from main at bab6520 (the baseline), then dry-run from this branch. Receipt: [`receipts/taxonomy-2026-11-04.dry-run.json`](../../data/synth-catalog/receipts/taxonomy-2026-11-04.dry-run.json).
 
 | | |
 |---|---|
@@ -251,7 +251,7 @@ Also OBSERVED on throwaway copies:
 - A load from empty applied the same corrections and retirement and needed no sync. A second dry run planned nothing.
 - The two end with the same category and tombstone on every `module_catalog` row, and the same `module_type` and status on every `modules` row. No live module row holds `UNKNOWN` while its catalog row has a category.
 
-## Merged with main at 537ac0a
+## Merged with main at bab6520
 
 The branch merges main with its catalog PRs in. The one conflict was a test helper in `Modules.search.test.tsx`, where both sides added a parameter, and both were kept. Main changed no seed, overlay, provenance file, loader code or migration, so the plan and inputs hashes didn't move. Checked for anything assuming the old behaviour:
 
