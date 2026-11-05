@@ -35,7 +35,7 @@ rg 'from patchhive|import patchhive' backend/patches backend/racks backend/main.
 | `backend/canon` | product | CANON_MVP |
 | `backend/evidence` | product | CANON_MVP |
 | `backend/patchhive` | ~67 | CANON_SUPPORTING / historical pipeline |
-| repo-root `patchhive/` | ~78 | HISTORICAL_ORPHAN (duplicate-era tree) |
+| repo-root `patchhive/` | ~76 | HISTORICAL_ORPHAN (duplicate-era tree). Its undeployed HTTP API (`patchhive/api`) was removed 2026-11-04 |
 
 ### `backend/tests` files that import `patchhive` (LEGACY_PIPELINE_TEST)
 
