@@ -4,6 +4,18 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.9](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.8...v0.3.0-alpha.9) (2026-11-05)
+
+
+### Fixed
+
+* **export:** escape names in SVG output ([#280](https://github.com/Zero-State-LLC/Patch-Hive/issues/280)) ([bbccfc1](https://github.com/Zero-State-LLC/Patch-Hive/commit/bbccfc1c136f73b3325284e034f7fd20cfdc142d))
+
+
+### Documentation
+
+* record the 0.3.0-alpha.8 deploy to staging and production ([#274](https://github.com/Zero-State-LLC/Patch-Hive/issues/274)) ([007b437](https://github.com/Zero-State-LLC/Patch-Hive/commit/007b437bcb18f725f067a6e0f933f430c6302ebb))
+
 ## [0.3.0-alpha.8](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.7...v0.3.0-alpha.8) (2026-11-05)
 
 
