@@ -256,6 +256,19 @@ def test_in_process_walkthrough_receipt_reaches_beta_eligible(
     assert settings.allow_production_payments is False
 
 
+def test_walkthrough_can_run_again_after_its_first_grant_is_spent(
+    db_session, client, seeded, design_flags
+) -> None:
+    # 10 credits at 3 per export cover three runs, so each run has to grant its own.
+    result, user, admin = seeded
+    sources = _bridge_sources(db_session, result.run_id)
+    for _ in range(4):
+        _health, outcome = execute_walkthrough(
+            client, user=user, admin=admin, user_id=result.user_id, sources=sources
+        )
+        assert [s.name for s in outcome.steps if not s.passed] == []
+
+
 def test_design_engine_flag_off_blocks_walkthrough_start(client, seeded, design_flags, monkeypatch) -> None:
     result, _, _ = seeded
     monkeypatch.setattr(settings, "enable_patchbook_design_engine", False)

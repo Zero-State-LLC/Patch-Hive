@@ -128,7 +128,11 @@ def execute_walkthrough(
     grant = http.post(
         f"/api/admin/users/{int(user_id)}/credits/grant",
         headers=admin_headers,
-        json={"credits": int(credits), "reason": "design-engine-staging-walkthrough"},
+        # The admin grant is idempotent on credits and reason, so each run needs its own reason.
+        json={
+            "credits": int(credits),
+            "reason": f"design-engine-staging-walkthrough:{uuid.uuid4().hex}",
+        },
     )
     if not record("grant_credits", grant.status_code in (200, 201), int(grant.status_code)):
         return finish(health)
