@@ -367,6 +367,15 @@ const SCREENS: Screen[] = [
   { path: "/products", name: "products", signedIn: true },
   { path: "/patches", name: "patches", signedIn: true },
   { path: "/account", name: "account", signedIn: true },
+  {
+    path: "/account",
+    name: "account, delete confirmation",
+    signedIn: true,
+    open: async (page) => {
+      await page.getByRole("button", { name: "Delete account…" }).click();
+      await expect(page.getByRole("heading", { name: "Confirm deletion" })).toBeFocused();
+    },
+  },
   { path: "/admin", name: "ops", signedIn: true },
   { path: "/admin/users", name: "ops users", signedIn: true },
   { path: "/admin/leaderboards", name: "ops leaderboards", signedIn: true },

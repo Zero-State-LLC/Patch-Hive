@@ -47,6 +47,12 @@ export function restoreSession(): Promise<string | null> {
   return refreshSession();
 }
 
+/** Forget the session in this browser. Enough on its own when the API has already ended it. */
+export function endLocalSession(): void {
+  useAuthStore.getState().clear();
+  setSessionHint(false);
+}
+
 /** Sign out this browser: the API revokes the refresh cookie, and memory is cleared. */
 export async function signOut(): Promise<void> {
   try {
@@ -57,7 +63,6 @@ export async function signOut(): Promise<void> {
       });
     }
   } finally {
-    useAuthStore.getState().clear();
-    setSessionHint(false);
+    endLocalSession();
   }
 }

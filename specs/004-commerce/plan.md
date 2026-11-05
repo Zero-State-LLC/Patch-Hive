@@ -1,46 +1,54 @@
 # Plan: 004-commerce
 
-> **DRAFT, pending T001 confirmation.** An agent wrote this on 2026-11-03 from spec.md and the code on `main` at 3688037 (0.3.0-alpha.6). The owner has not approved it. T002 stays open until the owner confirms the spec (T001) and accepts this plan. If T001 changes spec.md, copy the carried sections again.
+An agent wrote and finished this plan on 2026-11-04, under the owner's delegation, from spec.md, [the T001 record](T001_CONFIRMATION_2026-11-04.md) and the code on `main` at 007b437 (0.3.0-alpha.8). The owner has not read the spec or this plan, and approves both by merging the PR. Payments stay in test mode.
 
 ## Stack (as built)
 
-- Backend: Python (CI runs 3.12), FastAPI, SQLAlchemy 2, Alembic migrations, Pydantic 2 (`backend/pyproject.toml`).
+- Backend: Python 3.11 (`backend/Dockerfile`; the CI test jobs run 3.11 and `backend-lint` runs 3.12), FastAPI, SQLAlchemy 2, Alembic migrations, Pydantic 2 (`backend/pyproject.toml`).
 - Database: Postgres 15 (Neon in staging and production, a Postgres service in CI); unit tests use SQLite fixtures (`backend/tests/conftest.py`).
 - Frontend: React 18, TypeScript, Vite, React Router (`frontend/package.json`).
 - Edge: the Cloudflare Worker in `edge/api` fronts the API (spec 006).
-- CI: `.github/workflows/ci.yml`, jobs `backend`, `frontend` and `frontend-e2e`. `just spec-dag` runs the task DAG check.
+- CI: `.github/workflows/ci.yml`, jobs `backend`, `migrations`, `acceptance`, `backend-lint`, `frontend` and `frontend-e2e`. `just spec-dag` runs the task DAG check.
 
 ## Architecture
 
-- **Canonical ledger.** `canonical_credit_ledger` (`backend/canon/models.py`) is append-only, enforced by a Postgres trigger (#139). The entry types are `purchase`, `debit`, `reversal`, `grant` and `refund`. `GET /api/canon/credits/balance` is the one balance (`backend/canon/routes.py`, `backend/canon/exports.py`).
-- **Webhook intake.** `receive_stripe_webhook` (`backend/canon/exports.py`) verifies the signature (constant-time HMAC over every `v1`, 300 s tolerance, livemode gate). `process_stripe_event` (`backend/canon/webhook_events.py`) then dispatches by type and gives every event a disposition: `processed`, `duplicate`, `unresolved` with a reason code, or `ignored`.
+- **Canonical ledger.** `canonical_credit_ledger` (`backend/canon/models.py`) is append-only, enforced by a Postgres trigger (#139). The entry types are `purchase`, `debit`, `reversal`, `grant` and `refund`. `GET /api/canon/credits/balance` is the balance spending uses (`backend/canon/routes.py`, `backend/canon/exports.py`).
+- **Legacy tables.** `credits_ledger` holds the `Purchase` rows Machine A counts (`backend/monetization/models.py`). `credit_ledger_entries` and `account_referrals` serve the `/api/me` routes (`backend/account/models.py`); see D7 and D8a in the T001 record.
+- **Webhook intake.** `receive_stripe_webhook` (`backend/canon/exports.py`) verifies the signature (constant-time HMAC over every `v1`, 300 s tolerance, livemode gate) and refuses what it cannot verify, storing nothing. `process_stripe_event` (`backend/canon/webhook_events.py`) then dispatches by type and gives every stored event a disposition: `processed`, `duplicate`, `unresolved` with a reason code, or `ignored`.
 - **Machine B.** `backend/canon/checkout.py`: credit checkout behind `ENABLE_CREDIT_CHECKOUT` and `checkout_gate`, one provider customer per user, payments unique on the provider ids, refunds and disputes (OQ-2), and operator resolve (T048b).
 - **Machine C.** `backend/canon/subscriptions.py`: subscription checkout behind `ENABLE_SUBSCRIPTION_CHECKOUT`, a record synced by `customer.subscription.*`, a period grant on `invoice.paid`, and cancel at period end. `backend/canon/entitlements.py` resolves the tier from the subscription and spends the STUDIO fair-use entitlement (T050).
-- **Machine A.** `backend/monetization/referrals.py`: append-only referral rows. A reward comes only from a provider-verified first purchase (`record_purchase(payment_verified=True)`), behind `ENABLE_REFERRALS`.
-- **Operator.** Admin reject and resolve for unresolved events (`backend/canon/webhook_events.py`, `backend/canon/checkout.py`), each with an audit record.
+- **Machine A.** `backend/monetization/referrals.py`: append-only referral rows. A reward comes only from a provider-verified first purchase (`record_purchase(payment_verified=True)`). Referral signup and the summaries sit behind `ENABLE_REFERRALS`.
+- **Operator.** Admin reject and resolve for unresolved events (`backend/canon/webhook_events.py`, `backend/canon/checkout.py`), each with an audit record. Resolve is Machine B only.
 - **Defaults.** `STRIPE_TEST_MODE=true`, `ALLOW_PRODUCTION_PAYMENTS=false`, both checkout flags off (`backend/core/config.py`). `validate_stripe_mode_startup_policy` refuses live mode outside production.
+
+## What T001 settled
+
+[The T001 record](T001_CONFIRMATION_2026-11-04.md) classifies every checklist claim and `[INFERRED]` line. An agent confirmed them under the owner's delegation, not the owner by reading them.
+
+- Machine C grants on `invoice.paid`. The corrected table is below and in spec.md.
+- Workflows: the governing skills and the CI reuse stand; the owners line is drift (D10).
+- FR-008: this plan reads "the credits ledger" as the canonical ledger, and treats the other tables as drift (D5).
 
 ## Remaining work
 
-- FRs still Partial (spec.md table): FR-002 ("demo mode only" is undefined), FR-008 (only the canonical ledger has a database guard), FR-021 (nothing at the database stops a referral code from changing), FR-029 (no database guard on referral rows).
-- Machine C: the proposed correction in spec.md, and its five questions.
-- T046 to T050 are built but stay unticked until T001 and OQ-1. T051 is the live-payments step, and it needs explicit authority.
-- T090: converge the code against the confirmed spec.
+In this order. Tasks stay open until their checks pass; nothing below activates payments.
+
+1. **T010.** Finish the transitions tests against the corrected Machine C table, and update the "decided deviation" comment in `backend/tests/unit/test_spec_004_transitions.py`. Add a test for each behavior the record says only a probe covered: D3, the referral code that does not resolve (OQ-6), the first-event rows of Machine C, SC-006 and SC-007.
+2. **T090.** Converge against the record's DRIFT list.
+   - Code changes: D4 (a rejection closes the checkout), D5 (guards or retire the legacy tables), D6 (a guard on the referral code), D7 (`/api/me/credits`), D8a (the Account page's referral summary) and D8b (the frontend for buying, subscribing, cancelling and the STUDIO allowance).
+   - Spec text: D1, D2, D3, D9, D10, D11 and D12.
+3. **Owner and counsel.** The record's OPEN list, O1 to O12, each with a recommended default. O8 to O11 may add code to T090 once decided.
+4. **T046 to T053.** The code exists and stays unticked. T046 needs an owner-confirmed OQ-1 (O1), T047, T048b, T049, T050 and T053 follow from T046, and T048 also waits on O9.
+5. **T051.** Payment activation, last: it needs the adversarial review of the provider path and explicit owner authority.
+
+Also still undefined: `data-model.md` and `contracts/README.md` are TODO stubs. No task names them; `docs/DATA_MODEL.md` and the code are the sources for now.
 
 ## Verification
 
 - `cd backend && pytest tests/unit/test_spec_004_transitions.py -q`, which covers Machines A, B and C as the code reads them.
-- `tests/unit/test_commerce_subscriptions.py`, `tests/unit/test_commerce_operator_resolve.py`, `tests/unit/test_commerce_webhook_processor.py`.
-- The Postgres acceptance tests in `tests/acceptance/` (append-only trigger, concurrent referral reward).
+- `tests/unit/test_commerce_subscriptions.py`, `tests/unit/test_commerce_credit_checkout.py`, `tests/unit/test_commerce_operator_resolve.py`, `tests/unit/test_commerce_webhook_processor.py`, `tests/unit/test_commerce_purchase_refunds.py`.
+- `cd backend && python -m pytest tests/acceptance -q`, which needs Postgres (CI job `acceptance`): append-only trigger, concurrent checkout, grant, refund and referral paths, and the refusing downgrades.
 - `just spec-dag`.
-
-## What T001 settles for this spec
-
-- Every `[INFERRED]` label in spec.md, including the Workflows skeleton.
-- The Machine C correction: the grant trigger and its five questions (spec.md, after the Machine C diagram).
-- OQ-1 (prices and credit counts) and OQ-13 (sales terms): provisional; the owner and a lawyer confirm.
-- FR-008: whether "the credits ledger" means the canonical ledger alone, or also the legacy `credits_ledger`, `referrals` and `subscription_period_grants`.
-- FR-002: what "demo mode only" means for FREE.
 
 ## Carried forward from spec.md
 
@@ -160,62 +168,75 @@ stateDiagram-v2
 
 ### Machine C: Subscription (per subscription)
 
+Corrected 2026-11-04 at T001. The earlier table granted on `subscription_created`, `subscription_updated` and `period_renewed`. The code grants only on `invoice.paid`, once per billing period, and `customer.subscription.*` events only sync the record (`backend/canon/subscriptions.py`; T049 #219, T050 #224). That follows OQ-4 `A_stripe_mapping` and [research 2026-11-01](../../docs/evidence/COMMERCE_BLOCKERS_RESEARCH_2026-11-01.md) §3. An agent made this correction under the owner's delegation, and the owner accepts it by merging; see [the T001 record](T001_CONFIRMATION_2026-11-04.md). Rows marked OPEN state what the code does today. They are not settled.
+
+The code stores the provider status, not these states. The states below map to it the same way as `_c_state` in `backend/tests/unit/test_spec_004_transitions.py`.
+
 States:
 
-- `NONE`. No subscription exists. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
-- `CheckoutOpen`. The subscription checkout session exists. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
-- `Active`. The provider status is `active`. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
-- `CancelScheduled`. The subscription is active and flagged to cancel at the period end. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
-- `NotActive`. The provider status is a value other than `active` and `canceled`, such as `past_due`. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] Whether PatchHive should distinguish the provider statuses further is NOT_COMPUTABLE. See OQ-4.
-- `Canceled`. The provider reported deletion. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
-- `Abandoned`. The user left checkout. [INFERRED]
-- `Unresolved`. The customer is unknown, the price maps to no tier, or the event is unverified. [INFERRED]
+- `NONE`. No subscription exists.
+- `CheckoutOpen`. The subscription checkout session exists. This is a `SubscriptionCheckoutRecord` reservation, not a subscription record.
+- `Active`. The provider status is `active`, and `cancel_at_period_end` is false.
+- `CancelScheduled`. The provider status is `active`, and `cancel_at_period_end` is true.
+- `NotActive`. The provider status is any other value except `canceled`, such as `past_due`.
+- `Canceled`. The provider status is `canceled`.
+- `Abandoned`. The user left checkout. The reservation expired, and no subscription record exists.
+- `Unresolved`. The disposition of a stored event, not a state of the subscription record: the customer is unknown, the price maps to no tier, or the payload is malformed.
 
-The initial state is `NONE`. The final states are `Canceled` and `Abandoned`. `Unresolved` exits only through operator action. [INFERRED]
+The initial state is `NONE`. The final states are `Canceled` and `Abandoned`. An event's `Unresolved` disposition exits only through operator action.
+
+Every row below is [OBSERVED: backend/canon/subscriptions.py, backend/canon/checkout.py, backend/canon/webhook_events.py].
 
 | from | event | guard | to | effect |
 |---|---|---|---|---|
-| NONE | choose_tier | Payments are enabled. The tier is CORE, PRO, or STUDIO. | CheckoutOpen | Get or create the provider customer. Create a subscription session that carries the user and the tier. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] |
-| NONE | choose_tier | The tier is invalid, or payments are disabled. | NONE | Refuse the request. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] The invalid-tier rule is OBSERVED. The disabled rule is [INFERRED]. |
-| CheckoutOpen | checkout_canceled_or_expired | Any. | Abandoned | Write no record. [INFERRED] |
-| CheckoutOpen | subscription_created | Verified. The customer is known. The price maps to a tier. The status is `active`. | Active | Record the subscription. Grant the tier entitlement for the current period once. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] Once per period is [INFERRED]. |
-| CheckoutOpen | subscription_created | Verified. The customer is known. The tier is known. The status is not `active`. | NotActive | Record the subscription. Grant nothing. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] |
-| CheckoutOpen, Active, NotActive, CancelScheduled | subscription_created or subscription_updated | The event is unverified, the customer is unknown, or the price maps to no tier. | Unresolved | Grant nothing. Retain the event. [INFERRED] The observed code returns silently. |
-| Active | subscription_updated | Same period. The status is `active`. | Active | Sync the fields. Grant nothing. [INFERRED] The observed code grants again. See FR-016. |
-| Active, NotActive | period_renewed | A new period starts. The status is `active`. | Active | Sync the period. Grant the entitlement for the new period once. [INFERRED] |
-| Active | subscription_updated | The status is not `active`. | NotActive | Sync the fields. Grant nothing. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] |
-| NotActive | subscription_updated | The status is `active` in a period that has not been granted yet. | Active | Sync the fields. Grant once for the period. [INFERRED] |
-| Active | cancel_requested | The user owns the subscription. | CancelScheduled | Set cancel-at-period-end at the provider and locally. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] |
-| Active, NotActive, CancelScheduled | subscription_deleted | Verified. | Canceled | Set the status to `canceled`. Keep the granted credits. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] Keeping credits is [INFERRED]. |
-| Unresolved | operator_resolves | The operator has mapped the customer and the tier. | Active or NotActive | Apply the event as verified. [INFERRED] |
+| NONE | choose_tier | `ENABLE_SUBSCRIPTION_CHECKOUT` and `checkout_gate` pass; the tier is CORE, PRO, or STUDIO and has a configured price; the user has no live subscription. | CheckoutOpen | Get or create the provider customer. Create a `subscription`-mode session for the tier's price. Write a reservation and no subscription record. A repeat for the same tier reuses the open session. |
+| NONE | choose_tier | Disabled, invalid tier, no configured price (503 `SUBSCRIPTION_PRICE_MISSING`), a live subscription exists (409 `SUBSCRIPTION_EXISTS`), or another tier's session is open (409 `SUBSCRIPTION_CHECKOUT_OPEN`). | NONE | Refuse the request. |
+| CheckoutOpen | checkout_canceled_or_expired (`checkout.session.expired`) | The session has an open reservation. | Abandoned | Mark the reservation expired. Write no subscription record. |
+| NONE, CheckoutOpen | subscription_created (`customer.subscription.created`), or subscription_updated with no record yet (EC-2) | Verified. The customer is known. One item whose price maps to a tier. A provider status. | The state the status and flag map to | Record the subscription (tier from the provider price, status, period, cancel flag). Grant nothing. |
+| Active, NotActive, CancelScheduled | subscription_updated | Newer than the last applied event, and something changed. | Active, CancelScheduled or NotActive, from the new status and flag | Sync the fields. The tier always comes from the provider price (OQ-7). Grant nothing. |
+| Active, NotActive, CancelScheduled | subscription_updated | Older than the last applied event, or nothing changed. | Unchanged | `duplicate` (`STALE_EVENT`, `SUBSCRIPTION_UNCHANGED`). |
+| NONE, Active, NotActive, CancelScheduled | invoice_paid (`invoice.paid`) | Verified. The invoice is `paid` and `amount_paid > 0`. A non-proration line whose price maps to a tier. The customer matches. The period `subscription-period:<subscription_id>:<period_start>` has no grant. | Unchanged. A missing record is created as `active` (EC-2). | Grant once for the period. CORE and PRO get a canonical `grant` of the tier's credits. STUDIO gets the unlimited entitlement with the fair-use cap, and no credits (FR-004, OQ-8). The subscription's first paid invoice also records a purchase for Machine A (FR-028, OQ-3). |
+| Canceled | invoice_paid | The same guard as the row above. | Canceled | OPEN. Today it grants once and the record stays `canceled`. No test covers this. |
+| any | invoice_paid | The period was already granted. | Unchanged | `duplicate` (`PERIOD_ALREADY_GRANTED`). Grant nothing. |
+| any | invoice_paid | The invoice has only proration lines. | Unchanged | `ignored` (`INVOICE_PRORATION_ONLY`). The new tier's credits come with the next period (OQ-7). |
+| any | invoice_paid | Not paid, a zero amount, no subscription, unknown customer or price, the same invoice already granted for another period, or a malformed payload. | Unresolved | Grant nothing. Keep the event with its reason code. |
+| CheckoutOpen, Active, NotActive, CancelScheduled | subscription_created or subscription_updated | Unknown customer, a price that maps to no tier, not exactly one item, a malformed period, a customer mismatch, or an unknown status. | Unresolved | Grant nothing. Keep the event with its reason code. |
+| Active | cancel_requested | `ENABLE_SUBSCRIPTION_CHECKOUT` and `checkout_gate` pass. The user's newest live subscription, with provider status exactly `active`. | CancelScheduled | Set cancel-at-period-end at the provider and locally. Refused: 404 `SUBSCRIPTION_NOT_FOUND` when there is none. OPEN: 409 `SUBSCRIPTION_NOT_ACTIVE` for any other status, and 403 `PAYMENTS_DISABLED` with the flag off. |
+| NONE, Active, NotActive, CancelScheduled | subscription_deleted | Verified. The customer matches. With no record yet, the price must also map to a tier. | Canceled | Set the status to `canceled`. Keep the granted credits. |
+| Canceled | subscription_created, subscription_updated or subscription_deleted | The customer matches. | Canceled | `duplicate` (`SUBSCRIPTION_ALREADY_CANCELED`). |
+| Unresolved | operator_rejects | An admin, with a reason (OQ-5, T048). | Unresolved, closed as rejected | Grant nothing. Write one admin audit record. |
+| Unresolved | operator_resolves | Any. | Unchanged | Refused with 409 `RESOLVE_NOT_SUPPORTED`, so an operator can only reject. OPEN whether to build resolve. |
+
+An event whose signature does not verify is refused at intake, before any handler runs. Such an event is never stored and never becomes `Unresolved`. `invoice.payment_failed` has no handler, so it is stored as `ignored`; `past_due` arrives through `customer.subscription.updated`. A `subscription`-mode `checkout.session.completed` marks the reservation completed and grants nothing. A reservation also stops blocking a new checkout once its `expires_at` passes. Entitlement by status (OQ-4): `active`, `trialing` and `past_due` keep the paid tier; every other status resolves to FREE (`ENTITLED_STATUSES`).
 
 Illegal transitions:
 
-- A second credit grant for the same subscription and the same billing period. [INFERRED]
-- `Canceled` to `Active`. Resubscribing starts a new subscription from `NONE`. [INFERRED]
-- Any grant for an unknown tier or an unknown customer. [INFERRED]
-- A tier change derived from client input instead of the provider price. [INFERRED]
+- A second grant for the same subscription and billing period.
+- `Canceled` to any other state through a `customer.subscription.*` event. Resubscribing starts a new subscription from `NONE`.
+- Any grant for an unknown tier or an unknown customer.
+- A tier change derived from client input instead of the provider price.
 
 ```mermaid
 stateDiagram-v2
     [*] --> NONE
-    NONE --> CheckoutOpen: choose_tier [enabled, valid tier]
-    CheckoutOpen --> Abandoned: checkout_canceled_or_expired
-    CheckoutOpen --> Active: subscription_created [known, active] / grant once
+    NONE --> CheckoutOpen: choose_tier [enabled, priced tier, no live subscription]
+    CheckoutOpen --> Abandoned: checkout.session.expired
+    NONE --> Active: subscription_created [known, active]
+    NONE --> NotActive: subscription_created [known, not active]
+    CheckoutOpen --> Active: subscription_created [known, active]
     CheckoutOpen --> NotActive: subscription_created [known, not active]
-    CheckoutOpen --> Unresolved: subscription_created [unknown or unverified]
-    Active --> Active: subscription_updated [same period] / sync only
-    Active --> Active: period_renewed / grant once
+    NONE --> Active: invoice_paid [no record yet, EC-2] / grant once
+    Active --> Active: invoice_paid [new period] / grant once
+    NotActive --> NotActive: invoice_paid [new period] / grant once
+    CancelScheduled --> CancelScheduled: invoice_paid [new period] / grant once
     Active --> NotActive: subscription_updated [not active]
-    NotActive --> Active: subscription_updated or period_renewed [active, ungranted period]
-    Active --> CancelScheduled: cancel_requested
+    NotActive --> Active: subscription_updated [active]
+    Active --> CancelScheduled: cancel_requested or subscription_updated [flag set]
+    CancelScheduled --> Active: subscription_updated [flag cleared]
+    CancelScheduled --> NotActive: subscription_updated [not active]
     Active --> Canceled: subscription_deleted
     NotActive --> Canceled: subscription_deleted
     CancelScheduled --> Canceled: subscription_deleted
-    Unresolved --> Active: operator_resolves
-    Unresolved --> NotActive: operator_resolves
     Canceled --> [*]
     Abandoned --> [*]
 ```
-
-The proposed Machine C correction that follows this table in spec.md is not carried forward: it is not settled. If the owner approves it at T001, copy it here in place of the Machine C table.
