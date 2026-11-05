@@ -378,6 +378,7 @@ CATEGORY_CORRECTION_MANIFESTS = (
     CATALOG / "provenance" / "category-corrections-v2.json",
     CATALOG / "provenance" / "category-corrections-v3.json",
     CATALOG / "provenance" / "category-corrections-v4.json",
+    CATALOG / "provenance" / "catalog-url-corrections-v1.json",
 )
 # A row's Module Category: module_catalog.category, and modules.module_type on the row the
 # patch engine reads. A manifest may only correct these, never null, flag or relabel them.
@@ -394,7 +395,7 @@ ARCHIVE_FIELDS = {
         "source_reference",
         "module_type",
     },
-    "module_catalog": {"hp", "category", "modulargrid_url"},
+    "module_catalog": {"hp", "category", "modulargrid_url", "manufacturer_url"},
 }
 NULLABLE = {"modules": set(POWER_FIELDS) | {"verification_source_url"}, "module_catalog": {"hp"}}
 ARCHIVE_ACTIONS = {"null", "keep", "flag", "relabel", "correct"}
@@ -412,7 +413,8 @@ def _correction_problem(table: str, item: dict[str, Any]) -> str | None:
         value = item["value"]
         if not isinstance(value, int) or not CORRECTION_HP_BAND[0] <= value <= CORRECTION_HP_BAND[1]:
             return "correction_hp_outside_band"
-    if item["field"] == "verification_source_url" and not str(item["value"]).startswith("https://"):
+    url_field = item["field"] in ("verification_source_url", "manufacturer_url")
+    if url_field and not str(item["value"]).startswith("https://"):
         return "correction_bad_url"
     if item["field"] in CATEGORY_FIELDS and item["value"] not in MODULE_CATEGORIES:
         return "correction_bad_category"
@@ -542,9 +544,9 @@ def _schedule_provenance(
             continue
         # A corrected row leaves FLAGGED once every flagged field is fixed (research R8).
         # Checked on every run, so a correction applied before this rule existed counts too.
-        # A flag is about HP or power, so correcting a category never clears one.
+        # A flag is about HP or power, so correcting a category or a URL never clears one.
         if state is not None and state.get("needs_reverify") and any(
-            item.get("action") == "correct" and item.get("field") not in CATEGORY_FIELDS
+            item.get("action") == "correct" and item.get("field") not in (*CATEGORY_FIELDS, "manufacturer_url")
             for item in row.get("fields") or []
         ):
             resolved.append((table, row_key, brand, name, state))

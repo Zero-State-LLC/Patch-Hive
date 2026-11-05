@@ -675,9 +675,11 @@ def test_the_access_basis_overlay_names_no_lead_and_passes_its_own_checks():
     assert {row["access_basis"] for row in overlay["rows"]} == {"official_publication"}
     assert all(row["checks"] for row in overlay["rows"])
     assert not {row["slug"] for row in overlay["rows"]} & {row["slug"] for row in overlay["left_out"]}
-    left_out = {row["slug"]: row for row in overlay["left_out"]}
-    assert left_out["noise-engineering-basimilus-iteritas-alter"]["reason"] == "maker_site_not_confirmed"
-    assert {row["host"] for row in overlay["rows"]}.isdisjoint({"manualslib.com"})
+    # The Noise Engineering row is checked at the maker's page its URL correction moves it to.
+    hosts = {row["slug"]: row["host"] for row in overlay["rows"]}
+    assert hosts["noise-engineering-basimilus-iteritas-alter"] == "noiseengineering.us"
+    assert set(hosts.values()).isdisjoint({"manualslib.com"})
+    assert {row["reason"] for row in overlay["left_out"]} == {"robots_unavailable_403", "robots_unavailable_0"}
 
 
 def test_jumper_settings_load_once_as_power_configs(fresh_population_url, tmp_path):
@@ -845,6 +847,10 @@ def test_the_free_reads_reach_both_tables_and_clear_supply_outputs(fresh_populat
             assert module("STO").module_type == "VCO"
             assert module("Mesa").module_type == "FX"
             assert module("Starlight 8HP").status == "tombstoned"
+            assert conn.execute(text(
+                "SELECT manufacturer_url, access_basis FROM module_catalog "
+                "WHERE slug = 'noise-engineering-basimilus-iteritas-alter'"
+            )).one() == ("https://noiseengineering.us/products/basimilus-iteritas-alter", "official_publication")
 
         # A database loaded before v7 holds the supply's output as a draw.
         with engine.begin() as conn:

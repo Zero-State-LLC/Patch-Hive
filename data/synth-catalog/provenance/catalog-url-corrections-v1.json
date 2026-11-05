@@ -1,0 +1,25 @@
+{
+ "batch": "catalog-url-corrections-v1",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted.",
+ "decided": "2026-11-04: owner decisions 1 and 53 (docs/evidence/OWNER_DECISIONS_2026-11-04.md). Page read by plain GET on 2026-11-05.",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "noise-engineering-basimilus-iteritas-alter",
+   "brand": "Noise Engineering",
+   "name": "Basimilus Iteritas Alter",
+   "fields": [
+    {
+     "field": "manufacturer_url",
+     "action": "correct",
+     "only_if_value": "https://www.manualslib.com/manual/1316602/Noise-Engineering-Basimilus-Iteritas-Alter.html",
+     "value": "https://noiseengineering.us/products/basimilus-iteritas-alter",
+     "evidence_url": "https://noiseengineering.us/products/basimilus-iteritas-alter",
+     "source_tag": "catalog-url-corrections-v1: the maker has its own page (\"10HP parameterized digital drum synthesizer\"); the stored URL is a third-party copy of the manual",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}

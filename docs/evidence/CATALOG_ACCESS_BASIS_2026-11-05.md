@@ -116,3 +116,23 @@ This load also carried the taxonomy that staging already had:
 Reading production's public API afterwards: the catalog total went from 3,360 to 3,171, and none of the 3,171 rows on `/api/modules/catalog` or `/api/modules` mentions ModularGrid. Rows with no basis fell from 961 to 79. The public rows match staging's: catalog rows on every field, module rows on everything but `imported_at`. Rows anonymous reads leave out weren't compared.
 
 The two databases didn't start the same. Before these loads their archives held 3,869 and 3,820 rows, and `module_type_from_category` updated 403 rows on staging and 336 here. The cause wasn't traced.
+
+## Retry of the 30 left-out rows
+
+Run the same day, after the free reads. Robots.txt was read again for each site, and the 3 unconfirmed sites were read by plain GET, with nothing paid. 5 rows now pass, which takes the overlay to 699 rows and leaves 25 out.
+
+| Row | Why it now passes |
+|---|---|
+| FlatSix Modular Shroud of Turing, Slight of Hand | robots.txt answered and allows the pages |
+| Synthetic Sound Labs V-Gates Euro | steamsynth.com is titled "Analog Synthesizers \| Synthetic Sound Labs" |
+| Unknown Devices Eisei | unwn.dev is titled "unknown devices – modular instruments" |
+| Noise Engineering Basimilus Iteritas Alter | The maker has its own page, so `provenance/catalog-url-corrections-v1.json` replaces the third-party manual link. The old URL is archived first |
+
+| Still left out | Rows | Why |
+|---|---:|---|
+| AMSynths 8, Pulp Logic 6, SSSR Labs 2, Befaco 1 | 17 | robots.txt answers 403, a refusal under decision 3 |
+| Fruku 4, Encore Electronics 1, Frap Tools 1, Raw Analogue Sound 1, Tin Man Synths 1 | 8 | The connection timed out from this machine, and curl timed out the same way. A read from another network might get an answer |
+
+These 25 stay public with no basis. They aren't leads, so tagging them `unknown` would hide real maker rows.
+
+A correction now accepts `module_catalog.manufacturer_url`. It must cite an https page, and it never clears a `needs_reverify` flag, because a flag is about HP or power.

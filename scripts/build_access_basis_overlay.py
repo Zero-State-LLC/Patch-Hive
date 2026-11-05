@@ -7,7 +7,9 @@ which checks it passed, and a row that fails stays out with its reason.
 
 `--catalog` takes saved rows from `GET /api/modules/catalog`, from each database. Anonymous reads
 leave out `unknown` rows, which is all this needs. CatalogCandidate rows aren't listed here: they
-are ModularGrid-derived, so the loader tags them by source instead of the repo naming them.
+are ModularGrid-derived, so the loader tags them by source instead of the repo naming them. A rerun
+checks only the rows still without a basis and keeps the rows the overlay already tags, which a load
+from empty still needs.
 """
 
 from __future__ import annotations
@@ -30,6 +32,7 @@ from catalog_scrape import USER_AGENT, parse_robots, permission_basis  # noqa: E
 
 SOURCES = ROOT / "data" / "synth-catalog" / "maker-sources.json"
 OVERLAY = ROOT / "data" / "synth-catalog" / "overlays" / "access-basis-v1.json"
+URL_CORRECTIONS = ROOT / "data" / "synth-catalog" / "provenance" / "catalog-url-corrections-v1.json"
 MAKER_ROW_SOURCES = ("ManufacturerCrawl", "ManufacturerVerified")
 # Hosts that serve many makers from subdomains: the whole host is the maker's, the domain isn't.
 SHARED_PLATFORMS = (
@@ -45,6 +48,8 @@ SHARED_PLATFORMS = (
 REVIEWED_HOSTS = {
     ("Mutable Instruments", "pichenettes.github.io"): "the maker's documentation site",
     ("BÈSIA Modular", "besia.bigcartel.com"): "the maker's store, titled with its name",
+    ("Synthetic Sound Labs", "steamsynth.com"): "the maker's site, titled with its name",
+    ("Unknown Devices", "unwn.dev"): "the maker's site, titled with its name",
 }
 
 
@@ -107,6 +112,10 @@ def main() -> int:
     for path in args.catalog:
         for row in json.loads(path.read_text(encoding="utf-8")):
             rows.setdefault(row["slug"], row)
+    # A row whose reviewed correction moves it to the maker's page is checked at that page.
+    for correction in json.loads(URL_CORRECTIONS.read_text(encoding="utf-8"))["rows"]:
+        if correction["slug"] in rows:
+            rows[correction["slug"]]["manufacturer_url"] = correction["fields"][0]["value"]
 
     listed: dict[str, set[str]] = {}
     for brand, entry in [*sources["homepages"].items(), *sources["adapters"].items()]:
@@ -146,6 +155,10 @@ def main() -> int:
         else:
             tagged.append({**identity, "access_basis": "official_publication", "checks": checks})
 
+    checked = {row["slug"] for row in [*tagged, *left_out]}
+    if args.out.is_file():
+        earlier = json.loads(args.out.read_text(encoding="utf-8"))["rows"]
+        tagged = sorted([*tagged, *(row for row in earlier if row["slug"] not in checked)], key=lambda r: r["slug"])
     args.out.write_text(
         json.dumps(
             {

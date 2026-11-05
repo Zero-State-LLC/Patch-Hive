@@ -104,6 +104,24 @@ def test_a_width_changes_only_with_a_quote_from_the_maker() -> None:
     assert all(entry["source_class"] == "maker" and entry["source_url"].startswith("https://") for entry in HP)
 
 
+def test_a_url_correction_cites_the_makers_own_page_and_clears_no_flag() -> None:
+    rows = json.loads((CATALOG / "provenance" / "catalog-url-corrections-v1.json").read_text(encoding="utf-8"))["rows"]
+    assert [row["slug"] for row in rows] == ["noise-engineering-basimilus-iteritas-alter"]
+    item = rows[0]["fields"][0]
+    assert "manualslib" in item["only_if_value"] and item["value"] == item["evidence_url"]
+    assert P._correction_problem("module_catalog", item) is None
+    assert P._correction_problem("module_catalog", {**item, "value": "http://noiseengineering.us/"}) == "correction_bad_url"
+
+    plan = P.Plan()
+    catalog = {"noise-engineering-basimilus-iteritas-alter": {
+        "brand": "Noise Engineering", "name": "Basimilus Iteritas Alter", "needs_reverify": True,
+        "manufacturer_url": item["only_if_value"], "tombstoned": False,
+    }}
+    P._schedule_provenance(plan, catalog, {}, {"batch": "t", "flag_reverify": False, "rows": rows}, set(), {})
+    assert catalog["noise-engineering-basimilus-iteritas-alter"]["manufacturer_url"] == item["value"]
+    assert plan.provenance["t"]["reverify_clear_scheduled"] == 0
+
+
 def test_a_retirement_cites_the_page_and_keeps_placed_rows_to_blank_or_not_modules() -> None:
     assert len(RETIRED) == 11
     assert all(row["evidence_url"].startswith("https://") and "The page says" in row["reason"] for row in RETIRED)
