@@ -163,6 +163,27 @@ Nothing here changed these:
 3. **After Later's "VCA+Mixer" rows** (Barback, Bartender, Inserts, Blend and others) stay empty, because the store files both functions together.
 4. **Marbles clones file differently.** After Later's own store tags Dice, Cara and Pachinko as Modulation, so they're LFO, while Mutable Marbles stays SEQ.
 
+## Staging
+
+Loaded from branch `catalog/free-reads`, before merge. The owner confirmed this load in chat, on top of decision 20.
+
+| Step | Run | Result |
+|---|---|---|
+| Dry run | [42117262485](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42117262485) | 0 conflicts, no destructive SQL |
+| Apply | [42117702596](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42117702596) | The counts above. The archive went from 5,094 to 5,422 rows |
+| Second dry run | [42118691507](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42118691507) | Plans nothing |
+| Smoke | [42118706230](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42118706230) | 10/10 |
+
+Reading staging's public API afterwards: the catalog total went from 3,171 to 3,160, public rows with no category from 555 to 278, and none of the rows mentions ModularGrid. UPWR, SOURCE MK3 and POW! show no draw, ST Modular USB keeps its 8 mA, and the retired rows are gone. Yarns, Frames, Edges, ADDAC200PI and Akemie's Castle are hidden from anonymous reads, so only the receipt shows those changes.
+
+## Production, not yet loaded
+
+Dry run [42119014963](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42119014963), from the same branch, wrote nothing. Its plan matches staging's.
+
+- `plan_hash`: `95e8c235c4c47f5b3cf3c6a9572b8a23bd39f94621d5b3c40a75b2a7d801cdd8`
+- `inputs_hash`: `2097e4cb323d894d81f8d3e16615d9ceeb48c35784eca27bb99222c587e5cab9`
+- 0 conflicts, no destructive SQL.
+
 ## Not in this change
 
 - The 30 maker rows the access-basis check left out.
