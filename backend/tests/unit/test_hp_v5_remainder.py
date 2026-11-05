@@ -63,7 +63,7 @@ def test_v5_re_sources_only_v1_values_no_earlier_overlay_cites() -> None:
 def test_maker_corrections_v6_fixes_dixie_ii_in_both_tables() -> None:
     path = CATALOG / "provenance" / "maker-corrections-v6.json"
     manifest = json.loads(path.read_text())
-    assert P.PROVENANCE_MANIFESTS[-1] == path and manifest["flag_reverify"] is False
+    assert path in P.PROVENANCE_MANIFESTS and manifest["flag_reverify"] is False
     assert {(row["table"], row["name"]) for row in manifest["rows"]} == {
         ("module_catalog", "Dixie II"), ("modules", "Dixie II"),
     }

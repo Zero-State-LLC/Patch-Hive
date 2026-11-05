@@ -1,0 +1,173 @@
+{
+ "batch": "category-corrections-v4",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted. Each row is corrected in module_catalog and in modules, because the patch engine reads modules.module_type.",
+ "decided": "2026-11-04: owner decisions 17, 18 and 54 (docs/evidence/OWNER_DECISIONS_2026-11-04.md). Pages read by plain GET on 2026-11-05.",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "mutable-instruments-yarns",
+   "brand": "Mutable Instruments",
+   "name": "Yarns",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "MIDI",
+     "evidence_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/yarns/",
+     "source_tag": "category-corrections-v4: \"rsion Specifications Key data 4-channel MIDI interface ( MIDI interface on the packaging) Para\" on https://pichenettes.github.io/mutable-instruments-documentation/module",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Yarns",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "MIDI",
+     "evidence_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/yarns/",
+     "source_tag": "category-corrections-v4: \"rsion Specifications Key data 4-channel MIDI interface ( MIDI interface on the packaging) Para\" on https://pichenettes.github.io/mutable-instruments-documentation/module",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "mutable-instruments-frames",
+   "brand": "Mutable Instruments",
+   "name": "Frames",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCA",
+     "value": "MIX",
+     "evidence_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/frames/",
+     "source_tag": "category-corrections-v4: \"ginal printed manual Features An analog mixer... ... under digital control Specificat\" on https://pichenettes.github.io/mutable-instruments-documentation/modules/frames/",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Frames",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCA",
+     "value": "MIX",
+     "evidence_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/frames/",
+     "source_tag": "category-corrections-v4: \"ginal printed manual Features An analog mixer... ... under digital control Specificat\" on https://pichenettes.github.io/mutable-instruments-documentation/modules/frames/",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "mutable-instruments-edges",
+   "brand": "Mutable Instruments",
+   "name": "Edges",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "VCO",
+     "evidence_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/edges/",
+     "source_tag": "category-corrections-v4: \"visions and variants 2014 Key data Quad chiptune audio generator Parameter Value Width 2\" on https://pichenettes.github.io/mutable-instruments-documentation/modules/edge",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Mutable Instruments",
+   "name": "Edges",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "VCO",
+     "evidence_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/edges/",
+     "source_tag": "category-corrections-v4: \"visions and variants 2014 Key data Quad chiptune audio generator Parameter Value Width 2\" on https://pichenettes.github.io/mutable-instruments-documentation/modules/edge",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "lzx-industries-sensory-translator",
+   "brand": "LZX Industries",
+   "name": "Sensory Translator",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "UTIL",
+     "evidence_url": "https://lzxindustries.net/modules/sensory-translator",
+     "source_tag": "category-corrections-v4: \"Sensory Translator: 5-channel input acquisition for LZX. Manual and Specs o\" on https://lzxindustries.net/modules/sensory-translator; VCF came from the crawl or seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "LZX Industries",
+   "name": "Sensory Translator",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "UTIL",
+     "evidence_url": "https://lzxindustries.net/modules/sensory-translator",
+     "source_tag": "category-corrections-v4: \"Sensory Translator: 5-channel input acquisition for LZX. Manual and Specs o\" on https://lzxindustries.net/modules/sensory-translator; VCF came from the crawl or seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "syntonie-animate",
+   "brand": "Syntonie",
+   "name": "Animate",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "LFO",
+     "evidence_url": "https://syntonie.fr/products/animate",
+     "source_tag": "category-corrections-v4: \"Animate is a quadrature low frequency oscillator with triangle, sine and square waveform\" on https://syntonie.fr/products/animate; VCO came from the crawl or seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Syntonie",
+   "name": "Animate",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "LFO",
+     "evidence_url": "https://syntonie.fr/products/animate",
+     "source_tag": "category-corrections-v4: \"Animate is a quadrature low frequency oscillator with triangle, sine and square waveform\" on https://syntonie.fr/products/animate; VCO came from the crawl or seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}

@@ -433,7 +433,8 @@ def test_maker_corrections_v3_and_the_legacy_hp_marker(fresh_population_url, tmp
     # 88 after v3; v4 (the T039 remainder) re-sources 26 more and v5 4 more. On a fresh
     # load the A-155 stays marked at v1's 4 (maker-corrections-v5 needs a stored value).
     # Of the 58, the 40 whose HP a retailer page states read retailer_observed (FR-039).
-    assert first["updates"]["hp_source_legacy_marked"] == 18
+    # The free reads of 2026-11-05 re-source 9 of the other 18 (8 ADDAC rows, Doepfer A-101-4).
+    assert first["updates"]["hp_source_legacy_marked"] == 9
     assert first["updates"]["hp_source_retailer_marked"] == 40
     engine = create_engine(fresh_population_url)
     try:
@@ -451,9 +452,9 @@ def test_maker_corrections_v3_and_the_legacy_hp_marker(fresh_population_url, tmp
         # A fresh load takes the maker value from v3; no re-sourced value is marked.
         assert fresh == {"make-noise-dpo": 28, "make-noise-morphagene": 20,
                          "bastl-instruments-knit-rider": 16, "intellijel-mems-mic-1u": 10}
-        assert len(marked) == 18 and marked["make-noise-mysteron"] == 14
-        # A retailer page that disagrees (4 HP) leaves the v1 value marked.
-        assert marked["addac-system-addac200pi"] == 2
+        assert len(marked) == 9 and marked["make-noise-mysteron"] == 14
+        # A retailer page that disagrees leaves the v1 value marked (Befaco Mixer: 5, retailer 4).
+        assert marked["befaco-mixer"] == 5
         # A citation the page check could not confirm stays marked.
         assert marked["cwejman-d-lfo"] == 12
         assert len(retailer) == 40 and retailer["befaco-bandit"] == 8
@@ -822,3 +823,44 @@ def test_inputs_hash_covers_the_manual_label_receipt(tmp_path, monkeypatch):
     before = population.inputs_hash()
     copy.write_text(copy.read_text().replace("Internal 5v", "Internal 5V"))
     assert population.inputs_hash() != before
+
+
+def test_the_free_reads_reach_both_tables_and_clear_supply_outputs(fresh_population_url, tmp_path):
+    missing = tmp_path / "none.json"
+    applied = populate(fresh_population_url, apply=True, verification_path=missing)
+    assert applied["conflicts_total"] == 0
+    engine = create_engine(fresh_population_url)
+    try:
+        with engine.connect() as conn:
+            def module(name):
+                return conn.execute(text(
+                    "SELECT hp, module_type, status, power_12v_ma, power_neg12v_ma, power_5v_ma "
+                    "FROM modules WHERE name = :name ORDER BY id LIMIT 1"
+                ), {"name": name}).one()
+
+            assert module("UPWR")[3:] == (None, None, None)
+            assert module("POW!")[3:] == (None, None, None)
+            assert module("ADDAC200PI").hp == 4
+            assert module("Yarns").module_type == "MIDI"
+            assert module("STO").module_type == "VCO"
+            assert module("Mesa").module_type == "FX"
+            assert module("Starlight 8HP").status == "tombstoned"
+
+        # A database loaded before v7 holds the supply's output as a draw.
+        with engine.begin() as conn:
+            conn.execute(text("DELETE FROM catalog_value_archive WHERE batch = 'maker-corrections-v7'"))
+            conn.execute(text(
+                "UPDATE modules SET power_12v_ma = 2000, power_neg12v_ma = 1000, power_5v_ma = 500 WHERE name = 'UPWR'"
+            ))
+        again = populate(fresh_population_url, apply=True, verification_path=missing)
+        assert again["conflicts_total"] == 0
+        with engine.connect() as conn:
+            assert conn.execute(text(
+                "SELECT power_12v_ma, power_neg12v_ma, power_5v_ma FROM modules WHERE name = 'UPWR'"
+            )).one() == (None, None, None)
+            assert conn.execute(text(
+                "SELECT old_value FROM catalog_value_archive "
+                "WHERE batch = 'maker-corrections-v7' AND field = 'power_12v_ma' AND name = 'UPWR'"
+            )).scalar_one() == "2000"
+    finally:
+        engine.dispose()

@@ -1,0 +1,99 @@
+{
+ "dataset_version": "module-catalog-hp-overlay-v8",
+ "generated_from": "spec 003 T039 and owner decision 30: the unsourced HP values retried on maker pages by plain GET on 2026-11-05 (robots.txt honoured, nothing paid). Where the stored width differs, maker-corrections-v7 fixes it on a loaded database, and this entry gives a load from empty the right value.",
+ "policy": "fill-null only; maker page values only, each quoted.",
+ "generated_at": "2026-11-05T00:00:00Z",
+ "count": 9,
+ "entries": [
+  {
+   "slug": "addac-system-addac200pi",
+   "brand": "ADDAC System",
+   "name": "ADDAC200PI",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200pi",
+   "verification": "maker-page-checked-2026-11-05: \"t. Specs: . Width: 4 HP . Dep\""
+  },
+  {
+   "slug": "addac-system-addac200s-size-matter-black",
+   "brand": "ADDAC System",
+   "name": "ADDAC200S Size Matter black",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200s",
+   "verification": "maker-page-checked-2026-11-05: \"Eurorack . Width: 4 HP . Dep\""
+  },
+  {
+   "slug": "addac-system-addac501b-complex-random-expansion",
+   "brand": "ADDAC System",
+   "name": "ADDAC501B Complex Random Expansion",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac500-series/addac501b",
+   "verification": "maker-page-checked-2026-11-05: \"Eurorack . Width: 4 HP . Dep\""
+  },
+  {
+   "slug": "addac-system-addac101-wav-player",
+   "brand": "ADDAC System",
+   "name": "ADDAC101 .WAV Player",
+   "hp": 11,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac100-series/addac101",
+   "verification": "maker-page-checked-2026-11-05: \"Eurorack . Width: 11 HP . Dep\""
+  },
+  {
+   "slug": "addac-system-addac203-cv-mapping",
+   "brand": "ADDAC System",
+   "name": "ADDAC203 CV Mapping",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac203",
+   "verification": "maker-page-checked-2026-11-05: \"Eurorack . Width: 4 HP . Dep\""
+  },
+  {
+   "slug": "addac-system-addac001-vcc-voltage-controlled-computer",
+   "brand": "ADDAC System",
+   "name": "ADDAC001 VCC (Voltage Controlled Computer)",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac001",
+   "verification": "maker-page-checked-2026-11-05: \"Eurorack . Width: 12 HP . Dep\""
+  },
+  {
+   "slug": "addac-system-addac003-vcc-manual-inputs",
+   "brand": "ADDAC System",
+   "name": "ADDAC003 VCC Manual Inputs",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac003",
+   "verification": "maker-page-checked-2026-11-05: \"Eurorack . Width: 4 HP . Dep\""
+  },
+  {
+   "slug": "addac-system-addac005-vcc-gate-outputs",
+   "brand": "ADDAC System",
+   "name": "ADDAC005 VCC Gate Outputs",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac005",
+   "verification": "maker-page-checked-2026-11-05: \"Eurorack . Width: 4 HP . Dep\""
+  },
+  {
+   "slug": "doepfer-a-101-4",
+   "brand": "Doepfer",
+   "name": "A-101-4",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a1014.htm",
+   "verification": "maker-page-checked-2026-11-05: \"eite/Width: 8 TE / 8 HP / 40.\""
+  }
+ ]
+}

@@ -1,0 +1,250 @@
+{
+ "batch": "maker-corrections-v7",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), and a correct entry names the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted.",
+ "decided": "2026-11-04: owner decisions 15, 18, 30 and 41 (docs/evidence/OWNER_DECISIONS_2026-11-04.md). Pages read by plain GET on 2026-11-05.",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "addac-system-addac200pi",
+   "brand": "ADDAC System",
+   "name": "ADDAC200PI",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 2,
+     "value": 4,
+     "evidence_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200pi",
+     "source_tag": "maker-corrections-v7: 4 HP (\"t. Specs: . Width: 4 HP . Dep\") on https://www.addacsystem.com/en/products/modules/addac200-series/addac200pi; 2 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "ADDAC System",
+   "name": "ADDAC200PI",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 2,
+     "value": 4,
+     "evidence_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200pi",
+     "source_tag": "maker-corrections-v7: 4 HP (\"t. Specs: . Width: 4 HP . Dep\") on https://www.addacsystem.com/en/products/modules/addac200-series/addac200pi; 2 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "addac-system-addac200s-size-matter-black",
+   "brand": "ADDAC System",
+   "name": "ADDAC200S Size Matter black",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 2,
+     "value": 4,
+     "evidence_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200s",
+     "source_tag": "maker-corrections-v7: 4 HP (\"Eurorack . Width: 4 HP . Dep\") on https://www.addacsystem.com/en/products/modules/addac200-series/addac200s; 2 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "ADDAC System",
+   "name": "ADDAC200S Size Matter black",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 2,
+     "value": 4,
+     "evidence_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200s",
+     "source_tag": "maker-corrections-v7: 4 HP (\"Eurorack . Width: 4 HP . Dep\") on https://www.addacsystem.com/en/products/modules/addac200-series/addac200s; 2 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "addac-system-addac501b-complex-random-expansion",
+   "brand": "ADDAC System",
+   "name": "ADDAC501B Complex Random Expansion",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 8,
+     "value": 4,
+     "evidence_url": "https://www.addacsystem.com/en/products/modules/addac500-series/addac501b",
+     "source_tag": "maker-corrections-v7: 4 HP (\"Eurorack . Width: 4 HP . Dep\") on https://www.addacsystem.com/en/products/modules/addac500-series/addac501b; 8 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "ADDAC System",
+   "name": "ADDAC501B Complex Random Expansion",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 8,
+     "value": 4,
+     "evidence_url": "https://www.addacsystem.com/en/products/modules/addac500-series/addac501b",
+     "source_tag": "maker-corrections-v7: 4 HP (\"Eurorack . Width: 4 HP . Dep\") on https://www.addacsystem.com/en/products/modules/addac500-series/addac501b; 8 came from the unsourced module-catalog-hp-v1 overlay",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Eowave",
+   "name": "SOURCE MK3",
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "action": "null",
+     "only_if_value": 2500,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"-> 2500mA +12V\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    },
+    {
+     "field": "power_neg12v_ma",
+     "action": "null",
+     "only_if_value": 2500,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"-> 2500mA +12V\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    },
+    {
+     "field": "power_5v_ma",
+     "action": "null",
+     "only_if_value": 2000,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"-> 2500mA +12V\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "vpme.de",
+   "name": "UPWR",
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "action": "null",
+     "only_if_value": 2000,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"UPWR delivers\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    },
+    {
+     "field": "power_neg12v_ma",
+     "action": "null",
+     "only_if_value": 1000,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"UPWR delivers\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    },
+    {
+     "field": "power_5v_ma",
+     "action": "null",
+     "only_if_value": 500,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"UPWR delivers\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Aircraft Designs",
+   "name": "DC High-Quality Power Supply",
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "action": "null",
+     "only_if_value": 2000,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"Current Delivering\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    },
+    {
+     "field": "power_neg12v_ma",
+     "action": "null",
+     "only_if_value": 1500,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"Current Delivering\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "ST Modular",
+   "name": "POW!",
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "action": "null",
+     "only_if_value": 300,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"provides up to\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    },
+    {
+     "field": "power_neg12v_ma",
+     "action": "null",
+     "only_if_value": 150,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"provides up to\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    },
+    {
+     "field": "power_5v_ma",
+     "action": "null",
+     "only_if_value": 500,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"provides up to\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "WGD Modular",
+   "name": "STV",
+   "fields": [
+    {
+     "field": "power_12v_ma",
+     "action": "null",
+     "only_if_value": 700,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"rating of\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    },
+    {
+     "field": "power_neg12v_ma",
+     "action": "null",
+     "only_if_value": 150,
+     "source_tag": "maker-corrections-v7: the page gives what the supply delivers (\"rating of\"), not what it draws, so the crawl stored an output as a draw",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "alm-busy-circuits-akemie-s-castle",
+   "brand": "ALM Busy Circuits",
+   "name": "Akemie's Castle",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 18,
+     "value": 38,
+     "evidence_url": "https://busycircuits.com/products/alm011",
+     "source_tag": "maker-corrections-v7: 38 HP (\"38HP 32mm Deep\") on https://busycircuits.com/products/alm011 (owner decision 41)",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}

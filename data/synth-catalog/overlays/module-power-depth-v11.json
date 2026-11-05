@@ -13849,16 +13849,12 @@
   {
    "brand": "Eowave",
    "name": "SOURCE MK3",
-   "power_12v_ma": 2500,
-   "power_neg12v_ma": 2500,
-   "power_5v_ma": 2000,
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
    "depth_mm": null,
    "source_url": "https://www.eowave.com/modules/sourcemk3",
-   "sources": {
-    "power_12v_ma": "https://www.eowave.com/modules/sourcemk3",
-    "power_neg12v_ma": "https://www.eowave.com/modules/sourcemk3",
-    "power_5v_ma": "https://www.eowave.com/modules/sourcemk3"
-   },
+   "sources": {},
    "provenance": "OBSERVED",
    "status": "found",
    "extracted_by": "regex+deepseek/deepseek-v4.1-flash",
@@ -44513,15 +44509,12 @@
   {
    "brand": "ST Modular",
    "name": "POW!",
-   "power_12v_ma": 300,
-   "power_neg12v_ma": 150,
-   "power_5v_ma": 500,
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
    "depth_mm": 25,
    "source_url": "https://www.st-modular.de/modules/pow!",
    "sources": {
-    "power_12v_ma": "https://www.st-modular.de/modules/pow!",
-    "power_neg12v_ma": "https://www.st-modular.de/modules/pow!",
-    "power_5v_ma": "https://www.st-modular.de/modules/pow!",
     "depth_mm": "https://www.st-modular.de/modules/pow!"
    },
    "provenance": "OBSERVED",
@@ -52534,16 +52527,12 @@
   {
    "brand": "vpme.de",
    "name": "UPWR",
-   "power_12v_ma": 2000,
-   "power_neg12v_ma": 1000,
-   "power_5v_ma": 500,
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
+   "power_5v_ma": null,
    "depth_mm": null,
    "source_url": "https://vpme.de/upwr/",
-   "sources": {
-    "power_12v_ma": "https://vpme.de/upwr/",
-    "power_neg12v_ma": "https://vpme.de/upwr/",
-    "power_5v_ma": "https://vpme.de/upwr/"
-   },
+   "sources": {},
    "provenance": "OBSERVED",
    "status": "found",
    "extracted_by": "regex+deepseek/deepseek-v4.1-flash",
@@ -53841,14 +53830,12 @@
   {
    "brand": "WGD Modular",
    "name": "STV",
-   "power_12v_ma": 700,
-   "power_neg12v_ma": 150,
+   "power_12v_ma": null,
+   "power_neg12v_ma": null,
    "power_5v_ma": null,
    "depth_mm": 40,
    "source_url": "https://wgdmodular.de/module/stv/",
    "sources": {
-    "power_12v_ma": "https://wgdmodular.de/module/stv/",
-    "power_neg12v_ma": "https://wgdmodular.de/module/stv/",
     "depth_mm": "https://wgdmodular.de/module/stv/"
    },
    "provenance": "OBSERVED",
