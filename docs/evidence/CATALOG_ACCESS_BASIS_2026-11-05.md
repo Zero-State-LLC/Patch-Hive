@@ -80,15 +80,23 @@ Loaded from branch `catalog/access-basis-backfill`, before merge, on data that a
 
 Reading staging's public API afterwards: the catalog total went from 3,359 to 3,171, and none of the 3,171 module rows mentions ModularGrid. Rows with no basis fell from 961 to 79: the 30 above and 49 retired rows.
 
-## Production, not yet loaded
+## Production
 
-Dry run [42016573161](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42016573161), from the same branch, was the first production database read through the named secrets from [#273](https://github.com/Zero-State-LLC/Patch-Hive/pull/273). It wrote nothing.
+Loaded from `main` at `5efa122`, after [#297](https://github.com/Zero-State-LLC/Patch-Hive/pull/297), [#298](https://github.com/Zero-State-LLC/Patch-Hive/pull/298) and [#299](https://github.com/Zero-State-LLC/Patch-Hive/pull/299) merged. The dry runs from the branch and from `main` gave the same hashes, and the apply used them:
 
 - `plan_hash`: `265bb085a3cf0fcc3cdc3094680bc809420804b134cded0fc366559007983fb2`
 - `inputs_hash`: `373ed6ead83d4b2d66ef7841858fc063bc900ab1ce3975a196d031f1c0a5544f`
 - 0 conflicts, no destructive SQL.
 
-This load also carries the taxonomy that staging already has:
+| Step | Run | Result |
+|---|---|---|
+| Dry run, branch | [42016573161](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42016573161) | First production database read through the named secrets from [#273](https://github.com/Zero-State-LLC/Patch-Hive/pull/273); wrote nothing |
+| Dry run, `main` | [42100987495](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42100987495) | Same hashes |
+| Apply | [42101357989](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42101357989) | Counts below |
+| Second dry run | [42102464437](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42102464437) | Plans nothing |
+| Smoke | [42102457775](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42102457775) | Passed |
+
+This load also carried the taxonomy that staging already had:
 
 | Update | Rows |
 |---|---|
@@ -103,4 +111,8 @@ This load also carries the taxonomy that staging already has:
 | `modulargrid_url_clear` | 179 |
 | `modules_source_reference_clear` | 523 |
 
-It also archives 1,096 old values. The public catalog would go from 3,360 to 3,171 rows.
+`catalog_value_archive` grew from 3,820 to 4,978 rows, 1,158 against 1,099 planned statements (1,096 values and 3 markers). The plan counts statements, and one statement can archive several fields of a row. Staging's taxonomy load shows the same gap of 59: 523 rows against 464 statements.
+
+Reading production's public API afterwards: the catalog total went from 3,360 to 3,171, and none of the 3,171 rows on `/api/modules/catalog` or `/api/modules` mentions ModularGrid. Rows with no basis fell from 961 to 79. The public rows match staging's: catalog rows on every field, module rows on everything but `imported_at`. Rows anonymous reads leave out weren't compared.
+
+The two databases didn't start the same. Before these loads their archives held 3,869 and 3,820 rows, and `module_type_from_category` updated 403 rows on staging and 336 here. The cause wasn't traced.
