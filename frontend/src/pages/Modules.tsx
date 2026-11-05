@@ -661,7 +661,7 @@ export default function ModulesPage() {
             <div className="screen-state">
               <p className="status status-warning">No modules in the catalog yet.</p>
               <p className="muted">
-                Run synth catalog import or ModularGrid curated populate to seed discovery.
+                The catalog hasn't been loaded on this environment.
               </p>
             </div>
           ) : null}
