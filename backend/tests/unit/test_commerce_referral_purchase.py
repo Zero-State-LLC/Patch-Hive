@@ -228,9 +228,7 @@ def test_a_deleted_referrer_is_traced_once_across_redelivery_and_later_purchases
     _deliver(db_session, "evt_d44_a", "checkout.session.completed", obj)
 
     redelivered = _deliver(db_session, "evt_d44_a2", "checkout.session.completed", obj)
-    later = _deliver(
-        db_session, "evt_d44_b", "checkout.session.completed", _session_object(second)
-    )
+    later = _deliver(db_session, "evt_d44_b", "checkout.session.completed", _session_object(second))
 
     assert (redelivered.record.status, later.record.status) == ("duplicate", "processed")
     assert len(_withheld_traces(db_session)) == 1

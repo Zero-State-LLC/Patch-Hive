@@ -602,9 +602,7 @@ def test_a_pending_purchase_recorded_with_a_deleted_referrer_stays_pending(
     anonymize_user(db_session, referrer)
     db_session.commit()
 
-    purchase = record_purchase(
-        db_session, user=referred, credits_delta=30, payment_verified=True
-    )
+    purchase = record_purchase(db_session, user=referred, credits_delta=30, payment_verified=True)
     db_session.commit()
 
     assert _state(db_session, referred) == PENDING
@@ -1013,7 +1011,9 @@ def test_c_canceled_invoice_paid_grants_once_and_stays_canceled(
     )
     assert _c_state(db_session) == C_CANCELED
 
-    paid = _c_deliver(db_session, "evt_c_late", "invoice.paid", _c_invoice("in_c", "sub_c", buyer.id))
+    paid = _c_deliver(
+        db_session, "evt_c_late", "invoice.paid", _c_invoice("in_c", "sub_c", buyer.id)
+    )
 
     assert paid.record.status == "processed"
     assert _c_state(db_session) == C_CANCELED

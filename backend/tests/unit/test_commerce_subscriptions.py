@@ -1518,7 +1518,9 @@ def test_a_paid_retry_after_a_past_due_cancel_still_grants_the_period_once(
         _subscription("sub_1", user.id, status="active", cancel=True),
         created=TS + 5,
     )
-    again = _deliver(db_session, "evt_again", "invoice.paid", _invoice("in_again", "sub_1", user.id))
+    again = _deliver(
+        db_session, "evt_again", "invoice.paid", _invoice("in_again", "sub_1", user.id)
+    )
 
     assert _disposition(synced) == ("processed", None)
     assert _disposition(again) == ("duplicate", "PERIOD_ALREADY_GRANTED")
