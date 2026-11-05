@@ -72,7 +72,7 @@ jobs:
       - name: Source counts before the dump (read-only)
         id: source
         env:
-          SOURCE_DATABASE_URL: ${{ secrets[inputs.env == 'prod' && 'PATCHHIVE_DATABASE_URL_PROD' || 'PATCHHIVE_DATABASE_URL_STAGING'] }}
+          SOURCE_DATABASE_URL: ${{ inputs.env == 'prod' && secrets.PATCHHIVE_DATABASE_URL_PROD || inputs.env != 'prod' && secrets.PATCHHIVE_DATABASE_URL_STAGING || '' }}
           TARGET: ${{ inputs.env }}
         run: |
           if [ -z "$SOURCE_DATABASE_URL" ]; then printf '::error::database secret for %s is not set\n' "$TARGET"; exit 1; fi
@@ -95,7 +95,7 @@ jobs:
           exit 1
       - name: pg_dump the source (the dump stays on this runner)
         env:
-          SOURCE_DATABASE_URL: ${{ secrets[inputs.env == 'prod' && 'PATCHHIVE_DATABASE_URL_PROD' || 'PATCHHIVE_DATABASE_URL_STAGING'] }}
+          SOURCE_DATABASE_URL: ${{ inputs.env == 'prod' && secrets.PATCHHIVE_DATABASE_URL_PROD || inputs.env != 'prod' && secrets.PATCHHIVE_DATABASE_URL_STAGING || '' }}
           PG_MAJOR: ${{ steps.source.outputs.server_major }}
         run: |
           # libpq does not accept SQLAlchemy driver names such as postgresql+psycopg2://.
@@ -115,7 +115,7 @@ jobs:
           PY
       - name: Source counts after the dump (read-only)
         env:
-          SOURCE_DATABASE_URL: ${{ secrets[inputs.env == 'prod' && 'PATCHHIVE_DATABASE_URL_PROD' || 'PATCHHIVE_DATABASE_URL_STAGING'] }}
+          SOURCE_DATABASE_URL: ${{ inputs.env == 'prod' && secrets.PATCHHIVE_DATABASE_URL_PROD || inputs.env != 'prod' && secrets.PATCHHIVE_DATABASE_URL_STAGING || '' }}
         run: python scripts/staging/restore_drill.py counts --url-env SOURCE_DATABASE_URL --out "$DRILL_DIR/source-after.json"
       - name: pg_restore into the runner's Postgres
         env:
