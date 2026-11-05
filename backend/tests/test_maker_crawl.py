@@ -626,8 +626,7 @@ def test_a_crawl_run_leaves_out_the_maker_and_its_host(tmp_path: Path, monkeypat
         },
     )
     assert crawl.main(["--dry-run", "--workers", "1"]) == 0
-    assert not [c for c in site.calls if "gone.example" in c]
-    assert "https://other.example/" in site.calls
+    assert {urlparse(c).hostname for c in site.calls} == {"other.example"}
     receipt = json.loads((tmp_path / "receipts" / "maker-crawl-v2.dry-run.json").read_text())
     assert receipt["statuses"]["left_out"] == 1
 
