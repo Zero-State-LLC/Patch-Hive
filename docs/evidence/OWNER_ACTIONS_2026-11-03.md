@@ -101,8 +101,9 @@ This one chain unblocks 7 cards: 005 T061/T062/T070, 007 T020b, 006 T060b, 008 T
   - delete the 12 whose patches are already in `main`, and the 19 believed landed elsewhere, now confirmed (review of 2026-11-04);
   - of the 6 that never landed, the review recommends dropping 4 and keeping 2;
   - optionally turn on "Automatically delete head branches".
-- **Release:** merge the open Release Please PR (#240 today) right before a deploy that ships code, so the tag matches what runs. The beta line is decided: `0.3.0-beta.1` via a `Release-As` footer at beta exit.
-- **Optional:** make `frontend-e2e` a required check.
+- **Release:** merge the open Release Please PR (#258 today) right before a deploy that ships code, so the tag matches what runs. The beta line is decided: `0.3.0-beta.1` via a `Release-As` footer at beta exit.
+- **Optional:** make `frontend-e2e`, `backend-lint`, `migrations`, `secrets` and `audit` required checks. Requiring `migrations` means every future migration must be reversible.
+- **CI gates still off (#264):** decide whether to bring back the coverage gate on `canon` and `evidence`, and the case-catalog seed dry runs.
 
 ## 6. Hands-on
 
