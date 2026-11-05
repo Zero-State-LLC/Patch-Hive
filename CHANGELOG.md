@@ -4,6 +4,46 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.10](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.9...v0.3.0-alpha.10) (2026-11-05)
+
+
+### Added
+
+* **catalog:** basic proxy tier by default, no paid route around a bot check ([#254](https://github.com/Zero-State-LLC/Patch-Hive/issues/254)) ([537ac0a](https://github.com/Zero-State-LLC/Patch-Hive/commit/537ac0a79d4823904718e3d770097370c862ce60))
+* **frontend:** add a delete-account control ([#290](https://github.com/Zero-State-LLC/Patch-Hive/issues/290)) ([bab6520](https://github.com/Zero-State-LLC/Patch-Hive/commit/bab6520a0dce895cffdd753250c0e7b6faad1184))
+* **frontend:** add a factual privacy notice ([#285](https://github.com/Zero-State-LLC/Patch-Hive/issues/285)) ([06c91de](https://github.com/Zero-State-LLC/Patch-Hive/commit/06c91deab5893f4e8e06e2a50b81eb9cd2cb7687))
+* **racks:** warn about in-rack power supplies without counting them ([#291](https://github.com/Zero-State-LLC/Patch-Hive/issues/291)) ([8657171](https://github.com/Zero-State-LLC/Patch-Hive/commit/8657171966322f25f4d37dc9ae9b7f09212d76bf))
+
+
+### Fixed
+
+* **catalog:** leave rows with an unknown access basis out of anonymous reads ([#293](https://github.com/Zero-State-LLC/Patch-Hive/issues/293)) ([fe9be6e](https://github.com/Zero-State-LLC/Patch-Hive/commit/fe9be6ec5cd4a4193a810a9187bb2ba590ab7587))
+* **catalog:** stop returning ModularGrid fields from the API ([#294](https://github.com/Zero-State-LLC/Patch-Hive/issues/294)) ([491fccd](https://github.com/Zero-State-LLC/Patch-Hive/commit/491fccda70210ba3d492971c528c25f9ca936729))
+* **commerce:** let any live subscription cancel, and pay no reward to a deleted referrer ([#292](https://github.com/Zero-State-LLC/Patch-Hive/issues/292)) ([08694be](https://github.com/Zero-State-LLC/Patch-Hive/commit/08694be4f8243c9858543af5bc1f82eeb34792b5))
+* **evidence:** drop JPEG comments when re-encoding photos ([#287](https://github.com/Zero-State-LLC/Patch-Hive/issues/287)) ([1b98867](https://github.com/Zero-State-LLC/Patch-Hive/commit/1b988676bee59d4f708ae448ef1605abfd3d2b11))
+* **evidence:** only report ready for generation when generation would accept the rig ([#289](https://github.com/Zero-State-LLC/Patch-Hive/issues/289)) ([229be7d](https://github.com/Zero-State-LLC/Patch-Hive/commit/229be7d7e5eadb5271072e4c463fddc970f4af9e)), closes [#283](https://github.com/Zero-State-LLC/Patch-Hive/issues/283)
+
+
+### Data
+
+* **catalog:** add VIDEO and SYSTEM categories and apply the owner's taxonomy calls ([#286](https://github.com/Zero-State-LLC/Patch-Hive/issues/286)) ([3d9e072](https://github.com/Zero-State-LLC/Patch-Hive/commit/3d9e072b8cf0efdd3504673f56cfad70f89d6742))
+
+
+### Operations
+
+* run the case-catalog seed dry runs and report coverage again ([#276](https://github.com/Zero-State-LLC/Patch-Hive/issues/276)) ([1521499](https://github.com/Zero-State-LLC/Patch-Hive/commit/1521499fbafe5e4871ac2821ed0ceebc0ca80af6)), closes [#264](https://github.com/Zero-State-LLC/Patch-Hive/issues/264)
+
+
+### Documentation
+
+* record alpha.8 staging receipts, VirusTotal results and a corpus shot list ([#277](https://github.com/Zero-State-LLC/Patch-Hive/issues/277)) ([66a9516](https://github.com/Zero-State-LLC/Patch-Hive/commit/66a9516d0b46017665ea8cde88c4b18a43ff2fc1))
+* record the 0.3.0-alpha.9 deploy to staging and production ([#288](https://github.com/Zero-State-LLC/Patch-Hive/issues/288)) ([a5611d3](https://github.com/Zero-State-LLC/Patch-Hive/commit/a5611d34f2aca8cca74600b5070787844b49884a))
+* record the owner's 56 decisions, a glossary and the maker permission ADR ([#278](https://github.com/Zero-State-LLC/Patch-Hive/issues/278)) ([19eeace](https://github.com/Zero-State-LLC/Patch-Hive/commit/19eeaceb82311fb842e21c0c5d9fb9b8c9d45cef))
+* **specs:** confirm spec 001 (T001) and finish its plan (T002) ([#282](https://github.com/Zero-State-LLC/Patch-Hive/issues/282)) ([65fd705](https://github.com/Zero-State-LLC/Patch-Hive/commit/65fd7053af92348609fa0a36a561162fb4238f40))
+* **specs:** confirm spec 002 (T001) and finish its plan (T002) ([#279](https://github.com/Zero-State-LLC/Patch-Hive/issues/279)) ([45c9bed](https://github.com/Zero-State-LLC/Patch-Hive/commit/45c9bedab6cb191ad60ee5d489744ff8d1963329))
+* **specs:** confirm spec 003 (T001) and finish its plan (T002) ([#284](https://github.com/Zero-State-LLC/Patch-Hive/issues/284)) ([9f1aae4](https://github.com/Zero-State-LLC/Patch-Hive/commit/9f1aae43516aa863c3d220310fac7bf58608cfb3))
+* **specs:** confirm spec 004 (T001) and finish its plan (T002) ([#281](https://github.com/Zero-State-LLC/Patch-Hive/issues/281)) ([8571f0e](https://github.com/Zero-State-LLC/Patch-Hive/commit/8571f0e55fcb147a14b645f4b3b537e0f83072ab))
+
 ## [0.3.0-alpha.9](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.8...v0.3.0-alpha.9) (2026-11-05)
 
 
