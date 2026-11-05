@@ -10,6 +10,7 @@ import json
 import sys
 from collections import Counter
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from fastapi.testclient import TestClient
@@ -25,6 +26,7 @@ import population as P  # noqa: E402
 from core.database import get_db  # noqa: E402
 from main import app  # noqa: E402
 from modules.catalog import ModuleCatalog  # noqa: E402
+from racks.validation import IN_RACK_SUPPLY_CODE, in_rack_supply_warning  # noqa: E402
 
 CATALOG = ROOT / "data" / "synth-catalog"
 OVERLAYS = CATALOG / "overlays"
@@ -670,6 +672,26 @@ def test_a_reviewed_correction_is_never_overwritten_by_the_sync() -> None:
     plan = P.Plan()
     P._schedule_module_type_sync(plan, catalog, modules)
     assert plan.ops == [] and modules[("Acme", "Gate")]["module_type"] == "VCF"
+
+
+def _placed(module: dict) -> SimpleNamespace:
+    return SimpleNamespace(id=1, brand="Acme", name="Gate", module_type=module["module_type"])
+
+
+def test_the_sync_lets_the_in_rack_supply_warning_reach_a_loaded_database() -> None:
+    # Decision 15's warning matches module_type, so a row left on the placeholder never warned.
+    assert in_rack_supply_warning([_placed({"module_type": "UNKNOWN"})]) is None
+    _, module = _sync(category="SYSTEM")
+    assert in_rack_supply_warning([_placed(module)]).details["code"] == IN_RACK_SUPPLY_CODE
+
+
+def test_every_system_row_warns_and_a_video_row_does_not(fresh) -> None:
+    _, catalog, modules = fresh
+    for slug in DC_DISTRO | POWER_ROWS | {"alyseum-eole"}:
+        row = catalog[slug]
+        assert in_rack_supply_warning([_placed(modules[(row["brand"], row["name"])])]) is not None, slug
+    row = catalog["lzx-industries-doorway"]
+    assert in_rack_supply_warning([_placed(modules[(row["brand"], row["name"])])]) is None
 
 
 def test_a_load_from_empty_needs_no_sync(fresh) -> None:

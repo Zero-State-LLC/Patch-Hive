@@ -19,11 +19,11 @@ One PR that applies those calls from committed data:
 
 Evidence: [CATALOG_TAXONOMY_DECISIONS_2026-11-04.md](../docs/evidence/CATALOG_TAXONOMY_DECISIONS_2026-11-04.md).
 
-Out of scope: any fetch, any load to a deployed database, a NOISE category, firmware platforms, decision 15's builder warning, and ticking T031.
+Out of scope: any fetch, any load to a deployed database, a NOISE category, firmware platforms, decision 52's clearing of ModularGrid URLs, and ticking T031.
 
 ## Affected users / systems
 
-Catalog inputs, the loader, and `db-load.yml`'s summary. `inputs_hash` changes. Over main's data, the next db-load dry run plans 52 category fills, 60 corrected values, 52 `module_type` fills and 2 retirement updates. A deployed database has more `module_type` fills, because earlier fills never reached those rows. On a Rig holding an affected module, the next generation may differ. No schema change.
+Catalog inputs, the loader, and `db-load.yml`'s summary. `inputs_hash` changes. Over main's data, the next db-load dry run plans 52 category fills, 60 corrected values, 52 `module_type` fills and 2 retirement updates. A deployed database has more `module_type` fills, because earlier fills never reached those rows. On a Rig holding an affected module, the next generation may differ, and a Rig holding a SYSTEM module gets #291's warning. No schema change.
 
 ## Constraints / non-goals
 

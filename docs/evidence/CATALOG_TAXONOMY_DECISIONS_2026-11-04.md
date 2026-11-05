@@ -147,7 +147,8 @@ What a Rig sees after the load:
 - **Next generation:** a Rig holding one of these modules may get different patches. A filled module can now be wired in, and a corrected video module no longer can.
 - **Stored runs and patches:** unchanged. OBSERVED: the plan writes only `module_catalog` (84 statements), `modules` (82) and `catalog_value_archive` (115).
 - **Same revision, different result:** the rig revision hash doesn't include `module_type`, so the same revision and seed can produce a different patch set before and after the load. Decision 56 accepts this for this load, and old runs don't change. The hash gap is its own bug, [#295](https://github.com/Zero-State-LLC/Patch-Hive/issues/295), because changing the hash would invalidate every existing revision.
-- **Placement and power:** unchanged. `racks/validation.py` doesn't read `module_type`.
+- **A new warning:** a Rig holding a SYSTEM module gets `IN_RACK_SUPPLY_NOT_COUNTED` on every read, in the words #291 added for decision 15. That warning matches `module_type`, so on a loaded database it could only reach a row once this sync or a correction has set it. Over main's data, that's 14 rows: 12 synced and the 2 LZX DC Distros. It stays a warning, never a hard fail.
+- **Placement and power budgets:** unchanged. `racks/validation.py` reads `module_type` only for that warning, and no supply is credited.
 - **Rig metrics:** new packets count these modules under their new category instead of `UNKNOWN`.
 
 **Left alone over main's data:** 1 row, Make Noise Maths, with `module_type` UTIL and catalog category ENV.
@@ -164,7 +165,7 @@ OBSERVED, by consumer:
 - **TypeScript contract.** There is no category union to extend: `category` and `module_type` are `string`.
 - **Module plate color.** `catalog.css` maps some categories to a color. Both new ones take the default `--module-controller`, as UTIL, MIX and MIDI do.
 - **Patch engine.** `engine.py` matches substrings of `module_type`, and no keyword is a substring of VIDEO or SYSTEM. Tests read the keywords out of the source and check that a rack holding only these generates nothing, and that adding them to a full rack changes no connection.
-- **Other readers.** `core/naming.py`, `derive_patch_semantics.py`, `patching_order.py` and `get_module_color` give both no role.
+- **Other readers.** `core/naming.py`, `derive_patch_semantics.py`, `patching_order.py` and `get_module_color` give both no role. `racks/validation.py` warns on a placed SYSTEM module (#291, decision 15), and tests confirm every SYSTEM row here warns and a VIDEO row doesn't.
 
 One thing the engine doesn't ignore: a placed module changes the generated *names* of patches it isn't part of, because `name_patch_v2` hashes how many modules the rack holds. This is true of every module type and isn't new.
 
@@ -231,7 +232,7 @@ Decision 14 retires whatever never occupies HP, and a Blank Panel isn't a Module
 
 ## Dry run
 
-The target was a throwaway Postgres 15.13 container: migrated to alembic head, then loaded by `import_catalog_population.py --apply` from main at 504bbc1 (the baseline), then dry-run from this branch. Receipt: [`receipts/taxonomy-2026-11-04.dry-run.json`](../../data/synth-catalog/receipts/taxonomy-2026-11-04.dry-run.json).
+The target was a throwaway Postgres 15.13 container: migrated to alembic head, then loaded by `import_catalog_population.py --apply` from main at 537ac0a (the baseline), then dry-run from this branch. Receipt: [`receipts/taxonomy-2026-11-04.dry-run.json`](../../data/synth-catalog/receipts/taxonomy-2026-11-04.dry-run.json).
 
 | | |
 |---|---|
@@ -250,14 +251,24 @@ Also OBSERVED on throwaway copies:
 - A load from empty applied the same corrections and retirement and needed no sync. A second dry run planned nothing.
 - The two end with the same category and tombstone on every `module_catalog` row, and the same `module_type` and status on every `modules` row. No live module row holds `UNKNOWN` while its catalog row has a category.
 
+## Merged with main at 537ac0a
+
+The branch merges main with its catalog PRs in. The one conflict was a test helper in `Modules.search.test.tsx`, where both sides added a parameter, and both were kept. Main changed no seed, overlay, provenance file, loader code or migration, so the plan and inputs hashes didn't move. Checked for anything assuming the old behaviour:
+
+| Main's change | Effect here |
+|---|---|
+| #254 sets `access_basis` in the overlay builders from `maker-sources.json`, and leaves out a maker with an unknown basis | None today. `permission_basis.brands` is empty and the default is `official_publication`. Overlays v4 and v5 and the correction manifests set no `access_basis`, and the committed additions overlays aren't regenerated. `build_category_overlay.py` only fills rows already in the catalog, so it adds no row for a left-out maker. |
+| #293 hides `access_basis = unknown` rows from anonymous reads | OBSERVED: all 65 VIDEO and SYSTEM rows stay visible (51 `official_publication`, 14 with no basis). Of the rows this PR changes, only Ripples and Tides (2014 version) are `unknown`, as seed leads. Their corrections apply, signed-in readers see them, and anonymous readers don't. The loader reads and writes both tables directly, so it isn't affected. |
+| #294 stops the API returning the ModularGrid fields | None. Nothing here reads them. Decision 52's clearing of those URLs at the next load isn't part of this PR. |
+| #291 warns on a placed SYSTEM module | It matches `module_type`, so this PR is what gives it real rows. See [what a Rig sees](#what-this-does-to-existing-rows). |
+
 ## Found along the way, not changed
 
 These are outside the owner's calls, so nothing here was touched:
 
 1. **More rack infrastructure outside SYSTEM.** Tagged power and holding UTIL: David Haillant USB Power Output, Manikk Analog8, Sonoclast Zero, WGD tofu. By name only: Make Noise Din Power (UTIL); and, empty, Endorphin.es 2HP POWER, Intellijel Power Entry and USB Extender, DPW P2 Pedal Power, Synthrotek USB Power.
 2. **Other Mutable derivatives look misfiled.** Left alone: MSW mBrane 6HP Yarns (VCO), MSW Pachinko (SAMP), After Later uTides v2 (VCO), TLM SEGS (LFO, while Stages is ENV), TLM METAX (VCO). Seven more are empty and outside the owner's 12: After Later Atom, Cara, Knit, nRings, Peaks, Pique and uGrids.
-3. **Decision 15 isn't built here.** An in-rack supply's output is still not handled specially, and the builder has no warning that it isn't counted.
-4. **Jolin ROSA stays undecided.** The same duplicate pattern as GETREKT, but decision 7 names only GETREKT.
-5. NOT_COMPUTABLE offline: whether any production rack places the `modules` row being retired. FR-036 warns such a rack and doesn't change it.
+3. **Jolin ROSA stays undecided.** The same duplicate pattern as GETREKT, but decision 7 names only GETREKT.
+4. NOT_COMPUTABLE offline: whether any production rack places the `modules` row being retired. FR-036 warns such a rack and doesn't change it.
 
 T031 stays open: its text needs the page cache rebuilt and the untagged rows classified from their pages.
