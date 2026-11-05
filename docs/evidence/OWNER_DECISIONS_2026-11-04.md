@@ -1,6 +1,6 @@
 # Owner decisions, 2026-11-04
 
-The agent put 53 decisions to the owner over several rounds, each with a recommendation, and the owner answered "Yes to all" each time. Where this conflicts with [OWNER_ACTIONS_2026-11-03.md](OWNER_ACTIONS_2026-11-03.md) or an older guide, this record wins. Vocabulary is in [GLOSSARY.md](../../GLOSSARY.md).
+The agent put 56 decisions to the owner over several rounds, each with a recommendation, and the owner answered "Yes to all" each time. Where this conflicts with [OWNER_ACTIONS_2026-11-03.md](OWNER_ACTIONS_2026-11-03.md) or an older guide, this record wins. Vocabulary is in [GLOSSARY.md](../../GLOSSARY.md).
 
 
 ## Catalog and makers
@@ -79,3 +79,6 @@ Spec 001, 002, 003 and 004's T001 reviews (#282, #279, #284, #281) left these op
 | 51 | Confirm and fix filled catalog rows keeping `modules.module_type` as UNKNOWN on a loaded database, before the catalog load. |
 | 52 | The API stops returning `modulargrid_url` and `modulargrid_id`, and the leftover ModularGrid text on the Modules page goes. The next load clears those URLs from the 179 `CatalogCandidate` rows on production and tags them `unknown` (FR-033). Clearing production data needs the owner's yes at that load. |
 | 53 | For the other 730 rows with no `access_basis`, the basis follows the source: the 721 maker-sourced rows become `official_publication` under decision 1, once each is checked to come from a maker's own site, and the 9 `SynthCatalogResearch` rows become `unknown`. |
+| 54 | LZX DC Distro 3A and 5A become SYSTEM. The other 9 rows that link to video only through their brand stay as they are until a maker page says otherwise. |
+| 55 | The 3 Rings-derived rows come out of the overlay until a maker page settles their category, under decision 50. |
+| 56 | For this load, accept that the same rig revision and seed can give different patches, because the revision hash omits `module_type`. Old runs don't change. The hash gap is filed as its own bug, because changing the hash would invalidate every existing revision. |
