@@ -19,12 +19,14 @@ import pytest
 from sqlalchemy.orm import Session
 
 import core.config as core_config
+from account.deletion import anonymize_user
 from canon.checkout import (
     CheckoutUnavailableError,
     PaymentProviderError,
     ProviderCheckoutSession,
     StripeCheckoutProvider,
 )
+from canon.entitlements import resolve_user_tier
 from canon.exports import credit_balance, receive_stripe_webhook
 from canon.models import (
     CanonicalCreditLedgerEntryRecord,
@@ -1065,6 +1067,67 @@ def test_the_first_paid_invoice_grants_the_period_and_records_one_purchase(
     assert credit_balance(db_session, referrer.id) == REFERRAL_REWARD_CREDITS
 
 
+def test_a_first_paid_invoice_pays_no_reward_to_a_deleted_referrer(
+    db_session: Session, machine_c
+) -> None:
+    """Owner decision 44: the subscriber's own period, purchase marker and credits stand."""
+    referrer = _user(db_session, "referrer")
+    user = _user(db_session)
+    create_referral(db_session, referrer=referrer, referred=user)
+    db_session.commit()
+    anonymize_user(db_session, referrer)
+    db_session.commit()
+    _customer(db_session, user)
+    _deliver(db_session, "evt_1", "customer.subscription.created", _subscription("sub_1", user.id))
+
+    intake = _deliver(db_session, "evt_2", "invoice.paid", _invoice("in_1", "sub_1", user.id))
+
+    assert _disposition(intake) == ("processed", None)
+    assert len(_grants(db_session)) == 1
+    assert credit_balance(db_session, user.id) == 25
+    assert len(_legacy_purchases(db_session)) == 1
+    assert _record(db_session, "sub_1").purchase_recorded_at is not None
+    assert credit_balance(db_session, referrer.id) == 0
+    assert db_session.query(CreditsLedger).filter_by(change_type="Grant").count() == 0
+    assert {row.status for row in db_session.query(Referral)} == {"Pending"}
+
+
+def test_a_paid_invoice_on_a_canceled_subscription_still_grants_its_period(
+    db_session: Session, machine_c
+) -> None:
+    """Owner decision 42: money was received, so the period is granted, once. The record
+    stays ``canceled``; only a new subscription would make the user live again."""
+    user = _user(db_session)
+    _customer(db_session, user)
+    _deliver(db_session, "evt_1", "customer.subscription.created", _subscription("sub_1", user.id))
+    _deliver(db_session, "evt_2", "invoice.paid", _invoice("in_1", "sub_1", user.id))
+    _deliver(
+        db_session,
+        "evt_3",
+        "customer.subscription.deleted",
+        _subscription("sub_1", user.id, status="canceled"),
+        created=TS + 5,
+    )
+    assert credit_balance(db_session, user.id) == 25
+    next_period = {"start": P1 + MONTH, "end": P1 + 2 * MONTH}
+
+    late = _deliver(
+        db_session, "evt_4", "invoice.paid", _invoice("in_2", "sub_1", user.id, **next_period)
+    )
+    again = _deliver(
+        db_session, "evt_5", "invoice.paid", _invoice("in_3", "sub_1", user.id, **next_period)
+    )
+
+    assert _disposition(late) == ("processed", None)
+    assert _disposition(again) == ("duplicate", "PERIOD_ALREADY_GRANTED")
+    assert [grant.grant_key for grant in _grants(db_session)] == [
+        subscription_period_key("sub_1", P1),
+        subscription_period_key("sub_1", P1 + MONTH),
+    ]
+    assert credit_balance(db_session, user.id) == 50
+    assert _record(db_session, "sub_1").status == "canceled"
+
+
 def test_a_repeated_invoice_for_a_granted_period_is_a_duplicate(
     db_session: Session, machine_c
 ) -> None:
@@ -1325,7 +1388,7 @@ def test_cancel_sets_cancel_at_period_end_at_the_provider_and_locally(
     assert len(provider.calls) == 1
 
 
-def test_cancel_is_refused_without_an_active_subscription(db_session: Session, machine_c) -> None:
+def test_cancel_is_refused_without_a_subscription(db_session: Session, machine_c) -> None:
     user = _user(db_session)
     provider = FakeSubscriptionProvider()
     with pytest.raises(SubscriptionRefusedError) as missing:
@@ -1333,22 +1396,147 @@ def test_cancel_is_refused_without_an_active_subscription(db_session: Session, m
             db_session, user=user, provider=provider, app_settings=_c_settings()
         )
     assert (missing.value.code, missing.value.status_code) == ("SUBSCRIPTION_NOT_FOUND", 404)
-
-    _active(db_session, user, status="past_due")
-    with pytest.raises(SubscriptionRefusedError) as not_active:
-        request_subscription_cancel(
-            db_session, user=user, provider=provider, app_settings=_c_settings()
-        )
-    assert (not_active.value.code, not_active.value.status_code) == (
-        "SUBSCRIPTION_NOT_ACTIVE",
-        409,
-    )
     assert provider.calls == []
 
 
-def test_cancel_is_refused_when_subscriptions_are_off(db_session: Session, machine_c) -> None:
+@pytest.mark.parametrize(
+    ("status", "code", "http_status"),
+    [
+        # Terminal: no live subscription is left to cancel.
+        ("canceled", "SUBSCRIPTION_NOT_FOUND", 404),
+        ("incomplete_expired", "SUBSCRIPTION_NOT_FOUND", 404),
+        # Not terminal, but outside the three statuses owner decision 43 names.
+        ("incomplete", "SUBSCRIPTION_NOT_ACTIVE", 409),
+        ("unpaid", "SUBSCRIPTION_NOT_ACTIVE", 409),
+        ("paused", "SUBSCRIPTION_NOT_ACTIVE", 409),
+    ],
+)
+def test_cancel_is_refused_outside_the_three_live_statuses(
+    db_session: Session, machine_c, status: str, code: str, http_status: int
+) -> None:
     user = _user(db_session)
-    _active(db_session, user)
+    _active(db_session, user, status=status)
+    provider = FakeSubscriptionProvider()
+
+    with pytest.raises(SubscriptionRefusedError) as refused:
+        request_subscription_cancel(
+            db_session, user=user, provider=provider, app_settings=_c_settings()
+        )
+
+    assert (refused.value.code, refused.value.status_code) == (code, http_status)
+    assert provider.calls == []
+    assert _record(db_session, "sub_1").cancel_at_period_end is False
+
+
+@pytest.mark.parametrize("status", ["trialing", "past_due"])
+def test_a_trialing_or_past_due_subscription_can_schedule_a_cancel(
+    db_session: Session, machine_c, status: str
+) -> None:
+    """Owner decision 43. The provider call is the same one ``active`` makes, the provider
+    status stays as the provider reported it, and scheduling grants nothing."""
+    user = _user(db_session)
+    _active(db_session, user, status=status)
+    provider = FakeSubscriptionProvider()
+
+    record = request_subscription_cancel(
+        db_session, user=user, provider=provider, app_settings=_c_settings()
+    )
+    db_session.commit()
+
+    assert provider.calls == [
+        (
+            "cancel",
+            {
+                "subscription_id": "sub_1",
+                "idempotency_key": "patchhive-subscription-cancel:sub_1",
+            },
+        )
+    ]
+    assert (record.cancel_at_period_end, record.status) == (True, status)
+    assert _nothing_granted(db_session)
+    # Cancelling again is a no-op with no provider call.
+    request_subscription_cancel(
+        db_session, user=user, provider=provider, app_settings=_c_settings()
+    )
+    assert len(provider.calls) == 1
+
+
+def test_a_past_due_cancel_reaches_the_provider_through_the_real_client(
+    db_session: Session, machine_c
+) -> None:
+    seen: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        return httpx.Response(
+            200, json={"id": "sub_1", "status": "past_due", "cancel_at_period_end": True}
+        )
+
+    user = _user(db_session)
+    _active(db_session, user, status="past_due")
+    client = StripeCheckoutProvider("sk_test_fixture", transport=httpx.MockTransport(handler))
+
+    record = request_subscription_cancel(
+        db_session, user=user, provider=client, app_settings=_c_settings()
+    )
+    db_session.commit()
+
+    (request,) = seen
+    assert (request.method, request.url.path) == ("POST", "/v1/subscriptions/sub_1")
+    assert parse_qs(request.content.decode()) == {"cancel_at_period_end": ["true"]}
+    assert request.headers["Idempotency-Key"] == "patchhive-subscription-cancel:sub_1"
+    assert (record.cancel_at_period_end, record.status) == (True, "past_due")
+
+
+def test_a_paid_retry_after_a_past_due_cancel_still_grants_the_period_once(
+    db_session: Session, machine_c
+) -> None:
+    """Owner decision 43: a scheduled cancel changes nothing about period grants. The
+    retried invoice grants its period once, and the invoice leaves the status and the
+    flag to the subscription events."""
+    user = _user(db_session)
+    _active(db_session, user, status="past_due")
+    request_subscription_cancel(
+        db_session, user=user, provider=FakeSubscriptionProvider(), app_settings=_c_settings()
+    )
+    db_session.commit()
+    assert _nothing_granted(db_session)
+
+    paid = _deliver(db_session, "evt_paid", "invoice.paid", _invoice("in_retry", "sub_1", user.id))
+
+    assert _disposition(paid) == ("processed", None)
+    (grant,) = _grants(db_session)
+    assert grant.grant_key == subscription_period_key("sub_1", P1)
+    assert credit_balance(db_session, user.id) == 25
+    record = _record(db_session, "sub_1")
+    assert (record.status, record.cancel_at_period_end) == ("past_due", True)
+
+    synced = _deliver(
+        db_session,
+        "evt_sync",
+        "customer.subscription.updated",
+        _subscription("sub_1", user.id, status="active", cancel=True),
+        created=TS + 5,
+    )
+    again = _deliver(
+        db_session, "evt_again", "invoice.paid", _invoice("in_again", "sub_1", user.id)
+    )
+
+    assert _disposition(synced) == ("processed", None)
+    assert _disposition(again) == ("duplicate", "PERIOD_ALREADY_GRANTED")
+    assert len(_grants(db_session)) == 1
+    assert credit_balance(db_session, user.id) == 25
+    record = _record(db_session, "sub_1")
+    assert (record.status, record.cancel_at_period_end) == ("active", True)
+    assert resolve_user_tier(db_session, user.id) == "core"
+
+
+@pytest.mark.parametrize("status", ["active", "trialing", "past_due"])
+def test_cancel_is_refused_when_subscriptions_are_off(
+    db_session: Session, machine_c, status: str
+) -> None:
+    user = _user(db_session)
+    _active(db_session, user, status=status)
     provider = FakeSubscriptionProvider()
     with pytest.raises(CheckoutUnavailableError, match="PAYMENTS_DISABLED"):
         request_subscription_cancel(
@@ -1358,13 +1546,15 @@ def test_cancel_is_refused_when_subscriptions_are_off(db_session: Session, machi
             app_settings=_c_settings(enable_subscription_checkout=False),
         )
     assert provider.calls == []
+    assert _record(db_session, "sub_1").cancel_at_period_end is False
 
 
+@pytest.mark.parametrize("status", ["active", "trialing", "past_due"])
 def test_cancel_fails_closed_when_the_provider_does_not_confirm(
-    db_session: Session, machine_c
+    db_session: Session, machine_c, status: str
 ) -> None:
     user = _user(db_session)
-    _active(db_session, user)
+    _active(db_session, user, status=status)
     provider = FakeSubscriptionProvider(cancel_body={"id": "sub_1", "cancel_at_period_end": False})
 
     with pytest.raises(PaymentProviderError):

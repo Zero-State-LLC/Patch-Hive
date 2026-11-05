@@ -271,6 +271,97 @@ def test_cancel_without_a_subscription_is_404(
     assert provider.calls == []
 
 
+def _subscribed(
+    client: TestClient,
+    db_session: Session,
+    user: User,
+    monkeypatch: pytest.MonkeyPatch,
+    status: str,
+) -> None:
+    secret = _webhook_settings(monkeypatch, environment="development", test_mode=True)
+    _subscriptions_on(monkeypatch)
+    _customer(db_session, user)
+    created = _post_event(
+        client,
+        secret,
+        "evt_api_status",
+        "customer.subscription.created",
+        _subscription("sub_api", user.id, status=status),
+    )
+    assert created.json()["status"] == "processed", created.text
+
+
+@pytest.mark.parametrize("status", ["trialing", "past_due"])
+def test_a_trialing_or_past_due_subscription_cancels_over_http(
+    client: TestClient,
+    db_session: Session,
+    provider: FakeSubscriptionProvider,
+    user: User,
+    monkeypatch: pytest.MonkeyPatch,
+    status: str,
+) -> None:
+    _subscribed(client, db_session, user, monkeypatch, status)
+
+    resp = client.post("/api/canon/subscription/cancel", headers=_headers(user))
+
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert (body["provider_subscription_id"], body["status"], body["cancel_at_period_end"]) == (
+        "sub_api",
+        status,
+        True,
+    )
+    assert [name for name, _ in provider.calls] == ["cancel"]
+
+
+@pytest.mark.parametrize(
+    ("status", "http_status", "code"),
+    [
+        ("canceled", 404, "SUBSCRIPTION_NOT_FOUND"),
+        ("incomplete_expired", 404, "SUBSCRIPTION_NOT_FOUND"),
+        ("unpaid", 409, "SUBSCRIPTION_NOT_ACTIVE"),
+    ],
+)
+def test_cancel_is_still_refused_over_http_outside_the_live_statuses(
+    client: TestClient,
+    db_session: Session,
+    provider: FakeSubscriptionProvider,
+    user: User,
+    monkeypatch: pytest.MonkeyPatch,
+    status: str,
+    http_status: int,
+    code: str,
+) -> None:
+    _subscribed(client, db_session, user, monkeypatch, status)
+
+    resp = client.post("/api/canon/subscription/cancel", headers=_headers(user))
+
+    assert (resp.status_code, resp.json()["detail"]) == (http_status, code)
+    assert provider.calls == []
+
+
+@pytest.mark.parametrize("status", ["active", "trialing", "past_due"])
+def test_cancel_with_subscriptions_off_still_answers_403_for_every_live_status(
+    client: TestClient,
+    db_session: Session,
+    provider: FakeSubscriptionProvider,
+    user: User,
+    monkeypatch: pytest.MonkeyPatch,
+    status: str,
+) -> None:
+    _subscribed(client, db_session, user, monkeypatch, status)
+    _subscriptions_on(monkeypatch, enable_subscription_checkout=False)
+
+    resp = client.post("/api/canon/subscription/cancel", headers=_headers(user))
+
+    assert (resp.status_code, resp.json()["detail"]) == (403, "PAYMENTS_DISABLED")
+    assert provider.calls == []
+    record = db_session.query(ProviderSubscriptionRecord).filter_by(
+        provider_subscription_id="sub_api"
+    )
+    assert record.one().cancel_at_period_end is False
+
+
 def test_an_unknown_price_event_is_unresolved_over_http(
     client: TestClient, db_session: Session, user: User, monkeypatch: pytest.MonkeyPatch
 ) -> None:
