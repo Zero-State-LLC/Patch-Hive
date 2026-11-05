@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from canon.models import ClassificationEvidenceRecord, ImageAssetRecord, SystemInventoryRevisionRecord
 from intelligence.models import DecisionReceiptRecord
 from main import app
+from modules.models import Module
 from racks.models import Rack
 
 
@@ -269,3 +270,201 @@ def test_decision_advisory_projects_only_matching_evidence(
     matched = next(c for c in listed.json()["candidates"] if c["candidate_id"] == "matched-module-id")
     assert matched["decision_advisory"]["confidence"] == 0.93
     assert matched["decision_advisory"]["disposition"] == "auto_propose"
+
+
+# Owner decision 35 (#283): the API's readiness answer and generation's answer are one
+# answer. A confirmed photo has no row or HP, so it stays listed until the rack route places it.
+
+
+def _upload_photo(client: TestClient, rack_id: int) -> None:
+    upload = client.post(
+        f"/api/racks/{rack_id}/evidence/images",
+        files=[("files", ("rig.jpg", _jpeg_bytes(), "image/jpeg"))],
+        data={"run_vision_mock": "true", "retention_days": "30"},
+    )
+    assert upload.status_code == 201, upload.text
+
+
+def _confirm_top_candidate(client: TestClient, rack_id: int) -> tuple[dict, dict]:
+    """Upload a photo, confirm the top candidate, reject the rest. Returns (candidate, body)."""
+    _upload_photo(client, rack_id)
+    candidates = client.get(f"/api/racks/{rack_id}/evidence/candidates").json()["candidates"]
+    top = candidates[0]
+    confirm = client.post(
+        f"/api/racks/{rack_id}/evidence/confirmations",
+        json={
+            "decisions": [
+                {
+                    "candidate_id": top["candidate_id"],
+                    "status": "confirm",
+                    "module_revision_id": f"catalog-{top['candidate_id']}",
+                },
+                *[{"candidate_id": c["candidate_id"], "status": "reject"} for c in candidates[1:]],
+            ],
+        },
+    )
+    assert confirm.status_code == 201, confirm.text
+    return top, confirm.json()
+
+
+def _generate(client: TestClient, rack_id: int) -> dict:
+    response = client.post(f"/api/patches/generate/{rack_id}", json={})
+    assert response.status_code == 200, response.text
+    return response.json()
+
+
+def _inventory(client: TestClient, rack_id: int) -> dict:
+    response = client.get(f"/api/racks/{rack_id}/evidence/inventory")
+    assert response.status_code == 200, response.text
+    return response.json()
+
+
+def _mock_oscillator(db_session: Session) -> Module:
+    """The catalog row for the module the mock vision provider ranks first."""
+    module = Module(
+        brand="MockAudio",
+        name="Oscillator A",
+        hp=10,
+        module_type="VCO",
+        power_12v_ma=50,
+        power_neg12v_ma=10,
+        power_5v_ma=0,
+        io_ports=[{"name": "CV In", "type": "cv_in"}, {"name": "Out", "type": "audio_out"}],
+        source="test",
+    )
+    db_session.add(module)
+    db_session.commit()
+    db_session.refresh(module)
+    return module
+
+
+def test_photo_only_rig_is_not_ready_and_generation_agrees(
+    client, db_session, sample_rack_empty, tmp_path
+) -> None:
+    from core import settings
+
+    settings.export_dir = str(tmp_path)
+    module = _mock_oscillator(db_session)
+    rack_id = sample_rack_empty.id
+
+    _top, confirmed = _confirm_top_candidate(client, rack_id)
+    assert confirmed["confirmed_count"] == 1
+    assert confirmed["ready_for_generation"] is False
+    assert [
+        (entry["manufacturer"], entry["model"], entry["module_id"])
+        for entry in confirmed["modules_to_place"]
+    ] == [("MockAudio", "Oscillator A", module.id)]
+
+    listed = _inventory(client, rack_id)
+    assert listed["latest"]["ready_for_generation"] is False
+    assert all(not revision["ready_for_generation"] for revision in listed["revisions"])
+    assert [entry["module_id"] for entry in listed["modules_to_place"]] == [module.id]
+
+    # Generation gives the same answer, with no run.
+    refused = _generate(client, rack_id)
+    assert refused["generation_status"] == "NOT_COMPUTABLE"
+    assert refused["run_id"] is None
+
+    # A refused generation seals an empty placement revision; the module is still to place.
+    after_refusal = _inventory(client, rack_id)
+    assert after_refusal["latest"]["ready_for_generation"] is False
+    assert [entry["module_id"] for entry in after_refusal["modules_to_place"]] == [module.id]
+
+
+def test_placing_a_confirmed_module_through_the_rack_route_makes_the_rig_ready(
+    client, db_session, sample_rack_empty, sample_case, tmp_path
+) -> None:
+    from core import settings
+
+    settings.export_dir = str(tmp_path)
+    module = _mock_oscillator(db_session)
+    rack_id = sample_rack_empty.id
+    _confirm_top_candidate(client, rack_id)
+
+    # The rack route checks fit: a placement past the row's HP changes nothing.
+    too_far = client.patch(
+        f"/api/racks/{rack_id}",
+        json={
+            "modules": [{"module_id": module.id, "row_index": 0, "start_hp": sample_case.total_hp}]
+        },
+    )
+    assert too_far.status_code == 400, too_far.text
+    still_waiting = _inventory(client, rack_id)
+    assert still_waiting["latest"]["ready_for_generation"] is False
+    assert [entry["module_id"] for entry in still_waiting["modules_to_place"]] == [module.id]
+
+    placed = client.patch(
+        f"/api/racks/{rack_id}",
+        json={"modules": [{"module_id": module.id, "row_index": 0, "start_hp": 0}]},
+    )
+    assert placed.status_code == 200, placed.text
+
+    listed = _inventory(client, rack_id)
+    assert listed["latest"]["ready_for_generation"] is True
+    assert listed["modules_to_place"] == []
+
+    accepted = _generate(client, rack_id)
+    assert accepted["generation_status"] != "NOT_COMPUTABLE"
+    assert accepted["run_id"] is not None
+
+
+def test_rig_with_placed_modules_stays_ready_and_lists_the_unplaced_one(
+    client, db_session, sample_rack_basic, tmp_path
+) -> None:
+    """Generation accepts this rig on its placed modules, so the API says ready; the
+    confirmed module it won't use yet is listed."""
+    from core import settings
+
+    settings.export_dir = str(tmp_path)
+    rack_id = sample_rack_basic.id
+
+    _top, confirmed = _confirm_top_candidate(client, rack_id)
+    assert confirmed["ready_for_generation"] is True
+    assert [entry["model"] for entry in confirmed["modules_to_place"]] == ["Oscillator A"]
+    # No catalog row for the mock module, and nothing invents one.
+    assert confirmed["modules_to_place"][0]["module_id"] is None
+
+    accepted = _generate(client, rack_id)
+    assert accepted["generation_status"] != "NOT_COMPUTABLE"
+    assert accepted["run_id"] is not None
+
+    # A generation that ran seals a placement revision; the list survives it.
+    listed = _inventory(client, rack_id)
+    assert listed["latest"]["ready_for_generation"] is True
+    assert [entry["model"] for entry in listed["modules_to_place"]] == ["Oscillator A"]
+
+
+def test_vision_alone_lists_nothing_to_place(
+    client, db_session, sample_rack_empty, tmp_path
+) -> None:
+    """Image and evidence aren't inventory: until the owner confirms, nothing is to place."""
+    from core import settings
+
+    settings.export_dir = str(tmp_path)
+    rack_id = sample_rack_empty.id
+    _upload_photo(client, rack_id)
+    assert client.get(f"/api/racks/{rack_id}/evidence/candidates").json()["total"] >= 1
+
+    listed = _inventory(client, rack_id)
+    assert listed["latest"] is None
+    assert listed["modules_to_place"] == []
+
+
+def test_a_later_confirmation_replaces_what_is_still_to_place(
+    client, db_session, sample_rack_empty, tmp_path
+) -> None:
+    """The newest confirmation is the owner's current answer, even when it confirms nothing."""
+    from core import settings
+
+    settings.export_dir = str(tmp_path)
+    rack_id = sample_rack_empty.id
+    top, confirmed = _confirm_top_candidate(client, rack_id)
+    assert len(confirmed["modules_to_place"]) == 1
+
+    rejected = client.post(
+        f"/api/racks/{rack_id}/evidence/confirmations",
+        json={"decisions": [{"candidate_id": top["candidate_id"], "status": "reject"}]},
+    )
+    assert rejected.status_code == 201, rejected.text
+    assert rejected.json()["modules_to_place"] == []
+    assert _inventory(client, rack_id)["modules_to_place"] == []

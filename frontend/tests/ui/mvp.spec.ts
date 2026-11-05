@@ -137,12 +137,15 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(page.getByRole("list", { name: "Ranked module candidates" })).toBeVisible();
     const createRevision = page.getByRole("button", { name: "Create immutable rig revision" });
     await expect(createRevision).toBeDisabled();
-    // Resolve every ranked candidate (confirm + reject) so inventory is ready.
+    // Resolve every ranked candidate (confirm + reject) so the revision can be sealed.
     await page.getByRole("button", { name: "Confirm match" }).first().click();
     await page.getByRole("button", { name: "Reject" }).last().click();
     await expect(createRevision).toBeEnabled();
     await createRevision.click();
-    await expect(page.getByText(/Inventory revision ready/i)).toBeVisible();
+    // This demo has no rig, so generation has nothing to accept.
+    const sealed = page.getByText(/Inventory revision sealed/i);
+    await expect(sealed).toBeVisible();
+    await expect(sealed).toContainText("not ready for generation");
   });
 
   test("export boundary explains zero-credit state", async ({ page }) => {

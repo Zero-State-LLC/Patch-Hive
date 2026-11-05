@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import uuid
+from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
@@ -17,6 +18,7 @@ from canon.models import (
     ImageAssetRecord,
     SystemInventoryRevisionRecord,
 )
+from canon.visual_contracts import SystemInventoryRevision
 from core import get_db, settings
 from core.storage import StorageError, get_file_store
 from evidence.images import (
@@ -34,6 +36,7 @@ from evidence.vision_provider import (
 from community.auth import require_auth
 from community.models import User
 from racks.access import owned_private_rack, private_rack
+from racks.models import Rack
 
 router = APIRouter()
 
@@ -355,12 +358,25 @@ class ConfirmationBatchRequest(BaseModel):
     # Who confirmed is the signed-in user, never a client-supplied name (spec 005 FR-006).
 
 
+class ModuleToPlaceOut(BaseModel):
+    """A confirmed photo module not on the rack yet. Place it with ``PATCH /api/racks/{id}``."""
+
+    instance_id: str
+    module_revision_id: str
+    manufacturer: str | None = None
+    model: str | None = None
+    # None when no single catalog row matches; nothing invents one.
+    module_id: int | None = None
+
+
 class ConfirmationBatchResponse(BaseModel):
     inventory_revision_id: str
     inventory_canonical_hash: str | None
     confirmed_count: int
     unresolved_candidate_ids: list[str]
+    # Generation's own gate answer for this Rig (owner decision 35, #283).
     ready_for_generation: bool
+    modules_to_place: list[ModuleToPlaceOut]
 
 
 def _load_candidates_for_rack(db: Session, rack_id: int) -> list[dict]:
@@ -540,6 +556,8 @@ class InventoryRevisionSummary(BaseModel):
     rack_id: int | None
     confirmed_count: int
     unresolved_count: int
+    # Generation reads the Rig's placements, not a revision, so every summary carries the
+    # gate's one answer for the Rig as it is now (owner decision 35, #283).
     ready_for_generation: bool
     canonical_hash: str | None = None
     created_by: str | None = None
@@ -550,6 +568,19 @@ class InventoryRevisionListResponse(BaseModel):
     total: int
     latest: InventoryRevisionSummary | None = None
     revisions: list[InventoryRevisionSummary]
+    # From the newest photo confirmation, which ``latest`` may not be: generation also
+    # seals revisions, from placements.
+    modules_to_place: list[ModuleToPlaceOut]
+
+
+def _modules_to_place(
+    db: Session, rack: Rack, inventory: SystemInventoryRevision
+) -> list[ModuleToPlaceOut]:
+    from patches.inventory_gate import modules_still_to_place
+
+    return [
+        ModuleToPlaceOut(**asdict(entry)) for entry in modules_still_to_place(db, rack, inventory)
+    ]
 
 
 @router.get(
@@ -567,10 +598,12 @@ def list_rack_inventory_revisions(
     current_user: User = Depends(require_auth),
 ) -> InventoryRevisionListResponse:
     """List sealed inventory revisions for a rack (newest first). Read-only."""
-    from canon.inventory import inventory_ready_for_generation
     from canon.inventory_persist import load_system_inventory_revision
+    from patches.inventory_gate import evaluate_rack_inventory_gate, latest_confirmation_revision
 
-    private_rack(db, rack_id, current_user)
+    rack = private_rack(db, rack_id, current_user)
+    gate_report, _ = evaluate_rack_inventory_gate(db, rack)
+    confirmation = latest_confirmation_revision(db, rack)
 
     rows = (
         db.query(SystemInventoryRevisionRecord)
@@ -588,9 +621,6 @@ def list_rack_inventory_revisions(
             if inventory is not None
             else len(row.unresolved_candidate_ids or [])
         )
-        ready = (
-            inventory_ready_for_generation(inventory) if inventory is not None else confirmed > 0
-        )
         summaries.append(
             InventoryRevisionSummary(
                 inventory_revision_id=row.id,
@@ -598,7 +628,7 @@ def list_rack_inventory_revisions(
                 rack_id=row.rack_id,
                 confirmed_count=confirmed,
                 unresolved_count=unresolved,
-                ready_for_generation=ready,
+                ready_for_generation=gate_report.ready,
                 canonical_hash=row.canonical_hash,
                 created_by=row.created_by,
                 created_at=row.created_at,
@@ -608,6 +638,7 @@ def list_rack_inventory_revisions(
         total=len(summaries),
         latest=summaries[0] if summaries else None,
         revisions=summaries,
+        modules_to_place=_modules_to_place(db, rack, confirmation) if confirmation else [],
     )
 
 
@@ -634,19 +665,16 @@ def confirm_rack_evidence_candidates(
     ``module_revision_id`` (gallery revision) on confirm/manual_add.
     """
     confirmed_by = f"user:{current_user.id}"
-    from canon.inventory import (
-        InventoryBuildError,
-        build_system_inventory_revision,
-        inventory_ready_for_generation,
-    )
+    from canon.inventory import InventoryBuildError, build_system_inventory_revision
     from canon.inventory_persist import persist_system_inventory_revision
     from canon.visual_contracts import (
         ClassificationCandidate,
         ConfirmationDecision,
         ResolutionStatus,
     )
+    from patches.inventory_gate import evaluate_rack_inventory_gate
 
-    owned_private_rack(db, rack_id, current_user)
+    rack = owned_private_rack(db, rack_id, current_user)
     if not body.decisions:
         raise HTTPException(status_code=400, detail="NO_DECISIONS")
 
@@ -727,12 +755,15 @@ def confirm_rack_evidence_candidates(
     # ClassificationEvidenceRecord is append-only; inventory linkage is via
     # SystemInventoryRevisionRecord + candidate source_candidate_ids, not mutation.
     db.commit()
+    # A confirmation adds no placement; generation reads placements (owner decision 35, #283).
+    gate_report, _ = evaluate_rack_inventory_gate(db, rack)
     return ConfirmationBatchResponse(
         inventory_revision_id=inventory.inventory_revision_id,
         inventory_canonical_hash=inventory.canonical_hash,
         confirmed_count=len(inventory.items),
         unresolved_candidate_ids=list(inventory.unresolved_candidate_ids),
-        ready_for_generation=inventory_ready_for_generation(inventory),
+        ready_for_generation=gate_report.ready,
+        modules_to_place=_modules_to_place(db, rack, inventory),
     )
 
 
