@@ -12,8 +12,6 @@ import re
 from hashlib import sha256
 from typing import Any, Dict, Iterable
 
-from core.ops.derive_patch_semantics import derive_patch_semantics
-
 ADJECTIVES = [
     "Midnight",
     "Solar",

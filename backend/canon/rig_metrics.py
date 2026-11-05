@@ -28,10 +28,7 @@ def build_rig_metrics_packet(
     placed = [m for m in (snapshot.get("modules") or []) if isinstance(m, dict)]
     module_ids = {int(m["module_id"]) for m in placed if m.get("module_id") is not None}
     rows = (
-        {
-            int(m.id): m
-            for m in db.query(Module).filter(Module.id.in_(module_ids)).all()
-        }
+        {int(m.id): m for m in db.query(Module).filter(Module.id.in_(module_ids)).all()}
         if module_ids
         else {}
     )
@@ -44,7 +41,9 @@ def build_rig_metrics_packet(
         widths.append(int(module.hp) if module and module.hp is not None else None)
         ports = module.io_ports if module is not None else None
         port_counts.append(len(ports) if isinstance(ports, list) else None)
-    total_hp = sum(w for w in widths if w is not None) if all(w is not None for w in widths) else None
+    total_hp = (
+        sum(w for w in widths if w is not None) if all(w is not None for w in widths) else None
+    )
     flex, density, score_notes = compute_rig_scores(port_counts, widths)
     notes = list(score_notes)
     if total_hp is None:

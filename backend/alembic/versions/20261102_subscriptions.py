@@ -166,7 +166,8 @@ def upgrade() -> None:
 def downgrade() -> None:
     bind = op.get_bind()
     for table in ("subscription_period_grants", "provider_subscriptions", "subscription_checkouts"):
-        count = bind.execute(sa.text(f"SELECT COUNT(*) FROM {table}")).scalar() or 0
+        # An identifier can't be a bound parameter; table comes from the tuple above.
+        count = bind.execute(sa.text(f"SELECT COUNT(*) FROM {table}")).scalar() or 0  # nosec B608
         if count:
             raise RuntimeError(
                 f"refusing to downgrade 20261102_subscriptions: {table} has rows that back "

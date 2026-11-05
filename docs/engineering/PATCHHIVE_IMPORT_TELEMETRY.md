@@ -26,7 +26,7 @@ rg 'from patchhive|import patchhive' backend/patches backend/racks backend/main.
 ```
 
 **Exit criterion:** no accidental product-path imports of the historical package.  
-**CI:** `bash scripts/ai/check_no_canon_patchhive_imports.sh` (engineering-quality workflow).
+**CI:** `bash scripts/ai/check_no_canon_patchhive_imports.sh` (the `backend-lint` job in `ci.yml`).
 
 ### Product package tree
 

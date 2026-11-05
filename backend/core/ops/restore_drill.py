@@ -60,9 +60,9 @@ def public_table_counts(url: str) -> dict[str, int]:
         for name in names:
             if not _TABLE_NAME.fullmatch(name):
                 raise DrillError("refusing to count a table whose name is not a plain identifier")
-            counts[name] = int(
-                conn.execute(text(f'SELECT COUNT(*) FROM public."{name}"')).scalar_one()
-            )
+            # An identifier can't be a bound parameter; _TABLE_NAME checked it above.
+            query = text(f'SELECT COUNT(*) FROM public."{name}"')  # nosec B608
+            counts[name] = int(conn.execute(query).scalar_one())
         return counts
 
     return _read_only(url, work)
