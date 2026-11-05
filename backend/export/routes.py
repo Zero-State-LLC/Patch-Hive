@@ -3,6 +3,7 @@ FastAPI routes for export functionality (PDF, SVG).
 """
 
 from typing import Optional
+import logging
 import os
 from datetime import datetime
 from hashlib import sha256
@@ -29,6 +30,16 @@ from .patchbook.build import build_patchbook_pdf_bytes_from_payload
 from .patchbook.models import PatchBookExportRequest, PATCHBOOK_TEMPLATE_VERSION, PatchBookTier
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+
+# An SVG opened directly is a document on the API origin, and the API sets no CSP of its own.
+SVG_CSP = "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+
+
+def _svg_response(svg: str) -> Response:
+    return Response(
+        content=svg, media_type="image/svg+xml", headers={"Content-Security-Policy": SVG_CSP}
+    )
 
 
 @router.get("/patches/{patch_id}/pdf")
@@ -48,7 +59,8 @@ def export_patch_pdf(
             filename=f"patch_{patch.id}_{patch.name.replace(' ', '_')}.pdf",
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
+        logger.exception("PDF generation failed")
+        raise HTTPException(status_code=500, detail="PDF generation failed") from e
 
 
 @router.get("/racks/{rack_id}/pdf")
@@ -68,7 +80,8 @@ def export_rack_pdf(
             filename=f"rack_{rack.id}_{rack.name.replace(' ', '_')}.pdf",
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
+        logger.exception("PDF generation failed")
+        raise HTTPException(status_code=500, detail="PDF generation failed") from e
 
 
 @router.get("/racks/{rack_id}/layout.svg")
@@ -82,9 +95,10 @@ def export_rack_layout_svg(
 
     try:
         svg = generate_rack_layout_svg(db, rack)
-        return Response(content=svg, media_type="image/svg+xml")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"SVG generation failed: {str(e)}")
+        logger.exception("rack layout SVG failed for rack %s", rack_id)
+        raise HTTPException(status_code=500, detail="SVG generation failed") from e
+    return _svg_response(svg)
 
 
 @router.get("/patches/{patch_id}/diagram.svg")
@@ -102,9 +116,10 @@ def export_patch_diagram_svg(
 
     try:
         svg = generate_patch_diagram_svg(db, rack, patch.connections)
-        return Response(content=svg, media_type="image/svg+xml")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"SVG generation failed: {str(e)}")
+        logger.exception("patch diagram SVG failed for patch %s", patch_id)
+        raise HTTPException(status_code=500, detail="SVG generation failed") from e
+    return _svg_response(svg)
 
 
 @router.post("/runs/{run_id}/patchbook")
