@@ -10,18 +10,26 @@ This module bridges `canon.inventory` contracts into the existing
 
 from __future__ import annotations
 
+import re
+from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Iterable, Sequence
 
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from canon.inventory import inventory_ready_for_generation
+from canon.inventory_persist import load_system_inventory_revision
+from canon.models import SystemInventoryRevisionRecord
 from canon.visual_contracts import InventoryItem, ResolutionStatus, SystemInventoryRevision
 from modules.models import Module
 from racks.models import Rack, RackModule
 
 GATE_VERSION = "inventory-gate.1.0.0"
+# Who a placement revision names, which tells it apart from a photo confirmation's.
+PLACEMENT_REVISION_AUTHOR_PREFIX = "rack-owner:"
+CATALOG_MODULE_LABEL = re.compile(r"catalog-module-(\d+)")
 
 
 @dataclass(frozen=True)
@@ -118,9 +126,94 @@ def build_manual_inventory_from_rack(
         items=tuple(items),
         unresolved_candidate_ids=(),
         created_at=created,
-        created_by=created_by or f"rack-owner:{rack.user_id}",
+        created_by=created_by or f"{PLACEMENT_REVISION_AUTHOR_PREFIX}{rack.user_id}",
     )
     return revision.seal()
+
+
+@dataclass(frozen=True)
+class ModuleToPlace:
+    """A photo-confirmed module not on the rack yet (owner decision 35, #283).
+
+    A photo gives no reliable row or HP, so nothing places it automatically. ``module_id``
+    is what the rack route takes, and None when no single catalog row matches.
+    """
+
+    instance_id: str
+    module_revision_id: str
+    manufacturer: str | None
+    model: str | None
+    module_id: int | None
+
+
+def _catalog_module_id(db: Session, item: InventoryItem) -> int | None:
+    """The catalog row an item names: its id label, else its one exact brand and name match."""
+
+    label = CATALOG_MODULE_LABEL.fullmatch(item.module_revision_id)
+    if label:
+        module = db.get(Module, int(label.group(1)))
+        return int(module.id) if module else None
+    if not item.manufacturer or not item.model:
+        return None
+    matches = (
+        db.query(Module.id)
+        .filter(
+            func.lower(Module.brand) == item.manufacturer.lower(),
+            func.lower(Module.name) == item.model.lower(),
+        )
+        .limit(2)
+        .all()
+    )
+    return int(matches[0][0]) if len(matches) == 1 else None
+
+
+def modules_still_to_place(
+    db: Session, rack: Rack, inventory: SystemInventoryRevision
+) -> list[ModuleToPlace]:
+    """Confirmed photo items in ``inventory`` that no placement on the rack accounts for.
+
+    Each placement accounts for one confirmed copy. A placement revision's own items have
+    no source candidates, so they are never listed.
+    """
+
+    placed = Counter(
+        int(module_id)
+        for (module_id,) in db.query(RackModule.module_id).filter(RackModule.rack_id == rack.id)
+    )
+    left: list[ModuleToPlace] = []
+    for item in inventory.items:
+        if item.resolution is not ResolutionStatus.USER_CONFIRMED or not item.source_candidate_ids:
+            continue
+        module_id = _catalog_module_id(db, item)
+        if module_id is not None and placed[module_id] > 0:
+            placed[module_id] -= 1
+            continue
+        left.append(
+            ModuleToPlace(
+                instance_id=item.instance_id,
+                module_revision_id=item.module_revision_id,
+                manufacturer=item.manufacturer,
+                model=item.model,
+                module_id=module_id,
+            )
+        )
+    return left
+
+
+def latest_confirmation_revision(db: Session, rack: Rack) -> SystemInventoryRevision | None:
+    """The owner's newest photo confirmation, even if a generation sealed a revision since."""
+
+    author = SystemInventoryRevisionRecord.created_by
+    row = (
+        db.query(SystemInventoryRevisionRecord.id)
+        .filter(
+            SystemInventoryRevisionRecord.rack_id == rack.id,
+            or_(author.is_(None), ~author.startswith(PLACEMENT_REVISION_AUTHOR_PREFIX)),
+        )
+        .order_by(SystemInventoryRevisionRecord.created_at.desc())
+        .first()
+    )
+    return load_system_inventory_revision(db, row.id) if row else None
 
 
 def connection_module_ids(connections: Iterable[object]) -> set[int]:

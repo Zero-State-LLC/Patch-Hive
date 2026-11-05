@@ -4,18 +4,25 @@ Referral program utilities and credit ledger helpers.
 
 from __future__ import annotations
 
+import logging
 import secrets
 from datetime import datetime, timezone
 from hashlib import sha256
 from typing import Optional
 
 from sqlalchemy import func
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from admin.models import AdminAuditLog
 from community.models import User
 from monetization.models import CreditsLedger, Referral
 
+logger = logging.getLogger(__name__)
+
 REFERRAL_REWARD_CREDITS = 3
+REWARD_WITHHELD_ACTION = "referral_reward_withheld"
+REFERRER_DELETED_REASON = "REFERRER_ACCOUNT_DELETED"
 
 
 def generate_referral_code(db: Session, length: int = 10) -> str:
@@ -99,6 +106,61 @@ def record_purchase(
     return purchase_entry
 
 
+def _referrer_is_deleted(db: Session, referrer_user_id: int) -> bool:
+    """Whether the referrer's account is deleted, read under a shared row lock.
+
+    Account deletion updates this row in its own transaction, so the two serialize: a
+    reward that meets an uncommitted deletion waits and then reads the committed
+    ``deleted_at``, and a deletion that meets an uncommitted reward waits for it. The lock
+    is shared so that rewards to one referrer do not queue behind each other.
+    """
+    row = (
+        db.query(User.deleted_at)
+        .filter(User.id == referrer_user_id)
+        .with_for_update(read=True)
+        .one_or_none()
+    )
+    return row is None or row.deleted_at is not None
+
+
+def _trace_withheld_reward(db: Session, *, referral_id: int, purchase_entry_id: int) -> None:
+    """Leave one audit row per referral for a reward not paid. It holds no personal data.
+
+    Runs under the ``Pending`` row lock, so concurrent first purchases leave one row. In a
+    savepoint, so a failure here cannot cost the buyer their purchase.
+    """
+    target_id = str(referral_id)
+    try:
+        with db.begin_nested():
+            already_traced = (
+                db.query(AdminAuditLog.id)
+                .filter(
+                    AdminAuditLog.action_type == REWARD_WITHHELD_ACTION,
+                    AdminAuditLog.target_type == "referral",
+                    AdminAuditLog.target_id == target_id,
+                )
+                .first()
+            )
+            if already_traced is None:
+                db.add(
+                    AdminAuditLog(
+                        actor_user_id=None,
+                        actor_role="System",
+                        action_type=REWARD_WITHHELD_ACTION,
+                        target_type="referral",
+                        target_id=target_id,
+                        delta_json={
+                            "credits_withheld": REFERRAL_REWARD_CREDITS,
+                            "first_purchase_id": purchase_entry_id,
+                        },
+                        reason=REFERRER_DELETED_REASON,
+                    )
+                )
+                db.flush()
+    except SQLAlchemyError:
+        logger.exception("referral %s: withheld-reward audit row not written", referral_id)
+
+
 def apply_referral_reward(
     db: Session,
     *,
@@ -108,7 +170,10 @@ def apply_referral_reward(
 ) -> Optional[CreditsLedger]:
     """Grant referral credits after the referred user's first provider-verified purchase.
 
-    An unverified purchase never rewards (spec 004 Machine A, FR-033).
+    An unverified purchase never rewards (spec 004 Machine A, FR-033). Nor does a referrer
+    who has deleted their account (owner decision 44, 2026-11-04): the referral stays
+    ``Pending``, no grant is written to either ledger, an audit row records why, and the
+    buyer's purchase is not affected.
     """
     if not payment_verified:
         return None
@@ -145,6 +210,12 @@ def apply_referral_reward(
         .first()
     )
     if rewarded_exists:
+        return None
+
+    if _referrer_is_deleted(db, referral_pending.referrer_user_id):
+        _trace_withheld_reward(
+            db, referral_id=referral_pending.id, purchase_entry_id=purchase_entry_id
+        )
         return None
 
     reward_entry = CreditsLedger(

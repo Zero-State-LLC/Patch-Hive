@@ -18,6 +18,7 @@ import random
 import re
 import threading
 import time
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -41,7 +42,9 @@ FIRECRAWL_SCRAPE_URL = "https://api.firecrawl.dev/v1/scrape"
 FIRECRAWL_SEARCH_URL = "https://api.firecrawl.dev/v1/search"
 # Firecrawl's managed proxy tiers (v1 scrape `proxy`). Proxies change where a paid fetch comes
 # from, never what may be fetched: robots, the deny list and the paid cap still apply first.
-# context.dev routes through its own managed network; its scrape API has no proxy field.
+# basic is the default; stealth and auto are used only under a fetch-approvals entry that names
+# the tier (`proxy_tier`). context.dev routes through its own managed network; its scrape API has
+# no proxy field.
 FIRECRAWL_PROXY_TIERS = ("basic", "stealth", "auto")
 # Paid backends render the page (browser, proxies), which routinely takes longer than a plain GET.
 # A 25 s timeout made most context.dev calls fail in the first v2 run while still using the paid cap.
@@ -49,11 +52,18 @@ PAID_TIMEOUT_S = 120.0
 DDG_LITE = "https://lite.duckduckgo.com/lite/"
 
 RETRY_STATUSES = {0, 429, 500, 502, 503, 504}
-# A 200 that is really a bot check. Treated as a failed free fetch so the paid backends
-# (which render and proxy) can try; never parsed as content.
+# A 200 that is really a bot check. A refusal (spec 003 D7): recorded as a failed free fetch,
+# never parsed as content and never retried through a paid backend that renders or proxies.
 CHALLENGE = re.compile(
     rb"(cf-chl-|challenge-platform|<title>\s*(?:Just a moment|Attention Required|Access denied|Are you a robot))", re.I
 )
+# The site said no (owner decision 3, 2026-11-04; spec 003 D7 and FR-008): recorded, never sent to a
+# paid backend. On a page, 429, 5xx and timeouts are load, not refusal, and stay eligible for a paid
+# retry. A refused connection is not listed because it cannot be told from a timeout: both are
+# status 0. robots.txt is stricter: any answer but 200 or 404, or none, stops all fetching of the host.
+PAGE_REFUSAL_STATUSES = frozenset({401, 403, 451})
+ROBOTS_REFUSAL_STATUSES = frozenset({401, 403})
+REFUSAL_NOTES = frozenset({"refused", "challenge"})
 RECEIPT_KEYS = ("url", "method", "status", "sha256", "timestamp")
 
 
@@ -113,6 +123,56 @@ def public_http_url(url: str) -> bool:
 def denied_host(url: str) -> bool:
     host = (urlparse(url).hostname or "").lower().rstrip(".")
     return any(host == d or host.endswith("." + d) for d in DENY_HOSTS)
+
+
+def _origin(url: str) -> str:
+    parsed = urlparse(url)
+    return f"{parsed.scheme}://{parsed.netloc}"
+
+
+def _bare_host(url: str) -> str:
+    return (urlparse(url).hostname or "").lower().rstrip(".").removeprefix("www.")
+
+
+def _brand_key(brand: str) -> str:
+    """"Instruō", "Instruo" and "INSTRUO " are one maker: a spelling must not get past an opt-out."""
+    plain = unicodedata.normalize("NFKD", brand).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]", "", plain.lower()) or brand.strip().casefold()
+
+
+def permission_basis(sources: dict, brand: str) -> str:
+    """The access basis recorded for a maker's pages (EXTERNAL_SOURCE_POLICY): its own entry, else the
+    default. Sources with no basis at all fail closed to unknown, and so does a conflict between
+    two spellings of one maker."""
+    basis = sources.get("permission_basis") or {}
+    key = _brand_key(brand)
+    own = [value for name, value in (basis.get("brands") or {}).items() if _brand_key(name) == key]
+    if own:
+        return "unknown" if "unknown" in own else own[0]
+    return basis.get("default") or "unknown"
+
+
+def left_out(sources: dict, brand: str) -> bool:
+    """A maker who opted out, or whose terms forbid automated access: not fetched, not built."""
+    return permission_basis(sources, brand) == "unknown"
+
+
+def left_out_hosts(sources: dict, crawl_path: Path) -> frozenset[str]:
+    """The hosts of left-out makers, from the curated sources and the committed crawl, so that another
+    script or a second brand name cannot reach them. The v1 crawl's homepages are not used: it gave
+    brands other makers' sites."""
+    basis = sources.get("permission_basis") or {}
+    if "unknown" not in {basis.get("default") or "unknown", *(basis.get("brands") or {}).values()}:
+        return frozenset()
+    homepages = [
+        (brand, cfg.get("homepage"))
+        for section in ("adapters", "homepages")
+        for brand, cfg in (sources.get(section) or {}).items()
+    ]
+    if crawl_path.is_file():
+        crawl = json.loads(crawl_path.read_text(encoding="utf-8"))
+        homepages += [(b["brand"], b.get("homepage")) for b in crawl.get("brands") or []]
+    return frozenset(_bare_host(home) for brand, home in homepages if home and left_out(sources, brand))
 
 
 def _sha256(data: bytes) -> str:
@@ -335,12 +395,10 @@ class CatalogScraper:
         on_receipt: Callable[[dict], None] | None = None,
         approvals_path: Path | None = None,
         brands: tuple[str, ...] = (),
+        left_out_hosts: frozenset[str] = frozenset(),
     ) -> None:
-        tier = (firecrawl_proxy or os.environ.get("PATCHHIVE_FIRECRAWL_PROXY", "") or "auto")
-        tier = tier.strip().lower()
-        if tier not in FIRECRAWL_PROXY_TIERS:
-            raise ValueError(f"firecrawl proxy must be one of {FIRECRAWL_PROXY_TIERS}, got {tier!r}")
-        self.firecrawl_proxy = tier
+        self.firecrawl_proxy = firecrawl_proxy_tier(firecrawl_proxy)
+        self.left_out_hosts = left_out_hosts
         self.cache_dir = cache_dir
         self.ledger_path = ledger_path
         self.max_paid_fetches = max(0, int(max_paid_fetches))
@@ -364,6 +422,8 @@ class CatalogScraper:
         self._memory: dict[str, FetchResult] = {}
         self._next_ok: dict[str, float] = {}
         self._robots: dict[str, str | None] = {}
+        # What an origin's robots.txt answered when it could not be read (0: no answer).
+        self._robots_status: dict[str, int] = {}
         self.paid_attempts = 0
         # Paid calls granted but not yet booked in the ledger. The approval check counts them,
         # so parallel workers cannot all pass on the same remaining allowance.
@@ -377,11 +437,13 @@ class CatalogScraper:
     def for_repo(cls, max_paid_fetches: int = 0, **kwargs: object) -> CatalogScraper:
         root = Path(__file__).resolve().parents[2]
         catalog = root / "data" / "synth-catalog"
+        sources = json.loads((catalog / "maker-sources.json").read_text(encoding="utf-8"))
         return cls(
             cache_dir=catalog / ".cache" / "http",
             ledger_path=catalog / "receipts" / "scrape-ledger.json",
             max_paid_fetches=max_paid_fetches,
             approvals_path=catalog / "receipts" / "fetch-approvals.json",
+            left_out_hosts=left_out_hosts(sources, catalog / "hermes-research" / "maker-crawl-v2.json"),
             **kwargs,  # type: ignore[arg-type]
         )
 
@@ -394,12 +456,20 @@ class CatalogScraper:
         render: bool = False,
         allow_paid: bool = True,
     ) -> FetchResult:
-        """Free first, then paid. `render=True` skips the free GET (robots still apply) for script-rendered
-        pages whose plain HTML is an empty shell, and ignores a cached copy that came from a free GET.
+        """Free first, then paid. `render=True` is for script-rendered pages whose plain HTML is an empty
+        shell: it returns the paid body and ignores a cached copy that came from a free GET. Robots still
+        apply, and one free GET still asks first, because only that can see the site refuse.
         `allow_paid=False` never falls back to a paid backend (used for the free search engine, whose
-        paid counterpart is the paid search API, not a scrape of its results page)."""
-        if url in self._memory and not (render and self._memory[url].receipt.get("method") == "free_http"):
-            cached = self._memory[url]
+        paid counterpart is the paid search API, not a scrape of its results page).
+
+        A refusal never reaches a paid backend, and neither does a host whose robots.txt cannot be read."""
+        cached = self._memory.get(url)
+        free_shell = (
+            cached is not None
+            and cached.receipt.get("method") == "free_http"
+            and cached.receipt.get("note") not in REFUSAL_NOTES
+        )
+        if cached is not None and not (render and free_shell):
             receipt = dict(cached.receipt)
             receipt["method"] = "cache"
             receipt["timestamp"] = _now_iso(self.wall_clock)
@@ -420,24 +490,28 @@ class CatalogScraper:
 
         if check_robots:
             allowed, reason = self._robots_allow(url, timeout)
-            if not allowed and reason == "robots_unavailable":
-                # Do not free-fetch when robots.txt could not be read. A paid
-                # backend may still run when a key is set and the cap allows.
-                skipped = self._finish(url, "robots_unavailable", None, b"", ok=False, remember=False)
-                paid = self._paid_fetch(url, timeout) if allow_paid else None
-                return paid if paid is not None else skipped
+            if not allowed and reason in ("robots_refused", "robots_unavailable"):
+                # Fail closed: no free GET and no paid backend for a host whose robots.txt cannot be
+                # read. The status belongs to robots.txt, not to this URL, so it goes in the note.
+                status = self._robots_status[_origin(url)]
+                note = f"robots.txt answered {status}" if status else "robots.txt did not answer"
+                return self._finish(url, reason, None, b"", ok=False, note=note, remember=False)
             if not allowed:
                 return self._finish(url, reason or "robots_disallowed", None, b"", ok=False)
 
         if render:
+            status, body = self._free_get(url, timeout, attempts=1)
+            refused = self._refusal(url, status, body)
+            if refused is not None:
+                return refused
+            self._finish(url, "free_http", status, b"", ok=False, note="render_check", remember=False)
             paid = self._paid_fetch(url, timeout) if allow_paid else None
             return paid if paid is not None else self._finish(url, "render_unavailable", None, b"", ok=False, remember=False)
 
         status, body = self._free_get(url, timeout)
-        if status == 200 and body and body.lstrip()[:1] == b"<" and CHALLENGE.search(body[:8000]):
-            challenged = self._finish(url, "free_http", status, b"", ok=False, note="challenge", remember=False)
-            paid = self._paid_fetch(url, timeout) if allow_paid else None
-            return paid if paid is not None else challenged
+        refused = self._refusal(url, status, body)
+        if refused is not None:
+            return refused
         if status == 200 and body:
             result = self._finish(url, "free_http", status, body, ok=True)
             self._write_cache(url, result, body)
@@ -450,6 +524,18 @@ class CatalogScraper:
         free_result = self._finish(url, "free_http", status, body, ok=False)
         paid = self._paid_fetch(url, timeout) if allow_paid else None
         return paid if paid is not None else free_result
+
+    def _refusal(self, url: str, status: int, body: bytes) -> FetchResult | None:
+        """The recorded refusal when a free answer is the site saying no (spec 003 D7), else None.
+        Remembered for this run, so no later call reaches a paid backend. Never written to the disk
+        cache, so the next run asks again."""
+        if status in PAGE_REFUSAL_STATUSES:
+            note = "refused"
+        elif status == 200 and body and body.lstrip()[:1] == b"<" and CHALLENGE.search(body[:8000]):
+            note = "challenge"
+        else:
+            return None
+        return self._finish(url, "free_http", status, b"", ok=False, note=note)
 
     def search(self, query: str, limit: int = 5, timeout: float = 25) -> SearchResult:
         limit = max(1, min(int(limit), 10))
@@ -480,7 +566,7 @@ class CatalogScraper:
             if not key:
                 self._finish(url, "skipped_no_key", None, b"", ok=False, note=method, remember=False)
                 continue
-            denied = self._reserve_paid()
+            denied = self._reserve_paid(self.firecrawl_proxy if method == "firecrawl" else "basic")
             if denied:
                 self._finish(url, denied, None, b"", ok=False, note=method, remember=False)
                 continue
@@ -568,11 +654,15 @@ class CatalogScraper:
             urls.extend(found)
         return urls[:limit], receipts
 
-    def _reserve_paid(self) -> str | None:
-        """Reserve one paid call. None when granted, else the receipt method naming the refusal."""
+    def _reserve_paid(self, proxy_tier: str = "basic") -> str | None:
+        """Reserve one paid call. None when granted, else the receipt method naming the refusal.
+        A non-basic proxy tier needs an approvals entry that names it, so with no approvals file
+        it is refused."""
         with self._lock:
             if self.paid_attempts >= self.max_paid_fetches:
                 return "skipped_paid_cap"
+            if proxy_tier != "basic" and self.approvals_path is None:
+                return "skipped_proxy_unapproved"
             if self.approvals_path is not None:
                 ok, _ = check_paid_approval(
                     self.approvals_path,
@@ -580,6 +670,7 @@ class CatalogScraper:
                     self.brands,
                     now=self.wall_clock(),
                     pending_fetches=self._paid_in_flight,
+                    proxy_tier=proxy_tier,
                 )
                 if not ok:
                     return "skipped_no_approval"
@@ -589,8 +680,9 @@ class CatalogScraper:
 
     def robots_info(self, url: str, timeout: float = 25) -> tuple[bool, list[str], float]:
         """(robots readable, Sitemap: lines, crawl-delay for our UA or *) for the URL's origin."""
-        parsed = urlparse(url)
-        origin = f"{parsed.scheme}://{parsed.netloc}"
+        if self._block_reason(url):
+            return False, [], 0.0
+        origin = _origin(url)
         self._robots_allow(origin + "/", timeout)
         rules = self._robots.get(origin)
         if rules is None:
@@ -632,10 +724,11 @@ class CatalogScraper:
             return 0, b""
         return response.status, response.body
 
-    def _free_get(self, url: str, timeout: float) -> tuple[int, bytes]:
+    def _free_get(self, url: str, timeout: float, attempts: int | None = None) -> tuple[int, bytes]:
         status = 0
         body = b""
-        for attempt in range(self.max_retries):
+        attempts = self.max_retries if attempts is None else attempts
+        for attempt in range(attempts):
             self._wait(url)
             try:
                 response = self.transport(
@@ -652,13 +745,13 @@ class CatalogScraper:
             status, body = response.status, response.body
             if status not in RETRY_STATUSES:
                 break
-            if attempt + 1 < self.max_retries:
+            if attempt + 1 < attempts:
                 self.sleeper(0.5 * (2**attempt) + random.uniform(0, 0.05))
         return status, body
 
     def _robots_allow(self, url: str, timeout: float) -> tuple[bool, str | None]:
         parsed = urlparse(url)
-        origin = f"{parsed.scheme}://{parsed.netloc}"
+        origin = _origin(url)
         if origin not in self._robots:
             robots_url = origin + "/robots.txt"
             status, body = self._free_get(robots_url, timeout)
@@ -667,10 +760,13 @@ class CatalogScraper:
             elif status == 200:
                 self._robots[origin] = _decode(body)
             else:
+                # In this order: a worker sharing this scraper reads the status once it sees None.
+                self._robots_status[origin] = status
                 self._robots[origin] = None
         rules = self._robots[origin]
         if rules is None:
-            return False, "robots_unavailable"
+            refused = self._robots_status[origin] in ROBOTS_REFUSAL_STATUSES
+            return False, "robots_refused" if refused else "robots_unavailable"
         path = parsed.path or "/"
         if parsed.query:
             path = path + "?" + parsed.query
@@ -693,6 +789,9 @@ class CatalogScraper:
     def _block_reason(self, url: str) -> str | None:
         if denied_host(url):
             return "denied_host"
+        host = _bare_host(url)
+        if any(host == blocked or host.endswith("." + blocked) for blocked in self.left_out_hosts):
+            return "left_out"
         if not public_http_url(url):
             return "blocked_url"
         if not self.resolve_hosts:
@@ -733,7 +832,8 @@ class CatalogScraper:
             self._memory[url] = result
         if method == "free_http":
             self._bump_ledger("free_http", 0)
-        elif method in {"skipped_no_key", "skipped_paid_cap", "skipped_no_approval", "robots_disallowed", "robots_unavailable", "blocked_url"}:
+        elif method in {"skipped_no_key", "skipped_paid_cap", "skipped_no_approval", "skipped_proxy_unapproved",
+                        "robots_disallowed", "robots_unavailable", "robots_refused", "blocked_url", "left_out"}:
             self._bump_ledger(method, 0)
         return result
 
@@ -851,6 +951,14 @@ def _parse_expiry(value: object) -> float | None:
     return parsed.timestamp()
 
 
+def firecrawl_proxy_tier(value: str | None = None) -> str:
+    """The Firecrawl proxy tier: `value`, else PATCHHIVE_FIRECRAWL_PROXY, else basic."""
+    tier = (value or os.environ.get("PATCHHIVE_FIRECRAWL_PROXY", "") or "basic").strip().lower()
+    if tier not in FIRECRAWL_PROXY_TIERS:
+        raise ValueError(f"firecrawl proxy must be one of {FIRECRAWL_PROXY_TIERS}, got {tier!r}")
+    return tier
+
+
 def check_paid_approval(
     approvals_path: Path,
     ledger_path: Path,
@@ -858,12 +966,14 @@ def check_paid_approval(
     *,
     now: float | None = None,
     pending_fetches: int = 0,
+    proxy_tier: str = "basic",
 ) -> tuple[bool, str]:
     """FR-003: is there an unexpired fetch-approvals entry covering `brands` with ledger headroom?
 
     An entry is {id, approver, expires_at, brands (names or "*"), cap_fetches, cap_credits}, plus
     optional ledger_baseline_fetches / ledger_baseline_credits: the ledger totals when it was approved,
-    so the caps count spend since then. ``pending_fetches`` are calls already granted but not
+    so the caps count spend since then. A `proxy_tier` other than basic matches only an entry whose
+    own `proxy_tier` names it. ``pending_fetches`` are calls already granted but not
     yet booked; each counts as one fetch and at least one credit. A ledger that exists but
     cannot be read, or reads below an entry's baseline, refuses: unknown spend is not zero.
     Returns (ok, reason).
@@ -905,6 +1015,9 @@ def check_paid_approval(
         covered = {str(b) for b in entry.get("brands") or []}
         if "*" not in covered and (not brands or not set(brands) <= covered):
             reasons.append(f"{name}: brands not covered")
+            continue
+        if proxy_tier != "basic" and str(entry.get("proxy_tier") or "basic").strip().lower() != proxy_tier:
+            reasons.append(f"{name}: does not approve the {proxy_tier} proxy tier")
             continue
         try:
             cap_fetches = int(entry["cap_fetches"])

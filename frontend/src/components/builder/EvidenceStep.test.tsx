@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
+import type { ModuleToPlace } from "@/lib/api";
 import EvidenceStep, { type FusionView, type ReviewCandidate } from "./EvidenceStep";
 
 const candidates: ReviewCandidate[] = [
@@ -29,7 +30,14 @@ function fusion(overrides: Partial<FusionView> = {}): FusionView {
   };
 }
 
-function renderReview(props: { fromLiveApi: boolean; fusion: FusionView }) {
+function renderReview(props: {
+  fromLiveApi: boolean;
+  fusion: FusionView;
+  targetRackId?: number | null;
+  revisionId?: string | null;
+  readyForGeneration?: boolean;
+  modulesToPlace?: ModuleToPlace[];
+}) {
   return render(
     <MemoryRouter>
       <EvidenceStep
@@ -50,6 +58,7 @@ function renderReview(props: { fromLiveApi: boolean; fusion: FusionView }) {
         onCreateRevision={vi.fn()}
         revisionId={null}
         readyForGeneration={false}
+        modulesToPlace={[]}
         {...props}
       />
     </MemoryRouter>,
@@ -78,5 +87,48 @@ describe("EvidenceStep review", () => {
     unmount();
     renderReview({ fromLiveApi: true, fusion: fusion({ status: "PARTIAL_MATCH" }) });
     expect(screen.getByText("Status: Partial match")).toBeInTheDocument();
+  });
+
+  it("says a confirmed photo isn't ready, lists what to place, and offers no generate link", () => {
+    renderReview({
+      fromLiveApi: true,
+      fusion: fusion(),
+      targetRackId: 3,
+      revisionId: "inv-rev-1",
+      readyForGeneration: false,
+      modulesToPlace: [
+        {
+          instance_id: "inst-1",
+          module_revision_id: "catalog-cand-1",
+          manufacturer: "Sim",
+          model: "Oscillator A",
+          module_id: 7,
+        },
+      ],
+    });
+    const sealed = screen.getByText(/Inventory revision sealed: inv-rev-1/);
+    expect(sealed).toHaveTextContent("not ready for generation");
+    expect(sealed).toHaveClass("status-warning");
+    expect(screen.queryByRole("link", { name: /Generate patches/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Open this rig" })).toHaveAttribute("href", "/rigs/3");
+    expect(screen.getByRole("link", { name: "Place it" })).toHaveAttribute(
+      "href",
+      "/racks/3/edit?module_id=7",
+    );
+  });
+
+  it("offers generation only when the rig is ready", () => {
+    renderReview({
+      fromLiveApi: true,
+      fusion: fusion(),
+      targetRackId: 3,
+      revisionId: "inv-rev-1",
+      readyForGeneration: true,
+    });
+    const sealed = screen.getByText(/Inventory revision sealed: inv-rev-1/);
+    expect(sealed).toHaveTextContent("ready for generation");
+    expect(sealed).toHaveClass("status-success");
+    expect(screen.getByRole("link", { name: "Generate patches on this rig" })).toBeInTheDocument();
+    expect(screen.queryByText(/Still to place/)).not.toBeInTheDocument();
   });
 });

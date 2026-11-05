@@ -8,6 +8,7 @@ import {
   evidenceApi,
   rackApi,
   type EvidenceCandidate,
+  type ModuleToPlace,
 } from "@/lib/api";
 import { rigDetailToRack, rigSummaryToRack } from "@/lib/canonRigAdapter";
 import CaseStep from "@/components/builder/CaseStep";
@@ -169,6 +170,7 @@ export default function RackBuilderPage() {
   const [candidates, setCandidates] = useState<ReviewCandidate[]>(DEMO_CANDIDATES);
   const [inventoryRevisionId, setInventoryRevisionId] = useState<string | null>(null);
   const [readyForGeneration, setReadyForGeneration] = useState(false);
+  const [modulesToPlace, setModulesToPlace] = useState<ModuleToPlace[]>([]);
   const [fromLiveApi, setFromLiveApi] = useState(false);
   const [fused, setFused] = useState<FusedEntityView[]>([]);
   /** User-applied fusion decisions keyed by fuse_id (still maps to candidate rows). */
@@ -544,6 +546,25 @@ export default function RackBuilderPage() {
       .catch(() => setGalleryModules([]));
   }, [liveMode, rackId, preselectedModuleId]);
 
+  // A placement can make a sealed revision's rig ready, so ask again when placements change.
+  useEffect(() => {
+    if (inventoryRevisionId == null || !fromLiveApi || activeRackId == null) return;
+    let current = true;
+    evidenceApi
+      .listInventory(activeRackId)
+      .then((inventory) => {
+        if (!current) return;
+        setReadyForGeneration(Boolean(inventory.data.latest?.ready_for_generation));
+        setModulesToPlace(inventory.data.modules_to_place ?? []);
+      })
+      .catch(() => {
+        /* keep the last answer */
+      });
+    return () => {
+      current = false;
+    };
+  }, [placementModules, inventoryRevisionId, fromLiveApi, activeRackId]);
+
   /** Saves placements once the server accepts them. Says whether it saved. */
   const savePlacements = async (next: RackModuleSpec[]): Promise<boolean> => {
     if (rackId == null) return false;
@@ -830,6 +851,7 @@ export default function RackBuilderPage() {
     setError("");
     setInventoryRevisionId(null);
     setReadyForGeneration(false);
+    setModulesToPlace([]);
     setFused([]);
     setFusedApplied({});
     setFusionFeedback(null);
@@ -1018,6 +1040,7 @@ export default function RackBuilderPage() {
         });
         setInventoryRevisionId(result.data.inventory_revision_id);
         setReadyForGeneration(result.data.ready_for_generation);
+        setModulesToPlace(result.data.modules_to_place ?? []);
         setEvidenceState("confirmed");
         return;
       } catch {
@@ -1034,7 +1057,8 @@ export default function RackBuilderPage() {
       Array.from(material).reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) | 0, 7),
     ).toString(16)}`;
     setInventoryRevisionId(syntheticId);
-    setReadyForGeneration(true);
+    // A demo revision stays in this browser: there is no rig for generation to accept.
+    setReadyForGeneration(false);
     setEvidenceState("confirmed");
   };
 
@@ -1244,6 +1268,7 @@ export default function RackBuilderPage() {
           onCreateRevision={() => void createInventoryRevision()}
           revisionId={inventoryRevisionId}
           readyForGeneration={readyForGeneration}
+          modulesToPlace={modulesToPlace}
         />
       </div>
       <Toast toast={toast} onDismiss={dismissToast} actionDisabled={placementSaving} />

@@ -2,6 +2,11 @@
  "version": 1,
  "checked": "2026-10-27",
  "policy": "Maker-owned sites only (spec 003 D2). Every fetch goes through data/synth-catalog/catalog_scrape.py: robots.txt, the deny list, per-host delay, cache, then context.dev and Firecrawl under one paid cap.",
+ "permission_basis": {
+  "meaning": "The access basis each crawl row records (EXTERNAL_SOURCE_POLICY access_basis). Owner decision 2026-11-04, option C: official spec pages count as publication for facts, under the policy's conditions. Under brands, set a maker who opts out, or whose terms forbid automated access, to unknown: the crawl and the fetch router then leave it alone, the overlay builders give it no rows, and bulk publication is blocked. Set a maker who gave permission to maker_permission (docs/evidence/MAKER_PERMISSION_AND_PROXY_DECISION_2026-11-03.md).",
+  "default": "official_publication",
+  "brands": {}
+ },
  "status_meaning": {
   "verified_free": "free fetch returned 200 and the page names the brand",
   "candidate": "free fetch was blocked or inconclusive; the crawl must see the brand on the page before using it",
@@ -472,7 +477,7 @@
    "follow": "^/(modules|eurorack|products?)/?$",
    "product": "^/[a-z0-9-]+-?\\d?/?$",
    "exclude": "^/(shop|cart|contact|about|blog|news|faq|dealers|support|diy|kits?)/?$",
-   "note": "unreachable over free HTTP from the dev box; needs the paid tier",
+   "note": "unreachable over free HTTP from the dev box. www.befaco.org answered 403 to a plain GET (docs/evidence/OWNER_ACTIONS_2026-11-02.md). A 403 is a refusal (owner decision 3, 2026-11-04), so render does not reach a paid backend while the site keeps answering that way",
    "render": true
   },
   "Behringer": {

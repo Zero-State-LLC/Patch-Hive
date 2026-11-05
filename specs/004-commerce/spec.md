@@ -46,7 +46,7 @@ Checked against the code on `main` at 3688037 (0.3.0-alpha.6). Paths are under `
 | FR-014 | Implemented | `process_stripe_event` sets every event to `processed`, `duplicate`, `unresolved` (reason code) or `ignored`, and sets `processed_at`; an unresolved outcome rolls its effects back (`canon/webhook_events.py`, migration `20261029_webhook_disposition`, #145). Machine B and C handlers raise reason codes for an unknown customer, an unmapped price, a bad payload and a missing payment id (`canon/checkout.py`, `canon/subscriptions.py`). An event type with no handler is `ignored` with no reason code (`canon/webhook_events.py`). |
 | FR-015 | Implemented | `ProviderSubscriptionRecord` holds tier, provider status, current period and `cancel_at_period_end`; `customer.subscription.created`/`updated` sync it (`canon/models.py`, `canon/subscriptions.py`, migration `20261102_subscriptions`, #219). |
 | FR-016 | Implemented | `invoice.paid` is the only grant trigger, once per period key; `customer.subscription.*` never grant (`canon/subscriptions.py` `handle_invoice_paid`, `handle_subscription_event`, #219). The Machine C table still names `subscription_created`, `subscription_updated` and `period_renewed`; see the proposed Machine C correction for T001. |
-| FR-017 | Implemented | `POST /api/canon/subscription/cancel` calls `request_subscription_cancel`, which sets `cancel_at_period_end` at the provider and locally for the user's `active` subscription (`canon/routes.py`, `canon/subscriptions.py`, #219). |
+| FR-017 | Implemented | `POST /api/canon/subscription/cancel` calls `request_subscription_cancel`, which sets `cancel_at_period_end` at the provider and locally for the user's `active`, `trialing` or `past_due` subscription (owner decision 43, 2026-11-04; `canon/routes.py`, `canon/subscriptions.py`, #219). |
 | FR-018 | Implemented | `customer.subscription.deleted` sets `canceled`, final, and keeps granted credits (`canon/subscriptions.py`, #219). |
 | FR-019 | Implemented | `stripe_test_mode = True`, `allow_production_payments = False`, `enable_credit_checkout = False`, `enable_subscription_checkout = False` by default (`core/config.py`); production webhook 403 `PRODUCTION_PAYMENTS_DISABLED`; `checkout_gate` refuses a disabled flag, production without activation, a missing key and a live key outside activated production (`canon/checkout.py`, `canon/routes.py`). |
 | FR-020 | Implemented | `ProviderCustomerRecord` is unique on `user_id` and on the provider customer id; `get_or_create_customer` (`canon/models.py`, `canon/checkout.py`, #209). |
@@ -265,8 +265,9 @@ The initial state is `NONE`. The final state is `Rewarded`.
 | NONE | signup_with_code | The code resolves to a user. The referrer is not the referred user. No `Pending` or `Rewarded` row exists. | Pending | Set `referred_by`. Append a `Pending` row. [OBSERVED: REFERRAL_IMPLEMENTATION.md] |
 | NONE | signup_with_code | The referrer is the referred user. | NONE | Reject with an error. Write no row. [OBSERVED: backend/monetization/referrals.py] |
 | NONE | signup_with_code | The code does not resolve. | NONE | Write no referral row. The signup outcome is unresolved. See OQ-6. [INFERRED] |
-| Pending | purchase_recorded | The `Purchase` count is exactly 1. The referrer is not the referred user. No `Rewarded` row exists. | Rewarded | In one atomic unit, append a `Grant` of +3 to the referrer with `referral_id` and the note `Referral reward: <referred_user_id>`. Append a `Rewarded` row with `first_purchase_id` and `rewarded_at`. [OBSERVED: backend/monetization/referrals.py] Atomicity is [INFERRED]. |
+| Pending | purchase_recorded | The `Purchase` count is exactly 1. The referrer is not the referred user. No `Rewarded` row exists. The referrer's account is not deleted. | Rewarded | In one atomic unit, append a `Grant` of +3 to the referrer with `referral_id` and the note `Referral reward: <referred_user_id>`. Append a `Rewarded` row with `first_purchase_id` and `rewarded_at`. [OBSERVED: backend/monetization/referrals.py] Atomicity is [INFERRED]. |
 | Pending | purchase_recorded | The `Purchase` count is not 1. | Pending | No reward. [OBSERVED: backend/monetization/referrals.py] |
+| Pending | purchase_recorded | The `Purchase` count is exactly 1. No `Rewarded` row exists. The referrer's account is deleted (`users.deleted_at`, read under a row lock so it serializes with account deletion). | Pending | No reward in either ledger and no `Rewarded` row. Append one `admin_audit_log` row (`referral_reward_withheld`, `REFERRER_ACCOUNT_DELETED`). The buyer's purchase is unaffected. Owner decision 44, 2026-11-04. |
 | Pending | signup_with_code | Any. | Pending | Reject with "already recorded." [OBSERVED: backend/monetization/referrals.py] |
 | Rewarded | purchase_recorded | Any. | Rewarded | No operation. [OBSERVED: backend/monetization/referrals.py] |
 | Rewarded | refund_processed | Any. | Rewarded | No revocation. [OBSERVED: REFERRAL_IMPLEMENTATION.md] |
@@ -286,8 +287,8 @@ stateDiagram-v2
     [*] --> NONE
     NONE --> Pending: signup_with_code [valid, not self, no prior row]
     NONE --> NONE: signup_with_code [self or unresolved code] / reject
-    Pending --> Rewarded: purchase_recorded [purchase count == 1, not rewarded]
-    Pending --> Pending: purchase_recorded [count != 1]
+    Pending --> Rewarded: purchase_recorded [purchase count == 1, not rewarded, referrer not deleted]
+    Pending --> Pending: purchase_recorded [count != 1 or referrer deleted]
     Rewarded --> Rewarded: purchase_recorded or refund_processed / no-op
     Rewarded --> [*]
 ```
@@ -353,7 +354,7 @@ States:
 - `NONE`. No subscription exists. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
 - `CheckoutOpen`. The subscription checkout session exists. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
 - `Active`. The provider status is `active`. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
-- `CancelScheduled`. The subscription is active and flagged to cancel at the period end. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
+- `CancelScheduled`. The provider status is `active`, `trialing` or `past_due`, and the subscription is flagged to cancel at the period end. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] `trialing` and `past_due` are owner decision 43, 2026-11-04.
 - `NotActive`. The provider status is a value other than `active` and `canceled`, such as `past_due`. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] Whether PatchHive should distinguish the provider statuses further is NOT_COMPUTABLE. See OQ-4.
 - `Canceled`. The provider reported deletion. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md]
 - `Abandoned`. The user left checkout. [INFERRED]
@@ -373,7 +374,7 @@ The initial state is `NONE`. The final states are `Canceled` and `Abandoned`. `U
 | Active, NotActive | period_renewed | A new period starts. The status is `active`. | Active | Sync the period. Grant the entitlement for the new period once. [INFERRED] |
 | Active | subscription_updated | The status is not `active`. | NotActive | Sync the fields. Grant nothing. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] |
 | NotActive | subscription_updated | The status is `active` in a period that has not been granted yet. | Active | Sync the fields. Grant once for the period. [INFERRED] |
-| Active | cancel_requested | The user owns the subscription. | CancelScheduled | Set cancel-at-period-end at the provider and locally. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] |
+| Active, NotActive | cancel_requested | The user owns the subscription. The provider status is `active`, `trialing` or `past_due` (owner decision 43). | CancelScheduled | Set cancel-at-period-end at the provider and locally. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] |
 | Active, NotActive, CancelScheduled | subscription_deleted | Verified. | Canceled | Set the status to `canceled`. Keep the granted credits. [OBSERVED: STRIPE_INTEGRATION_PROMPT.md] Keeping credits is [INFERRED]. |
 | Unresolved | operator_resolves | The operator has mapped the customer and the tier. | Active or NotActive | Apply the event as verified. [INFERRED] |
 
@@ -397,6 +398,7 @@ stateDiagram-v2
     Active --> NotActive: subscription_updated [not active]
     NotActive --> Active: subscription_updated or period_renewed [active, ungranted period]
     Active --> CancelScheduled: cancel_requested
+    NotActive --> CancelScheduled: cancel_requested [trialing or past_due]
     Active --> Canceled: subscription_deleted
     NotActive --> Canceled: subscription_deleted
     CancelScheduled --> Canceled: subscription_deleted
@@ -412,7 +414,7 @@ stateDiagram-v2
 
 **Why.** The table above grants on `subscription_created`, `subscription_updated` and `period_renewed`. The code grants only on `invoice.paid`, once per billing period. `customer.subscription.created`, `updated` and `deleted` only sync the record and never grant. That follows OQ-4 and [research 2026-11-01](../../docs/evidence/COMMERCE_BLOCKERS_RESEARCH_2026-11-01.md) §3. `backend/tests/unit/test_spec_004_transitions.py` already encodes the code's reading ("decided deviation from the table"). The table itself was never updated.
 
-**State mapping.** [INFERRED] The code stores the provider status, not these states. `Active` is status `active` with `cancel_at_period_end` false. `CancelScheduled` is status `active` with the flag set. `NotActive` is any other provider status. `Canceled` is `canceled`. `CheckoutOpen` and `Abandoned` are a `SubscriptionCheckoutRecord` reservation, not a subscription record. `Unresolved` is the stored event's disposition. This is the same mapping as `_c_state` in the transitions test.
+**State mapping.** [INFERRED] The code stores the provider status, not these states. `Active` is status `active` with `cancel_at_period_end` false. `CancelScheduled` is status `active`, `trialing` or `past_due` with the flag set. `NotActive` is any other provider status. `Canceled` is `canceled`. `CheckoutOpen` and `Abandoned` are a `SubscriptionCheckoutRecord` reservation, not a subscription record. `Unresolved` is the stored event's disposition. This is the same mapping as `_c_state` in the transitions test.
 
 | from | event | guard | to | effect |
 |---|---|---|---|---|
@@ -422,12 +424,12 @@ stateDiagram-v2
 | NONE, CheckoutOpen | subscription_created (`customer.subscription.created`) | Verified. The customer is known. One item whose price maps to a tier. A provider status. | Active if the status is `active`, else NotActive | Record the subscription (tier from the provider price, status, period, cancel flag). Grant nothing. |
 | Active, NotActive, CancelScheduled | subscription_updated | Newer than the last applied event, and something changed. | Active, CancelScheduled or NotActive, from the new status and flag | Sync the fields. The tier always comes from the provider price (OQ-7). Grant nothing. |
 | Active, NotActive, CancelScheduled | subscription_updated | Older than the last applied event, or nothing changed. | Unchanged | `duplicate` (`STALE_EVENT`, `SUBSCRIPTION_UNCHANGED`). |
-| NONE, Active, NotActive, CancelScheduled | invoice_paid (`invoice.paid`) | Verified. The invoice is `paid` and `amount_paid > 0`. A non-proration line whose price maps to a tier. The customer matches. The period `subscription-period:<subscription_id>:<period_start>` has no grant. | Unchanged. A missing record is created as `active` (EC-2). | Grant once for the period. CORE and PRO get a canonical `grant` of the tier's credits. STUDIO gets the unlimited entitlement with the fair-use cap, and no credits (FR-004, OQ-8). The subscription's first paid invoice also records a purchase for Machine A (FR-028, OQ-3). |
+| NONE, Active, NotActive, CancelScheduled, Canceled | invoice_paid (`invoice.paid`) | Verified. The invoice is `paid` and `amount_paid > 0`. A non-proration line whose price maps to a tier. The customer matches. The period `subscription-period:<subscription_id>:<period_start>` has no grant. | Unchanged. A missing record is created as `active` (EC-2). | Grant once for the period. CORE and PRO get a canonical `grant` of the tier's credits. STUDIO gets the unlimited entitlement with the fair-use cap, and no credits (FR-004, OQ-8). The subscription's first paid invoice also records a purchase for Machine A (FR-028, OQ-3). |
 | any | invoice_paid | The period was already granted. | Unchanged | `duplicate` (`PERIOD_ALREADY_GRANTED`). Grant nothing. |
 | any | invoice_paid | The invoice has only proration lines. | Unchanged | `ignored` (`INVOICE_PRORATION_ONLY`). The new tier's credits come with the next period (OQ-7). |
 | any | invoice_paid | Not paid, a zero amount, no subscription, unknown customer or price, the same invoice already granted for another period, or a malformed payload. | Unresolved | Grant nothing. Keep the event with its reason code. |
 | CheckoutOpen, Active, NotActive, CancelScheduled | subscription_created or subscription_updated | Unknown customer, a price that maps to no tier, not exactly one item, a malformed period, a customer mismatch, or an unknown status. | Unresolved | Grant nothing. Keep the event with its reason code. |
-| Active | cancel_requested | The user's newest live subscription, with provider status exactly `active`. | CancelScheduled | Set cancel-at-period-end at the provider and locally. 404 `SUBSCRIPTION_NOT_FOUND` when there is none; 409 `SUBSCRIPTION_NOT_ACTIVE` for any other status. |
+| Active, NotActive | cancel_requested | The user's newest non-terminal subscription, with provider status `active`, `trialing` or `past_due` (owner decision 43). | CancelScheduled | Set cancel-at-period-end at the provider and locally. 404 `SUBSCRIPTION_NOT_FOUND` when there is none; 409 `SUBSCRIPTION_NOT_ACTIVE` for any other status. |
 | Active, NotActive, CancelScheduled | subscription_deleted | Verified. The customer matches. | Canceled | Set the status to `canceled`. Keep the granted credits. |
 | Canceled | subscription_created, subscription_updated or subscription_deleted | Any. | Canceled | `duplicate` (`SUBSCRIPTION_ALREADY_CANCELED`). |
 | Unresolved | operator_rejects | An admin, with a reason (OQ-5, T048). | Unresolved, closed as rejected | Grant nothing. Write one admin audit record. |
@@ -453,9 +455,11 @@ stateDiagram-v2
     Active --> Active: invoice_paid [new period] / grant once
     NotActive --> NotActive: invoice_paid [new period] / grant once
     CancelScheduled --> CancelScheduled: invoice_paid [new period] / grant once
+    Canceled --> Canceled: invoice_paid [new period] / grant once
     Active --> NotActive: subscription_updated [not active]
     NotActive --> Active: subscription_updated [active]
     Active --> CancelScheduled: cancel_requested [status active]
+    NotActive --> CancelScheduled: cancel_requested [trialing or past_due]
     Active --> Canceled: subscription_deleted
     NotActive --> Canceled: subscription_deleted
     CancelScheduled --> Canceled: subscription_deleted
@@ -466,9 +470,9 @@ stateDiagram-v2
 What the owner settles at T001 for this block:
 
 1. Approve `invoice.paid` as the only grant trigger, and these rows as the Machine C contract in place of the table above.
-2. Decide what a paid invoice on a `Canceled` subscription does. Today `handle_invoice_paid` does not read the record's status: it writes a period grant, and the record stays `canceled`. No test covers this case. The test for the illegal `Canceled` to `Active` row covers only `customer.subscription.updated`. Options: grant, because money was received, or refuse it as `Unresolved`. Either way, add the test.
+2. Decided 2026-11-04 (owner decision 42): a paid invoice on a `Canceled` subscription keeps granting, because money was received. `handle_invoice_paid` does not read the record's status: it writes a period grant, and the record stays `canceled`. `test_c_canceled_invoice_paid_grants_once_and_stays_canceled` pins it.
 3. Keep operator resolve refused for Machine C, so an operator can only reject. The alternative is to build resolve.
-4. Decide whether a `trialing` or `past_due` subscription may schedule a cancel. Today only `active` can.
+4. Decided 2026-11-04 (owner decision 43): `active`, `trialing` and `past_due` can schedule a cancel. Every other status is refused.
 5. Decide whether `invoice.payment_failed` stays ignored or is recorded.
 
 ## Security, privacy, observability, and rollback

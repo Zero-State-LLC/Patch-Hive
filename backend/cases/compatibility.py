@@ -8,7 +8,7 @@ produce ``verified``.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Optional
 
 from sqlalchemy.orm import Session
 
@@ -23,6 +23,7 @@ from cases.compatibility_schemas import (
     RowCapacityResult,
 )
 from cases.models import CaseCatalog, CasePowerSystem, CaseRevision, CaseRow
+from modules.catalog import MODULE_KNOWN_BASIS
 from modules.models import Module
 
 EURORACK_LIKE = {"eurorack", "intellijel_1u", "pulplogic_1u"}
@@ -51,13 +52,21 @@ def _worst(*statuses: CompatibilityStatus) -> CompatibilityStatus:
     return max(statuses, key=_status_rank)
 
 
-def _resolve_modules(db: Session, specs: list[CompatibilityModuleIn]) -> tuple[list[ResolvedModule], list[CheckResult]]:
+def _resolve_modules(
+    db: Session,
+    specs: list[CompatibilityModuleIn],
+    *,
+    hide_unknown_basis: bool = False,
+) -> tuple[list[ResolvedModule], list[CheckResult]]:
     resolved: list[ResolvedModule] = []
     warnings: list[CheckResult] = []
     for idx, spec in enumerate(specs):
         module: Optional[Module] = None
         if spec.module_id is not None:
-            module = db.query(Module).filter(Module.id == spec.module_id).first()
+            query = db.query(Module).filter(Module.id == spec.module_id)
+            if hide_unknown_basis:
+                query = query.filter(MODULE_KNOWN_BASIS)
+            module = query.first()
             if module is None:
                 warnings.append(
                     CheckResult(
@@ -636,6 +645,8 @@ def evaluate_catalog_compatibility(
     db: Session,
     slug: str,
     request: CompatibilityRequest,
+    *,
+    hide_unknown_basis: bool = False,
 ) -> CompatibilityResponse:
     case = get_case_by_slug(db, slug)
     if case is None:
@@ -653,7 +664,9 @@ def evaluate_catalog_compatibility(
         if revision is None:
             raise LookupError("Case has no revisions")
 
-    modules, resolve_warnings = _resolve_modules(db, request.modules)
+    modules, resolve_warnings = _resolve_modules(
+        db, request.modules, hide_unknown_basis=hide_unknown_basis
+    )
     format_check = _format_check(case, modules)
     physical, remaining, depth_warnings = _physical_and_capacity(case, revision, modules)
     rails, connectors, pos5, power_warnings = _power_checks(case, revision, modules)

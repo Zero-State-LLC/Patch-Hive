@@ -183,7 +183,7 @@ Receipt: artifact `restore-drill-receipt-<env>` (`receipt.json`: dump size and s
 
 | Workflow | Role |
 |----------|------|
-| `ci.yml` | PostgreSQL 15: backend and acceptance suites; Ruff, Black, mypy; ESLint, tsc, Vitest, build, Playwright |
+| `ci.yml` | PostgreSQL 15: backend (with a coverage report for `canon` and `evidence`) and acceptance suites; migration round trip and case-catalog seed dry runs; Ruff, Black, mypy; ESLint, tsc, Vitest, build, Playwright |
 | `codeql.yml` | CodeQL for Python and JavaScript |
 | `security.yml` | pip-audit, npm audit, Bandit, Gitleaks, CycloneDX SBOMs |
 

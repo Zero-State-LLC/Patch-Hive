@@ -34,6 +34,7 @@ sys.path.insert(0, str(CATALOG))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import build_maker_overlays as B  # noqa: E402
+import maker_adapters  # noqa: E402
 
 CRAWL = "maker-crawl-v2.json"
 # Manifest version -> the catalog-additions and module-power-depth versions it writes.
@@ -87,6 +88,7 @@ def main(argv: list[str] | None = None) -> int:
     additions_version = OUTPUT_VERSIONS[version][0]
 
     crawl = json.loads((CATALOG / "hermes-research" / CRAWL).read_text())
+    sources = maker_adapters.load_sources(CATALOG / "maker-sources.json")
     shared = B.shared_homepage_skips(crawl["brands"]) if version == 1 else B.misattributed_brands(crawl["brands"])
     already = {
         r["slug"]
@@ -137,6 +139,8 @@ def main(argv: list[str] | None = None) -> int:
             entry["kept_as"] = "existing row under owner"
         elif not page:
             entry["kept_as"] = "not re-added: no page for it in the current crawl"
+        elif maker_adapters.left_out(sources, owner):
+            entry["kept_as"] = f"not re-added: {owner} is left out (permission basis unknown)"
         else:
             entry["kept_as"] = f"re-added under owner (catalog-additions-v{additions_version})"
             readd.setdefault(key, {**page, "brand": owner, "name": clean})
@@ -151,7 +155,7 @@ def main(argv: list[str] | None = None) -> int:
             "brand": m["brand"], "name": m["name"], "hp": m["hp"], "category": B.category(m.get("tags") or [], m["name"]),
             "manufacturer_url": m["source_url"], "image_url": m.get("image_url"), "is_available": "available",
             "source": "ManufacturerCrawl", "source_reference": m["source_url"], "tags": m.get("tags") or [],
-            "access_basis": "official_publication",
+            "access_basis": maker_adapters.permission_basis(sources, m["brand"]),
             "content_sha256": m["content_sha256"], "fetch_method": m["fetch_method"],
         })
         entries.append({

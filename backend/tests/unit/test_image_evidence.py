@@ -13,6 +13,20 @@ def _jpeg(*, metadata: bool = False) -> bytes:
     return output.getvalue()
 
 
+def test_a_jpeg_comment_is_removed() -> None:
+    output = io.BytesIO()
+    Image.new("RGB", (64, 64), "white").save(output, format="JPEG", comment=b"private-comment")
+    assert b"private-comment" in output.getvalue()
+
+    prepared = prepare_image_evidence(
+        output.getvalue(), declared_media_type="image/jpeg", scanner=SignatureImageScanner()
+    )
+
+    assert b"private-comment" not in prepared.content
+    with Image.open(io.BytesIO(prepared.content)) as image:
+        assert "comment" not in image.info
+
+
 def test_image_is_reencoded_and_metadata_removed() -> None:
     original = _jpeg(metadata=True)
     prepared = prepare_image_evidence(

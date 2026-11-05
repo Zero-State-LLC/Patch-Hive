@@ -53,7 +53,8 @@ def _scraper(tmp_path: Path, site: Site, **kwargs) -> CatalogScraper:
 # --- shared router changes
 
 
-def test_challenge_page_escalates_to_paid(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_challenge_page_is_not_escalated_to_paid(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Spec 003 D7: a bot check is a refusal, not a reason to render or proxy around it."""
     monkeypatch.setenv("CONTEXT_DEV_API_KEY", "ctx-test")
     monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
     site = Site(
@@ -61,9 +62,10 @@ def test_challenge_page_escalates_to_paid(tmp_path: Path, monkeypatch: pytest.Mo
     )
     scraper = _scraper(tmp_path, site, max_paid_fetches=1)
     res = scraper.fetch("https://maker.example/p")
-    assert not res.ok  # context.dev is not routed in this fake web either
+    assert not res.ok
     assert any(r.get("note") == "challenge" for r in scraper.receipts)
-    assert catalog_scrape.CONTEXT_SCRAPE_URL in site.calls
+    assert catalog_scrape.CONTEXT_SCRAPE_URL not in site.calls
+    assert scraper.paid_attempts == 0
 
 
 def test_json_mentioning_captcha_is_not_a_challenge(tmp_path: Path) -> None:
@@ -425,6 +427,92 @@ def test_curated_sources_are_maker_sites_only() -> None:
     assert {h["status"] for h in data["homepages"].values()} <= set(data["status_meaning"])
 
 
+def test_official_publication_is_the_recorded_default_basis() -> None:
+    """Owner decision 1 (2026-11-04, option C): official spec pages count as publication for facts."""
+    data = maker_adapters.load_sources()
+    assert data["permission_basis"]["default"] == "official_publication"
+    assert maker_adapters.permission_basis(data, "A brand with no entry") == "official_publication"
+
+
+def test_a_maker_who_opts_out_is_recorded_as_unknown() -> None:
+    sources = {"permission_basis": {"default": "official_publication", "brands": {"Acme": "unknown"}}}
+    assert maker_adapters.permission_basis(sources, "Acme") == "unknown"
+    assert maker_adapters.permission_basis(sources, "Other") == "official_publication"
+
+
+def test_every_crawl_basis_is_allowed_by_the_source_policy() -> None:
+    policy = (ROOT / "docs" / "EXTERNAL_SOURCE_POLICY.md").read_text(encoding="utf-8")
+    missing = [basis for basis in maker_adapters.PERMISSION_BASES if f"- `{basis}`" not in policy]
+    assert missing == []
+
+
+def test_an_unlisted_permission_basis_is_refused(tmp_path: Path) -> None:
+    bad = tmp_path / "s.json"
+    bad.write_text(json.dumps({"adapters": {}, "permission_basis": {"default": "unknown", "brands": {"X": "scraped"}}}))
+    with pytest.raises(ValueError, match="permission basis"):
+        maker_adapters.load_sources(bad)
+
+
+def test_crawl_rows_record_the_makers_permission_basis(monkeypatch: pytest.MonkeyPatch) -> None:
+    sources = {
+        "adapters": {"Acme": {"homepage": "https://acme.example/", "kind": "shopify"}},
+        "permission_basis": {"default": "unknown", "brands": {"Acme": "official_publication"}},
+    }
+    monkeypatch.setattr(crawl, "SOURCES", sources)
+    monkeypatch.setattr(crawl, "BUDGET", type("B", (), {"can_spend": lambda self: True})())
+    monkeypatch.setattr(crawl, "FETCH", type("F", (), {"robots_info": lambda self, url: (False, [], 0)})())
+
+    def adapter(brand, cfg, cap, rec):
+        rec["modules"].append({"brand": brand, "name": "Widget"})
+        rec["unconfirmed"].append({"brand": brand, "name": "Gadget"})
+
+    monkeypatch.setattr(crawl, "crawl_adapter", adapter)
+    monkeypatch.setattr(crawl, "crawl_generic", lambda brand, home, cap, rec: None)
+    rec = crawl.crawl_brand("Acme", 10, {"homepage": "https://acme.example/", "how": "adapter"})
+    assert rec["permission_basis"] == "official_publication"
+    assert {r["permission_basis"] for r in rec["modules"] + rec["unconfirmed"]} == {"official_publication"}
+    rec = crawl.crawl_brand("Other", 10, {"homepage": "https://other.example/", "how": "curated"})
+    assert rec["permission_basis"] == "unknown"
+    assert rec["status"] == "left_out" and rec["modules"] == []
+
+
+@pytest.mark.parametrize("spelling", ["Instruō", "Instruo", "INSTRUO", " instruo "])
+def test_an_opt_out_matches_every_spelling_of_the_brand(spelling: str) -> None:
+    """The committed crawl holds both "Instruo" and "Instruō": an exact match would fail open."""
+    sources = {"permission_basis": {"default": "official_publication", "brands": {"Instruo": "unknown"}}}
+    assert maker_adapters.left_out(sources, spelling)
+    assert not maker_adapters.left_out(sources, "Instruments")
+
+
+def test_sources_with_no_basis_leave_every_maker_out() -> None:
+    assert maker_adapters.left_out({}, "Acme")
+
+
+def test_a_left_out_maker_is_not_resolved_or_fetched(monkeypatch: pytest.MonkeyPatch) -> None:
+    def no_fetch(*_args, **_kwargs):
+        raise AssertionError("a left-out maker must not be fetched")
+
+    sources = {
+        "adapters": {"Acme": {"homepage": "https://acme.example/", "kind": "shopify"}},
+        "homepages": {"Beta": {"homepage": "https://beta.example/", "status": "candidate"}},
+        "permission_basis": {"default": "official_publication", "brands": {"Acme": "unknown", "Beta": "unknown", "Gamma": "unknown"}},
+    }
+    monkeypatch.setattr(crawl, "SOURCES", sources)
+    monkeypatch.setattr(crawl, "PRIOR", {})
+    monkeypatch.setattr(crawl, "BUDGET", type("B", (), {"can_spend": lambda self: True})())
+    monkeypatch.setattr(crawl, "FETCH", type("F", (), {"robots_info": no_fetch, "fetch": no_fetch})())
+    monkeypatch.setattr(crawl, "search", no_fetch)
+    monkeypatch.setattr(crawl, "crawl_adapter", no_fetch)
+    monkeypatch.setattr(crawl, "crawl_generic", no_fetch)
+    for brand in ("Acme", "acme", "Beta", "Gamma"):  # an adapter, a spelling, a candidate page, a search
+        assert crawl.resolve_brand(brand) == {"brand": brand, "homepage": None, "status": "left_out"}
+        rec = crawl.crawl_brand(brand, 10)
+        assert (rec["status"], rec["permission_basis"], rec["modules"], rec["pages"]) == ("left_out", "unknown", [], 0)
+    # A resolution made elsewhere, with a homepage, does not get past the gate either.
+    rec = crawl.crawl_brand("Acme", 10, {"homepage": "https://acme.example/", "how": "adapter:shopify"})
+    assert (rec["status"], rec["permission_basis"]) == ("left_out", "unknown")
+
+
 def test_resolution_order(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         crawl,
@@ -435,6 +523,7 @@ def test_resolution_order(monkeypatch: pytest.MonkeyPatch) -> None:
                 "B": {"homepage": "https://b.example/", "status": "verified_free"},
                 "C": {"homepage": "https://c.example/", "status": "rejected"},
             },
+            "permission_basis": {"default": "official_publication"},
         },
     )
     monkeypatch.setattr(crawl, "PRIOR", {"D": "https://d.example/"})
@@ -488,6 +577,7 @@ def test_dry_run_writes_yield_and_projection(
             "homepages": {
                 "BlockedMaker": {"homepage": "https://blocked.example/", "status": "candidate"}
             },
+            "permission_basis": {"default": "official_publication"},
         },
     )
     monkeypatch.setenv("CONTEXT_DEV_API_KEY", "ctx-test")
@@ -503,6 +593,42 @@ def test_dry_run_writes_yield_and_projection(
         urlparse(c).hostname in ("api.context.dev", "api.firecrawl.dev", "openrouter.ai")
         for c in site.calls
     )
+
+
+def test_a_crawl_run_leaves_out_the_maker_and_its_host(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A second brand name on the maker's host, such as a misspelt seed entry, does not reach it."""
+    site = Site({"https://other.example/": (200, "<html>Other Maker</html>")})
+    catalog = tmp_path / "catalog"
+    catalog.mkdir()
+    (catalog / "seed-phase2-v1.json").write_text(json.dumps({"brands": ["Gone Maker", "Gone Maker DIY", "Other Maker"]}))
+    monkeypatch.setattr(catalog_scrape, "default_transport", site)
+    monkeypatch.setattr(catalog_scrape, "socket_getaddrinfo", lambda host: ["93.184.216.34"])
+    for name, value in (
+        ("CATALOG", catalog),
+        ("WORK", tmp_path / "work"),
+        ("RECEIPTS", tmp_path / "receipts"),
+        ("OUT", tmp_path / "out"),
+        ("PRIOR_CRAWL", tmp_path / "none.json"),
+    ):
+        monkeypatch.setattr(crawl, name, value)
+    (tmp_path / "receipts").mkdir()
+    (tmp_path / "out").mkdir()
+    monkeypatch.setattr(
+        crawl.maker_adapters,
+        "load_sources",
+        lambda: {
+            "adapters": {"Gone Maker": {"homepage": "https://gone.example/", "kind": "shopify"}},
+            "homepages": {
+                "Gone Maker DIY": {"homepage": "https://shop.gone.example/", "status": "verified_free"},
+                "Other Maker": {"homepage": "https://other.example/", "status": "verified_free"},
+            },
+            "permission_basis": {"default": "official_publication", "brands": {"Gone Maker": "unknown"}},
+        },
+    )
+    assert crawl.main(["--dry-run", "--workers", "1"]) == 0
+    assert {urlparse(c).hostname for c in site.calls} == {"other.example"}
+    receipt = json.loads((tmp_path / "receipts" / "maker-crawl-v2.dry-run.json").read_text())
+    assert receipt["statuses"]["left_out"] == 1
 
 
 def test_paid_run_needs_an_approved_cap() -> None:
@@ -564,7 +690,8 @@ def test_no_model_paid_run_keeps_generic_rows_unconfirmed(
         lambda: {
             "homepages": {
                 "Maker": {"homepage": "https://maker.example/", "status": "verified_free"}
-            }
+            },
+            "permission_basis": {"default": "official_publication"},
         },
     )
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
@@ -585,7 +712,7 @@ def test_no_model_paid_run_keeps_generic_rows_unconfirmed(
     assert "openrouter.ai" not in " ".join(site.calls)
 
 
-def test_render_skips_the_free_get_but_not_robots(
+def test_render_uses_the_paid_body_and_still_applies_robots(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setenv("CONTEXT_DEV_API_KEY", "ctx-test")
@@ -600,8 +727,11 @@ def test_render_skips_the_free_get_but_not_robots(
     scraper = _scraper(tmp_path, site, max_paid_fetches=2)
     res = scraper.fetch("https://js.example/modules", render=True)
     assert res.ok and "/p/x" in res.text and res.receipt["method"] == "context_dev"
-    assert "https://js.example/modules" not in site.calls  # no free GET of the shell
+    # One free GET, only to see whether the site refuses (owner decision 3, 2026-11-04). It answers 404
+    # here and the paid body is what comes back.
+    assert site.calls.count("https://js.example/modules") == 1
     assert not scraper.fetch("https://js.example/private/x", render=True).ok  # robots still applies
+    assert "https://js.example/private/x" not in site.calls
     assert scraper.paid_attempts == 1
 
 

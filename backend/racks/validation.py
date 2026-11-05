@@ -4,7 +4,7 @@ Rack validation — HP fit, format gate, power budget (fail-closed, no invent).
 
 from __future__ import annotations
 
-from typing import List, Tuple
+from typing import Iterable, List, Tuple
 
 from sqlalchemy import func, inspect, text
 from sqlalchemy.orm import Session
@@ -25,6 +25,10 @@ UNKNOWN_NAMES_SHOWN = 10
 
 
 ALTERNATIVES_SHOWN = 3
+
+# The Module Category for rack infrastructure, matched as a string on ``module_type``.
+SYSTEM_MODULE_TYPE = "SYSTEM"
+IN_RACK_SUPPLY_CODE = "IN_RACK_SUPPLY_NOT_COUNTED"
 
 
 def tombstone_note(db: Session, module: Module) -> dict | None:
@@ -73,6 +77,30 @@ def tombstone_warning(index: int, module: Module, note: dict) -> RackValidationE
             "brand": module.brand,
             "reason": note["reason"],
             "alternatives": note["alternatives"],
+        },
+    )
+
+
+def in_rack_supply_warning(modules: Iterable[Module]) -> RackValidationError | None:
+    """Say that a Rig's budget doesn't count any supply it holds (owner decision 15).
+
+    SYSTEM covers power supplies and fans, and nothing stored for a placed module tells them
+    apart: ``module_catalog`` has no tags and a materialized ``modules`` row keeps none. So
+    this warns on every SYSTEM module, in words that stay true of a fan. One warning per Rig.
+    """
+    system = {m.id: m for m in modules if m.module_type == SYSTEM_MODULE_TYPE}
+    if not system:
+        return None
+    names = ", ".join(f"{m.brand} {m.name}" for m in system.values())
+    return RackValidationError(
+        field="power",
+        message=(
+            f"Any power supplied by the in-rack SYSTEM module{'' if len(system) == 1 else 's'} "
+            f"{names} isn't counted. This Rig's power budget is only what its Case supplies."
+        ),
+        details={
+            "code": IN_RACK_SUPPLY_CODE,
+            "modules": [{"id": m.id, "brand": m.brand, "name": m.name} for m in system.values()],
         },
     )
 
@@ -140,6 +168,8 @@ def validate_rack_configuration(
     - A placement that names a jumper setting (``power_config_id``, spec 003 D8) adds
       that setting's draws instead of the module's; a setting of another module is a
       ``POWER_CONFIG_NOT_FOR_MODULE`` error.
+    - An in-rack supply's output is never added to a rail (owner decision 15). Capacity is
+      what the Case states; a placed SYSTEM module is an ``IN_RACK_SUPPLY_NOT_COUNTED`` warning.
     - powered is False and modules draw power → hard error.
     - Non-Eurorack format with any module placement → hard error (MVP placement is Eurorack-only).
     """
@@ -187,6 +217,7 @@ def validate_rack_configuration(
     total_power_neg12v = 0
     total_power_5v = 0
     unknown_draw: dict[str, list[str]] = {label: [] for _, _, label in RAILS}
+    placed: list[Module] = []
 
     for idx, module_spec in enumerate(modules):
         module = db.query(Module).filter(Module.id == module_spec.module_id).first()
@@ -198,6 +229,7 @@ def validate_rack_configuration(
                 )
             )
             continue
+        placed.append(module)
 
         if hp_needs_reverify(db, module):
             errors.append(
@@ -410,5 +442,9 @@ def validate_rack_configuration(
                     },
                 )
             )
+
+    supply_warning = in_rack_supply_warning(placed)
+    if supply_warning:
+        warnings.append(supply_warning)
 
     return len(errors) == 0, errors, warnings

@@ -8,6 +8,10 @@ With a session, a manufacturer's models are its registry device models plus its 
 in the module catalog, matched by brand name or alias (or an explicit
 ``registry_manufacturer_slug``). The catalog is where the loaded modules live; the
 snapshot file is not shipped in the API image.
+
+Catalog rows whose access basis is ``unknown`` are left out unless the caller passes
+``include_unknown_basis``, which the routes do only for a signed-in caller (owner decision
+39, spec 003 FR-033).
 """
 
 from __future__ import annotations
@@ -19,7 +23,7 @@ from typing import Optional
 from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session
 
-from modules.catalog import ModuleCatalog
+from modules.catalog import KNOWN_BASIS, ModuleCatalog
 from registry.models import DeviceModel, Manufacturer
 
 SNAPSHOT_LATEST = (
@@ -58,9 +62,13 @@ def _manufacturer_names(manufacturer: Manufacturer) -> set[str]:
 _LIVE = ModuleCatalog.tombstoned_at.is_(None)
 
 
-def _catalog_rows_for(manufacturer: Manufacturer):
+def _readable_catalog(include_unknown_basis: bool):
+    return _LIVE if include_unknown_basis else and_(_LIVE, KNOWN_BASIS)
+
+
+def _catalog_rows_for(manufacturer: Manufacturer, include_unknown_basis: bool):
     return and_(
-        _LIVE,
+        _readable_catalog(include_unknown_basis),
         or_(
             func.lower(ModuleCatalog.brand).in_(_manufacturer_names(manufacturer)),
             ModuleCatalog.registry_manufacturer_slug == manufacturer.slug,
@@ -81,7 +89,7 @@ def _catalog_model(row: ModuleCatalog) -> dict:
     }
 
 
-def _catalog_counts(db: Session) -> list[tuple[str, str | None, int]]:
+def _catalog_counts(db: Session, include_unknown_basis: bool) -> list[tuple[str, str | None, int]]:
     """(lower brand, registry slug, rows) for the whole catalog, in one query."""
     return [
         (brand, slug, int(count))
@@ -90,7 +98,7 @@ def _catalog_counts(db: Session) -> list[tuple[str, str | None, int]]:
             ModuleCatalog.registry_manufacturer_slug,
             func.count(ModuleCatalog.id),
         )
-        .filter(_LIVE)
+        .filter(_readable_catalog(include_unknown_basis))
         .group_by(func.lower(ModuleCatalog.brand), ModuleCatalog.registry_manufacturer_slug)
         .all()
     ]
@@ -118,6 +126,7 @@ def list_manufacturers(
     limit: int = 100,
     offset: int = 0,
     db: Session | None = None,
+    include_unknown_basis: bool = False,
 ) -> list[dict]:
     if db is None:
         return [
@@ -137,7 +146,7 @@ def list_manufacturers(
         .group_by(DeviceModel.manufacturer_id)
         .all()
     )
-    catalog_counts = _catalog_counts(db)
+    catalog_counts = _catalog_counts(db, include_unknown_basis)
     return [
         {
             "id": row.id,
@@ -162,9 +171,12 @@ def search_models(
     brand: Optional[str] = None,
     limit: int = 50,
     db: Session | None = None,
+    include_unknown_basis: bool = False,
 ) -> list[dict]:
     if db is not None:
-        return _search_models_db(db, q=q, brand=brand, limit=limit)
+        return _search_models_db(
+            db, q=q, brand=brand, limit=limit, include_unknown_basis=include_unknown_basis
+        )
     query = q.lower()
     results = []
     for manufacturer in _snapshot_manufacturers():
@@ -193,7 +205,9 @@ def search_models(
     return results
 
 
-def _search_models_db(db: Session, *, q: str, brand: Optional[str], limit: int) -> list[dict]:
+def _search_models_db(
+    db: Session, *, q: str, brand: Optional[str], limit: int, include_unknown_basis: bool
+) -> list[dict]:
     term = q.strip()
     manufacturer = None
     if brand:
@@ -237,10 +251,10 @@ def _search_models_db(db: Session, *, q: str, brand: Optional[str], limit: int) 
     remaining = limit - len(results)
     if remaining <= 0:
         return results
-    catalog = db.query(ModuleCatalog).filter(_LIVE)
+    catalog = db.query(ModuleCatalog).filter(_readable_catalog(include_unknown_basis))
     if brand:
         catalog = catalog.filter(
-            _catalog_rows_for(manufacturer)
+            _catalog_rows_for(manufacturer, include_unknown_basis)
             if manufacturer
             else func.lower(ModuleCatalog.brand) == brand.lower()
         )
@@ -255,13 +269,14 @@ def _search_models_db(db: Session, *, q: str, brand: Optional[str], limit: int) 
     return results + [_catalog_model(row) for row in rows]
 
 
-def get_coverage_report(db: Session | None = None) -> dict:
+def get_coverage_report(db: Session | None = None, include_unknown_basis: bool = False) -> dict:
     if db is not None:
+        readable = _readable_catalog(include_unknown_basis)
         total_manufacturers = db.query(Manufacturer).count()
-        total_models = db.query(DeviceModel).count() + db.query(ModuleCatalog).filter(_LIVE).count()
+        total_models = db.query(DeviceModel).count() + db.query(ModuleCatalog).filter(readable).count()
         models_with_hp = (
             db.query(DeviceModel).filter(DeviceModel.hp.is_not(None)).count()
-            + db.query(ModuleCatalog).filter(_LIVE, ModuleCatalog.hp.is_not(None)).count()
+            + db.query(ModuleCatalog).filter(readable, ModuleCatalog.hp.is_not(None)).count()
         )
     else:
         manufacturers = _snapshot_manufacturers()
@@ -282,6 +297,7 @@ def list_models_for_manufacturer(
     manufacturer_slug: str,
     limit: int = 50,
     db: Session | None = None,
+    include_unknown_basis: bool = False,
 ) -> list[dict]:
     if db is None:
         manufacturer = get_manufacturer(manufacturer_slug)
@@ -322,7 +338,7 @@ def list_models_for_manufacturer(
     if remaining > 0:
         rows = (
             db.query(ModuleCatalog)
-            .filter(_catalog_rows_for(manufacturer))
+            .filter(_catalog_rows_for(manufacturer, include_unknown_basis))
             .order_by(ModuleCatalog.name)
             .limit(remaining)
             .all()
@@ -331,7 +347,11 @@ def list_models_for_manufacturer(
     return results
 
 
-def get_manufacturer_detail(slug: str, db: Session | None = None) -> Optional[dict]:
+def get_manufacturer_detail(
+    slug: str,
+    db: Session | None = None,
+    include_unknown_basis: bool = False,
+) -> Optional[dict]:
     if db is None:
         manufacturer = get_manufacturer(slug)
         if not manufacturer:
@@ -349,10 +369,12 @@ def get_manufacturer_detail(slug: str, db: Session | None = None) -> Optional[di
     manufacturer = db.query(Manufacturer).filter_by(slug=slug).first()
     if not manufacturer:
         return None
-    models = list_models_for_manufacturer(slug, limit=100, db=db)
+    models = list_models_for_manufacturer(
+        slug, limit=100, db=db, include_unknown_basis=include_unknown_basis
+    )
     model_count = (
         db.query(DeviceModel).filter_by(manufacturer_id=manufacturer.id).count()
-        + db.query(ModuleCatalog).filter(_catalog_rows_for(manufacturer)).count()
+        + db.query(ModuleCatalog).filter(_catalog_rows_for(manufacturer, include_unknown_basis)).count()
     )
     return {
         "id": manufacturer.id,

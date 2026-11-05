@@ -2,12 +2,13 @@
  * Public Product Database Explorer (PDB)
  * Manufacturer directory + search + detail — PatchHive workspace chrome.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import LoadFailure from "@/components/LoadFailure";
 import { ListSkeleton, ReadoutSkeleton } from "@/components/Skeletons";
 import { registryApi } from "@/lib/api";
 import { isCancelled } from "@/lib/loadError";
+import { useAuthStore } from "@/lib/store";
 import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import type { DeviceModel, Manufacturer, RegistryCoverage } from "@/types/api";
 
@@ -33,6 +34,22 @@ export default function RegistryPage() {
   const [searchAttempt, setSearchAttempt] = useState(0);
   const searchTerm = useDebouncedValue(query.trim());
 
+  // What the registry returns depends on whether the reader is signed in (owner decision 39).
+  // A change of reader drops what the last one got while rendering, so none of it reaches the
+  // screen, and the effects below ask again. A token renewal is not a change of reader.
+  const signedIn = useAuthStore((st) => st.isAuthenticated());
+  const [reader, setReader] = useState(signedIn);
+  if (reader !== signedIn) {
+    setReader(signedIn);
+    setManufacturers([]);
+    setCoverage(null);
+    setSelected(null);
+    setLoading(true);
+    setListError(null);
+    setSearchResults([]);
+    setSearchError(null);
+  }
+
   useEffect(() => {
     let current = true;
     setLoading(true);
@@ -52,7 +69,7 @@ export default function RegistryPage() {
     return () => {
       current = false;
     };
-  }, [attempt]);
+  }, [attempt, signedIn]);
 
   // Model search asks once the typing pauses, and a newer search cancels the one before it.
   useEffect(() => {
@@ -73,7 +90,7 @@ export default function RegistryPage() {
         setSearchError(err);
       });
     return () => controller.abort();
-  }, [searchTerm, searchAttempt]);
+  }, [searchTerm, searchAttempt, signedIn]);
 
   const manLabel = (m: Manufacturer) => m.name || m.slug;
 
@@ -86,17 +103,30 @@ export default function RegistryPage() {
     );
   });
 
+  // The manufacturer asked for last. Only its answer may land, and a change of reader asks again.
+  const latestSelect = useRef<{ manufacturer: Manufacturer } | null>(null);
+
   const selectMan = async (m: Manufacturer) => {
+    const request = { manufacturer: m };
+    latestSelect.current = request;
     try {
       const [detail, models] = await Promise.all([
         registryApi.getManufacturer(m.slug),
         registryApi.listModelsForManufacturer(m.slug),
       ]);
-      setSelected({ ...detail.data, models: models.data.models });
+      if (latestSelect.current === request) {
+        setSelected({ ...detail.data, models: models.data.models });
+      }
     } catch (err: unknown) {
-      setSelected({ ...m, models: [], failure: err });
+      if (latestSelect.current === request) {
+        setSelected({ ...m, models: [], failure: err });
+      }
     }
   };
+
+  useEffect(() => {
+    if (latestSelect.current) void selectMan(latestSelect.current.manufacturer);
+  }, [signedIn]);
 
   return (
     <div className="registry-page">

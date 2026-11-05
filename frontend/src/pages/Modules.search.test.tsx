@@ -55,7 +55,7 @@ function holdRequests() {
   return pending;
 }
 
-function renderPage(categories: string[] = ["VCO"]) {
+function renderPage(entry = "/modules", categories: string[] = ["VCO"]) {
   catalogStats.mockResolvedValue({
     data: {
       total_modules: 2,
@@ -70,7 +70,7 @@ function renderPage(categories: string[] = ["VCO"]) {
     data: { total: categories.length, categories: categories.map((name) => ({ name })) },
   });
   return render(
-    <MemoryRouter initialEntries={["/modules"]}>
+    <MemoryRouter initialEntries={[entry]}>
       <ModulesPage />
     </MemoryRouter>,
   );
@@ -120,7 +120,7 @@ describe("module search", () => {
   it("offers whatever categories the catalog holds, VIDEO and SYSTEM included", async () => {
     const pending = holdRequests();
     const user = userEvent.setup();
-    renderPage(["VCO", "VIDEO", "SYSTEM"]);
+    renderPage("/modules", ["VCO", "VIDEO", "SYSTEM"]);
     await waitFor(() => expect(pending).toHaveLength(1));
     act(() => pending[0].resolve(page([row(1, "Oscillator")])));
     await screen.findByText(/Showing 1 of 1/);
@@ -162,5 +162,23 @@ describe("module search", () => {
 
     await user.click(screen.getByRole("button", { name: "Retry" }));
     expect(await screen.findByText(/Showing 1 of 1/)).toBeInTheDocument();
+  });
+
+  // A brand whose only rows are unverified leads has nothing to show a signed-out visitor.
+  it("says nothing matched, not that the catalog is empty, when a filter finds nothing", async () => {
+    catalog.mockResolvedValue(page([]));
+    renderPage("/modules?brand=Lead+Only");
+
+    expect(await screen.findByText("No modules match these filters.")).toBeInTheDocument();
+    expect(screen.queryByText("No modules in the catalog yet.")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Clear filters" }).length).toBeGreaterThan(0);
+  });
+
+  it("says the catalog is empty only when no filter is set", async () => {
+    catalog.mockResolvedValue(page([]));
+    renderPage();
+
+    expect(await screen.findByText("No modules in the catalog yet.")).toBeInTheDocument();
+    expect(screen.queryByText("No modules match these filters.")).not.toBeInTheDocument();
   });
 });

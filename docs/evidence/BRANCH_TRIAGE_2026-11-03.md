@@ -123,7 +123,7 @@ For each branch, this counts the lines its own commits add since the merge base 
 | `claude/generate-vl2-pack-kbY4K` | 55 of 448 | `SystemPackLoader` in `backend/ingest/system_packs.py`. The `POST /api/ingest/system-pack` route never landed, and no spec names it. | Drop |
 | `claude/patchbook-computed-tiers-Dzu7u` | 236 of 1126 | The same computations in `backend/export/patchbook/computation.py`, `book_analytics.py` and `tiers.py`. | Drop |
 | `archive/local-pdb-readiness-20260723` | 43425 of 44268 | Everything but `seed_catalog_from_synth.py` (deleted on purpose, spec 003 D5), later rewrites and two July debug notes. | Keep: a deliberate archive |
-| `security/free-scanner-stack` | 0 of 33 | Nothing. Main has had no secret scan in CI since `5b85f58` removed `security.yml` (2026-09-03). | Keep until the security workflow is back on `main` |
+| `security/free-scanner-stack` | 0 of 33 | Nothing, and it no longer needs to: `security.yml` came back in #266 with its own gitleaks step and `.gitleaks.toml`. | Drop |
 
 ### The 19 believed landed
 
