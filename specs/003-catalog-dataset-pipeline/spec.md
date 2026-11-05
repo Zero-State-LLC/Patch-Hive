@@ -475,7 +475,7 @@ Privacy: catalog data is public product specs. Keep any private source material 
 - **Revision mismatch.** A manual covers a different revision than the catalog row. It applies only to the revisions it documents [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
 - **Duplicate candidate URLs.** Remove duplicates while preserving order [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **Short or empty response.** A response shorter than 80 characters or a failed scrape moves to the next candidate [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
-- **Slug collision.** The same slug from two brands collides under slug-only catalog dedupe [INFERRED].
+- **Slug collision.** Slugs are built from brand plus name and `module_catalog.slug` is globally unique, so the same module name under two brands gets two slugs. A row whose slug matches a stored row with a different brand or name is reported as an `identity_mismatch` conflict, not merged (OQ-6) [OBSERVED: data/synth-catalog/population.py].
 - **Mid-batch credential or budget failure.** The batch keeps its checkpoint and moves to `RETRY_QUEUED` [INFERRED].
 - **Prompt injection.** Scraped markdown containing instruction-like text is never passed as trusted commands [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
 - **Phase 2 rows without HP.** These rows are admitted for discovery, but rack placement still needs HP later [OBSERVED: backend/DATA_SOURCES.md].
