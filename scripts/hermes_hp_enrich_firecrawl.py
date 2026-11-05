@@ -6,7 +6,8 @@ fetching targets official manufacturer pages and manuals only (access_basis =
 official_publication). Retailer values come only from one-off manual lookups, and ModularGrid is
 never fetched. Fetches go through the in-repo CatalogScraper: direct first (robots.txt honoured),
 then context.dev, then Firecrawl, behind PATCHHIVE_MAX_PAID_FETCHES. Firecrawl's managed proxy
-tier is PATCHHIVE_FIRECRAWL_PROXY (basic | stealth | auto, default auto).
+tier is PATCHHIVE_FIRECRAWL_PROXY (default basic; stealth or auto only under a fetch-approvals
+entry that names the tier).
 """
 
 from __future__ import annotations

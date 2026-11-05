@@ -262,3 +262,44 @@ def test_the_builder_never_rewrites_an_applied_manifest() -> None:
     import build_reattribution as R
 
     assert R.main(["--version", "1"]) == 2
+
+
+def _reattribute(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, basis: dict) -> tuple[Path, dict]:
+    """One row the crawl filed under Mental Noise, on Make Noise's host, built from temporary files."""
+    import build_reattribution as R
+
+    catalog = tmp_path / "catalog"
+    overlays = catalog / "overlays"
+    overlays.mkdir(parents=True)
+    (catalog / "hermes-research").mkdir()
+    (catalog / "maker-sources.json").write_text(json.dumps({"adapters": {}, "permission_basis": basis}))
+    url = "https://www.makenoisemusic.com/modules/maths"
+    module = {
+        "brand": "Mental Noise", "name": "Maths", "hp": 20, "tags": [], "source_url": url, "sources": {},
+        "power_12v_ma": 60, "content_sha256": "abc", "fetch_method": "free_http", "extracted_by": "regex",
+    }
+    (catalog / "hermes-research" / R.CRAWL).write_text(json.dumps({"brands": [
+        {"brand": "Make Noise", "homepage": "https://www.makenoisemusic.com/", "modules": []},
+        {"brand": "Mental Noise", "homepage": "https://www.makenoisemusic.com/", "modules": [module]},
+    ]}))
+    monkeypatch.setattr(R, "CATALOG", catalog)
+    monkeypatch.setattr(R, "OVERLAYS", overlays)
+    monkeypatch.setattr(R, "planned_catalog", lambda version: {"mental-noise-maths": {"brand": "Mental Noise", "name": "Maths"}})
+    assert R.main(["--version", "2", "--rebuild"]) == 0
+    return overlays, json.loads((overlays / "catalog-retirements-v2.json").read_text())["rows"][0]
+
+
+def test_a_re_added_row_takes_its_owners_basis_from_the_sources(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    basis = {"default": "official_publication", "brands": {"Make Noise": "maker_permission"}}
+    overlays, retired = _reattribute(tmp_path, monkeypatch, basis)
+    rows = json.loads((overlays / "catalog-additions-v7.json").read_text())["rows"]
+    assert [(r["brand"], r["access_basis"]) for r in rows] == [("Make Noise", "maker_permission")]
+    assert retired["kept_as"].startswith("re-added under owner")
+
+
+def test_a_left_out_owner_gets_nothing_re_added(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    basis = {"default": "official_publication", "brands": {"Make Noise": "unknown"}}
+    overlays, retired = _reattribute(tmp_path, monkeypatch, basis)
+    assert not (overlays / "catalog-additions-v7.json").exists()
+    assert not (overlays / "module-power-depth-v15.json").exists()
+    assert retired["kept_as"] == "not re-added: Make Noise is left out (permission basis unknown)"

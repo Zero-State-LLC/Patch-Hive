@@ -17,13 +17,21 @@ from __future__ import annotations
 import html
 import json
 import re
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urljoin, urlparse, urlunparse
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "data" / "synth-catalog"))
+
+from catalog_scrape import left_out, permission_basis  # noqa: E402,F401  (the router also needs them)
+
 SOURCES = ROOT / "data" / "synth-catalog" / "maker-sources.json"
 KINDS = ("shopify", "squarespace", "woocommerce", "listing")
+# The EXTERNAL_SOURCE_POLICY access_basis values a maker crawl can record. maker_permission means the
+# maker said yes (docs/evidence/MAKER_PERMISSION_AND_PROXY_DECISION_2026-11-03.md, decision 1).
+PERMISSION_BASES = ("official_publication", "maker_permission", "authorized_feed", "licensed_dataset", "unknown")
 FEED_PAGES = 20  # pages per store feed; 20 x 250 Shopify products is far beyond any maker
 HREF = re.compile(r"""href\s*=\s*["']?([^"'#\s>]+)""", re.I)
 # Merch, spares and services, by product handle or title. Modules that slip through
@@ -67,6 +75,10 @@ def load_sources(path: Path = SOURCES) -> dict:
             raise ValueError(f"{brand}: adapter kind must be one of {KINDS}")
         if cfg["kind"] == "listing" and not cfg.get("product"):
             raise ValueError(f"{brand}: listing adapter needs a product pattern")
+    basis = data.get("permission_basis") or {}
+    for brand, value in {"default": basis.get("default", "unknown"), **(basis.get("brands") or {})}.items():
+        if value not in PERMISSION_BASES:
+            raise ValueError(f"{brand}: permission basis must be one of {PERMISSION_BASES}")
     return data
 
 
