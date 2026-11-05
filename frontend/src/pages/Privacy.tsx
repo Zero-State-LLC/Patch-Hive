@@ -131,9 +131,8 @@ export default function PrivacyPage() {
           <p>
             A photo you upload is decoded and saved again as a JPEG, at most 4096 pixels on its long
             side. That removes EXIF data, including any GPS location, as well as XMP data and colour
-            profiles. One exception as of 2026-11-04: if the original is a JPEG with a comment
-            field, the comment is copied into the stored file. Re-encoding doesn&apos;t change what
-            the picture shows, so anything visible in it stays.
+            profiles, and any JPEG comment. Re-encoding doesn&apos;t change what the picture shows,
+            so anything visible in it stays.
           </p>
           <p>
             The site&apos;s upload form keeps photos for 30 days and offers no other choice. The API
@@ -174,10 +173,8 @@ export default function PrivacyPage() {
         <section className="ops-section" aria-labelledby="privacy-deleting">
           <h2 id="privacy-deleting">Deleting your account</h2>
           <p>
-            The site doesn&apos;t have a delete button yet, and the{" "}
-            <Link to="/account">account page</Link> doesn&apos;t offer one. Deletion exists only as
-            a signed-in API request: <code>DELETE /api/me</code> on <code>api.patch-hive.com</code>,
-            with your current password in the request body.
+            You can delete your account from the <Link to="/account">account page</Link>. It asks
+            you to type your username and current password first.
           </p>
           <h3>What deletion does</h3>
           <ul className="privacy-list">
@@ -295,8 +292,8 @@ export default function PrivacyPage() {
             <p>
               PatchHive has no working contact address for privacy requests yet. The address will be
               privacy@patch-hive.com, but that mailbox hasn&apos;t been created, so it can&apos;t
-              receive anything today. Until it works, the API request under Deleting your account is
-              the only route to deleting your data.
+              receive anything today. Until it works, the account page is the only route to deleting
+              your data.
             </p>
           </div>
         </section>
