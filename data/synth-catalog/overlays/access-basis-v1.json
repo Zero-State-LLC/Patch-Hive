@@ -2488,6 +2488,28 @@
    ]
   },
   {
+   "slug": "flatsix-modular-shroud-of-turing",
+   "brand": "FlatSix Modular",
+   "name": "Shroud Of Turing",
+   "host": "flatsixmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
+   "slug": "flatsix-modular-slight-of-hand",
+   "brand": "FlatSix Modular",
+   "name": "Slight Of Hand",
+   "host": "flatsixmodular.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
    "slug": "flight-of-harmony-facehugger",
    "brand": "Flight of Harmony",
    "name": "Facehugger",
@@ -4592,6 +4614,18 @@
    ]
   },
   {
+   "slug": "noise-engineering-basimilus-iteritas-alter",
+   "brand": "Noise Engineering",
+   "name": "Basimilus Iteritas Alter",
+   "host": "noiseengineering.us",
+   "access_basis": "official_publication",
+   "checks": [
+    "maker_sources",
+    "official_rows",
+    "brand_in_host"
+   ]
+  },
+  {
    "slug": "noise-engineering-basimilus-iteritas-legacy-hardware",
    "brand": "Noise Engineering",
    "name": ": Basimilus Iteritas (Legacy Hardware)",
@@ -6207,6 +6241,16 @@
    ]
   },
   {
+   "slug": "synthetic-sound-labs-v-gates-euro",
+   "brand": "Synthetic Sound Labs",
+   "name": "V-Gates Euro",
+   "host": "steamsynth.com",
+   "access_basis": "official_publication",
+   "checks": [
+    "reviewed"
+   ]
+  },
+  {
    "slug": "synthrotek-308-distortion-module",
    "brand": "Synthrotek",
    "name": "308 Distortion Module",
@@ -6745,6 +6789,16 @@
    "checks": [
     "official_rows",
     "brand_in_host"
+   ]
+  },
+  {
+   "slug": "unknown-devices-eisei",
+   "brand": "Unknown Devices",
+   "name": "Eisei",
+   "host": "unwn.dev",
+   "access_basis": "official_publication",
+   "checks": [
+    "reviewed"
    ]
   },
   {
@@ -7610,20 +7664,6 @@
    "reason": "robots_unavailable_0"
   },
   {
-   "slug": "flatsix-modular-shroud-of-turing",
-   "brand": "FlatSix Modular",
-   "name": "Shroud Of Turing",
-   "host": "flatsixmodular.com",
-   "reason": "robots_unavailable_0"
-  },
-  {
-   "slug": "flatsix-modular-slight-of-hand",
-   "brand": "FlatSix Modular",
-   "name": "Slight Of Hand",
-   "host": "flatsixmodular.com",
-   "reason": "robots_unavailable_0"
-  },
-  {
    "slug": "frap-tools-fumana",
    "brand": "Frap Tools",
    "name": "Fumana",
@@ -7657,13 +7697,6 @@
    "name": "Tlum /// Multiple",
    "host": "fruku.club",
    "reason": "robots_unavailable_0"
-  },
-  {
-   "slug": "noise-engineering-basimilus-iteritas-alter",
-   "brand": "Noise Engineering",
-   "name": "Basimilus Iteritas Alter",
-   "host": "manualslib.com",
-   "reason": "maker_site_not_confirmed"
   },
   {
    "slug": "pulp-logic-2180-vca",
@@ -7729,25 +7762,11 @@
    "reason": "robots_unavailable_403"
   },
   {
-   "slug": "synthetic-sound-labs-v-gates-euro",
-   "brand": "Synthetic Sound Labs",
-   "name": "V-Gates Euro",
-   "host": "steamsynth.com",
-   "reason": "maker_site_not_confirmed"
-  },
-  {
    "slug": "tin-man-synths-1u-toolbox",
    "brand": "Tin Man Synths",
    "name": "1u Toolbox",
    "host": "tinmansynths.cn",
    "reason": "robots_unavailable_0"
-  },
-  {
-   "slug": "unknown-devices-eisei",
-   "brand": "Unknown Devices",
-   "name": "Eisei",
-   "host": "unwn.dev",
-   "reason": "maker_site_not_confirmed"
   }
  ]
 }
