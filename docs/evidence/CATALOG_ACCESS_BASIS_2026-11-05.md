@@ -16,7 +16,7 @@ The load only fills an empty basis, and it leaves retired rows alone. Each clear
 
 ## A correction: alpha.10 still served ModularGrid URLs
 
-[#294](https://github.com/Zero-State-LLC/Patch-Hive/pull/294) removed `modulargrid_url` and `modulargrid_id` from the API, and the alpha.10 deploy note said the URLs were no longer served. That was incomplete. `/api/modules` kept returning the same URLs in `source_reference`.
+[#294](https://github.com/Zero-State-LLC/Patch-Hive/pull/294) removed `modulargrid_url` and `modulargrid_id` from the API, and the agent's report to the owner after the alpha.10 deploy said the URLs were no longer served. That was incomplete. `/api/modules` kept returning the same URLs in `source_reference`.
 
 - Staging served 186 of them to anonymous readers. Of those, 179 were `CatalogCandidate` rows and 7 were Instruo rows.
 - Across all rows, including those anonymous reads leave out, 523 held one on staging and on production.
@@ -62,7 +62,7 @@ These rows stay visible, as they are today. Rebuilding the overlay picks up any 
 
 ## What readers see
 
-Anonymous reads leave out `unknown` rows and their `modules` rows ([FR-033](../../specs/003-catalog-population/spec.md)), so these 188 rows leave the public catalog. Signed-in readers still see them, marked "Unverified lead". All 9 `SynthCatalogResearch` rows are Instruo, which leaves 2 Instruo rows public until maker pages confirm the rest (FR-034).
+Anonymous reads leave out `unknown` rows and their `modules` rows ([FR-033](../../specs/003-catalog-dataset-pipeline/spec.md)), so these 188 rows leave the public catalog. Signed-in readers still see them, marked "Unverified lead". All 9 `SynthCatalogResearch` rows are Instruo, which leaves 2 Instruo rows public until maker pages confirm the rest (FR-034).
 
 A placed module stays in its rack, because a rack reads its modules directly.
 
