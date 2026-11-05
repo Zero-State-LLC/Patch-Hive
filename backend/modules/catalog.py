@@ -93,7 +93,6 @@ class ModuleCatalog(Base):
         """Convert to dictionary."""
         return {
             "id": self.id,
-            "modulargrid_id": self.modulargrid_id,
             "slug": self.slug,
             "brand": self.brand,
             "name": self.name,
@@ -101,7 +100,6 @@ class ModuleCatalog(Base):
             "hp_source": self.hp_source,
             "category": self.category,
             "image_url": self.image_url,
-            "modulargrid_url": self.modulargrid_url,
             "manufacturer_url": self.manufacturer_url,
             "registry_manufacturer_slug": self.registry_manufacturer_slug,
             "registry_device_slug": self.registry_device_slug,

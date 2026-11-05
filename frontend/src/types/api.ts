@@ -42,19 +42,17 @@ export interface ModuleListResponse {
 /** Lightweight module_catalog browse row (research + curated discovery). */
 export interface CatalogModule {
   id: number;
-  modulargrid_id?: number | null;
   slug: string;
   brand: string;
   name: string;
   hp?: number | null;
   category?: string | null;
   image_url?: string | null;
-  modulargrid_url?: string | null;
   manufacturer_url?: string | null;
   is_available?: string | null;
   /** Admit pipeline, e.g. SynthCatalogResearch */
   source?: string | null;
-  /** External-source policy: "unknown" for ModularGrid-derived discovery leads */
+  /** External-source policy: "unknown" for unverified discovery leads */
   access_basis?: string | null;
   /** CATALOG_OBSERVED marks an unverified lead (spec 003 D1) */
   evidence_status?: string | null;
