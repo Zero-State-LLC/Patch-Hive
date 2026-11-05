@@ -3,6 +3,7 @@ Patch and rack visualization generator.
 Creates SVG diagrams showing module layouts and patch connections.
 """
 
+import html
 from typing import Any, Dict, List
 
 from sqlalchemy.orm import Session
@@ -46,8 +47,8 @@ def generate_rack_layout_svg(db: Session, rack: Rack, width: int = 1200, hp_widt
   <rect width="{width}" height="{total_height}" fill="#1a1a1a"/>
 
   <!-- Title -->
-  <text x="20" y="25" fill="#fff" font-family="Arial, sans-serif" font-size="18" font-weight="bold">{rack.name}</text>
-  <text x="20" y="45" fill="#888" font-family="Arial, sans-serif" font-size="12">{case.brand} {case.name}</text>
+  <text x="20" y="25" fill="#fff" font-family="Arial, sans-serif" font-size="18" font-weight="bold">{html.escape(rack.name)}</text>
+  <text x="20" y="45" fill="#888" font-family="Arial, sans-serif" font-size="12">{html.escape(case.brand)} {html.escape(case.name)}</text>
 """
 
     # Draw each row
@@ -86,10 +87,10 @@ def generate_rack_layout_svg(db: Session, rack: Rack, width: int = 1200, hp_widt
             color = get_module_color(module.module_type)
 
             svg += f"""
-  <!-- Module: {module.name} -->
+  <!-- Module {module.id} -->
   <rect x="{module_x}" y="{row_y + 5}" width="{module_width - 2}" height="{module_h - 10}" fill="{color}" stroke="#555" stroke-width="1" rx="2"/>
-  <text x="{module_x + module_width / 2}" y="{row_y + module_h / 2 - 10}" fill="#fff" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="bold">{module.brand}</text>
-  <text x="{module_x + module_width / 2}" y="{row_y + module_h / 2 + 5}" fill="#fff" font-family="Arial, sans-serif" font-size="9" text-anchor="middle">{module.name[:15]}</text>
+  <text x="{module_x + module_width / 2}" y="{row_y + module_h / 2 - 10}" fill="#fff" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="bold">{html.escape(module.brand)}</text>
+  <text x="{module_x + module_width / 2}" y="{row_y + module_h / 2 + 5}" fill="#fff" font-family="Arial, sans-serif" font-size="9" text-anchor="middle">{html.escape(module.name[:15])}</text>
   <text x="{module_x + module_width / 2}" y="{row_y + module_h / 2 + 20}" fill="#ccc" font-family="monospace" font-size="8" text-anchor="middle">{module.hp}HP</text>
 """
 
@@ -170,7 +171,7 @@ def generate_patch_diagram_svg(
         color = get_module_color(module.module_type)
         svg += f"""
   <circle cx="{x}" cy="{y}" r="25" fill="{color}" stroke="#fff" stroke-width="2"/>
-  <text x="{x}" y="{y + 5}" fill="#fff" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="bold">{module.module_type}</text>
+  <text x="{x}" y="{y + 5}" fill="#fff" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="bold">{html.escape(module.module_type)}</text>
 """
 
     # Draw connections
