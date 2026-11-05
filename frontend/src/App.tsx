@@ -28,6 +28,7 @@ const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
 const CaseDetailPage = lazy(() => import("@/pages/CaseDetail"));
 const PatchBookStyleStudioPage = lazy(() => import("@/pages/PatchBookStyleStudio"));
 const PatchDetailPage = lazy(() => import("@/pages/PatchDetail"));
+const PrivacyPage = lazy(() => import("@/pages/Privacy"));
 const RackBuilderPage = lazy(() => import("@/pages/RackBuilder"));
 const RegistryPage = lazy(() => import("@/pages/Registry"));
 
@@ -56,6 +57,7 @@ function AppRoutes() {
       <Route path="/products" element={<RegistryPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/account" element={<AccountPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/admin/users" element={<AdminUsers />} />
       <Route path="/admin/modules" element={<AdminModules />} />
@@ -180,6 +182,7 @@ function App() {
           <span>
             Canonical rig revisions and deterministic runs. Exports are the credit boundary.
           </span>
+          <NavLink to="/privacy">Privacy notice</NavLink>
           <span className="zero-state-credit">Designed and engineered by Zero State</span>
         </footer>
       </div>

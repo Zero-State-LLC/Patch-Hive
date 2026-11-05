@@ -21,6 +21,7 @@ const ROUTE_TITLES: [pattern: string, title: string][] = [
   ["/patches", "Patches"],
   ["/login", "Sign in"],
   ["/account", "Account"],
+  ["/privacy", "Privacy notice"],
   ["/admin/users", "Ops users"],
   ["/admin/modules", "Ops modules"],
   ["/admin/gallery", "Ops gallery"],

@@ -16,6 +16,7 @@ export const APP_ROUTES = [
   "/products",
   "/login",
   "/account",
+  "/privacy",
   "/admin",
   "/admin/users",
   "/admin/modules",
