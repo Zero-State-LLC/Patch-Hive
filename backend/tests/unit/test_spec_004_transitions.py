@@ -21,6 +21,8 @@ import json
 import pytest
 from sqlalchemy.orm import Session
 
+from account.deletion import anonymize_user
+from admin.models import AdminAuditLog
 from canon.checkout import (
     CheckoutUnavailableError,
     PaymentProviderError,
@@ -591,6 +593,29 @@ def test_b_abandoned_refund_reverses_nothing(db_session: Session, pair):
     assert _refund_entries(db_session) == []
 
 
+def test_a_pending_purchase_recorded_with_a_deleted_referrer_stays_pending(
+    db_session: Session, pair
+):
+    """Machine A, owner decision 44: no reward of either kind, and a trace of why."""
+    referrer, referred = pair
+    _in_state(db_session, PENDING, referrer, referred)
+    anonymize_user(db_session, referrer)
+    db_session.commit()
+
+    purchase = record_purchase(
+        db_session, user=referred, credits_delta=30, payment_verified=True
+    )
+    db_session.commit()
+
+    assert _state(db_session, referred) == PENDING
+    assert _grants(db_session) == 0
+    assert _canonical_grants(db_session) == []
+    assert credit_balance(db_session, referrer.id) == 0
+    assert purchase.user_id == referred.id
+    (trace,) = db_session.query(AdminAuditLog).filter_by(action_type="referral_reward_withheld")
+    assert trace.reason == "REFERRER_ACCOUNT_DELETED"
+
+
 def test_a_rewarded_refund_processed_is_a_no_op(db_session: Session, pair):
     """Machine A ``Rewarded --refund_processed--> Rewarded``: no revocation (FR-030)."""
     referrer, buyer = pair
@@ -633,9 +658,10 @@ def _c_state(db: Session, sub_id: str = "sub_c") -> str:
         return C_NONE
     if record.status == "canceled":
         return C_CANCELED
-    if record.status == "active":
-        return C_CANCEL_SCHEDULED if record.cancel_at_period_end else C_ACTIVE
-    return C_NOT_ACTIVE
+    # Owner decision 43: any of the three live statuses can carry a scheduled cancel.
+    if record.status in ("active", "trialing", "past_due") and record.cancel_at_period_end:
+        return C_CANCEL_SCHEDULED
+    return C_ACTIVE if record.status == "active" else C_NOT_ACTIVE
 
 
 def _c_period_grants(db: Session) -> int:
@@ -889,6 +915,29 @@ def test_c_active_cancel_requested_becomes_cancel_scheduled(
     assert [name for name, _ in provider.calls] == ["cancel"]
 
 
+@pytest.mark.parametrize("status", ["trialing", "past_due"])
+def test_c_not_active_live_cancel_requested_becomes_cancel_scheduled(
+    db_session: Session, pair, c_prices, status: str
+):
+    _, buyer = pair
+    _c_customer(db_session, buyer)
+    _c_deliver(
+        db_session,
+        "evt_c_live",
+        "customer.subscription.created",
+        _c_subscription("sub_c", buyer.id, status=status),
+    )
+    assert _c_state(db_session) == C_NOT_ACTIVE
+    provider = FakeSubscriptionProvider()
+    request_subscription_cancel(
+        db_session, user=buyer, provider=provider, app_settings=_c_settings()
+    )
+    db_session.commit()
+    assert _c_state(db_session) == C_CANCEL_SCHEDULED
+    assert [name for name, _ in provider.calls] == ["cancel"]
+    assert _c_period_grants(db_session) == 0
+
+
 @pytest.mark.parametrize("start", [C_ACTIVE, C_NOT_ACTIVE, C_CANCEL_SCHEDULED])
 def test_c_subscription_deleted_becomes_canceled_and_keeps_credits(
     db_session: Session, pair, c_prices, start
@@ -946,6 +995,28 @@ def test_c_second_grant_for_the_same_period_is_illegal(db_session: Session, pair
         db_session, "evt_c_paid_b", "invoice.paid", _c_invoice("in_c_b", "sub_c", buyer.id)
     )
     assert second.record.status == "duplicate"
+    assert _c_period_grants(db_session) == 1
+    assert credit_balance(db_session, buyer.id) == 25
+
+
+def test_c_canceled_invoice_paid_grants_once_and_stays_canceled(
+    db_session: Session, pair, c_prices
+):
+    """Owner decision 42. ``Canceled`` to ``Canceled``: the period is granted, not refused."""
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_ACTIVE)
+    _c_deliver(
+        db_session,
+        "evt_c_gone",
+        "customer.subscription.deleted",
+        _c_subscription("sub_c", buyer.id, status="canceled"),
+    )
+    assert _c_state(db_session) == C_CANCELED
+
+    paid = _c_deliver(db_session, "evt_c_late", "invoice.paid", _c_invoice("in_c", "sub_c", buyer.id))
+
+    assert paid.record.status == "processed"
+    assert _c_state(db_session) == C_CANCELED
     assert _c_period_grants(db_session) == 1
     assert credit_balance(db_session, buyer.id) == 25
 
