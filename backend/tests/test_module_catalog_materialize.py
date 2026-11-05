@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from sqlalchemy.orm import Session
 
 from modules.catalog import ModuleCatalog
@@ -108,6 +110,26 @@ def test_materialize_batch_hp_known_only(db_session: Session):
         .count()
         == 0
     )
+
+
+def test_materialize_batch_keeps_exception_text_out_of_the_result(
+    db_session: Session, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+):
+    from modules.catalog_routes import materialize_catalog_batch
+
+    detail = "postgresql://ops:hunter2@db.internal/patchhive"
+    entry = _entry(db_session, brand="FailCo", name="Alpha", hp=8)
+
+    def fail(*_args, **_kwargs):
+        raise RuntimeError(detail)
+
+    monkeypatch.setattr("modules.catalog_routes.materialize_catalog_entry", fail)
+    with caplog.at_level(logging.ERROR, logger="modules.catalog_routes"):
+        result = materialize_catalog_batch(db_session, brand="FailCo", hp_known_only=True, limit=50)
+    assert result["status"] == "partial"
+    assert result["failed_samples"] == [{"catalog_slug": entry.slug, "error": "MATERIALIZE_FAILED"}]
+    assert detail not in str(result)
+    assert detail in caplog.text
 
 
 def test_catalog_source_persisted_and_filterable(db_session: Session):

@@ -7,12 +7,15 @@ without inventing unspecified rails or depths.
 
 from __future__ import annotations
 
+import logging
 from typing import Any, Optional
 
 from sqlalchemy.orm import Session
 
 from cases.catalog_service import get_case_by_slug, pick_primary_revision
 from cases.models import Case, CaseCatalog, CasePowerSystem, CaseRevision, CaseRow
+
+logger = logging.getLogger(__name__)
 
 
 def _legacy_format_label(format_family: str) -> str:
@@ -249,8 +252,10 @@ def materialize_catalog_batch(
                     "created": was_created,
                 }
             )
-        except Exception as exc:  # noqa: BLE001 — batch continues; per-row failure retained
-            failed.append({"catalog_slug": catalog.slug, "error": str(exc)})
+        except Exception:  # noqa: BLE001 — batch continues; per-row failure retained
+            # The exception text can hold SQL or connection details, so it stays in the log.
+            logger.exception("case catalog materialize failed for %s", catalog.slug)
+            failed.append({"catalog_slug": catalog.slug, "error": "MATERIALIZE_FAILED"})
     return {
         "status": "success" if not failed else "partial",
         "requested_format_family": format_family,
