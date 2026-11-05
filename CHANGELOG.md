@@ -4,6 +4,35 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.8](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.7...v0.3.0-alpha.8) (2026-11-05)
+
+
+### Fixed
+
+* **api:** keep exception text out of catalog and compatibility responses ([#267](https://github.com/Zero-State-LLC/Patch-Hive/issues/267)) ([29196c8](https://github.com/Zero-State-LLC/Patch-Hive/commit/29196c88741aa97e854daebc2b28a1bdd45ae486))
+* **ci:** name the database secrets instead of looking them up by expression ([#273](https://github.com/Zero-State-LLC/Patch-Hive/issues/273)) ([40117bc](https://github.com/Zero-State-LLC/Patch-Hive/commit/40117bc4a2ebde2a95f5bda6b9be5c4faa7ebb13))
+* **deps:** override minimatch to 11 for GHSA-g3hv-75wg-m249 ([#263](https://github.com/Zero-State-LLC/Patch-Hive/issues/263)) ([dd67257](https://github.com/Zero-State-LLC/Patch-Hive/commit/dd672572bd55be495dd432927f7bcee76c04f98f))
+* **ops:** find the acceptance JUnit report when the receipt path is relative ([#259](https://github.com/Zero-State-LLC/Patch-Hive/issues/259)) ([2bf82c1](https://github.com/Zero-State-LLC/Patch-Hive/commit/2bf82c18f5bd0e0952874dee70e752cd9b5d7cfa))
+* **runs:** return a run's patches in generation order ([#261](https://github.com/Zero-State-LLC/Patch-Hive/issues/261)) ([6a31173](https://github.com/Zero-State-LLC/Patch-Hive/commit/6a31173df0a07c93432bb48edb88c9c9faf81d62))
+* **security:** remove the undeployed legacy HTTP API ([#269](https://github.com/Zero-State-LLC/Patch-Hive/issues/269)) ([219a822](https://github.com/Zero-State-LLC/Patch-Hive/commit/219a8224b71c2eea644bb0f0612fb6cd6f737a63))
+* **seed:** stop printing the demo password ([#268](https://github.com/Zero-State-LLC/Patch-Hive/issues/268)) ([1330a9a](https://github.com/Zero-State-LLC/Patch-Hive/commit/1330a9a1780606297326409d7b2f692378f4a9f8))
+
+
+### Operations
+
+* **codeql:** scan the workflows again ([#270](https://github.com/Zero-State-LLC/Patch-Hive/issues/270)) ([c24ce86](https://github.com/Zero-State-LLC/Patch-Hive/commit/c24ce8669f004818c7ee8268a58ee7d7b83b9075))
+* restore the security and backend lint gates removed in 5b85f58 ([#266](https://github.com/Zero-State-LLC/Patch-Hive/issues/266)) ([43459fd](https://github.com/Zero-State-LLC/Patch-Hive/commit/43459fd10444e10ce82fab88a80ebe5c5728e107))
+* test on the Python production runs, and round-trip migrations ([#271](https://github.com/Zero-State-LLC/Patch-Hive/issues/271)) ([b98c243](https://github.com/Zero-State-LLC/Patch-Hive/commit/b98c243f1fa6a24210afad7c427033e998bc6ac1))
+
+
+### Documentation
+
+* acceptance receipt from main, beta drills done, board mirror for 2026-11-04 ([#262](https://github.com/Zero-State-LLC/Patch-Hive/issues/262)) ([be6b728](https://github.com/Zero-State-LLC/Patch-Hive/commit/be6b7283e13a1747b461ccf38eef5fc0272bfb89))
+* **evidence:** alpha.7 staging receipts (walkthrough, restore drill, acceptance) ([#260](https://github.com/Zero-State-LLC/Patch-Hive/issues/260)) ([5d0b6e5](https://github.com/Zero-State-LLC/Patch-Hive/commit/5d0b6e57a7d8a53dd0700c5a82d55620c0dc3838))
+* record the 0.3.0-alpha.7 deploy to staging and production ([#257](https://github.com/Zero-State-LLC/Patch-Hive/issues/257)) ([c36fcdf](https://github.com/Zero-State-LLC/Patch-Hive/commit/c36fcdf761d667d5f9b41366c812e8f53a0e7688))
+* record the restored CI gates and what's left to decide ([#272](https://github.com/Zero-State-LLC/Patch-Hive/issues/272)) ([ac9d2f5](https://github.com/Zero-State-LLC/Patch-Hive/commit/ac9d2f57594994079e4cc6bb4bd2635219fe9909))
+* review the unlanded branches and tie T101c to T101b ([#265](https://github.com/Zero-State-LLC/Patch-Hive/issues/265)) ([86a0a29](https://github.com/Zero-State-LLC/Patch-Hive/commit/86a0a2984241cd583d80bb8ce2566b33a7573d3e))
+
 ## [0.3.0-alpha.7](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.6...v0.3.0-alpha.7) (2026-11-04)
 
 
