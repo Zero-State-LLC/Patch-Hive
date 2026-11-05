@@ -639,6 +639,68 @@ def test_jumper_settings_load_once_as_power_configs(fresh_population_url, tmp_pa
     assert singles_after == singles_before
 
 
+def test_a_category_reaches_module_type_on_a_loaded_database(fresh_population_url, tmp_path):
+    """Owner decision 51: a module row older than its category holds the loader's placeholder."""
+    missing = tmp_path / "none.json"
+    populate(fresh_population_url, apply=True, verification_path=missing)
+
+    def types(conn) -> dict[str, str]:
+        rows = conn.execute(text(
+            "SELECT name, module_type FROM modules WHERE (brand, name) IN ("
+            "('ACL', 'M/S-MATRIX'), ('Hive Mind Synthesis', 'Video Gate 1U 10HP'), ('Eowave', 'SOURCE MK3'), "
+            "('Melted Electronics', 'Glitch Boy'), ('Feedback', 'RESET'), ('Jolin', 'GETREKT ⇝ touch waveshaper'), "
+            "('Bela', 'Pepper'))"
+        )).all()
+        return {row.name: row.module_type for row in rows}
+
+    engine = create_engine(fresh_population_url)
+    try:
+        with engine.begin() as conn:
+            # Filled by this load: the catalog row has no category yet, and the module row predates it.
+            conn.execute(text("UPDATE module_catalog SET category = NULL WHERE slug = 'acl-m-s-matrix'"))
+            conn.execute(text("UPDATE modules SET module_type = 'UNKNOWN' WHERE name = 'M/S-MATRIX'"))
+            # Filled or corrected by an earlier load, and the module row never caught up.
+            conn.execute(text("UPDATE modules SET module_type = 'UNKNOWN' WHERE name = 'Video Gate 1U 10HP'"))
+            # A value someone set, which differs from the catalog's SYSTEM. It stays.
+            conn.execute(text("UPDATE modules SET module_type = 'UTIL' WHERE name = 'SOURCE MK3'"))
+            # The placeholder on a row the loader didn't write. It stays.
+            conn.execute(text("UPDATE modules SET module_type = 'UNKNOWN', source = 'Admin' WHERE name = 'RESET'"))
+            # The placeholder on a retired row. It stays.
+            conn.execute(text("UPDATE modules SET module_type = 'UNKNOWN' WHERE name = 'GETREKT ⇝ touch waveshaper'"))
+            assert types(conn)["Pepper"] == "UNKNOWN"  # no category to copy, so it stays too
+
+        receipt = populate(fresh_population_url, apply=True, verification_path=missing)
+        with engine.connect() as conn:
+            assert types(conn) == {
+                "M/S-MATRIX": "UTIL",
+                "Video Gate 1U 10HP": "VIDEO",
+                "SOURCE MK3": "UTIL",
+                "Glitch Boy": "VIDEO",  # a reviewed correction's value is left alone
+                "RESET": "UNKNOWN",
+                "GETREKT ⇝ touch waveshaper": "UNKNOWN",
+                "Pepper": "UNKNOWN",
+            }
+            archived = conn.execute(text(
+                "SELECT row_key, field, old_value, source_tag, action FROM catalog_value_archive "
+                "WHERE batch = 'module-type-sync-v1' ORDER BY row_key"
+            )).all()
+        assert receipt["updates"]["module_type_from_category"] == 2
+        assert receipt["module_type_sync"]["synced"] == 2
+        assert receipt["module_type_sync"]["by_category"] == {"UTIL": 1, "VIDEO": 1}
+        assert receipt["module_type_sync"]["left_alone_not_loader_row"] == 1
+        assert receipt["module_type_sync"]["left_alone_other_value"] >= 1
+        assert [tuple(row) for row in archived] == [
+            ("ACL::M/S-MATRIX", "module_type", "UNKNOWN", "module_catalog:acl-m-s-matrix", "fill"),
+            ("Hive Mind Synthesis::Video Gate 1U 10HP", "module_type", "UNKNOWN",
+             "module_catalog:hive-mind-synthesis-video-gate-1u-10hp", "fill"),
+        ]
+
+        again = populate(fresh_population_url, apply=False, verification_path=missing)
+        assert "module_type_from_category" not in again["updates"]
+    finally:
+        engine.dispose()
+
+
 def test_inputs_hash_covers_the_manual_label_receipt(tmp_path, monkeypatch):
     """The fingerprint changes when a T034 manual label changes (it changes the plan)."""
     import population
