@@ -1,8 +1,7 @@
 # Owner decisions, 2026-11-04
 
-The agent put 34 decisions to the owner over three rounds, each with a recommendation, and the owner answered "Yes to all" each time, then confirmed the summary. Where this conflicts with [OWNER_ACTIONS_2026-11-03.md](OWNER_ACTIONS_2026-11-03.md) or an older guide, this record wins. Vocabulary is in [GLOSSARY.md](../../GLOSSARY.md).
+The agent put 51 decisions to the owner over several rounds, each with a recommendation, and the owner answered "Yes to all" each time. Where this conflicts with [OWNER_ACTIONS_2026-11-03.md](OWNER_ACTIONS_2026-11-03.md) or an older guide, this record wins. Vocabulary is in [GLOSSARY.md](../../GLOSSARY.md).
 
-Spec open questions from the four T001 reviews aren't here yet. They follow in their own PRs.
 
 ## Catalog and makers
 
@@ -54,3 +53,27 @@ Spec open questions from the four T001 reviews aren't here yet. They follow in t
 | 31 | The owner is the only required reviewer on `production`, with a main-only rule, admin bypass off and "Prevent self-review" off. The owner applies this. |
 
 Decision 4's "occupies HP" reads with decision 13's "working". Decisions 19 and 24 depend on steps only the owner can take, so neither goes live until those are done.
+
+## From the spec reviews
+
+Spec 001, 002, 003 and 004's T001 reviews (#282, #279, #284, #281) left these open. Decisions 39 and 49 to 51 refine the catalog decisions above.
+
+| # | Decision |
+|---|---|
+| 35 | A photo-confirmed Module is listed as still to place, with placement through the existing rack route. The API doesn't say `ready_for_generation: true` until it's placed. No auto-placement (#283). |
+| 36 | A Module doesn't fill two roles in one Patch unless the catalog declares separate sections. |
+| 37 | The spec 002 page and book compile machines aren't built. If a patch doesn't fit, the whole export fails and the customer's credits come back. |
+| 38 | Book thresholds stay `NOT_COMPUTABLE` until approved, the publication profile flag stays off, and the spec wins over the truncated source extracts. |
+| 39 | Anonymous reads of `GET /api/modules/catalog` leave out rows whose `access_basis` is `unknown`, after checking how many rows that removes from the Modules page; if it guts browsing, it comes back to the owner. The full question goes to counsel. |
+| 40 | FR-031 per-run rollback stays required, and T090 builds it. |
+| 41 | Try the maker's page for Akemie's Castle (18 HP versus 38) under the free reads. If it's blocked, mark HP as unknown rather than pick one. |
+| 42 | A paid invoice on a canceled subscription keeps granting credits. |
+| 43 | Any live subscription (`active`, `trialing`, `past_due`) can schedule a cancel. |
+| 44 | A referral reward no longer pays out to a referrer who has deleted their account. |
+| 45 | A user who never subscribed and one whose subscription lapsed both get FREE before sales open. Today's default stays during beta. |
+| 46 | Parked: the STUDIO usage cap and operator resolve for subscription events wait for sales; disclosing provider data to customers and retention after account deletion go in the counsel brief. Operators keep rejecting subscription events. |
+| 47 | Add a delete-account control with a clear confirmation step to the Account page, before the owner's real sign-up test. |
+| 48 | The privacy contact is `privacy@patch-hive.com`, separate from `catalog@`. The owner creates it, and the notice's gap stays until then. |
+| 49 | The 35 further video rows filed under other categories move to VIDEO. |
+| 50 | Mutable-derived rows that rest only on a reviewer's knowledge come out of the overlay until a maker page confirms each. |
+| 51 | Confirm and fix filled catalog rows keeping `modules.module_type` as UNKNOWN on a loaded database, before the catalog load. |
