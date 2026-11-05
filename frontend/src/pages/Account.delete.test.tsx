@@ -87,6 +87,25 @@ describe("Account page, deleting the account", () => {
     expect(logout).not.toHaveBeenCalled();
   });
 
+  it("still shows the failure when the session ends during the request", async () => {
+    // The API client's failed renewal clears the store before the error reaches the control.
+    api.accountApi.deleteAccount.mockImplementation(async () => {
+      useAuthStore.getState().clear();
+      throw Object.assign(new Error("HTTP 401"), { response: { status: 401, data: {} } });
+    });
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(await screen.findByRole("button", { name: "Delete account…" }));
+    await waitFor(() => expect(screen.getByText(/Signed in as/)).toBeVisible());
+    await user.type(screen.getByLabelText(/Type your username/), USER.username);
+    await user.type(screen.getByLabelText("Current password"), "correct horse");
+    await user.click(screen.getByRole("button", { name: "Delete my account" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(/Your session has ended/);
+    expect(screen.queryByRole("heading", { name: "Account deleted" })).not.toBeInTheDocument();
+  });
+
   it("stays signed in on the dashboard when deletion fails", async () => {
     api.accountApi.deleteAccount.mockRejectedValue(
       Object.assign(new Error("HTTP 403"), {

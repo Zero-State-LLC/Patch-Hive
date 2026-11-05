@@ -358,8 +358,12 @@ export default function AccountPage() {
           ) : null}
         </section>
 
-        {user ? (
-          <DeleteAccount username={user.username} onDeleted={() => setDeleted(true)} />
+        {/* A session that ends mid-request clears the user, and that failure still has to show. */}
+        {user || profile ? (
+          <DeleteAccount
+            username={(user ?? profile)?.username ?? ""}
+            onDeleted={() => setDeleted(true)}
+          />
         ) : null}
       </div>
     </section>

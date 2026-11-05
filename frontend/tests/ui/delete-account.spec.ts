@@ -54,7 +54,7 @@ async function mockApi(
     const request = route.request();
     if (request.method() !== "DELETE") return route.fallback();
     recorded.deletes.push(request);
-    if (answer.status < 300) signedIn = false;
+    if (answer.status < 300 || answer.status === 401) signedIn = false;
     return route.fulfill(answer);
   });
   return recorded;
@@ -162,6 +162,17 @@ test.describe("deleting an account", () => {
       await expect(page.getByRole("button", { name: /Sign out/ })).toBeVisible();
     });
   }
+
+  test("a session that has ended says so, and the control stays in view", async ({ page }) => {
+    await mockApi(page, { status: 401, json: { detail: "Not authenticated" } });
+    await openAccount(page);
+    await fill(page);
+    await confirm(page).click();
+
+    await expect(panel(page).getByRole("alert")).toContainText("Your session has ended.");
+    await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Account deleted" })).toHaveCount(0);
+  });
 
   test("a lost connection never reads as success", async ({ page }) => {
     await mockApi(page, { status: 204 });
