@@ -1,5 +1,5 @@
 {
-  "task": "owner taxonomy decisions 5, 6, 7, 14, 17, 49, 50 and 51 (2026-11-04): category overlays v4 and v5, category-corrections-v1 and -v2, catalog-retirements-v3, module-type sync",
+  "task": "owner taxonomy decisions 5, 6, 7, 14, 17, 49, 50, 51, 54 and 55 (2026-11-04): category overlays v4 and v5, category-corrections-v1 to -v3, catalog-retirements-v3, module-type sync",
   "target": "throwaway Postgres 15.13 container, migrated to alembic head and loaded by import_catalog_population.py --apply from main at 504bbc1, then dry-run from this branch; removed afterwards",
   "baseline_apply": {
     "plan_hash": "6f3d1126db6ffe0cf85a493d32eb8e0678ba7fd00326499f27ecdf4f43a15383",
@@ -14,20 +14,20 @@
   },
   "dry_run": {
     "mode": "dry-run",
-    "database": "127.0.0.1:55474/ph_base",
-    "plan_hash": "267142a257e5e220e72d5d3fd6e2b118c1acad84facc4c19517cd2f1ea82ecfa",
-    "inputs_hash": "387a58f24f73b60f334add113f0f6621a79839282788c5f59e74f403a8e6b986",
+    "database": "127.0.0.1:55475/ph_base",
+    "plan_hash": "2269b9c72b8b35daf4e9cc0ef7f964991f15b1b06e8d9244db309b4bfeb407aa",
+    "inputs_hash": "eaeca0636e151009a6ab1b85639d789eb93e0aa16239adab909735a45b4acddb",
     "inserts": {
-      "catalog_value_archive": 111,
-      "catalog_value_archive_markers": 2
+      "catalog_value_archive": 112,
+      "catalog_value_archive_markers": 3
     },
     "updates": {
-      "category_overlay": 55,
-      "module_catalog_correct": 29,
-      "modules_correct": 27,
+      "category_overlay": 52,
+      "module_catalog_correct": 31,
+      "modules_correct": 29,
       "catalog_retire": 1,
       "module_retire": 1,
-      "module_type_from_category": 55
+      "module_type_from_category": 52
     },
     "conflicts_total": 0,
     "unmatched": {
@@ -37,15 +37,15 @@
       "retire_module": 1
     },
     "module_type_sync": {
-      "synced": 55,
+      "synced": 52,
       "by_category": {
         "VIDEO": 24,
         "SYSTEM": 12,
         "LFO": 4,
-        "VCO": 6,
         "MIX": 3,
         "VCF": 1,
-        "UTIL": 5
+        "UTIL": 5,
+        "VCO": 3
       },
       "left_alone_other_value": 1,
       "left_alone_not_loader_row": 0,
@@ -87,24 +87,41 @@
         "corrected_values": 48,
         "refused_row_tombstoned": 0,
         "reverify_clear_scheduled": 0
+      },
+      "v3": {
+        "archived_values": 4,
+        "already_archived": 0,
+        "rows_missing": 0,
+        "null_in_db": 0,
+        "by_action": {
+          "correct": 4
+        },
+        "nulled_values": 0,
+        "relabeled_rows": 0,
+        "flagged_rows": 0,
+        "rows_already_processed": 0,
+        "value_not_matched": 0,
+        "corrected_values": 4,
+        "refused_row_tombstoned": 0,
+        "reverify_clear_scheduled": 0
       }
     },
     "destructive_sql": false,
-    "started_at": "2026-11-05T06:09:16+00:00",
-    "finished_at": "2026-11-05T06:09:44+00:00"
+    "started_at": "2026-11-05T07:19:38+00:00",
+    "finished_at": "2026-11-05T07:19:43+00:00"
   },
   "apply_bound_to_those_hashes_on_a_copy": {
     "updates": {
-      "category_overlay": 55,
-      "module_catalog_correct": 29,
-      "modules_correct": 27,
+      "category_overlay": 52,
+      "module_catalog_correct": 31,
+      "modules_correct": 29,
       "catalog_retire": 1,
       "module_retire": 1,
-      "module_type_from_category": 55
+      "module_type_from_category": 52
     },
     "inserts": {
-      "catalog_value_archive": 111,
-      "catalog_value_archive_markers": 2
+      "catalog_value_archive": 112,
+      "catalog_value_archive_markers": 3
     },
     "conflicts_total": 0,
     "second_dry_run": {
@@ -114,7 +131,7 @@
     }
   },
   "load_from_empty": {
-    "plan_hash": "f0b0e124ac34a27891280dc68841e1b0dc2d1199e9bf4aee6ca7c40dbe345bc6",
+    "plan_hash": "0e7d2fb0baea08acb9a631d57c32891cc948389d62259f8f3e2151c037a59850",
     "conflicts_total": 0,
     "module_type_sync": {
       "synced": 0,
@@ -138,11 +155,11 @@
     },
     "live_rows_without_a_category": {
       "before": 619,
-      "after": 564
+      "after": 567
     },
     "rows_deleted": 0,
     "video_rows": 51,
-    "system_rows": 12,
+    "system_rows": 14,
     "same_category_and_tombstone_on_every_catalog_row_in_both_loads": true,
     "same_module_type_and_status_on_every_module_row_in_both_loads": true,
     "live_module_rows_holding_the_placeholder_with_a_catalog_category": {
@@ -150,8 +167,9 @@
       "after": 0
     },
     "module_rows_changed_over_main": {
-      "placeholder_to_category": 55,
+      "placeholder_to_category": 52,
       "category_to_video": 27,
+      "category_to_system": 2,
       "retired": 1
     }
   },
@@ -160,7 +178,7 @@
       "note": "ada8949 is the newest commit OPERATOR_RECEIPTS_2026-11-02.md records for db-load.yml",
       "conflicts_total": 0,
       "module_type_sync": {
-        "synced": 137,
+        "synced": 134,
         "by_category": {
           "UTIL": 40,
           "MIX": 10,
@@ -169,7 +187,7 @@
           "SYSTEM": 12,
           "ENV": 3,
           "SEQ": 8,
-          "VCO": 19,
+          "VCO": 16,
           "LFO": 5,
           "VCF": 1,
           "VCA": 1
@@ -185,10 +203,10 @@
       "note": "scratch copy with every live loader-written module row that overlays v1 to v3 categorized reset to the placeholder",
       "conflicts_total": 0,
       "module_type_sync": {
-        "synced": 305,
+        "synced": 302,
         "by_category": {
           "UTIL": 85,
-          "VCO": 31,
+          "VCO": 28,
           "MIX": 17,
           "FX": 37,
           "VCF": 5,

@@ -1,11 +1,11 @@
 {
  "dataset_version": "module-catalog-category-v5",
- "generated_from": "hand review: the 5 Mutable-derived rows whose maker wording is committed, and the 2 empty Mutable rows quoted from their own maker page",
- "decided": "2026-11-04: owner decisions 17 and 50 (docs/evidence/OWNER_DECISIONS_2026-11-04.md, #278)",
+ "generated_from": "hand review: the 2 Mutable-derived rows whose maker wording gives their category, and the 2 empty Mutable rows quoted from their own maker page",
+ "decided": "2026-11-04: owner decisions 17, 50 and 55 (docs/evidence/OWNER_DECISIONS_2026-11-04.md, #278)",
  "reviewed_by": "Claude, offline, for the owner (no fetches)",
  "reviewed_at": "2026-11-04",
- "policy": "what each module does, quoted from the maker's wording in committed data. A row resting only on a reviewer's knowledge stays out until a maker page confirms it (decision 50). Fill-null only; no ModularGrid",
- "count": 7,
+ "policy": "what each module does, quoted from the maker's wording in committed data, with the category following from that wording by the catalog's own rule. A row resting only on a reviewer's knowledge, or on wording that names no category, stays out until a maker page settles it (decisions 50 and 55). Fill-null only; no ModularGrid",
+ "count": 4,
  "entries": [
   {
    "slug": "michigan-synth-works-microtides-8hp-tides-version-2",
@@ -29,28 +29,6 @@
    ]
   },
   {
-   "slug": "michigan-synth-works-nanorings-nrings-8hp-rings",
-   "brand": "Michigan Synth Works",
-   "name": "NanoRings (nRings), 8HP Rings",
-   "category": "VCO",
-   "basis": "review",
-   "derived_from": "Rings",
-   "does": "Resonator",
-   "does_source": "maker_wording",
-   "maker_quote": "Key data Resonator Parameter Value Width 14HP",
-   "tags": [
-    "rings"
-   ],
-   "source_url": "https://michigansynthworks.com/products/nanorings-8hp-rings",
-   "content_sha256": "40ba9e71bea70516b37dfb888da81747b08785534a883dc6caae9f4bf959057c",
-   "evidence": "The maker URL reads nanorings-8hp-rings and the tag says rings. The wording doesn't name a category: this row follows the catalog's own Rings row (VCO, overlays/catalog-additions-v1.json), which the free-reads PR checks against the maker's page. If Rings moves, this row moves with a correct entry.",
-   "cites": [
-    "hermes-research/maker-crawl-v2.json",
-    "hermes-research/unmatched-pass.json",
-    "overlays/catalog-additions-v1.json"
-   ]
-  },
-  {
    "slug": "tall-dog-plaits-se",
    "brand": "Tall Dog",
    "name": "µPlaits SE",
@@ -70,52 +48,6 @@
    "cites": [
     "hermes-research/maker-crawl-v2.json",
     "hermes-research/unmatched-pass.json"
-   ]
-  },
-  {
-   "slug": "tall-dog-rings-se",
-   "brand": "Tall Dog",
-   "name": "µRings SE",
-   "category": "VCO",
-   "basis": "review",
-   "derived_from": "Rings",
-   "does": "Resonator",
-   "does_source": "maker_wording",
-   "maker_quote": "Key data Resonator Parameter Value Width 14HP",
-   "tags": [
-    "rings",
-    "resonator"
-   ],
-   "source_url": "https://www.tall-dog.com/uRings_SE.html",
-   "content_sha256": "bee7dcdc6a76d9abeb0855fb6fac78efb2ad65c8bdf79eef5ab836ceac8dbc20",
-   "evidence": "The name says µRings and the tags say rings, resonator. The wording doesn't name a category: this row follows the catalog's own Rings row (VCO, overlays/catalog-additions-v1.json), which the free-reads PR checks against the maker's page. If Rings moves, this row moves with a correct entry.",
-   "cites": [
-    "hermes-research/maker-crawl-v2.json",
-    "hermes-research/unmatched-pass.json",
-    "overlays/catalog-additions-v1.json"
-   ]
-  },
-  {
-   "slug": "tlm-audio-physc-mutable-instruments-rings-clone",
-   "brand": "TLM Audio",
-   "name": "PHYSC (Mutable Instruments Rings Clone)",
-   "category": "VCO",
-   "basis": "review",
-   "derived_from": "Rings",
-   "does": "Resonator",
-   "does_source": "maker_wording",
-   "maker_quote": "Key data Resonator Parameter Value Width 14HP",
-   "tags": [
-    "clone",
-    "eurorack"
-   ],
-   "source_url": "https://www.tlm-audio.com/product-page/physc-mutable-instruments-rings-clone",
-   "content_sha256": "b83434ae2841512381bc824f7bbe28f63854d4f253db16d031079727ea4e8b71",
-   "evidence": "The name says Rings Clone. The wording doesn't name a category: this row follows the catalog's own Rings row (VCO, overlays/catalog-additions-v1.json), which the free-reads PR checks against the maker's page. If Rings moves, this row moves with a correct entry.",
-   "cites": [
-    "hermes-research/maker-crawl-v2.json",
-    "hermes-research/unmatched-pass.json",
-    "overlays/catalog-additions-v1.json"
    ]
   },
   {

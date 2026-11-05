@@ -1,6 +1,6 @@
 # Catalog taxonomy decisions applied (2026-11-04)
 
-This applies the owner's catalog calls from committed data: decisions 5, 6, 7, 14, 17, 49, 50 and 51 in `docs/evidence/OWNER_DECISIONS_2026-11-04.md` ([#278](https://github.com/Zero-State-LLC/Patch-Hive/pull/278), open when this was written). No maker page, feed or listing was fetched, nothing was paid for, and nothing was loaded to a deployed database.
+This applies the owner's catalog calls from committed data: decisions 5, 6, 7, 14, 17, 49, 50, 51, 54, 55 and 56 in `docs/evidence/OWNER_DECISIONS_2026-11-04.md` ([#278](https://github.com/Zero-State-LLC/Patch-Hive/pull/278), open when this was written). No maker page, feed or listing was fetched, nothing was paid for, and nothing was loaded to a deployed database.
 
 OBSERVED means read in this checkout or measured on a throwaway load. INFERRED means reasoned from it. Counts are for a load from the committed inputs over main's data, unless a row says otherwise. Production also holds 137 database-only rows that this checkout cannot see.
 
@@ -9,9 +9,9 @@ OBSERVED means read in this checkout or measured on a throwaway load. INFERRED m
 | Live rows (OBSERVED) | Before | After |
 |---|---:|---:|
 | All | 3,599 | 3,598 |
-| Without a category | 619 | 564 |
+| Without a category | 619 | 567 |
 | VIDEO | 0 | 51 |
-| SYSTEM | 0 | 12 |
+| SYSTEM | 0 | 14 |
 
 | Rule | Decision | Category | Rows | File |
 |---|---|---|---:|---|
@@ -23,15 +23,16 @@ OBSERVED means read in this checkout or measured on a throwaway load. INFERRED m
 | Noise A1: the name names one function | 6 | VCO | 1 | v4 |
 | Noise A2: tagged noise and random only | 6 | VCO | 1 | v4 |
 | Noise A3: noise among modulation tags | 6 | LFO | 2 | v4 |
-| Mutable-derived rows that quote the maker | 17, 50 | LFO, VCO | 5 | `overlays/module-catalog-category-v5.json` |
+| Mutable-derived rows whose quote gives the category | 17, 50, 55 | LFO, VCO | 2 | `overlays/module-catalog-category-v5.json` |
 | Empty Mutable rows quoted from their own page | 17, 50 | VCF, LFO | 2 | v5 |
-| **Rows filled** | | | **55** | fill-null |
+| **Rows filled** | | | **52** | fill-null |
 | Corrections: the 3 video rows v1 filed elsewhere | 5 | VIDEO | 3 | `provenance/category-corrections-v1.json` |
 | Corrections: Mutable rows backed by committed wording | 17 | VCF, LFO | 2 | same |
 | Corrections: further video rows | 49 | VIDEO | 24 | `provenance/category-corrections-v2.json` |
-| **Rows corrected** | | | **29** | |
+| Corrections: LZX DC Distro 3A and 5A | 54 | SYSTEM | 2 | `provenance/category-corrections-v3.json` |
+| **Rows corrected** | | | **31** | |
 | Retired: `jolin-getrekt-touch-waveshaper` (`jolin-getrekt` kept) | 7 | | 1 | `overlays/catalog-retirements-v3.json` |
-| `modules.module_type` set from the catalog category | 51 | see [below](#decision-51-a-category-now-reaches-modulesmodule_type) | 55 | loader |
+| `modules.module_type` set from the catalog category | 51 | see [below](#decision-51-a-category-now-reaches-modulesmodule_type) | 52 | loader |
 
 Noise A4 (noise next to another function) leaves Nekyia Ouija empty, as the option says. The other A rows are Wildsync NOISE (A1), Steady State Fate Quantum Rainbow 2 (A2), and Nonlinearcircuits PSEUDO and 1u Reverse Sigmoid (A3). No NOISE category was added.
 
@@ -43,25 +44,26 @@ Noise A4 (noise next to another function) leaves Nekyia Ouija empty, as the opti
 | Firmware platforms | 10 | Stay empty (decision 17) |
 | Tags point to two categories | 8 | [Maker page](#needs-a-maker-page-in-the-free-reads-pr) |
 | "Probably not modules" | 8 | [Maker page](#the-nine-probably-not-modules-rows) |
-| Mutable-derived, no committed source | 7 | [Maker page](#decision-50-no-category-without-a-cited-source) |
+| Mutable-derived, no committed source | 7 | [Maker page](#decisions-50-and-55-no-category-without-a-cited-source) |
+| Rings-derived: the quote names no category | 3 | [Maker page](#decisions-50-and-55-no-category-without-a-cited-source) |
 
-## Decision 49: the further video rows
+## Decisions 49 and 54: the further video rows
 
-Of the 35, 24 moved to VIDEO and 11 did not. The test: does the row's **own** maker page say video, or is the only link its brand? OBSERVED, from `hermes-research/maker-crawl-v2.json`.
+Of the 35, 24 moved to VIDEO, 2 moved to SYSTEM, and 9 stay as they are. The test: does the row's **own** maker page say video, or is the only link its brand? OBSERVED, from `hermes-research/maker-crawl-v2.json`.
 
 | Outcome | Rows | Evidence |
 |---|---:|---|
-| Moved | 23 | The row's own page carries the whole tag `video` |
-| Moved | 1 | Syntonie Formes: the page's tags include RGB, a video signal, and 12 of Syntonie's 23 crawled modules are tagged video |
-| **Not moved: evidence too weak** | **11** | The brand only, and the row's tags name another function |
+| Moved to VIDEO | 23 | The row's own page carries the whole tag `video` |
+| Moved to VIDEO | 1 | Syntonie Formes: the page's tags include RGB, a video signal, and 12 of Syntonie's 23 crawled modules are tagged video |
+| Moved to SYSTEM (decision 54) | 2 | LZX DC Distro 3A and 5A: tagged power, distributor and utility. They're rack power, not video. |
+| **Stay as they are, listed for a maker page** | **9** | The brand only, and the row's tags name another function |
 
-Moved, by old category: MIX 6, UTIL 4, VCO 5, VCF 3, VCA 3, FX 2, LFO 1. Each is corrected in both `module_catalog` and `modules`.
+Moved to VIDEO, by old category: MIX 6, VCO 5, UTIL 4, VCF 3, VCA 3, FX 2, LFO 1. The 2 DC Distro rows were UTIL. Each is corrected in both `module_catalog` and `modules`.
 
-The 11 keep their stored category until a maker page settles them:
+The 9 keep their stored category until a maker page says otherwise (decision 54):
 
 | Row | Stored | Own tags | Note |
 |---|---|---|---|
-| LZX DC Distro 3A, DC Distro 5A | UTIL | power, distributor, utility | These point to SYSTEM, not VIDEO. Owner's call. |
 | LZX Cyclops | UTIL | interface, ILDA, laser, display | A laser output. Nothing says video. |
 | LZX Sensory Translator | VCF | microphone, filter, envelope, trigger | |
 | Afterlife Castle Circuits #2 | UTIL | flip-flops, multi-gate, quad-gate | The brand is 2 of 3, a small sample. |
@@ -76,19 +78,22 @@ The same weakness applies to three of the original 24, which decision 5 settled 
 
 Outside the 35 and not moved: LZX TBC2 Expander (UTIL, no crawl page, though TBC2 itself is VIDEO), Foxing Hour LUMA (UTIL, tagged RGB and greyscale), and two empty LZX rows with no crawl page (Cadet II RGB Encoder, Keychain). `build_maker_overlays.CATEGORY` still files a newly crawled video row by its function, so this list can grow.
 
-## Decision 50: no category without a cited source
+## Decisions 50 and 55: no category without a cited source
 
-The 7 `reviewer_knowledge` rows are out of overlay v5. Overlay v5 hadn't been loaded anywhere but a throwaway database, so it was edited rather than versioned. These rows stay empty until a maker page confirms each:
+Overlay v5 now holds only rows whose maker quote gives their category by the catalog's own rule. It hadn't been loaded anywhere but a throwaway database, so it was edited rather than versioned. These 10 rows stay empty until a maker page settles each:
 
-| Row | Points to, by its committed name, URL or tags |
-|---|---|
-| Michigan Synth Works MicroStreams | Streams |
-| Michigan Synth Works Plancks II | Frames |
-| Michigan Synth Works Quarks | Elements |
-| TLM Audio MODAX | Elements |
-| Michigan Synth Works Twiigs | a Bernoulli gate (Branches) |
-| Michigan Synth Works Twist | Warps |
-| Plum Audio Apex | Peaks |
+| Row | Points to, by its committed name, URL or tags | Why it's out |
+|---|---|---|
+| Michigan Synth Works MicroStreams | Streams | Decision 50: no committed wording |
+| Michigan Synth Works Plancks II | Frames | Decision 50 |
+| Michigan Synth Works Quarks | Elements | Decision 50 |
+| TLM Audio MODAX | Elements | Decision 50 |
+| Michigan Synth Works Twiigs | a Bernoulli gate (Branches) | Decision 50 |
+| Michigan Synth Works Twist | Warps | Decision 50 |
+| Plum Audio Apex | Peaks | Decision 50 |
+| Michigan Synth Works NanoRings | Rings | Decision 55: "Key data Resonator" names no category |
+| Tall Dog µRings SE | Rings | Decision 55 |
+| TLM Audio PHYSC | Rings | Decision 55 |
 
 Re-checking everything else this PR adds:
 
@@ -98,13 +103,10 @@ Re-checking everything else this PR adds:
 | Tides_Original | "Key data Tidal modulator", likewise. The catalog's rule sends `modulat` to LFO. | Stays LFO |
 | Tall Dog µPlaits SE | "Key data Macro-oscillator". The catalog's rule sends `oscillat` to VCO. | Stays VCO |
 | Michigan Synth Works MicroTides | "Key data Tidal modulator". The wording is from the page for the first Tides, and this is a Tides 2 derivative. | Stays LFO |
-| Michigan Synth Works NanoRings, Tall Dog µRings SE, TLM Audio PHYSC | "Key data Resonator" | **Stays VCO, with a caveat** |
 | Ripples and Tides (2014 version) corrections | The same quotes, on the pages they cite | Unchanged |
 | Overlay v4 | Whole tags, the owner's conventions and the brand test decision 5 names | Unchanged: no model knowledge |
 
-**The caveat.** The three Rings rows were kept as instructed, and the quote is verbatim, but "Resonator" names no category: the catalog's rule would send it to FX if it were a name. These rows' VCO comes only from following the catalog's own Rings row (`catalog-additions-v1.json`), which is itself deferred below. If the owner reads "no category without a cited source" strictly, these three come out too.
-
-I also removed what went beyond the sources in the rows that stay. `does` now holds the maker's word and nothing added, and the Rings rows no longer say how Rings behaves. Tests check that each quote is verbatim in its cited file and that `does` is part of it. They also check that the category follows from the quote by the catalog's own rule, or for Rings that the row cites the catalog row it follows.
+I also removed what went beyond the sources in the rows that stay: `does` now holds the maker's word and nothing added. Tests check that each quote is verbatim in its cited file, that `does` is part of it, and that the category follows from it by the catalog's own rule.
 
 ## Decision 51: a category now reaches `modules.module_type`
 
@@ -132,19 +134,19 @@ These counts are what the owner approves from. A load from empty needs no sync, 
 
 | Database | Rows set from `UNKNOWN` | By category | Can now join patches |
 |---|---:|---|---:|
-| Loaded from main today (OBSERVED) | 55 | VIDEO 24, SYSTEM 12, VCO 6, UTIL 5, LFO 4, MIX 3, VCF 1 | 19 |
-| First loaded at `ada8949`, the newest commit the [2026-11-02 operator receipts](OPERATOR_RECEIPTS_2026-11-02.md) record for `db-load.yml` (OBSERVED on a replay) | 137 | UTIL 40, VIDEO 24, VCO 19, FX 14, SYSTEM 12, MIX 10, SEQ 8, LFO 5, ENV 3, VCF 1, VCA 1 | 101 |
-| Worst case: every row older than category overlays v1 to v3 (OBSERVED on a scratch copy) | 305 | UTIL 85, FX 37, SEQ 35, LFO 34, VCO 31, VIDEO 27, MIX 17, VCA 16, SYSTEM 12, ENV 5, VCF 5, SAMP 1 | 266 |
+| Loaded from main today (OBSERVED) | 52 | VIDEO 24, SYSTEM 12, UTIL 5, LFO 4, MIX 3, VCO 3, VCF 1 | 16 |
+| First loaded at `ada8949`, the newest commit the [2026-11-02 operator receipts](OPERATOR_RECEIPTS_2026-11-02.md) record for `db-load.yml` (OBSERVED on a replay) | 134 | UTIL 40, VIDEO 24, VCO 16, FX 14, SYSTEM 12, MIX 10, SEQ 8, LFO 5, ENV 3, VCF 1, VCA 1 | 98 |
+| Worst case: every row older than category overlays v1 to v3 (OBSERVED on a scratch copy) | 302 | UTIL 85, FX 37, SEQ 35, LFO 34, VCO 28, VIDEO 27, MIX 17, VCA 16, SYSTEM 12, ENV 5, VCF 5, SAMP 1 | 263 |
 
-**Production's count is NOT_COMPUTABLE offline.** Its load history isn't fully recorded here, and its 137 database-only rows can't be seen. INFERRED: if the `ada8949` runs were applies, between 137 and about 305, and any database-only rows the guards allow would add to that. The `db-load.yml` dry run on production prints the exact count and categories in its job summary, so the go-ahead can name them.
+**Production's count is NOT_COMPUTABLE offline.** Its load history isn't fully recorded here, and its 137 database-only rows can't be seen. INFERRED: if the `ada8949` runs were applies, between 134 and about 302, and any database-only rows the guards allow would add to that. The `db-load.yml` dry run on production prints the exact count and categories in its job summary, so the go-ahead can name them.
 
-For the same load over main's data, the corrections also move 27 module rows **out** of generated patches and into VIDEO: UTIL 6, MIX 6, VCO 5, VCF 3, VCA 3, FX 2, LFO 1, MIDI 1. For example, LZX Pendulum stops counting as an oscillator. One module row, the Jolin duplicate, is tombstoned.
+For the same load over main's data, the corrections also move 29 module rows **out** of generated patches: 27 into VIDEO (UTIL 6, MIX 6, VCO 5, VCF 3, VCA 3, FX 2, LFO 1, MIDI 1) and the 2 LZX DC Distro rows from UTIL into SYSTEM. For example, LZX Pendulum stops counting as an oscillator. One module row, the Jolin duplicate, is tombstoned.
 
 What a Rig sees after the load:
 
 - **Next generation:** a Rig holding one of these modules may get different patches. A filled module can now be wired in, and a corrected video module no longer can.
-- **Stored runs and patches:** unchanged. OBSERVED: the plan writes only `module_catalog` (85 statements), `modules` (83) and `catalog_value_archive` (113).
-- **Same revision, different result:** the rig revision hash doesn't include `module_type`, so the same revision and seed can produce a different patch set before and after the load. This is decision 16's "new runs may differ", arriving with this load rather than with NOISE.
+- **Stored runs and patches:** unchanged. OBSERVED: the plan writes only `module_catalog` (84 statements), `modules` (82) and `catalog_value_archive` (115).
+- **Same revision, different result:** the rig revision hash doesn't include `module_type`, so the same revision and seed can produce a different patch set before and after the load. Decision 56 accepts this for this load, and old runs don't change. The hash gap is its own bug, [#295](https://github.com/Zero-State-LLC/Patch-Hive/issues/295), because changing the hash would invalidate every existing revision.
 - **Placement and power:** unchanged. `racks/validation.py` doesn't read `module_type`.
 - **Rig metrics:** new packets count these modules under their new category instead of `UNKNOWN`.
 
@@ -188,7 +190,7 @@ All 35 rows, checked against committed data. Committed maker wording exists for 
 | Ripples_Original | empty | "Key data Liquid filter" | **Filled VCF** |
 | Tides_Original | empty | "Key data Tidal modulator" | **Filled LFO** |
 | Yarns | VCO | none | **Deferred.** INFERRED: a MIDI interface, as the owner says, and VCO is almost certainly wrong. The only committed hint is the seed's research label, which D1 keeps as a discovery lead, not evidence. One page read settles it. |
-| Rings | VCO | "Key data Resonator" | **Deferred.** The wording isn't "oscillator", but committed data doesn't name a better category: rows tagged resonator are split (FX 3, VCF 2, ENV 1, SEQ 1). |
+| Rings | VCO | "Key data Resonator" | **Deferred.** The wording isn't "oscillator", but committed data doesn't name a better category: rows tagged resonator are split (FX 3, VCF 2, ENV 1, SEQ 1). Its 3 derivatives wait with it (decision 55). |
 | Frames | VCA | none | **Deferred.** INFERRED: VCA is defensible. The page decides VCA or MIX. |
 | Edges | SEQ | none | **Deferred.** INFERRED: an oscillator, so SEQ looks wrong. |
 | Links | MIX | none | Kept. The page confirms. |
@@ -222,8 +224,8 @@ Decision 14 retires whatever never occupies HP, and a Blank Panel isn't a Module
 
 - **Mutable rows stored but unconfirmed (8):** Yarns, Rings, Frames, Edges, Links, Grids, Anushri (Eurorack), anushri exp.
 - **Mutable rows empty (17):** Beads, Blades, Blinds, Branches, Ears, Elements, Kinks, Peaks, Ripples_2020, Shades_2020, Shades_Original, Shelves, Streams, Tides_2018, Veils_2020, Veils_Original, Warps.
-- **Mutable-derived, left empty (7):** [listed above](#decision-50-no-category-without-a-cited-source).
-- **Video rows with weak evidence (11):** [listed above](#decision-49-the-further-video-rows).
+- **Mutable-derived, left empty (10):** [listed above](#decisions-50-and-55-no-category-without-a-cited-source).
+- **Rows linked to video only by brand (9):** [listed above](#decisions-49-and-54-the-further-video-rows).
 - **"Probably not modules" (8):** the rows above.
 - **Two categories (8):** BLM DDK, Erogenous Tones BLIP, Laine Vole, Nekyia Ouija, Nonlinearcircuits Coupled Comparators and SPASM, Selestium OSCULATRIX, Tsyklon Chaos Divider HV.
 
@@ -233,12 +235,12 @@ The target was a throwaway Postgres 15.13 container: migrated to alembic head, t
 
 | | |
 |---|---|
-| inserts | `catalog_value_archive`: 111 old values (56 corrected, 55 synced), and markers for the manifest rows |
-| updates | `category_overlay`: 55; `module_catalog_correct`: 29; `modules_correct`: 27; `module_type_from_category`: 55; `catalog_retire`: 1; `module_retire`: 1 |
+| inserts | `catalog_value_archive`: 112 old values (60 corrected, 52 synced), and markers for the manifest rows |
+| updates | `category_overlay`: 52; `module_catalog_correct`: 31; `modules_correct`: 29; `module_type_from_category`: 52; `catalog_retire`: 1; `module_retire`: 1 |
 | conflicts | 0 |
 | unmatched | same as the baseline (hp 31, power_depth 38, retire 1 + 1) |
-| plan_hash | `267142a257e5e220e72d5d3fd6e2b118c1acad84facc4c19517cd2f1ea82ecfa` |
-| inputs_hash | `387a58f24f73b60f334add113f0f6621a79839282788c5f59e74f403a8e6b986` |
+| plan_hash | `2269b9c72b8b35daf4e9cc0ef7f964991f15b1b06e8d9244db309b4bfeb407aa` |
+| inputs_hash | `eaeca0636e151009a6ab1b85639d789eb93e0aa16239adab909735a45b4acddb` |
 
 The plan hash depends on the target database, so the operator applies with the hash from db-load.yml's own dry run, on staging first (decision 20). The inputs hash covers the committed catalog inputs.
 
@@ -252,8 +254,8 @@ Also OBSERVED on throwaway copies:
 
 These are outside the owner's calls, so nothing here was touched:
 
-1. **More rack infrastructure outside the 11.** Tagged power and holding UTIL: David Haillant USB Power Output, LZX DC Distro 3A and 5A, Manikk Analog8, Sonoclast Zero, WGD tofu. By name only: Make Noise Din Power (UTIL); and, empty, Endorphin.es 2HP POWER, Intellijel Power Entry and USB Extender, DPW P2 Pedal Power, Synthrotek USB Power.
-2. **Other Mutable derivatives look misfiled.** Left alone: MSW mBrane 6HP Yarns (VCO), MSW Pachinko (SAMP), After Later uTides v2 (VCO), TLM SEGS (LFO, while Stages is ENV), TLM METAX (VCO). Seven more are empty and outside the 12: After Later Atom, Cara, Knit, nRings, Peaks, Pique and uGrids.
+1. **More rack infrastructure outside SYSTEM.** Tagged power and holding UTIL: David Haillant USB Power Output, Manikk Analog8, Sonoclast Zero, WGD tofu. By name only: Make Noise Din Power (UTIL); and, empty, Endorphin.es 2HP POWER, Intellijel Power Entry and USB Extender, DPW P2 Pedal Power, Synthrotek USB Power.
+2. **Other Mutable derivatives look misfiled.** Left alone: MSW mBrane 6HP Yarns (VCO), MSW Pachinko (SAMP), After Later uTides v2 (VCO), TLM SEGS (LFO, while Stages is ENV), TLM METAX (VCO). Seven more are empty and outside the owner's 12: After Later Atom, Cara, Knit, nRings, Peaks, Pique and uGrids.
 3. **Decision 15 isn't built here.** An in-rack supply's output is still not handled specially, and the builder has no warning that it isn't counted.
 4. **Jolin ROSA stays undecided.** The same duplicate pattern as GETREKT, but decision 7 names only GETREKT.
 5. NOT_COMPUTABLE offline: whether any production rack places the `modules` row being retired. FR-036 warns such a rack and doesn't change it.

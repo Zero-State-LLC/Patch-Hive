@@ -1,0 +1,100 @@
+{
+ "batch": "category-corrections-v3",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page whose committed tags state it. The old value is archived first; a value changed since review is left alone. Nothing is deleted. Each row is corrected in module_catalog and in modules, because the patch engine reads modules.module_type.",
+ "decided": "2026-11-04: owner decision 54 (docs/evidence/OWNER_DECISIONS_2026-11-04.md, #278). No page was fetched: the tags are the committed crawl's (hermes-research/maker-crawl-v2.json).",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "lzx-industries-dc-distro-3a",
+   "brand": "LZX Industries",
+   "name": "DC Distro 3A",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "SYSTEM",
+     "evidence_url": "https://lzxindustries.net/modules/dc-distro-3a",
+     "source_tag": "category-corrections-v3: owner decision 54 (2026-11-04); maker page tags power, utility, distributor; rack infrastructure, as decision 14 defines SYSTEM",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "power",
+      "utility",
+      "distributor"
+     ],
+     "content_sha256": "4643b2b9171a803ea09fd2f10ee8b09ba7959398819b03b0ed58c77290304444"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "LZX Industries",
+   "name": "DC Distro 3A",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "SYSTEM",
+     "evidence_url": "https://lzxindustries.net/modules/dc-distro-3a",
+     "source_tag": "category-corrections-v3: owner decision 54 (2026-11-04); maker page tags power, utility, distributor; rack infrastructure, as decision 14 defines SYSTEM",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "power",
+      "utility",
+      "distributor"
+     ],
+     "content_sha256": "4643b2b9171a803ea09fd2f10ee8b09ba7959398819b03b0ed58c77290304444"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "lzx-industries-dc-distro-5a",
+   "brand": "LZX Industries",
+   "name": "DC Distro 5A",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "SYSTEM",
+     "evidence_url": "https://lzxindustries.net/modules/dc-distro-5a",
+     "source_tag": "category-corrections-v3: owner decision 54 (2026-11-04); maker page tags power, distributor, utility, passive; rack infrastructure, as decision 14 defines SYSTEM",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "power",
+      "distributor",
+      "utility",
+      "passive"
+     ],
+     "content_sha256": "0105d5355f4d17e6f54f14275bb18598ae7c5143117c497cccc71333f6f036ff"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "LZX Industries",
+   "name": "DC Distro 5A",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "SYSTEM",
+     "evidence_url": "https://lzxindustries.net/modules/dc-distro-5a",
+     "source_tag": "category-corrections-v3: owner decision 54 (2026-11-04); maker page tags power, distributor, utility, passive; rack infrastructure, as decision 14 defines SYSTEM",
+     "maker_check": "owner_decision_and_crawl_tags",
+     "maker_tags": [
+      "power",
+      "distributor",
+      "utility",
+      "passive"
+     ],
+     "content_sha256": "0105d5355f4d17e6f54f14275bb18598ae7c5143117c497cccc71333f6f036ff"
+    }
+   ]
+  }
+ ]
+}

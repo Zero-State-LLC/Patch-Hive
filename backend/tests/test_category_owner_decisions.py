@@ -1,4 +1,4 @@
-"""The owner's catalog taxonomy decisions of 2026-11-04 (5, 6, 7, 14, 17, 49, 50 and 51).
+"""The owner's catalog taxonomy decisions of 2026-11-04 (5, 6, 7, 14, 17, 49, 50, 51, 54 and 55).
 
 VIDEO and SYSTEM in the vocabulary, the whole-tag and noise rules, the reviewed Mutable table,
 the category corrections, the Jolin retirement, and a category reaching modules.module_type.
@@ -35,6 +35,8 @@ CORRECTIONS_PATH = CATALOG / "provenance" / "category-corrections-v1.json"
 CORRECTIONS = json.loads(CORRECTIONS_PATH.read_text())
 FURTHER_VIDEO_PATH = CATALOG / "provenance" / "category-corrections-v2.json"
 FURTHER_VIDEO = json.loads(FURTHER_VIDEO_PATH.read_text())
+RACK_POWER_PATH = CATALOG / "provenance" / "category-corrections-v3.json"
+RACK_POWER = json.loads(RACK_POWER_PATH.read_text())
 RETIREMENTS = json.loads((OVERLAYS / "catalog-retirements-v3.json").read_text())
 
 CATEGORIES = {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI", "VIDEO", "SYSTEM"}
@@ -93,10 +95,13 @@ NOISE_ROWS = {
 }
 MUTABLE_DERIVED = {
     "michigan-synth-works-microtides-8hp-tides-version-2": "LFO",
-    "michigan-synth-works-nanorings-nrings-8hp-rings": "VCO",
     "tall-dog-plaits-se": "VCO",
-    "tall-dog-rings-se": "VCO",
-    "tlm-audio-physc-mutable-instruments-rings-clone": "VCO",
+}
+# Decision 55: "Resonator" names no category, so these wait for a maker page.
+RINGS_DERIVED = {
+    "michigan-synth-works-nanorings-nrings-8hp-rings",
+    "tall-dog-rings-se",
+    "tlm-audio-physc-mutable-instruments-rings-clone",
 }
 # Decision 50: nothing committed says what these do, so they wait for a maker page.
 MUTABLE_DERIVED_WITHOUT_A_SOURCE = {
@@ -135,12 +140,12 @@ FURTHER_VIDEO_ROWS = {
     "syntonie-vu001b",
     "syntonie-vu001c",
 }
-# Decision 49: only the brand links these to video, and their own tags name another function.
+# Decision 54: rack power, not video.
+DC_DISTRO = {"lzx-industries-dc-distro-3a", "lzx-industries-dc-distro-5a"}
+# Decisions 49 and 54: only the brand links these to video, and their own tags name another function.
 WEAK_VIDEO_EVIDENCE = {
     "afterlife-laboratories-castle-circuits-2-100-101-111-combined-module",
     "lzx-industries-cyclops",
-    "lzx-industries-dc-distro-3a",
-    "lzx-industries-dc-distro-5a",
     "lzx-industries-sensory-translator",
     "syntonie-animate",
     "syntonie-cadrans",
@@ -305,7 +310,7 @@ def test_every_row_the_t031_pass_held_now_has_its_category() -> None:
 
 def test_the_reviewed_table_names_each_mutable_derived_row() -> None:
     entries = {e["slug"]: e for e in REVIEWED["entries"]}
-    assert REVIEWED["reviewed_by"] and REVIEWED["count"] == len(REVIEWED["entries"]) == len(entries) == 7
+    assert REVIEWED["reviewed_by"] and REVIEWED["count"] == len(REVIEWED["entries"]) == len(entries) == 4
     derived = {slug: e["category"] for slug, e in entries.items() if not slug.startswith("mutable-instruments-")}
     assert derived == MUTABLE_DERIVED
     own = {slug: e["category"] for slug, e in entries.items() if slug.startswith("mutable-instruments-")}
@@ -325,15 +330,11 @@ def test_each_reviewed_entry_says_what_the_module_does_and_cites_it() -> None:
     assert "modulargrid" not in json.dumps(REVIEWED["entries"]).lower()
 
 
-def test_a_quote_gives_its_category_by_the_catalogs_own_rule_or_the_row_says_it_follows_rings() -> None:
+def test_each_quote_gives_its_category_by_the_catalogs_own_rule() -> None:
+    # Decision 55: a quote that names no category, such as "Resonator", isn't enough.
     for entry in REVIEWED["entries"]:
-        if entry["derived_from"] == "Rings":
-            # "Resonator" names no category. These follow the catalog's own Rings row.
-            additions = json.loads((OVERLAYS / "catalog-additions-v1.json").read_text())["rows"]
-            (rings,) = [row for row in additions if row["name"] == "Rings"]
-            assert entry["category"] == rings["category"] and "overlays/catalog-additions-v1.json" in entry["cites"]
-        else:
-            assert B.category([entry["does"]], "") == entry["category"], entry["slug"]
+        assert B.category([entry["does"]], "") == entry["category"], entry["slug"]
+    assert B.category(["Resonator"], "") is None
 
 
 def test_the_own_mutable_rows_are_quoted_from_their_own_maker_page() -> None:
@@ -373,7 +374,8 @@ def test_firmware_platforms_stay_empty(fresh) -> None:
 def test_these_overlays_leave_the_open_rows_for_a_maker_page() -> None:
     filled = {e["slug"] for e in RULES["entries"] + REVIEWED["entries"]}
     assert not filled & (
-        FIRMWARE_PLATFORMS | NEEDS_MAKER_PAGE | MUTABLE_DERIVED_WITHOUT_A_SOURCE | {"nekyia-circuits-ouija"}
+        FIRMWARE_PLATFORMS | NEEDS_MAKER_PAGE | MUTABLE_DERIVED_WITHOUT_A_SOURCE | RINGS_DERIVED
+        | {"nekyia-circuits-ouija"}
     )
 
 
@@ -381,7 +383,7 @@ def test_video_and_system_hold_the_rows_the_owner_named(fresh) -> None:
     _, catalog, _ = fresh
     held = VIDEO_ROWS | set(VIDEO_CORRECTIONS) | FURTHER_VIDEO_ROWS
     assert held <= {s for s, r in catalog.items() if r.get("category") == "VIDEO"}
-    assert POWER_ROWS | {"alyseum-eole"} <= {s for s, r in catalog.items() if r.get("category") == "SYSTEM"}
+    assert POWER_ROWS | DC_DISTRO | {"alyseum-eole"} <= {s for s, r in catalog.items() if r.get("category") == "SYSTEM"}
 
 
 # --- corrections -----------------------------------------------------------------------------
@@ -401,7 +403,7 @@ def test_the_manifest_names_the_three_video_rows_and_the_backed_mutable_rows() -
     assert not set(catalog_rows) & set(MUTABLE_DEFERRED)
 
 
-@pytest.mark.parametrize("manifest,rows", [(CORRECTIONS, 10), (FURTHER_VIDEO, 48)])
+@pytest.mark.parametrize("manifest,rows", [(CORRECTIONS, 10), (FURTHER_VIDEO, 48), (RACK_POWER, 4)])
 def test_each_correction_covers_both_tables_and_cites_its_page(manifest, rows) -> None:
     assert len(manifest["rows"]) == rows
     by_identity: dict[tuple[str, str], dict[str, dict]] = {}
@@ -445,8 +447,8 @@ def test_decision_49_moves_the_rows_whose_own_page_says_video_and_no_others() ->
     assert FURTHER_VIDEO_PATH in P.CATEGORY_CORRECTION_MANIFESTS
     catalog_rows = {r["slug"]: r["fields"][0] for r in FURTHER_VIDEO["rows"] if r["table"] == "module_catalog"}
     assert set(catalog_rows) == FURTHER_VIDEO_ROWS and len(FURTHER_VIDEO_ROWS) == 24
-    assert not set(catalog_rows) & WEAK_VIDEO_EVIDENCE
-    assert len(FURTHER_VIDEO_ROWS) + len(WEAK_VIDEO_EVIDENCE) == 35
+    assert not set(catalog_rows) & (WEAK_VIDEO_EVIDENCE | DC_DISTRO)
+    assert len(FURTHER_VIDEO_ROWS) + len(WEAK_VIDEO_EVIDENCE) + len(DC_DISTRO) == 35
 
     crawl = json.loads((CATALOG / "hermes-research" / "maker-crawl-v2.json").read_text())
     crawled = {m["source_url"]: m for brand in crawl["brands"] for m in brand.get("modules") or []}
@@ -467,6 +469,24 @@ def test_a_fresh_load_moves_the_further_video_rows_in_both_tables(fresh) -> None
         assert modules[(row["brand"], row["name"])]["module_type"] == "VIDEO", slug
     stats = plan.provenance["category-corrections-v2"]
     assert stats["corrected_values"] == 48 and stats["value_not_matched"] == 0 and stats["rows_missing"] == 0
+
+
+def test_decision_54_moves_the_dc_distros_to_system_and_no_other_weak_row(fresh) -> None:
+    assert RACK_POWER_PATH in P.CATEGORY_CORRECTION_MANIFESTS
+    moved = {r["slug"]: r["fields"][0] for r in RACK_POWER["rows"] if r["table"] == "module_catalog"}
+    assert set(moved) == DC_DISTRO
+    for item in moved.values():
+        assert (item["only_if_value"], item["value"]) == ("UTIL", "SYSTEM") and "power" in item["maker_tags"]
+
+    plan, catalog, modules = fresh
+    for slug in DC_DISTRO:
+        row = catalog[slug]
+        assert row["category"] == "SYSTEM", slug
+        assert modules[(row["brand"], row["name"])]["module_type"] == "SYSTEM", slug
+    stats = plan.provenance["category-corrections-v3"]
+    assert stats["corrected_values"] == 4 and stats["value_not_matched"] == 0 and stats["rows_missing"] == 0
+    named = {r.get("slug") for path in P.CATEGORY_CORRECTION_MANIFESTS for r in json.loads(path.read_text())["rows"]}
+    assert not named & WEAK_VIDEO_EVIDENCE
 
 
 def test_a_correction_runs_after_the_insert_and_fill_it_replaces(fresh) -> None:
