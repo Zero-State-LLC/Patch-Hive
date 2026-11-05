@@ -9,14 +9,22 @@ from pathlib import Path
 BACKEND = Path(__file__).resolve().parents[2]
 
 
-def _pins(lines: list[str]) -> dict[str, str]:
+def _pins(lines: list[str]) -> dict[str, tuple[list[str], str]]:
     pins = {}
     for raw in lines:
         line = raw.split("#")[0].strip()
         if line:
-            name, _, spec = re.match(r"([A-Za-z0-9_.-]+)(\[[^\]]*\])?\s*(.*)", line).groups()
-            pins[re.sub(r"[-_.]+", "-", name).lower()] = spec
+            name, extras, spec = re.match(
+                r"([A-Za-z0-9_.-]+)(?:\[([^\]]*)\])?\s*(.*)", line
+            ).groups()
+            pins[re.sub(r"[-_.]+", "-", name).lower()] = (sorted((extras or "").split(",")), spec)
     return pins
+
+
+def test_a_dropped_extra_counts_as_drift() -> None:
+    # core/security.py needs both hashers, which only the extras install.
+    assert _pins(["pwdlib[argon2,bcrypt]==0.3.1"]) != _pins(["pwdlib==0.3.1"])
+    assert _pins(["pwdlib[argon2,bcrypt]==0.3.1"]) == _pins(["pwdlib[bcrypt,argon2]==0.3.1"])
 
 
 def test_requirements_txt_matches_pyproject_dependencies() -> None:
