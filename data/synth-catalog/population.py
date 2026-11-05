@@ -1455,7 +1455,7 @@ def _schedule_access_basis(
 
     A basis is only ever filled, never changed. The maker's host is compared again here, so a row
     whose page moved after the check is reported rather than tagged. A cleared URL is archived
-    first, and an anonymous read never reaches the archive. A retired row is final.
+    first, and no API serves the archive. A retired row is final.
     """
     stats: dict[str, Any] = {
         "official_publication": 0,
