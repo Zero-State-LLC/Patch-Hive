@@ -336,12 +336,22 @@ export interface MultiImageUploadResponse {
   rejected: Array<{ filename: string; reason: string }>;
 }
 
+/** A photo-confirmed module not on the rig yet. `module_id` is null with no single catalog match. */
+export interface ModuleToPlace {
+  instance_id: string;
+  module_revision_id: string;
+  manufacturer?: string | null;
+  model?: string | null;
+  module_id?: number | null;
+}
+
 export interface ConfirmationBatchResponse {
   inventory_revision_id: string;
   inventory_canonical_hash?: string | null;
   confirmed_count: number;
   unresolved_candidate_ids: string[];
   ready_for_generation: boolean;
+  modules_to_place: ModuleToPlace[];
 }
 
 export interface InventoryRevisionSummary {
@@ -360,6 +370,7 @@ export interface InventoryRevisionListResponse {
   total: number;
   latest: InventoryRevisionSummary | null;
   revisions: InventoryRevisionSummary[];
+  modules_to_place: ModuleToPlace[];
 }
 
 /** F4: evidence under canon prefix (rig_id ≡ rack_id). Legacy /racks/.../evidence still works. */
