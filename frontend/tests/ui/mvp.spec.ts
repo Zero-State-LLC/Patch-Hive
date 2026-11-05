@@ -533,6 +533,14 @@ test.describe("PatchHive canonical workspace", () => {
               power_neg12v_ma: 1200,
               power_5v_ma: 500,
             },
+            validation_warnings: [
+              {
+                field: "power",
+                message:
+                  "Any power supplied by the in-rack SYSTEM module Sim Supply isn't counted. This Rig's power budget is only what its Case supplies.",
+                details: { code: "IN_RACK_SUPPLY_NOT_COUNTED" },
+              },
+            ],
           },
         });
         return;
@@ -592,6 +600,7 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(page.getByRole("heading", { name: "Module placement" })).toBeVisible({
       timeout: 15000,
     });
+    await expect(page.getByText(/Sim Supply isn't counted/)).toBeVisible();
     await expect(page.getByLabel("Builder steps")).toBeVisible();
     await expect(page.getByText("Place modules").first()).toBeVisible();
     await expect(page.getByLabel("Row HP usage")).toBeVisible();

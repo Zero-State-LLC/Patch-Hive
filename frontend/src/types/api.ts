@@ -318,6 +318,14 @@ export interface Rack {
     catalog_slug?: string | null;
   };
   vote_count: number;
+  validation_warnings?: RackValidationWarning[];
+}
+
+/** A soft advisory on a rack: never a hard fail. */
+export interface RackValidationWarning {
+  field: string;
+  message: string;
+  details?: { code?: string; [key: string]: unknown } | null;
 }
 
 export interface RackListResponse {

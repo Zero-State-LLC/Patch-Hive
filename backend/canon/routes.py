@@ -371,6 +371,8 @@ class CanonRigDetail(CanonRigSummary):
     modules: list[dict[str, Any]] = Field(default_factory=list)
     case: dict[str, Any] | None = None
     vote_count: int = 0
+    # The advisories a read carries; Rack Builder loads the Rig through this route.
+    validation_warnings: list[dict[str, Any]] = Field(default_factory=list)
 
 
 def _canon_rig_summary_from_rack(db: Session, rack: Any) -> CanonRigSummary:
@@ -447,6 +449,7 @@ def get_canon_rig(
         modules=modules,
         case=full.case,
         vote_count=int(full.vote_count or 0),
+        validation_warnings=[w.model_dump() for w in full.validation_warnings],
     )
 
 

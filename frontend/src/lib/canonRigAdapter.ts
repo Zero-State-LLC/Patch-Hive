@@ -5,7 +5,7 @@
  * existing Rack view type so list pages read the canonical path while writes stay
  * on rackApi. rig_id is identical to rack.id (F2 alias).
  */
-import type { Rack, RackModule } from "@/types/api";
+import type { Rack, RackModule, RackValidationWarning } from "@/types/api";
 
 export interface CanonRigSummaryDto {
   rig_id: number;
@@ -27,6 +27,7 @@ export interface CanonRigDetailDto extends CanonRigSummaryDto {
   modules: Array<Record<string, unknown>>;
   case: Record<string, unknown> | null;
   vote_count: number;
+  validation_warnings?: RackValidationWarning[];
 }
 
 /** List rows carry no placements; modules stay empty until the detail is loaded. */
@@ -56,5 +57,6 @@ export function rigDetailToRack(rig: CanonRigDetailDto): Rack {
     modules: (rig.modules ?? []) as unknown as RackModule[],
     case: (rig.case ?? undefined) as unknown as Rack["case"],
     vote_count: rig.vote_count ?? 0,
+    validation_warnings: rig.validation_warnings ?? [],
   };
 }
