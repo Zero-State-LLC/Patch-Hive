@@ -48,3 +48,26 @@ def test_ci_runs_backend_lint_types_and_import_guard() -> None:
         "check_no_canon_patchhive_imports.sh",
     ):
         assert check in lint
+
+
+def test_no_workflow_looks_up_a_secret_by_expression() -> None:
+    # `secrets[...]` makes Actions hand every org and repo secret to the runner.
+    for path in (ROOT / ".github" / "workflows").glob("*.yml"):
+        assert "secrets[" not in path.read_text(encoding="utf-8"), path.name
+
+
+def test_a_missing_prod_secret_cannot_fall_through_to_staging() -> None:
+    # `a && secret || other` would pick `other` when the secret is empty, so each branch tests
+    # the target and the expression ends empty, which the job then refuses.
+    for name, target in (
+        ("db-load.yml", "inputs.env == 'prod'"),
+        ("db-migrate.yml", "inputs.target == 'prod'"),
+        ("db-restore-drill.yml", "inputs.env == 'prod'"),
+        ("edge-secrets.yml", "inputs.env == 'production'"),
+    ):
+        text = _workflow(name)
+        other = target.replace("==", "!=")
+        assert (
+            f"{target} && secrets.PATCHHIVE_DATABASE_URL_PROD"
+            f" || {other} && secrets.PATCHHIVE_DATABASE_URL_STAGING || ''"
+        ) in text, name
