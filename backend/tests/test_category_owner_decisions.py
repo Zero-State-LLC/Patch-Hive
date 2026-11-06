@@ -41,7 +41,7 @@ RACK_POWER_PATH = CATALOG / "provenance" / "category-corrections-v3.json"
 RACK_POWER = json.loads(RACK_POWER_PATH.read_text())
 RETIREMENTS = json.loads((OVERLAYS / "catalog-retirements-v3.json").read_text())
 
-CATEGORIES = {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI", "VIDEO", "SYSTEM"}
+CATEGORIES = {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI", "VIDEO", "SYSTEM", "NOISE"}
 VIDEO_ROWS = {
     "afterlife-laboratories-video-keyer",
     "lzx-industries-doorway",
@@ -223,7 +223,7 @@ def test_every_stored_and_planned_category_is_in_the_vocabulary(fresh) -> None:
 def test_an_overlay_outside_the_vocabulary_is_a_conflict_and_writes_nothing() -> None:
     catalog = {"acme-x": {"brand": "Acme", "name": "X", "hp": 4, "category": None}}
     plan = P.Plan()
-    P._schedule_category(plan, catalog, {"slug": "acme-x", "brand": "Acme", "name": "X", "category": "NOISE"})
+    P._schedule_category(plan, catalog, {"slug": "acme-x", "brand": "Acme", "name": "X", "category": "DRONE"})
     assert [conflict["reason"] for conflict in plan.conflicts] == ["category_outside_vocabulary"]
     assert catalog["acme-x"]["category"] is None and plan.ops == []
 
@@ -366,9 +366,18 @@ def test_a_load_from_the_committed_inputs_has_no_conflict_and_fills_every_row(fr
         if entry["slug"] not in catalog
     ]
     assert plan.unmatched.get("category", 0) == len(filled_on_deployed_only)
+    # Corrections run after the overlays, so decision 16 moves a row the rules first filled.
+    moved_to_noise = {
+        row["slug"]: field["value"]
+        for row in json.loads((CATALOG / "provenance" / "category-corrections-v6.json").read_text())["rows"]
+        if row["table"] == "module_catalog"
+        for field in row["fields"]
+        if field["field"] == "category"
+    }
     for entry in RULES["entries"] + REVIEWED["entries"]:
         row = catalog[entry["slug"]]
-        assert (row["brand"], row["name"], row["category"]) == (entry["brand"], entry["name"], entry["category"])
+        expected = moved_to_noise.get(entry["slug"], entry["category"])
+        assert (row["brand"], row["name"], row["category"]) == (entry["brand"], entry["name"], expected)
         assert not row.get("tombstoned")
     assert not {e["slug"] for e in RULES["entries"]} & {e["slug"] for e in REVIEWED["entries"]}
 
@@ -571,7 +580,7 @@ def test_a_processed_row_is_not_corrected_again() -> None:
 @pytest.mark.parametrize(
     "field,reason",
     [
-        ({"value": "NOISE"}, "correction_bad_category"),
+        ({"value": "DRONE"}, "correction_bad_category"),
         ({"value": "video"}, "correction_bad_category"),
         ({"evidence_url": "http://maker.example"}, "correction_needs_maker_page"),
         ({"only_if_value": None}, "correction_needs_old_and_new_value"),
@@ -627,7 +636,7 @@ def test_the_placeholder_takes_the_catalog_category_and_is_archived_first() -> N
         ({"source": "Admin"}, "left_alone_not_loader_row"),
         ({"source": "ModuleCatalog"}, "left_alone_not_loader_row"),
         ({"module_extra": {"_duplicate": True}}, "skipped_duplicate_module_row"),
-        ({"category": "NOISE"}, "skipped_outside_vocabulary"),
+        ({"category": "DRONE"}, "skipped_outside_vocabulary"),
     ],
 )
 def test_a_value_it_may_not_touch_stays_and_is_counted(kwargs, counter) -> None:

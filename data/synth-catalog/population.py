@@ -30,7 +30,7 @@ POWER_FIELDS = ("power_12v_ma", "power_neg12v_ma", "power_5v_ma", "depth_mm")
 # The Module Category vocabulary. VIDEO and SYSTEM are the owner's decisions 5 and 14
 # (2026-11-04). A category overlay or correction naming anything else is a conflict.
 MODULE_CATEGORIES = frozenset(
-    {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI", "VIDEO", "SYSTEM"}
+    {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI", "VIDEO", "SYSTEM", "NOISE"}
 )
 AFFECTED_TABLES = (
     "catalog_value_archive",
@@ -383,6 +383,7 @@ CATEGORY_CORRECTION_MANIFESTS = (
     CATALOG / "provenance" / "catalog-url-corrections-v1.json",
     CATALOG / "provenance" / "category-corrections-v5.json",
     CATALOG / "provenance" / "hp-footer-corrections-v1.json",
+    CATALOG / "provenance" / "category-corrections-v6.json",
 )
 # A row's Module Category: module_catalog.category, and modules.module_type on the row the
 # patch engine reads. A manifest may only correct these, never null, flag or relabel them.
