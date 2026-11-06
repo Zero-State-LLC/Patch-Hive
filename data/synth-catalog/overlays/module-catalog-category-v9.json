@@ -1,0 +1,37 @@
+{
+ "dataset_version": "module-catalog-category-v9",
+ "generated_from": "hand review of the second names of 2026-11-05: the row that stays takes the category the retired row held, which its page doesn't contradict",
+ "decided": "under owner decision 7's rule (docs/evidence/OWNER_DECISIONS_2026-11-04.md)",
+ "reviewed_by": "Claude, for the owner",
+ "reviewed_at": "2026-11-05",
+ "policy": "what each module does, in its maker's words. Fill-null only; no ModularGrid",
+ "count": 2,
+ "entries": [
+  {
+   "slug": "endorphin-es-autopilot",
+   "brand": "Endorphin.es",
+   "name": "AUTOPILOT",
+   "category": "UTIL",
+   "basis": "second_name_review",
+   "does": "tuner",
+   "does_source": "maker_wording",
+   "maker_quote": "of 3 AUTOPILOT €115.00 Dual channel autotuner of oscillators AUTOPILOT is an innovative dual tuner module. We play ",
+   "rule": "kept_from_second_name",
+   "source_url": "https://www.endorphin.es/modules/p/autopilot",
+   "content_sha256": "dd2948a7b0212d6c92e0fa03646e3008521c78d0f33cbd0f0b9eb381ffdaea56"
+  },
+  {
+   "slug": "endorphin-es-grand-terminal",
+   "brand": "Endorphin.es",
+   "name": "GRAND TERMINAL",
+   "category": "VCF",
+   "basis": "second_name_review",
+   "does": "VCF",
+   "does_source": "maker_wording",
+   "maker_quote": ".00 Original Price: €559.00 Dual 8 mode VCF / VCA, dual voltage controlled AD/AR/looping envelope, 16 algorithm s",
+   "rule": "catalog_rule",
+   "source_url": "https://www.endorphin.es/modules/p/grand-terminal",
+   "content_sha256": "5b6a589173900e7b8e136edbd6fe1cb8f8657f47398e9e625ea38b6c4f2c692c"
+  }
+ ]
+}

@@ -1,0 +1,24 @@
+{
+ "dataset_version": "module-power-depth-overlay-v16",
+ "generated_from": "Expert Sleepers ES-40 page (plain GET 2026-11-05, robots.txt honoured). The misread Sleepers row held this depth, and retiring it would lose it.",
+ "policy": "maker's own pages only; values verbatim; no ModularGrid; insert-if-absent / fill-null; disagreements are flagged by the loader",
+ "count": 1,
+ "entries": [
+  {
+   "brand": "Expert Sleepers",
+   "name": "ES-40 SPDIF Interface",
+   "depth_mm": 51,
+   "source_url": "https://www.expert-sleepers.co.uk/es40.html",
+   "sources": {
+    "depth_mm": "https://www.expert-sleepers.co.uk/es40.html"
+   },
+   "provenance": "OBSERVED",
+   "status": "found",
+   "extracted_by": "verbatim",
+   "verification_status": "verified",
+   "verification_source_url": "https://www.expert-sleepers.co.uk/es40.html",
+   "quote": " as follows: Panel width: 6HP Module depth: 51mm",
+   "catalog_slug": "expert-sleepers-es-40-spdif-interface"
+  }
+ ]
+}

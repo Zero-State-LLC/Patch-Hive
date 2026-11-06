@@ -375,11 +375,15 @@ def test_a_load_from_the_committed_inputs_has_no_conflict_and_fills_every_row(fr
         for field in row["fields"]
         if field["field"] == "category"
     }
+    # A row filled by these rules can later retire as a second name for another row.
+    second_names = {
+        row["slug"] for row in json.loads((OVERLAYS / "catalog-retirements-v5.json").read_text())["rows"]
+    }
     for entry in RULES["entries"] + REVIEWED["entries"]:
         row = catalog[entry["slug"]]
         expected = moved_to_noise.get(entry["slug"], entry["category"])
         assert (row["brand"], row["name"], row["category"]) == (entry["brand"], entry["name"], expected)
-        assert not row.get("tombstoned")
+        assert bool(row.get("tombstoned")) == (entry["slug"] in second_names)
     assert not {e["slug"] for e in RULES["entries"]} & {e["slug"] for e in REVIEWED["entries"]}
 
 

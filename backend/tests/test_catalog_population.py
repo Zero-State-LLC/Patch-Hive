@@ -949,6 +949,39 @@ def test_the_lead_search_confirms_its_rows_and_fixes_what_their_pages_contradict
         engine.dispose()
 
 
+def test_a_second_name_retires_and_the_row_that_stays_keeps_its_facts(fresh_population_url, tmp_path):
+    missing = tmp_path / "none.json"
+    applied = populate(fresh_population_url, apply=True, verification_path=missing)
+    assert applied["conflicts_total"] == 0
+    # Nothing is placed on a fresh database, so the count is 0 Rigs for every retired module.
+    assert applied["retired_on_racks"]["modules_retiring"] > 400
+    assert (applied["retired_on_racks"]["rigs"], applied["retired_on_racks"]["placements"]) == (0, 0)
+    engine = create_engine(fresh_population_url)
+    try:
+        with engine.connect() as conn:
+            def catalog(slug):
+                return conn.execute(text(
+                    "SELECT tombstoned_at, tombstone_reason, category FROM module_catalog WHERE slug = :slug"
+                ), {"slug": slug}).one()
+
+            sleepers = catalog("expert-sleepers-sleepers")
+            assert sleepers.tombstoned_at is not None
+            assert "expert-sleepers-es-40-spdif-interface" in sleepers.tombstone_reason
+            assert catalog("endorphin-es-autopilot-golden").tombstoned_at is not None
+            autopilot = catalog("endorphin-es-autopilot")
+            assert autopilot.tombstoned_at is None and autopilot.category == "UTIL"
+            terminal = catalog("endorphin-es-grand-terminal")
+            assert terminal.tombstoned_at is None and terminal.category == "VCF"
+            assert conn.execute(text(
+                "SELECT status FROM modules WHERE brand = 'Expert Sleepers' AND name = 'Sleepers'"
+            )).scalar_one() == "tombstoned"
+        again = populate(fresh_population_url, apply=False, verification_path=missing)
+        assert again["retired_on_racks"]["modules_retiring"] == 0
+        assert not again["updates"].get("catalog_retire")
+    finally:
+        engine.dispose()
+
+
 def test_noise_first_rows_become_noise_in_both_tables(fresh_population_url, tmp_path):
     """Owner decision 16: the patch engine reads module_type, so a noise source has to say so."""
     missing = tmp_path / "none.json"
