@@ -4,7 +4,8 @@
 ``get``/``post`` with httpx-style responses (``httpx.Client`` for a staging host,
 ``fastapi.testclient.TestClient`` in tests). It returns a health snapshot and a
 hash-only outcome. Tokens and passwords stay in local variables and are never
-returned, printed, or logged; pack bytes are reduced to a SHA-256.
+returned, printed, or logged. The outcome keeps only the pack's SHA-256; a caller
+that has to read the pack passes ``on_pack``.
 """
 
 from __future__ import annotations
@@ -71,12 +72,14 @@ def execute_walkthrough(
     sources: Mapping[str, str],
     credits: int = 10,
     idempotency_key: str | None = None,
+    on_pack: Callable[[bytes], None] | None = None,
 ) -> tuple[HealthSnapshot, WalkthroughOutcome]:
     """Run the walkthrough with seeded credentials only (no credential patching).
 
     ``sources`` carries ``source_run_id``, ``source_rig_revision_id``, and
     ``artifact_manifest_hash`` from the export bridge. Stops at the first failed
-    step; later steps are recorded as not passed.
+    step; later steps are recorded as not passed. ``on_pack`` gets the downloaded
+    zip's bytes.
     """
     steps: list[WalkthroughStep] = []
     result: dict[str, Any] = {}
@@ -181,6 +184,8 @@ def execute_walkthrough(
     ok = pack.status_code == 200 and len(content) > 0
     if ok:
         result["pack_zip_sha256"] = hashlib.sha256(content).hexdigest()
+        if on_pack is not None:
+            on_pack(content)
     record("download_pack", ok, int(pack.status_code))
     return finish(health)
 
