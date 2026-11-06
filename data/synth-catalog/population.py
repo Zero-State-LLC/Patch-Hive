@@ -324,7 +324,8 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     # After every fill, correction and retirement above, so it reads each row's final state.
     _schedule_module_type_sync(plan, catalog, modules)
     _schedule_access_basis(plan, catalog, modules, _load_optional(ACCESS_BASIS_OVERLAY))
-    _schedule_lead_promotions(plan, catalog, _load_optional(LEAD_PROMOTIONS))
+    for promotion_path in sorted((CATALOG / "overlays").glob("lead-promotions-v*.json")):
+        _schedule_lead_promotions(plan, catalog, _load_optional(promotion_path))
 
     # Jumper settings attach to module rows, so they run after every module insert and
     # retirement above (spec 003 D8, T034).
@@ -384,6 +385,7 @@ CATEGORY_CORRECTION_MANIFESTS = (
     CATALOG / "provenance" / "category-corrections-v5.json",
     CATALOG / "provenance" / "hp-footer-corrections-v1.json",
     CATALOG / "provenance" / "category-corrections-v6.json",
+    CATALOG / "provenance" / "category-corrections-v7.json",
 )
 # A row's Module Category: module_catalog.category, and modules.module_type on the row the
 # patch engine reads. A manifest may only correct these, never null, flag or relabel them.
@@ -1438,7 +1440,6 @@ def _schedule_module_type_sync(
 # Owner decisions 52 and 53. The overlay lists the maker rows that passed ADR 0002's checks. Leads
 # are found by source, because the repo doesn't name ModularGrid-derived rows.
 ACCESS_BASIS_OVERLAY = CATALOG / "overlays" / "access-basis-v1.json"
-LEAD_PROMOTIONS = CATALOG / "overlays" / "lead-promotions-v1.json"
 LEAD_PROMOTION_BATCH = "lead-promotions-v1"
 PROMOTED_BASIS = "official_publication"
 PROMOTED_EVIDENCE = "MANUFACTURER_CONFIRMED"
@@ -1468,8 +1469,12 @@ def _schedule_lead_promotions(
     This is the only path that changes a basis, and only from ``unknown``. Each row must cite the
     maker's page. The old values are archived first, and a stored maker URL is never replaced. A row
     that isn't a lead is left alone: a load from empty takes a maker row from the maker's own crawl.
+    Counts add up across overlay files, and each file archives under its own batch.
     """
-    stats = {"promoted": 0, "already_confirmed": 0, "rows_missing": 0, "refused_row_tombstoned": 0}
+    batch = overlay.get("dataset_version") or LEAD_PROMOTION_BATCH
+    stats = plan.lead_promotions or {
+        "promoted": 0, "already_confirmed": 0, "rows_missing": 0, "refused_row_tombstoned": 0,
+    }
     plan.lead_promotions = stats
     for entry in overlay.get("rows") or []:
         slug, brand, name = entry.get("slug"), entry.get("brand"), entry.get("name")
@@ -1493,10 +1498,10 @@ def _schedule_lead_promotions(
         if row.get("source") not in LEAD_ROW_SOURCES:
             plan.conflict(table="module_catalog", slug=slug, reason="lead_promotion_not_a_lead")
             continue
-        tag = f"{LEAD_PROMOTION_BATCH}: the maker's page {url}"[:200]
+        tag = f"{batch}: the maker's page {url}"[:200]
         _archive_row(
             plan,
-            LEAD_PROMOTION_BATCH,
+            batch,
             "module_catalog",
             slug,
             brand,

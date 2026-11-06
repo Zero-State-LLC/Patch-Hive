@@ -1,0 +1,1440 @@
+{
+ "searched": "the leads with no maker page on record",
+ "paid_attempts": 0,
+ "rows": 283,
+ "outcomes": {
+  "holding_page": 37,
+  "no_maker_site_found": 12,
+  "no_page_found": 68,
+  "no_text_by_plain_get": 4,
+  "page_does_not_confirm": 9,
+  "promoted": 46,
+  "refused": 3,
+  "refused_not_read_again": 31,
+  "robots_disallowed": 8,
+  "robots_unanswered": 47,
+  "second_name": 18
+ },
+ "reads": [
+  {
+   "slug": "1010-music-bitbox-2-0",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "1010-music-fxbox",
+   "outcome": "promoted",
+   "url": "https://1010music.com/product/fxbox-performance-effects-module",
+   "sha256": "b993370db3c9db69c4753d112c7887b80ad52d2b2a9ebe30b3593758ac079267"
+  },
+  {
+   "slug": "1010-music-laserbox",
+   "outcome": "promoted",
+   "url": "https://1010music.com/product/laserbox-pattern-generator-for-lasers",
+   "sha256": "576815e2315cdf58c730d5ce8546489caac580708bea68a68961141aa1e16f55"
+  },
+  {
+   "slug": "1010-music-toolbox",
+   "outcome": "promoted",
+   "url": "https://1010music.com/product/toolbox-sequencer-function-generator-eurorack-module",
+   "sha256": "9ac8bc03844c358a0c39f1835361208797dc0a7e0c183706defa43b4ce7aed65"
+  },
+  {
+   "slug": "1010-music-toolbox-black",
+   "outcome": "page_does_not_confirm",
+   "why": "the page doesn't name a black panel",
+   "url": "https://1010music.com/product/toolbox-sequencer-function-generator-eurorack-module"
+  },
+  {
+   "slug": "1v-oct-taipo",
+   "outcome": "promoted",
+   "url": "https://1voct.com/product/taipo/",
+   "sha256": "b5ea0b061341a63378f3153db997275f7647b93a7e2a3dd2f410aef3f7157719"
+  },
+  {
+   "slug": "256klabs-flip",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "256klabs-formingle",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "256klabs-hexor",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "256klabs-matrix-mixer",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "256klabs-vca",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "333modules-333-envfoll",
+   "outcome": "holding_page",
+   "site": "333modules.com"
+  },
+  {
+   "slug": "333modules-333-midimerge",
+   "outcome": "holding_page",
+   "site": "333modules.com"
+  },
+  {
+   "slug": "333modules-333-noizeq",
+   "outcome": "holding_page",
+   "site": "333modules.com"
+  },
+  {
+   "slug": "4ms-company-metaaio",
+   "outcome": "page_does_not_confirm",
+   "why": "named only on the MetaModule's page",
+   "url": "https://4mscompany.com/metamodule"
+  },
+  {
+   "slug": "4ms-company-qcd-quad-clock-distributor",
+   "outcome": "promoted",
+   "url": "https://4mscompany.com/p.php?p=620&c=5",
+   "sha256": "a8f17b90914c159c1ef2c9ae18d1ff342b9125bc11ef3f78673911538a0ba6d4"
+  },
+  {
+   "slug": "5540lab-lpg",
+   "outcome": "no_maker_site_found",
+   "site": null
+  },
+  {
+   "slug": "5540lab-triga",
+   "outcome": "no_maker_site_found",
+   "site": null
+  },
+  {
+   "slug": "5540lab-y-y",
+   "outcome": "no_maker_site_found",
+   "site": null
+  },
+  {
+   "slug": "7-dials-cv-express",
+   "outcome": "no_maker_site_found",
+   "site": null
+  },
+  {
+   "slug": "7-dials-route-four",
+   "outcome": "no_maker_site_found",
+   "site": null
+  },
+  {
+   "slug": "abstract-data-ade-10-reactive-shaper",
+   "outcome": "holding_page",
+   "site": "abstractdata.biz"
+  },
+  {
+   "slug": "abstract-data-ade-20-multi-mode-vcf",
+   "outcome": "holding_page",
+   "site": "abstractdata.biz"
+  },
+  {
+   "slug": "abstract-data-ade-30-wave-boss",
+   "outcome": "holding_page",
+   "site": "abstractdata.biz"
+  },
+  {
+   "slug": "abstract-data-ade-32-octocontroller",
+   "outcome": "holding_page",
+   "site": "abstractdata.biz"
+  },
+  {
+   "slug": "abstract-data-ade-33-event-boss",
+   "outcome": "holding_page",
+   "site": "abstractdata.biz"
+  },
+  {
+   "slug": "abstract-data-ade-60-4-4-mix-utility",
+   "outcome": "holding_page",
+   "site": "abstractdata.biz"
+  },
+  {
+   "slug": "acid-rain-technology-3u-to-1u-panel",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "acid-rain-technology-splitwave",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "acidlab-3co",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "acidlab-8cb",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "acidlab-8cyhh",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "acidlab-8lmht",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "acidlab-8rs",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "acidlab-mx",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "acidlab-pow",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "acxsynth-line-driver",
+   "outcome": "robots_unanswered",
+   "site": "acxsynth.com"
+  },
+  {
+   "slug": "acxsynth-midi-external",
+   "outcome": "robots_unanswered",
+   "site": "acxsynth.com"
+  },
+  {
+   "slug": "acxsynth-polyphonic-midi-to-cv",
+   "outcome": "robots_unanswered",
+   "site": "acxsynth.com"
+  },
+  {
+   "slug": "addac-system-addac102-vc-fm-radio",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac200-multiples",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac205-dual-oscilloscope-awg",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac207",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac207-intuitive-quantizer-black",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac213b",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac215",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac216",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac302-nchunk-control",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac306",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac501-complex-random",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac502-ultra-lissajous",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac503-marble-physics",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac601-vc-fixed-filterbank",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac602-passive-ring-modulator",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac801-simple-mixer",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac802-vc-mixer",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac803",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "addac-system-addac804-audio-integrator",
+   "outcome": "holding_page",
+   "site": "addacsystem.com"
+  },
+  {
+   "slug": "adventure-audio-count",
+   "outcome": "robots_unanswered",
+   "site": "adventurepedals.com"
+  },
+  {
+   "slug": "adventure-audio-merge",
+   "outcome": "robots_unanswered",
+   "site": "adventurepedals.com"
+  },
+  {
+   "slug": "adventure-audio-merge-black-panel",
+   "outcome": "robots_unanswered",
+   "site": "adventurepedals.com"
+  },
+  {
+   "slug": "adventure-audio-mult",
+   "outcome": "robots_unanswered",
+   "site": "adventurepedals.com"
+  },
+  {
+   "slug": "adventure-audio-orx",
+   "outcome": "robots_unanswered",
+   "site": "adventurepedals.com"
+  },
+  {
+   "slug": "aemit-exit",
+   "outcome": "refused",
+   "site": "aemit.com"
+  },
+  {
+   "slug": "aemit-variphase",
+   "outcome": "refused",
+   "site": "aemit.com"
+  },
+  {
+   "slug": "aemit-vco-ii",
+   "outcome": "refused",
+   "site": "aemit.com"
+  },
+  {
+   "slug": "after-later-audio-storm",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "afterlife-laboratories-castle-series-video-processing-circuits-no-2",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "afterlife-laboratories-video-motion",
+   "outcome": "promoted",
+   "url": "https://www.afterlifelaboratories.com/shop/p/w7xa5n1lhsas6qx2eiysnv97ucj3eg",
+   "sha256": "f6e5ad24822a1fa18bb0b5897b7632699ea88671d1c50fe124a186ed7c63ef6f"
+  },
+  {
+   "slug": "afterlife-laboratories-video-multiplier",
+   "outcome": "promoted",
+   "url": "https://www.afterlifelaboratories.com/shop/p/video-multiplier",
+   "sha256": "fc8b04d9d2be1c15b923f72a98f6a5a2f6a93737e0533174ba9f8f9b3aa65c5e"
+  },
+  {
+   "slug": "ai-synthesis-ai002-mixer",
+   "outcome": "holding_page",
+   "site": "aisynthesis.com"
+  },
+  {
+   "slug": "ai-synthesis-ai018-stereo-matrix-mixer",
+   "outcome": "holding_page",
+   "site": "aisynthesis.com"
+  },
+  {
+   "slug": "aion-modular-902-vca",
+   "outcome": "no_maker_site_found",
+   "site": null
+  },
+  {
+   "slug": "aion-modular-904a",
+   "outcome": "no_maker_site_found",
+   "site": null
+  },
+  {
+   "slug": "aion-modular-904c",
+   "outcome": "no_maker_site_found",
+   "site": null
+  },
+  {
+   "slug": "aion-modular-907a-fixed-filter-bank",
+   "outcome": "no_maker_site_found",
+   "site": null
+  },
+  {
+   "slug": "aion-modular-cp3",
+   "outcome": "no_maker_site_found",
+   "site": null
+  },
+  {
+   "slug": "aircraft-designs-cascade",
+   "outcome": "second_name",
+   "public_row": "Cascade Discrete VCA Compressor",
+   "url": "https://aircraftdesigns.info/cascade"
+  },
+  {
+   "slug": "aircraft-designs-fl",
+   "outcome": "second_name",
+   "public_row": "FL High-Quality Balanced Line Input",
+   "url": "https://aircraftdesigns.info/fl"
+  },
+  {
+   "slug": "aircraft-designs-ld",
+   "outcome": "second_name",
+   "public_row": "LD High-Quality Balanced Line Output",
+   "url": "https://aircraftdesigns.info/ld"
+  },
+  {
+   "slug": "ajh-synth-minimod-dual-contour-generators",
+   "outcome": "second_name",
+   "public_row": "MiniMod Contour",
+   "url": "https://ajhsynth.com/Contour.html"
+  },
+  {
+   "slug": "ali-modular-esu-s-trifecta",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "allen-synthesis-kompari",
+   "outcome": "promoted",
+   "url": "https://allensynthesis.co.uk/kompari",
+   "sha256": "cb9039992b37bf01ad65f0de462c38403f0b631fa9370dc23709a281b713af62"
+  },
+  {
+   "slug": "alm-busy-circuits-mult",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "alright-devices-chronoblob-2-black-gold-panel",
+   "outcome": "second_name",
+   "public_row": "Chronoblob2",
+   "url": "https://alrightdevices.bigcartel.com/product/chronoblob2"
+  },
+  {
+   "slug": "altered-state-machines-aristotle",
+   "outcome": "promoted",
+   "url": "https://alteredstatemachines.com/aristotle",
+   "sha256": "5ea7d4e29a8bee012d0353928f2130a9d285f5da5746668523cc5ece7e66120f"
+  },
+  {
+   "slug": "altered-state-machines-bubo",
+   "outcome": "promoted",
+   "url": "https://alteredstatemachines.com/bubo",
+   "sha256": "130682844725b87c2115286895c77341716bf0aa4ecafe060916feb81ff37c85"
+  },
+  {
+   "slug": "altered-state-machines-eris",
+   "outcome": "promoted",
+   "url": "https://alteredstatemachines.com/eris",
+   "sha256": "8df7ff375550fae2303f26c35aa577eda7a9d09ad4bdfe81fe657d92374074a8"
+  },
+  {
+   "slug": "amsynths-am303",
+   "outcome": "refused_not_read_again",
+   "site": "amsynths.co.uk"
+  },
+  {
+   "slug": "amsynths-am8319",
+   "outcome": "refused_not_read_again",
+   "site": "amsynths.co.uk"
+  },
+  {
+   "slug": "analog-ordnance",
+   "outcome": "robots_disallowed",
+   "site": "analogordnance.com"
+  },
+  {
+   "slug": "analog-ordnance-chainsaw-gvtsfvck",
+   "outcome": "robots_disallowed",
+   "site": "analogordnance.com"
+  },
+  {
+   "slug": "analog-ordnance-discrete-vcf",
+   "outcome": "robots_disallowed",
+   "site": "analogordnance.com"
+  },
+  {
+   "slug": "analog-ordnance-drone-machine",
+   "outcome": "robots_disallowed",
+   "site": "analogordnance.com"
+  },
+  {
+   "slug": "analog-ordnance-multi-pass",
+   "outcome": "robots_disallowed",
+   "site": "analogordnance.com"
+  },
+  {
+   "slug": "analog-ordnance-pe-machine",
+   "outcome": "robots_disallowed",
+   "site": "analogordnance.com"
+  },
+  {
+   "slug": "analog-ordnance-recti-combi",
+   "outcome": "robots_disallowed",
+   "site": "analogordnance.com"
+  },
+  {
+   "slug": "analog-ordnance-shunt-matrix",
+   "outcome": "robots_disallowed",
+   "site": "analogordnance.com"
+  },
+  {
+   "slug": "analogfx-ser-2020",
+   "outcome": "page_does_not_confirm",
+   "why": "the page calls it a desktop synthesizer",
+   "url": "https://www.analogfx.com/products/ser-2020/"
+  },
+  {
+   "slug": "analogfx-vcf-3320",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "analogrobotorchestra-analogue-robot-control",
+   "outcome": "no_maker_site_found",
+   "site": null
+  },
+  {
+   "slug": "analogrobotorchestra-trigger-length-control",
+   "outcome": "no_maker_site_found",
+   "site": null
+  },
+  {
+   "slug": "analogue-solutions-adaptor",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "analogue-solutions-hh88",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "analogue-solutions-joystick",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "analogue-solutions-rm-ring-mod",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "analogue-solutions-rp08",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "analogue-solutions-sq8",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "analogue-solutions-station-x",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "analogue-solutions-sy01-synthesizer",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "analogue-solutions-sy03",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "animal-factory-amplification-orobas",
+   "outcome": "promoted",
+   "url": "https://animalfactoryamps.com/products/eurorack-orobas-ii-vacuum-tube-vca-saturator-distortion-ef86-edition",
+   "sha256": "3929c019546adbafb585f8f986f3fa814134a363d687819a3fac7213cecf4f3f"
+  },
+  {
+   "slug": "animal-factory-amplification-vivisect",
+   "outcome": "second_name",
+   "public_row": "Eurorack: Vivisect 4 Channel CV Processor/Offset and Noise Source",
+   "url": "https://animalfactoryamps.com/products/vivisect-4-channel-signal-processor-offset-and-noise-module"
+  },
+  {
+   "slug": "animodule-sob-v1",
+   "outcome": "page_does_not_confirm",
+   "why": "the page names SOB, not v1",
+   "url": "https://www.animodule.com/product/sob-3u"
+  },
+  {
+   "slug": "antimatter-audio-crossfold",
+   "outcome": "no_text_by_plain_get",
+   "site": "antimatteraudio.com"
+  },
+  {
+   "slug": "antimatter-audio-launch-codes",
+   "outcome": "no_text_by_plain_get",
+   "site": "antimatteraudio.com"
+  },
+  {
+   "slug": "antimatter-audio-sub-ring",
+   "outcome": "no_text_by_plain_get",
+   "site": "antimatteraudio.com"
+  },
+  {
+   "slug": "antimatter-audio-v3kt",
+   "outcome": "no_text_by_plain_get",
+   "site": "antimatteraudio.com"
+  },
+  {
+   "slug": "antumbra-atom",
+   "outcome": "holding_page",
+   "site": "antumbra.eu"
+  },
+  {
+   "slug": "antumbra-cara",
+   "outcome": "holding_page",
+   "site": "antumbra.eu"
+  },
+  {
+   "slug": "antumbra-grid",
+   "outcome": "holding_page",
+   "site": "antumbra.eu"
+  },
+  {
+   "slug": "antumbra-mult",
+   "outcome": "holding_page",
+   "site": "antumbra.eu"
+  },
+  {
+   "slug": "antumbra-path",
+   "outcome": "holding_page",
+   "site": "antumbra.eu"
+  },
+  {
+   "slug": "antumbra-smog",
+   "outcome": "holding_page",
+   "site": "antumbra.eu"
+  },
+  {
+   "slug": "antumbra-strampler",
+   "outcome": "holding_page",
+   "site": "antumbra.eu"
+  },
+  {
+   "slug": "bastl-instruments-blind-panel",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "bastl-instruments-cv-trinity-expander",
+   "outcome": "second_name",
+   "public_row": "CV Trinity Exp",
+   "url": "https://bastl-instruments.com/eurorack/modules/cv-trinity-exp"
+  },
+  {
+   "slug": "bastl-instruments-solenoid-cv-velocity-expander",
+   "outcome": "second_name",
+   "public_row": "Solenoid Exp",
+   "url": "https://bastl-instruments.com/eurorack/modules/solenoid-exp"
+  },
+  {
+   "slug": "befaco-befaco-slicer-v3",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-bf20-vcf",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-crush-delay",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-dual-atenuverter",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-hexa-vca",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-input-output",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-instrument-interface-v2",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-lich",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-midi-thing-v2",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-mixer",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-muxlicer",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-noise-lag",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-noise-plethora",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-octaves-vco",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-out",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-output-module-with-headphones-out",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-pip-filter",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-pip-lfo",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-pip-slope",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-quad-vca",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-quad-vca-v2",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-rampage",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-ring-mod",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-s-h-lag",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-slew",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-slicer-v3",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-slope-gen-282",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-tube-distortion-vca",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "befaco-vco-iii",
+   "outcome": "refused_not_read_again",
+   "site": "befaco.org"
+  },
+  {
+   "slug": "cwejman-ai-2",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-att-4",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-crv-24",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-ctg-vc",
+   "outcome": "promoted",
+   "url": "https://www.cwejmanmusic.com/ctg-vc",
+   "sha256": "9ccc3dc1d55eceefedc768f3fe5581611582f55967075874db4c79f819335800"
+  },
+  {
+   "slug": "cwejman-d-lfo",
+   "outcome": "promoted",
+   "url": "https://www.cwejmanmusic.com/d-lfo",
+   "sha256": "4c40b75ef6bdb28eea9f870710092eaad318c56e1bcee5993cc7e667edb0acb6"
+  },
+  {
+   "slug": "cwejman-dmf-2",
+   "outcome": "promoted",
+   "url": "https://www.cwejmanmusic.com/dmf-2",
+   "sha256": "dfc32edee238f28e149c4250f5b5cf616ade65f4f377b3a4875f4cb3b7ea8223"
+  },
+  {
+   "slug": "cwejman-fsh-1",
+   "outcome": "promoted",
+   "url": "https://www.cwejmanmusic.com/fsh-1",
+   "sha256": "02668c33d1cc6412d600415b2e54b1e34b624c35d2e9e817a16b23d6ff9265f7"
+  },
+  {
+   "slug": "cwejman-ins-2mx",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-mmf-6",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-mx-4s",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-ns-4-noise-and-s-h",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-rg-6",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-rm-2s",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-vc-fc-forward-compressor",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-vc-fcs-stereo-forward-compressor",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-vca-2p",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-vceq-3",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-vco-6",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "cwejman-vm-1",
+   "outcome": "page_does_not_confirm",
+   "why": "the page is for VM-1S",
+   "url": "https://www.cwejmanmusic.com/vm-1s"
+  },
+  {
+   "slug": "doepfer-a-101-5",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "doepfer-a-155",
+   "outcome": "promoted",
+   "url": "https://doepfer.de/a155.htm",
+   "sha256": "4d7d131cf22c757024def7b6d08c724e9aac7bc5ed5ffb87a49bf1d513080e26"
+  },
+  {
+   "slug": "doepfer-a-170-1",
+   "outcome": "page_does_not_confirm",
+   "why": "the page names A-170 only",
+   "url": null
+  },
+  {
+   "slug": "doepfer-a-180-1",
+   "outcome": "promoted",
+   "url": "https://doepfer.de/a180.htm",
+   "sha256": "f453dd77a835c56c5326f721fa6e9e9ab4891d626bd5c186f8e9d15f95f7502f"
+  },
+  {
+   "slug": "doepfer-a-185-1",
+   "outcome": "promoted",
+   "url": "https://doepfer.de/a185.htm",
+   "sha256": "e8b458a6dea897f76199c8f9cd612bec9ed0bde44a5c02ecf999169496888dce"
+  },
+  {
+   "slug": "dreadbox-alpha",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-ataxia",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-delta",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-drips",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-epsilon",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-eudemonia",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-gamma",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-hades",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-hysteria-1-0",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-lamda",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-milky-way-1u-silver",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-nostalgia-1-0",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-omikron",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-splash",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-taff2-scientific-tremolo",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-theta",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-two-of-cups-black",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-utopia",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-attenuator",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-divider",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-drive",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-dual-vca",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-echo",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-envelope",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-filter",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-lfo",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-mixer",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-modulator",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-multiple",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-murmux-filter",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-oscillator",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-phaser",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-random",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-wl-reflector",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "dreadbox-ypsilon",
+   "outcome": "robots_unanswered",
+   "site": "dreadbox-fx.com"
+  },
+  {
+   "slug": "endorphin-es-shuttle-control-golden",
+   "outcome": "second_name",
+   "public_row": "SHUTTLE CONTROL",
+   "url": "https://www.endorphin.es/modules/p/shuttle-control"
+  },
+  {
+   "slug": "endorphin-es-shuttle-mate-black",
+   "outcome": "second_name",
+   "public_row": "SHUTTLE MATE",
+   "url": "https://www.endorphin.es/modules/p/shuttle-mate"
+  },
+  {
+   "slug": "endorphin-es-shuttle-mate-golden",
+   "outcome": "second_name",
+   "public_row": "SHUTTLE MATE",
+   "url": "https://www.endorphin.es/modules/p/shuttle-mate"
+  },
+  {
+   "slug": "endorphin-es-shuttle-system-black",
+   "outcome": "promoted",
+   "url": "https://www.endorphin.es/modules/p/shuttle-system",
+   "sha256": "8b3f63336b4707fffb5958a9468ac03ae28cb5294b29099ddce65c7a8e2a2bc2"
+  },
+  {
+   "slug": "endorphin-es-shuttle-system-golden",
+   "outcome": "promoted",
+   "url": "https://www.endorphin.es/modules/p/shuttle-system",
+   "sha256": "8b3f63336b4707fffb5958a9468ac03ae28cb5294b29099ddce65c7a8e2a2bc2"
+  },
+  {
+   "slug": "endorphin-es-two-of-cups-black",
+   "outcome": "second_name",
+   "public_row": "TWO OF CUPS",
+   "url": "https://www.endorphin.es/modules/p/two-of-cups"
+  },
+  {
+   "slug": "erica-synths-black-input",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-black-varishape-vco-1",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-black-varishape-vco-2",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-dtech-vcf",
+   "outcome": "promoted",
+   "url": "https://www.ericasynths.lv/diy-dtech-vcf-assembled-305/",
+   "sha256": "ff55da5b082ea5d92fed2732d60d07f368b42ae4bafb1c17eae871154035e0e8"
+  },
+  {
+   "slug": "erica-synths-erica-fusion-analogue-chorus-delay",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-erica-fusion-vcf",
+   "outcome": "promoted",
+   "url": "https://www.ericasynths.lv/fusion-vcf-v2-35/",
+   "sha256": "a7080db83d67f7dae869277789620cbf62739bef026f6bec2212318f75bc53d1"
+  },
+  {
+   "slug": "erica-synths-fusion-vca",
+   "outcome": "promoted",
+   "url": "https://www.ericasynths.lv/fusion-vca-waveshaper-ringmodulator-1030/",
+   "sha256": "9a53cb5c78e3dcb0451224761b744b9a0b7f34f98d626bc06d6b7f4d88bf22ab"
+  },
+  {
+   "slug": "erica-synths-matrix-mixer",
+   "outcome": "page_does_not_confirm",
+   "why": "the page is for a desktop unit",
+   "url": "https://www.ericasynths.lv/desktop-matrix-mixer-1982/"
+  },
+  {
+   "slug": "erica-synths-mixer-splitter",
+   "outcome": "promoted",
+   "url": "https://www.ericasynths.lv/black-mixer-splitter-v2-57/",
+   "sha256": "6f2ff3633f12b349792794ff9fb664841dc9d59041debdb17973f79b4b8e9cb4"
+  },
+  {
+   "slug": "erica-synths-moog-parametric-equalizer",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-mutant-brain",
+   "outcome": "promoted",
+   "url": "https://www.ericasynths.lv/hexinverter-mutant-brain-2515/",
+   "sha256": "1e673d40e5c82c8b8135ca206eb938034bfab5f17b0d0e465e5dcd8480736631"
+  },
+  {
+   "slug": "erica-synths-pico-vc-eg",
+   "outcome": "promoted",
+   "url": "https://www.ericasynths.lv/news/post/pico-vc-eg/",
+   "sha256": "ed36789e978e85829063f327c03f07df82f1a8c714a45292f0864499829129c6"
+  },
+  {
+   "slug": "erica-synths-polivoks-ish-adsr-eg-diy-kit",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-polivoks-mixer",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-polivoks-modulator",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-polivoks-modulator-custom-panel",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-polivoks-vca",
+   "outcome": "promoted",
+   "url": "https://www.ericasynths.lv/diy-polivoks-vca-ii-full-kit-153/",
+   "sha256": "8eb9f028e25b8b61ef2b3890578e6df5b336914bd1574ed8899f3ee66e0e6aac"
+  },
+  {
+   "slug": "erica-synths-polivoks-vcf",
+   "outcome": "promoted",
+   "url": "https://www.ericasynths.lv/black-polivoks-vcf-v1-878/",
+   "sha256": "55cfeb0355795fcd1f7bd1d060760fad36730f7bffbf6fcf128b78de2abfe0bc"
+  },
+  {
+   "slug": "erica-synths-polivoks-vcf-custom-panel",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-polivoks-vco1",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-polivoks-vco2",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-synth-voice",
+   "outcome": "promoted",
+   "url": "https://www.ericasynths.lv/diy-synth-voice-full-kit-164/",
+   "sha256": "ae6da70a0c27b716f4bd9153e8f097ee0c260e26317b33166d708e2bc5afd5e4"
+  },
+  {
+   "slug": "erica-synths-vco-signal-mixer",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-wogglebug",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "erica-synths-wogglebug-diy",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "expert-sleepers-disting-mk3",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/distingmk3.html",
+   "sha256": "2d6b2964d342f9551b6c6754bc76d7128ae0588c55c669e5c35691c6e3566d5b"
+  },
+  {
+   "slug": "expert-sleepers-es-1-db25-version",
+   "outcome": "second_name",
+   "public_row": "ES-1",
+   "url": "https://www.expert-sleepers.co.uk/es1.html"
+  },
+  {
+   "slug": "expert-sleepers-es-2-2",
+   "outcome": "second_name",
+   "public_row": "ES-2 CV/Audio Interface",
+   "url": "https://www.expert-sleepers.co.uk/es2.html"
+  },
+  {
+   "slug": "expert-sleepers-es-3",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/es3.html",
+   "sha256": "f21ec82517fc8de0009d39cf856a5f47c0b48b1157c60e39426c0f5599ab0bb0"
+  },
+  {
+   "slug": "expert-sleepers-es-3-mk2",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/es3.html",
+   "sha256": "f21ec82517fc8de0009d39cf856a5f47c0b48b1157c60e39426c0f5599ab0bb0"
+  },
+  {
+   "slug": "expert-sleepers-es-3-mk3",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/es3.html",
+   "sha256": "f21ec82517fc8de0009d39cf856a5f47c0b48b1157c60e39426c0f5599ab0bb0"
+  },
+  {
+   "slug": "expert-sleepers-es-3-mk4",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/es3.html",
+   "sha256": "f21ec82517fc8de0009d39cf856a5f47c0b48b1157c60e39426c0f5599ab0bb0"
+  },
+  {
+   "slug": "expert-sleepers-es-4-spdif-cv-interface",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/es4.html",
+   "sha256": "1638ba0a6ddf4759393c01f3e3c7ae06ad0331d454adf55445b6b701a012b078"
+  },
+  {
+   "slug": "expert-sleepers-es-40-spdif-interface",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/es40.html",
+   "sha256": "60890742351448a06f5a50f1f3e507458660902dc75beb4c2ae2ff03bc95cabf"
+  },
+  {
+   "slug": "expert-sleepers-es-5-mk2",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/es5.html",
+   "sha256": "bf081364dcd22d9c5662064e359de89ec7da1971303764dfad71048e035f471d"
+  },
+  {
+   "slug": "expert-sleepers-es-6",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/es6.html",
+   "sha256": "2d1139fd18642bea075328e7756561dbafd5e671f6d5c04d576c667dc0fe5a19"
+  },
+  {
+   "slug": "expert-sleepers-es-6-mk2",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/es6.html",
+   "sha256": "2d1139fd18642bea075328e7756561dbafd5e671f6d5c04d576c667dc0fe5a19"
+  },
+  {
+   "slug": "expert-sleepers-es-7-cv-input-expander",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/es7.html",
+   "sha256": "095fdafd102c5e39a5e3f4cc551c40e942bef3d925a70aa0da47bca5f2d84b3b"
+  },
+  {
+   "slug": "expert-sleepers-esx-8gt-mk2-gate-expander",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/esx8gt.html",
+   "sha256": "c96173bca3ed959bf8aaf831452266864ce32fa7b757cdd622037faab6dbca23"
+  },
+  {
+   "slug": "expert-sleepers-esx-8md-mk1",
+   "outcome": "second_name",
+   "public_row": "ESX-8MD MIDI/DINsync Expander",
+   "url": "https://www.expert-sleepers.co.uk/esx8md.html"
+  },
+  {
+   "slug": "expert-sleepers-esx-8md-mk2",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/esx8md.html",
+   "sha256": "14bbd73282e411b25f73b4e37e513f780d04e82e2dd1113d297ab5ccdf87e959"
+  },
+  {
+   "slug": "expert-sleepers-fh-1-faderhost",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/fh1.html",
+   "sha256": "62606f6df20f2bc9cdc9ca3488b4bedf7051e5c15f9724581aea7dc65a3dc975"
+  },
+  {
+   "slug": "expert-sleepers-fh-2-factotum",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/fh2.html",
+   "sha256": "74f90914dfa0bbcdbf1831c1aee55ae33e5a5bf1a7ef7a2c8b467580994c2fb2"
+  },
+  {
+   "slug": "expert-sleepers-fhx-1-output-expander-for-fh-1",
+   "outcome": "promoted",
+   "url": "https://www.expert-sleepers.co.uk/fhx1.html",
+   "sha256": "486d314a541dad3a19098f9ecbe39d947d3207d27982eab20cdea276e983e1cb"
+  },
+  {
+   "slug": "instruo-arbhar",
+   "outcome": "robots_unanswered",
+   "site": "instruomodular.com"
+  },
+  {
+   "slug": "instruo-d-il",
+   "outcome": "robots_unanswered",
+   "site": "instruomodular.com"
+  },
+  {
+   "slug": "instruo-dh",
+   "outcome": "robots_unanswered",
+   "site": "instruomodular.com"
+  },
+  {
+   "slug": "instruo-seashell",
+   "outcome": "robots_unanswered",
+   "site": "instruomodular.com"
+  },
+  {
+   "slug": "intellijel-dr-octature",
+   "outcome": "page_does_not_confirm",
+   "why": "the address answers with the legacy list",
+   "url": "https://intellijel.com/shop/legacy/dr-octature-ii/"
+  },
+  {
+   "slug": "intellijel-pulse-tornado",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "make-noise-1hp-blank",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "make-noise-6hp-blank",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "make-noise-blank-4hp",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "make-noise-din-power",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "make-noise-moddemod",
+   "outcome": "second_name",
+   "public_row": "modDemix",
+   "url": "https://www.makenoisemusic.com/modules/moddemix/"
+  },
+  {
+   "slug": "make-noise-mysteron",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "make-noise-rene-limited-edition-white",
+   "outcome": "second_name",
+   "public_row": "René",
+   "url": "https://www.makenoisemusic.com/modules/rene/"
+  },
+  {
+   "slug": "make-noise-strega",
+   "outcome": "page_does_not_confirm",
+   "why": "the maker gives it the 0-COAST's form factor, so it isn't a rack module",
+   "url": "https://www.makenoisemusic.com/synthesizers-and-controllers/strega/"
+  },
+  {
+   "slug": "mutable-instruments-anushri-eurorack",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "mutable-instruments-anushri-exp",
+   "outcome": "no_page_found"
+  },
+  {
+   "slug": "mutable-instruments-braids-old-version",
+   "outcome": "second_name",
+   "public_row": "Braids",
+   "url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/braids/"
+  }
+ ]
+}

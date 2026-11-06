@@ -1,0 +1,279 @@
+{
+ "dataset_version": "module-catalog-hp-overlay-v10",
+ "generated_from": "the lead search of 2026-11-05: leads with no stored width whose maker page states one.",
+ "policy": "fill-null only; maker page values only, each quoted.",
+ "generated_at": "2026-11-05T00:00:00Z",
+ "count": 27,
+ "entries": [
+  {
+   "slug": "1010-music-fxbox",
+   "brand": "1010 Music",
+   "name": "Fxbox",
+   "hp": 26,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://1010music.com/product/fxbox-performance-effects-module",
+   "verification": "maker-page-checked-2026-11-05: \"irmware downloads. Fxbox is a 26HP eurorack module that delivers\""
+  },
+  {
+   "slug": "1010-music-toolbox",
+   "brand": "1010 Music",
+   "name": "Toolbox",
+   "hp": 26,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://1010music.com/product/toolbox-sequencer-function-generator-eurorack-module",
+   "verification": "maker-page-checked-2026-11-05: \"rum. Technical Specifications 26 HP +12V: 350mA -12V: 0mA 5V: 0mA\""
+  },
+  {
+   "slug": "4ms-company-qcd-quad-clock-distributor",
+   "brand": "4ms Company",
+   "name": "QCD: Quad Clock Distributor",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://4mscompany.com/p.php?p=620&c=5",
+   "verification": "maker-page-checked-2026-11-05: \"nd Mechanical Specifications: Module size: 10 HP Eurorack format module 16-pin\""
+  },
+  {
+   "slug": "allen-synthesis-kompari",
+   "brand": "Allen Synthesis",
+   "name": "Kompari",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://allensynthesis.co.uk/kompari",
+   "verification": "maker-page-checked-2026-11-05: \"ts depending on the use case. 4HP · 22mm github socials & conta\""
+  },
+  {
+   "slug": "altered-state-machines-aristotle",
+   "brand": "Altered State Machines",
+   "name": "Aristotle",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://alteredstatemachines.com/aristotle",
+   "verification": "maker-page-checked-2026-11-05: \"n thread . Specs Aristotle is 10HP and has a current draw of 120\""
+  },
+  {
+   "slug": "altered-state-machines-bubo",
+   "brand": "Altered State Machines",
+   "name": "Bubo",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://alteredstatemachines.com/bubo",
+   "verification": "maker-page-checked-2026-11-05: \"el B for ease of use. Bubo is 4hp and has a depth of 42mm. Curr\""
+  },
+  {
+   "slug": "altered-state-machines-eris",
+   "brand": "Altered State Machines",
+   "name": "Eris",
+   "hp": 12,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://alteredstatemachines.com/eris",
+   "verification": "maker-page-checked-2026-11-05: \", four output matrix mixer in 12hp. Each of the four inputs has\""
+  },
+  {
+   "slug": "doepfer-a-180-1",
+   "brand": "Doepfer",
+   "name": "A-180-1",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a180.htm",
+   "verification": "maker-page-checked-2026-11-05: \"e: A180_man.pdf Breite/Width: A-180-1 4 TE / 4 HP / 20.0 mm A-180-2 2 TE / 2 HP\""
+  },
+  {
+   "slug": "doepfer-a-185-1",
+   "brand": "Doepfer",
+   "name": "A-185-1",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://doepfer.de/a185.htm",
+   "verification": "maker-page-checked-2026-11-05: \"d to \"A-185-1\". Breite/Width: 4 TE / 4 HP / 20.0 mm Tiefe/Depth: 25 mm\""
+  },
+  {
+   "slug": "erica-synths-dtech-vcf",
+   "brand": "Erica Synths",
+   "name": "Dtech VCF",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/diy-dtech-vcf-assembled-305/",
+   "verification": "maker-page-checked-2026-11-05: \"tion 62mA (+12V), 56mA (-12V) Module width 14HP Module depth 45mm For those w\""
+  },
+  {
+   "slug": "erica-synths-fusion-vca",
+   "brand": "Erica Synths",
+   "name": "Fusion VCA",
+   "hp": 14,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/fusion-vca-waveshaper-ringmodulator-1030/",
+   "verification": "maker-page-checked-2026-11-05: \"evel (full swing) -10V - +10V Panel width 14HP Module depth 36mm Power consu\""
+  },
+  {
+   "slug": "erica-synths-synth-voice",
+   "brand": "Erica Synths",
+   "name": "Synth Voice",
+   "hp": 30,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.ericasynths.lv/diy-synth-voice-full-kit-164/",
+   "verification": "maker-page-checked-2026-11-05: \"sumption 82mA@+12V, 50mA@-12V Module width 30HP Module depth 35mm Effective J\""
+  },
+  {
+   "slug": "expert-sleepers-disting-mk3",
+   "brand": "Expert Sleepers",
+   "name": "Disting mk3",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/distingmk3.html",
+   "verification": "maker-page-checked-2026-11-05: \"are as follows: Panel width: 4HP Module depth: 42mm X & Y inpu\""
+  },
+  {
+   "slug": "expert-sleepers-es-3",
+   "brand": "Expert Sleepers",
+   "name": "ES-3",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/es3.html",
+   "verification": "maker-page-checked-2026-11-05: \"pecifications are as follows: Panel width: 8HP Module depth: 50mm Input conn\""
+  },
+  {
+   "slug": "expert-sleepers-es-3-mk2",
+   "brand": "Expert Sleepers",
+   "name": "ES-3 mk2",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/es3.html",
+   "verification": "maker-page-checked-2026-11-05: \"pecifications are as follows: Panel width: 8HP Module depth: 50mm Input conn\""
+  },
+  {
+   "slug": "expert-sleepers-es-3-mk3",
+   "brand": "Expert Sleepers",
+   "name": "ES-3 MK3",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/es3.html",
+   "verification": "maker-page-checked-2026-11-05: \"pecifications are as follows: Panel width: 8HP Module depth: 50mm Input conn\""
+  },
+  {
+   "slug": "expert-sleepers-es-3-mk4",
+   "brand": "Expert Sleepers",
+   "name": "ES-3 mk4",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/es3.html",
+   "verification": "maker-page-checked-2026-11-05: \"pecifications are as follows: Panel width: 8HP Module depth: 50mm Input conn\""
+  },
+  {
+   "slug": "expert-sleepers-es-40-spdif-interface",
+   "brand": "Expert Sleepers",
+   "name": "ES-40 SPDIF Interface",
+   "hp": 6,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/es40.html",
+   "verification": "maker-page-checked-2026-11-05: \"are as follows: Panel width: 6HP Module depth: 51mm Digital in\""
+  },
+  {
+   "slug": "expert-sleepers-es-5-mk2",
+   "brand": "Expert Sleepers",
+   "name": "ES-5 mk2",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/es5.html",
+   "verification": "maker-page-checked-2026-11-05: \"are as follows: Panel width: 4HP Module depth: 36mm Digital in\""
+  },
+  {
+   "slug": "expert-sleepers-es-6",
+   "brand": "Expert Sleepers",
+   "name": "ES-6",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/es6.html",
+   "verification": "maker-page-checked-2026-11-05: \"are as follows: Panel width: 4HP Module depth: 50mm Sync input\""
+  },
+  {
+   "slug": "expert-sleepers-es-6-mk2",
+   "brand": "Expert Sleepers",
+   "name": "ES-6 mk2",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/es6.html",
+   "verification": "maker-page-checked-2026-11-05: \"are as follows: Panel width: 4HP Module depth: 50mm Sync input\""
+  },
+  {
+   "slug": "expert-sleepers-es-7-cv-input-expander",
+   "brand": "Expert Sleepers",
+   "name": "ES-7 CV Input Expander",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/es7.html",
+   "verification": "maker-page-checked-2026-11-05: \"are as follows: Panel width: 4HP Module depth: 50mm Digital I/\""
+  },
+  {
+   "slug": "expert-sleepers-esx-8gt-mk2-gate-expander",
+   "brand": "Expert Sleepers",
+   "name": "ESX-8GT mk2 Gate Expander",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/esx8gt.html",
+   "verification": "maker-page-checked-2026-11-05: \"are as follows: Panel width: 4HP Module depth: 24mm Analogue o\""
+  },
+  {
+   "slug": "expert-sleepers-esx-8md-mk2",
+   "brand": "Expert Sleepers",
+   "name": "ESX-8MD mk2",
+   "hp": 10,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/esx8md.html",
+   "verification": "maker-page-checked-2026-11-05: \"are as follows: Panel width: 10HP Module depth: 27mm Digital in\""
+  },
+  {
+   "slug": "expert-sleepers-fh-1-faderhost",
+   "brand": "Expert Sleepers",
+   "name": "FH-1 'faderHost'",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/fh1.html",
+   "verification": "maker-page-checked-2026-11-05: \"ost' is a USB MIDI Host in an 8HP Eurorack module, allowing you\""
+  },
+  {
+   "slug": "expert-sleepers-fh-2-factotum",
+   "brand": "Expert Sleepers",
+   "name": "FH-2 'factotum'",
+   "hp": 8,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/fh2.html",
+   "verification": "maker-page-checked-2026-11-05: \"onsibilities 1 The FH-2 is an 8HP Eurorack module combining the\""
+  },
+  {
+   "slug": "expert-sleepers-fhx-1-output-expander-for-fh-1",
+   "brand": "Expert Sleepers",
+   "name": "FHX-1 Output Expander for FH-1",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/fhx1.html",
+   "verification": "maker-page-checked-2026-11-05: \"are as follows: Panel width: 4HP Module depth: 43mm Current dr\""
+  }
+ ]
+}

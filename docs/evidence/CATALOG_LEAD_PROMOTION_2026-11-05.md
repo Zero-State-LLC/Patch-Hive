@@ -134,7 +134,7 @@ Reading production's public API afterwards: the catalog total went from 3,160 to
 
 ## Not in this change
 
-- A search for maker pages for the 283 rows with none.
+- A search for maker pages for the 283 rows with none. [That search](CATALOG_LEAD_SEARCH_2026-11-05.md) came next.
 - A guard against a width over the band at the crawl. The corrections fix these rows, but the crawl code that read them hasn't changed.
 
 T031 and T039 stay open.

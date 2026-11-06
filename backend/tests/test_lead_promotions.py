@@ -23,10 +23,13 @@ def load(*parts: str) -> dict:
     return json.loads(CATALOG.joinpath(*parts).read_text(encoding="utf-8"))
 
 
-PROMOTED = load("overlays", "lead-promotions-v1.json")["rows"]
-FILLS = load("overlays", "module-catalog-category-v7.json")["entries"]
+SEARCHED = load("overlays", "lead-promotions-v2.json")["rows"]
+PROMOTED = load("overlays", "lead-promotions-v1.json")["rows"] + SEARCHED
+FILLS = load("overlays", "module-catalog-category-v7.json")["entries"] + load("overlays", "module-catalog-category-v8.json")["entries"]
 CORRECTIONS = load("provenance", "category-corrections-v5.json")["rows"]
+SEARCH_CORRECTIONS = load("provenance", "category-corrections-v7.json")["rows"]
 WIDTHS = load("provenance", "hp-footer-corrections-v1.json")["rows"]
+SEARCH = load("receipts", "lead-search-2026-11-05.json")
 
 
 def lead(**extra) -> dict:
@@ -98,6 +101,19 @@ def test_a_row_the_database_doesnt_hold_is_counted() -> None:
     assert schedule({}, entry()).lead_promotions["rows_missing"] == 1
 
 
+def test_each_overlay_file_adds_to_the_counts_and_archives_under_its_own_batch() -> None:
+    catalog = {"acme-lead": lead(), "acme-next": lead(name="Next")}
+    plan = P.Plan()
+    P._schedule_lead_promotions(plan, catalog, {"rows": [entry()]})
+    P._schedule_lead_promotions(
+        plan, catalog, {"dataset_version": "lead-promotions-v2", "rows": [entry(slug="acme-next", name="Next")]}
+    )
+    assert plan.lead_promotions["promoted"] == 2
+    assert {op.params["batch"] for op in plan.ops if "batch" in op.params} == {
+        "lead-promotions-v1", "lead-promotions-v2",
+    }
+
+
 @pytest.mark.parametrize("row", PROMOTED, ids=lambda r: r["slug"])
 def test_each_promotion_cites_the_makers_page_and_a_short_quote(row) -> None:
     assert row["source_url"].startswith("https://")
@@ -119,6 +135,8 @@ def test_refused_or_unconfirmed_makers_are_not_promoted() -> None:
 def follows(does: str, category: str, rule: str) -> bool:
     if rule == "decision_14":
         return category == "SYSTEM"
+    if rule == "decision_5":
+        return category == "VIDEO"
     low = does.lower()
     return {category} == (O.tag_categories([low]) or O.tag_categories([low.rstrip("s")])) or (
         B.category([does], does) == category or (low in ("modulation", "modulator") and category == "LFO")
@@ -131,10 +149,13 @@ def test_each_fill_follows_from_the_makers_words(entry_) -> None:
     assert follows(entry_["does"], entry_["category"], entry_["rule"])
 
 
+@pytest.mark.parametrize(
+    "corrections,count", [(CORRECTIONS, 37), (SEARCH_CORRECTIONS, 9)], ids=["lead-reads", "lead-search"]
+)
 @pytest.mark.parametrize("table,field", [("module_catalog", "category"), ("modules", "module_type")])
-def test_each_category_correction_covers_its_table_and_cites_its_page(table, field) -> None:
-    rows = [row for row in CORRECTIONS if row["table"] == table]
-    assert len(rows) == 37
+def test_each_category_correction_covers_its_table_and_cites_its_page(corrections, count, table, field) -> None:
+    rows = [row for row in corrections if row["table"] == table]
+    assert len(rows) == count
     for row in rows:
         item = row["fields"][0]
         assert item["field"] == field and item["evidence_url"].startswith("https://")
@@ -153,3 +174,45 @@ def test_a_page_footer_width_is_replaced_by_the_width_the_page_states() -> None:
 def test_a_101_4_is_no_longer_confirmed_by_the_a_110_4_page() -> None:
     entries = load("overlays", "module-catalog-hp-v8.json")["entries"]
     assert "doepfer-a-101-4" not in {entry_["slug"] for entry_ in entries}
+
+
+def test_the_search_accounts_for_every_row_it_looked_for() -> None:
+    outcomes = [row["outcome"] for row in SEARCH["reads"]]
+    assert SEARCH["paid_attempts"] == 0 and len(outcomes) == SEARCH["rows"] == 283
+    assert {o: outcomes.count(o) for o in set(outcomes)} == SEARCH["outcomes"]
+    assert "modulargrid" not in json.dumps(SEARCH).lower()
+
+
+def test_only_the_rows_the_search_confirmed_are_promoted() -> None:
+    confirmed = {row["slug"] for row in SEARCH["reads"] if row["outcome"] == "promoted"}
+    assert confirmed == {row["slug"] for row in SEARCHED}
+    assert not confirmed & {row["slug"] for row in load("overlays", "lead-promotions-v1.json")["rows"]}
+
+
+def test_a_second_name_for_a_public_row_stays_hidden() -> None:
+    seconds = {row["slug"]: row["public_row"] for row in SEARCH["reads"] if row["outcome"] == "second_name"}
+    assert seconds["aircraft-designs-cascade"] == "Cascade Discrete VCA Compressor"
+    assert seconds["bastl-instruments-cv-trinity-expander"] == "CV Trinity Exp"
+    assert not set(seconds) & {row["slug"] for row in SEARCHED}
+
+
+def test_a_site_that_gave_no_usable_read_has_no_promotion() -> None:
+    refused = {
+        "Befaco", "Dreadbox", "Instruo", "ADDAC System", "Analog Ordnance", "AMSynths", "Aemit", "Abstract Data",
+        "Aion Modular", "Adventure Audio",
+    }
+    assert not [row["slug"] for row in SEARCHED if row["brand"] in refused]
+
+
+def test_each_search_width_is_quoted_from_the_rows_own_page() -> None:
+    pages = {row["slug"]: row["source_url"] for row in SEARCHED}
+    for entry_ in load("overlays", "module-catalog-hp-v10.json")["entries"]:
+        assert entry_["source_url"] == pages[entry_["slug"]]
+        assert P.HP_BAND[0] <= entry_["hp"] <= P.HP_BAND[1] and str(entry_["hp"]) in entry_["verification"]
+
+
+def test_a_width_the_page_contradicts_or_a_manifest_already_owns_stays_out() -> None:
+    # D-LFO's page says 12 TE and 70.6 mm, which is 14 HP. A-155's 50 HP is past the overlay band;
+    # maker-corrections-v5 makes that change on a stored value.
+    entries = {entry_["slug"] for entry_ in load("overlays", "module-catalog-hp-v10.json")["entries"]}
+    assert not entries & {"cwejman-d-lfo", "doepfer-a-155", "endorphin-es-shuttle-system-black"}
