@@ -4,6 +4,32 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.13](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.12...v0.3.0-alpha.13) (2026-11-06)
+
+
+### Added
+
+* **001:** keep what a run and an evidence decision leave behind (T090) ([#321](https://github.com/Zero-State-LLC/Patch-Hive/issues/321)) ([1f3a357](https://github.com/Zero-State-LLC/Patch-Hive/commit/1f3a35757442ecc73c46d33c2c395504af9e0b7b))
+* **001:** one role per module, and catch loops through other modules (T090) ([#322](https://github.com/Zero-State-LLC/Patch-Hive/issues/322)) ([5f446c0](https://github.com/Zero-State-LLC/Patch-Hive/commit/5f446c01652ee5ef4eebb22550a768931b08d056))
+* **catalog:** add a NOISE category and move 17 noise-first rows ([#312](https://github.com/Zero-State-LLC/Patch-Hive/issues/312)) ([e0a1443](https://github.com/Zero-State-LLC/Patch-Hive/commit/e0a14434373947b462788a70fa9a8fc6541839b4))
+* **catalog:** promote 46 more leads a search of makers' sites confirms (FR-034) ([#314](https://github.com/Zero-State-LLC/Patch-Hive/issues/314)) ([9787f50](https://github.com/Zero-State-LLC/Patch-Hive/commit/9787f501f2a6836c325f99ab1deb5ff2a5b4b575))
+* **catalog:** retire 38 public rows that repeat another row's maker page ([#316](https://github.com/Zero-State-LLC/Patch-Hive/issues/316)) ([1433e62](https://github.com/Zero-State-LLC/Patch-Hive/commit/1433e62128e74a9c0187b6a26827e17235a2e8ff))
+
+
+### Fixed
+
+* **catalog:** give each maker one brand, and retire what the splits left ([#318](https://github.com/Zero-State-LLC/Patch-Hive/issues/318)) ([923375d](https://github.com/Zero-State-LLC/Patch-Hive/commit/923375d1cad90bcd486de5b077adcf2b99825f83))
+
+
+### Documentation
+
+* record the 0.3.0-alpha.12 deploy to staging and production ([#311](https://github.com/Zero-State-LLC/Patch-Hive/issues/311)) ([45e3780](https://github.com/Zero-State-LLC/Patch-Hive/commit/45e3780cb4b4a851650c4aefad26aea6597b453a))
+* record the access-basis retry and FR-034 load on production ([#307](https://github.com/Zero-State-LLC/Patch-Hive/issues/307)) ([e2c703d](https://github.com/Zero-State-LLC/Patch-Hive/commit/e2c703dc23cf3a81e663e41fb9c2bf748de425b9))
+* record the brand fix on production ([#319](https://github.com/Zero-State-LLC/Patch-Hive/issues/319)) ([9bfa8c7](https://github.com/Zero-State-LLC/Patch-Hive/commit/9bfa8c784c44516dd60e95e622093e82175e9055))
+* record the lead search load on production ([#315](https://github.com/Zero-State-LLC/Patch-Hive/issues/315)) ([e314a99](https://github.com/Zero-State-LLC/Patch-Hive/commit/e314a99f0f9d1c5b7ec2ab9c92ee4c249802144f))
+* record the NOISE load on staging and production ([#313](https://github.com/Zero-State-LLC/Patch-Hive/issues/313)) ([dd35349](https://github.com/Zero-State-LLC/Patch-Hive/commit/dd35349c3852f90f591c809a58152438848107dd))
+* record the second-name retirements on production ([#317](https://github.com/Zero-State-LLC/Patch-Hive/issues/317)) ([4f8825d](https://github.com/Zero-State-LLC/Patch-Hive/commit/4f8825d7c5a1de85fdfb9f8e649b4f68ed6968b6))
+
 ## [0.3.0-alpha.12](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.11...v0.3.0-alpha.12) (2026-11-06)
 
 
