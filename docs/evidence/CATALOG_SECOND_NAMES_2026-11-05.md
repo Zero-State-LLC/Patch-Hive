@@ -106,3 +106,30 @@ Patches generated for a Rig holding a retired row can change.
 - **Guru Gara Dual Ringmodulator** is filed under LFO, and Strange-R under LFO though its page describes a sequencer.
 - **77 pairs of public rows** have nearly the same name and the same width on different pages. Most look like real editions and kits, such as `Maths` and `MATHS (Classic)`. These weren't reviewed.
 - **The 18 second names the lead search held back** stay hidden, so they don't need retiring.
+
+## Staging
+
+Loaded from branch `catalog/retire-second-names`, before merge, on the owner's yes after seeing this list.
+
+- `plan_hash`: `519e2384545bdf18657f00577f5b9d85eb2aa7014d6206720dfa44f56d9ff8ce`
+- `inputs_hash`: `a1f5777c9593ea896278415739824bdf0486cc4f49d78b94fb22b4c117c1ba31`
+
+| Step | Run | Result |
+|---|---|---|
+| Dry run | [42181347245](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42181347245) | 0 conflicts, no destructive SQL |
+| Apply | [42182936126](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42182936126) | 38 catalog rows and 36 module rows retired |
+| Second dry run | [42183281535](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42183281535) | Plans nothing |
+| Smoke | [42183421414](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42183421414) | 10/10 |
+
+Retiring 38 catalog rows touched 36 module rows because A-110 and Knit Rider Expander never had one.
+
+Reading staging's public API afterwards:
+
+- The catalog went from 3,426 to 3,388 rows, and `/api/modules` from 3,420 to 3,384. None of those rows mentions ModularGrid.
+- None of the 38 is public, and every row that stays is.
+- AUTOPILOT reads UTIL and GRAND TERMINAL reads VCF in both tables, and ES-40 holds a depth of 51 mm.
+- Public rows with no category went from 286 to 281: 3 retired rows had none, and 2 rows that stay gained one.
+- 14 maker pages still hold more than one public row, and each is listed under "What stays".
+- Public catalog rows with no row in `/api/modules` went from 6 to 4: Cwejman AP-1, Cwejman DMF-2, Erica Synths Pico DRUMS and Intellijel Metropolis.
+
+The dry run counted 1 Rig holding 1 of these modules on staging. The count doesn't say which Rig or which module, so that Rig's warning wasn't read here. Tests cover the warning. The production dry run ([42182473769](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42182473769)) gave the same hashes and counted 0 Rigs.
