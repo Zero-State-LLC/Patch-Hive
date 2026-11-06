@@ -17,7 +17,7 @@ The agent put 56 decisions to the owner over several rounds, each with a recomme
 | 13 | Blank Panels aren't Modules, so the definition is "a *working* unit that occupies HP". |
 | 14 | A new SYSTEM Module Category covers rack infrastructure: the 11 power rows, plus any fans and USB power panels among the 9 "probably not modules" rows. Check those 9 on maker pages, and retire whatever never occupies HP, such as connectors and bare PCBs. |
 | 15 | An in-rack power supply's output is never added to a Rig's power budget. The builder warns that it isn't counted. |
-| 16 | Add a NOISE Module Category, in its own PR after spec 003 lands. New runs on affected Rigs may differ; old runs are immutable. |
+| 16 | Add a NOISE Module Category, in its own PR after spec 003 lands. New runs on affected Rigs may differ; old runs are immutable. Loaded 2026-11-06 with #312: the owner chose not to wait for spec 003's T010, T031, T039 and T090 ([record](CATALOG_NOISE_CATEGORY_2026-11-05.md)). |
 | 17 | Rectifiers (5) go to UTIL and crossfaders (3) to MIX. Firmware platforms (10) stay empty. Mutable-derived modules (12) get a reviewed name-to-category table, and the catalog's own Mutable rows are checked against the maker's docs (Ripples and Yarns look wrong as VCO). |
 | 18 | Free reads come first: the 281 feed rows and the 59 or more maker pages, by plain GET. Paid fetches are only for T035, under a 50 context.dev credit cap. A site that blocks stays blocked. |
 | 19 | The opt-out address is `catalog@patch-hive.com`, published on the site's About page and in the source policy once the owner has created it. |

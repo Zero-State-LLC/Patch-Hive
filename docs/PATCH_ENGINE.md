@@ -104,6 +104,7 @@ analyzer.noise_sources # Noise generators
 - Based on `module.module_type` field (e.g., "VCO", "VCF", "VCA")
 - Case-insensitive substring matching
 - Modules can belong to multiple categories
+- NOISE is a catalog category too (owner decision 16), so a module filed under it counts as a noise source and nothing else
 - VIDEO and SYSTEM match no keyword, so a module in either category occupies HP in the rack and joins no patch
 
 ### Step 2: Patch Type Selection

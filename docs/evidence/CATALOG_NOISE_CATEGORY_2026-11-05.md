@@ -50,3 +50,16 @@ Each is corrected in `module_catalog` and in `modules` (`provenance/category-cor
 ## Not in this change
 
 `build_category_overlay.py` still sends a whole-tag `noise` to VCO under decision 6, and `build_maker_overlays.py` still files by function. A newly crawled noise module needs a reviewed correction until those rules change.
+
+## Load
+
+The owner chose to load this before spec 003 landed. Decision 16 says "after spec 003 lands", and T010, T031, T039 and T090 were still open. The rest of T031 needs an approved paid cap, the rest of T039 waits partly on maker replies, and decision 16 already accepts that new runs may differ. Production listed 0 public Rigs at the time; private Rigs weren't counted.
+
+Both hosts took the same plan on 2026-11-06 UTC: plan `d5b4c57c5842c8bbf266cb1387d9996491d6d02997469c4c4fd199925fca33e5`, inputs `d53a46d60b92a6f06b93f2356e51459bfbe4e75bc953d0239bb5a566576108a0`.
+
+| Host | Apply | Second dry run | Smoke |
+|---|---|---|---|
+| Staging | [42153852662](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42153852662) | [42154252862](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42154252862) | [42154547565](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42154547565) |
+| Production | [42156962957](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42156962957) | [42157269877](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42157269877) | [42157416167](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42157416167) |
+
+Each apply updated 17 rows in each table and archived 34 old values, with 0 conflicts and no destructive SQL. Each second dry run found nothing left to change. On each host the public API lists exactly these 17 rows as NOISE in both lists, and the totals stay at 3,380 catalog rows and 3,375 modules.
