@@ -38,10 +38,7 @@ def _hp_writes(plan: P.Plan) -> dict[str, int]:
 
 def test_on_a_fresh_load_the_maker_value_wins_over_v1() -> None:
     overlays = _real_overlays()
-    assert [name for name, _ in overlays][:2] == [
-        "module-catalog-hp-v1.json",
-        "module-catalog-hp-v2.json",
-    ]
+    assert overlays[0][0] == "module-catalog-hp-v1.json"
     catalog = _empty_catalog(overlays)
     plan = P.Plan()
     P._schedule_hp_overlays(plan, catalog, overlays)

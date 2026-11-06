@@ -125,6 +125,27 @@ These changes can alter the patches generated for a Rig holding one of these row
 - **A public row named "Sleepers"** (`expert-sleepers-sleepers`, 6 HP) points at the ES-40 page. It looks like a crawl misreading of that module, so once ES-40 is public the module appears twice.
 - **Dreadbox "Milky Way 1U (silver)" and "Two Of Cups (black)"** carry names of Endorphin.es products. Both stay hidden.
 
+## Staging
+
+Loaded from branch `catalog/lead-page-search`, before merge, on the owner's yes after seeing this list.
+
+| Step | Run | Result |
+|---|---|---|
+| Dry run | [42171745552](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42171745552) | 0 conflicts, no destructive SQL |
+| Apply | [42172280925](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42172280925) | 46 promoted, and 220 already confirmed |
+| Second dry run | [42172467081](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42172467081) | Plans nothing |
+| Smoke | [42172762828](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42172762828) | 10/10 |
+
+Reading staging's public API afterwards:
+
+- The catalog total went from 3,380 to 3,426, and `/api/modules` from 3,375 to 3,420. None of those rows mentions ModularGrid.
+- All 46 rows are public, with the new basis and evidence status. Every corrected or filled category matches the lists above.
+- The plan filled 25 of the 27 widths, because 2 rows already held a width. Every one of the 27 now matches its page.
+- No held row is public, no row is `unknown`, and none stores a width over 84.
+- Rows with no category went from 285 to 286, because Laserbox has none.
+- D-LFO keeps 12 HP, marked `legacy_unsourced`. A-155 reads 50 HP.
+- `cwejman-dmf-2` is public in the catalog, but `/api/modules` has no row for DMF-2. That's why the two totals grew by 46 and 45.
+
 ## Not in this change
 
-T031 and T039 stay open. This list hasn't been loaded anywhere yet.
+T031 and T039 stay open.
