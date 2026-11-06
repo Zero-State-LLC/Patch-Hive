@@ -1,26 +1,28 @@
 """Spec 002 (patch book publishing) T010: the publication lifecycle transitions table.
 
-The table below is copied from specs/002-patch-book-publishing/spec.md, "Stateful behavior",
+The table below is checked against specs/002-patch-book-publishing/spec.md, "Stateful behavior",
 "Publication lifecycle machine". Any (state, event) pair it does not list must be rejected
 and leave the publication unchanged (the rule at the top of that section; SC-007).
 
-The global guard (every event requires ``ENABLE_LEGACY_PUBLISHING=true``) is encoded by firing
-each event at an app that main.py builds with the flag off.
-
-The page compilation machine and the book compilation machine have no implementation in the
-backend (no stage states, events or guards exist in code), so they are not encoded here.
+The global guard (every event except ``account_deleted`` requires
+``ENABLE_LEGACY_PUBLISHING=true``) is encoded by firing each event at an app that main.py builds
+with the flag off. The page and book compile machines aren't built (owner decision 37), so
+they aren't encoded here.
 """
 
 from __future__ import annotations
 
 import importlib.util
+import re
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 import main
+from account.deletion import anonymize_user
 from admin.models import AdminAuditLog
 from community.models import User
 from core import get_db, settings
@@ -29,6 +31,42 @@ from patches.models import Patch
 from publishing.models import Export, Publication, PublicationReport
 from racks.models import Rack
 from tests.conftest import bearer_headers
+
+BACKEND = Path(__file__).resolve().parents[2]
+SPEC = BACKEND.parent / "specs" / "002-patch-book-publishing" / "spec.md"
+
+# Spec "Publication lifecycle machine" / the transitions table: (from, event, to).
+SPEC_TRANSITIONS = [
+    ("[*]", "create", "draft"),
+    ("draft", "publish", "published"),
+    ("published", "owner_hide", "hidden"),
+    ("hidden", "owner_unhide", "published"),
+    ("published", "admin_hide", "hidden"),
+    ("hidden", "admin_hide", "hidden"),
+    ("published", "admin_remove", "removed"),
+    ("hidden", "admin_remove", "removed"),
+    ("draft", "edit_metadata", "draft"),
+    ("published", "edit_metadata", "published"),
+    ("hidden", "edit_metadata", "hidden"),
+    ("published", "report", "published"),
+    ("published", "owner_set_same", "published"),
+    ("hidden", "owner_set_same", "hidden"),
+    ("draft", "account_deleted", "removed"),
+    ("published", "account_deleted", "removed"),
+    ("hidden", "account_deleted", "removed"),
+    ("removed", "account_deleted", "removed"),
+]
+# Rows that have no route to fire through LISTED, and the test that holds each one.
+HELD_BY = {
+    ("[*]", "create", "draft"): "test_create_makes_a_draft_and_a_second_create_is_rejected",
+    ("draft", "publish", "published"): "test_publish_of_a_draft_is_refused_without_a_validated_book",
+    ("draft", "account_deleted", "removed"): "test_closing_an_account_removes_the_publication",
+    ("published", "account_deleted", "removed"): "test_closing_an_account_removes_the_publication",
+    ("hidden", "account_deleted", "removed"): "test_closing_an_account_removes_the_publication",
+    ("removed", "account_deleted", "removed"): "test_closing_an_account_removes_the_publication",
+}
+# The row FR-048 keeps from succeeding until T033: no export is bound to a validated book.
+CANNOT_SUCCEED_YET = {("draft", "publish", "published")}
 
 STATES = ("draft", "published", "hidden", "removed")
 
@@ -41,6 +79,8 @@ LISTED = [
     ("hidden", False, "owner_unhide", 200, "published"),
     # published --admin_hide--> hidden
     ("published", False, "admin_hide", 200, "hidden"),
+    # hidden --admin_hide--> hidden, when the owner hid it first (D6)
+    ("hidden", False, "admin_hide", 200, "hidden"),
     # published/hidden --admin_remove--> removed
     ("published", False, "admin_remove", 200, "removed"),
     ("hidden", False, "admin_remove", 200, "removed"),
@@ -51,6 +91,9 @@ LISTED = [
     ("hidden", False, "edit_metadata", 200, "hidden"),
     # published --report--> published
     ("published", False, "report", 201, "published"),
+    # setting the status a publication already has changes nothing (D9)
+    ("published", False, "owner_unhide", 200, "published"),
+    ("hidden", False, "owner_hide", 200, "hidden"),
 ]
 
 # Spec "Illegal transitions" plus the unlisted pairs; each is rejected, state unchanged.
@@ -67,12 +110,10 @@ ILLEGAL = [
     ("draft", False, "admin_remove", 409),  # draft -> removed (OQ-3)
     ("draft", False, "report", 404),
     ("hidden", False, "report", 404),
-    ("hidden", False, "admin_hide", 409),
+    ("hidden", True, "admin_hide", 409),  # already held; would replace the audit link (D6)
     ("hidden", True, "owner_unhide", 409),  # moderation-hidden (OQ-2)
-    ("published", False, "owner_unhide", 200),  # same status is a no-op, see below
+    ("hidden", True, "owner_hide", 409),  # no no-op under a hold
 ]
-# The last row is a no-op re-set of "published", not an illegal pair: drop it.
-ILLEGAL = ILLEGAL[:-1]
 
 # Spec "Illegal transitions": any event while ENABLE_LEGACY_PUBLISHING is off. Every listed
 # (from, event) pair, plus `draft --publish-->` (PATCH status=published, fired as owner_unhide).
@@ -183,6 +224,29 @@ def _fire(client: TestClient, world: dict, pub: Publication, event: str):
 
 def _reports(db: Session, pub: Publication) -> int:
     return db.query(PublicationReport).filter_by(publication_id=pub.id).count()
+
+
+def _spec_rows() -> list[tuple[str, str, str]]:
+    machine = SPEC.read_text(encoding="utf-8").split("### Publication lifecycle machine")[1]
+    table = machine.split("Illegal transitions:")[0]
+    rows = re.findall(r"^\| `([^`]+)` \| `([^`]+)` \| .*? \| `([^`]+)` \| ", table, re.M)
+    return [(start, event, end) for start, event, end in rows]
+
+
+def test_this_file_encodes_the_table_in_the_spec():
+    assert sorted(_spec_rows()) == sorted(SPEC_TRANSITIONS)
+
+
+def test_every_row_has_a_test():
+    fired = {(start, event, end) for start, _, event, _, end in LISTED}
+    fired = {
+        (start, "owner_set_same" if start == end and event.startswith("owner") else event, end)
+        for start, event, end in fired
+    }
+    assert set(SPEC_TRANSITIONS) - fired == set(HELD_BY)
+    for test in HELD_BY.values():
+        assert test in globals()
+    assert CANNOT_SUCCEED_YET <= set(HELD_BY)
 
 
 @pytest.mark.parametrize(("start", "moderated", "event", "code", "end"), LISTED)
@@ -313,3 +377,98 @@ def test_admin_event_from_a_non_admin_is_rejected(client, db_session, world, sta
     assert resp.status_code == 403
     db_session.refresh(pub)
     assert pub.status == state and pub.moderation_audit_id is None
+
+
+def test_an_owner_cannot_unhide_after_an_admin_acted_second(client, db_session, world):
+    pub = _publication(db_session, world, "published", False)
+    assert _fire(client, world, pub, "owner_hide").status_code == 200
+    assert _fire(client, world, pub, "admin_hide").status_code == 200
+
+    resp = _fire(client, world, pub, "owner_unhide")
+
+    assert resp.status_code == 409
+    assert resp.json()["detail"] == "PUBLICATION_UNDER_MODERATION"
+    db_session.refresh(pub)
+    assert pub.status == "hidden"
+
+
+@pytest.mark.parametrize("state", STATES)
+def test_closing_an_account_removes_the_publication(db_session, world, state):
+    """D2: this is the one way out of a state that skips the owner and admin routes, so it isn't
+    a moderation action: it writes no audit link, and it keeps one that's already there."""
+    pub = _publication(db_session, world, state, False)
+
+    anonymize_user(db_session, world["owner"])
+    db_session.commit()
+
+    db_session.refresh(pub)
+    assert pub.status == "removed"
+    assert pub.removed_reason == "ACCOUNT_DELETED"
+    assert pub.moderation_audit_id is None
+    assert pub.title == "Removed" and pub.description is None
+    assert pub.allow_download is False
+
+
+def test_closing_an_account_keeps_a_moderation_link(db_session, world):
+    pub = _publication(db_session, world, "hidden", True)
+    audit_before = pub.moderation_audit_id
+
+    anonymize_user(db_session, world["owner"])
+    db_session.commit()
+
+    db_session.refresh(pub)
+    assert pub.status == "removed" and pub.moderation_audit_id == audit_before
+
+
+@pytest.mark.parametrize("state", ["draft", "hidden", "removed"])
+def test_only_a_published_row_can_be_read_or_downloaded(client, db_session, world, state):
+    """FR-043, FR-046: a row that isn't public looks the same as a row that doesn't exist."""
+    pub = _publication(db_session, world, state, False)
+    assert client.get(f"/api/p/{pub.slug}").status_code == 404
+    assert client.get(f"/api/p/{pub.slug}/download/pdf").status_code == 404
+
+
+def test_the_gallery_lists_only_published_public_rows(client, db_session, world):
+    rows = {state: _publication(db_session, world, state, False) for state in STATES}
+    unlisted = _publication(db_session, world, "published", False)
+    unlisted.visibility = "unlisted"
+    db_session.commit()
+
+    resp = client.get("/api/gallery/publications")
+
+    assert resp.status_code == 200
+    assert [card["slug"] for card in resp.json()["publications"]] == [rows["published"].slug]
+
+
+def test_the_two_exports_paths_stay_closed_with_the_flag_off(flag_off_client, db_session, world):
+    """D1: the account router owns /me/exports, so these two aren't 404. No publishing handler
+    runs: POST has no route, and GET lists paid exports, not publication exports."""
+    _export(db_session, world["owner"], world["patch"])
+    owner = bearer_headers(world["owner"])
+    before = db_session.query(Export).count()
+
+    posted = flag_off_client.post(
+        "/api/me/exports", json={"export_type": "patch", "patch_id": world["patch"].id}, headers=owner
+    )
+    listed = flag_off_client.get("/api/me/exports", headers=owner)
+
+    assert posted.status_code == 405
+    assert listed.status_code == 200 and listed.json() == []
+    assert db_session.query(Export).count() == before
+
+
+def test_only_the_lifecycle_routes_and_account_closure_write_a_status():
+    """FR-049: no model or decision-layer code changes a status or moderates."""
+    writers = set()
+    for path in BACKEND.rglob("*.py"):
+        if "tests" in path.parts or "alembic" in path.parts:
+            continue
+        if re.search(r"\bpublication\.status\s*=[^=]", path.read_text(encoding="utf-8")):
+            writers.add(path.relative_to(BACKEND).as_posix())
+    assert writers == {"publishing/routes.py", "account/deletion.py"}
+
+    import_line = re.compile(r"^\s*(?:from|import)\s+(\w+)", re.M)
+    for path in (BACKEND / "intelligence").rglob("*.py"):
+        assert "publishing" not in import_line.findall(path.read_text(encoding="utf-8")), path
+    for path in (BACKEND / "publishing").rglob("*.py"):
+        assert "intelligence" not in import_line.findall(path.read_text(encoding="utf-8")), path

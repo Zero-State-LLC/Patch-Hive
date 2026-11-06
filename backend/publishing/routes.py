@@ -572,7 +572,11 @@ def hide_publication(
     )
     if not publication:
         raise HTTPException(status_code=404, detail="Publication not found")
-    if publication.status not in ("published",):
+    # A row the owner hid first still takes the hold, or the owner could unhide it (spec 002 D6).
+    can_hold = publication.status == "published" or (
+        publication.status == "hidden" and publication.moderation_audit_id is None
+    )
+    if not can_hold:
         raise HTTPException(status_code=409, detail="INVALID_TRANSITION")
 
     audit = _audit_moderation(
