@@ -315,4 +315,4 @@ def test_the_migration_refuses_to_downgrade_with_rows_and_round_trips_empty(
     with engine.connect() as conn:
         version = conn.execute(text("SELECT version_num FROM alembic_version")).scalar()
     # Head is the T050 export fair-use revision, which revises this one.
-    assert version == "20261102_export_fair_use"
+    assert version == "20261106_run_outcome_records"

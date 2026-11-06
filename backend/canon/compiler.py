@@ -367,7 +367,9 @@ def run_outcome_receipt(
         operation="run_generation",
         operation_version=GENERATOR_VERSION,
         determinism_class="deterministic",
-        input_hash=canonical_sha256({"rig_revision_id": rig_revision_id, "run_id": run_id, "seed": seed}),
+        input_hash=canonical_sha256(
+            {"rig_revision_id": rig_revision_id, "run_id": run_id, "seed": seed}
+        ),
         output_hash=canonical_sha256({"detail": detail, "status": status}),
         **_artifact_fields(
             artifact_id=_stable_id("receipt", run_id, "outcome", status),

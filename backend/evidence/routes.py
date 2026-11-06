@@ -620,7 +620,9 @@ def _record_decisions(
                 module_revision_id=asked.module_revision_id,
                 replacement_candidate_id=decision.replacement_candidate_id,
                 inventory_revision_id=inventory_revision_id,
-                reverses_decision_id=earlier.id if earlier and earlier.status != decision.status else None,
+                reverses_decision_id=(
+                    earlier.id if earlier and earlier.status != decision.status else None
+                ),
                 decided_by=decision.confirmed_by,
                 decided_at=decision.confirmed_at,
             )
