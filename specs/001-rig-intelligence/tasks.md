@@ -8,7 +8,7 @@
 
 ## Foundational
 
-- [ ] T010 Encode the transitions table as tests (workflows: anti-slop-code, production-systems). Tests written 2026-11-01 in `backend/tests/unit/test_spec_001_transitions.py` for the generation run lifecycle (enforced inline in `patches/routes.py:run_generation`): 5 of 8 transitions and 2 of 7 illegal rows. Drift, not encoded: no `rig_selected` event or IDLE/RIG_LOADED state, no retry event, nothing that could reject QUEUED/FAILED/RUNNING/NOT_COMPUTABLE illegal moves (status is assigned directly), stage receipts not asserted (FR-015/016 Partial); the module evidence disposition machine has no implementation (005's `resolution_machine.py` uses other states). Stays open until T002.
+- [x] T010 Encode the transitions table as tests (workflows: anti-slop-code, production-systems). Done 2026-11-06, through the mapping in [plan.md](plan.md). `backend/tests/unit/test_spec_001_transitions.py` holds the run lifecycle: every spec row is encoded or says why it isn't (`rig_selected` and `retry` have no handler, D1; `worker_started` moves the status but has no worker or start receipt, D4), the illegal moves are pinned by checking that `run_generation` is the only writer of a run's status, and stage receipts are asserted on the success path. `backend/tests/unit/test_spec_001_evidence_rules.py` names the test that holds each evidence row. Rejects aren't recorded yet (D8), and failed runs have no receipts yet (D5): T090 covers both.
   - depends_on: [T002]
 
 ## Implemented (reconciled 2026-10-29)
