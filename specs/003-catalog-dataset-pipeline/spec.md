@@ -372,7 +372,7 @@ Initial state: `LIVE`. Final state: `TOMBSTONED` (no un-tombstoning yet).
 
 | from | event | guard | to | effect |
 |---|---|---|---|---|
-| LIVE | flag | provenance manifest action `flag` or `null` on a NOT NULL field | FLAGGED | Archive the value; set `needs_reverify` |
+| LIVE | flag | provenance manifest action `flag`, or `null` on a nullable field (on a NOT NULL field it is refused as `not_nullable`, research R1) | FLAGGED | Archive the value; set `needs_reverify` |
 | FLAGGED | correct | correction entry matches the stored value (`only_if_value`) AND cites a maker page | LIVE | Archive the old value; write the new one; clear `needs_reverify` once every flagged field is corrected (research R8); an HP correction lifts the FR-035 block |
 | LIVE | correct | as above | LIVE | Archive the old value; write the new one |
 | LIVE | retire | retirement manifest names the row with a reason and evidence (an `https://` `evidence_url`; otherwise `retirement_needs_evidence`) | TOMBSTONED | Set `tombstoned_at` and reason (catalog), `status = tombstoned` (modules) |
