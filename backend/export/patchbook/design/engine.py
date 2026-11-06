@@ -13,6 +13,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 
+from canon.compiler import STARTUP_CHECK
 from canon.contracts import canonical_json, canonical_sha256
 from export.patchbook.design.brand_policy import (
     PDF_CREATOR_PATTERN,
@@ -563,10 +564,10 @@ def compose_design_export_pack(
     for item in library.items:
         companion_lines.append(f"## {item.compilation.patch_plan.title}")
         companion_lines.append(item.compilation.patch_plan.intent)
-        for step in item.compilation.patch_plan.steps:
-            companion_lines.append(f"  [{step.phase}] {step.instruction}")
         for cable in cable_lines(item.compilation.patch_graph, _module_labels(library)):
             companion_lines.append(f"  CABLE {cable}")
+        for number, step in enumerate(operation_lines(item.compilation, library), start=1):
+            companion_lines.append(f"  STEP {number}. {step}")
         for note in page_notes(item.compilation, library):
             companion_lines.append(f"  NOTE {note}")
         companion_lines.append("")
@@ -728,6 +729,77 @@ def cable_lines(graph: Any, labels: dict[str, str]) -> list[str]:
         f"{number}. {end(edge.source_port_id)} -> {end(edge.target_port_id)} [{edge.signal_type}]"
         for number, edge in numbered_edges(graph.edges)
     ]
+
+
+def _names(names: list[str]) -> str:
+    return names[0] if len(names) == 1 else f"{', '.join(names[:-1])} and {names[-1]}"
+
+
+def operation_lines(compilation: Any, library: LoadedLibrary) -> list[str]:
+    """How to run this patch, worked out from its own cables (FR-008). The catalog holds no
+    knob or mode data, so the steps say where to listen and what to bring in, never a setting."""
+    graph = compilation.patch_graph
+    labels = _module_labels(library)
+    nodes = {port.port_id: node for node in graph.nodes for port in node.ports}
+    cables = numbered_edges(graph.edges)
+
+    def name(port_id: str) -> str:
+        node = nodes[port_id]
+        return labels.get(node.module_instance_id, node.label)
+
+    def sources(*kinds: str) -> list[str]:
+        return list(
+            dict.fromkeys(name(e.source_port_id) for _, e in cables if e.signal_type in kinds)
+        )
+
+    audio = [e for _, e in cables if e.signal_type == "audio"]
+    passes_on = {
+        nodes[e.source_port_id].node_id
+        for e in audio
+        if nodes[e.source_port_id].node_id != nodes[e.target_port_id].node_id
+    }
+    ends = list(
+        dict.fromkeys(
+            name(e.target_port_id)
+            for e in audio
+            if nodes[e.target_port_id].node_id not in passes_on
+        )
+    )
+    timing = sources("gate", "trigger", "clock")
+    cv = sources("cv")
+    looped_ids = feedback_edge_ids(graph)
+    looped = [str(n) for n, e in cables if e.edge_id in looped_ids]
+
+    steps = [
+        STARTUP_CHECK,
+        (
+            "Patch cable 1, then power up."
+            if len(cables) == 1
+            else f"Patch cables 1 to {len(cables)} in order, then power up."
+        ),
+    ]
+    if timing:
+        steps.append(
+            f"Check that {_names(timing)} "
+            + ("is running: it sends" if len(timing) == 1 else "are running: they send")
+            + " this patch's timing."
+        )
+    steps.append(
+        f"Take your output from {_names(ends)}, and raise the level slowly."
+        if ends
+        else "Connect the module you want to hear to your output, and raise its level slowly."
+    )
+    if cv:
+        steps.append(f"Bring in the CV from {_names(cv)} slowly while monitoring the output.")
+    steps.append("Reduce the CV, then the output level." if cv else "Reduce the output level.")
+    if looped:
+        cable_word = "cable" if len(looped) == 1 else "cables"
+        steps.append(
+            f"Return levels low, remove {cable_word} {_names(looped)}, then power down if rewiring."
+        )
+    else:
+        steps.append("Return levels low, then power down if rewiring.")
+    return steps
 
 
 def page_notes(compilation: Any, library: LoadedLibrary) -> list[str]:
@@ -1008,6 +1080,7 @@ def _execution_page(
                 {
                     "modules": _page_modules(compilation, library),
                     "notes": page_notes(compilation, library),
+                    "operation": operation_lines(compilation, library),
                 }
             ),
             "layout_class": family.default_layout_class,
@@ -1115,6 +1188,7 @@ def _render_execution_pdf(
             height=height,
             body_size=body_size,
             cables=cable_lines(graph, labels),
+            operation=operation_lines(item.compilation, library),
             notes=page_notes(item.compilation, library),
             diagram=diagram,
         )
@@ -1224,6 +1298,7 @@ def layout_patch_page(
     width: float,
     height: float,
     cables: list[str],
+    operation: list[str],
     notes: list[str] | None = None,
     diagram: DiagramLayout | None = None,
     body_size: float = 9.5,
@@ -1242,6 +1317,7 @@ def layout_patch_page(
             with_title_block,
             body_size,
             cables,
+            operation,
             notes or [],
             diagram.height if diagram is not None else 0.0,
         )
@@ -1257,7 +1333,7 @@ def layout_patch_page(
     raise PreflightFailed(
         "PATCH_PAGE_TEXT_OVERFLOW",
         f"Patch {graph.artifact_id} needs more than one page for its required content "
-        f"({len(plan.steps)} steps, {len(cables)} cables). Remediation: split the "
+        f"({len(operation)} steps, {len(cables)} cables). Remediation: split the "
         "patch into smaller patches, or choose a book profile with a denser layout.",
     )
 
@@ -1272,6 +1348,7 @@ def _lay_out(
     with_title_block: bool,
     body_size: float,
     cables: list[str],
+    operation: list[str],
     notes: list[str],
     diagram_height: float,
 ) -> list[PageLine]:
@@ -1311,9 +1388,9 @@ def _lay_out(
             y -= leading
     y -= 8
     add("Checklist" if family.show_checklist else "Operation", "Helvetica-Bold", 11, 14)
-    for number, step in enumerate(plan.steps, start=1):
+    for number, step in enumerate(operation, start=1):
         prefix = "[ ] " if family.show_checklist else f"{number}. "
-        add(f"{prefix}[{step.phase}] {step.instruction}", body_font, body_size, leading)
+        add(f"{prefix}{step}", body_font, body_size, leading)
     if notes:
         y -= 8
         add("Warnings", "Helvetica-Bold", 11, 14)

@@ -18,7 +18,6 @@ from canon.contracts import (
     PatchNode,
     PatchPlan,
     PatchPort,
-    PatchStep,
     PatchVariation,
     StageReceipt,
     ValidationIssue,
@@ -26,7 +25,7 @@ from canon.contracts import (
     canonical_json,
     canonical_sha256,
 )
-from canon.compiler import _cycle_edges, compile_patch
+from canon.compiler import _cycle_edges, compile_patch, standard_plan_steps
 from canon.models import GeneratedPatchRecord, PatchLibraryRecord, RigRevisionRecord
 from modules.models import Module
 from patches.models import Patch
@@ -250,7 +249,6 @@ def _load_path_b(
     if not patches:
         raise ContentSpineError("EXPORT_NO_PATCHES", "No patches for run")
 
-    rig_modules = _rig_modules(session, canonical_rig)
     items_list: list[LoadedLibraryItem] = []
     for position, patch in enumerate(patches):
         compilation = seal_orm_patch_to_compilation(
@@ -259,7 +257,6 @@ def _load_path_b(
             source_rig_revision_id=source_rig_revision_id,
             rig_snapshot=canonical_rig,
             position=position,
-            module_labels={mid: module.label for mid, module in rig_modules.items()},
         )
         items_list.append(
             LoadedLibraryItem(
@@ -424,7 +421,6 @@ def seal_orm_patch_to_compilation(
     source_rig_revision_id: str,
     rig_snapshot: dict[str, Any],
     position: int = 0,
-    module_labels: dict[str, str] | None = None,
 ) -> PatchCompilation:
     """Deterministic pure seal from immutable run-bound patch JSON (Path B)."""
     # Fixed timestamp for determinism (Layer A seal must not depend on wall clock)
@@ -449,7 +445,6 @@ def seal_orm_patch_to_compilation(
         edges=edges,
     ).seal()
 
-    steps = _plan_steps_from_connections(connections, module_labels or {})
     plan = PatchPlan(
         artifact_id=f"{artifact_base}-plan",
         entity_id=str(patch.id),
@@ -460,7 +455,7 @@ def seal_orm_patch_to_compilation(
         created_at=now,
         title=str(patch.name or "UNKNOWN"),
         intent=str(patch.description or "NOT_COMPUTABLE"),
-        steps=steps,
+        steps=standard_plan_steps(),
         variations=(),
     ).seal()
 
@@ -563,67 +558,6 @@ def _map_signal(cable_type: Any) -> str:
     if "audio" in raw or "out" in raw:
         return "audio"
     return "unknown"
-
-
-def _plan_steps_from_connections(
-    connections: list[dict[str, Any]], labels: dict[str, str]
-) -> tuple[PatchStep, ...]:
-    phases = ("prep", "threshold", "peak", "release", "seal")
-    if not connections:
-        return tuple(
-            PatchStep(
-                position=i,
-                phase=phase,  # type: ignore[arg-type]
-                instruction=f"{phase}: no cables (UNKNOWN topology)",
-                expected_result="NOT_COMPUTABLE",
-            )
-            for i, phase in enumerate(phases)
-        )
-
-    # Distribute connections across phases; ensure all five phases present
-    steps: list[PatchStep] = []
-    n = len(connections)
-    for i, phase in enumerate(phases):
-        # Map phase to a connection index
-        conn_idx = min(i, n - 1) if n else 0
-        if i < n:
-            conn = connections[i]
-            source = str(conn.get("from_module_id", "UNKNOWN"))
-            target = str(conn.get("to_module_id", "UNKNOWN"))
-            instruction = (
-                f"Connect {labels.get(source, source)} "
-                f"{conn.get('from_port', 'UNKNOWN')} → "
-                f"{labels.get(target, target)} "
-                f"{conn.get('to_port', 'UNKNOWN')}"
-            )
-        else:
-            conn = connections[conn_idx]
-            instruction = f"{phase}: verify prior connection {conn.get('from_port', 'UNKNOWN')}"
-        steps.append(
-            PatchStep(
-                position=i,
-                phase=phase,  # type: ignore[arg-type]
-                instruction=instruction,
-                expected_result="Signal path established" if i < n else "Stable operation",
-            )
-        )
-    # Append remaining cables as peak-phase extras with unique positions
-    for j in range(5, n):
-        conn = connections[j]
-        steps.append(
-            PatchStep(
-                position=j,
-                phase="peak",
-                instruction=(
-                    f"Connect {conn.get('from_module_id', 'UNKNOWN')} "
-                    f"{conn.get('from_port', 'UNKNOWN')} → "
-                    f"{conn.get('to_module_id', 'UNKNOWN')} "
-                    f"{conn.get('to_port', 'UNKNOWN')}"
-                ),
-                expected_result="Signal path established",
-            )
-        )
-    return tuple(steps)
 
 
 def _compilation_from_generated(row: GeneratedPatchRecord) -> PatchCompilation:

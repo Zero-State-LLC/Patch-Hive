@@ -13,7 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from canon.contracts import canonical_sha256
 
 STYLE_RECIPE_SCHEMA_VERSION = "patchhive.style_recipe.v1"
-DESIGN_ENGINE_VERSION = "0.2.0"
+DESIGN_ENGINE_VERSION = "0.3.0"
 
 
 class PatchBookMode(str, Enum):

@@ -97,10 +97,9 @@ def test_compiler_agrees_with_the_adapter_on_graph_and_blocking_findings(
         assert [(e.source_port_id, e.target_port_id) for e in compiled.patch_graph.edges] == [
             (e.source_port_id, e.target_port_id) for e in adapter.patch_graph.edges
         ]
-        # Both carry five phases; only the compiler's prep step carries a startup warning.
-        assert {s.phase for s in compiled.patch_plan.steps} == {s.phase for s in adapter.patch_plan.steps}
+        # Both carry the same five steps, and the prep step carries a startup warning.
+        assert compiled.patch_plan.steps == adapter.patch_plan.steps
         assert any(s.warning for s in compiled.patch_plan.steps if s.phase == "prep")
-        assert not any(s.warning for s in adapter.patch_plan.steps)
         # The compiler adds the validate stage the adapter lacks.
         assert [r.stage for r in compiled.stage_receipts] == ["normalize", "generate", "validate"]
         assert [r.stage for r in adapter.stage_receipts] == ["design_engine"]

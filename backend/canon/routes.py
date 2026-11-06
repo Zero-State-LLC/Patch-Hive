@@ -759,6 +759,7 @@ def preview_patchbook_style(
     from canon.entitlements import get_design_entitlements, tier_allows_family
     from export.patchbook.design.constraints import StyleResolveError, resolve_style_recipe
     from export.patchbook.design.content_spine import ContentSpineError, load_patch_compilations
+    from export.patchbook.design.engine import operation_lines
     from export.patchbook.design.rate_limit import check_preview_rate_limit
     from export.patchbook.design.recipe import (
         RequestStyleRecipe,
@@ -818,7 +819,7 @@ def preview_patchbook_style(
                 "title": plan.title,
                 "intent": plan.intent,
                 "edge_count": len(graph.edges),
-                "steps": [{"phase": s.phase, "instruction": s.instruction} for s in plan.steps[:8]],
+                "operation": operation_lines(item.compilation, library),
                 "warnings": [
                     {"code": i.code, "severity": i.severity, "message": i.message}
                     for i in item.compilation.validation_report.issues[:5]
