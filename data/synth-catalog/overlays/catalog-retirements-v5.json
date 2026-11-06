@@ -1,0 +1,351 @@
+{
+ "dataset_version": "catalog-retirements-v5",
+ "generated_from": "hand review of the public rows that share a maker page, 2026-11-05",
+ "decided": "under owner decision 7's rule (docs/evidence/OWNER_DECISIONS_2026-11-04.md); the owner saw this list before the load",
+ "policy": "tombstone, never delete: module_catalog.tombstoned_at + reason, modules.status='tombstoned'",
+ "count": 38,
+ "rows": [
+  {
+   "slug": "4ms-company-qcd-quad-clock-distributor",
+   "brand": "4ms Company",
+   "name": "QCD: Quad Clock Distributor",
+   "owner": "4ms Company",
+   "evidence_url": "https://4mscompany.com/p.php?p=620&c=5",
+   "reason": "duplicate: the maker's page for 4ms QCD, held as 4ms-company-4ms-qcd",
+   "kept_as": "4ms-company-4ms-qcd"
+  },
+  {
+   "slug": "addac-system-addac200s-size-matter-black",
+   "brand": "ADDAC System",
+   "name": "ADDAC200S Size Matter black",
+   "owner": "ADDAC System",
+   "evidence_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200s",
+   "reason": "same module in another finish: the maker's page sells one ADDAC200S, held as addac-system-addac200s",
+   "kept_as": "addac-system-addac200s"
+  },
+  {
+   "slug": "aircraft-designs-ember",
+   "brand": "Aircraft Designs",
+   "name": "EMBER",
+   "owner": "Aircraft Designs",
+   "evidence_url": "https://aircraftdesigns.info/ember",
+   "reason": "duplicate: the maker's page for Ember Analog Mid/Side Saturator, held as aircraft-designs-ember-analog-mid-side-saturator",
+   "kept_as": "aircraft-designs-ember-analog-mid-side-saturator"
+  },
+  {
+   "slug": "animodule-mixman-mixer-man",
+   "brand": "AniModule",
+   "name": "MixMan Mixer/Man",
+   "owner": "AniModule",
+   "evidence_url": "https://www.animodule.com/product/mixman-mixer-manipulator",
+   "reason": "a misread name: the maker's page is for MixMan Mixer/Manipulator, held as animodule-mixman-mixer-manipulator",
+   "kept_as": "animodule-mixman-mixer-manipulator"
+  },
+  {
+   "slug": "at1-4-cv-channel",
+   "brand": "AT1",
+   "name": "4 CV CHANNEL",
+   "owner": "AT1",
+   "evidence_url": "https://at1-modular.company.site/4-CV-CHANNEL-MIXER-p562956803",
+   "reason": "a misread name: the maker's page is for 4 CV CHANNEL MIXER, held as at1-4-cv-channel-mixer",
+   "kept_as": "at1-4-cv-channel-mixer"
+  },
+  {
+   "slug": "bastl-instruments-knit-rider-expander",
+   "brand": "Bastl Instruments",
+   "name": "Knit Rider Expander",
+   "owner": "Bastl Instruments",
+   "evidence_url": "https://bastl-instruments.com/eurorack/modules/knit-rider-exp",
+   "reason": "duplicate: the maker's page for Knit Rider EXP, held as bastl-instruments-knit-rider-exp",
+   "kept_as": "bastl-instruments-knit-rider-exp"
+  },
+  {
+   "slug": "die-systems-16-step-sequencer-build-to-order",
+   "brand": "DIE Systems",
+   "name": "16 STEP SEQUENCER (Build to Order)",
+   "owner": "DIE Systems",
+   "evidence_url": "https://die.systems/product/16-step-sequencer/",
+   "reason": "duplicate: the maker's page for 16 STEP SEQUENCER, held as die-systems-16-step-sequencer",
+   "kept_as": "die-systems-16-step-sequencer"
+  },
+  {
+   "slug": "doepfer-a-106-5-sem",
+   "brand": "Doepfer",
+   "name": "A-106-5 SEM",
+   "owner": "Doepfer",
+   "evidence_url": "https://doepfer.de/a1065.htm",
+   "reason": "duplicate: the maker's page for A-106-5, held as doepfer-a-106-5",
+   "kept_as": "doepfer-a-106-5"
+  },
+  {
+   "slug": "doepfer-a-110",
+   "brand": "Doepfer",
+   "name": "A-110",
+   "owner": "Doepfer",
+   "evidence_url": "https://doepfer.de/a110.htm",
+   "reason": "duplicate: the maker's page for A-110-1, held as doepfer-a-110-1",
+   "kept_as": "doepfer-a-110-1"
+  },
+  {
+   "slug": "dpw-design-av3-attenuverter-mixer-comparator",
+   "brand": "DPW Design",
+   "name": "AV3, Attenuverter, Mixer, Comparator",
+   "owner": "DPW Design",
+   "evidence_url": "https://dpw.se/product/av3-attenuverter-mixer-comparator/",
+   "reason": "duplicate: the maker's page for AV3, held as dpw-design-av3",
+   "kept_as": "dpw-design-av3"
+  },
+  {
+   "slug": "endorphin-es-autopilot-golden",
+   "brand": "Endorphin.es",
+   "name": "Autopilot (golden)",
+   "owner": "Endorphin.es",
+   "evidence_url": "https://www.endorphin.es/modules/p/autopilot",
+   "reason": "same module in another finish: the maker's page sells one AUTOPILOT, held as endorphin-es-autopilot",
+   "kept_as": "endorphin-es-autopilot"
+  },
+  {
+   "slug": "endorphin-es-blck-noir-black",
+   "brand": "Endorphin.es",
+   "name": "Blck_Noir (black)",
+   "owner": "Endorphin.es",
+   "evidence_url": "https://www.endorphin.es/modules/p/blck-noir",
+   "reason": "same module in another finish: the maker's page sells one BLCK_NOIR, held as endorphin-es-blck-noir",
+   "kept_as": "endorphin-es-blck-noir"
+  },
+  {
+   "slug": "endorphin-es-cockpit-black",
+   "brand": "Endorphin.es",
+   "name": "Cockpit (black)",
+   "owner": "Endorphin.es",
+   "evidence_url": "https://www.endorphin.es/discontinued/p/cockpit",
+   "reason": "same module in another finish: the maker's page sells one COCKPIT MK1, held as endorphin-es-cockpit-mk1",
+   "kept_as": "endorphin-es-cockpit-mk1"
+  },
+  {
+   "slug": "endorphin-es-cockpit-golden",
+   "brand": "Endorphin.es",
+   "name": "Cockpit (golden)",
+   "owner": "Endorphin.es",
+   "evidence_url": "https://www.endorphin.es/discontinued/p/cockpit",
+   "reason": "same module in another finish: the maker's page sells one COCKPIT MK1, held as endorphin-es-cockpit-mk1",
+   "kept_as": "endorphin-es-cockpit-mk1"
+  },
+  {
+   "slug": "endorphin-es-furthrrrr-generator-black",
+   "brand": "Endorphin.es",
+   "name": "Furthrrrr Generator (black)",
+   "owner": "Endorphin.es",
+   "evidence_url": "https://www.endorphin.es/modules/p/furthrrrr-generator",
+   "reason": "same module in another finish: the maker's page sells one FURTHRRRR GENERATOR, held as endorphin-es-furthrrrr-generator",
+   "kept_as": "endorphin-es-furthrrrr-generator"
+  },
+  {
+   "slug": "endorphin-es-furthrrrr-generator-golden",
+   "brand": "Endorphin.es",
+   "name": "Furthrrrr Generator (golden)",
+   "owner": "Endorphin.es",
+   "evidence_url": "https://www.endorphin.es/modules/p/furthrrrr-generator",
+   "reason": "same module in another finish: the maker's page sells one FURTHRRRR GENERATOR, held as endorphin-es-furthrrrr-generator",
+   "kept_as": "endorphin-es-furthrrrr-generator"
+  },
+  {
+   "slug": "endorphin-es-grand-terminal-black",
+   "brand": "Endorphin.es",
+   "name": "Grand Terminal (black)",
+   "owner": "Endorphin.es",
+   "evidence_url": "https://www.endorphin.es/modules/p/grand-terminal",
+   "reason": "same module in another finish: the maker's page sells one GRAND TERMINAL, held as endorphin-es-grand-terminal",
+   "kept_as": "endorphin-es-grand-terminal"
+  },
+  {
+   "slug": "endorphin-es-grand-terminal-golden",
+   "brand": "Endorphin.es",
+   "name": "Grand Terminal (golden)",
+   "owner": "Endorphin.es",
+   "evidence_url": "https://www.endorphin.es/modules/p/grand-terminal",
+   "reason": "same module in another finish: the maker's page sells one GRAND TERMINAL, held as endorphin-es-grand-terminal",
+   "kept_as": "endorphin-es-grand-terminal"
+  },
+  {
+   "slug": "endorphin-es-shuttle-control-black",
+   "brand": "Endorphin.es",
+   "name": "Shuttle Control (black)",
+   "owner": "Endorphin.es",
+   "evidence_url": "https://www.endorphin.es/modules/p/shuttle-control",
+   "reason": "same module in another finish: the maker's page sells one SHUTTLE CONTROL, held as endorphin-es-shuttle-control",
+   "kept_as": "endorphin-es-shuttle-control"
+  },
+  {
+   "slug": "endorphin-es-shuttle-system-golden",
+   "brand": "Endorphin.es",
+   "name": "Shuttle System (golden)",
+   "owner": "Endorphin.es",
+   "evidence_url": "https://www.endorphin.es/modules/p/shuttle-system",
+   "reason": "same module in another finish: the maker's page sells one Shuttle System (black), held as endorphin-es-shuttle-system-black",
+   "kept_as": "endorphin-es-shuttle-system-black"
+  },
+  {
+   "slug": "expert-sleepers-esx-4cv-cv-expander",
+   "brand": "Expert Sleepers",
+   "name": "ESX-4CV CV Expander",
+   "owner": "Expert Sleepers",
+   "evidence_url": "https://www.expert-sleepers.co.uk/esx4cv.html",
+   "reason": "duplicate: the maker's page for ESX-4CV, held as expert-sleepers-esx-4cv",
+   "kept_as": "expert-sleepers-esx-4cv"
+  },
+  {
+   "slug": "expert-sleepers-sleepers",
+   "brand": "Expert Sleepers",
+   "name": "Sleepers",
+   "owner": "Expert Sleepers",
+   "evidence_url": "https://www.expert-sleepers.co.uk/es40.html",
+   "reason": "a misread name: the maker's page is for ES-40 SPDIF Interface, held as expert-sleepers-es-40-spdif-interface",
+   "kept_as": "expert-sleepers-es-40-spdif-interface"
+  },
+  {
+   "slug": "guru-gara-synth-dual-ringmodulator-eurorack-platine-und-frontplatte",
+   "brand": "Guru Gara Synth",
+   "name": "Dual Ringmodulator / Eurorack Platine und Frontplatte",
+   "owner": "Guru Gara Synth",
+   "evidence_url": "https://gurugarasynth.com/de/products/dual-ring-modulator",
+   "reason": "duplicate: the maker's page for Dual Ringmodulator, held as guru-gara-synth-dual-ringmodulator",
+   "kept_as": "guru-gara-synth-dual-ringmodulator"
+  },
+  {
+   "slug": "make-noise-rene",
+   "brand": "Make Noise",
+   "name": "Rene",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/rene-classic/",
+   "reason": "duplicate: the maker's page for René (Classic), held as make-noise-ren-classic",
+   "kept_as": "make-noise-ren-classic"
+  },
+  {
+   "slug": "make-noise-rene-2",
+   "brand": "Make Noise",
+   "name": "Rene 2",
+   "owner": "Make Noise",
+   "evidence_url": "https://www.makenoisemusic.com/modules/rene",
+   "reason": "duplicate: the maker's page for René, held as make-noise-ren",
+   "kept_as": "make-noise-ren"
+  },
+  {
+   "slug": "modulaire-maritime-vc-crossfader",
+   "brand": "Modulaire Maritime",
+   "name": "VC Crossfader",
+   "owner": "Modulaire Maritime",
+   "evidence_url": "https://www.modulaire-maritime.com/fr/product-page/r-k",
+   "reason": "duplicate: the maker's page for R / K, held as modulaire-maritime-r-k",
+   "kept_as": "modulaire-maritime-r-k"
+  },
+  {
+   "slug": "noise-engineering-basimilus-iteritas-legacy-hardware",
+   "brand": "Noise Engineering",
+   "name": ": Basimilus Iteritas (Legacy Hardware)",
+   "owner": "Noise Engineering",
+   "evidence_url": "https://noiseengineering.us/products/basimilus-iteritas-legacy",
+   "reason": "a misread name: the maker's page is for Basimilus Iteritas, held as noise-engineering-basimilus-iteritas",
+   "kept_as": "noise-engineering-basimilus-iteritas"
+  },
+  {
+   "slug": "plum-audio-scillator",
+   "brand": "Plum Audio",
+   "name": "SCILLATOR",
+   "owner": "Plum Audio",
+   "evidence_url": "https://www.plum-audio.com/product-page/roved",
+   "reason": "a misread name: the maker's page is for RO'VED, held as plum-audio-ro-ved",
+   "kept_as": "plum-audio-ro-ved"
+  },
+  {
+   "slug": "qu-bit-electronix-chord",
+   "brand": "Qu-Bit Electronix",
+   "name": "Chord",
+   "owner": "Qu-Bit Electronix",
+   "evidence_url": "https://www.qubitelectronix.com/shop/p/chord-v2",
+   "reason": "duplicate: the maker's page for Chord v2, held as qu-bit-electronix-chord-v2",
+   "kept_as": "qu-bit-electronix-chord-v2"
+  },
+  {
+   "slug": "rides-in-the-storm-dpm-dual-passive-multiple",
+   "brand": "Rides in the Storm",
+   "name": "DPM Dual Passive Multiple",
+   "owner": "Rides in the Storm",
+   "evidence_url": "https://rides-in-the-storm.de/modules/dpm",
+   "reason": "duplicate: the maker's page for DPM, held as rides-in-the-storm-dpm",
+   "kept_as": "rides-in-the-storm-dpm"
+  },
+  {
+   "slug": "setonixsynth-noise-complaint",
+   "brand": "SetonixSynth",
+   "name": "Noise Complaint",
+   "owner": "SetonixSynth",
+   "evidence_url": "https://www.setonixsynth.com/shop/p/noise-complaint-1u-yzank",
+   "reason": "duplicate: the maker's page for Noise Complaint 1U, held as setonixsynth-noise-complaint-1u",
+   "kept_as": "setonixsynth-noise-complaint-1u"
+  },
+  {
+   "slug": "sitka-instruments-gravity-eurorack-clock-and-trigger-sequencer",
+   "brand": "Sitka Instruments",
+   "name": "Gravity Eurorack Clock and Trigger Sequencer",
+   "owner": "Sitka Instruments",
+   "evidence_url": "https://sitkainstruments.com/gravity/",
+   "reason": "duplicate: the maker's page for Gravity, held as sitka-instruments-gravity",
+   "kept_as": "sitka-instruments-gravity"
+  },
+  {
+   "slug": "st-modular-chiasso",
+   "brand": "ST Modular",
+   "name": "Chiasso",
+   "owner": "ST Modular",
+   "evidence_url": "https://www.st-modular.de/modules/chiasso",
+   "reason": "duplicate: the maker's page for Chiasso V2, held as st-modular-chiasso-v2",
+   "kept_as": "st-modular-chiasso-v2"
+  },
+  {
+   "slug": "steady-state-fate-state-gate",
+   "brand": "Steady State Fate",
+   "name": "State Gate",
+   "owner": "Steady State Fate",
+   "evidence_url": "https://steadystatefate.com/products/steady-state-gate",
+   "reason": "a misread name: the maker's page is for Steady State Gate, held as steady-state-fate-steady-state-gate",
+   "kept_as": "steady-state-fate-steady-state-gate"
+  },
+  {
+   "slug": "york-modular-diode-ladder-vcf-6hp",
+   "brand": "York Modular",
+   "name": "Diode ladder VCF (6HP)",
+   "owner": "York Modular",
+   "evidence_url": "https://www.yorkmodular.co.uk/products/diode-ladder-vcf-6hp",
+   "reason": "duplicate: the maker's page for Diode ladder VCF, held as york-modular-diode-ladder-vcf",
+   "kept_as": "york-modular-diode-ladder-vcf"
+  },
+  {
+   "slug": "york-modular-frisk-fixed-sallen-key-filter-bank-4hp",
+   "brand": "York Modular",
+   "name": "FRiSK: fixed Sallen-Key filter bank (4HP)",
+   "owner": "York Modular",
+   "evidence_url": "https://www.yorkmodular.co.uk/products/frcl-rev2-0-fixed-rc-filter-bank-4hp",
+   "reason": "duplicate: the maker's page for FRiSK: fixed Sallen-Key filter bank, held as york-modular-frisk-fixed-sallen-key-filter-bank",
+   "kept_as": "york-modular-frisk-fixed-sallen-key-filter-bank"
+  },
+  {
+   "slug": "york-modular-splerge-stereo-split-merge-module",
+   "brand": "York Modular",
+   "name": "SPLERGE: Stereo split/merge module",
+   "owner": "York Modular",
+   "evidence_url": "https://www.yorkmodular.co.uk/products/splerge-stereo-split-merge-module-2hp",
+   "reason": "duplicate: the maker's page for SPLERGE, held as york-modular-splerge",
+   "kept_as": "york-modular-splerge"
+  },
+  {
+   "slug": "york-modular-tinydvcov2-avr-based-wavetable-digital-vco",
+   "brand": "York Modular",
+   "name": "TinyDVCOv2: AVR-based wavetable digital VCO",
+   "owner": "York Modular",
+   "evidence_url": "https://www.yorkmodular.co.uk/products/tinydvcov2-avr-based-wavetable-digital-vco-2hp-updated-design",
+   "reason": "duplicate: the maker's page for TinyDVCOv2, held as york-modular-tinydvcov2",
+   "kept_as": "york-modular-tinydvcov2"
+  }
+ ]
+}

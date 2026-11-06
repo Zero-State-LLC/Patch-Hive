@@ -145,6 +145,8 @@ class Plan:
     module_type_sync: dict[str, Any] = field(default_factory=dict)
     access_basis: dict[str, Any] = field(default_factory=dict)
     lead_promotions: dict[str, int] = field(default_factory=dict)
+    retiring_modules: list[tuple[str, str]] = field(default_factory=list)
+    retired_on_racks: dict[str, int] = field(default_factory=dict)
 
     def add_insert(self, kind: str, op: Op) -> None:
         self.ops.append(op)
@@ -175,7 +177,7 @@ def _stamp() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-POWER_OVERLAY_LATEST = 15
+POWER_OVERLAY_LATEST = 16
 CATALOG_ADDITIONS_LATEST = 6
 ENTRY_VERIFICATION = {"verified", "corrected", "flagged"}
 
@@ -1266,6 +1268,26 @@ def _schedule_category(plan: Plan, catalog: dict[str, dict[str, Any]], entry: di
     plan.add_update("category_overlay", _category_update(slug, brand, name, str(category)))
 
 
+def _rigs_holding(conn: Connection, modules: list[tuple[str, str]]) -> dict[str, int]:
+    """How many Rigs hold a module this plan retires, for the owner to read before an apply.
+
+    Counts only. A placed module stays placed, and every read of that Rig warns about it.
+    """
+    rigs: set[int] = set()
+    placements = 0
+    for brand, name in modules:
+        held = conn.execute(
+            text(
+                "SELECT rm.rack_id FROM rack_modules rm JOIN modules m ON m.id = rm.module_id "
+                "WHERE m.brand = :brand AND m.name = :name"
+            ),
+            {"brand": brand, "name": name},
+        ).all()
+        placements += len(held)
+        rigs.update(row[0] for row in held)
+    return {"modules_retiring": len(modules), "rigs": len(rigs), "placements": placements}
+
+
 def _schedule_retirement(
     plan: Plan,
     catalog: dict[str, dict[str, Any]],
@@ -1316,6 +1338,7 @@ def _schedule_retirement(
         _bump(plan.unmatched, "retire_module")
     elif module.get("status") != "tombstoned":
         module["status"] = "tombstoned"
+        plan.retiring_modules.append((brand, name))
         plan.add_update(
             "module_retire",
             Op(
@@ -2407,6 +2430,7 @@ def receipt_for(plan: Plan, *, database_url: str, apply: bool, cases: dict[str, 
         "module_type_sync": plan.module_type_sync,
         "access_basis": plan.access_basis,
         "lead_promotions": plan.lead_promotions,
+        "retired_on_racks": plan.retired_on_racks,
         "cases": cases,
         "destructive_sql": False,
     }
@@ -2520,6 +2544,7 @@ def populate(
         try:
             with engine.connect() as conn:
                 plan = build_plan(conn, verification_path=verification_path)
+                plan.retired_on_racks = _rigs_holding(conn, plan.retiring_modules)
                 counts_before = provenance_counts(conn)
         except ProgrammingError:
             raise SystemExit(

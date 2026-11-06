@@ -21,7 +21,7 @@ OVERLAYS = ROOT / "data" / "synth-catalog" / "overlays"
 def test_v15_fills_both_cockpits_from_the_maker_page_and_is_loaded() -> None:
     v14 = json.loads((OVERLAYS / "module-power-depth-v14.json").read_text())
     v15 = json.loads((OVERLAYS / "module-power-depth-v15.json").read_text())
-    assert P.POWER_OVERLAY_LATEST == 15
+    assert P.POWER_OVERLAY_LATEST >= 15
     assert v15["count"] == len(v15["entries"]) == 2
     hp_source = {e["slug"]: e for e in json.loads((OVERLAYS / "module-catalog-hp-v5.json").read_text())["entries"]}
     page = hp_source["endorphin-es-cockpit-black"]["source_url"]

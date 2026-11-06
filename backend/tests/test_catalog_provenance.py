@@ -168,7 +168,8 @@ def test_archive_then_null_relabel_and_rerun(url, tmp_path):
     again = P.populate(url, apply=True, verification_path=tmp_path / "none.json")
     stats = again["provenance"]["modulargrid-provenance-v1"]
     assert stats["archived_values"] == 0 and stats["nulled_values"] == 0
-    assert stats["rows_already_processed"] == len(_manifest()["rows"])
+    # A row retired since it was processed counts as refused on a re-run, and nothing is written.
+    assert stats["rows_already_processed"] + stats["refused_row_tombstoned"] == len(_manifest()["rows"])
     assert _counts(engine) == after
     engine.dispose()
 
