@@ -65,6 +65,12 @@ def _summary(
                 f"- ModularGrid URLs cleared: {basis['urls_cleared']}; "
                 f"on retired rows, left alone: {basis['left_alone_retired_with_url']}"
             )
+        if promoted := receipt.get("lead_promotions"):
+            # FR-034: what a production go-ahead would bring back into anonymous reads.
+            lines.append(
+                f"- leads confirmed by a maker page: {promoted['promoted']}; "
+                f"already confirmed: {promoted['already_confirmed']}; not in this database: {promoted['rows_missing']}"
+            )
         lines.append("")
     lines += [
         "| table | before | after | delta |",

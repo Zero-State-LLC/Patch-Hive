@@ -359,7 +359,13 @@ def test_a_reviewed_table_is_never_regenerated() -> None:
 def test_a_load_from_the_committed_inputs_has_no_conflict_and_fills_every_row(fresh) -> None:
     plan, catalog, _ = fresh
     assert plan.conflicts_total == 0
-    assert "category" not in plan.unmatched
+    # Overlay v7 also fills leads that only a deployed database holds (spec 003 FR-034).
+    filled_on_deployed_only = [
+        entry["slug"]
+        for entry in json.loads((OVERLAYS / "module-catalog-category-v7.json").read_text())["entries"]
+        if entry["slug"] not in catalog
+    ]
+    assert plan.unmatched.get("category", 0) == len(filled_on_deployed_only)
     for entry in RULES["entries"] + REVIEWED["entries"]:
         row = catalog[entry["slug"]]
         assert (row["brand"], row["name"], row["category"]) == (entry["brand"], entry["name"], entry["category"])

@@ -144,6 +144,7 @@ class Plan:
     power_configs: dict[str, Any] = field(default_factory=dict)
     module_type_sync: dict[str, Any] = field(default_factory=dict)
     access_basis: dict[str, Any] = field(default_factory=dict)
+    lead_promotions: dict[str, int] = field(default_factory=dict)
 
     def add_insert(self, kind: str, op: Op) -> None:
         self.ops.append(op)
@@ -323,6 +324,7 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     # After every fill, correction and retirement above, so it reads each row's final state.
     _schedule_module_type_sync(plan, catalog, modules)
     _schedule_access_basis(plan, catalog, modules, _load_optional(ACCESS_BASIS_OVERLAY))
+    _schedule_lead_promotions(plan, catalog, _load_optional(LEAD_PROMOTIONS))
 
     # Jumper settings attach to module rows, so they run after every module insert and
     # retirement above (spec 003 D8, T034).
@@ -379,6 +381,8 @@ CATEGORY_CORRECTION_MANIFESTS = (
     CATALOG / "provenance" / "category-corrections-v3.json",
     CATALOG / "provenance" / "category-corrections-v4.json",
     CATALOG / "provenance" / "catalog-url-corrections-v1.json",
+    CATALOG / "provenance" / "category-corrections-v5.json",
+    CATALOG / "provenance" / "hp-footer-corrections-v1.json",
 )
 # A row's Module Category: module_catalog.category, and modules.module_type on the row the
 # patch engine reads. A manifest may only correct these, never null, flag or relabel them.
@@ -395,7 +399,7 @@ ARCHIVE_FIELDS = {
         "source_reference",
         "module_type",
     },
-    "module_catalog": {"hp", "category", "modulargrid_url", "manufacturer_url"},
+    "module_catalog": {"hp", "category", "modulargrid_url", "manufacturer_url", "access_basis", "evidence_status"},
 }
 NULLABLE = {"modules": set(POWER_FIELDS) | {"verification_source_url"}, "module_catalog": {"hp"}}
 ARCHIVE_ACTIONS = {"null", "keep", "flag", "relabel", "correct"}
@@ -1433,6 +1437,10 @@ def _schedule_module_type_sync(
 # Owner decisions 52 and 53. The overlay lists the maker rows that passed ADR 0002's checks. Leads
 # are found by source, because the repo doesn't name ModularGrid-derived rows.
 ACCESS_BASIS_OVERLAY = CATALOG / "overlays" / "access-basis-v1.json"
+LEAD_PROMOTIONS = CATALOG / "overlays" / "lead-promotions-v1.json"
+LEAD_PROMOTION_BATCH = "lead-promotions-v1"
+PROMOTED_BASIS = "official_publication"
+PROMOTED_EVIDENCE = "MANUFACTURER_CONFIRMED"
 MAKER_ROW_SOURCES = ("ManufacturerCrawl", "ManufacturerVerified")
 LEAD_ROW_SOURCES = ("CatalogCandidate", "SynthCatalogResearch")
 LEAD_BASIS = "unknown"
@@ -1447,6 +1455,76 @@ def _is_modulargrid(url: Any) -> bool:
 
 def _url_host(url: Any) -> str:
     return (urlparse(str(url or "")).hostname or "").lower().removeprefix("www.")
+
+
+def _schedule_lead_promotions(
+    plan: Plan,
+    catalog: dict[str, dict[str, Any]],
+    overlay: dict[str, Any],
+) -> None:
+    """Move a lead out of ``unknown`` once its maker's page confirms it (FR-034).
+
+    This is the only path that changes a basis, and only from ``unknown``. Each row must cite the
+    maker's page. The old values are archived first, and a stored maker URL is never replaced. A row
+    that isn't a lead is left alone: a load from empty takes a maker row from the maker's own crawl.
+    """
+    stats = {"promoted": 0, "already_confirmed": 0, "rows_missing": 0, "refused_row_tombstoned": 0}
+    plan.lead_promotions = stats
+    for entry in overlay.get("rows") or []:
+        slug, brand, name = entry.get("slug"), entry.get("brand"), entry.get("name")
+        url = str(entry.get("source_url") or "")
+        if not url.startswith("https://") or _is_modulargrid(url):
+            plan.conflict(table="module_catalog", slug=slug, reason="lead_promotion_needs_maker_page")
+            continue
+        row = catalog.get(slug)
+        if row is None:
+            stats["rows_missing"] += 1
+            continue
+        if row["brand"] != brand or row["name"] != name:
+            plan.conflict(table="module_catalog", slug=slug, reason="lead_promotion_identity_mismatch")
+            continue
+        if row.get("tombstoned"):
+            stats["refused_row_tombstoned"] += 1
+            continue
+        if row.get("access_basis") != LEAD_BASIS:
+            stats["already_confirmed"] += 1
+            continue
+        if row.get("source") not in LEAD_ROW_SOURCES:
+            plan.conflict(table="module_catalog", slug=slug, reason="lead_promotion_not_a_lead")
+            continue
+        tag = f"{LEAD_PROMOTION_BATCH}: the maker's page {url}"[:200]
+        _archive_row(
+            plan,
+            LEAD_PROMOTION_BATCH,
+            "module_catalog",
+            slug,
+            brand,
+            name,
+            [
+                {"field": "access_basis", "action": "correct", "only_if_value": LEAD_BASIS, "source_tag": tag},
+                {"field": "evidence_status", "action": "correct", "only_if_value": LEAD_EVIDENCE, "source_tag": tag},
+            ],
+        )
+        row["access_basis"] = PROMOTED_BASIS
+        row["manufacturer_url"] = row.get("manufacturer_url") or url
+        stats["promoted"] += 1
+        plan.add_update(
+            "lead_promoted",
+            Op(
+                "promote_lead",
+                """
+                UPDATE module_catalog
+                SET access_basis = :access_basis, evidence_status = :evidence_status,
+                    manufacturer_url = COALESCE(manufacturer_url, :url), updated_at = CURRENT_TIMESTAMP
+                WHERE slug = :slug AND brand = :brand AND name = :name
+                  AND access_basis = :lead_basis AND tombstoned_at IS NULL
+                """,
+                {
+                    "slug": slug, "brand": brand, "name": name, "access_basis": PROMOTED_BASIS,
+                    "evidence_status": PROMOTED_EVIDENCE, "url": url, "lead_basis": LEAD_BASIS,
+                },
+            ),
+        )
 
 
 def _schedule_access_basis(
@@ -2265,6 +2343,7 @@ def provenance_counts(conn: Connection) -> dict[str, int]:
             "SELECT COUNT(*) FROM modules WHERE source_reference ILIKE '%modulargrid%' "
             "OR verification_source_url ILIKE '%modulargrid%'"
         ),
+        "module_catalog_unknown_basis": "SELECT COUNT(*) FROM module_catalog WHERE access_basis = 'unknown'",
         "module_catalog_no_access_basis": "SELECT COUNT(*) FROM module_catalog WHERE access_basis IS NULL",
     }
     return {key: int(conn.execute(text(sql)).scalar_one()) for key, sql in queries.items()}
@@ -2321,6 +2400,7 @@ def receipt_for(plan: Plan, *, database_url: str, apply: bool, cases: dict[str, 
         "power_configs": plan.power_configs,
         "module_type_sync": plan.module_type_sync,
         "access_basis": plan.access_basis,
+        "lead_promotions": plan.lead_promotions,
         "cases": cases,
         "destructive_sql": False,
     }

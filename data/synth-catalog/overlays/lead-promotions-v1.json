@@ -1,0 +1,1770 @@
+{
+ "dataset_version": "lead-promotions-v1",
+ "decided": "2026-11-04: owner decisions 1 and 53 (docs/evidence/OWNER_DECISIONS_2026-11-04.md), under spec 003 FR-034",
+ "reviewed_by": "Claude, for the owner",
+ "reviewed_at": "2026-11-05",
+ "policy": "A ModularGrid-derived lead becomes canonical only through manufacturer confirmation recorded with its source URL (FR-034). Each row's page was read by plain GET with robots.txt honoured and nothing paid, is on the maker's own site, and names the module. Facts only. The old basis is archived first.",
+ "count": 220,
+ "rows": [
+  {
+   "slug": "1010-music-bitbox-micro",
+   "brand": "1010 Music",
+   "name": "Bitbox Micro",
+   "source_url": "https://1010music.com/product/bitbox-micro",
+   "content_sha256": "fb19bf7ea74d6342cf89b68e098b69a40734dcc84883ea4f6a41f4f0bf3f72ba",
+   "maker_quote": "Bitbox Micro - Compact Sampling Module - 1010music LLC Skip to content Products Bitbox Micr"
+  },
+  {
+   "slug": "1010-music-bluebox",
+   "brand": "1010 Music",
+   "name": "bluebox",
+   "source_url": "https://1010music.com/product/bluebox-eurorack",
+   "content_sha256": "8bf49d07656cb955444f82ecaa0cb4a01464d0a0fa2e0ec2543e7af7e1637e8e",
+   "maker_quote": "The bluebox Eurorack edition is the new Eurorack mixer with effects and multichannel recording/playback based on t"
+  },
+  {
+   "slug": "1v-oct-the-centre",
+   "brand": "1V/Oct",
+   "name": "The Centre",
+   "source_url": "https://1voct.com/product/update/2021/05/28/the-centre-is-here.html",
+   "content_sha256": "d37eafd9da9100101ece8b065ad1c5857593705e267ffe947e7394c13500d1cd",
+   "maker_quote": "Synthesizer The Centre is a 16hp Eurorack module that is a wavetable-based complex oscillator and a percussive-oriented sound so"
+  },
+  {
+   "slug": "2hp-3-1",
+   "brand": "2hp",
+   "name": "3:1",
+   "source_url": "https://www.twohp.com/modules/p/31",
+   "content_sha256": "c2cdb3fdb58d023f3d94d6d40218ed4a29ccb68f3f6302831c4a65a0e45fe535",
+   "maker_quote": "3:1 is a voltage controlled gate switch. It allows the user to send one of three input signals to a"
+  },
+  {
+   "slug": "2hp-dc",
+   "brand": "2hp",
+   "name": "DC",
+   "source_url": "https://www.twohp.com/modules/p/dc",
+   "content_sha256": "adac1ee4edd594293ffede51746e329acb2d00b7a40e466804612366cd31e6d8",
+   "maker_quote": "The 2hp DC is a voltage offset generator. It creates three channels of offset voltages, ea"
+  },
+  {
+   "slug": "2hp-mix",
+   "brand": "2hp",
+   "name": "Mix",
+   "source_url": "https://www.twohp.com/modules/p/mix",
+   "content_sha256": "8a50941a6a042381f7120e6208a6b71eeb51166308b1a889f64d5ca1f4adb073",
+   "maker_quote": "Mix is a 4 channel mixer that is great for audio or control voltage signals. Up to f"
+  },
+  {
+   "slug": "2hp-play",
+   "brand": "2hp",
+   "name": "Play",
+   "source_url": "https://www.twohp.com/modules/p/play",
+   "content_sha256": "f00b97f8e2019816a7d2e8ccd3c24dfdaf5891f81e68c45258744d37c208d0e3",
+   "maker_quote": "Play is a high fidelity sample player with a full feature set. Up to 32 samples can be loaded at"
+  },
+  {
+   "slug": "2hp-sine",
+   "brand": "2hp",
+   "name": "Sine",
+   "source_url": "https://www.twohp.com/modules/p/sine",
+   "content_sha256": "657a7c6e0e01911f891aa094e809e6c8d6dca889f62e7f1cb113a4d223868f59",
+   "maker_quote": "Sine is a harmonically pure VCO with two distinct outputs. The primary output contains a pe"
+  },
+  {
+   "slug": "4ms-company-listen-four",
+   "brand": "4ms Company",
+   "name": "Listen Four",
+   "source_url": "https://4mscompany.com/p.php?p=813&c=5",
+   "content_sha256": "7071b37d8b095236feaffd63802d3c61c1892ce3b21b2170e0567619d0b41031",
+   "maker_quote": "Modules < Eurorack The Listen Four is a four channel stereo mixer with line, modular, and headphone outputs. Two mono channel"
+  },
+  {
+   "slug": "4ms-company-row-power-25",
+   "brand": "4ms Company",
+   "name": "ROW POWER 25",
+   "source_url": "https://4mscompany.com/rowpow25.php",
+   "content_sha256": "b57bfbcad2b78a2c20108a64041e1443d17ed926ff79c65a5f13a70ed4e9b839",
+   "maker_quote": "4ms Row Power 25 Row Power 25 [RP25] The Row Power 25 is a clean, regulat"
+  },
+  {
+   "slug": "4ms-company-stereo-triggered-sampler",
+   "brand": "4ms Company",
+   "name": "Stereo Triggered Sampler",
+   "source_url": "https://4mscompany.com/p.php?p=783&c=5",
+   "content_sha256": "c84a9f50e34e36e822bb1ceecbd2fc3adaa0a558cccbc11aefeab87df2402543",
+   "maker_quote": "Stereo Triggered Sampler Stereo Triggered Sampler [STS] tag / --> Stereo Triggered S"
+  },
+  {
+   "slug": "abyss-devices-amix",
+   "brand": "Abyss Devices",
+   "name": "aMix",
+   "source_url": "https://abyssdevices.com/product/octamix/",
+   "content_sha256": "71530f23df5a177fc7a436b517de3c396edb9f91fafaf4b137cd0560ca17d7dd",
+   "maker_quote": "8 channel VCA with clickless mutes Octamix can be used as a cascading mix"
+  },
+  {
+   "slug": "abyss-devices-amp",
+   "brand": "Abyss Devices",
+   "name": "AMP",
+   "source_url": "https://abyssdevices.com/product/line-level-instrument-amplifier-50x-gain-for-eurorack/",
+   "content_sha256": "fb4ac6d0bfefd91f6b2b9b64dee5a03fd9d9fc9d547a3bcf55451ce7fc92f97a",
+   "maker_quote": "– 2 channels of 50x (aprox 34db) gain each – Amplify signals such as your smartphone, piezo, guitar, bass, l"
+  },
+  {
+   "slug": "abyss-devices-mtr",
+   "brand": "Abyss Devices",
+   "name": "MTR",
+   "source_url": "https://abyssdevices.com/product/mtr-2hp-eurorack-led-vu-meter/",
+   "content_sha256": "eec58be14790fb224b830b1527f3c781dbb876e30560acdb393cc212e93d6776",
+   "maker_quote": "MTR is designed to show signals from 0V to +12V in an aesthetic"
+  },
+  {
+   "slug": "abyss-devices-saevitum",
+   "brand": "Abyss Devices",
+   "name": "Saevitum",
+   "source_url": "https://abyssdevices.com/product/saevitum/",
+   "content_sha256": "0871f79555082b0a89d59be3c444e40478b4f1dcfa448de832f1f7a81d48d5a5",
+   "maker_quote": "Saevitum - Abyss Devices ~ Eurorack Modular Synthesizers Shop Saevit"
+  },
+  {
+   "slug": "acid-rain-technology-constellation",
+   "brand": "Acid Rain Technology",
+   "name": "Constellation",
+   "source_url": "https://acidraintechnology.com/products/constellation",
+   "content_sha256": "2bca55e8a0503684094aa58f3fb0b0af04268de67a57847b4e65d223c51053eb",
+   "maker_quote": "Constellation is an 8 channel pattern generator that combines multiple de"
+  },
+  {
+   "slug": "acid-rain-technology-junction",
+   "brand": "Acid Rain Technology",
+   "name": "Junction",
+   "source_url": "https://acidraintechnology.com/products/junction",
+   "content_sha256": "5572ea5cdefd74873a093b6f704813fec85b6fd0af20e938e5c9503531e3a88b",
+   "maker_quote": "Junction is a compact, 4 channel attenuverter, cascading mixer and m"
+  },
+  {
+   "slug": "acid-rain-technology-maestro",
+   "brand": "Acid Rain Technology",
+   "name": "Maestro",
+   "source_url": "https://acidraintechnology.com/products/maestro",
+   "content_sha256": "c281d0a09baba0cd1582e5d07963a68585ec3986f58920fb5b9445612a11484d",
+   "maker_quote": "Maestro is a 6 channel clocked modulation controller inspired by the automation lanes found in digita"
+  },
+  {
+   "slug": "acid-rain-technology-navigator",
+   "brand": "Acid Rain Technology",
+   "name": "Navigator",
+   "source_url": "https://acidraintechnology.com/products/navigator",
+   "content_sha256": "b7f6f07e6d7705530246c1dbfb233031784a2fe7a65ab7028953e6efc027a917",
+   "maker_quote": "Navigator is a compact, multi-use voltage utility designed to bring playable control to CV sources in your ra"
+  },
+  {
+   "slug": "acid-rain-technology-ripsaw",
+   "brand": "Acid Rain Technology",
+   "name": "Ripsaw",
+   "source_url": "https://acidraintechnology.com/products/ripsaw",
+   "content_sha256": "1098339aab4e83d78a2df614752c30642130d7944abbd73209659741cacaec31",
+   "maker_quote": "Ripsaw is a powerful digital oscillator designed to bring polyphon"
+  },
+  {
+   "slug": "acid-rain-technology-trellis",
+   "brand": "Acid Rain Technology",
+   "name": "Trellis",
+   "source_url": "https://acidraintechnology.com/products/trellis",
+   "content_sha256": "49bb71323a72c198173da3bbbd9ccb6e55d1e20a446e84a7046301506197f5c4",
+   "maker_quote": "Trellis is a 6 stereo input, 3 stereo output matrix mixer with manual and CV control over all points of the matrix. T"
+  },
+  {
+   "slug": "acid-rain-technology-ziggurat",
+   "brand": "Acid Rain Technology",
+   "name": "Ziggurat",
+   "source_url": "https://acidraintechnology.com/products/ziggurat",
+   "content_sha256": "c4a3a41d0e9df91294ff9bb83ad30d227ce712c46cc009a811f67921c81308b4",
+   "maker_quote": "Ziggurat is a 4 channel quantizer designed to turn any combination of control voltage and gat"
+  },
+  {
+   "slug": "acl-audio-interface",
+   "brand": "ACL",
+   "name": "AUDIO INTERFACE",
+   "source_url": "https://acl-synth.com/products/audio-interface",
+   "content_sha256": "2863b27ccacefbfb73339b4f9ba006ab81e181224967d716f2920b61971532a1",
+   "maker_quote": "The purpose of the ACL Audio Interface module is to interconnect modular synthesizer systems with"
+  },
+  {
+   "slug": "acl-envelope-x3-v2",
+   "brand": "ACL",
+   "name": "Envelope X3 v2",
+   "source_url": "https://www.acl-synth.com/products/envelope-x3.php",
+   "content_sha256": "1f6468fb53a65cd4225e884d73472055c381626c29d1ec2b9b9533f3f53f7e0f",
+   "maker_quote": "How do you make a near-perfect three ADSR module even better? Well, obviously you make it slimmer and"
+  },
+  {
+   "slug": "acl-m-s-matrix",
+   "brand": "ACL",
+   "name": "M/S-MATRIX",
+   "source_url": "https://acl-synth.com/products/ms-matrix",
+   "content_sha256": "49d0ced9f1e63a27e808937278d071752e445205fd45096b89aa00f37986269b",
+   "maker_quote": "With just eight connections and four knobs, M/S Matrix is an exceedingly simple yet exceptionally useful module. Q"
+  },
+  {
+   "slug": "acl-oktave",
+   "brand": "ACL",
+   "name": "Oktave",
+   "source_url": "https://acl-synth.com/products/oktave",
+   "content_sha256": "53fd5da50105d02c6c4a5e49dc2ee34d650926be7a2b1dee38d2f15ead415707",
+   "maker_quote": "The ACL Oktave is made with two main functions in mind - allowing you to t"
+  },
+  {
+   "slug": "acl-sinfonion",
+   "brand": "ACL",
+   "name": "Sinfonion",
+   "source_url": "https://acl-synth.com/products/sinfonion",
+   "content_sha256": "862fd9d7f7096abf5532d8fe19f93eb247d83f0b01a443b548384fbf65861fbe",
+   "maker_quote": "Sinfonion is a revolutionary product – there is literally nothing els"
+  },
+  {
+   "slug": "addac-system-addac001-vcc-voltage-controlled-computer",
+   "brand": "ADDAC System",
+   "name": "ADDAC001 VCC (Voltage Controlled Computer)",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac001",
+   "content_sha256": "5b6dd591e3240508f112321d8f7f7aa9bde8b82768c1e80d6591f4f3639e287c",
+   "maker_quote": "ADDAC001 Width: 12 HP"
+  },
+  {
+   "slug": "addac-system-addac003-vcc-manual-inputs",
+   "brand": "ADDAC System",
+   "name": "ADDAC003 VCC Manual Inputs",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac003",
+   "content_sha256": "db5ae1c73d40ce91dab60e766cd3224d7de8051a2adde0a6054a4f5cc14199f4",
+   "maker_quote": "ADDAC003 Width: 4 HP"
+  },
+  {
+   "slug": "addac-system-addac005-vcc-gate-outputs",
+   "brand": "ADDAC System",
+   "name": "ADDAC005 VCC Gate Outputs",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac005",
+   "content_sha256": "2f7b548a3d40479d650f9831ef2e2b9b3d264c8cd6f17d85d1e51f0be27e353f",
+   "maker_quote": "ADDAC005 Width: 4 HP"
+  },
+  {
+   "slug": "addac-system-addac101-wav-player",
+   "brand": "ADDAC System",
+   "name": "ADDAC101 .WAV Player",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac100-series/addac101",
+   "content_sha256": "a4b378ee147e4bd77bd0fa1552956fd8bb1890d00716777b593457abd6705b16",
+   "maker_quote": "ADDAC101 Width: 11 HP"
+  },
+  {
+   "slug": "addac-system-addac200pi",
+   "brand": "ADDAC System",
+   "name": "ADDAC200PI",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200pi",
+   "content_sha256": "6a06a67d2fabaf033af66facbe2824cc0bca09619cbd5ae2b7cc4dffc6dd0198",
+   "maker_quote": "ADDAC200PI Width: 4 HP"
+  },
+  {
+   "slug": "addac-system-addac200s-size-matter-black",
+   "brand": "ADDAC System",
+   "name": "ADDAC200S Size Matter black",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac200s",
+   "content_sha256": "ce345b391d069db4fb692a2332dd05db73842535ed6a1043d23746707e830bee",
+   "maker_quote": "ADDAC200S Width: 4 HP"
+  },
+  {
+   "slug": "addac-system-addac203-cv-mapping",
+   "brand": "ADDAC System",
+   "name": "ADDAC203 CV Mapping",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac200-series/addac203",
+   "content_sha256": "22f7392a9a7a30639f078bb85c41f70a2d9dae87638b20ea610290c69abb4b1b",
+   "maker_quote": "ADDAC203 Width: 4 HP"
+  },
+  {
+   "slug": "addac-system-addac501b-complex-random-expansion",
+   "brand": "ADDAC System",
+   "name": "ADDAC501B Complex Random Expansion",
+   "source_url": "https://www.addacsystem.com/en/products/modules/addac500-series/addac501b",
+   "content_sha256": "475c8a15e55f5dce2ec32c30eb3cb7adc483e70933ee342407ba28fb206190d8",
+   "maker_quote": "ADDAC501B Width: 4 HP"
+  },
+  {
+   "slug": "after-later-audio-brooks",
+   "brand": "After Later Audio",
+   "name": "Brooks",
+   "source_url": "https://afterlateraudio.com/products/brooks",
+   "content_sha256": "9744b45d17a2912e8f23b8f49f9674cb2514fb3a58a6e42f24aea64241880e9f",
+   "maker_quote": "This is the smallest oscillator in our COCO system. Brooks Brooks is a 4hp thru zero oscill"
+  },
+  {
+   "slug": "after-later-audio-cloverleaf",
+   "brand": "After Later Audio",
+   "name": "Cloverleaf",
+   "source_url": "https://afterlateraudio.com/products/cloverleaf",
+   "content_sha256": "7c0b3315daa85e0b557b01956f18fd1bd630724de119741f817c506c7c4fa4f3",
+   "maker_quote": "An interface for the case 1/4\" jacks in Intelljel cases. The jacks are m"
+  },
+  {
+   "slug": "after-later-audio-g-t",
+   "brand": "After Later Audio",
+   "name": "G&T",
+   "source_url": "https://afterlateraudio.com/products/gt-gates-and-triggers-1u-intellijel-format",
+   "content_sha256": "2dbd9842ea3bb5bb9dcdcd87c3f2cae8f1ed25aa67233ab579d5b0bd08d5a4d4",
+   "maker_quote": "G&T - Gates and Triggers 1U Intellijel Format – After Later Aud"
+  },
+  {
+   "slug": "after-later-audio-quarks",
+   "brand": "After Later Audio",
+   "name": "Quarks",
+   "source_url": "https://afterlateraudio.com/products/quarks",
+   "content_sha256": "d75b8cf6c4a6a4ad75197b6474f79d20af58fb46db53791ca7c4e4999a0b334b",
+   "maker_quote": "Shirts Category COCO MIC External Interfaces Effects Filter VCO Modulation Utilities VCA & Mixer Oscillators Guitar Pedals"
+  },
+  {
+   "slug": "after-later-audio-scenes",
+   "brand": "After Later Audio",
+   "name": "Scenes",
+   "source_url": "https://afterlateraudio.com/products/scenes",
+   "content_sha256": "4277e26665802883700f7fd1847e69af884f8e234fcb96f38e0b6f8d24470b30",
+   "maker_quote": "Six segment generator. Looping or one shot envelope generator. Chainable, so it can be expanded to link multiple units. A"
+  },
+  {
+   "slug": "after-later-audio-valley",
+   "brand": "After Later Audio",
+   "name": "Valley",
+   "source_url": "https://afterlateraudio.com/products/valley",
+   "content_sha256": "7df790923b9ed1d86dfd033eb0115dfa6f834f62e031846725abb4c620c11e81",
+   "maker_quote": "Cables Panels Shirts Category COCO MIC External Interfaces Effects Filter VCO Modulation Utilities VCA & Mixer Oscillators Gui"
+  },
+  {
+   "slug": "after-later-audio-warp-drive-1-25a",
+   "brand": "After Later Audio",
+   "name": "Warp Drive (1.25A)",
+   "source_url": "https://afterlateraudio.com/products/warp-drive",
+   "content_sha256": "82eb1a21f438b91dbba3728d830e6e6279d304c8321a5414220a99c86ce65be1",
+   "maker_quote": "Rack power bringing 1.25A (1250mA) on both the +12V and -12V rails. Th"
+  },
+  {
+   "slug": "afterlife-laboratories-video-calculator",
+   "brand": "Afterlife Laboratories",
+   "name": "Video Calculator",
+   "source_url": "https://www.afterlifelaboratories.com/shop/p/ihcqwq1ozdtuc3axrldrk49zmihgmy",
+   "content_sha256": "f7fa118dc8fdf02e09e7b0e56f3ed9cc5a5830118d7d0aea8fc869f75a81ed06",
+   "maker_quote": "Video Calculator is a wide bandwidth video mixer that processes s"
+  },
+  {
+   "slug": "aircraft-designs-ember",
+   "brand": "Aircraft Designs",
+   "name": "EMBER",
+   "source_url": "https://aircraftdesigns.info/ember",
+   "content_sha256": "dbdeba25a46e7dfd36ae68a59940bcb775fcb54b56081afc969d605bbabdf72a",
+   "maker_quote": "Us Selected Product Selected Product Ember Analog Mid/Side Saturator Size Size 14 HP 14 HP Current Draw Current Draw +12v | 190m"
+  },
+  {
+   "slug": "ajh-synth-finaliser-r-eq",
+   "brand": "AJH Synth",
+   "name": "FINALISER R-EQ",
+   "source_url": "https://www.ajhsynth.com/Finaliser.html",
+   "content_sha256": "794813a9243f993badee95f99b23647ccbeb8250f2d68902b9b47b8a7218a278",
+   "maker_quote": "Finaliser R-EQ Module HOME PRODUCTS SOUNDS & VIDEO FAQ's DOWNLOADS BUY DEA"
+  },
+  {
+   "slug": "allen-synthesis-europi",
+   "brand": "Allen Synthesis",
+   "name": "EuroPi",
+   "source_url": "https://allensynthesis.co.uk/europi/",
+   "content_sha256": "1f39a45943d68ddee580b9bc0c124450ae6fff854d5068cd868a676545c78ba2",
+   "maker_quote": "EuroPi - Reprogrammable CV Controller a l l e n s y n t h e s i s"
+  },
+  {
+   "slug": "allen-synthesis-usb-router",
+   "brand": "Allen Synthesis",
+   "name": "USB Router",
+   "source_url": "https://allensynthesis.co.uk/usb-router/",
+   "content_sha256": "87ced2720ae561026553b61f17eaa317b8f55bb8e2613d2d56e741835d63399a",
+   "maker_quote": "USB Router a l l e n s y n t h e s i s free open-source hardware and s"
+  },
+  {
+   "slug": "alm-busy-circuits-akemie-s-castle",
+   "brand": "ALM Busy Circuits",
+   "name": "Akemie's Castle",
+   "source_url": "https://busycircuits.com/products/alm011",
+   "content_sha256": "36aeba8f4eec1f3a81df08f92667ec03595b9c8f98d61799f019bf39407ff95a",
+   "maker_quote": "‘Akemie’s Castle’ is a dual voltage controlled oscillator with authentic 4 Operator digital FM using ‘new-old-stock’"
+  },
+  {
+   "slug": "alm-busy-circuits-mco",
+   "brand": "ALM Busy Circuits",
+   "name": "MCO",
+   "source_url": "https://busycircuits.com/products/alm046",
+   "content_sha256": "ef308386303d65caa914d3de7f3db05dd99c25693fa37e48c7b7689727b00ac3",
+   "maker_quote": "The MCO (mk II) is a highly versatile digital VCO and voice module inspired by 90s/00s digital synths shrunk"
+  },
+  {
+   "slug": "alm-busy-circuits-mco-mkii",
+   "brand": "ALM Busy Circuits",
+   "name": "MCO (mkII)",
+   "source_url": "https://busycircuits.com/pages/alm046?srsltid=AU7gw4XNdgm2YbrPicKpcd_8PtJ_KpY30y9RUCW9BUASfmAkXcHptu2H",
+   "content_sha256": "4510d37d271723fa95ef9a6afa4f46ed06587500b6e05d49f45610e63d2a9172",
+   "maker_quote": "Skip to content Search Cart 1 / of MCO: Compact Multi Synth Voice ALM046 Buy Now (In Stock) The MCO (mk II) is a highly versa"
+  },
+  {
+   "slug": "alm-busy-circuits-squid-salmple",
+   "brand": "ALM Busy Circuits",
+   "name": "Squid Salmple",
+   "source_url": "https://busycircuits.com/products/alm022",
+   "content_sha256": "3486403554141c963847cedeb55c28780dda5b841febdb8e45eba5913e3797e6",
+   "maker_quote": "The ‘Squid Salmple’ is a Eurorack 8 channel audio &amp; CV sampler. It is designed for immediate real time sampling, editing a"
+  },
+  {
+   "slug": "alright-devices-chronoblob",
+   "brand": "Alright Devices",
+   "name": "Chronoblob",
+   "source_url": "https://alrightdevices.bigcartel.com/product/chronoblob",
+   "content_sha256": "38f63fd3be24b49482cb20c787813f88c877fa95291d343a8f6b9007ee4c3170",
+   "maker_quote": "discontinued. Get Chronoblob2 here! Chronoblob is a digital delay module! Unlike other delays, Chronoblob can sync to an exte"
+  },
+  {
+   "slug": "alright-devices-chronoblob2",
+   "brand": "Alright Devices",
+   "name": "Chronoblob2",
+   "source_url": "https://alrightdevices.bigcartel.com/product/chronoblob2",
+   "content_sha256": "023aeb3106f45a10479883473ababf3890adffa6af4a25eae905f32ea38b2c6d",
+   "maker_quote": "Chronoblob2 is a digital delay module! Just like his little brother, Ch"
+  },
+  {
+   "slug": "alright-devices-t-wrex",
+   "brand": "Alright Devices",
+   "name": "T-Wrex",
+   "source_url": "https://alrightdevices.bigcartel.com/product/t-wrex",
+   "content_sha256": "2bed32a95556a54022af49cc2db9b345060ac85b1ab239b52358b585fd6103a9",
+   "maker_quote": "T-Wrex is an analog bitcrusher and decimator! T-Wrex has two separate sections: STOMP is a"
+  },
+  {
+   "slug": "alright-devices-zzzorb",
+   "brand": "Alright Devices",
+   "name": "Zzzorb",
+   "source_url": "https://alrightdevices.bigcartel.com/product/zzzorb",
+   "content_sha256": "af6b38001d89b2ecb7ee5ad99584308420bef560c066799ec96644fb2f34c2e1",
+   "maker_quote": "Zzzorb is a four-pole multimode filter plus a linear VCA! Zzzorb's"
+  },
+  {
+   "slug": "alyseum-hold",
+   "brand": "Alyseum",
+   "name": "HOLD",
+   "source_url": "https://www.alyseum.com/hold.html",
+   "content_sha256": "8aa391dd5462206d41a90982b8763bf2315c86e869b37b19ab49647b5b80c43c",
+   "maker_quote": "ule's companion which adds 2 features ● 8 digital addressed outputs, selectable between Trigger or Gate. ● 1 CV input to 8 anal"
+  },
+  {
+   "slug": "alyseum-matrix-ii",
+   "brand": "Alyseum",
+   "name": "MATRIX II",
+   "source_url": "https://www.alyseum.com/matrix2.html",
+   "content_sha256": "033b35892384caa23b30481fdc4282a0f3a155bb3d7e6254de5e7100e7bf5b8b",
+   "maker_quote": "MATRIX II Price without VAT & taxes New HTML editor Bundle MATRIX"
+  },
+  {
+   "slug": "alyseum-push",
+   "brand": "Alyseum",
+   "name": "PUSH",
+   "source_url": "https://www.alyseum.com/push.html",
+   "content_sha256": "a27885f540b7ceb83d7080a60ea2d4245452a34762ad11ddad69bdd7930ac62f",
+   "maker_quote": "PUSH Hide Mode d'emploi User manual PUSH 109.00 € Price without"
+  },
+  {
+   "slug": "alyseum-q-mix",
+   "brand": "Alyseum",
+   "name": "Q-MIX",
+   "source_url": "https://www.alyseum.com/q-mix.html",
+   "content_sha256": "506f6d316ab1d9e7c71fe0700337c4509641d6aa9a69fa827a1e122ad79e4bf1",
+   "maker_quote": "Q-MIX Mixer"
+  },
+  {
+   "slug": "alyseum-selector",
+   "brand": "Alyseum",
+   "name": "SELECTOR",
+   "source_url": "https://www.alyseum.com/selector.html",
+   "content_sha256": "ee85344d8eb291827e06468da52c518912a04bf91f93f08812b64e02a74b92dc",
+   "maker_quote": "ice without VAT & taxes SELECTOR is an analogue 8 positions switch that is probably the most versatile in terms of connectivit"
+  },
+  {
+   "slug": "animal-factory-amplification-bonesaw",
+   "brand": "Animal Factory Amplification",
+   "name": "Bonesaw",
+   "source_url": "https://animalfactoryamps.com/products/bonesaw-eurorack-filter",
+   "content_sha256": "e443838f402acb2b92b4a79a982192f4d08cf67b64ab33611cebf9ac9cb9fc5b",
+   "maker_quote": "Eurorack: Bonesaw State-Variable Filter – Animal Factory Amplification Skip t"
+  },
+  {
+   "slug": "animal-factory-amplification-godeater",
+   "brand": "Animal Factory Amplification",
+   "name": "Godeater",
+   "source_url": "https://animalfactoryamps.com/products/godeater-eurorack-fuzztortion-module",
+   "content_sha256": "d076d9befbe316c0773fdf0cb4a6af37a5805d429b857caada386974a0e449b4",
+   "maker_quote": "rder now. Next batch: January 2027 You wanted big, big bass distortion in Eurorack format. We built it, then made it better. Th"
+  },
+  {
+   "slug": "animal-factory-amplification-pit-viper",
+   "brand": "Animal Factory Amplification",
+   "name": "Pit Viper",
+   "source_url": "https://animalfactoryamps.com/products/racketier-2-pit-viper-module",
+   "content_sha256": "5681d4eed10421d32afe861c731b7a9dd8440de6d21754cdd9aff0e67a9f0e2a",
+   "maker_quote": "We built the venomous Pit Viper circuit from the ground up for Eurorack users who wanted ev"
+  },
+  {
+   "slug": "animodule-gate-mod",
+   "brand": "AniModule",
+   "name": "Gate_Mod",
+   "source_url": "https://www.animodule.com/product/gate_mod",
+   "content_sha256": "1be7cb054dc487d7f4c638c0b5cffd03d5e630452d196b0178b1f8b12eba0bd8",
+   "maker_quote": "y Got a gate that's gonna make you late? Run it through the Gate_Mod! Got a trigger comin' sooner than you figg..."
+  },
+  {
+   "slug": "animodule-lil-monster-vco",
+   "brand": "AniModule",
+   "name": "Lil' Monster VCO",
+   "source_url": "https://www.animodule.com/product/lil-monster-lm-vco",
+   "content_sha256": "6b6400b99ce83c6169f94ca0c5d429b4254fc3c03a48cf6ae884f9a28ba07a88",
+   "maker_quote": "Animodule — Lil' Monster VCO Lil' Monster VCO $ 198.99 / Sold Out It's Alive!!!! Mwahaha"
+  },
+  {
+   "slug": "animodule-midi-gate",
+   "brand": "AniModule",
+   "name": "MIDI_Gate",
+   "source_url": "https://www.animodule.com/product/midi_gate",
+   "content_sha256": "e4feed048d24fffc6e425f0730f89bdae1b06f6a8b59925a99c8781c49e1bf3c",
+   "maker_quote": "The AniModule MIDI_Gate is an easy way to integrate your MIDI-synced workflow"
+  },
+  {
+   "slug": "animodule-quad-comparator",
+   "brand": "AniModule",
+   "name": "Quad Comparator",
+   "source_url": "https://www.animodule.com/product/quad-comparator",
+   "content_sha256": "96d95338e3de98e43fa6242858f6561b8b1318599e09018d27b959be5a4406ac",
+   "maker_quote": "It’s a simple quad comparator based around the LM339. It will take your Voltages and turn"
+  },
+  {
+   "slug": "animodule-tiktok",
+   "brand": "AniModule",
+   "name": "TikTok",
+   "source_url": "https://www.animodule.com/product/tiktok",
+   "content_sha256": "c1d829452bd160eadc71fc9f9af27687e380d55670559f08a01e88c7cd2ae4f6",
+   "maker_quote": "The TikTok is a 4HP Clock Divider/Multiplier. It has Divisions and Mul"
+  },
+  {
+   "slug": "animodule-xxx-or",
+   "brand": "AniModule",
+   "name": "XXX_OR",
+   "source_url": "https://www.animodule.com/product/xxx_or",
+   "content_sha256": "f8b68add68e929be82f1deb8555c3d9aeaf6f4bd2b10d8a4ebe105f0ac3c517f",
+   "maker_quote": "Animodule — XXX_OR XXX_OR $ 109.99 / Sold Out A Triple Analog XOR module with"
+  },
+  {
+   "slug": "anti-kulture-precision-disrupter",
+   "brand": "Anti-Kulture",
+   "name": "Precision Disrupter",
+   "source_url": "https://www.antikulture.com",
+   "content_sha256": "f436f06fa9362867efec2636c9990e78f42b607c772de43294c7b4e16b964dda",
+   "maker_quote": "me | Antikulture top of page Latest Firmware Update Now THE PRECISION DISRUPTER CREATIVE : INTUITIVE : FLUID : SEQUENCING ORDER NOW THE MEA"
+  },
+  {
+   "slug": "bastl-instruments-abc",
+   "brand": "Bastl Instruments",
+   "name": "ABC",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/abc",
+   "content_sha256": "9bb72321f75040df70544c41deae465a48c01195eb13f40d2d8ca15d89bad239",
+   "maker_quote": "ABC has 6 inputs – A, B, C, D, E, and F – and two outputs – A+B"
+  },
+  {
+   "slug": "bastl-instruments-ciao",
+   "brand": "Bastl Instruments",
+   "name": "Ciao!",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/ciaoii",
+   "content_sha256": "f55d95cba37b456786013a578f89ab378a51798bc09bd171fd8bde421d1b6585",
+   "maker_quote": "Four high-quality, low-noise line outputs for the best possible modular-to-line level conversion."
+  },
+  {
+   "slug": "bastl-instruments-cinnamon",
+   "brand": "Bastl Instruments",
+   "name": "Cinnamon",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/cinnamon",
+   "content_sha256": "74d0b1d3738764b3410f75aaa74324c076cf2cb67760bf6e0ecdaeec3b532f4c",
+   "maker_quote": "Cinnamon is a unique sounding filter. The presence of drive and char"
+  },
+  {
+   "slug": "bastl-instruments-clutch",
+   "brand": "Bastl Instruments",
+   "name": "Clutch",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/clutch",
+   "content_sha256": "ccb81df2edf7b10430f6e9be2ff3d9896439e1912bb1f4834a18fcb42af8a3ce",
+   "maker_quote": "Bastl Clutch Eurorack Module – Quad Attenuator & Volume Pedal to CV Inte"
+  },
+  {
+   "slug": "bastl-instruments-cv-trinity",
+   "brand": "Bastl Instruments",
+   "name": "CV TRINITY",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/cv-trinity",
+   "content_sha256": "4805ba455853e221c2788600a3b57097361e2bd2c4687b27eb9f14955a45bada",
+   "maker_quote": "CV Trinity has 6 independent channels with CV outputs, each of which c"
+  },
+  {
+   "slug": "bastl-instruments-dark-matter",
+   "brand": "Bastl Instruments",
+   "name": "Dark Matter",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/dark-matter",
+   "content_sha256": "05dc66fbd155c2081e9eb268aa3277ed11b307ea1215adefd52d154dede048e3",
+   "maker_quote": "Dark Matter is a high energy sound processor and signal generator that"
+  },
+  {
+   "slug": "bastl-instruments-dc-motor",
+   "brand": "Bastl Instruments",
+   "name": "DC MOTOR",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/dc-motor",
+   "content_sha256": "dab584682c6ca13ca465baaa1423541707b75a648af76d3178ce009c0ff900a0",
+   "maker_quote": "DC Motor can drive 2 DC motors with speed and direction control depe"
+  },
+  {
+   "slug": "bastl-instruments-grandpa",
+   "brand": "Bastl Instruments",
+   "name": "GrandPa",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/grandpa",
+   "content_sha256": "67c943e3256724d33aa08a717d27e8328afab605590d0fde51ae29b33f46984e",
+   "maker_quote": "GrandPA has 2 trigger inputs to trigger 2 different samples, CV inp"
+  },
+  {
+   "slug": "bastl-instruments-ikarie",
+   "brand": "Bastl Instruments",
+   "name": "Ikarie",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/ikarie",
+   "content_sha256": "af59197eaff41dfb79f82c4edac5cba4b6f071a754dccac3cd6fdd1a0bd5a9d0",
+   "maker_quote": "A uniquely sculpted, flexible stereo or dual peak filter module. It can transition between lowpass and highpass filt"
+  },
+  {
+   "slug": "bastl-instruments-knit-rider",
+   "brand": "Bastl Instruments",
+   "name": "Knit Rider",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/knit-rider",
+   "content_sha256": "f1dedb3040bd7843ec181f2c5332e744c3e4a23f746bd5e45320dd8e725505dd",
+   "maker_quote": "Bastl Knit Rider Eurorack Module – Six-voice Trigger/Gate Sequencer Disconti"
+  },
+  {
+   "slug": "bastl-instruments-knit-rider-expander",
+   "brand": "Bastl Instruments",
+   "name": "Knit Rider Expander",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/knit-rider",
+   "content_sha256": "f1dedb3040bd7843ec181f2c5332e744c3e4a23f746bd5e45320dd8e725505dd",
+   "maker_quote": "e custom knobs add reset jack + clock out & more with a 2hp Knit Rider Expander Technical details 16 HP 35mm deep (skiff friendly) current"
+  },
+  {
+   "slug": "bastl-instruments-little-nerd",
+   "brand": "Bastl Instruments",
+   "name": "Little Nerd",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/little-nerd",
+   "content_sha256": "b73ebf7a388179660a7b5bd7ad621462d9c86d20a575d62a5b0b5c5dc74bd54b",
+   "maker_quote": "Bastl Little Nerd Eurorack Module – Clock, Trigger and Gate Processor Discont"
+  },
+  {
+   "slug": "bastl-instruments-multiple",
+   "brand": "Bastl Instruments",
+   "name": "Multiple",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/multiple",
+   "content_sha256": "a1eb7ee5bc2d0fa67142e6cc76dd76cca1d39c5de18b17c4721bc7d7a710552e",
+   "maker_quote": "Passive Multiple is handy whenever you need to split your signals."
+  },
+  {
+   "slug": "bastl-instruments-neo-trinity",
+   "brand": "Bastl Instruments",
+   "name": "Neo Trinity",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/neo-trinity",
+   "content_sha256": "ba3ca60bc6d40a2a842562070a928250669bc7e2c459171dfcca0876acf758b4",
+   "maker_quote": "Neo Trinity is a 6-channel compact modulation hub with great musical co"
+  },
+  {
+   "slug": "bastl-instruments-noise-square",
+   "brand": "Bastl Instruments",
+   "name": "Noise Square",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/noise-square",
+   "content_sha256": "df4b5c89385e8255f8ee1c317beb8de6e510858046252206c5d733768a0ade75",
+   "maker_quote": "Noise Square is a versatile generator of noises and square wave signals."
+  },
+  {
+   "slug": "bastl-instruments-pizza",
+   "brand": "Bastl Instruments",
+   "name": "Pizza",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/pizza",
+   "content_sha256": "4d7006e87905de5251de6322e5465e8875f032069d91689abd61fa50add61503",
+   "maker_quote": "Pizza is a compact digital oscillator with powerful wave shaping applied to FM synthesis."
+  },
+  {
+   "slug": "bastl-instruments-propust",
+   "brand": "Bastl Instruments",
+   "name": "Propust",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/propust",
+   "content_sha256": "98584e48857d844e927bdb2369e576aa6ea2f748bc25361dd00e6e9827fad95e",
+   "maker_quote": "Bastl Propust Eurorack Module – Tripple Passive Filter Discontinued Propu"
+  },
+  {
+   "slug": "bastl-instruments-quattro-figaro",
+   "brand": "Bastl Instruments",
+   "name": "Quattro Figaro",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/quattro-figaro",
+   "content_sha256": "218e91cd192891b6c11a8beef5b32631796ab297ef65fb3e44645a59b0e0f982",
+   "maker_quote": "Bastl Quattro Figaro Eurorack Module – Quad VCA with CV Invertors and Mixed Outp"
+  },
+  {
+   "slug": "bastl-instruments-sense",
+   "brand": "Bastl Instruments",
+   "name": "Sense",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/sense",
+   "content_sha256": "bddc13512aae693b87853ab39af35daf6b23c43269076bcb187e869ff748d0a6",
+   "maker_quote": "Sense can convert and amplify the signal from almost any type of"
+  },
+  {
+   "slug": "bastl-instruments-servo",
+   "brand": "Bastl Instruments",
+   "name": "SERVO",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/servo",
+   "content_sha256": "4f5c14c17cd813e5a006eac92c4b8381b6301126fe6db23b32becfe4165efc9a",
+   "maker_quote": "Servo can drive 2 hobby 5V servo motors. Motor driving circuitry"
+  },
+  {
+   "slug": "bastl-instruments-skis",
+   "brand": "Bastl Instruments",
+   "name": "Skis",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/skis-2",
+   "content_sha256": "7b101107171dfe41ebacf94e4a38260fb126fea1b495fd8d09ccfb2621866160",
+   "maker_quote": "Skis II is a dual voltage controlled decay envelope with a dual"
+  },
+  {
+   "slug": "bastl-instruments-solenoid",
+   "brand": "Bastl Instruments",
+   "name": "SOLENOID",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/solenoid",
+   "content_sha256": "3687b998448fa11f611327665127bd2cad530e3799f971e4724d5dfd84426e98",
+   "maker_quote": "Solenoid can drive 4 solenoid motors with voltage directly from the"
+  },
+  {
+   "slug": "bastl-instruments-spa",
+   "brand": "Bastl Instruments",
+   "name": "SPA",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/spa",
+   "content_sha256": "5d02dfc41ac13df83818c1f168318c5f5cf5db28fa16ad4625c8d3b11707af0b",
+   "maker_quote": "Bastl Spa Eurorack Module – grandPa Expander Discontinued Spa is an e"
+  },
+  {
+   "slug": "bastl-instruments-spaghetti",
+   "brand": "Bastl Instruments",
+   "name": "Spaghetti",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/spaghetti",
+   "content_sha256": "6bb5cb58f38533ff2445178770ce31fdfaf8adca1d3be2f3be466fc76c310bf3",
+   "maker_quote": "Spaghetti is a simple utility module for handling signals in your modular setup."
+  },
+  {
+   "slug": "bastl-instruments-tea-kick",
+   "brand": "Bastl Instruments",
+   "name": "Tea Kick",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/tea-kick",
+   "content_sha256": "96fe5694be8bb43c424731e8fde8b1c1207f055d479352d30867fc957fbe447b",
+   "maker_quote": "Bastl Tea Kick Eurorack Module – Universal Analog Drum Circuit Discontinue"
+  },
+  {
+   "slug": "bastl-instruments-wackel-kontakt",
+   "brand": "Bastl Instruments",
+   "name": "Wackel Kontakt",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/wackel-kontakt",
+   "content_sha256": "b1cf8f5be6babb4b5eef0003eeb893a8b58b7db6ae00c00ad20ea1d08b9afd08",
+   "maker_quote": "Wackel Kontakt is not only a random type of generator to break your patche"
+  },
+  {
+   "slug": "bastl-instruments-waver",
+   "brand": "Bastl Instruments",
+   "name": "Waver",
+   "source_url": "https://bastl-instruments.com/eurorack/modules/waver",
+   "content_sha256": "6905cd77cb5ea04ef78d2d52669c8fdde1cb8068ef83a7506de220fb2d26e725",
+   "maker_quote": "Waver is a fully analog, wave folding mixer and signal disruptor"
+  },
+  {
+   "slug": "cwejman-adsr-vc2",
+   "brand": "Cwejman",
+   "name": "ADSR-VC2",
+   "source_url": "https://www.cwejmanmusic.com/adsr-vc2",
+   "content_sha256": "4a62a532b6abf104a5e75832451939a1193a3fa38fdc45765d9e1dcd5f892acd",
+   "maker_quote": "ADSR-VC2 — Cwejman music 0 ADSR-VC2 DUAL VC TRANSIENT GENERATOR Both"
+  },
+  {
+   "slug": "cwejman-ap-1",
+   "brand": "Cwejman",
+   "name": "AP-1",
+   "source_url": "https://www.cwejmanmusic.com/ap-1mk2",
+   "content_sha256": "0f5eec180a00f1429d9e832b5b4db2b4db4ab2959d7388a31834bbcc1a1bf24e",
+   "maker_quote": "AP-1mk2 — Cwejman music 0 AP-1 mk2 AUDIO PROCESSOR- MK2 The AP-1"
+  },
+  {
+   "slug": "cwejman-bld",
+   "brand": "Cwejman",
+   "name": "BLD",
+   "source_url": "https://www.cwejmanmusic.com/bld-2",
+   "content_sha256": "cc79bbb491f574631c970952d39a62d8fbc3c8704ce0ae3adc3c59ec244698a2",
+   "maker_quote": "BLD-2 — Cwejman music 0 BLD-2 Bass- Lead & Drum Generator -MK2 Cwejman module for drum sounds, basses and l"
+  },
+  {
+   "slug": "cwejman-mmf-1",
+   "brand": "Cwejman",
+   "name": "MMF-1",
+   "source_url": "https://www.cwejmanmusic.com/mmf-1s",
+   "content_sha256": "3d61336543d408d82e13befc5cf0deaf92e08342be8d060cf76f0c7cd23e732f",
+   "maker_quote": "MMF-1S — Cwejman music 0 MMF-1S Multi mode filter MMF-1S is MMF-1"
+  },
+  {
+   "slug": "cwejman-mmf-2",
+   "brand": "Cwejman",
+   "name": "MMF-2",
+   "source_url": "https://www.cwejmanmusic.com/mmf-2",
+   "content_sha256": "79ab603c67453ded452a63279d495c32d775abcf6b3abcbd4e06f03af299486d",
+   "maker_quote": "MMF-2 — Cwejman music 0 MMF-2 STEREO MULTI MODE FILTER The MMF-2"
+  },
+  {
+   "slug": "cwejman-ph-4",
+   "brand": "Cwejman",
+   "name": "PH-4",
+   "source_url": "https://www.cwejmanmusic.com/ph-4",
+   "content_sha256": "fd10891e7c7afb70eabcf4934aa5d742c906fd3f83ffb60af573ec9c091e82b1",
+   "maker_quote": "PH-4 — Cwejman music 0 PH-4 Generator with four signal outputs T"
+  },
+  {
+   "slug": "cwejman-res-4",
+   "brand": "Cwejman",
+   "name": "RES-4",
+   "source_url": "https://www.cwejmanmusic.com/res-4",
+   "content_sha256": "6fdf1bd0144f0a5a32786b854ac63bc0598272fc2e0e95adc4a864cb23f163da",
+   "maker_quote": "RES-4 — Cwejman music 0 Four band voltage controlled parametric r"
+  },
+  {
+   "slug": "cwejman-sph-2",
+   "brand": "Cwejman",
+   "name": "SPH-2",
+   "source_url": "https://www.cwejmanmusic.com/sph-2",
+   "content_sha256": "94a634510d9b26d1fd26a1fe7061c0914a6c85bd6cd77375f1aa7c7aef1c92f8",
+   "maker_quote": "SPH-2 — Cwejman music 0 SPH-2 SPATiAL PHASER 14 stage stereo imag"
+  },
+  {
+   "slug": "cwejman-vca-4mx",
+   "brand": "Cwejman",
+   "name": "VCA-4MX",
+   "source_url": "https://www.cwejmanmusic.com/vca-4mx",
+   "content_sha256": "477f746c7d5791c42566d7e458b8d9b75bec5eadf36dba8a168885399c4479c5",
+   "maker_quote": "VCA-4MX — Cwejman music 0 VCA-4MX QUAD VCA-MIXER VCA-4MX consists o"
+  },
+  {
+   "slug": "cwejman-vco-2rm",
+   "brand": "Cwejman",
+   "name": "VCO-2RM",
+   "source_url": "https://www.cwejmanmusic.com/vco-2rm",
+   "content_sha256": "ad0a4676772be85731535b787c72ffd82dfce83a96286ce1d6ad3fe48b465bbd",
+   "maker_quote": "VCO-2RM — Cwejman music 0 VCO-2RM DUAL OSCILLATOR The oscillator’s"
+  },
+  {
+   "slug": "doepfer-a-101-1",
+   "brand": "Doepfer",
+   "name": "A-101-1",
+   "source_url": "https://doepfer.de/a1011.htm",
+   "content_sha256": "abd5f3159487251f249b37943ab225ef8ce0d977277816751a9cde997e85e300",
+   "maker_quote": "A-101-1 Vactrol Filter A-101-1 Vactrol Multitype Filter click to en"
+  },
+  {
+   "slug": "doepfer-a-101-2",
+   "brand": "Doepfer",
+   "name": "A-101-2",
+   "source_url": "https://doepfer.de/a1012.htm",
+   "content_sha256": "5b2fd8a9500ad59977ca35f8c1ba5f30d62dbed6340d4f0db9dfee9cdfe0ab2c",
+   "maker_quote": "A-101-2 Low Pass Gate A-101-2 Vactrol Low Pass Gate A-101-2 online tutorials by R"
+  },
+  {
+   "slug": "doepfer-a-101-3",
+   "brand": "Doepfer",
+   "name": "A-101-3",
+   "source_url": "https://doepfer.de/A1013.htm",
+   "content_sha256": "adddcb2c803e12dbb2fb5b7a548320955870c7facf842c06895b0fa328e063ea",
+   "maker_quote": "A-101-3 A-101-3 Modular Vactrol Phase Filter nicht mehr lieferbar /"
+  },
+  {
+   "slug": "doepfer-a-101-6",
+   "brand": "Doepfer",
+   "name": "A-101-6",
+   "source_url": "https://doepfer.de/a1016.htm",
+   "content_sha256": "3a24a350300e77946de0ad263a55787c1793afee5b0d92bb89205ef776969a14",
+   "maker_quote": "A-101-6 Opto FET VCF A-101-6 Six Stage Opto FET VCF click to enlarg"
+  },
+  {
+   "slug": "doepfer-a-101-9",
+   "brand": "Doepfer",
+   "name": "A-101-9",
+   "source_url": "https://doepfer.de/A1019.htm",
+   "content_sha256": "94090bb28c31ff0a536089acc254fb0667309d4dddc9a0077711b34f281a1ecf",
+   "maker_quote": "A-101-9 A-101-9 Universal Vactrol Module nicht mehr lieferbar / no"
+  },
+  {
+   "slug": "doepfer-a-102",
+   "brand": "Doepfer",
+   "name": "A-102",
+   "source_url": "https://doepfer.de/a102.htm",
+   "content_sha256": "8f73d484375fc23893616b9b3fe0ce431b74144e18c183c79d4560d136eaf3ce",
+   "maker_quote": "A-102 A-102 Diode Low Pass click to enlarge Das Modul A-102 ist N"
+  },
+  {
+   "slug": "doepfer-a-103",
+   "brand": "Doepfer",
+   "name": "A-103",
+   "source_url": "https://doepfer.de/a103.htm",
+   "content_sha256": "636bd72b3399d96c9d11c277f70288df2da2bd5e1cbe7121e13a2f9954cbc4d8",
+   "maker_quote": "A-103 A-103 18dB Low Pass click to enlarge Das Modul A-103 ist ei"
+  },
+  {
+   "slug": "doepfer-a-104",
+   "brand": "Doepfer",
+   "name": "A-104",
+   "source_url": "https://doepfer.de/a104.htm",
+   "content_sha256": "9e20c541e0c0f51d2ccb5fc9178402e38e5f0ef6378f288eefad48b3adf49d07",
+   "maker_quote": "A-104 A-104 Trautonium Formant Filter click to enlarge A-104 ist"
+  },
+  {
+   "slug": "doepfer-a-105",
+   "brand": "Doepfer",
+   "name": "A-105",
+   "source_url": "https://doepfer.de/a105.htm",
+   "content_sha256": "7808f4003d02ec0413dde6125b3a366bba0304ff0da00fcf0b6bd72757153b77",
+   "maker_quote": "A-105 A-105 24dB SSM Low Pass Filter nicht mehr lieferbar / no lo"
+  },
+  {
+   "slug": "doepfer-a-106-1",
+   "brand": "Doepfer",
+   "name": "A-106-1",
+   "source_url": "https://doepfer.de/A106.htm",
+   "content_sha256": "55fb1a01c062c40bb126a0e5b514cd4a4d5213ff47b2240c004786ba0b75a29b",
+   "maker_quote": "A-106 A-106-1 Xtreme Lowpass/Highpass Filter click to enlarge Module A-10"
+  },
+  {
+   "slug": "doepfer-a-106-5-sem",
+   "brand": "Doepfer",
+   "name": "A-106-5 SEM",
+   "source_url": "https://doepfer.de/a1065.htm",
+   "content_sha256": "1c66a035085f77450f367fc7638aa20a10d87a114204eeea662c034b1522e46a",
+   "maker_quote": "A-106-5"
+  },
+  {
+   "slug": "doepfer-a-106-6",
+   "brand": "Doepfer",
+   "name": "A-106-6",
+   "source_url": "https://doepfer.de/a1066.htm",
+   "content_sha256": "fb2850d1c6dbe263aad54c1bd1eb26c0cc361495506010eda765cafa84da4a95",
+   "maker_quote": "A-106-6 A-106-6 XP Filter click to enlarge click to enlarge Standard Edition Vintage"
+  },
+  {
+   "slug": "doepfer-a-107",
+   "brand": "Doepfer",
+   "name": "A-107",
+   "source_url": "https://doepfer.de/a107.htm",
+   "content_sha256": "a56f0697b91593b1b36910e2945aaae01ce97f3c23a63277e4132c80b70cf019",
+   "maker_quote": "A-107 A-107 Multitype Morphing Filter nicht mehr lieferbar / no l"
+  },
+  {
+   "slug": "doepfer-a-108",
+   "brand": "Doepfer",
+   "name": "A-108",
+   "source_url": "https://doepfer.de/a108.htm",
+   "content_sha256": "be53e0ab20427dc57e669a96b47904932c80372567d25aa6e13242c0e13caeb0",
+   "maker_quote": "A-108 A-108 6/12/24/48dB Low Pass Filter click to enlarge Das Mod"
+  },
+  {
+   "slug": "doepfer-a-109-discontinued",
+   "brand": "Doepfer",
+   "name": "A-109 (Discontinued)",
+   "source_url": "https://doepfer.de/a109.htm",
+   "content_sha256": "387b513fcb1fabdd3e4c1706911561fe0c1dcc48f1a4d800a39d32c114d2f0ba",
+   "maker_quote": "A-109"
+  },
+  {
+   "slug": "doepfer-a-110",
+   "brand": "Doepfer",
+   "name": "A-110",
+   "source_url": "https://doepfer.de/a110.htm",
+   "content_sha256": "b6a265367f90870f21651344217116c55fa7d67d9d7fa9f98a6cd87e831ea07d",
+   "maker_quote": "A-110 A-110-1 Standard VCO A-110 online tutorials by Raul Pena: A"
+  },
+  {
+   "slug": "doepfer-a-111-1",
+   "brand": "Doepfer",
+   "name": "A-111-1",
+   "source_url": "https://doepfer.de/a1111.htm",
+   "content_sha256": "8506af6fec5c39bb9fb5fe655d135ead4cf1bad5243e29f8f54e481ca3fc948f",
+   "maker_quote": "A-111 A-111-1 High-End VCO nicht mehr lieferbar / no longer available emp"
+  },
+  {
+   "slug": "doepfer-a-111-5",
+   "brand": "Doepfer",
+   "name": "A-111-5",
+   "source_url": "https://doepfer.de/a1115.htm",
+   "content_sha256": "842d69c5963cbffc72312880ce1eed85ccfc55ce7ae536e921ee1a68a943f9e9",
+   "maker_quote": "A-111-5 Mini Synth A-111-5 Synthesizer Voice Wiederauflage Herbst 2"
+  },
+  {
+   "slug": "doepfer-a-112",
+   "brand": "Doepfer",
+   "name": "A-112",
+   "source_url": "https://doepfer.de/a112.htm",
+   "content_sha256": "28bec0261b39217ec4ce0fa76b013b383a8f58d359161d9c81a98a0198c12c53",
+   "maker_quote": "A-112 A-112 Sampler / Wavetable Module nicht mehr im regulren Lieferprogramm /"
+  },
+  {
+   "slug": "doepfer-a-113",
+   "brand": "Doepfer",
+   "name": "A-113",
+   "source_url": "https://doepfer.de/a113.htm",
+   "content_sha256": "cb4e0079b70d2cb30f0eb1719fc36881ae8a20a4a54a4d072874cffd0ef9ca2c",
+   "maker_quote": "A-113 A-113 Subharmonic Generator click to enlarge Das Modul A-11"
+  },
+  {
+   "slug": "doepfer-a-114",
+   "brand": "Doepfer",
+   "name": "A-114",
+   "source_url": "https://doepfer.de/a114.htm",
+   "content_sha256": "06d515b6f4cd7124445786661da65bf5708c2dc1086ab90045df98908bcc91c7",
+   "maker_quote": "A-114 A-114 Dual Ringmodulator A-114 online tutorials by Raul Pena: A-114 Ring Modulation"
+  },
+  {
+   "slug": "doepfer-a-115",
+   "brand": "Doepfer",
+   "name": "A-115",
+   "source_url": "https://doepfer.de/a115.htm",
+   "content_sha256": "970d6dfa6dd6c5e1d3a202e596d53a5d2263ef2b9a56221633b853ed773a9e1a",
+   "maker_quote": "A-115 A-115 Audio Divider click to enlarge Das Modul A-115 ist ei"
+  },
+  {
+   "slug": "doepfer-a-116",
+   "brand": "Doepfer",
+   "name": "A-116",
+   "source_url": "https://doepfer.de/a116.htm",
+   "content_sha256": "e5b7e883e580914f43c91ff8e6b4306056d7ce5a5b0074201ad4a53177492101",
+   "maker_quote": "A-116 A-116 Voltage Controlled Waveform Processor click to enlarg"
+  },
+  {
+   "slug": "doepfer-a-117",
+   "brand": "Doepfer",
+   "name": "A-117",
+   "source_url": "https://doepfer.de/a117.htm",
+   "content_sha256": "e78e92d66dd9acc1155b274d4650dca4b736d7fef46ffb8a2c671963bfa34627",
+   "maker_quote": "A-117 A-117 Digital Noise / Random Clock / 808 Sound Source nicht"
+  },
+  {
+   "slug": "doepfer-a-118-1",
+   "brand": "Doepfer",
+   "name": "A-118-1",
+   "source_url": "https://doepfer.de/a118.htm",
+   "content_sha256": "b3ff94558b3df9f560b61a6c008afe7c4ae295059aeb097ca1026e072c4c4d5f",
+   "maker_quote": "A-118 A-118-1 Noise / Random A-118 online tutorials by Raul Pena: A118 Fi"
+  },
+  {
+   "slug": "doepfer-a-119",
+   "brand": "Doepfer",
+   "name": "A-119",
+   "source_url": "https://doepfer.de/a119.htm",
+   "content_sha256": "08bec8619d2ae219b4ade693e6167532416891d119a4e6cc7a12b00525c687e3",
+   "maker_quote": "A-119 A-119 External Input / Envelope Follower Patch tip with A-1"
+  },
+  {
+   "slug": "doepfer-a-124-se",
+   "brand": "Doepfer",
+   "name": "A-124 SE",
+   "source_url": "https://doepfer.de/a124.htm",
+   "content_sha256": "7e27b638e13544410db5f7ad1471ab92a0df002a98f6a1b829f55f9d4ebed8e9",
+   "maker_quote": "A-124 Wasp Filter"
+  },
+  {
+   "slug": "doepfer-a-137-2",
+   "brand": "Doepfer",
+   "name": "A-137-2",
+   "source_url": "https://doepfer.de/a1372.htm",
+   "content_sha256": "f16b1fe3dfe4fb079c9f6a1b2acf000d6dedce064ca33f4d3a5499805b9a3b12",
+   "maker_quote": "A-137-2 A-137-2 Wave Multiplier II Patch-of-the-day with A-137-2 fr"
+  },
+  {
+   "slug": "doepfer-a-138m",
+   "brand": "Doepfer",
+   "name": "A-138m",
+   "source_url": "https://doepfer.de/A138m.htm",
+   "content_sha256": "9d1fd0f51cbeb68575254f406e7aa425b1700b184b7c95a1bd37de0fcd73b0e3",
+   "maker_quote": "A-138m Matrix Mixer A-138m Matrix Mixer click to enlarge Matrix-Mi"
+  },
+  {
+   "slug": "doepfer-a-140",
+   "brand": "Doepfer",
+   "name": "A-140",
+   "source_url": "https://doepfer.de/a140.htm",
+   "content_sha256": "e83ed76b489e0f092c6663ef90b35dcc2508705fa45c6d883ceaa29b8cdb6f83",
+   "maker_quote": "A-140 A-140-1 ADSR Envelope Generator A-140 online tutorials by R"
+  },
+  {
+   "slug": "doepfer-a-141-4",
+   "brand": "Doepfer",
+   "name": "A-141-4",
+   "source_url": "https://doepfer.de/a1414.htm",
+   "content_sha256": "82e382eefba38713f12f2dfd7ae28aa639fd9b7357d4c8fba23156116e99fc6f",
+   "maker_quote": "A-141-4 A-141-4 Quad Poly VCADSR Ausfhrlicher Test aller polyphone"
+  },
+  {
+   "slug": "doepfer-a-151",
+   "brand": "Doepfer",
+   "name": "A-151",
+   "source_url": "https://doepfer.de/a151.htm",
+   "content_sha256": "bcf31d86389bd8f70d3aff2eb47baaac89d67855607a3fcab219a0fbf1a83587",
+   "maker_quote": "A-151 A-151 Quad Sequential Switch Klangbeispiel unseres Kunden R"
+  },
+  {
+   "slug": "doepfer-a-156",
+   "brand": "Doepfer",
+   "name": "A-156",
+   "source_url": "https://doepfer.de/a156.htm",
+   "content_sha256": "77c3eaff4de2f68856f3d1f0b53cc259883e03b2a44eb1539cb76bb732a99ed1",
+   "maker_quote": "A-156 A-156 Dual Quantizer A-156 online tutorials by Raul Pena: A-156 Basics: http://w"
+  },
+  {
+   "slug": "doepfer-a-160-2",
+   "brand": "Doepfer",
+   "name": "A-160-2",
+   "source_url": "https://doepfer.de/a1602.htm",
+   "content_sha256": "78109fe2c4ac016824a40e22adfeaf17f81bd56b899124d3342f4a5506ce237a",
+   "maker_quote": "A-160-2 A-160-2 Clock/Trigger Divider II click to enlarge Standard"
+  },
+  {
+   "slug": "doepfer-a-161",
+   "brand": "Doepfer",
+   "name": "A-161",
+   "source_url": "https://doepfer.de/a161.htm",
+   "content_sha256": "94f50eae4e616ac1567a64b944dbbed6a070000a4fc268af7e48922539dd76e6",
+   "maker_quote": "A-161 A-161 Clock/Trigger Sequencer click to enlarge Das Modul A-"
+  },
+  {
+   "slug": "doepfer-a-162",
+   "brand": "Doepfer",
+   "name": "A-162",
+   "source_url": "https://doepfer.de/a162.htm",
+   "content_sha256": "6861a09163a7a846ebd3844ce3f005925413f5b9c2756ef6333d5c2358e87895",
+   "maker_quote": "A-162 A-162 Dual Trigger Delay Patch-of-the-day with A-162 from N"
+  },
+  {
+   "slug": "doepfer-a-163",
+   "brand": "Doepfer",
+   "name": "A-163",
+   "source_url": "https://doepfer.de/a163.htm",
+   "content_sha256": "aaa78eaf465c3f1b5513fa7e6c191bf7a1525ca1d3dcc948a5e169c55dce2e9a",
+   "maker_quote": "A-163 A-163 Voltage Controlled Frequency Divider nicht mehr liefe"
+  },
+  {
+   "slug": "doepfer-a-180-2-multiples",
+   "brand": "Doepfer",
+   "name": "A-180-2 Multiples",
+   "source_url": "https://doepfer.de/a180.htm",
+   "content_sha256": "f453dd77a835c56c5326f721fa6e9e9ab4891d626bd5c186f8e9d15f95f7502f",
+   "maker_quote": "A-180 A-180-1 / A-180-2 Multiples click to enlarge (A-180-1) click to enlarge (A-180-2) A-180"
+  },
+  {
+   "slug": "doepfer-a-180-3",
+   "brand": "Doepfer",
+   "name": "A-180-3",
+   "source_url": "https://doepfer.de/a1803.htm",
+   "content_sha256": "51508d5f03cc093425a0aa0cab38faee2a39e97cb84fd47ad3982d8987b6ca2b",
+   "maker_quote": "A-180-3 Dual Buffered Multiple A-180-3 Dual Buffered Multiple / Bus"
+  },
+  {
+   "slug": "doepfer-a-181",
+   "brand": "Doepfer",
+   "name": "A-181",
+   "source_url": "https://doepfer.de/a181.htm",
+   "content_sha256": "7a63bdb180194aadca6472743e6a3b405bcbe1394604f16a55486c69359f682e",
+   "maker_quote": "A-181 A-181 Multiples 2 nicht mehr lieferbar / no longer availabl"
+  },
+  {
+   "slug": "doepfer-a-182-1",
+   "brand": "Doepfer",
+   "name": "A-182-1",
+   "source_url": "https://doepfer.de/a182.htm",
+   "content_sha256": "1870aa117c60e8b22721518a18d0bf4fca520e736f965b09d14a92ce51d0a518",
+   "maker_quote": "A-182 A-182-1 Switched Multiples click to enlarge Module A-182-1 is a sim"
+  },
+  {
+   "slug": "doepfer-a-182-2",
+   "brand": "Doepfer",
+   "name": "A-182-2",
+   "source_url": "https://doepfer.de/a1822.htm",
+   "content_sha256": "ce956a5fd11dfaf671105e4ee9df226db409a2ab047c730bfb0ca511d3c2b31e",
+   "maker_quote": "A-182-2 Quad Switches A-182-2 Quad Switches Slim Line Series click"
+  },
+  {
+   "slug": "doepfer-a-183-1",
+   "brand": "Doepfer",
+   "name": "A-183-1",
+   "source_url": "https://doepfer.de/a1831.htm",
+   "content_sha256": "d695b08044350daef18c63fe46a94854b92df8008598c119f7fad998357bb285",
+   "maker_quote": "A-183-1 A-183-1 Dual Attenuator nicht mehr lieferbar / no longer av"
+  },
+  {
+   "slug": "doepfer-a-183-2",
+   "brand": "Doepfer",
+   "name": "A-183-2",
+   "source_url": "https://doepfer.de/a1832.htm",
+   "content_sha256": "066801f6a03722b346d1436b442807070d69104e56905684b9c30142e6f6df97",
+   "maker_quote": "A-183-2 A-183-2 Offset-Generator/Attenuator/Polarizer click to enla"
+  },
+  {
+   "slug": "doepfer-a-184-1",
+   "brand": "Doepfer",
+   "name": "A-184-1",
+   "source_url": "https://doepfer.de/a1841.htm",
+   "content_sha256": "62f36a97b7909709eac5bd379e47d099c1459b49dea692dca1b597fd8c3d3765",
+   "maker_quote": "A-184-1 A-184-1 Ring Modulator / S&H/T&H / Slew Limiter Slim Line S"
+  },
+  {
+   "slug": "doepfer-a-184-2",
+   "brand": "Doepfer",
+   "name": "A-184-2",
+   "source_url": "https://doepfer.de/a1842.htm",
+   "content_sha256": "1509ba4acc8e9e347c936fe6037e1e5744938b98115b35e91da5872500d13be6",
+   "maker_quote": "A-184-2 A-184-2 Voltage Controlled Crossfader / Triangle-to-Sine Wa"
+  },
+  {
+   "slug": "doepfer-a-185-2",
+   "brand": "Doepfer",
+   "name": "A-185-2",
+   "source_url": "https://doepfer.de/a1852.htm",
+   "content_sha256": "22139d9921650356d8afd4972f2f6114d3f8b814ad3abba843d4a92b9feb0ebc",
+   "maker_quote": "A-185-2 A-185-2 Precision CV Adder click to enlarge Standard Editio"
+  },
+  {
+   "slug": "endorphin-es-autopilot-golden",
+   "brand": "Endorphin.es",
+   "name": "Autopilot (golden)",
+   "source_url": "https://www.endorphin.es/modules/p/autopilot",
+   "content_sha256": "73b22e13e7d3b95684d75afc2cae113c9a7c11d066d4ecb31f77c5dda2c4a330",
+   "maker_quote": "AUTOPILOT — ENDORPHIN.ES"
+  },
+  {
+   "slug": "endorphin-es-blck-noir-black",
+   "brand": "Endorphin.es",
+   "name": "Blck_Noir (black)",
+   "source_url": "https://www.endorphin.es/modules/p/blck-noir",
+   "content_sha256": "a00f45a8d17b11a4fc371594b7d88b23493339f965eeb3e2180949dcb715b045",
+   "maker_quote": "CR-78 inspired 7-Voice hybrid drum generator with filter and effects 7 drum voices in the analog kit: ba"
+  },
+  {
+   "slug": "endorphin-es-cockpit-black",
+   "brand": "Endorphin.es",
+   "name": "Cockpit (black)",
+   "source_url": "https://www.endorphin.es/discontinued/p/cockpit",
+   "content_sha256": "57cd278c3066d48a5fd08dc4ae55a75cf623f64734e663e0a6b4fb7dfeb32bd9",
+   "maker_quote": "COCKPIT MK1 — ENDORPHIN.ES"
+  },
+  {
+   "slug": "endorphin-es-cockpit-golden",
+   "brand": "Endorphin.es",
+   "name": "Cockpit (golden)",
+   "source_url": "https://www.endorphin.es/discontinued/p/cockpit",
+   "content_sha256": "57cd278c3066d48a5fd08dc4ae55a75cf623f64734e663e0a6b4fb7dfeb32bd9",
+   "maker_quote": "COCKPIT MK1 — ENDORPHIN.ES"
+  },
+  {
+   "slug": "endorphin-es-furthrrrr-generator-black",
+   "brand": "Endorphin.es",
+   "name": "Furthrrrr Generator (black)",
+   "source_url": "https://www.endorphin.es/modules/p/furthrrrr-generator",
+   "content_sha256": "db54cc360ecd45eefb279b48ef38482df53218881b5d03dbc2c6a3d105874613",
+   "maker_quote": "FURTHRRRR GENERATOR — ENDORPHIN.ES"
+  },
+  {
+   "slug": "endorphin-es-furthrrrr-generator-golden",
+   "brand": "Endorphin.es",
+   "name": "Furthrrrr Generator (golden)",
+   "source_url": "https://www.endorphin.es/modules/p/furthrrrr-generator",
+   "content_sha256": "db54cc360ecd45eefb279b48ef38482df53218881b5d03dbc2c6a3d105874613",
+   "maker_quote": "FURTHRRRR GENERATOR — ENDORPHIN.ES"
+  },
+  {
+   "slug": "endorphin-es-grand-terminal-black",
+   "brand": "Endorphin.es",
+   "name": "Grand Terminal (black)",
+   "source_url": "https://www.endorphin.es/modules/p/grand-terminal",
+   "content_sha256": "c752aae26d8009548dfd5105f56738cad12068321f284f1197708322bc5fc5b3",
+   "maker_quote": "GRAND TERMINAL — ENDORPHIN.ES"
+  },
+  {
+   "slug": "endorphin-es-grand-terminal-golden",
+   "brand": "Endorphin.es",
+   "name": "Grand Terminal (golden)",
+   "source_url": "https://www.endorphin.es/modules/p/grand-terminal",
+   "content_sha256": "c752aae26d8009548dfd5105f56738cad12068321f284f1197708322bc5fc5b3",
+   "maker_quote": "GRAND TERMINAL — ENDORPHIN.ES"
+  },
+  {
+   "slug": "endorphin-es-milky-way-1u-silver",
+   "brand": "Endorphin.es",
+   "name": "Milky Way 1U (silver)",
+   "source_url": "https://www.endorphin.es/modules/p/milky-way",
+   "content_sha256": "ee873acc273a1653fb09f8d45a3b3f14cb7bc978df86152e09f0248e0e27aec7",
+   "maker_quote": "16 Algorithm Stereo FX Processor with meta cv FX scan, pan and crossfade Simple an"
+  },
+  {
+   "slug": "endorphin-es-shuttle-control-black",
+   "brand": "Endorphin.es",
+   "name": "Shuttle Control (black)",
+   "source_url": "https://www.endorphin.es/modules/p/shuttle-control",
+   "content_sha256": "4c09c35dd186d7e998dd66c84e3ff399adcc3c4e83e0b99e784b62c699d3337e",
+   "maker_quote": "12 bit USB-to-MIDI-to-CV converter, PSU, USB-host for class compliant MIDI-Dev"
+  },
+  {
+   "slug": "endorphin-es-terminal",
+   "brand": "Endorphin.es",
+   "name": "Terminal",
+   "source_url": "https://www.endorphin.es/discontinued/p/terminal",
+   "content_sha256": "846e711ef26faed0fa9b24e3f72ea512f51542112941491c0247f4afaf43114e",
+   "maker_quote": "TERMINAL — ENDORPHIN.ES // // Image 1 of 1 TERMINAL €399.00 OUT OF S"
+  },
+  {
+   "slug": "erica-synths-black-vc-eg-expander",
+   "brand": "Erica Synths",
+   "name": "Black VC EG Expander",
+   "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/black-vc-eg-expander/",
+   "content_sha256": "b6cddcbf6e33e064b60babbffe66ebd6d99314764b5c3f86506affde758ab1c3",
+   "maker_quote": "Black VC EG Expander - Erica Synths JavaScript seems to be disabled in your brow"
+  },
+  {
+   "slug": "erica-synths-black-xfade",
+   "brand": "Erica Synths",
+   "name": "Black XFade",
+   "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/black-xfade/",
+   "content_sha256": "bbf145c51f23c0b7dcdb3f4c45be0789e2bf7e77811e2f48c1ef3d94f2bf2ca7",
+   "maker_quote": "ps to come up with really advanced modulations. In addition Black XFADE can be used to boost CV and audio signals.Erica Black serie"
+  },
+  {
+   "slug": "erica-synths-fusion-ring-modulator",
+   "brand": "Erica Synths",
+   "name": "Fusion Ring modulator",
+   "source_url": "https://www.ericasynths.lv/fusion-ring-modulator-v2-33/",
+   "content_sha256": "4451d184665ebe86c92969f6d44b2abadf57bca3a63ef9b06b678d29294dce85",
+   "maker_quote": "Fusion Ring Modulator V2 - Erica Synths JavaScript seems to be disabled in your b"
+  },
+  {
+   "slug": "erica-synths-graphic-vco",
+   "brand": "Erica Synths",
+   "name": "Graphic VCO",
+   "source_url": "https://www.ericasynths.lv/graphic-vco-2/",
+   "content_sha256": "5e53a851649de3ab62a9513d840ea2bda5ddd8994777e12249b30a904deb58c8",
+   "maker_quote": "imefor announcements about firmware updates for the Graphic VCO. You can upda"
+  },
+  {
+   "slug": "erica-synths-midi-to-clock-v2",
+   "brand": "Erica Synths",
+   "name": "Midi to Clock V2",
+   "source_url": "https://www.ericasynths.lv/midi-to-clock-v2-76/",
+   "content_sha256": "d97f21b83edc34e824b82297ecefe51245a0473be53ffcfc24ed2b12001c1b9d",
+   "maker_quote": "What sets Erica Synths MIDI <-> Clock module apart from others is that it works BOTH WA"
+  },
+  {
+   "slug": "erica-synths-modulator",
+   "brand": "Erica Synths",
+   "name": "Modulator",
+   "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/modulator/",
+   "content_sha256": "42c316edf188d8656da70f70f20638a90a6cd79d57673245fbeb77461d933a42",
+   "maker_quote": "th 45mm Product Highlights Product Features Two independent modulation/pitched noise sources 7morphing waveshape + noise LFO Sync,"
+  },
+  {
+   "slug": "erica-synths-pico-drums",
+   "brand": "Erica Synths",
+   "name": "Pico DRUMS",
+   "source_url": "https://www.ericasynths.lv/shop/eurorack-modules/pico-drums/",
+   "content_sha256": "b32d6002219d0d371a25546d58f1a37e623fdce4747d31ed847eab724bbd3455",
+   "maker_quote": "You can chain up several Pico Drums and get one of the smallest modular drum setups in the modu"
+  },
+  {
+   "slug": "erica-synths-pico-dsp",
+   "brand": "Erica Synths",
+   "name": "Pico DSP",
+   "source_url": "https://www.ericasynths.lv/pico-dsp-21/",
+   "content_sha256": "18d81cfa67376b21692732b00ac11a51b20e4143c8c32de450e2b3a66b45c79b",
+   "maker_quote": "Erica Synths Pico DSP is a smaller brother to our famous Black Hole DSP module. I"
+  },
+  {
+   "slug": "erica-synths-pico-out",
+   "brand": "Erica Synths",
+   "name": "Pico OUT",
+   "source_url": "https://www.ericasynths.lv/pico-output-24/",
+   "content_sha256": "d1dbb39be0ae9052aedfc49dcc8589df433a745edfbc6707b3d62c291060453a",
+   "maker_quote": "Erica Synths Pico OUTPUT module is just what you need to monitor your music on he"
+  },
+  {
+   "slug": "erica-synths-sample-drum",
+   "brand": "Erica Synths",
+   "name": "Sample Drum",
+   "source_url": "https://www.ericasynths.lv/sample-drum-427/",
+   "content_sha256": "4422384a6d5b9dfccbdd1449edde46150c3cb2b74296779edf308c94b261802a",
+   "maker_quote": "The Sample Drum is composed of two identical parts and allows you to p"
+  },
+  {
+   "slug": "erica-synths-sequential-switch",
+   "brand": "Erica Synths",
+   "name": "Sequential Switch",
+   "source_url": "https://www.ericasynths.lv/sequential-switch-v2-73/",
+   "content_sha256": "ea9a9827628cc3d8374ee95ed8f288fd58ea8d6ffd8a5dd8e841d88dfd0da4f3",
+   "maker_quote": "Erica Synths Sequential Switch (SS) has unique control interface that allows you to pause,"
+  },
+  {
+   "slug": "expert-sleepers-disting-ex",
+   "brand": "Expert Sleepers",
+   "name": "disting EX",
+   "source_url": "https://www.expert-sleepers.co.uk/distingEX.html",
+   "content_sha256": "f916537b664098b7aee314055d26bf8df63cd9d477057ac5f9bb965bb72b1bfe",
+   "maker_quote": "Expert Sleepers Disting EX --> --> Home News Hardware CVM-8 CV to MIDI/I2C User Manual"
+  },
+  {
+   "slug": "expert-sleepers-disting-mk4",
+   "brand": "Expert Sleepers",
+   "name": "Disting mk4",
+   "source_url": "https://www.expert-sleepers.co.uk/disting.html",
+   "content_sha256": "2476a3ea913c152f028e6b1653ae8b80bb2e45c33b7c9e498a7d8d1af7d0d6e5",
+   "maker_quote": "Expert Sleepers Disting mk4 --> Disting mk4 --> Home News Hardware CVM-8 CV to MIDI/I2C"
+  },
+  {
+   "slug": "expert-sleepers-es-1",
+   "brand": "Expert Sleepers",
+   "name": "ES-1",
+   "source_url": "https://www.expert-sleepers.co.uk/es1.html",
+   "content_sha256": "5c1080c10b7956ef05ac3295092a235899b9b46faba15bc0c1932d8569dacde0",
+   "maker_quote": "Expert Sleepers - ES-1 Audio/CV Interface --> ES-1 Audio/CV Interface --> Home New"
+  },
+  {
+   "slug": "expert-sleepers-es-8",
+   "brand": "Expert Sleepers",
+   "name": "ES-8",
+   "source_url": "https://www.expert-sleepers.co.uk/es8.html",
+   "content_sha256": "6d0a119869c30797dc461c0508ecb80a54f98f4850b75d2eb677f87583309d06",
+   "maker_quote": "Expert Sleepers - ES-8 USB Audio Interface --> ES-8 USB Audio Interface --> Home News Hardware CVM-8 C"
+  },
+  {
+   "slug": "expert-sleepers-es-9",
+   "brand": "Expert Sleepers",
+   "name": "ES-9",
+   "source_url": "https://www.expert-sleepers.co.uk/es9.html",
+   "content_sha256": "da906d202a26096f415d195dcff491a163beda53f6046e3cfc0894235fc2f45e",
+   "maker_quote": "Expert Sleepers - ES-9 USB Audio Interface --> ES-9 USB Audio Interface --> Home N"
+  },
+  {
+   "slug": "expert-sleepers-esx-4cv",
+   "brand": "Expert Sleepers",
+   "name": "ESX-4CV",
+   "source_url": "https://www.expert-sleepers.co.uk/esx4cv.html",
+   "content_sha256": "55249998a173660f97ad259b500afc91181bcec7dac582a7c5af813e58c8a015",
+   "maker_quote": "Expert Sleepers ESX-4CV CV Expander --> ESX-4CV CV Expander --> Home News Hardware CVM-8 CV to"
+  },
+  {
+   "slug": "expert-sleepers-esx-8cv-cv-expander",
+   "brand": "Expert Sleepers",
+   "name": "ESX-8CV CV Expander",
+   "source_url": "https://www.expert-sleepers.co.uk/esx8cv.html",
+   "content_sha256": "c1ffe94c88fb3c865c23fdedb2663346993da772ff60a2a60b12554592c2145c",
+   "maker_quote": "Expert Sleepers ESX-8CV CV Expander --> ESX-8CV CV Expander --> Home News Hardware CVM-8 CV to"
+  },
+  {
+   "slug": "expert-sleepers-esx-8gt-gate-expander",
+   "brand": "Expert Sleepers",
+   "name": "ESX-8GT Gate Expander",
+   "source_url": "https://www.expert-sleepers.co.uk/esx8gt.html",
+   "content_sha256": "c96173bca3ed959bf8aaf831452266864ce32fa7b757cdd622037faab6dbca23",
+   "maker_quote": "Expert Sleepers ESX-8GT Gate Expander --> ESX-8GT Gate Expander --> Home News Hardware CVM-8 CV t"
+  },
+  {
+   "slug": "expert-sleepers-esx-8gt-mk3",
+   "brand": "Expert Sleepers",
+   "name": "ESX-8GT mk3",
+   "source_url": "https://www.expert-sleepers.co.uk/esx8gt.html",
+   "content_sha256": "c96173bca3ed959bf8aaf831452266864ce32fa7b757cdd622037faab6dbca23",
+   "maker_quote": "round hole). For more detail, please see the user manual . ESX-8GT mk3 February 2017 sees the launch of the \"ESX-8GT mk3\". Functio"
+  },
+  {
+   "slug": "intellijel-buff-mult",
+   "brand": "Intellijel",
+   "name": "Buff Mult",
+   "source_url": "https://intellijel.com/shop/eurorack/buff-mult/",
+   "content_sha256": "e343393080f665511f72d5c0115ea706d18a0d513b1c09d973c715d39fbf3323",
+   "maker_quote": "Buff Mult - intellijel Skip to content Get Buff Turn one audio or CV"
+  },
+  {
+   "slug": "intellijel-buff-mult-1u",
+   "brand": "Intellijel",
+   "name": "Buff Mult 1U",
+   "source_url": "https://intellijel.com/shop/eurorack/buff-mult-1u/",
+   "content_sha256": "304de24df7402667ab51a449a515838116da5205f5d1ae136c9d52a004dc4440",
+   "maker_quote": "Buff Mult 1U - intellijel Skip to content Cloning Made Easy Turn one aud"
+  },
+  {
+   "slug": "intellijel-mems-mic",
+   "brand": "Intellijel",
+   "name": "MEMS Mic",
+   "source_url": "https://intellijel.com/shop/eurorack/mems-mic/",
+   "content_sha256": "1ecf2d8f78f3561b25a0acc47dcb194dad26bc533edd103760af94c47c51e6cd",
+   "maker_quote": "low-frequency roll-of switch (180Hz, 6dB/oct) What’s MEMS? MEMS Microphones are constructed with a Micro-Electro-Mechanical Sys"
+  },
+  {
+   "slug": "intellijel-mems-mic-1u",
+   "brand": "Intellijel",
+   "name": "MEMS Mic 1U",
+   "source_url": "https://intellijel.com/shop/eurorack/mems-mic-1u/",
+   "content_sha256": "157ddc5b6c78ea033f690c25ca0463e7eeaf239876d1897bce7c7f0c93676b3f",
+   "maker_quote": "MEMS Mic 1U - intellijel Skip to content Features Identical features an"
+  },
+  {
+   "slug": "intellijel-metropolis",
+   "brand": "Intellijel",
+   "name": "Metropolis",
+   "source_url": "https://intellijel.com/shop/eurorack/metropolis/",
+   "content_sha256": "0fb4dee4be58ea998a166e0f25e507e70cf1ee843feb2e5943262076933a618f",
+   "maker_quote": "atterns, nothing beats the immediacy of dedicated controls. Metropolis patterns are built in stages not just steps. Each stage has"
+  },
+  {
+   "slug": "intellijel-multigrain",
+   "brand": "Intellijel",
+   "name": "Multigrain",
+   "source_url": "https://intellijel.com/shop/eurorack/multigrain/",
+   "content_sha256": "7d25d968b5e52210d22799b54a6244dedc11bab11dfe27a049f3a65699c0664f",
+   "maker_quote": "With the immense sonic potential of granular synthesis, Multigrain can transform your audio samples and live input into everyt"
+  },
+  {
+   "slug": "intellijel-quad-vca",
+   "brand": "Intellijel",
+   "name": "Quad VCA",
+   "source_url": "https://intellijel.com/shop/eurorack/quad-vca/",
+   "content_sha256": "949fe88658b4e739344fc81d2ed9d970a52a8961db3aa63ca5c969604eb957bd",
+   "maker_quote": "enough VCAs. It's true, but it's a bit over simplified, the Quad VCA is not. Each of the four VCAs has independent level control"
+  },
+  {
+   "slug": "intellijel-quadratt-1u",
+   "brand": "Intellijel",
+   "name": "Quadratt 1U",
+   "source_url": "https://intellijel.com/shop/eurorack/quadratt-1u/",
+   "content_sha256": "e5402920f93b8b4ea8d3ddeb14d72cac79c4a09e7e7633e7e00132f5bf24dfd9",
+   "maker_quote": "Quadratt 1U - intellijel Skip to content At Your Service The shorter an"
+  },
+  {
+   "slug": "intellijel-rubicon",
+   "brand": "Intellijel",
+   "name": "Rubicon",
+   "source_url": "https://intellijel.com/shop/legacy/rubicon-2/",
+   "content_sha256": "0fb4dee4be58ea998a166e0f25e507e70cf1ee843feb2e5943262076933a618f",
+   "maker_quote": "Proudly Analog This is not a set it and forget it oscillator. It’s an oscillator that demands to be tweaked, modulated a"
+  },
+  {
+   "slug": "intellijel-stereo-i-o-1u",
+   "brand": "Intellijel",
+   "name": "Stereo I/O 1U",
+   "source_url": "https://intellijel.com/shop/eurorack/1u/stereo-i-o-1u/",
+   "content_sha256": "e66882fa47bacb43149f1b4ffe9a3fcdb709c053690c83f28ce59b0158ee7a77",
+   "maker_quote": "Stereo I/O 1U - intellijel Skip to content The Stereo I/O 1U is an all-in"
+  },
+  {
+   "slug": "intellijel-stereo-line-out-1u",
+   "brand": "Intellijel",
+   "name": "Stereo Line Out 1U",
+   "source_url": "https://intellijel.com/shop/eurorack/1u/stereo-line-out-1u/",
+   "content_sha256": "1fc40104db9efc2d3a67dd49f5ea1348e1953a62bd24f0de3ecadb589c21a423",
+   "maker_quote": "Stereo Line Out 1U - intellijel Skip to content Use the Stereo Line Out 1U sys"
+  },
+  {
+   "slug": "intellijel-swells",
+   "brand": "Intellijel",
+   "name": "Swells",
+   "source_url": "https://intellijel.com/shop/eurorack/swells/",
+   "content_sha256": "60a9a196a724cf7ec83fdfb6df2a14d3a00062c4b0279a8f0ac3598b8a8a6dfe",
+   "maker_quote": "More than a Reverb Swells allows you to create reverberant spaces, real or imaginary,"
+  },
+  {
+   "slug": "intellijel-xfade-1u",
+   "brand": "Intellijel",
+   "name": "Xfade 1U",
+   "source_url": "https://intellijel.com/shop/eurorack/xfade-1u/",
+   "content_sha256": "10faef428e7e92f909f6a8be9f406ad5ccd808f9cc59b3a399b6ff6db78abfbf",
+   "maker_quote": "Xfade 1U is a classic DJ-style stereo crossfader, with a few extra t"
+  },
+  {
+   "slug": "make-noise-brains",
+   "brand": "Make Noise",
+   "name": "Brains",
+   "source_url": "https://www.makenoisemusic.com/retired/retired-modules/brains/",
+   "content_sha256": "f7b8680fbfb39b05ea59f1d27e83c4864de28dd1d7b7c70025d33ba8d1e5d0ae",
+   "maker_quote": "BRAINS – Make Noise Music The BRAINS music synthesizer module is a"
+  },
+  {
+   "slug": "make-noise-dpo",
+   "brand": "Make Noise",
+   "name": "DPO",
+   "source_url": "https://www.makenoisemusic.com/modules/dpo/",
+   "content_sha256": "6e3a959e01f02b27a66f3320b41f4a12dd5df1e59c65d2da6d7c7309e58015e8",
+   "maker_quote": "DPO – Make Noise Music The DPO music synthesizer module is a du"
+  },
+  {
+   "slug": "make-noise-echophon",
+   "brand": "Make Noise",
+   "name": "Echophon",
+   "source_url": "https://www.makenoisemusic.com/modules/echophon/",
+   "content_sha256": "d45bc113a2d508924a3f45c93f201aacea5d0a2e3f110c6c97a4429768af7339",
+   "maker_quote": "Echophon – Make Noise Music The Echophon music synthesizer module is"
+  },
+  {
+   "slug": "make-noise-erbe-verb",
+   "brand": "Make Noise",
+   "name": "Erbe-Verb",
+   "source_url": "https://www.makenoisemusic.com/retired/retired-modules/erbe-verb/",
+   "content_sha256": "1bcb2be8d46d2975b8e9b46350629d4b68c85275755c8902734339e1cce46805",
+   "maker_quote": "-Verb music synthesizer module is more than a collection of reverb algorithms or presets, it is a unique, modeless, continuous"
+  },
+  {
+   "slug": "make-noise-function",
+   "brand": "Make Noise",
+   "name": "Function",
+   "source_url": "https://www.makenoisemusic.com/retired/retired-modules/function/",
+   "content_sha256": "021c0aef20c15f8867b8f2cdd07d2ec0990b4fe6364b63470b56960eb0cf383b",
+   "maker_quote": "FUNCTION – Make Noise Music The FUNCTION music synthesizer module is"
+  },
+  {
+   "slug": "make-noise-fxdf",
+   "brand": "Make Noise",
+   "name": "FXDf",
+   "source_url": "https://www.makenoisemusic.com/retired/retired-modules/fxdf/",
+   "content_sha256": "48612f3403fa7fe0003c54cc696c304bedd29c7fdb5a8b2379d02db59b47abb1",
+   "maker_quote": "e Music The FXDf music synthesizer module is a 6 Band Fixed Filter. Traditionally fixed filters are large modules having 8 to"
+  },
+  {
+   "slug": "make-noise-maths",
+   "brand": "Make Noise",
+   "name": "Maths",
+   "source_url": "https://www.makenoisemusic.com/modules/maths/",
+   "content_sha256": "437410697640ffffd12c2d59ec885dfa64998555f765607c8e2651e6bd1a0d42",
+   "maker_quote": "MATHS – Make Noise Music The MATHS music synthesizer module is an"
+  },
+  {
+   "slug": "make-noise-moddemix",
+   "brand": "Make Noise",
+   "name": "modDemix",
+   "source_url": "https://www.makenoisemusic.com/modules/moddemix/",
+   "content_sha256": "e7f81d2c33f9af9df607254aad18d594248468df5006fbd6ccc6c513f21711a2",
+   "maker_quote": "modDemix – Make Noise Music The modDemix music synthesizer module fe"
+  },
+  {
+   "slug": "make-noise-optomix",
+   "brand": "Make Noise",
+   "name": "Optomix",
+   "source_url": "https://www.makenoisemusic.com/modules/optomix/",
+   "content_sha256": "58e56fddb926f5c9a262d3d9c5d48f6216e5930d471f2d18210cbf8500e263c3",
+   "maker_quote": "Music The Optomix music synthesizer module is a two channel Low Pass Gate, providing simultaneous voltage control over amplitude and"
+  },
+  {
+   "slug": "make-noise-phonogene",
+   "brand": "Make Noise",
+   "name": "Phonogene",
+   "source_url": "https://www.makenoisemusic.com/retired/retired-modules/phonogene/",
+   "content_sha256": "ae86605efa19ff43a2f6b6f23f7607fd410914207e532483a1fb48061dda54d7",
+   "maker_quote": "Phonogene – Make Noise Music The Phonogene music synthesizer module i"
+  },
+  {
+   "slug": "make-noise-pressure-points",
+   "brand": "Make Noise",
+   "name": "Pressure Points",
+   "source_url": "https://www.makenoisemusic.com/modules/pressure-points/",
+   "content_sha256": "9dfefbc297ff8dfcfb704b1999c2ed1d734299ccab23bcbfbafc7d20bb499680",
+   "maker_quote": "Pressure Points – Make Noise Music The Pressure Points music synthesizer mo"
+  },
+  {
+   "slug": "make-noise-qmmg",
+   "brand": "Make Noise",
+   "name": "QMMG",
+   "source_url": "https://www.makenoisemusic.com/modules/qmmg/",
+   "content_sha256": "d3af1b7d14835d83fd6142e430b067f280e5338b0eb9ffbcecdb6957d7bface9",
+   "maker_quote": "QMMG – Make Noise Music We built as many QMMGs as we could sourc"
+  },
+  {
+   "slug": "make-noise-rene",
+   "brand": "Make Noise",
+   "name": "Rene",
+   "source_url": "https://www.makenoisemusic.com/retired/retired-modules/rene-classic/",
+   "content_sha256": "873e8435f032de41fb9fe9d92714661dc68e80db2aee4d7e92ca26fefe5ced2e",
+   "maker_quote": "René (Classic) – Make Noise Music"
+  },
+  {
+   "slug": "make-noise-rxmx",
+   "brand": "Make Noise",
+   "name": "RxMx",
+   "source_url": "https://www.makenoisemusic.com/retired/retired-modules/rxmx/",
+   "content_sha256": "5489c34c8aa2295febf9138ae8ec1dd7f80b6ef797de10cf1f325dccda192f9b",
+   "maker_quote": "RxMx – Make Noise Music The RxMx music synthesizer module is a v"
+  },
+  {
+   "slug": "make-noise-wogglebug",
+   "brand": "Make Noise",
+   "name": "Wogglebug",
+   "source_url": "https://www.makenoisemusic.com/modules/wogglebug/",
+   "content_sha256": "dd4ddc9cdb7e6096fbc25d61caad1b9a0550748d087025fb7d7a4e3fc402ffb7",
+   "maker_quote": "ake Noise Music The WoggleBug music synthesizer module is a random voltage generator, originally designed by Grant Richter of"
+  },
+  {
+   "slug": "mutable-instruments-edges",
+   "brand": "Mutable Instruments",
+   "name": "Edges",
+   "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/edges/",
+   "content_sha256": "b975a27d2d0372df5d1022e00c875a0466834f4332fea7aae76dfba3e056da9f",
+   "maker_quote": "es Specifications Revisions and variants 2014 Key data Quad chiptune audio generator Parameter Value Width 20HP Depth 25mm +12V"
+  },
+  {
+   "slug": "mutable-instruments-frames",
+   "brand": "Mutable Instruments",
+   "name": "Frames",
+   "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/frames/",
+   "content_sha256": "5fbafa109d5d02f467d3e9dd01ce23bee9a9300fe1a1cce20a3630a9ee214c50",
+   "maker_quote": "» Index Key data Original printed manual Features An analog mixer... ... under digital control Specifications Key data Keyfra"
+  },
+  {
+   "slug": "mutable-instruments-grids",
+   "brand": "Mutable Instruments",
+   "name": "Grids",
+   "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/grids/",
+   "content_sha256": "d2e37a1131c5d9cb571e63b3aa9852013f06dd34683b1720a1f5ebaf8999050c",
+   "maker_quote": "tions Revisions and variants 2014 Key data Topographic drum sequencer Parameter Value Width 16HP Depth 25mm +12V current 25mA -12"
+  },
+  {
+   "slug": "mutable-instruments-links",
+   "brand": "Mutable Instruments",
+   "name": "Links",
+   "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/links/",
+   "content_sha256": "f3795a446be6a2961d80d09b7b12128cc398025a76da44e0dbd4ff2e404a5a4c",
+   "maker_quote": "Index - Mutable Instruments Documentation » Modules » Links » Index Key data Original printed manual Features Three ess"
+  },
+  {
+   "slug": "mutable-instruments-ripples",
+   "brand": "Mutable Instruments",
+   "name": "Ripples",
+   "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_original/",
+   "content_sha256": "1c7112733a514637a7d0dcbb8222c11bdd70f7f8828649a80ee9e244a56c381e",
+   "maker_quote": "Index Key data Original printed manual Features A multimode filter All the CV inputs you need Specifications Revisions and var"
+  },
+  {
+   "slug": "mutable-instruments-tides-2014-version",
+   "brand": "Mutable Instruments",
+   "name": "Tides (2014 version)",
+   "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_original/",
+   "content_sha256": "d70e1b713f6c04038c3f34cc824ea69f886f1336a9d0053ac7e3632679ba5cbe",
+   "maker_quote": "cifications Revisions and variants 2014 2015 Key data Tidal modulator Parameter Value Width 14HP Depth 25mm +12V current 55mA -12"
+  },
+  {
+   "slug": "mutable-instruments-yarns",
+   "brand": "Mutable Instruments",
+   "name": "Yarns",
+   "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/yarns/",
+   "content_sha256": "a75e6a97598c4d335b45e6f432f172436bc8c5ccce42b967bbc95e9ba4abb658",
+   "maker_quote": "essing CV/Gate conversion Specifications Key data 4-channel MIDI interface ( MIDI interface on the packaging) Parameter Value Width 12"
+  }
+ ]
+}

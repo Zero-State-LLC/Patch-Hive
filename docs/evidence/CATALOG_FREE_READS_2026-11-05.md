@@ -121,7 +121,7 @@ ST Modular USB keeps its 8 mA, which is a real draw. The other SYSTEM rows store
 
 ### Widths
 
-Decision 30's plain-GET retry settled 9 of the 17 unsourced widths. ADDAC's site, listed as blocked in the earlier record, answered every read.
+Decision 30's plain-GET retry settled 8 of the 17 unsourced widths. This record first said 9, counting Doepfer A-101-4, but the page read was the A-110-4's; [the lead-promotion record](CATALOG_LEAD_PROMOTION_2026-11-05.md) corrects it. ADDAC's site, listed as blocked in the earlier record, answered every read.
 
 | Row | Stored | Maker's page | Outcome |
 |---|---:|---:|---|
@@ -129,11 +129,10 @@ Decision 30's plain-GET retry settled 9 of the 17 unsourced widths. ADDAC's site
 | ADDAC200S Size Matter (black) | 2 | 4 | Corrected |
 | ADDAC501B | 8 | 4 | Corrected |
 | ADDAC001, 003, 005, 101, 203 | 12, 4, 4, 11, 4 | The same | Confirmed |
-| Doepfer A-101-4 | 8 | 8 | Confirmed |
 
 Decision 41: ALM's page gives Akemie's Castle as "38HP 32mm Deep". The manifest corrects a stored 18 to 38 and changes nothing if the value is already 38. The row wasn't in production's public catalog when this was read.
 
-**8 stay `legacy_unsourced`** and go to the owner's drafted emails (decision 30):
+**9 stay `legacy_unsourced`** and go to the owner's drafted emails (decision 30):
 
 | Maker | Rows | Why the read failed |
 |---|---|---|
@@ -142,6 +141,7 @@ Decision 41: ALM's page gives Akemie's Castle as "38HP 32mm Deep". The manifest 
 | Cwejman | D-LFO | robots.txt answered 522 |
 | Intellijel | μAtt, Quadra Expander | The legacy pages state no width |
 | Make Noise | Mysteron, Strega | 404, and no HP on the page |
+| Doepfer | A-101-4 | The page at its URL is for another module |
 
 Doepfer A-155 also stays marked on a load from empty, as [T039](../../specs/003-catalog-dataset-pipeline/tasks.md) already records.
 
