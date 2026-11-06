@@ -12,7 +12,7 @@ Every feature follows:
 
 - [001 — Rig intelligence (draft)](001-rig-intelligence/spec.md)
 - [002 — Patch-book publishing (draft)](002-patch-book-publishing/spec.md)
-- [003 — Catalog dataset pipeline (draft)](003-catalog-dataset-pipeline/spec.md)
+- [003 — Catalog dataset pipeline](003-catalog-dataset-pipeline/spec.md)
 - [004 — Commerce (draft)](004-commerce/spec.md)
 - [005 — Decision Intelligence & Evidence Resolution](005-decision-intelligence/spec.md)
 - [006 — Cloudflare Edge Deploy with Clef Classifier](006-cloudflare-edge-clef/spec.md)

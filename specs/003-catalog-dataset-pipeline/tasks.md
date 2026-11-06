@@ -23,7 +23,7 @@
   - depends_on: [T023]
 - [x] T026 Render pass for script-rendered makers (4ms, Erica) and adapter fixes for Frap, Tiptop and Pittsburgh, under a small approved paid cap. Paid pass 2026-10-27 (context.dev, 10 credits): 4ms 44, Pittsburgh 56 and Erica 46 modules merged into `maker-crawl-v2.json`. Tiptop is excluded (CAPTCHA). Frap is still at 0 and needs a listing adapter over rendered HTML. Overlays built 2026-10-27 (`catalog-additions-v4`: 136 rows; `module-power-depth-v12`: 141 entries; jumper-dependent draws left unknown; staging replica: 0 conflicts). Loaded to staging (T025) and prod (T027). Closed 2026-10-29: Frap is excluded (D7: its host refuses connections from the crawl network; no paid workaround), like Tiptop.
   - depends_on: [T024]
-- [x] T040 Enforce FR-003: `data/synth-catalog/receipts/fetch-approvals.json` (cap in credits and fetches, brands, expiry, approver; no active entries committed) is checked by the router before any paid fetch or search, and by `catalog_maker_crawl.py` before a non-dry-run starts. Refused calls get a `skipped_no_approval` receipt; free fetches are unchanged. Tests in `backend/tests/test_catalog_scrape_router.py`.
+- [x] T040 Enforce FR-003: `data/synth-catalog/receipts/fetch-approvals.json` (cap in credits and fetches, brands, expiry, approver) is checked by the router before any paid fetch or search, and by `catalog_maker_crawl.py` before a non-dry-run starts. Refused calls get a `skipped_no_approval` receipt; free fetches are unchanged. Tests in `backend/tests/test_catalog_scrape_router.py`.
   - depends_on: [T024]
 - [x] T025 Build loader overlays from `maker-crawl-v2.json` (insert-if-absent, fill-null, flag disagreements) and load them to staging. Done 2026-10-27: overlays through `catalog-additions-v4` and `module-power-depth-v12`, with the rail, jumper, review and signed-pair fixes; staging holds 4,172 catalog rows and 4,142 modules with 0 conflicts. The prod load is T027.
   - depends_on: [T024]
@@ -70,5 +70,7 @@
 
 ## Polish
 
-- [ ] T090 Converge the code against the spec
+- [x] T090 Converge the code against the spec. Done 2026-11-06 (#335, #337, #338, and this text). A key or budget stop is recorded as a refusal and retried, the filter and residual targets file exist, Frap is refused, the loader is the only writer, applied inputs are frozen by hash, each load keeps a lasting record, a load can be rolled back by run ID (decision 40), and the batch table is marked as a process description. Still partial, and why, in spec.md's table: FR-015 (counsel), FR-016 and FR-023 to FR-026 (T092, T039), FR-031 (case tables), FR-034 (298 leads have no maker page yet).
   - depends_on: [T010]
+- [ ] T092 The remaining schema gaps from the status table: store the incoming observation for a loader conflict (FR-016), add `source_reference` to `module_catalog` (FR-023), mark an inferred category in the database (FR-025), and move `is_available` off the canonical row, or amend FR-026 to say it is a catalog status rather than a commerce observation. Each needs a migration and a look at what reads the field, so none went in with T090.
+  - depends_on: [T090]
