@@ -58,3 +58,27 @@ The dry-run receipt counts Rigs holding a retired module (`retired_on_racks`).
 - The names `Ripples_Original`, `Tides_Original` and similar come from the maker's documentation addresses. They read oddly, and they stay.
 - `maker-sources.json` still lists "Mutable instruments". A future crawl under that spelling is read under the one spelling at load.
 - `backend/integrations/synth_catalog_importer.py` reads the seed by its own path, not through this loader. Its seed lists both spellings as brand names, but has no module row under the old one.
+
+## Staging
+
+Loaded from branch `catalog/brand-splits`, before merge, on the owner's yes after seeing this list.
+
+- `plan_hash`: `701516504aa7b6d82b8d865f227f93b6bd74372c80aabc112b01813e66ec8b7a`
+- `inputs_hash`: `134df64ffd51c83bea0628cc73fe27ca63133c0c1a7b36860c16551b27cbc882`
+
+| Step | Run | Result |
+|---|---|---|
+| Dry run | [42190351455](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42190351455) | 0 conflicts, no destructive SQL, 0 Rigs |
+| Apply | [42191721314](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42191721314) | 19 rows moved in each table, 5 retired in each |
+| Second dry run | [42191990957](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42191990957) | Plans nothing |
+| Smoke | [42192149946](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42192149946) | 10/10 |
+
+Reading staging's public API afterwards and comparing every row with the read before the load:
+
+- The catalog went from 3,388 to 3,383 rows, and `/api/modules` from 3,384 to 3,379. None of those rows mentions ModularGrid.
+- Public brands went from 338 to 336. The brand list shows Mutable Instruments with 30 and Joranalogue Audio Design with 27. Filtering by the old spelling returns nothing.
+- Only the expected rows changed: the 5 retired rows are gone, 19 rows changed brand and nothing else, and Generate 3 gained VCO. No module's width, power, depth or id changed.
+- Rows with no category went from 281 to 280.
+- MILKY WAY 1U reads 22 HP.
+
+The production dry run ([42190602658](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42190602658)) gave the same hashes and counted 0 Rigs.
