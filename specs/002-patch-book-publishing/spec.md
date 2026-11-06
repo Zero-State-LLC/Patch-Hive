@@ -23,7 +23,7 @@ This feature also specifies the historical publishing layer. That layer lets an 
 
 ## Implementation status (2026-11-06)
 
-Checked against the code at T090, after 0.3.0-alpha.13. Open gaps link to [research.md](research.md) and to the open tasks in [tasks.md](tasks.md). "Design Engine" means `backend/export/patchbook/design/`; "engine.py" below is `backend/export/patchbook/design/engine.py`. Totals: compilation 19 implemented, 3 partial, 2 not built by decision; publishing 19 implemented, 1 partial.
+Checked against the code at T090, after 0.3.0-alpha.13. Open gaps link to [research.md](research.md) and to the open tasks in [tasks.md](tasks.md). "Design Engine" means `backend/export/patchbook/design/`; "engine.py" below is `backend/export/patchbook/design/engine.py`. Totals: compilation 18 implemented, 4 partial, 2 not built by decision; publishing 19 implemented, 1 partial.
 
 Until 2026-11-06 a paid book's PDF pages drew no diagram at all, and named modules by database id. The diagram went only to a separate SVG file in the pack. T090 fixed both.
 
