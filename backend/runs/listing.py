@@ -21,6 +21,7 @@ def build_run_response(db: Session, run: Run) -> RunResponse:
         artifact_manifest_hash=bridge.artifact_manifest_hash,
         export_bridge_ready=bridge.export_bridge_ready,
         validation=run.validation_report,
+        failure_reason=run.failure_reason,
     )
 
 

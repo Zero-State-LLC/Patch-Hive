@@ -668,6 +668,30 @@ def _reject_mutation(_mapper, _connection, target) -> None:
     raise ValueError(f"{type(target).__name__} is append-only and cannot be mutated")
 
 
+class EvidenceDecisionRecord(Base):
+    """One decision on a photo candidate (spec 001 D8). Append-only: a later reversal is a new
+    row that names the decision it reverses. A reject leaves canon unchanged."""
+
+    __tablename__ = "evidence_decisions"
+
+    id = Column(String(64), primary_key=True)
+    rack_id = Column(
+        Integer, ForeignKey("racks.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    candidate_id = Column(String(128), nullable=False, index=True)
+    status = Column(String(20), nullable=False)
+    module_revision_id = Column(String(128), nullable=True)
+    replacement_candidate_id = Column(String(128), nullable=True)
+    inventory_revision_id = Column(
+        String(64), ForeignKey("system_inventory_revisions.id", ondelete="RESTRICT"), nullable=False
+    )
+    reverses_decision_id = Column(
+        String(64), ForeignKey("evidence_decisions.id", ondelete="RESTRICT"), nullable=True
+    )
+    decided_by = Column(String(128), nullable=False)
+    decided_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+
 IMMUTABLE_RECORDS = (
     RigRevisionRecord,
     RigMetricsPacketRecord,
@@ -682,6 +706,7 @@ IMMUTABLE_RECORDS = (
     SubscriptionPeriodGrantRecord,
     SystemInventoryRevisionRecord,
     ClassificationEvidenceRecord,
+    EvidenceDecisionRecord,
 )
 
 for _record in IMMUTABLE_RECORDS:

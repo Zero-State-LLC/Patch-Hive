@@ -350,3 +350,33 @@ def compile_patch(
         stage_receipts=receipts,
         artifact_manifest=manifest,
     )
+
+
+def run_outcome_receipt(
+    *,
+    run_id: str,
+    rig_revision_id: str,
+    seed: int,
+    status: str,
+    detail: object,
+    created_at: datetime,
+) -> StageReceipt:
+    """The receipt of a run that sealed no patch, which leaves no compile receipts (spec 001 D5)."""
+    return StageReceipt(
+        stage="generation",
+        operation="run_generation",
+        operation_version=GENERATOR_VERSION,
+        determinism_class="deterministic",
+        input_hash=canonical_sha256(
+            {"rig_revision_id": rig_revision_id, "run_id": run_id, "seed": seed}
+        ),
+        output_hash=canonical_sha256({"detail": detail, "status": status}),
+        **_artifact_fields(
+            artifact_id=_stable_id("receipt", run_id, "outcome", status),
+            entity_id=run_id,
+            run_id=run_id,
+            rig_revision_id=rig_revision_id,
+            seed=seed,
+            created_at=created_at,
+        ),
+    ).seal()

@@ -23,6 +23,8 @@ class RunResponse(BaseModel):
     export_bridge_ready: bool = False
     # Port resolution and validation report (spec 001 FR-016/FR-019).
     validation: dict | None = None
+    # Why a run ended failed (spec 001 D5).
+    failure_reason: str | None = None
 
 
 class RunListResponse(BaseModel):

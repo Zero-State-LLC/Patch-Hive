@@ -23,6 +23,8 @@ class Run(Base):
     # The validation report of the run (spec 001 FR-016/FR-019): kept on the run so a
     # validation_failed run still says why after the response is gone.
     validation_report = Column(JSON, nullable=True)
+    # Why a run ended failed: the error's type or code, never its message (spec 001 D5).
+    failure_reason = Column(String(200), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     rack = relationship("Rack", backref="runs")
