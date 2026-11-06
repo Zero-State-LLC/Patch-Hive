@@ -14,7 +14,6 @@ CORE_HANDLERS: List[str] = [
     "patches.engine:generate_patches_with_ir",
     "patchhive.ops.build_canonical_rig:build_canonical_rig",
     "patchhive.gallery.revisions:append_revision",
-    "integrations.modulargrid_importer:import_all",
     "export.pdf:generate_patch_pdf",
     "export.pdf:generate_rack_pdf",
     "export.visualization:generate_patch_diagram_svg",

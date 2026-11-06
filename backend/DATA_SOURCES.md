@@ -45,7 +45,7 @@ This document provides complete provenance tracking for all data in the PatchHiv
 **Provenance**: `source="ModularGrid"`, `source_reference="https://www.modulargrid.net/"`
 **Method**: Hand-curated from official manufacturer product pages and specifications
 **Date Imported**: 2025-12-05
-**Importer**: `integrations/modulargrid_importer.py`
+**Importer**: removed 2026-11-06 (spec 003 D5). Catalog rows load through `data/synth-catalog/population.py`
 
 #### Field-Level Provenance
 
@@ -132,7 +132,7 @@ This document provides complete provenance tracking for all data in the PatchHiv
 **Provenance**: `source="SynthCatalogResearch"`, `source_reference="data/synth-catalog/seed-phase2-v1.json"`  
 **Method**: Phase 1 brand index (~700+) + Phase 2 major-brand module tables, normalized into PatchHive catalog rows  
 **Date Sealed**: 2026-07-21 (Abraxas PR #984)  
-**Importer**: `integrations/synth_catalog_importer.py`  
+**Importer**: `data/synth-catalog/population.py`, the only writer of catalog rows (spec 003 D5)  
 **Seed**: `data/synth-catalog/seed-phase2-v1.json`  
 **Policy packet**: `data/synth-catalog/seed-phase2-v1.sources.json`
 
@@ -165,18 +165,10 @@ This document provides complete provenance tracking for all data in the PatchHiv
 
 - `GET /api/synth-catalog/stats`
 - `GET /api/synth-catalog/manufacturers`
-- `POST /api/synth-catalog/import/catalog?dry_run=`
-- `POST /api/synth-catalog/import/modules?dry_run=&clear_existing=`
-- `POST /api/synth-catalog/import/all?dry_run=&clear_existing=`
-- `POST /api/synth-catalog/enrich/hp?dry_run=` — fill null catalog HP from the `modules` table (the curated ModularGrid list was removed 2026-10-17)
 
 #### HP enrichment
 
-```bash
-python -m integrations.synth_catalog_importer --enrich-hp
-```
-
-Only copies HP (and UTIL→specific category) when a manufacturer-curated match exists. Never overwrites non-null HP.
+HP comes only from reviewed overlays and corrections that cite a maker page, through the loader (`data/synth-catalog/population.py`). It never overwrites a stored HP except through a correction (spec 003 FR-024, FR-038).
 
 ## Data Collection Methodology
 

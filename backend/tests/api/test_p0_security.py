@@ -99,11 +99,23 @@ def test_only_the_owner_changes_rack_evidence(
 @pytest.mark.parametrize(
     "url",
     [
-        "/api/modulargrid/import/modules?clear_existing=true",
+        "/api/modulargrid/import/modules",
+        "/api/modulargrid/import/cases",
         "/api/modulargrid/import/all",
-        "/api/synth-catalog/import/catalog?dry_run=true",
-        "/api/synth-catalog/import/modules?clear_existing=true",
-        "/api/synth-catalog/enrich/hp?dry_run=true",
+        "/api/synth-catalog/import/catalog",
+        "/api/synth-catalog/import/modules",
+        "/api/synth-catalog/import/all",
+        "/api/synth-catalog/enrich/hp",
+    ],
+)
+def test_the_loader_is_the_only_way_to_write_catalog_rows(client: TestClient, people: dict, url: str) -> None:
+    """Spec 003 D5. These routes bypassed the receipt, and `clear_existing` deleted rows."""
+    assert client.post(url, headers=bearer_headers(people["ops"])).status_code == 404
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
         "/api/modules/catalog/materialize-batch",
         "/api/cases/catalog/materialize-batch",
     ],
@@ -118,15 +130,11 @@ def test_admin_catalog_imports_are_audited(
     client: TestClient, db_session: Session, people: dict
 ) -> None:
     resp = client.post(
-        "/api/synth-catalog/enrich/hp?dry_run=true", headers=bearer_headers(people["ops"])
-    )
-    assert resp.status_code in (200, 500)  # the guard passed; the import may lack seed data
-    resp = client.post(
         "/api/modules/catalog/materialize-batch?limit=1", headers=bearer_headers(people["ops"])
     )
     assert resp.status_code == 200
     actions = [row.action_type for row in db_session.query(AdminAuditLog).order_by(AdminAuditLog.id)]
-    assert actions == ["synth_catalog.enrich.hp", "module_catalog.materialize_batch"]
+    assert actions == ["module_catalog.materialize_batch"]
 
 
 # --- Profiles and referral codes ------------------------------------------------
