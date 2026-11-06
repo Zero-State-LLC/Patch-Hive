@@ -24,7 +24,7 @@ Findings have three severities:
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field, replace
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
 from core.ir import ConnectionIR, PatchGraphIR
 
@@ -185,6 +185,10 @@ def resolve_and_validate(
                 report.add(
                     Finding("flag", "FEEDBACK_LOOP", "A module patched into itself.", index)
                 )
+        if _route_loops_through_other_modules(connections):
+            report.add(
+                Finding("flag", "FEEDBACK_LOOP", "A route through other modules comes back to where it began.", index)
+            )
         resolved.append(
             PatchGraphIR(
                 patch_name=graph.patch_name,
@@ -196,6 +200,29 @@ def resolve_and_validate(
             )
         )
     return resolved, report
+
+
+def _route_loops_through_other_modules(connections: List[ConnectionIR]) -> bool:
+    """A cycle of two or more modules, which the canonical compiler calls an undeclared feedback
+    cycle (spec 001 D9). A module patched directly into itself is flagged where it's found."""
+    next_modules: Dict[int, Set[int]] = {}
+    for cable in connections:
+        if cable.from_module_id != cable.to_module_id:
+            next_modules.setdefault(cable.from_module_id, set()).add(cable.to_module_id)
+
+    def reaches(start: int) -> bool:
+        seen: Set[int] = set()
+        stack = list(next_modules.get(start, ()))
+        while stack:
+            module_id = stack.pop()
+            if module_id == start:
+                return True
+            if module_id not in seen:
+                seen.add(module_id)
+                stack.extend(next_modules.get(module_id, ()))
+        return False
+
+    return any(reaches(module_id) for module_id in next_modules)
 
 
 def drop_feedback_patches(

@@ -147,6 +147,32 @@ class PatchGenerator:
         self.rng = random.Random(seed)
         self.modules_by_id = {module.id: module for module in analyzer.all_modules}
 
+    @staticmethod
+    def _free(modules: List[Module], role: str, roles: Dict[int, str]) -> List[Module]:
+        """The modules that can fill ``role`` in this patch. A Module fills one role in a patch
+        (owner decision 36): the catalog declares no sections that would let it fill two."""
+        return [module for module in modules if roles.get(module.id, role) == role]
+
+    def _pick(
+        self, rng: random.Random, modules: List[Module], role: str, roles: Dict[int, str]
+    ) -> Optional[Module]:
+        """Draw a module for ``role``, or None if none is free. With every module free this draws
+        exactly what ``rng.choice(modules)`` would, so a rack whose modules each hold one class
+        keeps its output."""
+        free = self._free(modules, role, roles)
+        if not free:
+            return None
+        chosen = rng.choice(free)
+        roles[chosen.id] = role
+        return chosen
+
+    def _first(self, modules: List[Module], role: str, roles: Dict[int, str]) -> Optional[Module]:
+        free = self._free(modules, role, roles)
+        if not free:
+            return None
+        roles[free[0].id] = role
+        return free[0]
+
     def generate_patches(self) -> List[PatchSpec]:
         """Generate all possible patches for the rack."""
         patches: List[PatchSpec] = []
@@ -192,13 +218,14 @@ class PatchGenerator:
 
         for i, vco in enumerate(self.analyzer.vcos[: min(3, len(self.analyzer.vcos))]):
             connections: List[Connection] = []
+            roles: Dict[int, str] = {vco.id: "vco"}
 
             # VCO → VCF → VCA → OUT (if filter available, otherwise VCO → VCA)
             current_module = vco
 
             # Optional filter
-            if self.analyzer.vcfs:
-                vcf = self.rng.choice(self.analyzer.vcfs)
+            vcf = self._pick(self.rng, self.analyzer.vcfs, "vcf", roles)
+            if vcf is not None:
                 connections.append(
                     Connection(
                         from_module_id=current_module.id,
@@ -211,34 +238,39 @@ class PatchGenerator:
                 current_module = vcf
 
             # VCA (required)
-            if self.analyzer.vcas:
-                vca = self.rng.choice(self.analyzer.vcas)
+            vca = self._pick(self.rng, self.analyzer.vcas, "vca", roles)
+            if vca is None:
+                continue
+            connections.append(
+                Connection(
+                    from_module_id=current_module.id,
+                    from_port="Audio Out",
+                    to_module_id=vca.id,
+                    to_port="Audio In",
+                    cable_type="audio",
+                )
+            )
+
+            # Envelope to VCA
+            env = self._pick(self.rng, self.analyzer.envelopes, "env", roles)
+            if env is not None:
                 connections.append(
                     Connection(
-                        from_module_id=current_module.id,
-                        from_port="Audio Out",
+                        from_module_id=env.id,
+                        from_port="Envelope Out",
                         to_module_id=vca.id,
-                        to_port="Audio In",
-                        cable_type="audio",
+                        to_port="CV In",
+                        cable_type="cv",
                     )
                 )
 
-                # Envelope to VCA
-                if self.analyzer.envelopes:
-                    env = self.rng.choice(self.analyzer.envelopes)
-                    connections.append(
-                        Connection(
-                            from_module_id=env.id,
-                            from_port="Envelope Out",
-                            to_module_id=vca.id,
-                            to_port="CV In",
-                            cable_type="cv",
-                        )
-                    )
-
             # LFO modulation (50% chance)
-            if self.analyzer.lfos and self.rng.random() > 0.5:
-                lfo = self.rng.choice(self.analyzer.lfos)
+            lfo = (
+                self._pick(self.rng, self.analyzer.lfos, "lfo", roles)
+                if self.analyzer.lfos and self.rng.random() > 0.5
+                else None
+            )
+            if lfo is not None:
                 target = self.rng.choice([vco, current_module])
                 connections.append(
                     Connection(
@@ -277,14 +309,14 @@ class PatchGenerator:
             return patches
 
         connections: List[Connection] = []
+        roles: Dict[int, str] = {}
 
         # Use sequencer or LFO as clock/modulation source
-        if self.analyzer.sequencers:
-            seq = self.rng.choice(self.analyzer.sequencers)
-
+        seq = self._pick(self.rng, self.analyzer.sequencers, "seq", roles)
+        if seq is not None:
             # Sequence to VCO pitch
-            if self.analyzer.vcos:
-                vco = self.rng.choice(self.analyzer.vcos)
+            vco = self._pick(self.rng, self.analyzer.vcos, "vco", roles)
+            if vco is not None:
                 connections.append(
                     Connection(
                         from_module_id=seq.id,
@@ -296,11 +328,13 @@ class PatchGenerator:
                 )
 
         # Multiple LFOs for generative modulation
-        if len(self.analyzer.lfos) >= 2:
-            lfo1, lfo2 = self.analyzer.lfos[0], self.analyzer.lfos[1]
+        free_lfos = self._free(self.analyzer.lfos, "lfo", roles)
+        if len(free_lfos) >= 2:
+            lfo1, lfo2 = free_lfos[0], free_lfos[1]
+            roles[lfo1.id] = roles[lfo2.id] = "lfo"
 
-            if self.analyzer.vcos:
-                vco = self.rng.choice(self.analyzer.vcos)
+            vco = self._pick(self.rng, self.analyzer.vcos, "vco", roles)
+            if vco is not None:
                 connections.append(
                     Connection(
                         from_module_id=lfo1.id,
@@ -311,8 +345,8 @@ class PatchGenerator:
                     )
                 )
 
-            if self.analyzer.vcfs:
-                vcf = self.rng.choice(self.analyzer.vcfs)
+            vcf = self._pick(self.rng, self.analyzer.vcfs, "vcf", roles)
+            if vcf is not None:
                 connections.append(
                     Connection(
                         from_module_id=lfo2.id,
@@ -348,14 +382,14 @@ class PatchGenerator:
             return patches
 
         connections: List[Connection] = []
+        roles: Dict[int, str] = {}
 
         # Noise → VCF → VCA (classic snare/hi-hat)
-        if self.analyzer.noise_sources and self.analyzer.vcas:
-            noise = self.analyzer.noise_sources[0]
-            vca = self.rng.choice(self.analyzer.vcas)
-
-            if self.analyzer.vcfs:
-                vcf = self.rng.choice(self.analyzer.vcfs)
+        noise = self._first(self.analyzer.noise_sources, "noise", roles)
+        vca = self._pick(self.rng, self.analyzer.vcas, "vca", roles) if noise is not None else None
+        if noise is not None and vca is not None:
+            vcf = self._pick(self.rng, self.analyzer.vcfs, "vcf", roles)
+            if vcf is not None:
                 connections.append(
                     Connection(
                         from_module_id=noise.id,
@@ -386,8 +420,8 @@ class PatchGenerator:
                 )
 
             # Short envelope
-            if self.analyzer.envelopes:
-                env = self.analyzer.envelopes[0]
+            env = self._first(self.analyzer.envelopes, "env", roles)
+            if env is not None:
                 connections.append(
                     Connection(
                         from_module_id=env.id,
@@ -425,11 +459,12 @@ class PatchGenerator:
         connections: List[Connection] = []
 
         # Simple FX chain: IN → FX → OUT
-        fx = self.analyzer.effects[0]
+        roles: Dict[int, str] = {}
+        fx = self._first(self.analyzer.effects, "fx", roles)
 
         # If there's a mixer, use it
-        if self.analyzer.mixers:
-            mixer = self.analyzer.mixers[0]
+        mixer = self._first(self.analyzer.mixers, "mixer", roles)
+        if mixer is not None:
             connections.append(
                 Connection(
                     from_module_id=mixer.id,
@@ -497,10 +532,15 @@ class PatchGenerator:
         rng = self._rule_rng(5000)
         patches: List[PatchSpec] = []
         for i, vco in enumerate(a.vcos[:3]):
-            seq, vca, env = rng.choice(a.sequencers), rng.choice(a.vcas), rng.choice(a.envelopes)
+            roles: Dict[int, str] = {vco.id: "vco"}
+            seq = self._pick(rng, a.sequencers, "seq", roles)
+            vca = self._pick(rng, a.vcas, "vca", roles)
+            env = self._pick(rng, a.envelopes, "env", roles)
+            if seq is None or vca is None or env is None:
+                continue
             connections = [self._cv(seq, "CV Out", vco, "V/Oct"), self._gate(seq, env)]
-            if a.vcfs:
-                vcf = rng.choice(a.vcfs)
+            vcf = self._pick(rng, a.vcfs, "vcf", roles)
+            if vcf is not None:
                 connections += [self._audio(vco, vcf), self._audio(vcf, vca)]
             else:
                 connections.append(self._audio(vco, vca))
@@ -516,7 +556,13 @@ class PatchGenerator:
         if not (a.vcos and a.vcfs and a.vcas and a.envelopes):
             return []
         rng = self._rule_rng(6000)
-        vco, vcf, vca, env = (rng.choice(a.vcos), rng.choice(a.vcfs), rng.choice(a.vcas), rng.choice(a.envelopes))
+        roles: Dict[int, str] = {}
+        vco = self._pick(rng, a.vcos, "vco", roles)
+        vcf = self._pick(rng, a.vcfs, "vcf", roles)
+        vca = self._pick(rng, a.vcas, "vca", roles)
+        env = self._pick(rng, a.envelopes, "env", roles)
+        if vco is None or vcf is None or vca is None or env is None:
+            return []
         connections = [
             self._audio(vco, vcf),
             self._audio(vcf, vca),
@@ -531,7 +577,13 @@ class PatchGenerator:
         if not (a.vcos and a.vcfs and a.vcas and a.lfos):
             return []
         rng = self._rule_rng(7000)
-        vco, vcf, vca, lfo = (rng.choice(a.vcos), rng.choice(a.vcfs), rng.choice(a.vcas), rng.choice(a.lfos))
+        roles: Dict[int, str] = {}
+        vco = self._pick(rng, a.vcos, "vco", roles)
+        vcf = self._pick(rng, a.vcfs, "vcf", roles)
+        vca = self._pick(rng, a.vcas, "vca", roles)
+        lfo = self._pick(rng, a.lfos, "lfo", roles)
+        if vco is None or vcf is None or vca is None or lfo is None:
+            return []
         connections = [
             self._audio(vco, vcf),
             self._audio(vcf, vca),
@@ -545,12 +597,16 @@ class PatchGenerator:
         if not (a.sequencers and a.envelopes and a.noise_sources and a.vcas):
             return []
         rng = self._rule_rng(8000)
-        seq, env, noise, vca = (
-            rng.choice(a.sequencers), rng.choice(a.envelopes), a.noise_sources[0], rng.choice(a.vcas),
-        )
+        roles: Dict[int, str] = {}
+        seq = self._pick(rng, a.sequencers, "seq", roles)
+        env = self._pick(rng, a.envelopes, "env", roles)
+        noise = self._first(a.noise_sources, "noise", roles)
+        vca = self._pick(rng, a.vcas, "vca", roles)
+        if seq is None or env is None or noise is None or vca is None:
+            return []
         connections = [self._gate(seq, env)]
-        if a.vcfs:
-            vcf = rng.choice(a.vcfs)
+        vcf = self._pick(rng, a.vcfs, "vcf", roles)
+        if vcf is not None:
             connections += [self._audio(noise, vcf, "Noise Out"), self._audio(vcf, vca)]
         else:
             connections.append(self._audio(noise, vca, "Noise Out"))
@@ -563,7 +619,12 @@ class PatchGenerator:
         if not (a.vcos and a.vcas and a.effects):
             return []
         rng = self._rule_rng(9000)
-        vco, vca, fx = rng.choice(a.vcos), rng.choice(a.vcas), a.effects[0]
+        roles: Dict[int, str] = {}
+        vco = self._pick(rng, a.vcos, "vco", roles)
+        vca = self._pick(rng, a.vcas, "vca", roles)
+        fx = self._first(a.effects, "fx", roles)
+        if vco is None or vca is None or fx is None:
+            return []
         connections = [
             self._audio(vco, vca),
             Connection(
@@ -578,7 +639,11 @@ class PatchGenerator:
         a = self.analyzer
         if not (len(a.vcos) >= 2 and a.mixers):
             return []
-        first, second, mixer = a.vcos[0], a.vcos[1], a.mixers[0]
+        roles: Dict[int, str] = {a.vcos[0].id: "vco", a.vcos[1].id: "vco"}
+        first, second = a.vcos[0], a.vcos[1]
+        mixer = self._first(a.mixers, "mixer", roles)
+        if mixer is None:
+            return []
         connections = [
             Connection(
                 from_module_id=first.id, from_port="Audio Out", to_module_id=mixer.id,

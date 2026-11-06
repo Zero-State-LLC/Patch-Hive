@@ -50,10 +50,10 @@ Checked against the code on `main` at 3688037 (0.3.0-alpha.6). The 2026-10-29 ta
 | FR-007 | Implemented | Only the owner's confirm, replace or manual-add decision sets `USER_CONFIRMED` [OBSERVED: backend/evidence/routes.py]. |
 | FR-008 | Implemented | Decision layer bounded by spec 005 (#104, #105, #135) [OBSERVED: backend/intelligence/]. |
 | FR-009 | Implemented | `canon/contracts.py` imports no provider type [OBSERVED: repo grep 2026-11-03]. |
-| FR-010 | Implemented | Upper-cased substring match; a module can join several classes [OBSERVED: backend/patches/engine.py `ModuleAnalyzer`]. |
+| FR-010 | Implemented | Upper-cased substring match; a module can join several classes, and fills one role in a patch (owner decision 36) [OBSERVED: backend/patches/engine.py `ModuleAnalyzer`, `PatchGenerator._pick`]. |
 | FR-011 | Implemented | Feasibility checks per rule, plus six more rules (#96). |
 | FR-012 | Implemented | Five categories only (#94). |
-| FR-013 | Implemented | Since #137 (T032) `allow_feedback=false` drops patches with a `FEEDBACK_LOOP` finding and `prefer_simple` sorts by cable count before the `max_patches` cut [OBSERVED: backend/patches/engine.py, backend/patches/validation.py]. |
+| FR-013 | Implemented | Since #137 (T032) `allow_feedback=false` drops patches with a `FEEDBACK_LOOP` finding, which covers a loop through other modules since T090 (D9), and `prefer_simple` sorts by cable count before the `max_patches` cut [OBSERVED: backend/patches/engine.py, backend/patches/validation.py]. |
 | FR-014 | Implemented | `ConnectionIR` has the two modules, the two ports and `cable_type` [OBSERVED: backend/core/ir.py]. |
 | FR-015 | Implemented | The compiler plan has the five phases (#142), and `PatchPlan` refuses a plan that lacks any of them [OBSERVED: backend/canon/compiler.py, backend/canon/contracts.py `required_phases`]. |
 | FR-016 | Implemented | Blocking findings fail the run (#97). A plan without a seal phase cannot be built on the run path since #142 (`PatchPlan.required_phases`) [OBSERVED: backend/canon/contracts.py]. |
@@ -262,7 +262,7 @@ The constitution requires this section.
 - **Authority**: PatchHive is authoritative over physical and functional truth. Abraxas is authoritative over symbolic interpretation. Bridges are read-only unless explicitly versioned. [OBSERVED: docs/CANON.md]
 - **Data changes**: new runs, libraries, patches, receipts, and rig revisions are inserts only. Overlay edits are the only in-place updates. [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md]
 - **Security and privacy**: user overlay data and evidence such as rig photos may be personal. Retention and access rules are not stated in the sources. See OQ-10. [INFERRED]
-- **Observability**: each run stage emits a `StageReceipt`. Failed runs keep their stage receipts. [OBSERVED: docs/PATCH_ENGINE.md] [INFERRED]
+- **Observability**: compiling a patch emits three `StageReceipt` records. A run that seals no patch keeps one receipt of its outcome: `failed`, `validation_failed` or `no_patches`. A `failed` run also keeps its reason, as an error type or code and never the message. A run stopped before its canonical record was committed keeps only the reason.
 - **Rollback**: append-only history means rollback selects an earlier rig revision or run. It never deletes or rewrites records. [INFERRED] [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md]
 
 ## Adversary threat model: provider and evidence boundary
@@ -289,11 +289,11 @@ Suggested tasks, not yet in `tasks.md`:
 
 ## Workflows
 
-Status: INFERRED skeleton. Confirm before you plan.
+Checked in T001 (D11).
 
 - Governing workflows (skills): anti-slop-code, production-systems, google-developer-style.
-- Owners: FORGE decomposes, a cloud agent implements, SCRIBE files the compact artifact.
-- CI: reuse `.github/workflows/ci.yml` (jobs `backend` and `frontend`). Do not add a new CI path.
+- Owners: FORGE decomposes, and a cloud agent implements.
+- CI: reuse `.github/workflows/ci.yml` (jobs `backend`, `migrations`, `acceptance`, `backend-lint`, `frontend` and `frontend-e2e`). Do not add a new CI path.
 
 ## Stateful behavior
 
@@ -333,6 +333,18 @@ Initial state: `IDLE`. Final states: `SUCCEEDED`, `NOT_COMPUTABLE`.
 | RUNNING | run_failed | - | FAILED | keep the stage receipts [INFERRED] |
 | FAILED | retry | the same rig revision is still selected [INFERRED] | QUEUED | create a new run with a new run ID and leave the failed run unchanged [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md] |
 
+#### How the code meets this table
+
+The table is the contract, and `tests/unit/test_spec_001_transitions.py` checks each row against the code. It reads through these points (T001 record, T090):
+
+- **No stored `IDLE` or `RIG_LOADED`, and no `rig_selected` event (D1).** A generate request starts there. It reads the rack's current layout and binds the run to `rig-rev-{content_hash}`.
+- **ADR 0001's "explicit revision selection".** Generating selects the revision by hashing the layout, so the same layout selects the same revision and a changed layout selects a new one. Reads select an earlier revision or run by id, and they never change it. Rollback is that selection. There's no route that regenerates an older revision without restoring its layout.
+- **No worker (D4).** `RUNNING` means the request handler is running generation inline, so `worker_started` moves the status and writes no start receipt.
+- **`retry` is another generate call (D1).** It has no event of its own, and it creates a new run.
+- **`SUCCEEDED`** stores one `artifact_manifests` row per run, holding each patch's manifest (D6).
+- **`NOT_COMPUTABLE`** is an answer, not a run. Its `inventory_gate_messages` names the failed condition (D2).
+- **Illegal moves hold by construction.** `run_generation` is the only writer of a run's status, so nothing attempts them, and there's no rejection to assert.
+
 #### Illegal transitions
 
 - `QUEUED` -> `SUCCEEDED`, which skips `RUNNING`. [INFERRED]
@@ -364,6 +376,8 @@ This lifecycle enforces the rule that probabilistic systems propose and determin
 
 Initial state: `EVIDENCE_RECEIVED`. Final states: `CONFIRMED`, `REJECTED`.
 
+No code has these five states (D7). The rules run through the spec 005 resolution machine and the owner's decisions, as `plan.md` maps them, and `tests/unit/test_spec_001_evidence_rules.py` names the test that holds each row. Every decision is recorded in `evidence_decisions` (D8). A decision stays final in that its row never changes, and an owner who changes their mind adds a new row that names the decision it reverses. A photo-confirmed module is listed as still to place, and it reaches generation once it's placed through the rack route (D3, owner decision 35).
+
 #### States
 
 | State | Meaning | Label |
@@ -382,7 +396,7 @@ Initial state: `EVIDENCE_RECEIVED`. Final states: `CONFIRMED`, `REJECTED`.
 | EVIDENCE_RECEIVED | evidence_invalid | malformed, incompatible, or provider unavailable | UNRESOLVED | record the explicit unresolved reason [OBSERVED: constitution] |
 | PROPOSED | conflict_or_low_confidence | confidence below policy threshold or a conflict is detected | UNRESOLVED | route to catalog lookup, retrieval, or human review [OBSERVED: constitution] |
 | UNRESOLVED | new_evidence | new evidence is attached | EVIDENCE_RECEIVED | append the evidence and leave prior evidence unchanged [OBSERVED: constitution] |
-| PROPOSED | confirmed | a human or authoritative source confirms | CONFIRMED | create a new rig revision that includes the module and record the disposition [INFERRED] |
+| PROPOSED | confirmed | a human or authoritative source confirms | CONFIRMED | record the disposition and an inventory revision; placing the module creates the new rig revision that includes it (owner decision 35) |
 | PROPOSED | rejected | a human or authoritative source rejects | REJECTED | record the disposition and leave canon unchanged [INFERRED] |
 
 #### Illegal transitions
@@ -420,9 +434,9 @@ These criteria are pass or fail. They contain no invented thresholds.
 ## Edge cases
 
 - **The rig has no VCA**: the engine offers no subtractive voice. Other patch types depend on their own feasibility rules. [OBSERVED: docs/PATCH_ENGINE.md]
-- **No patch type is feasible**: the run has zero patches. The resulting state is undefined. See OQ-07. [INFERRED]
+- **No patch type is feasible**: the run has zero patches and ends `succeeded` (OQ-07). It keeps a receipt and an empty sealed manifest.
 - **The seed is omitted**: the engine accepts an optional seed. The derivation of a default seed is undefined. See OQ-05. [OBSERVED: docs/PATCH_ENGINE.md]
-- **A module matches several classes**, for example both VCO and LFO: it may be used in more than one role. Whether one module can fill two roles in the same patch is undefined. [OBSERVED: docs/PATCH_ENGINE.md] [INFERRED]
+- **A module matches several classes**, for example both VCO and LFO: it may fill either role across patches, but only one role in a patch, unless the catalog declares separate sections (owner decision 36). The catalog declares none today. A rule with no free module for a required role offers no patch.
 - **Port names are generic**: the engine uses generic port names, such as "Audio Out" and "CV In", while real modules have specific names. This can conflict with the rule against inventing jacks. See OQ-04. [OBSERVED: docs/PATCH_ENGINE.md] [OBSERVED: constitution]
 - **No electrical validation exists**: the engine assumes connections are electrically valid. Under fail-closed rules, unknown voltage compatibility must be marked unresolved. [OBSERVED: docs/PATCH_ENGINE.md] [OBSERVED: constitution]
 - **A rack is deleted**: the rack is soft-deleted and hidden; its runs and patches are kept (OQ-02, resolved 2026-10-28).
