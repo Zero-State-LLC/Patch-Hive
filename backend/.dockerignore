@@ -32,6 +32,9 @@ ENV/
 *.sqlite
 *.sqlite3
 
+# Packs a local run writes
+exports/
+
 # Logs
 *.log
 
