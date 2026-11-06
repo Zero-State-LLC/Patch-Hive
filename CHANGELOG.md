@@ -4,6 +4,23 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.15](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.14...v0.3.0-alpha.15) (2026-11-06)
+
+
+### Added
+
+* **export:** write each page's operation steps for its own patch (spec 002 T091) ([#329](https://github.com/Zero-State-LLC/Patch-Hive/issues/329)) ([ea88bea](https://github.com/Zero-State-LLC/Patch-Hive/commit/ea88bea4f3b992a61efdc65bbf1a1d219e3ed72c))
+
+
+### Fixed
+
+* **engine:** read patch titles and intents from their cables ([#331](https://github.com/Zero-State-LLC/Patch-Hive/issues/331)) ([88f29a4](https://github.com/Zero-State-LLC/Patch-Hive/commit/88f29a4fb9fff09a7dce91f8c14b958deafaab3a))
+
+
+### Documentation
+
+* record the 0.3.0-alpha.14 deploy and reopen spec 002's FR-008 ([#328](https://github.com/Zero-State-LLC/Patch-Hive/issues/328)) ([cd4e47f](https://github.com/Zero-State-LLC/Patch-Hive/commit/cd4e47f7cd5adaf74d3f7f0a472dd4dd8b113696))
+
 ## [0.3.0-alpha.14](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.13...v0.3.0-alpha.14) (2026-11-06)
 
 
