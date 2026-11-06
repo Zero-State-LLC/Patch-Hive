@@ -1,0 +1,54 @@
+{
+ "dataset_version": "catalog-retirements-v6",
+ "generated_from": "hand review of the brand splits, 2026-11-06",
+ "decided": "under owner decision 7's rule (docs/evidence/OWNER_DECISIONS_2026-11-04.md); the owner saw this list before the load",
+ "policy": "tombstone, never delete: module_catalog.tombstoned_at + reason, modules.status='tombstoned'",
+ "count": 5,
+ "rows": [
+  {
+   "slug": "joranalogue-filter-8",
+   "brand": "Joranalogue",
+   "name": "Filter 8",
+   "owner": "Joranalogue Audio Design",
+   "evidence_url": "https://joranalogue.com/products/filter-8",
+   "reason": "duplicate: the maker's page for Filter 8, held as joranalogue-audio-design-filter-8",
+   "kept_as": "joranalogue-audio-design-filter-8"
+  },
+  {
+   "slug": "joranalogue-generate-3",
+   "brand": "Joranalogue",
+   "name": "Generate 3",
+   "owner": "Joranalogue Audio Design",
+   "evidence_url": "https://joranalogue.com/products/generate-3",
+   "reason": "duplicate: the maker's page for Generate 3, held as joranalogue-audio-design-generate-3",
+   "kept_as": "joranalogue-audio-design-generate-3"
+  },
+  {
+   "slug": "mutable-instruments-ripples",
+   "brand": "Mutable Instruments",
+   "name": "Ripples",
+   "owner": "Mutable instruments",
+   "evidence_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/ripples_original/",
+   "reason": "duplicate: the maker's page for Ripples_Original, held as mutable-instruments-ripples-original",
+   "kept_as": "mutable-instruments-ripples-original"
+  },
+  {
+   "slug": "mutable-instruments-tides-2014-version",
+   "brand": "Mutable Instruments",
+   "name": "Tides (2014 version)",
+   "owner": "Mutable instruments",
+   "evidence_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/tides_original/",
+   "reason": "duplicate: the maker's page for Tides_Original, held as mutable-instruments-tides-original",
+   "kept_as": "mutable-instruments-tides-original"
+  },
+  {
+   "slug": "endorphin-es-milky-way-1u-silver",
+   "brand": "Endorphin.es",
+   "name": "Milky Way 1U (silver)",
+   "owner": "Endorphin.es",
+   "evidence_url": "https://www.endorphin.es/modules/p/milky-way-1u",
+   "reason": "same module in another finish: the maker's page sells one MILKY WAY 1U, held as endorphin-es-milky-way-1u",
+   "kept_as": "endorphin-es-milky-way-1u"
+  }
+ ]
+}

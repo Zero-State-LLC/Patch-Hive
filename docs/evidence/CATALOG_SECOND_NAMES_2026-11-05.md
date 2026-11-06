@@ -91,10 +91,10 @@ Patches generated for a Rig holding a retired row can change.
 | Rows | Why |
 |---|---|
 | Plum Audio ex2, ex2 CV Expander | The page states both "3u/12hp" and "3u / 2HP", so neither stored width can be called wrong. The maker needs to say which |
-| Endorphin.es Milky Way 1U (silver) | It's a separate format. The page says the 1U version is 22 HP, and this row stores 6 HP, so the width looks wrong. Not changed here |
+| Endorphin.es Milky Way 1U (silver) | This reasoning was wrong. A public MILKY WAY 1U row already holds 22 HP on its own page, so this row is a second name. [The brand-split load](CATALOG_BRAND_SPLITS_2026-11-06.md) retires it |
 | Stochastic Instruments Strange-R, Strange-R Combo (Studio + Live) | The page sells a bundle of two sizes, so neither row is clearly the second name |
 | Analogue Systems RS-650, RS-650 Echo Reverb | robots.txt didn't answer, so the page couldn't be read |
-| Joranalogue Filter 8, Generate 3 (held under both "Joranalogue" and "Joranalogue Audio Design") | A brand split, which needs its own fix |
+| Joranalogue Filter 8, Generate 3 (held under both "Joranalogue" and "Joranalogue Audio Design") | A brand split, [fixed separately](CATALOG_BRAND_SPLITS_2026-11-06.md) |
 | Mutable Instruments Ripples, Tides (2014 version) | The same, because "Mutable Instruments" and "Mutable instruments" are separate brands |
 | Expert Sleepers ES-3, ES-6, ESX-8GT and ESX-8MD revisions | The page names each revision |
 | Atonal Circuits SEE, SEE (V1) | The page names a legacy V1, and the power differs |

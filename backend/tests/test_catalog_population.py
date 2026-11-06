@@ -982,6 +982,55 @@ def test_a_second_name_retires_and_the_row_that_stays_keeps_its_facts(fresh_popu
         engine.dispose()
 
 
+def test_a_brand_split_on_a_loaded_database_moves_without_rerunning_a_manifest(fresh_population_url, tmp_path):
+    """The rows a database already holds under the old spelling, with their archived values."""
+    missing = tmp_path / "none.json"
+    assert populate(fresh_population_url, apply=True, verification_path=missing)["conflicts_total"] == 0
+    old, new, name = "Mutable instruments", "Mutable Instruments", "Ripples_2020"
+    engine = create_engine(fresh_population_url)
+    try:
+        with engine.begin() as conn:
+            for statement in (
+                "UPDATE module_catalog SET brand = :old WHERE brand = :new AND name LIKE '%\\_%'",
+                "UPDATE modules SET brand = :old WHERE brand = :new AND name LIKE '%\\_%'",
+                "UPDATE catalog_value_archive SET row_key = REPLACE(row_key, :new, :old) "
+                "WHERE table_name = 'modules' AND row_key LIKE 'Mutable Instruments::%\\_%'",
+            ):
+                conn.execute(text(statement), {"old": old, "new": new})
+            moved = conn.execute(text("SELECT COUNT(*) FROM modules WHERE brand = :old"), {"old": old}).scalar_one()
+            archived_before = conn.execute(text("SELECT COUNT(*) FROM catalog_value_archive")).scalar_one()
+        assert moved > 3
+
+        applied = populate(fresh_population_url, apply=True, verification_path=missing)
+        assert applied["conflicts_total"] == 0
+        assert applied["updates"]["module_brand_renamed"] == moved
+        for stats in applied["provenance"].values():
+            assert stats["archived_values"] == 0 and stats["nulled_values"] == 0
+        with engine.connect() as conn:
+            assert conn.execute(text(
+                "SELECT COUNT(*) FROM modules WHERE brand = :old"
+            ), {"old": old}).scalar_one() == 0
+            assert conn.execute(text(
+                "SELECT COUNT(*) FROM module_catalog WHERE brand = :old"
+            ), {"old": old}).scalar_one() == 0
+            assert conn.execute(text(
+                "SELECT COUNT(*) FROM modules WHERE brand = :new AND name = :name"
+            ), {"new": new, "name": name}).scalar_one() == 1
+            assert conn.execute(text(
+                "SELECT COUNT(*) FROM catalog_value_archive WHERE row_key LIKE 'Mutable instruments::%'"
+            )).scalar_one() == 0
+            added = conn.execute(text(
+                "SELECT COUNT(*) FROM catalog_value_archive WHERE batch = 'brand-renames-v1'"
+            )).scalar_one()
+            total = conn.execute(text("SELECT COUNT(*) FROM catalog_value_archive")).scalar_one()
+            assert added >= moved and total == archived_before + added
+        again = populate(fresh_population_url, apply=False, verification_path=missing)
+        assert not again["updates"].get("module_brand_renamed") and not again["updates"].get("catalog_brand_renamed")
+        assert not again["updates"].get("module_catalog_correct")
+    finally:
+        engine.dispose()
+
+
 def test_noise_first_rows_become_noise_in_both_tables(fresh_population_url, tmp_path):
     """Owner decision 16: the patch engine reads module_type, so a noise source has to say so."""
     missing = tmp_path / "none.json"

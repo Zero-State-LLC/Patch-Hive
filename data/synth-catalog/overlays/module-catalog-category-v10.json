@@ -1,0 +1,24 @@
+{
+ "dataset_version": "module-catalog-category-v10",
+ "generated_from": "hand review of the brand splits of 2026-11-06: the row that stays takes the category its page states",
+ "decided": "under owner decision 7's rule (docs/evidence/OWNER_DECISIONS_2026-11-04.md)",
+ "reviewed_by": "Claude, for the owner",
+ "reviewed_at": "2026-11-06",
+ "policy": "what each module does, in its maker's words, with the category following by the catalog's own rule. Fill-null only; no ModularGrid",
+ "count": 1,
+ "entries": [
+  {
+   "slug": "joranalogue-audio-design-generate-3",
+   "brand": "Joranalogue Audio Design",
+   "name": "Generate 3",
+   "category": "VCO",
+   "basis": "second_name_review",
+   "does": "VCO",
+   "does_source": "maker_wording",
+   "maker_quote": "the exceptionally precise triangle-core voltage controlled oscillator (VCO) at the module’s heart. Through-zero lin",
+   "rule": "catalog_rule",
+   "source_url": "https://joranalogue.com/products/generate-3",
+   "content_sha256": "51010de5e9c21646bac5d47d272c706beca1912132e0749058761067301a7e6d"
+  }
+ ]
+}

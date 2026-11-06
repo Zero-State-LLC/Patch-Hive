@@ -169,8 +169,25 @@ def _bump(counter: dict[str, int], key: str, amount: int = 1) -> None:
     counter[key] = counter.get(key, 0) + amount
 
 
+# One spelling per brand. Seeds and manifests keep the spelling they were reviewed under, and
+# _load reads each under this one, so a committed file never needs rewriting.
+BRAND_RENAMES = {"Mutable instruments": "Mutable Instruments"}
+BRAND_RENAME_BATCH = "brand-renames-v1"
+
+
+def _canonical_brands(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: BRAND_RENAMES.get(item, item) if key == "brand" and isinstance(item, str) else _canonical_brands(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_canonical_brands(item) for item in value]
+    return value
+
+
 def _load(path: Path) -> dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
+    return _canonical_brands(json.loads(path.read_text(encoding="utf-8")))
 
 
 def _stamp() -> str:
@@ -204,6 +221,7 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
     modules = _module_state(conn)
     manufacturers = _manufacturer_state(conn)
     history = _reverify_history(conn)
+    _schedule_brand_renames(plan, catalog, modules)
 
     # Archive-then-null runs first, so later fills from manufacturer overlays
     # can fill a field this run just cleared.
@@ -403,8 +421,9 @@ ARCHIVE_FIELDS = {
         "verification_source_url",
         "source_reference",
         "module_type",
+        "brand",
     },
-    "module_catalog": {"hp", "category", "modulargrid_url", "manufacturer_url", "access_basis", "evidence_status"},
+    "module_catalog": {"brand", "hp", "category", "modulargrid_url", "manufacturer_url", "access_basis", "evidence_status"},
 }
 NULLABLE = {"modules": set(POWER_FIELDS) | {"verification_source_url"}, "module_catalog": {"hp"}}
 ARCHIVE_ACTIONS = {"null", "keep", "flag", "relabel", "correct"}
@@ -435,6 +454,12 @@ def module_row_key(brand: str, name: str) -> str:
     return f"{brand}::{name}"
 
 
+def _renamed_row_key(row_key: str) -> str:
+    """An archived module's key under its brand's one spelling, as ``_load`` reads the manifests."""
+    brand, separator, name = row_key.partition("::")
+    return module_row_key(BRAND_RENAMES[brand], name) if separator and brand in BRAND_RENAMES else row_key
+
+
 def _archive_state(conn: Connection, manifest_path: Path) -> set[tuple[str, str, str]]:
     batch = _load(manifest_path).get("batch")
     if conn is None:
@@ -443,7 +468,7 @@ def _archive_state(conn: Connection, manifest_path: Path) -> set[tuple[str, str,
         text("SELECT table_name, row_key, field FROM catalog_value_archive WHERE batch = :batch"),
         {"batch": batch},
     ).mappings()
-    return {(row["table_name"], row["row_key"], row["field"]) for row in rows}
+    return {(row["table_name"], _renamed_row_key(row["row_key"]), row["field"]) for row in rows}
 
 
 def _reverify_history(conn: Connection) -> dict[tuple[str, str], list[tuple[str, str, Any]]]:
@@ -458,7 +483,7 @@ def _reverify_history(conn: Connection) -> dict[tuple[str, str], list[tuple[str,
     ).mappings()
     history: dict[tuple[str, str], list[tuple[str, str, Any]]] = {}
     for row in rows:
-        history.setdefault((row["table_name"], row["row_key"]), []).append(
+        history.setdefault((row["table_name"], _renamed_row_key(row["row_key"])), []).append(
             (row["field"], row["action"], row["archived_at"])
         )
     return history
@@ -1266,6 +1291,71 @@ def _schedule_category(plan: Plan, catalog: dict[str, dict[str, Any]], entry: di
         return
     row["category"] = category
     plan.add_update("category_overlay", _category_update(slug, brand, name, str(category)))
+
+
+def _schedule_brand_renames(
+    plan: Plan,
+    catalog: dict[str, dict[str, Any]],
+    modules: dict[tuple[str, str], dict[str, Any]],
+) -> None:
+    """Move rows stored under a retired spelling to the brand's one spelling.
+
+    Runs before everything else, so the rest of the plan matches rows as ``_load`` reads the
+    manifests. The old value is archived first. A retired row moves too, or a later insert would
+    bring it back under the new spelling. A module's archived values follow it, because they are
+    keyed by brand and a manifest it already passed through must not run on it again.
+    """
+    for slug, row in catalog.items():
+        old = row["brand"]
+        if old not in BRAND_RENAMES:
+            continue
+        new = BRAND_RENAMES[old]
+        _archive_brand(plan, "module_catalog", slug, old, row["name"], new)
+        row["brand"] = new
+        plan.add_update(
+            "catalog_brand_renamed",
+            Op(
+                "rename_catalog_brand",
+                """
+                UPDATE module_catalog SET brand = :new, updated_at = CURRENT_TIMESTAMP
+                WHERE slug = :slug AND brand = :old
+                """,
+                {"slug": slug, "old": old, "new": new},
+            ),
+        )
+    for (old, name) in [key for key in modules if key[0] in BRAND_RENAMES]:
+        new = BRAND_RENAMES[old]
+        if (new, name) in modules:
+            plan.conflict(table="modules", brand=old, name=name, reason="brand_rename_collision")
+            continue
+        old_key, new_key = module_row_key(old, name), module_row_key(new, name)
+        plan.add_update(
+            "archive_keys_renamed",
+            Op(
+                "rename_archive_key",
+                "UPDATE catalog_value_archive SET row_key = :new_key "
+                "WHERE table_name = 'modules' AND row_key = :old_key",
+                {"old_key": old_key, "new_key": new_key},
+            ),
+        )
+        _archive_brand(plan, "modules", new_key, old, name, new)
+        modules[(new, name)] = modules.pop((old, name))
+        plan.add_update(
+            "module_brand_renamed",
+            Op(
+                "rename_module_brand",
+                "UPDATE modules SET brand = :new WHERE brand = :old AND name = :name",
+                {"old": old, "new": new, "name": name},
+            ),
+        )
+
+
+def _archive_brand(plan: Plan, table: str, row_key: str, old: str, name: str, new: str) -> None:
+    item = {
+        "field": "brand", "action": "rename", "only_if_value": old,
+        "source_tag": f"{BRAND_RENAME_BATCH}: {old} is {new}",
+    }
+    _archive_row(plan, BRAND_RENAME_BATCH, table, row_key, old, name, [item])
 
 
 def _rigs_holding(conn: Connection, modules: list[tuple[str, str]]) -> dict[str, int]:
