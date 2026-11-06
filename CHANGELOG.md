@@ -4,6 +4,18 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.14](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.13...v0.3.0-alpha.14) (2026-11-06)
+
+
+### Added
+
+* **export:** draw each book page's diagram and name its modules (spec 002 T090) ([#326](https://github.com/Zero-State-LLC/Patch-Hive/issues/326)) ([f00903d](https://github.com/Zero-State-LLC/Patch-Hive/commit/f00903db1ad738c59f6bf4207b35b8bd98a0a03d))
+
+
+### Documentation
+
+* tick spec 001 T090 and record the 0.3.0-alpha.13 deploy ([#323](https://github.com/Zero-State-LLC/Patch-Hive/issues/323)) ([3522004](https://github.com/Zero-State-LLC/Patch-Hive/commit/3522004b21c5c607bc936d8c9d04f8631fd807fc))
+
 ## [0.3.0-alpha.13](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.12...v0.3.0-alpha.13) (2026-11-06)
 
 
