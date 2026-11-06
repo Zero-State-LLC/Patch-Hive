@@ -99,3 +99,8 @@ def test_drop_feedback_patches_is_a_no_op_without_loops():
     graphs, report = resolve_and_validate([_patch((1, "Audio Out", 2, "Audio In"))], MODULES)
     kept, dropped = drop_feedback_patches(graphs, report)
     assert dropped == 0 and kept == graphs
+
+
+def test_a_loop_through_a_second_module_is_flagged_once():
+    _, report = resolve_and_validate([_patch((1, "Out", 2, "In"), (2, "LP Out", 1, "FM"))], MODULES)
+    assert [f.code for f in report.findings].count("FEEDBACK_LOOP") == 1 and not report.blocking

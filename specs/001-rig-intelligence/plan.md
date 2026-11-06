@@ -68,7 +68,7 @@ No step adds audio processing or hardware control. D3 keeps the path image, evid
 
 ### T090 (after T010)
 
-Each code step brings a test that fails before it and passes after it. Bump `patch_engine_version` if a golden output changes.
+Each code step brings a test that fails before it and passes after it. Bump `patch_engine_version` if a golden output changes. Steps 1 to 4 went in with `feat(001): keep what a run and an evidence decision leave behind`, step 5 in #289, and steps 6 and 7 with `feat(001): one role per module, and catch loops through other modules`. O1 was settled by owner decision 35, and O2 by decision 36.
 
 1. D2: return the gate's message in the `NOT_COMPUTABLE` answer.
 2. D5: keep a reason on a `failed` run, and write receipts for failed and zero-patch runs.
@@ -95,7 +95,7 @@ O1, O2 and O3 in the record, plus the production image scanner (spec line 284). 
 - `tests/api/test_evidence_confirmations.py`, `tests/unit/test_resolution_machine.py`, `tests/unit/test_visual_system_intelligence.py` (the evidence rules).
 - `just spec-dag`.
 
-The carried sections below keep their draft labels, such as "INFERRED skeleton", because they are an exact copy. The T001 record gives their status.
+The carried sections below are an exact copy of `spec.md` after T090's edits. The T001 record gives the status of the labels they keep.
 
 ## Carried forward from spec.md
 
@@ -103,11 +103,11 @@ The sections below are copied from [spec.md](spec.md) without change.
 
 ## Workflows
 
-Status: INFERRED skeleton. Confirm before you plan.
+Checked in T001 (D11).
 
 - Governing workflows (skills): anti-slop-code, production-systems, google-developer-style.
-- Owners: FORGE decomposes, a cloud agent implements, SCRIBE files the compact artifact.
-- CI: reuse `.github/workflows/ci.yml` (jobs `backend` and `frontend`). Do not add a new CI path.
+- Owners: FORGE decomposes, and a cloud agent implements.
+- CI: reuse `.github/workflows/ci.yml` (jobs `backend`, `migrations`, `acceptance`, `backend-lint`, `frontend` and `frontend-e2e`). Do not add a new CI path.
 
 ## Stateful behavior
 
@@ -147,6 +147,18 @@ Initial state: `IDLE`. Final states: `SUCCEEDED`, `NOT_COMPUTABLE`.
 | RUNNING | run_failed | - | FAILED | keep the stage receipts [INFERRED] |
 | FAILED | retry | the same rig revision is still selected [INFERRED] | QUEUED | create a new run with a new run ID and leave the failed run unchanged [OBSERVED: docs/adr/0001-canonical-immutable-hierarchy.md] |
 
+#### How the code meets this table
+
+The table is the contract, and `tests/unit/test_spec_001_transitions.py` checks each row against the code. It reads through these points (T001 record, T090):
+
+- **No stored `IDLE` or `RIG_LOADED`, and no `rig_selected` event (D1).** A generate request starts there. It reads the rack's current layout and binds the run to `rig-rev-{content_hash}`.
+- **ADR 0001's "explicit revision selection".** Generating selects the revision by hashing the layout, so the same layout selects the same revision and a changed layout selects a new one. Reads select an earlier revision or run by id, and they never change it. Rollback is that selection. There's no route that regenerates an older revision without restoring its layout.
+- **No worker (D4).** `RUNNING` means the request handler is running generation inline, so `worker_started` moves the status and writes no start receipt.
+- **`retry` is another generate call (D1).** It has no event of its own, and it creates a new run.
+- **`SUCCEEDED`** stores one `artifact_manifests` row per run, holding each patch's manifest (D6).
+- **`NOT_COMPUTABLE`** is an answer, not a run. Its `inventory_gate_messages` names the failed condition (D2).
+- **Illegal moves hold by construction.** `run_generation` is the only writer of a run's status, so nothing attempts them, and there's no rejection to assert.
+
 #### Illegal transitions
 
 - `QUEUED` -> `SUCCEEDED`, which skips `RUNNING`. [INFERRED]
@@ -178,6 +190,8 @@ This lifecycle enforces the rule that probabilistic systems propose and determin
 
 Initial state: `EVIDENCE_RECEIVED`. Final states: `CONFIRMED`, `REJECTED`.
 
+No code has these five states (D7). The rules run through the spec 005 resolution machine and the owner's decisions, as `plan.md` maps them, and `tests/unit/test_spec_001_evidence_rules.py` names the test that holds each row. Every decision is recorded in `evidence_decisions` (D8). A decision stays final in that its row never changes, and an owner who changes their mind adds a new row that names the decision it reverses. A photo-confirmed module is listed as still to place, and it reaches generation once it's placed through the rack route (D3, owner decision 35).
+
 #### States
 
 | State | Meaning | Label |
@@ -196,7 +210,7 @@ Initial state: `EVIDENCE_RECEIVED`. Final states: `CONFIRMED`, `REJECTED`.
 | EVIDENCE_RECEIVED | evidence_invalid | malformed, incompatible, or provider unavailable | UNRESOLVED | record the explicit unresolved reason [OBSERVED: constitution] |
 | PROPOSED | conflict_or_low_confidence | confidence below policy threshold or a conflict is detected | UNRESOLVED | route to catalog lookup, retrieval, or human review [OBSERVED: constitution] |
 | UNRESOLVED | new_evidence | new evidence is attached | EVIDENCE_RECEIVED | append the evidence and leave prior evidence unchanged [OBSERVED: constitution] |
-| PROPOSED | confirmed | a human or authoritative source confirms | CONFIRMED | create a new rig revision that includes the module and record the disposition [INFERRED] |
+| PROPOSED | confirmed | a human or authoritative source confirms | CONFIRMED | record the disposition and an inventory revision; placing the module creates the new rig revision that includes it (owner decision 35) |
 | PROPOSED | rejected | a human or authoritative source rejects | REJECTED | record the disposition and leave canon unchanged [INFERRED] |
 
 #### Illegal transitions

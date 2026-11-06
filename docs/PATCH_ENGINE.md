@@ -387,7 +387,12 @@ class PatchEngineConfig:
 
 ## Limitations
 
-### Current Version (1.0.0)
+### What changed in 1.1.0
+
+- A module fills one role in a patch (owner decision 36). A rack whose modules each hold one class gets the same patches as before.
+- `allow_feedback=false` also drops a patch whose route through other modules comes back to where it began.
+
+### Current Version (1.1.0)
 
 - **Port matching**: Uses generic port names ("Audio Out", "CV In")
   - Real modules have specific port names
