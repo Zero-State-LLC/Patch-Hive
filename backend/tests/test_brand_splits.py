@@ -79,6 +79,18 @@ def test_a_second_pass_plans_nothing() -> None:
     assert not again.ops
 
 
+def test_the_plan_is_the_same_whatever_order_a_database_returns_rows() -> None:
+    names = ("Beads", "Elements", "Warps")
+    plans = []
+    for ordered in (names, tuple(reversed(names))):
+        plan = P.Plan()
+        catalog = {f"mutable-instruments-{name.lower()}": catalog_row(name=name) for name in ordered}
+        modules = {(OLD, name): {"status": "active"} for name in ordered}
+        P._schedule_brand_renames(plan, catalog, modules)
+        plans.append(P.plan_hash(plan))
+    assert plans[0] == plans[1]
+
+
 def test_an_archived_key_reads_under_the_one_spelling() -> None:
     assert P._renamed_row_key(f"{OLD}::Beads") == f"{NEW}::Beads"
     assert P._renamed_row_key(f"{NEW}::Beads") == f"{NEW}::Beads"

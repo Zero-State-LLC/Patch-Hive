@@ -1305,7 +1305,8 @@ def _schedule_brand_renames(
     bring it back under the new spelling. A module's archived values follow it, because they are
     keyed by brand and a manifest it already passed through must not run on it again.
     """
-    for slug, row in catalog.items():
+    # Sorted, because a database returns rows in its own order and the plan hash covers statement order.
+    for slug, row in sorted(catalog.items()):
         old = row["brand"]
         if old not in BRAND_RENAMES:
             continue
@@ -1323,7 +1324,7 @@ def _schedule_brand_renames(
                 {"slug": slug, "old": old, "new": new},
             ),
         )
-    for (old, name) in [key for key in modules if key[0] in BRAND_RENAMES]:
+    for (old, name) in sorted(key for key in modules if key[0] in BRAND_RENAMES):
         new = BRAND_RENAMES[old]
         if (new, name) in modules:
             plan.conflict(table="modules", brand=old, name=name, reason="brand_rename_collision")
