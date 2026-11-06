@@ -14,7 +14,7 @@ An agent wrote this plan on 2026-11-03 and finished it on 2026-11-04 (T002) from
 
 - **Fetch.** `data/synth-catalog/catalog_scrape.py` is the shared router: free HTTP first, then a paid backend only with a key and an unexpired approval in `data/synth-catalog/receipts/fetch-approvals.json` (T040). It applies the transport limits (content type, 10 MiB, public redirects only) and the ModularGrid deny list. `scripts/hermes_hp_enrich_firecrawl.py` targets official product pages. `scripts/catalog_maker_crawl.py` crawls maker sites and refuses a shared homepage (D6). Firecrawl's proxy tier defaults to `auto` until the owner decides (row 30).
 - **Evidence.** Fetch output stays `EVIDENCE_ONLY` under `data/synth-catalog/hermes-research/`. The loader does not read scrape results. Builders (`scripts/build_maker_overlays.py`, `build_category_overlay.py`, `build_reattribution.py`) turn crawl data into overlays that are reviewed and committed.
-- **Overlays and manifests.** Versioned files in `data/synth-catalog/overlays/` (HP, category, power, retirements) and `data/synth-catalog/provenance/` (maker corrections). `applied-inputs.json` freezes each file by hash, and a test fails if one changes.
+- **Overlays and manifests.** Versioned files in `data/synth-catalog/overlays/` (HP, category, power, retirements) and `data/synth-catalog/provenance/` (maker corrections). `applied-inputs.sha256` freezes each file by hash, and a test fails if one changes.
 - **Loader.** `data/synth-catalog/population.py` `build_plan` and `populate`: insert-if-absent, fill-null, reviewed corrections (D4), retirements (D3), `hp_source` markers, cases through `plan_cases`, and a plan bound to `plan_hash` and `inputs_hash`. `scripts/import_catalog_population.py` runs it locally. `.github/workflows/db-load.yml` (through `scripts/catalog_actions_load.py`) runs a dry run, then an apply that must match the reviewed hashes.
 - **Read side.** `backend/modules/catalog_routes.py` serves `module_catalog` (live rows only). `backend/racks/validation.py` blocks placement of an HP that needs reverification and warns on a retired module.
 - **Batch lifecycle.** A description of the process, not code (OQ-9). Scripts and `db-load.yml` run the steps. Only the row lifecycle is enforced in code and encoded in tests.
@@ -33,9 +33,9 @@ T010 and T090 are done. What each plan item became:
 | Frap refused (row 27) | #335 |
 | Remove the writers that bypass the loader (rows 8, 26) | #338 |
 | Filter step and residual targets (rows 4, 11) | #335 |
-| Applied overlays don't change (row 5) | #337 |
-| Lasting load receipts (row 12) | #337 |
-| Rollback by run (row 13, decision 40) | #337 |
+| Applied overlays don't change (row 5) | #340 |
+| Lasting load receipts (row 12) | #340 |
+| Rollback by run (row 13, decision 40) | #340 |
 | Threat model and injection test (row 19) | This PR and #335 |
 | FR-016, FR-023, FR-025, FR-026 | T092, not done |
 | FR-034 | Built in #308; 298 leads still have no maker page |

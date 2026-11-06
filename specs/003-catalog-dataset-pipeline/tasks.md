@@ -70,7 +70,7 @@
 
 ## Polish
 
-- [x] T090 Converge the code against the spec. Done 2026-11-06 (#335, #337, #338, and this text). A key or budget stop is recorded as a refusal and retried, the filter and residual targets file exist, Frap is refused, the loader is the only writer, applied inputs are frozen by hash, each load keeps a lasting record, a load can be rolled back by run ID (decision 40), and the batch table is marked as a process description. Still partial, and why, in spec.md's table: FR-015 (counsel), FR-016 and FR-023 to FR-026 (T092, T039), FR-031 (case tables), FR-034 (298 leads have no maker page yet).
+- [x] T090 Converge the code against the spec. Done 2026-11-06 (#335, #340, #338, and this text). A key or budget stop is recorded as a refusal and retried, the filter and residual targets file exist, Frap is refused, the loader is the only writer, applied inputs are frozen by hash, each load keeps a lasting record, a load can be rolled back by run ID (decision 40), and the batch table is marked as a process description. Still partial, and why, in spec.md's table: FR-015 (counsel), FR-016 and FR-023 to FR-026 (T092, T039), FR-031 (case tables), FR-034 (298 leads have no maker page yet).
   - depends_on: [T010]
 - [ ] T092 The remaining schema gaps from the status table: store the incoming observation for a loader conflict (FR-016), add `source_reference` to `module_catalog` (FR-023), mark an inferred category in the database (FR-025), and move `is_available` off the canonical row, or amend FR-026 to say it is a catalog status rather than a commerce observation. Each needs a migration and a look at what reads the field, so none went in with T090.
   - depends_on: [T090]
