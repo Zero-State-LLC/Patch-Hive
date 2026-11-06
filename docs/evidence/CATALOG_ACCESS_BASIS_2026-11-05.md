@@ -136,3 +136,14 @@ Run the same day, after the free reads. Robots.txt was read again for each site,
 These 25 stay public with no basis. They aren't leads, so tagging them `unknown` would hide real maker rows.
 
 A correction now accepts `module_catalog.manufacturer_url`. It must cite an https page, and it never clears a `needs_reverify` flag, because a flag is about HP or power.
+
+### Loaded
+
+| Step | Staging | Production |
+|---|---|---|
+| Dry run | [42127087490](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42127087490) | [42129814534](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42129814534), from `main` at `54b7608` |
+| Apply | [42127470207](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42127470207) | [42130124576](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42130124576) |
+| Second dry run | [42127751590](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42127751590), plans nothing | [42130662551](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42130662551), plans nothing |
+| Smoke | [42127772228](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42127772228), 10/10 | [42130687746](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42130687746), 10/10 |
+
+Both applies used `plan_hash` `9ff5de008a6f6f895b5c6eded8d37bb3691b2e69b86e994de3f9d568fcb1973a` and `inputs_hash` `e4d82896f071b7e079659ecdbb19c6a0fb862c838523e1c1b41386d418f4022e`, with 0 conflicts and no destructive SQL. Rows with no basis fell from 79 to 74 on each. The public catalog stays at 3,160 rows, none mentions ModularGrid, and 25 public rows have no basis. Every public row on production matches staging's, apart from `imported_at`. Rows anonymous reads leave out weren't compared.
