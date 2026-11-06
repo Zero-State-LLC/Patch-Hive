@@ -4,6 +4,27 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.12](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.11...v0.3.0-alpha.12) (2026-11-06)
+
+
+### Added
+
+* **catalog:** fill categories, widths and supply draws from free maker reads ([#304](https://github.com/Zero-State-LLC/Patch-Hive/issues/304)) ([9c610b0](https://github.com/Zero-State-LLC/Patch-Hive/commit/9c610b0ee163fb3f44fc97be0feec85fcb8f372c))
+* **catalog:** promote 220 leads their makers' pages confirm (FR-034) ([#308](https://github.com/Zero-State-LLC/Patch-Hive/issues/308)) ([6826c36](https://github.com/Zero-State-LLC/Patch-Hive/commit/6826c361e7eeeaadd98338c33de1f044b5f50393))
+* **catalog:** tag 5 more maker rows after retrying the access check ([#306](https://github.com/Zero-State-LLC/Patch-Hive/issues/306)) ([90d87d3](https://github.com/Zero-State-LLC/Patch-Hive/commit/90d87d31f537842aba2cb3aeebd2c53d8a14ab49))
+
+
+### Fixed
+
+* **api:** give paged module, catalog and rack lists a fixed order ([#309](https://github.com/Zero-State-LLC/Patch-Hive/issues/309)) ([29509af](https://github.com/Zero-State-LLC/Patch-Hive/commit/29509af8723284c0e22719cff1a8fbd47ce79b5f))
+
+
+### Documentation
+
+* record the 0.3.0-alpha.11 deploy to staging and production ([#303](https://github.com/Zero-State-LLC/Patch-Hive/issues/303)) ([9f2458f](https://github.com/Zero-State-LLC/Patch-Hive/commit/9f2458fde2e93cfbba7681b8ac09b13cf5daef97))
+* record the catalog load on production ([#301](https://github.com/Zero-State-LLC/Patch-Hive/issues/301)) ([80be54c](https://github.com/Zero-State-LLC/Patch-Hive/commit/80be54c50c90987e07d85d54863d3c6656ca46e5))
+* record the free-reads load on production ([#305](https://github.com/Zero-State-LLC/Patch-Hive/issues/305)) ([54b7608](https://github.com/Zero-State-LLC/Patch-Hive/commit/54b7608a5dd8fbfbb19f7e398ea1e47a967f6d54))
+
 ## [0.3.0-alpha.11](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.10...v0.3.0-alpha.11) (2026-11-05)
 
 
