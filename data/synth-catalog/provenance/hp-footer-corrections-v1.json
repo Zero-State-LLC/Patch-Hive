@@ -1,0 +1,503 @@
+{
+ "batch": "hp-footer-corrections-v1",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted.",
+ "decided": "2026-11-05: spec 003 FR-024, a width the maker's own page states. Pages read by plain GET.",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-sum-inv",
+   "brand": "After Later Audio",
+   "name": "Sum+Inv",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 2,
+     "evidence_url": "https://afterlateraudio.com/products/sum-inv",
+     "source_tag": "hp-footer-corrections-v1: 2 HP (\"Width: 2hp\") on https://afterlateraudio.com/products/sum-inv; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Sum+Inv",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 2,
+     "evidence_url": "https://afterlateraudio.com/products/sum-inv",
+     "source_tag": "hp-footer-corrections-v1: 2 HP (\"Width: 2hp\") on https://afterlateraudio.com/products/sum-inv; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-enigma-expander-for-alan-and-benjolin-v2",
+   "brand": "After Later Audio",
+   "name": "Enigma Expander for Alan and Benjolin V2",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 4,
+     "evidence_url": "https://afterlateraudio.com/products/enigma-expander-for-micro-turing-machine-alan",
+     "source_tag": "hp-footer-corrections-v1: 4 HP (\"Width: 4hp\") on https://afterlateraudio.com/products/enigma-expander-for-micro-turing-machine-alan; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Enigma Expander for Alan and Benjolin V2",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 4,
+     "evidence_url": "https://afterlateraudio.com/products/enigma-expander-for-micro-turing-machine-alan",
+     "source_tag": "hp-footer-corrections-v1: 4 HP (\"Width: 4hp\") on https://afterlateraudio.com/products/enigma-expander-for-micro-turing-machine-alan; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-bosc",
+   "brand": "After Later Audio",
+   "name": "bOSC",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 6,
+     "evidence_url": "https://afterlateraudio.com/products/bosc",
+     "source_tag": "hp-footer-corrections-v1: 6 HP (\"Width: 6hp\") on https://afterlateraudio.com/products/bosc; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "bOSC",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 6,
+     "evidence_url": "https://afterlateraudio.com/products/bosc",
+     "source_tag": "hp-footer-corrections-v1: 6 HP (\"Width: 6hp\") on https://afterlateraudio.com/products/bosc; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-envy",
+   "brand": "After Later Audio",
+   "name": "ENVy",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 6,
+     "evidence_url": "https://afterlateraudio.com/products/envy",
+     "source_tag": "hp-footer-corrections-v1: 6 HP (\"Width: 6hp\") on https://afterlateraudio.com/products/envy; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "ENVy",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 6,
+     "evidence_url": "https://afterlateraudio.com/products/envy",
+     "source_tag": "hp-footer-corrections-v1: 6 HP (\"Width: 6hp\") on https://afterlateraudio.com/products/envy; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-flip",
+   "brand": "After Later Audio",
+   "name": "Flip",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 14,
+     "evidence_url": "https://afterlateraudio.com/products/flip",
+     "source_tag": "hp-footer-corrections-v1: 14 HP (\"Width: 14hp\") on https://afterlateraudio.com/products/flip; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Flip",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 14,
+     "evidence_url": "https://afterlateraudio.com/products/flip",
+     "source_tag": "hp-footer-corrections-v1: 14 HP (\"Width: 14hp\") on https://afterlateraudio.com/products/flip; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-threads-1u",
+   "brand": "After Later Audio",
+   "name": "Threads 1U",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 24,
+     "evidence_url": "https://afterlateraudio.com/products/threads-1u",
+     "source_tag": "hp-footer-corrections-v1: 24 HP (\"Width: 24hp\") on https://afterlateraudio.com/products/threads-1u; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Threads 1U",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 24,
+     "evidence_url": "https://afterlateraudio.com/products/threads-1u",
+     "source_tag": "hp-footer-corrections-v1: 24 HP (\"Width: 24hp\") on https://afterlateraudio.com/products/threads-1u; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-typhoon",
+   "brand": "After Later Audio",
+   "name": "Typhoon",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 16,
+     "evidence_url": "https://afterlateraudio.com/products/typhoon",
+     "source_tag": "hp-footer-corrections-v1: 16 HP (\"Width: 16hp\") on https://afterlateraudio.com/products/typhoon; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Typhoon",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 16,
+     "evidence_url": "https://afterlateraudio.com/products/typhoon",
+     "source_tag": "hp-footer-corrections-v1: 16 HP (\"Width: 16hp\") on https://afterlateraudio.com/products/typhoon; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-uo-c",
+   "brand": "After Later Audio",
+   "name": "uO_C",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 8,
+     "evidence_url": "https://afterlateraudio.com/products/uo_c",
+     "source_tag": "hp-footer-corrections-v1: 8 HP (\"Width: 8hp\") on https://afterlateraudio.com/products/uo_c; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "uO_C",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 8,
+     "evidence_url": "https://afterlateraudio.com/products/uo_c",
+     "source_tag": "hp-footer-corrections-v1: 8 HP (\"Width: 8hp\") on https://afterlateraudio.com/products/uo_c; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-utides-v2",
+   "brand": "After Later Audio",
+   "name": "uTides v2",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 8,
+     "evidence_url": "https://afterlateraudio.com/products/utides-v2",
+     "source_tag": "hp-footer-corrections-v1: 8 HP (\"Width: 8hp\") on https://afterlateraudio.com/products/utides-v2; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "uTides v2",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 8,
+     "evidence_url": "https://afterlateraudio.com/products/utides-v2",
+     "source_tag": "hp-footer-corrections-v1: 8 HP (\"Width: 8hp\") on https://afterlateraudio.com/products/utides-v2; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-brooks",
+   "brand": "After Later Audio",
+   "name": "Brooks",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 4,
+     "evidence_url": "https://afterlateraudio.com/products/brooks",
+     "source_tag": "hp-footer-corrections-v1: 4 HP (\"Width: 4hp\") on https://afterlateraudio.com/products/brooks; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Brooks",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 4,
+     "evidence_url": "https://afterlateraudio.com/products/brooks",
+     "source_tag": "hp-footer-corrections-v1: 4 HP (\"Width: 4hp\") on https://afterlateraudio.com/products/brooks; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-cloverleaf",
+   "brand": "After Later Audio",
+   "name": "Cloverleaf",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 14,
+     "evidence_url": "https://afterlateraudio.com/products/cloverleaf",
+     "source_tag": "hp-footer-corrections-v1: 14 HP (\"Width: 14hp\") on https://afterlateraudio.com/products/cloverleaf; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Cloverleaf",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 14,
+     "evidence_url": "https://afterlateraudio.com/products/cloverleaf",
+     "source_tag": "hp-footer-corrections-v1: 14 HP (\"Width: 14hp\") on https://afterlateraudio.com/products/cloverleaf; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-g-t",
+   "brand": "After Later Audio",
+   "name": "G&T",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 10,
+     "evidence_url": "https://afterlateraudio.com/products/gt-gates-and-triggers-1u-intellijel-format",
+     "source_tag": "hp-footer-corrections-v1: 10 HP (\"Width: 10hp\") on https://afterlateraudio.com/products/gt-gates-and-triggers-1u-intellijel-format; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "G&T",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 10,
+     "evidence_url": "https://afterlateraudio.com/products/gt-gates-and-triggers-1u-intellijel-format",
+     "source_tag": "hp-footer-corrections-v1: 10 HP (\"Width: 10hp\") on https://afterlateraudio.com/products/gt-gates-and-triggers-1u-intellijel-format; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-quarks",
+   "brand": "After Later Audio",
+   "name": "Quarks",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 22,
+     "evidence_url": "https://afterlateraudio.com/products/quarks",
+     "source_tag": "hp-footer-corrections-v1: 22 HP (\"Width: 22hp\") on https://afterlateraudio.com/products/quarks; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Quarks",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 22,
+     "evidence_url": "https://afterlateraudio.com/products/quarks",
+     "source_tag": "hp-footer-corrections-v1: 22 HP (\"Width: 22hp\") on https://afterlateraudio.com/products/quarks; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-scenes",
+   "brand": "After Later Audio",
+   "name": "Scenes",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 14,
+     "evidence_url": "https://afterlateraudio.com/products/scenes",
+     "source_tag": "hp-footer-corrections-v1: 14 HP (\"Width: 14hp\") on https://afterlateraudio.com/products/scenes; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Scenes",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 14,
+     "evidence_url": "https://afterlateraudio.com/products/scenes",
+     "source_tag": "hp-footer-corrections-v1: 14 HP (\"Width: 14hp\") on https://afterlateraudio.com/products/scenes; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "after-later-audio-valley",
+   "brand": "After Later Audio",
+   "name": "Valley",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 8,
+     "evidence_url": "https://afterlateraudio.com/products/valley",
+     "source_tag": "hp-footer-corrections-v1: 8 HP (\"Width: 8hp\") on https://afterlateraudio.com/products/valley; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "After Later Audio",
+   "name": "Valley",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 104,
+     "value": 8,
+     "evidence_url": "https://afterlateraudio.com/products/valley",
+     "source_tag": "hp-footer-corrections-v1: 8 HP (\"Width: 8hp\") on https://afterlateraudio.com/products/valley; 104 was misread from the same page",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}

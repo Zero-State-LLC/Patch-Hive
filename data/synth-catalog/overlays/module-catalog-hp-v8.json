@@ -3,7 +3,7 @@
  "generated_from": "spec 003 T039 and owner decision 30: the unsourced HP values retried on maker pages by plain GET on 2026-11-05 (robots.txt honoured, nothing paid). Where the stored width differs, maker-corrections-v7 fixes it on a loaded database, and this entry gives a load from empty the right value.",
  "policy": "fill-null only; maker page values only, each quoted.",
  "generated_at": "2026-11-05T00:00:00Z",
- "count": 9,
+ "count": 8,
  "entries": [
   {
    "slug": "addac-system-addac200pi",
@@ -84,16 +84,6 @@
    "source_class": "maker",
    "source_url": "https://www.addacsystem.com/en/products/modules/addac000-series/addac005",
    "verification": "maker-page-checked-2026-11-05: \"Eurorack . Width: 4 HP . Dep\""
-  },
-  {
-   "slug": "doepfer-a-101-4",
-   "brand": "Doepfer",
-   "name": "A-101-4",
-   "hp": 8,
-   "provenance": "OBSERVED",
-   "source_class": "maker",
-   "source_url": "https://doepfer.de/a1014.htm",
-   "verification": "maker-page-checked-2026-11-05: \"eite/Width: 8 TE / 8 HP / 40.\""
   }
  ]
 }
