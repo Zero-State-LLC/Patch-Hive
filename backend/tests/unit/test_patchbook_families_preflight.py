@@ -82,6 +82,9 @@ def test_a11y_requires_execution_footer() -> None:
     assert any(i.code == "EXECUTION_FOOTER_MISSING" for i in report.issues)
 
 
+ROLES = ("identity", "intent", "diagram", "construction", "operation", "footer")
+
+
 def test_preflight_passes_well_formed_page() -> None:
     recipe = ResolvedStyleRecipe(
         mode=PatchBookMode.PROFESSIONAL,
@@ -98,26 +101,57 @@ def test_preflight_passes_well_formed_page() -> None:
         page_kind=PageKind.EXECUTION,
         patch_artifact_id="patch-1",
         page_size="us_letter",
-        regions=(
+        regions=tuple(
             LayoutRegion(
-                region_id="diagram",
-                role="diagram",
+                region_id=role,
+                role=role,
                 required=True,
-                bbox_pt=(36.0, 200.0, 400.0, 300.0),
-                reading_order=0,
-            ),
-            LayoutRegion(
-                region_id="footer",
-                role="footer",
-                required=True,
-                bbox_pt=(36.0, 36.0, 400.0, 40.0),
-                reading_order=1,
-            ),
+                bbox_pt=(36.0, 36.0 + index * 60.0, 400.0, 50.0),
+                reading_order=index,
+            )
+            for index, role in enumerate(ROLES)
         ),
-        reading_order=("diagram", "footer"),
+        reading_order=ROLES,
     )
     report = run_preflight([page], recipe)
     assert report.ok is True
+
+
+def test_preflight_refuses_a_page_missing_a_semantic_region() -> None:
+    """Spec 002 FR-008: a layout can move a region, but can't leave one out."""
+    recipe = ResolvedStyleRecipe(
+        mode=PatchBookMode.PROFESSIONAL,
+        template_family=TemplateFamilyId.SIGNAL_MANUAL,
+        template_family_version="1.0.0",
+        seed=1,
+        weights=StyleWeights(),
+        constraints=StyleConstraints(),
+        output_profile=OutputProfile.PRINT_PDF,
+    )
+    kept = tuple(role for role in ROLES if role != "operation")
+    page = PatchPageLayoutIR(
+        page_id="p",
+        page_index=0,
+        page_kind=PageKind.EXECUTION,
+        patch_artifact_id="a",
+        page_size="us_letter",
+        regions=tuple(
+            LayoutRegion(
+                region_id=role,
+                role=role,
+                required=True,
+                bbox_pt=(36.0, 36.0 + index * 60.0, 400.0, 50.0),
+                reading_order=index,
+            )
+            for index, role in enumerate(kept)
+        ),
+        reading_order=kept,
+    )
+    report = run_preflight([page], recipe)
+    assert report.ok is False
+    assert [i.code for i in report.issues if i.severity == "error"] == [
+        "PATCH_PAGE_REQUIRED_CONTENT_MISSING"
+    ]
 
 
 def test_preview_rate_limit() -> None:

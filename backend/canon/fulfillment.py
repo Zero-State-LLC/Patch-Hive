@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from canon.compiler import export_failure_receipt
 from canon.exports import compensate_failed_export
-from canon.models import CanonicalExportRecord
+from canon.models import CanonicalExportRecord, GenerationRunRecord, StageReceiptRecord
 from core.config import settings
 from core.storage import StorageError, get_file_store
 from export.patchbook.design.constraints import (
@@ -24,6 +27,8 @@ from export.patchbook.design.recipe import (
     ResolvedStyleRecipe,
     recipe_hash,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -134,18 +139,60 @@ def fulfill_export(session: Session, export_id: str) -> FulfillResult:
         )
     except (ContentSpineError, StyleResolveError, PreflightFailed) as exc:
         code = getattr(exc, "code", "EXPORT_FULFILL_FAILED")
-        return _fail(session, export, code)
+        return _fail(session, export, code, detail=str(exc))
     except StorageError as exc:
         return _fail(session, export, exc.code)
     except Exception:
         return _fail(session, export, "EXPORT_FULFILL_FAILED")
 
 
-def _fail(session: Session, export: CanonicalExportRecord, code: str) -> FulfillResult:
+def _fail(
+    session: Session, export: CanonicalExportRecord, code: str, *, detail: str | None = None
+) -> FulfillResult:
     export.error_code = code
     compensate_failed_export(session, export, occurred_at=datetime.now(timezone.utc))
     session.flush()
+    if detail is not None:
+        _keep_failure_receipt(session, export, code, detail)
     return FulfillResult(export_id=export.id, status=export.status, error_code=code)
+
+
+def _keep_failure_receipt(
+    session: Session, export: CanonicalExportRecord, code: str, detail: str
+) -> None:
+    """Keep which patch stopped the export and what to do about it (spec 002 FR-007, FR-019).
+    The credits are already back, so a problem here is logged and goes no further."""
+    if session.get(GenerationRunRecord, export.source_run_id) is None:
+        return
+    receipt = export_failure_receipt(
+        export_id=export.id,
+        run_id=export.source_run_id,
+        rig_revision_id=export.source_rig_revision_id,
+        attempt=int(export.fulfill_attempts or 0),
+        code=code,
+        detail=detail,
+        created_at=datetime.now(timezone.utc),
+    )
+    try:
+        with session.begin_nested():
+            session.add(
+                StageReceiptRecord(
+                    id=receipt.artifact_id,
+                    run_id=export.source_run_id,
+                    stage=receipt.stage,
+                    operation=receipt.operation,
+                    operation_version=receipt.operation_version,
+                    determinism_class=receipt.determinism_class,
+                    input_hash=receipt.input_hash,
+                    output_hash=receipt.output_hash,
+                    receipt={
+                        **receipt.canonical_dict(),
+                        "failure": {"code": code, "detail": detail},
+                    },
+                )
+            )
+    except SQLAlchemyError:
+        logger.exception("Could not keep the failure receipt of export %s", export.id)
 
 
 def _load_or_default_recipe(export: CanonicalExportRecord) -> ResolvedStyleRecipe:

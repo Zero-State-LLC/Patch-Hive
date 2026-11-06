@@ -4,6 +4,8 @@
 **Scope:** generated patch pages, book assembly, validation, export, and release gates  
 **Primary invariant:** one published patch equals exactly one standalone page
 
+The owner chose not to build the staged pipeline below (decision 37, [owner decisions](evidence/OWNER_DECISIONS_2026-11-04.md)). A book is composed in one pass, and a patch that doesn't fit fails the whole export. [Spec 002](../specs/002-patch-book-publishing/spec.md) describes what's built, and it wins over this document where they differ (decision 38).
+
 ## 1. Purpose
 
 The Patch Book Generator converts immutable PatchHive artifacts into publication-quality technical manuals for a specific modular rig. It is not a generic PDF formatter. It is a deterministic compiler whose output must remain technically accurate, accessible, reproducible, printable, and independently usable at the rack.

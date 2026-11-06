@@ -7,6 +7,7 @@ from pathlib import Path
 from export.patchbook.design.content_spine import (
     LoadedLibrary,
     LoadedLibraryItem,
+    ModuleDisplay,
     library_content_hash,
     seal_orm_patch_to_compilation,
 )
@@ -74,6 +75,12 @@ def _fixture_library() -> LoadedLibrary:
         library_content_hash=library_content_hash([item]),
         load_path="compile_on_export",
         items=(item,),
+        module_display={
+            "10": ModuleDisplay("Fixture Oscillator"),
+            "20": ModuleDisplay("Fixture Amplifier"),
+            "30": ModuleDisplay("Fixture Sequencer"),
+            "40": ModuleDisplay("Fixture Clock"),
+        },
     )
 
 
@@ -104,7 +111,7 @@ def test_svg_deterministic_and_non_color_encoded() -> None:
     assert 'data-signal="cv"' in a
     assert "non-color: dash+number+label" in a
     # Route numbers present
-    assert ">1</text>" in a
+    assert ">1 Audio In</text>" in a and 'data-route="1"' in a
 
 
 def test_composition_hash_stable_same_inputs(tmp_path: Path) -> None:

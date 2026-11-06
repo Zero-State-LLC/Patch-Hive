@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import pytest
 from reportlab.lib.pagesizes import letter
 
-from export.patchbook.design.diagram_svg import _label_lines
+from export.patchbook.design.diagram_svg import BOX_PAD, DIAGRAM_WIDTH, TITLE_FONT, TITLE_SIZE, DiagramLayout, wrap_to_width
 from export.patchbook.design.engine import (
     CONTENT_FLOOR,
     PreflightFailed,
@@ -35,8 +35,15 @@ def _patch(steps: int = 3, cables: int = 3, *, title: str = "Title", intent: str
     return plan, graph
 
 
-def _layout(plan, graph):
-    return layout_patch_page(plan, graph, FAMILY, body_font="Helvetica", mono="Courier", width=WIDTH, height=HEIGHT)
+def _cables(graph) -> list[str]:
+    return [f"{e.edge_id}: {e.source_port_id} -> {e.target_port_id} [{e.signal_type}]" for e in graph.edges]
+
+
+def _layout(plan, graph, **kwargs):
+    return layout_patch_page(
+        plan, graph, FAMILY, body_font="Helvetica", mono="Courier", width=WIDTH, height=HEIGHT,
+        cables=_cables(graph), **kwargs,
+    )
 
 
 def _text(lines) -> str:
@@ -91,13 +98,32 @@ def test_a_word_wider_than_the_line_is_split_not_cut():
     assert "".join(lines) == word and len(lines) > 1
 
 
-def test_long_diagram_labels_wrap_and_impossible_ones_fail():
-    assert _label_lines("Short name") == ["Short name"]
-    wrapped = _label_lines("Erica Synths Black Wavetable VCO")
-    assert " ".join(wrapped) == "Erica Synths Black Wavetable VCO" and len(wrapped) > 1
+def test_a_long_module_name_wraps_inside_its_box():
+    width = 120.0 - 2 * BOX_PAD
+    lines = wrap_to_width("Erica Synths Black Wavetable VCO", TITLE_FONT, TITLE_SIZE, width)
+    assert " ".join(lines) == "Erica Synths Black Wavetable VCO" and len(lines) > 1
+    # A word wider than the box is split rather than failing a paid export.
+    word = wrap_to_width("Supercalifragilisticexpialidocious", TITLE_FONT, TITLE_SIZE, 60.0)
+    assert "".join(word) == "Supercalifragilisticexpialidocious" and len(word) > 1
+
+
+def _diagram(height: float) -> DiagramLayout:
+    return DiagramLayout(width=DIAGRAM_WIDTH, height=height, boxes=(), routes=())
+
+
+def test_the_whole_diagram_sits_above_the_footer():
+    plan, graph = _patch(steps=3, cables=3)
+    page = _layout(plan, graph, diagram=_diagram(240.0))
+    block = [line for line in page if line.diagram]
+    assert len(block) == 1 and block[0].y >= CONTENT_FLOOR
+
+
+def test_a_diagram_too_tall_for_the_page_fails_with_its_own_code():
+    plan, graph = _patch(steps=3, cables=3)
     with pytest.raises(PreflightFailed) as exc:
-        _label_lines("Extremely Long Module Display Name That Will Not Fit In Any Node Box At All")
+        _layout(plan, graph, diagram=_diagram(620.0))
     assert exc.value.code == "PATCH_PAGE_DIAGRAM_OVERFLOW"
+    assert "Remediation" in exc.value.message
 
 
 def test_a_long_identifier_wraps_without_extra_spaces_or_wasted_lines():
@@ -112,20 +138,12 @@ def test_a_long_identifier_wraps_without_extra_spaces_or_wasted_lines():
     assert widths and min(widths) > 50
 
 
-def test_labels_are_measured_against_each_node_shape():
-    label = "Wonderful Oscillator"  # 20 characters
-    assert _label_lines(label, "orthogonal_schematic") == ["Wonderful", "Oscillator"]
-    with pytest.raises(PreflightFailed):
-        # One word wider than the hex cell's inner width.
-        _label_lines("Supercalifragilistic Osc", "hex_cell_map")
-    with pytest.raises(PreflightFailed):
-        _label_lines("Ultrawidemodulename Two", "orthogonal_schematic")
 def test_body_text_and_cables_are_drawn_at_the_floor_or_above():
     plan, graph = _patch(steps=4, cables=4)
     for floor in (9.5, 10.5):
         page = layout_patch_page(
             plan, graph, FAMILY, body_font="Helvetica", mono="Courier",
-            width=WIDTH, height=HEIGHT, body_size=floor,
+            width=WIDTH, height=HEIGHT, body_size=floor, cables=_cables(graph),
         )
         required = [
             line for line in page

@@ -11,7 +11,6 @@ from typing import Any
 
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
-from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
 
 from canon.contracts import canonical_json, canonical_sha256
@@ -21,7 +20,15 @@ from export.patchbook.design.brand_policy import (
 )
 from export.patchbook.design.content_spine import LoadedLibrary
 from export.patchbook.design.a11y import body_size_pt
-from export.patchbook.design.diagram_svg import render_patch_diagram_svg
+from export.patchbook.design.diagram_svg import (
+    DiagramLayout,
+    draw_diagram_on_canvas,
+    feedback_edge_ids,
+    layout_diagram,
+    numbered_edges,
+    render_patch_diagram_svg,
+)
+from export.patchbook.design.diagram_svg import wrap_to_width as _wrap_to_width
 from export.patchbook.design.families.registry import (
     PATENT_FUTURE_DISCLAIMER,
     FamilySpec,
@@ -283,6 +290,58 @@ def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+# What a seal writes when a fact was missing. None of these may reach a page (spec 002 FR-014).
+PLACEHOLDERS = {"", "UNKNOWN", "NOT_COMPUTABLE"}
+
+
+def check_semantics(library: LoadedLibrary) -> None:
+    """Refuse a patch before anything is drawn (spec 002 FR-013, FR-014): a missing fact is an
+    error, never a placeholder, and every module has to be on the source rig revision. One
+    patch that fails stops the whole export, and the customer's credits come back (decision 37)."""
+    for item in library.items:
+        plan = item.compilation.patch_plan
+        graph = item.compilation.patch_graph
+        report = item.compilation.validation_report
+        artifact = graph.artifact_id
+
+        def missing(what: str) -> PreflightFailed:
+            return PreflightFailed(
+                "PATCH_PAGE_REQUIRED_CONTENT_MISSING",
+                f"Patch {artifact} has no {what}. Remediation: generate the patch again from the "
+                "confirmed rig.",
+            )
+
+        if str(plan.title).strip() in PLACEHOLDERS:
+            raise missing("title")
+        if str(plan.intent).strip() in PLACEHOLDERS:
+            raise missing("intent")
+        if not plan.steps:
+            raise missing("operation steps")
+        if not graph.edges:
+            raise missing("cables")
+        for node in graph.nodes:
+            if node.module_instance_id not in library.module_display:
+                raise PreflightFailed(
+                    "PATCH_BOOK_REFERENCE_UNRESOLVED",
+                    f"Patch {artifact} uses module {node.module_instance_id}, which isn't on "
+                    "the source rig revision. Remediation: generate the patch again from the "
+                    "current rig.",
+                )
+            for port in node.ports:
+                if str(port.label).strip() in PLACEHOLDERS:
+                    raise missing(f"jack name on module {node.module_instance_id}")
+        for edge in graph.edges:
+            if edge.signal_type == "unknown":
+                raise missing(f"signal type on cable {edge.edge_id}")
+        if not report.valid:
+            codes = ", ".join(sorted({i.code for i in report.issues if i.severity in {"error", "critical"}}))
+            raise PreflightFailed(
+                "PATCH_PAGE_GRAPH_MISMATCH",
+                f"Patch {artifact} did not pass validation ({codes}). Remediation: generate the "
+                "patch again from the confirmed rig.",
+            )
+
+
 def compose_design_export_pack(
     library: LoadedLibrary,
     recipe: ResolvedStyleRecipe,
@@ -291,6 +350,7 @@ def compose_design_export_pack(
     export_id: str,
 ) -> ComposeResult:
     """Write design_export_pack.v1 directory; presentation only."""
+    check_semantics(library)
     family = get_family(recipe.template_family)
     root = Path(out_dir)
     root.mkdir(parents=True, exist_ok=True)
@@ -351,7 +411,9 @@ def compose_design_export_pack(
     for item in library.items:
         # Deterministic technical SVG per patch (color + dash + number)
         svg = render_patch_diagram_svg(
-            item.compilation, layout_algorithm_id=family.layout_algorithm_id
+            item.compilation,
+            layout_algorithm_id=family.layout_algorithm_id,
+            module_labels=_module_labels(library),
         )
         svg_rel = _diagram_path(item.compilation.patch_graph.artifact_id)
         (root / svg_rel).write_text(svg, encoding="utf-8")
@@ -377,7 +439,7 @@ def compose_design_export_pack(
             )
             page_index += 1
             # Dual-artifact: appendix_execution page IR for preflight completeness
-            app_ir = _execution_page(page_index, item.compilation, recipe, family)
+            app_ir = _execution_page(page_index, item.compilation, recipe, family, library)
             app_ir = app_ir.model_copy(
                 update={
                     "page_kind": PageKind.APPENDIX_EXECUTION,
@@ -389,6 +451,7 @@ def compose_design_export_pack(
             page_payload_ex = {
                 "page_index": page_index,
                 "page_kind": "appendix_execution",
+                "modules": _page_modules(item.compilation, library),
                 "plan": item.compilation.patch_plan.canonical_dict(),
                 "graph": {
                     "artifact_id": item.compilation.patch_graph.artifact_id,
@@ -410,11 +473,12 @@ def compose_design_export_pack(
             )
             page_index += 1
         else:
-            ir = _execution_page(page_index, item.compilation, recipe, family)
+            ir = _execution_page(page_index, item.compilation, recipe, family, library)
             layout_irs.append(ir)
             page_payload = {
                 "page_index": page_index,
                 "page_kind": "execution",
+                "modules": _page_modules(item.compilation, library),
                 "plan": item.compilation.patch_plan.canonical_dict(),
                 "graph": {
                     "artifact_id": item.compilation.patch_graph.artifact_id,
@@ -501,10 +565,10 @@ def compose_design_export_pack(
         companion_lines.append(item.compilation.patch_plan.intent)
         for step in item.compilation.patch_plan.steps:
             companion_lines.append(f"  [{step.phase}] {step.instruction}")
-        for edge in item.compilation.patch_graph.edges:
-            companion_lines.append(
-                f"  CABLE {edge.edge_id}: {edge.source_port_id} -> {edge.target_port_id} ({edge.signal_type})"
-            )
+        for cable in cable_lines(item.compilation.patch_graph, _module_labels(library)):
+            companion_lines.append(f"  CABLE {cable}")
+        for note in page_notes(item.compilation, library):
+            companion_lines.append(f"  NOTE {note}")
         companion_lines.append("")
     (root / "technical" / "companion.txt").write_text("\n".join(companion_lines), encoding="utf-8")
 
@@ -517,6 +581,7 @@ def compose_design_export_pack(
     if family.patent_disclaimer:
         license_lines.append(PATENT_FUTURE_DISCLAIMER + "\n")
     (root / "LICENSE.txt").write_text("".join(license_lines), encoding="utf-8")
+    (root / "README.txt").write_text(_pack_readme(library, comp_hash), encoding="utf-8")
 
     paths: dict[str, Any] = {
         "pdf": "PatchBook.pdf",
@@ -527,6 +592,7 @@ def compose_design_export_pack(
         "diagrams": diagram_paths,
         "layout_ir_dir": "pages/layout_ir",
         "book_validation": BOOK_VALIDATION_RECEIPT_PATH,
+        "readme": "README.txt",
     }
 
     # validate_book: the PDF is the page-count authority, every reference resolves,
@@ -613,6 +679,88 @@ def compose_design_export_pack(
     )
 
 
+def _pack_readme(library: LoadedLibrary, composition_hash_value: str) -> str:
+    """What's in the pack (spec 002 FR-018)."""
+    return "\n".join(
+        [
+            "PatchHive PatchBook",
+            "",
+            f"Patches: {len(library.items)}",
+            f"Source run: {library.source_run_id}",
+            f"Composition hash: {composition_hash_value}",
+            "",
+            "PatchBook.pdf                One page per patch, ready to print.",
+            "technical/companion.txt      The same patches as plain text.",
+            "diagrams/svg/                Each patch's diagram.",
+            "pages/json/                  Each page's data.",
+            "manifest/patch-book.json     The pages and hashes of this book.",
+            "manifest/checksums.json      A SHA-256 for every file in this pack.",
+            "validation/book.json         What was checked before this pack was written.",
+            "",
+            "The PDF is for reading. The JSON files and hashes are what reproduce the book.",
+            "",
+        ]
+    )
+
+
+def _module_labels(library: LoadedLibrary) -> dict[str, str]:
+    return {module_id: module.label for module_id, module in library.module_display.items()}
+
+
+def _page_modules(compilation: Any, library: LoadedLibrary) -> dict[str, str]:
+    """The names this patch's page prints. They go in the page data and the layout IR, so they
+    count toward the composition hash."""
+    return {
+        node.module_instance_id: library.module_display[node.module_instance_id].label
+        for node in compilation.patch_graph.nodes
+    }
+
+
+def cable_lines(graph: Any, labels: dict[str, str]) -> list[str]:
+    """The ordered connection list. Each number matches a route on the diagram (FR-011)."""
+    ports = {port.port_id: (node, port) for node in graph.nodes for port in node.ports}
+
+    def end(port_id: str) -> str:
+        node, port = ports[port_id]
+        return f"{labels.get(node.module_instance_id, node.label)} {port.label}"
+
+    return [
+        f"{number}. {end(edge.source_port_id)} -> {end(edge.target_port_id)} [{edge.signal_type}]"
+        for number, edge in numbered_edges(graph.edges)
+    ]
+
+
+def page_notes(compilation: Any, library: LoadedLibrary) -> list[str]:
+    """What the page must warn about (FR-011, FR-013, FR-014): a feedback loop, each issue in
+    the validation report, and the modules whose jack names are generic roles."""
+    graph = compilation.patch_graph
+    notes: list[str] = []
+    looped = feedback_edge_ids(graph)
+    if looped:
+        numbers = [str(n) for n, edge in numbered_edges(graph.edges) if edge.edge_id in looped]
+        notes.append(
+            f"Feedback: cables {', '.join(numbers)} form a loop. Start with levels low, and "
+            "raise them slowly."
+        )
+    for issue in compilation.validation_report.issues:
+        if issue.message not in notes:
+            notes.append(issue.message)
+    generic = sorted(
+        library.module_display[node.module_instance_id].label
+        for node in graph.nodes
+        if any(
+            port.label not in library.module_display[node.module_instance_id].declared_jacks
+            for port in node.ports
+        )
+    )
+    if generic:
+        notes.append(
+            f"Jack names are generic for {', '.join(generic)}: the real names aren't on file, "
+            "so check each panel."
+        )
+    return notes
+
+
 def _front_matter_page(
     index: int, role: str, recipe: ResolvedStyleRecipe, family: FamilySpec
 ) -> PatchPageLayoutIR:
@@ -693,8 +841,29 @@ def _plate_page(
     )
 
 
+def _with_every_semantic_region(regions: tuple[LayoutRegion, ...]) -> tuple[LayoutRegion, ...]:
+    """Intent shares the identity band and operation shares the construction block, so each
+    family's geometry keeps its overall shape (spec 002 FR-008)."""
+    split: list[LayoutRegion] = []
+    for region in regions:
+        x, y, w, h = region.bbox_pt
+        if region.role == "identity":
+            parts = (("identity", (x, y + h / 2, w, h / 2)), ("intent", (x, y, w, h / 2)))
+        elif region.role == "construction":
+            parts = (("construction", (x, y + h / 2, w, h / 2)), ("operation", (x, y, w, h / 2)))
+        else:
+            parts = ((region.role, region.bbox_pt),)
+        for role, bbox in parts:
+            split.append(
+                region.model_copy(
+                    update={"region_id": role, "role": role, "bbox_pt": bbox, "reading_order": len(split)}
+                )
+            )
+    return tuple(split)
+
+
 def _execution_page(
-    index: int, compilation, recipe: ResolvedStyleRecipe, family: FamilySpec
+    index: int, compilation, recipe: ResolvedStyleRecipe, family: FamilySpec, library: LoadedLibrary
 ) -> PatchPageLayoutIR:
     # Family-specific region geometry (structural uniqueness, not palette)
     if family.layout_algorithm_id == "notebook_checklist":
@@ -821,6 +990,7 @@ def _execution_page(
                 reading_order=3,
             ),
         )
+    regions = _with_every_semantic_region(regions)
     return PatchPageLayoutIR(
         page_id=f"exec-{compilation.patch_graph.artifact_id}",
         page_index=index,
@@ -833,6 +1003,13 @@ def _execution_page(
         layout_algorithm_id=family.layout_algorithm_id,
         fit={
             "edge_count": len(compilation.patch_graph.edges),
+            # What the page prints beyond its sealed patch: part of the composition hash.
+            "printed_hash": canonical_sha256(
+                {
+                    "modules": _page_modules(compilation, library),
+                    "notes": page_notes(compilation, library),
+                }
+            ),
             "layout_class": family.default_layout_class,
             "rhythm": family.fingerprint.rhythm_signature,
         },
@@ -926,6 +1103,8 @@ def _render_execution_pdf(
         # Lay the page out first: everything wraps, nothing is cut, and a page that
         # cannot hold its required content fails instead of dropping it (spec 002
         # FR-001, FR-003, FR-010, FR-021).
+        labels = _module_labels(library)
+        diagram = layout_diagram(item.compilation, module_labels=labels)
         page = layout_patch_page(
             plan,
             graph,
@@ -935,12 +1114,24 @@ def _render_execution_pdf(
             width=width,
             height=height,
             body_size=body_size,
+            cables=cable_lines(graph, labels),
+            notes=page_notes(item.compilation, library),
+            diagram=diagram,
         )
         for line in page:
             if line.rule:
                 c.setStrokeColorRGB(*accent)
                 c.line(inch, line.y, width - inch, line.y)
                 c.setStrokeColorRGB(0, 0, 0)
+                continue
+            if line.diagram:
+                draw_diagram_on_canvas(
+                    c,
+                    diagram,
+                    x=inch,
+                    top=line.y + diagram.height,
+                    layout_algorithm_id=family.layout_algorithm_id,
+                )
                 continue
             c.setFont(line.font, line.size)
             c.drawString(inch + line.indent, line.y, line.text)
@@ -974,7 +1165,10 @@ def _render_execution_pdf(
         width - 2 * inch,
     )
     if family.patent_disclaimer:
-        _draw_wrapped(c, [PATENT_FUTURE_DISCLAIMER], "Helvetica", 8, y_after - 10, width - 2 * inch)
+        # The same floor as the cover's notice (FR-004).
+        _draw_wrapped(
+            c, [PATENT_FUTURE_DISCLAIMER], "Helvetica", body_size, y_after - 10, width - 2 * inch
+        )
     c.showPage()
     drawn += 1
 
@@ -1001,6 +1195,8 @@ class PageLine:
     y: float
     indent: float = 0.0
     rule: bool = False
+    # The block's bottom edge is ``y``, so the page-fit check holds the whole block.
+    diagram: bool = False
 
 
 def _draw_wrapped(
@@ -1018,38 +1214,6 @@ def _draw_wrapped(
     return y
 
 
-def _wrap_to_width(
-    text: str, font: str, size: float, max_width: float, rest_width: float | None = None
-) -> list[str]:
-    """Wrap by measured width; continuation lines may be narrower (``rest_width``). A
-    single word wider than its line is split across lines, never cut and never given
-    extra spaces."""
-    lines: list[str] = []
-    cur = ""
-
-    def limit() -> float:
-        return max_width if not lines or rest_width is None else rest_width
-
-    for word in text.split():
-        trial = f"{cur} {word}" if cur else word
-        if stringWidth(trial, font, size) <= limit():
-            cur = trial
-            continue
-        if cur:
-            lines.append(cur)
-            cur = ""
-        while stringWidth(word, font, size) > limit():
-            cut = len(word)
-            while cut > 1 and stringWidth(word[:cut], font, size) > limit():
-                cut -= 1
-            lines.append(word[:cut])
-            word = word[cut:]
-        cur = word
-    if cur:
-        lines.append(cur)
-    return lines or [""]
-
-
 def layout_patch_page(
     plan: Any,
     graph: Any,
@@ -1059,28 +1223,47 @@ def layout_patch_page(
     mono: str,
     width: float,
     height: float,
+    cables: list[str],
+    notes: list[str] | None = None,
+    diagram: DiagramLayout | None = None,
     body_size: float = 9.5,
 ) -> list[PageLine]:
     """Every line of one patch page, fully wrapped. Optional decoration (the title
     block) goes first if the page is full; if required content still does not fit,
-    PATCH_PAGE_TEXT_OVERFLOW, never a truncated or dropped line."""
+    the export fails with a code, never a truncated or dropped line."""
     for with_title_block in ((True, False) if family.show_title_block else (False,)):
         page = _lay_out(
-            plan, graph, family, body_font, mono, width, height, with_title_block, body_size
+            plan,
+            family,
+            body_font,
+            mono,
+            width,
+            height,
+            with_title_block,
+            body_size,
+            cables,
+            notes or [],
+            diagram.height if diagram is not None else 0.0,
         )
         if all(line.y >= CONTENT_FLOOR for line in page):
             return page
+    if diagram is not None and diagram.height >= (height - inch - CONTENT_FLOOR) / 2:
+        raise PreflightFailed(
+            "PATCH_PAGE_DIAGRAM_OVERFLOW",
+            f"Patch {graph.artifact_id} has a diagram too tall to share a page with its required "
+            f"content ({len(diagram.boxes)} modules, {len(cables)} cables). Remediation: split "
+            "the patch into smaller patches.",
+        )
     raise PreflightFailed(
         "PATCH_PAGE_TEXT_OVERFLOW",
         f"Patch {graph.artifact_id} needs more than one page for its required content "
-        f"({len(plan.steps)} steps, {len(graph.edges)} cables). Remediation: split the "
+        f"({len(plan.steps)} steps, {len(cables)} cables). Remediation: split the "
         "patch into smaller patches, or choose a book profile with a denser layout.",
     )
 
 
 def _lay_out(
     plan: Any,
-    graph: Any,
     family: FamilySpec,
     body_font: str,
     mono: str,
@@ -1088,6 +1271,9 @@ def _lay_out(
     height: float,
     with_title_block: bool,
     body_size: float,
+    cables: list[str],
+    notes: list[str],
+    diagram_height: float,
 ) -> list[PageLine]:
     usable = width - 2 * inch
     leading = round(body_size * 1.3, 2)
@@ -1100,6 +1286,12 @@ def _lay_out(
             lines.append(PageLine(chunk, font, size, y, indent))
             y -= step
 
+    def add_diagram() -> None:
+        nonlocal y
+        if diagram_height:
+            lines.append(PageLine("", body_font, 9, y - diagram_height, diagram=True))
+            y -= diagram_height + 16
+
     add(plan.title, "Helvetica-Bold", 16, 18)
     add(f"Intent: {plan.intent}", body_font, body_size, leading)
     y -= 4
@@ -1107,18 +1299,27 @@ def _lay_out(
     y -= 20
     if with_title_block:
         add(f"TITLE BLOCK · {family.display_name} · rev eng={DESIGN_ENGINE_VERSION}", "Helvetica", 7, 14)
-    add("Checklist" if family.show_checklist else "Construction", "Helvetica-Bold", 11, 14)
-    for step in plan.steps:
-        prefix = "[ ] " if family.show_checklist else f"{step.position}. "
-        add(f"{prefix}[{step.phase}] {step.instruction}", body_font, body_size, leading)
-    y -= 8
-    add("Cables", "Helvetica-Bold", 11, 14)
-    for edge in graph.edges:
-        text = f"{edge.edge_id}: {edge.source_port_id} -> {edge.target_port_id} [{edge.signal_type}]"
+    if family.default_layout_class != "instruction_first":
+        add_diagram()
+    add("Construction", "Helvetica-Bold", 11, 14)
+    for cable in cables:
         # Cables are required content: body size, not a smaller caption size. One pass
         # over the original text; continuation lines indent (and are narrower) so one
         # cable never reads as two.
-        for i, chunk in enumerate(_wrap_to_width(text, mono, body_size, usable, usable - 12)):
+        for i, chunk in enumerate(_wrap_to_width(cable, mono, body_size, usable, usable - 12)):
             lines.append(PageLine(chunk, mono, body_size, y, indent=12 if i else 0))
             y -= leading
+    y -= 8
+    add("Checklist" if family.show_checklist else "Operation", "Helvetica-Bold", 11, 14)
+    for number, step in enumerate(plan.steps, start=1):
+        prefix = "[ ] " if family.show_checklist else f"{number}. "
+        add(f"{prefix}[{step.phase}] {step.instruction}", body_font, body_size, leading)
+    if notes:
+        y -= 8
+        add("Warnings", "Helvetica-Bold", 11, 14)
+        for note in notes:
+            add(note, body_font, body_size, leading)
+    if family.default_layout_class == "instruction_first":
+        y -= 8
+        add_diagram()
     return lines
