@@ -1,0 +1,586 @@
+{
+ "batch": "category-corrections-v6",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted. Each row is corrected in module_catalog and in modules, because the patch engine reads modules.module_type.",
+ "decided": "2026-11-04: owner decision 16 (docs/evidence/OWNER_DECISIONS_2026-11-04.md). Pages read by plain GET on 2026-11-06.",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "arc-noise-rainbow-v1-1",
+   "brand": "ARC",
+   "name": "Noise Rainbow v1.1",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "ow v1.1 eurorack synthesizer module. The Noise Rainbow is a source of analogue noise and digital pseudorandom pulses. The Analogue Noise submodu",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://www.analogueresearch.com/products/noise-rainbow-v1-1",
+     "source_tag": "category-corrections-v6: \"source of analogue noise\" on https://www.analogueresearch.com/products/noise-rainbow-v1-1; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "ARC",
+   "name": "Noise Rainbow v1.1",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://www.analogueresearch.com/products/noise-rainbow-v1-1",
+     "source_tag": "category-corrections-v6: \"source of analogue noise\" on https://www.analogueresearch.com/products/noise-rainbow-v1-1; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "ear-modular-nightrain",
+   "brand": "Ear Modular",
+   "name": "Nightrain ・ 夜雨",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "Night Rain — a compact 2HP Eurorack noise module with white, pink, red, and blue noise. Nightrain ・ 夜雨 | Ear",
+     "action": "correct",
+     "only_if_value": "LFO",
+     "value": "NOISE",
+     "evidence_url": "https://www.earmodular.com/modular/nightrain",
+     "source_tag": "category-corrections-v6: \"noise module\" on https://www.earmodular.com/modular/nightrain; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Ear Modular",
+   "name": "Nightrain ・ 夜雨",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "LFO",
+     "value": "NOISE",
+     "evidence_url": "https://www.earmodular.com/modular/nightrain",
+     "source_tag": "category-corrections-v6: \"noise module\" on https://www.earmodular.com/modular/nightrain; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "erica-synths-hexinverter-vcno",
+   "brand": "Erica Synths",
+   "name": "Hexinverter VCNO",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "With the pitch knob turned fully clockwise this will output pure white noise. As you turn the pitch down, the noise evolves into crunchy",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://www.ericasynths.lv/hexinverter-vcno-2718/",
+     "source_tag": "category-corrections-v6: \"pure white noise\" on https://www.ericasynths.lv/hexinverter-vcno-2718/; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Erica Synths",
+   "name": "Hexinverter VCNO",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://www.ericasynths.lv/hexinverter-vcno-2718/",
+     "source_tag": "category-corrections-v6: \"pure white noise\" on https://www.ericasynths.lv/hexinverter-vcno-2718/; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "hexinverter-lectronique-vcno",
+   "brand": "Hexinverter Électronique",
+   "name": "VCNO",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "MODULAR SYNTHESIZERS Menu VCNO discrete voltage controlled noise oscillator w/ multiple outputs >> 6HP | 30mm DEEP | 165 EUR | +49, -39",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://www.hexinverter.net/vcno",
+     "source_tag": "category-corrections-v6: \"noise oscillator\" on https://www.hexinverter.net/vcno; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Hexinverter Électronique",
+   "name": "VCNO",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://www.hexinverter.net/vcno",
+     "source_tag": "category-corrections-v6: \"noise oscillator\" on https://www.hexinverter.net/vcno; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "feedback-static",
+   "brand": "Feedback",
+   "name": "STATIC",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "STATIC module it's a comprehensive collection of noise sources generated with different methods STATIC – FEEDBACK Modules",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://feedback-modules.myshopify.com/products/static",
+     "source_tag": "category-corrections-v6: \"noise sources\" on https://feedback-modules.myshopify.com/products/static; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Feedback",
+   "name": "STATIC",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://feedback-modules.myshopify.com/products/static",
+     "source_tag": "category-corrections-v6: \"noise sources\" on https://feedback-modules.myshopify.com/products/static; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "hexinverter-lectronique-vcnoiz",
+   "brand": "Hexinverter Électronique",
+   "name": "vcNOIZ",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "vcNOIZ is a unique sounding voltage controlled digital noise source.&nbsp;It creates positively raunchy C64-esque digital noise",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://www.hexinverter.net/vcnoiz",
+     "source_tag": "category-corrections-v6: \"noise source\" on https://www.hexinverter.net/vcnoiz; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Hexinverter Électronique",
+   "name": "vcNOIZ",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://www.hexinverter.net/vcnoiz",
+     "source_tag": "category-corrections-v6: \"noise source\" on https://www.hexinverter.net/vcnoiz; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "manikk-noise",
+   "brand": "Manikk",
+   "name": "NOISE",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "roduct status: Active A compact module with three different noise types: White – 3 outputs Pink – 3 outputs Low-pass filtered – 2 o",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://manikk.com/product/noise/",
+     "source_tag": "category-corrections-v6: \"noise types\" on https://manikk.com/product/noise/; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Manikk",
+   "name": "NOISE",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://manikk.com/product/noise/",
+     "source_tag": "category-corrections-v6: \"noise types\" on https://manikk.com/product/noise/; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "nonlinearcircuits-mobius-pill",
+   "brand": "Nonlinearcircuits",
+   "name": "Mobius PiLL",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "Description/Usage 10hp Mobius PiLL This is a chaotic noise module, it is generally not very nice unless you are into noise. I",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "NOISE",
+     "evidence_url": "https://www.nonlinearcircuits.com/modules/p/mobius-pill",
+     "source_tag": "category-corrections-v6: \"chaotic noise module\" on https://www.nonlinearcircuits.com/modules/p/mobius-pill; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Nonlinearcircuits",
+   "name": "Mobius PiLL",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "NOISE",
+     "evidence_url": "https://www.nonlinearcircuits.com/modules/p/mobius-pill",
+     "source_tag": "category-corrections-v6: \"chaotic noise module\" on https://www.nonlinearcircuits.com/modules/p/mobius-pill; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "plum-audio-noise",
+   "brand": "Plum Audio",
+   "name": "Noise",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "NOISE is 1U Dual / Stereo noise generator with 3dB tilt filter.Contains two separate noise generators",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "NOISE",
+     "evidence_url": "https://www.plum-audio.com/product-page/noise",
+     "source_tag": "category-corrections-v6: \"noise generator\" on https://www.plum-audio.com/product-page/noise; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Plum Audio",
+   "name": "Noise",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "NOISE",
+     "evidence_url": "https://www.plum-audio.com/product-page/noise",
+     "source_tag": "category-corrections-v6: \"noise generator\" on https://www.plum-audio.com/product-page/noise; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "ritual-electronics-krach",
+   "brand": "Ritual Electronics",
+   "name": "Krach",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "RE1U005 Noise generator Krach | Ritual Electronics Skip to Content All products 1U",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "NOISE",
+     "evidence_url": "https://www.ritualelectronics.com/shop/re1u005-krach-15",
+     "source_tag": "category-corrections-v6: \"noise generator\" on https://www.ritualelectronics.com/shop/re1u005-krach-15; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Ritual Electronics",
+   "name": "Krach",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "NOISE",
+     "evidence_url": "https://www.ritualelectronics.com/shop/re1u005-krach-15",
+     "source_tag": "category-corrections-v6: \"noise generator\" on https://www.ritualelectronics.com/shop/re1u005-krach-15; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "setonixsynth-sands-of-time-filtered-noise-source",
+   "brand": "SetonixSynth",
+   "name": "Sands of Time Filtered Noise Source",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "The SetonixSynth Sands of Time is a compact 1U noise source which contains two separate noise circuits: a transistor-ba",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "NOISE",
+     "evidence_url": "https://www.setonixsynth.com/shop/p/sands-of-time-aggbe",
+     "source_tag": "category-corrections-v6: \"noise source\" on https://www.setonixsynth.com/shop/p/sands-of-time-aggbe; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "SetonixSynth",
+   "name": "Sands of Time Filtered Noise Source",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "NOISE",
+     "evidence_url": "https://www.setonixsynth.com/shop/p/sands-of-time-aggbe",
+     "source_tag": "category-corrections-v6: \"noise source\" on https://www.setonixsynth.com/shop/p/sands-of-time-aggbe; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "sovage-engineering-boucan",
+   "brand": "Sovage Engineering",
+   "name": "BOUCAN",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "ODD ANALOG NOISE GENERATOR / WAVESHAPER / EQ / DISTORTION BOUCAN is an odd analog nois",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "NOISE",
+     "evidence_url": "https://www.sovageengineering.com/product-page/boucan",
+     "source_tag": "category-corrections-v6: \"noise generator\" on https://www.sovageengineering.com/product-page/boucan; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Sovage Engineering",
+   "name": "BOUCAN",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "NOISE",
+     "evidence_url": "https://www.sovageengineering.com/product-page/boucan",
+     "source_tag": "category-corrections-v6: \"noise generator\" on https://www.sovageengineering.com/product-page/boucan; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "sovage-engineering-piti-boucan",
+   "brand": "Sovage Engineering",
+   "name": "PITI BOUCAN",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "d-down version of BOUCAN, while keeping the same odd analog noise generator core with its special features, like the ability to behave",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://www.sovageengineering.com/product-page/piti-boucan",
+     "source_tag": "category-corrections-v6: \"noise generator\" on https://www.sovageengineering.com/product-page/piti-boucan; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Sovage Engineering",
+   "name": "PITI BOUCAN",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://www.sovageengineering.com/product-page/piti-boucan",
+     "source_tag": "category-corrections-v6: \"noise generator\" on https://www.sovageengineering.com/product-page/piti-boucan; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "steady-state-fate-quantum-rainbow-2",
+   "brand": "Steady State Fate",
+   "name": "Quantum Rainbow 2",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "he Quantum Rainbow features a smaller 4hp width and two new noise outputs. All the original colors: White, Pink, Red, Blue and Purple",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://steadystatefate.com/products/quantum-rainbow-2",
+     "source_tag": "category-corrections-v6: \"noise outputs\" on https://steadystatefate.com/products/quantum-rainbow-2; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Steady State Fate",
+   "name": "Quantum Rainbow 2",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://steadystatefate.com/products/quantum-rainbow-2",
+     "source_tag": "category-corrections-v6: \"noise outputs\" on https://steadystatefate.com/products/quantum-rainbow-2; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "tokyo-tape-music-center-white-noise-generator-model-160",
+   "brand": "Tokyo Tape Music Center",
+   "name": "White Noise Generator Model 160",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "White Noise Generator Model 160 – Tokyo Tape Music Center Sale! White Noise Gener",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://tokyo-tape-music-center.com/product/white-noise-generator-model-160/",
+     "source_tag": "category-corrections-v6: \"White Noise Generator\" on https://tokyo-tape-music-center.com/product/white-noise-generator-model-160/; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Tokyo Tape Music Center",
+   "name": "White Noise Generator Model 160",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://tokyo-tape-music-center.com/product/white-noise-generator-model-160/",
+     "source_tag": "category-corrections-v6: \"White Noise Generator\" on https://tokyo-tape-music-center.com/product/white-noise-generator-model-160/; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "bastl-instruments-noise-square",
+   "brand": "Bastl Instruments",
+   "name": "Noise Square",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "Noise Square is a versatile generator of noises and square wave signals. Bastl Noise Square – Versatile Gen",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://bastl-instruments.com/eurorack/modules/noise-square",
+     "source_tag": "category-corrections-v6: \"generator of noises\" on https://bastl-instruments.com/eurorack/modules/noise-square; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Bastl Instruments",
+   "name": "Noise Square",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "NOISE",
+     "evidence_url": "https://bastl-instruments.com/eurorack/modules/noise-square",
+     "source_tag": "category-corrections-v6: \"generator of noises\" on https://bastl-instruments.com/eurorack/modules/noise-square; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "doepfer-a-118-1",
+   "brand": "Doepfer",
+   "name": "A-118-1",
+   "fields": [
+    {
+     "field": "category",
+     "maker_quote": "A-118 A-118-1 Noise / Random A-118 online tutorials by Raul Pena: A118 Filtering with A120 VCF Low Pass Filter",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "NOISE",
+     "evidence_url": "https://doepfer.de/a118.htm",
+     "source_tag": "category-corrections-v6: \"Noise\" on https://doepfer.de/a118.htm; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Doepfer",
+   "name": "A-118-1",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "NOISE",
+     "evidence_url": "https://doepfer.de/a118.htm",
+     "source_tag": "category-corrections-v6: \"Noise\" on https://doepfer.de/a118.htm; owner decision 16",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}

@@ -911,3 +911,29 @@ def test_a_confirmed_lead_leaves_unknown_and_the_rest_stay_hidden(fresh_populati
     finally:
         engine.dispose()
 
+
+def test_noise_first_rows_become_noise_in_both_tables(fresh_population_url, tmp_path):
+    """Owner decision 16: the patch engine reads module_type, so a noise source has to say so."""
+    missing = tmp_path / "none.json"
+    applied = populate(fresh_population_url, apply=True, verification_path=missing)
+    assert applied["conflicts_total"] == 0
+    engine = create_engine(fresh_population_url)
+    try:
+        with engine.connect() as conn:
+            category, module_type = conn.execute(text(
+                "SELECT c.category, m.module_type FROM module_catalog c JOIN modules m "
+                "ON m.brand = c.brand AND m.name = c.name WHERE c.slug = 'plum-audio-noise'"
+            )).one()
+            assert (category, module_type) == ("NOISE", "NOISE")
+            archived = conn.execute(text(
+                "SELECT old_value FROM catalog_value_archive WHERE batch = 'category-corrections-v6' "
+                "AND row_key = 'plum-audio-noise' AND field = 'category'"
+            )).scalar_one()
+            assert archived == "VCF"
+            # Noise among other functions keeps its category.
+            assert conn.execute(text(
+                "SELECT category FROM module_catalog WHERE slug = 'verbos-electronics-noise-filter'"
+            )).scalar_one() == "VCF"
+    finally:
+        engine.dispose()
+
