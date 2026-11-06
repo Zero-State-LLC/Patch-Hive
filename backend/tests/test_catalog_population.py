@@ -433,8 +433,8 @@ def test_maker_corrections_v3_and_the_legacy_hp_marker(fresh_population_url, tmp
     # 88 after v3; v4 (the T039 remainder) re-sources 26 more and v5 4 more. On a fresh
     # load the A-155 stays marked at v1's 4 (maker-corrections-v5 needs a stored value).
     # Of the 58, the 40 whose HP a retailer page states read retailer_observed (FR-039).
-    # The free reads of 2026-11-05 re-source 9 of the other 18 (8 ADDAC rows, Doepfer A-101-4).
-    assert first["updates"]["hp_source_legacy_marked"] == 9
+    # The free reads of 2026-11-05 re-source 8 of the other 18 (the ADDAC rows).
+    assert first["updates"]["hp_source_legacy_marked"] == 10
     assert first["updates"]["hp_source_retailer_marked"] == 40
     engine = create_engine(fresh_population_url)
     try:
@@ -452,7 +452,7 @@ def test_maker_corrections_v3_and_the_legacy_hp_marker(fresh_population_url, tmp
         # A fresh load takes the maker value from v3; no re-sourced value is marked.
         assert fresh == {"make-noise-dpo": 28, "make-noise-morphagene": 20,
                          "bastl-instruments-knit-rider": 16, "intellijel-mems-mic-1u": 10}
-        assert len(marked) == 9 and marked["make-noise-mysteron"] == 14
+        assert len(marked) == 10 and marked["make-noise-mysteron"] == 14
         # A retailer page that disagrees leaves the v1 value marked (Befaco Mixer: 5, retailer 4).
         assert marked["befaco-mixer"] == 5
         # A citation the page check could not confirm stays marked.
@@ -870,3 +870,44 @@ def test_the_free_reads_reach_both_tables_and_clear_supply_outputs(fresh_populat
             )).scalar_one() == "2000"
     finally:
         engine.dispose()
+
+
+def test_a_confirmed_lead_leaves_unknown_and_the_rest_stay_hidden(fresh_population_url, tmp_path):
+    """Spec 003 FR-034 on Postgres: confirmation is recorded with its URL, and the old basis is archived."""
+    missing = tmp_path / "none.json"
+    applied = populate(fresh_population_url, apply=True, verification_path=missing)
+    assert applied["conflicts_total"] == 0
+    assert applied["lead_promotions"]["promoted"] > 150
+    engine = create_engine(fresh_population_url)
+    try:
+        with engine.connect() as conn:
+            yarns = conn.execute(text(
+                "SELECT access_basis, evidence_status, manufacturer_url, category FROM module_catalog "
+                "WHERE slug = 'mutable-instruments-yarns'"
+            )).one()
+            assert yarns.access_basis == "official_publication"
+            assert yarns.evidence_status == "MANUFACTURER_CONFIRMED"
+            assert yarns.manufacturer_url == "https://pichenettes.github.io/mutable-instruments-documentation/modules/yarns/"
+            assert yarns.category == "MIDI"
+            archived = dict(conn.execute(text(
+                "SELECT field, old_value FROM catalog_value_archive "
+                "WHERE batch = 'lead-promotions-v1' AND row_key = 'mutable-instruments-yarns'"
+            )).all())
+            assert archived == {"access_basis": "unknown", "evidence_status": "CATALOG_OBSERVED"}
+            # A refused site stays refused, so its lead stays hidden.
+            assert conn.execute(text(
+                "SELECT access_basis FROM module_catalog WHERE slug = 'befaco-adsr'"
+            )).scalar_one() == "unknown"
+            still_leads = conn.execute(text(
+                "SELECT COUNT(*) FROM module_catalog WHERE access_basis = 'unknown' AND tombstoned_at IS NULL"
+            )).scalar_one()
+            assert still_leads > 100
+            assert conn.execute(text(
+                "SELECT hp FROM module_catalog WHERE hp > 84 AND tombstoned_at IS NULL"
+            )).all() == []
+        again = populate(fresh_population_url, apply=False, verification_path=missing)
+        assert again["lead_promotions"]["promoted"] == 0
+        assert not again["updates"].get("lead_promoted")
+    finally:
+        engine.dispose()
+

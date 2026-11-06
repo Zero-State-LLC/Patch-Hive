@@ -1,0 +1,1229 @@
+{
+ "batch": "category-corrections-v5",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted. Each row is corrected in module_catalog and in modules, because the patch engine reads modules.module_type.",
+ "decided": "2026-11-04: owner decisions 1, 5, 14 and 17 (docs/evidence/OWNER_DECISIONS_2026-11-04.md). Pages read by plain GET on 2026-11-05.",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "acid-rain-technology-maestro",
+   "brand": "Acid Rain Technology",
+   "name": "Maestro",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "ENV",
+     "value": "LFO",
+     "evidence_url": "https://acidraintechnology.com/products/maestro",
+     "source_tag": "category-corrections-v5: \"modulation\" on https://acidraintechnology.com/products/maestro; ENV came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Acid Rain Technology",
+   "name": "Maestro",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "ENV",
+     "value": "LFO",
+     "evidence_url": "https://acidraintechnology.com/products/maestro",
+     "source_tag": "category-corrections-v5: \"modulation\" on https://acidraintechnology.com/products/maestro; ENV came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "acid-rain-technology-navigator",
+   "brand": "Acid Rain Technology",
+   "name": "Navigator",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "UTIL",
+     "evidence_url": "https://acidraintechnology.com/products/navigator",
+     "source_tag": "category-corrections-v5: \"utility\" on https://acidraintechnology.com/products/navigator; MIX came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Acid Rain Technology",
+   "name": "Navigator",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "UTIL",
+     "evidence_url": "https://acidraintechnology.com/products/navigator",
+     "source_tag": "category-corrections-v5: \"utility\" on https://acidraintechnology.com/products/navigator; MIX came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "acid-rain-technology-trellis",
+   "brand": "Acid Rain Technology",
+   "name": "Trellis",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCA",
+     "value": "MIX",
+     "evidence_url": "https://acidraintechnology.com/products/trellis",
+     "source_tag": "category-corrections-v5: \"matrix mixer\" on https://acidraintechnology.com/products/trellis; VCA came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Acid Rain Technology",
+   "name": "Trellis",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCA",
+     "value": "MIX",
+     "evidence_url": "https://acidraintechnology.com/products/trellis",
+     "source_tag": "category-corrections-v5: \"matrix mixer\" on https://acidraintechnology.com/products/trellis; VCA came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "acid-rain-technology-ziggurat",
+   "brand": "Acid Rain Technology",
+   "name": "Ziggurat",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "UTIL",
+     "evidence_url": "https://acidraintechnology.com/products/ziggurat",
+     "source_tag": "category-corrections-v5: \"quantizer\" on https://acidraintechnology.com/products/ziggurat; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Acid Rain Technology",
+   "name": "Ziggurat",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "UTIL",
+     "evidence_url": "https://acidraintechnology.com/products/ziggurat",
+     "source_tag": "category-corrections-v5: \"quantizer\" on https://acidraintechnology.com/products/ziggurat; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "acl-audio-interface",
+   "brand": "ACL",
+   "name": "AUDIO INTERFACE",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCA",
+     "value": "UTIL",
+     "evidence_url": "https://acl-synth.com/products/audio-interface",
+     "source_tag": "category-corrections-v5: \"Interface\" on https://acl-synth.com/products/audio-interface; VCA came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "ACL",
+   "name": "AUDIO INTERFACE",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCA",
+     "value": "UTIL",
+     "evidence_url": "https://acl-synth.com/products/audio-interface",
+     "source_tag": "category-corrections-v5: \"Interface\" on https://acl-synth.com/products/audio-interface; VCA came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "alright-devices-chronoblob",
+   "brand": "Alright Devices",
+   "name": "Chronoblob",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "FX",
+     "evidence_url": "https://alrightdevices.bigcartel.com/product/chronoblob",
+     "source_tag": "category-corrections-v5: \"delay\" on https://alrightdevices.bigcartel.com/product/chronoblob; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Alright Devices",
+   "name": "Chronoblob",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "FX",
+     "evidence_url": "https://alrightdevices.bigcartel.com/product/chronoblob",
+     "source_tag": "category-corrections-v5: \"delay\" on https://alrightdevices.bigcartel.com/product/chronoblob; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "alright-devices-t-wrex",
+   "brand": "Alright Devices",
+   "name": "T-Wrex",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SAMP",
+     "value": "FX",
+     "evidence_url": "https://alrightdevices.bigcartel.com/product/t-wrex",
+     "source_tag": "category-corrections-v5: \"bitcrusher\" on https://alrightdevices.bigcartel.com/product/t-wrex; SAMP came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Alright Devices",
+   "name": "T-Wrex",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SAMP",
+     "value": "FX",
+     "evidence_url": "https://alrightdevices.bigcartel.com/product/t-wrex",
+     "source_tag": "category-corrections-v5: \"bitcrusher\" on https://alrightdevices.bigcartel.com/product/t-wrex; SAMP came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "alyseum-hold",
+   "brand": "Alyseum",
+   "name": "HOLD",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "UTIL",
+     "evidence_url": "https://www.alyseum.com/hold.html",
+     "source_tag": "category-corrections-v5: \"outputs\" on https://www.alyseum.com/hold.html; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Alyseum",
+   "name": "HOLD",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "UTIL",
+     "evidence_url": "https://www.alyseum.com/hold.html",
+     "source_tag": "category-corrections-v5: \"outputs\" on https://www.alyseum.com/hold.html; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "alyseum-selector",
+   "brand": "Alyseum",
+   "name": "SELECTOR",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIDI",
+     "value": "UTIL",
+     "evidence_url": "https://www.alyseum.com/selector.html",
+     "source_tag": "category-corrections-v5: \"switch\" on https://www.alyseum.com/selector.html; MIDI came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Alyseum",
+   "name": "SELECTOR",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIDI",
+     "value": "UTIL",
+     "evidence_url": "https://www.alyseum.com/selector.html",
+     "source_tag": "category-corrections-v5: \"switch\" on https://www.alyseum.com/selector.html; MIDI came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "animodule-midi-gate",
+   "brand": "AniModule",
+   "name": "MIDI_Gate",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "MIDI",
+     "evidence_url": "https://www.animodule.com/product/midi_gate",
+     "source_tag": "category-corrections-v5: \"MIDI\" on https://www.animodule.com/product/midi_gate; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "AniModule",
+   "name": "MIDI_Gate",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "MIDI",
+     "evidence_url": "https://www.animodule.com/product/midi_gate",
+     "source_tag": "category-corrections-v5: \"MIDI\" on https://www.animodule.com/product/midi_gate; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "animodule-quad-comparator",
+   "brand": "AniModule",
+   "name": "Quad Comparator",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "LFO",
+     "value": "UTIL",
+     "evidence_url": "https://www.animodule.com/product/quad-comparator",
+     "source_tag": "category-corrections-v5: \"comparator\" on https://www.animodule.com/product/quad-comparator; LFO came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "AniModule",
+   "name": "Quad Comparator",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "LFO",
+     "value": "UTIL",
+     "evidence_url": "https://www.animodule.com/product/quad-comparator",
+     "source_tag": "category-corrections-v5: \"comparator\" on https://www.animodule.com/product/quad-comparator; LFO came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "bastl-instruments-ciao",
+   "brand": "Bastl Instruments",
+   "name": "Ciao!",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "UTIL",
+     "evidence_url": "https://bastl-instruments.com/eurorack/modules/ciaoii",
+     "source_tag": "category-corrections-v5: \"outputs\" on https://bastl-instruments.com/eurorack/modules/ciaoii; MIX came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Bastl Instruments",
+   "name": "Ciao!",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "UTIL",
+     "evidence_url": "https://bastl-instruments.com/eurorack/modules/ciaoii",
+     "source_tag": "category-corrections-v5: \"outputs\" on https://bastl-instruments.com/eurorack/modules/ciaoii; MIX came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "bastl-instruments-ikarie",
+   "brand": "Bastl Instruments",
+   "name": "Ikarie",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VCF",
+     "evidence_url": "https://bastl-instruments.com/eurorack/modules/ikarie",
+     "source_tag": "category-corrections-v5: \"filter\" on https://bastl-instruments.com/eurorack/modules/ikarie; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Bastl Instruments",
+   "name": "Ikarie",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VCF",
+     "evidence_url": "https://bastl-instruments.com/eurorack/modules/ikarie",
+     "source_tag": "category-corrections-v5: \"filter\" on https://bastl-instruments.com/eurorack/modules/ikarie; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "bastl-instruments-pizza",
+   "brand": "Bastl Instruments",
+   "name": "Pizza",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VCO",
+     "evidence_url": "https://bastl-instruments.com/eurorack/modules/pizza",
+     "source_tag": "category-corrections-v5: \"oscillator\" on https://bastl-instruments.com/eurorack/modules/pizza; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Bastl Instruments",
+   "name": "Pizza",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VCO",
+     "evidence_url": "https://bastl-instruments.com/eurorack/modules/pizza",
+     "source_tag": "category-corrections-v5: \"oscillator\" on https://bastl-instruments.com/eurorack/modules/pizza; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "bastl-instruments-spaghetti",
+   "brand": "Bastl Instruments",
+   "name": "Spaghetti",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "UTIL",
+     "evidence_url": "https://bastl-instruments.com/eurorack/modules/spaghetti",
+     "source_tag": "category-corrections-v5: \"utility\" on https://bastl-instruments.com/eurorack/modules/spaghetti; MIX came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Bastl Instruments",
+   "name": "Spaghetti",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIX",
+     "value": "UTIL",
+     "evidence_url": "https://bastl-instruments.com/eurorack/modules/spaghetti",
+     "source_tag": "category-corrections-v5: \"utility\" on https://bastl-instruments.com/eurorack/modules/spaghetti; MIX came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "cwejman-bld",
+   "brand": "Cwejman",
+   "name": "BLD",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "ENV",
+     "value": "VCO",
+     "evidence_url": "https://www.cwejmanmusic.com/bld-2",
+     "source_tag": "category-corrections-v5: \"Drum\" on https://www.cwejmanmusic.com/bld-2; ENV came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Cwejman",
+   "name": "BLD",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "ENV",
+     "value": "VCO",
+     "evidence_url": "https://www.cwejmanmusic.com/bld-2",
+     "source_tag": "category-corrections-v5: \"Drum\" on https://www.cwejmanmusic.com/bld-2; ENV came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "doepfer-a-101-2",
+   "brand": "Doepfer",
+   "name": "A-101-2",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "VCA",
+     "evidence_url": "https://doepfer.de/a1012.htm",
+     "source_tag": "category-corrections-v5: \"Low Pass Gate\" on https://doepfer.de/a1012.htm; VCF came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Doepfer",
+   "name": "A-101-2",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "VCA",
+     "evidence_url": "https://doepfer.de/a1012.htm",
+     "source_tag": "category-corrections-v5: \"Low Pass Gate\" on https://doepfer.de/a1012.htm; VCF came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "doepfer-a-106-6",
+   "brand": "Doepfer",
+   "name": "A-106-6",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VCF",
+     "evidence_url": "https://doepfer.de/a1066.htm",
+     "source_tag": "category-corrections-v5: \"Filter\" on https://doepfer.de/a1066.htm; VCO came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Doepfer",
+   "name": "A-106-6",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "VCF",
+     "evidence_url": "https://doepfer.de/a1066.htm",
+     "source_tag": "category-corrections-v5: \"Filter\" on https://doepfer.de/a1066.htm; VCO came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "doepfer-a-112",
+   "brand": "Doepfer",
+   "name": "A-112",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "SAMP",
+     "evidence_url": "https://doepfer.de/a112.htm",
+     "source_tag": "category-corrections-v5: \"Sampler\" on https://doepfer.de/a112.htm; VCO came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Doepfer",
+   "name": "A-112",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "SAMP",
+     "evidence_url": "https://doepfer.de/a112.htm",
+     "source_tag": "category-corrections-v5: \"Sampler\" on https://doepfer.de/a112.htm; VCO came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "doepfer-a-114",
+   "brand": "Doepfer",
+   "name": "A-114",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "FX",
+     "evidence_url": "https://doepfer.de/a114.htm",
+     "source_tag": "category-corrections-v5: \"Ringmodulator\" on https://doepfer.de/a114.htm; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Doepfer",
+   "name": "A-114",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "FX",
+     "evidence_url": "https://doepfer.de/a114.htm",
+     "source_tag": "category-corrections-v5: \"Ringmodulator\" on https://doepfer.de/a114.htm; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "doepfer-a-156",
+   "brand": "Doepfer",
+   "name": "A-156",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "UTIL",
+     "evidence_url": "https://doepfer.de/a156.htm",
+     "source_tag": "category-corrections-v5: \"Quantizer\" on https://doepfer.de/a156.htm; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Doepfer",
+   "name": "A-156",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "UTIL",
+     "evidence_url": "https://doepfer.de/a156.htm",
+     "source_tag": "category-corrections-v5: \"Quantizer\" on https://doepfer.de/a156.htm; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "endorphin-es-blck-noir-black",
+   "brand": "Endorphin.es",
+   "name": "Blck_Noir (black)",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "VCO",
+     "evidence_url": "https://www.endorphin.es/modules/p/blck-noir",
+     "source_tag": "category-corrections-v5: \"drum generator\" on https://www.endorphin.es/modules/p/blck-noir; VCF came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Endorphin.es",
+   "name": "Blck_Noir (black)",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "VCO",
+     "evidence_url": "https://www.endorphin.es/modules/p/blck-noir",
+     "source_tag": "category-corrections-v5: \"drum generator\" on https://www.endorphin.es/modules/p/blck-noir; VCF came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "endorphin-es-milky-way-1u-silver",
+   "brand": "Endorphin.es",
+   "name": "Milky Way 1U (silver)",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "FX",
+     "evidence_url": "https://www.endorphin.es/modules/p/milky-way",
+     "source_tag": "category-corrections-v5: \"FX\" on https://www.endorphin.es/modules/p/milky-way; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Endorphin.es",
+   "name": "Milky Way 1U (silver)",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "FX",
+     "evidence_url": "https://www.endorphin.es/modules/p/milky-way",
+     "source_tag": "category-corrections-v5: \"FX\" on https://www.endorphin.es/modules/p/milky-way; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "endorphin-es-shuttle-control-black",
+   "brand": "Endorphin.es",
+   "name": "Shuttle Control (black)",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "ENV",
+     "value": "MIDI",
+     "evidence_url": "https://www.endorphin.es/modules/p/shuttle-control",
+     "source_tag": "category-corrections-v5: \"MIDI\" on https://www.endorphin.es/modules/p/shuttle-control; ENV came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Endorphin.es",
+   "name": "Shuttle Control (black)",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "ENV",
+     "value": "MIDI",
+     "evidence_url": "https://www.endorphin.es/modules/p/shuttle-control",
+     "source_tag": "category-corrections-v5: \"MIDI\" on https://www.endorphin.es/modules/p/shuttle-control; ENV came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "erica-synths-fusion-ring-modulator",
+   "brand": "Erica Synths",
+   "name": "Fusion Ring modulator",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "FX",
+     "evidence_url": "https://www.ericasynths.lv/fusion-ring-modulator-v2-33/",
+     "source_tag": "category-corrections-v5: \"Ring Modulator\" on https://www.ericasynths.lv/fusion-ring-modulator-v2-33/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Erica Synths",
+   "name": "Fusion Ring modulator",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "FX",
+     "evidence_url": "https://www.ericasynths.lv/fusion-ring-modulator-v2-33/",
+     "source_tag": "category-corrections-v5: \"Ring Modulator\" on https://www.ericasynths.lv/fusion-ring-modulator-v2-33/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "erica-synths-graphic-vco",
+   "brand": "Erica Synths",
+   "name": "Graphic VCO",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VCO",
+     "evidence_url": "https://www.ericasynths.lv/graphic-vco-2/",
+     "source_tag": "category-corrections-v5: \"VCO\" on https://www.ericasynths.lv/graphic-vco-2/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Erica Synths",
+   "name": "Graphic VCO",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VCO",
+     "evidence_url": "https://www.ericasynths.lv/graphic-vco-2/",
+     "source_tag": "category-corrections-v5: \"VCO\" on https://www.ericasynths.lv/graphic-vco-2/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "erica-synths-midi-to-clock-v2",
+   "brand": "Erica Synths",
+   "name": "Midi to Clock V2",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "MIDI",
+     "evidence_url": "https://www.ericasynths.lv/midi-to-clock-v2-76/",
+     "source_tag": "category-corrections-v5: \"MIDI\" on https://www.ericasynths.lv/midi-to-clock-v2-76/; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Erica Synths",
+   "name": "Midi to Clock V2",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "MIDI",
+     "evidence_url": "https://www.ericasynths.lv/midi-to-clock-v2-76/",
+     "source_tag": "category-corrections-v5: \"MIDI\" on https://www.ericasynths.lv/midi-to-clock-v2-76/; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "erica-synths-modulator",
+   "brand": "Erica Synths",
+   "name": "Modulator",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "LFO",
+     "evidence_url": "https://www.ericasynths.lv/shop/eurorack-modules/modulator/",
+     "source_tag": "category-corrections-v5: \"modulation\" on https://www.ericasynths.lv/shop/eurorack-modules/modulator/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Erica Synths",
+   "name": "Modulator",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "LFO",
+     "evidence_url": "https://www.ericasynths.lv/shop/eurorack-modules/modulator/",
+     "source_tag": "category-corrections-v5: \"modulation\" on https://www.ericasynths.lv/shop/eurorack-modules/modulator/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "erica-synths-pico-drums",
+   "brand": "Erica Synths",
+   "name": "Pico DRUMS",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VCO",
+     "evidence_url": "https://www.ericasynths.lv/shop/eurorack-modules/pico-drums/",
+     "source_tag": "category-corrections-v5: \"Drums\" on https://www.ericasynths.lv/shop/eurorack-modules/pico-drums/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Erica Synths",
+   "name": "Pico DRUMS",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VCO",
+     "evidence_url": "https://www.ericasynths.lv/shop/eurorack-modules/pico-drums/",
+     "source_tag": "category-corrections-v5: \"Drums\" on https://www.ericasynths.lv/shop/eurorack-modules/pico-drums/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "erica-synths-pico-dsp",
+   "brand": "Erica Synths",
+   "name": "Pico DSP",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "FX",
+     "evidence_url": "https://www.ericasynths.lv/pico-dsp-21/",
+     "source_tag": "category-corrections-v5: \"DSP\" on https://www.ericasynths.lv/pico-dsp-21/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Erica Synths",
+   "name": "Pico DSP",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "FX",
+     "evidence_url": "https://www.ericasynths.lv/pico-dsp-21/",
+     "source_tag": "category-corrections-v5: \"DSP\" on https://www.ericasynths.lv/pico-dsp-21/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "erica-synths-sample-drum",
+   "brand": "Erica Synths",
+   "name": "Sample Drum",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "SAMP",
+     "evidence_url": "https://www.ericasynths.lv/sample-drum-427/",
+     "source_tag": "category-corrections-v5: \"Sample\" on https://www.ericasynths.lv/sample-drum-427/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Erica Synths",
+   "name": "Sample Drum",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "SAMP",
+     "evidence_url": "https://www.ericasynths.lv/sample-drum-427/",
+     "source_tag": "category-corrections-v5: \"Sample\" on https://www.ericasynths.lv/sample-drum-427/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "expert-sleepers-es-8",
+   "brand": "Expert Sleepers",
+   "name": "ES-8",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIDI",
+     "value": "UTIL",
+     "evidence_url": "https://www.expert-sleepers.co.uk/es8.html",
+     "source_tag": "category-corrections-v5: \"Interface\" on https://www.expert-sleepers.co.uk/es8.html; MIDI came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Expert Sleepers",
+   "name": "ES-8",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIDI",
+     "value": "UTIL",
+     "evidence_url": "https://www.expert-sleepers.co.uk/es8.html",
+     "source_tag": "category-corrections-v5: \"Interface\" on https://www.expert-sleepers.co.uk/es8.html; MIDI came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "expert-sleepers-esx-4cv",
+   "brand": "Expert Sleepers",
+   "name": "ESX-4CV",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIDI",
+     "value": "UTIL",
+     "evidence_url": "https://www.expert-sleepers.co.uk/esx4cv.html",
+     "source_tag": "category-corrections-v5: \"Expander\" on https://www.expert-sleepers.co.uk/esx4cv.html; MIDI came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Expert Sleepers",
+   "name": "ESX-4CV",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIDI",
+     "value": "UTIL",
+     "evidence_url": "https://www.expert-sleepers.co.uk/esx4cv.html",
+     "source_tag": "category-corrections-v5: \"Expander\" on https://www.expert-sleepers.co.uk/esx4cv.html; MIDI came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "make-noise-erbe-verb",
+   "brand": "Make Noise",
+   "name": "Erbe-Verb",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "FX",
+     "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/erbe-verb/",
+     "source_tag": "category-corrections-v5: \"reverb\" on https://www.makenoisemusic.com/retired/retired-modules/erbe-verb/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Make Noise",
+   "name": "Erbe-Verb",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "FX",
+     "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/erbe-verb/",
+     "source_tag": "category-corrections-v5: \"reverb\" on https://www.makenoisemusic.com/retired/retired-modules/erbe-verb/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "make-noise-fxdf",
+   "brand": "Make Noise",
+   "name": "FXDf",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VCF",
+     "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/fxdf/",
+     "source_tag": "category-corrections-v5: \"Filter\" on https://www.makenoisemusic.com/retired/retired-modules/fxdf/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Make Noise",
+   "name": "FXDf",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VCF",
+     "evidence_url": "https://www.makenoisemusic.com/retired/retired-modules/fxdf/",
+     "source_tag": "category-corrections-v5: \"Filter\" on https://www.makenoisemusic.com/retired/retired-modules/fxdf/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "make-noise-optomix",
+   "brand": "Make Noise",
+   "name": "Optomix",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "VCA",
+     "evidence_url": "https://www.makenoisemusic.com/modules/optomix/",
+     "source_tag": "category-corrections-v5: \"Low Pass Gate\" on https://www.makenoisemusic.com/modules/optomix/; VCF came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Make Noise",
+   "name": "Optomix",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCF",
+     "value": "VCA",
+     "evidence_url": "https://www.makenoisemusic.com/modules/optomix/",
+     "source_tag": "category-corrections-v5: \"Low Pass Gate\" on https://www.makenoisemusic.com/modules/optomix/; VCF came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "make-noise-wogglebug",
+   "brand": "Make Noise",
+   "name": "Wogglebug",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "LFO",
+     "evidence_url": "https://www.makenoisemusic.com/modules/wogglebug/",
+     "source_tag": "category-corrections-v5: \"random\" on https://www.makenoisemusic.com/modules/wogglebug/; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Make Noise",
+   "name": "Wogglebug",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "LFO",
+     "evidence_url": "https://www.makenoisemusic.com/modules/wogglebug/",
+     "source_tag": "category-corrections-v5: \"random\" on https://www.makenoisemusic.com/modules/wogglebug/; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}

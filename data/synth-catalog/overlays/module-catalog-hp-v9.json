@@ -1,0 +1,29 @@
+{
+ "dataset_version": "module-catalog-hp-overlay-v9",
+ "generated_from": "the lead reads of 2026-11-05: leads with no stored width whose maker page states one.",
+ "policy": "fill-null only; maker page values only, each quoted.",
+ "generated_at": "2026-11-05T00:00:00Z",
+ "count": 2,
+ "entries": [
+  {
+   "slug": "expert-sleepers-esx-8cv-cv-expander",
+   "brand": "Expert Sleepers",
+   "name": "ESX-8CV CV Expander",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/esx8cv.html",
+   "verification": "maker-page-checked-2026-11-05: \"are as follows: Panel width: 4HP Module de\""
+  },
+  {
+   "slug": "expert-sleepers-esx-8gt-gate-expander",
+   "brand": "Expert Sleepers",
+   "name": "ESX-8GT Gate Expander",
+   "hp": 4,
+   "provenance": "OBSERVED",
+   "source_class": "maker",
+   "source_url": "https://www.expert-sleepers.co.uk/esx8gt.html",
+   "verification": "maker-page-checked-2026-11-05: \"are as follows: Panel width: 4HP Module de\""
+  }
+ ]
+}
