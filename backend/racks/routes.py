@@ -129,7 +129,7 @@ def list_racks(
         query = query.filter(Rack.user_id == user_id)
 
     total = query.count()
-    racks = query.offset(skip).limit(limit).all()
+    racks = query.order_by(Rack.id).offset(skip).limit(limit).all()
 
     rack_responses = [build_rack_response(db, rack) for rack in racks]
 
