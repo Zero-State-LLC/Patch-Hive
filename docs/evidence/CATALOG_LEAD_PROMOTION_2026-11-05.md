@@ -99,6 +99,29 @@ Rows held after a read include Intellijel's legacy rows, where the page is a lis
 
 ADDAC's site began answering with a holding page during this work. Its 8 promotions rest on full pages read earlier the same day, and the other 19 ADDAC rows wait.
 
+## Staging
+
+Loaded from branch `catalog/lead-promotion`, before merge, on the owner's yes after seeing this list.
+
+| Step | Run | Result |
+|---|---|---|
+| Dry run | [42135080338](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42135080338) | 0 conflicts, no destructive SQL |
+| Apply | [42135961226](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42135961226) | 220 promoted. Leads went from 564 to 344, and the archive from 5,424 to 6,077 rows |
+| Second dry run | [42136505803](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42136505803) | Plans nothing |
+| Smoke | [42136528548](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42136528548) | 10/10 |
+
+Reading staging's public API afterwards: the catalog total went from 3,160 to 3,380, and none of those rows mentions ModularGrid. No row is `unknown`, and none stores a width over 84. A spot check of promoted rows shows the new basis, evidence status, category, width and maker URL. Rows checked as still hidden stay hidden: Befaco ADSR, μAtt and A-101-4.
+
+`/api/modules` reports 3,375 rows, and a read through its pages saw only 3,184 of them, because the list has no fixed order. That is a separate bug, fixed in its own PR.
+
+## Production, not yet loaded
+
+Dry run [42136940478](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42136940478), from the same branch, wrote nothing. Its plan matches staging's.
+
+- `plan_hash`: `319ed5ddbecafcf4ef6ab7654e24f9d14ad3034359218a9d00645e1376c801e2`
+- `inputs_hash`: `0de24a57473e35893acef24d0a5ac00654e16853ec76c5bcea8d26daed5309fa`
+- 0 conflicts, no destructive SQL.
+
 ## Not in this change
 
 - A search for maker pages for the 283 rows with none.

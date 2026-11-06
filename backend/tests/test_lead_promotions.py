@@ -63,7 +63,7 @@ def test_a_stored_maker_url_is_kept() -> None:
     "extra,reason",
     [
         ({"source_url": "http://acme.example/lead"}, "lead_promotion_needs_maker_page"),
-        ({"source_url": "https://www.modulargrid.net/e/acme-lead"}, "lead_promotion_needs_maker_page"),
+        ({"source_url": "https://modulargrid.example/e/lead"}, "lead_promotion_needs_maker_page"),
         ({"source_url": None}, "lead_promotion_needs_maker_page"),
         ({"name": "Other"}, "lead_promotion_identity_mismatch"),
     ],
