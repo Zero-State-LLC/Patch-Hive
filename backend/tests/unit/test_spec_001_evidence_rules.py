@@ -2,8 +2,7 @@
 
 No code has the spec's five named states (T001 record, D7). The rules run through the spec 005
 resolution machine and the confirm decisions, and existing tests hold most of them. This file
-names the test that holds each spec row, and fails if a row or its test goes missing. Rejects
-aren't recorded yet (D8), so the rejected row only covers what a reject does to canon today.
+names the test that holds each spec row, and fails if a row or its test goes missing.
 """
 
 from __future__ import annotations
@@ -18,6 +17,7 @@ MACHINE = "unit/test_resolution_machine.py"
 VISUAL = "unit/test_visual_system_intelligence.py"
 DECISION = "unit/test_decision_intelligence.py"
 CONFIRM = "api/test_evidence_confirmations.py"
+RECORDS = "api/test_spec_001_run_records.py"
 
 HELD_BY = {
     ("EVIDENCE_RECEIVED", "candidate_ranked", "PROPOSED"): (CONFIRM, "test_list_and_confirm_candidates"),
@@ -31,7 +31,7 @@ HELD_BY = {
         CONFIRM, "test_new_evidence_is_appended_and_leaves_earlier_evidence_unchanged",
     ),
     ("PROPOSED", "confirmed", "CONFIRMED"): (CONFIRM, "test_list_and_confirm_candidates"),
-    ("PROPOSED", "rejected", "REJECTED"): (VISUAL, "test_unconfirmed_candidates_do_not_enter_inventory"),
+    ("PROPOSED", "rejected", "REJECTED"): (RECORDS, "test_a_reject_is_recorded_and_leaves_canon_unchanged"),
 }
 ILLEGAL_HELD_BY = [
     (VISUAL, "test_classification_candidate_cannot_self_confirm"),

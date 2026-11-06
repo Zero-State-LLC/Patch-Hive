@@ -155,7 +155,8 @@ def test_a_run_status_has_one_writer_and_only_these_moves() -> None:
 
 
 def test_a_succeeded_run_keeps_its_stage_receipts(db_session: Session, sample_rack_basic: Rack) -> None:
-    """Three receipts per patch on the success path, as built. Failed runs have none yet (D5, T090)."""
+    """Three receipts per patch on the success path. A run that seals no patch keeps one outcome
+    receipt instead: see ``tests/api/test_spec_001_run_records.py``."""
     result = _generate(db_session, sample_rack_basic)
     assert result.generated_count >= 1
     receipts = db_session.query(StageReceiptRecord).filter(StageReceiptRecord.run_id == result.source_run_id)

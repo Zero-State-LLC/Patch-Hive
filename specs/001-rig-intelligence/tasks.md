@@ -8,7 +8,7 @@
 
 ## Foundational
 
-- [x] T010 Encode the transitions table as tests (workflows: anti-slop-code, production-systems). Done 2026-11-06, through the mapping in [plan.md](plan.md). `backend/tests/unit/test_spec_001_transitions.py` holds the run lifecycle: every spec row is encoded or says why it isn't (`rig_selected` and `retry` have no handler, D1; `worker_started` moves the status but has no worker or start receipt, D4), the illegal moves are pinned by checking that `run_generation` is the only writer of a run's status, and stage receipts are asserted on the success path. `backend/tests/unit/test_spec_001_evidence_rules.py` names the test that holds each evidence row. Rejects aren't recorded yet (D8), and failed runs have no receipts yet (D5): T090 covers both.
+- [x] T010 Encode the transitions table as tests (workflows: anti-slop-code, production-systems). Done 2026-11-06, through the mapping in [plan.md](plan.md). `backend/tests/unit/test_spec_001_transitions.py` holds the run lifecycle: every spec row is encoded or says why it isn't (`rig_selected` and `retry` have no handler, D1; `worker_started` moves the status but has no worker or start receipt, D4), the illegal moves are pinned by checking that `run_generation` is the only writer of a run's status, and stage receipts are asserted on the success path. `backend/tests/unit/test_spec_001_evidence_rules.py` names the test that holds each evidence row. T090 then added what these tests couldn't yet assert: recorded rejects (D8) and failed-run receipts (D5).
   - depends_on: [T002]
 
 ## Implemented (reconciled 2026-10-29)
@@ -49,5 +49,5 @@
 
 ## Polish
 
-- [ ] T090 Converge the code against the spec
+- [x] T090 Converge the code against the spec. Done 2026-11-06: D2, D5, D6 and D8 (#321), D3 (#289, owner decision 35), D9 and one role per module (#322, owner decision 36), and the spec edits for D1, D4, D7, D10 and D11 (#322). The code is on `main` and not deployed: #321's migration has to run first.
   - depends_on: [T010, T030, T031, T032, T033, T034]
