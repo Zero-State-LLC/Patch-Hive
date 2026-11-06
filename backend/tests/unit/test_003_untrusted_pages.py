@@ -121,7 +121,7 @@ def test_a_page_found_after_a_refused_one_is_still_found(monkeypatch):
 
     monkeypatch.setattr(hermes, "scrape_markdown", fetch)
     # Two candidate pages for this brand: the first is refused and the second answers.
-    row = hermes.process_one({"brand": "Mutable Instruments", "name": "Frames", "slug": "frames"}, 0)
+    row = hermes.process_one({"brand": "Intellijel", "name": "Quadrax", "slug": "quadrax"}, 0)
     assert row["status"] == "found"
 
 
