@@ -18,7 +18,7 @@ from types import SimpleNamespace
 import pytest
 from sqlalchemy.orm import Session
 
-from canon.compiler import compile_patch
+from canon.compiler import compile_patch, standard_plan_steps
 from canon.contracts import ExportRequest, PatchEdge, PatchNode, PatchPort
 from canon.exports import credit_balance, request_export
 from canon.fulfillment import fulfill_export
@@ -39,6 +39,7 @@ from export.patchbook.design.engine import (
     cable_lines,
     check_semantics,
     compose_design_export_pack,
+    operation_lines,
     page_notes,
 )
 from export.patchbook.design.recipe import (
@@ -417,6 +418,100 @@ def test_the_pdf_page_draws_the_diagram_names_and_warnings(monkeypatch, tmp_path
     ):
         assert required in text
     assert "1:Audio Out" not in text
+    library = _library()
+    for step in operation_lines(library.items[0].compilation, library):
+        assert step in text
+    assert "[prep]" not in text
+
+
+def _operation(connections, *, sealed: bool = True) -> list[str]:
+    library = _library(_patch(connections), sealed=sealed)
+    return operation_lines(library.items[0].compilation, library)
+
+
+def _cable(source: int, target: int, kind: str, jack: str = "") -> dict:
+    return {
+        "from_module_id": source, "from_port": f"{kind} Out{jack}",
+        "to_module_id": target, "to_port": f"{kind} In{jack}", "cable_type": kind,
+    }
+
+
+@pytest.mark.parametrize("sealed", [True, False])
+def test_operation_is_worked_out_from_the_patchs_own_cables(sealed):
+    """FR-008, T091. A run with sealed rows and one without print the same steps."""
+    assert _operation(CONNECTIONS, sealed=sealed) == [
+        "Power down, set levels low, and verify every destination range.",
+        "Patch cables 1 to 2 in order, then power up.",
+        "Take your output from Intellijel Polaris, and raise the level slowly.",
+        "Bring in the CV from Make Noise Maths slowly while monitoring the output.",
+        "Reduce the CV, then the output level.",
+        "Return levels low, then power down if rewiring.",
+    ]
+
+
+def test_operation_takes_the_output_from_where_the_audio_ends():
+    chain = _operation([_cable(1, 2, "audio"), _cable(2, 3, "audio")])
+    assert "Take your output from Make Noise Maths, and raise the level slowly." in chain
+    forked = _operation([_cable(1, 2, "audio"), _cable(1, 3, "audio", " 2")])
+    assert (
+        "Take your output from Intellijel Polaris and Make Noise Maths, and raise the level slowly."
+        in forked
+    )
+
+
+def test_operation_names_what_sends_the_timing():
+    one = _operation([_cable(1, 2, "audio"), _cable(3, 1, "gate")])
+    assert "Check that Make Noise Maths is running: it sends this patch's timing." in one
+    two = _operation([_cable(3, 1, "clock"), _cable(2, 1, "trigger", " 2")])
+    assert (
+        "Check that Intellijel Polaris and Make Noise Maths are running: they send this patch's timing."
+        in two
+    )
+    assert not any("timing" in step for step in _operation(CONNECTIONS))
+
+
+def test_operation_without_a_cv_cable_only_mentions_the_level():
+    steps = _operation([_cable(1, 2, "audio")])
+    assert "Patch cable 1, then power up." in steps
+    assert "Reduce the output level." in steps
+    assert not any("CV" in step for step in steps)
+
+
+def test_operation_without_an_audio_cable_names_no_output():
+    steps = _operation([_cable(3, 1, "cv")])
+    assert "Connect the module you want to hear to your output, and raise its level slowly." in steps
+    assert not any("Take your output" in step for step in steps)
+
+
+def test_operation_names_a_loops_cables_and_only_a_loop_gets_that_step():
+    steps = _operation(LOOP)
+    assert steps[-1] == "Return levels low, remove cables 1 and 2, then power down if rewiring."
+    # Every module in a loop passes the audio on, so no module is the end of the path.
+    assert not any("Take your output" in step for step in steps)
+    assert not any("remove" in step for step in _operation(CONNECTIONS))
+
+
+def test_a_run_with_no_sealed_rows_has_no_padding_and_no_module_ids():
+    """T091. This plan used to repeat the cables, pad to five steps with "verify prior
+    connection", and print a module id from the sixth cable on."""
+    six = [_cable(1, 2, "audio", f" {n}") for n in range(1, 7)]
+    library = _library(_patch(six), sealed=False)
+    compilation = library.items[0].compilation
+    assert compilation.patch_plan.steps == standard_plan_steps()
+    steps = operation_lines(compilation, library)
+    assert "Patch cables 1 to 6 in order, then power up." in steps
+    assert not any(re.search(r"\b\d+ (audio|Out)", step) for step in steps)
+    assert not any("verify prior connection" in step for step in steps)
+
+
+def test_the_companion_prints_the_same_steps_in_page_order(tmp_path):
+    library = _library()
+    compose_design_export_pack(library, _recipe(), out_dir=tmp_path, export_id="e")
+    companion = (tmp_path / "technical" / "companion.txt").read_text(encoding="utf-8")
+    for number, step in enumerate(operation_lines(library.items[0].compilation, library), start=1):
+        assert f"  STEP {number}. {step}" in companion
+    assert "[prep]" not in companion
+    assert companion.index("  CABLE ") < companion.index("  STEP ") < companion.index("  NOTE ")
 
 
 def test_the_colophon_notice_is_drawn_at_the_body_floor(monkeypatch, tmp_path):

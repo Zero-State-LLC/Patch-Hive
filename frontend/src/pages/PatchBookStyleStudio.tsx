@@ -110,7 +110,7 @@ export default function PatchBookStyleStudioPage() {
       title: string;
       intent: string;
       edge_count: number;
-      steps: Array<{ phase: string; instruction: string }>;
+      operation: string[];
     }>;
   } | null>(null);
   const [serverLibrary, setServerLibrary] = useState<ServerRecipe[]>([]);
@@ -683,10 +683,8 @@ export default function PatchBookStyleStudioPage() {
                   <p>{page.intent}</p>
                   <p className="muted">{page.edge_count} cables</p>
                   <ol>
-                    {page.steps.map((s, i) => (
-                      <li key={i}>
-                        [{s.phase}] {s.instruction}
-                      </li>
+                    {page.operation.map((step, i) => (
+                      <li key={i}>{step}</li>
                     ))}
                   </ol>
                 </article>

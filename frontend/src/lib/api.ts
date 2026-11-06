@@ -559,7 +559,7 @@ export const canonApi = {
         title: string;
         intent: string;
         edge_count: number;
-        steps: Array<{ phase: string; instruction: string }>;
+        operation: string[];
         warnings?: Array<{ code: string; severity: string; message: string }>;
       }>;
       composition_preview_hash?: string | null;

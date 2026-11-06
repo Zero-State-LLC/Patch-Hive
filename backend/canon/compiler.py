@@ -25,6 +25,7 @@ from canon.contracts import (
 )
 
 GENERATOR_VERSION = "canon-compiler.1.0.0"
+STARTUP_CHECK = "Power down, set levels low, and verify every destination range."
 
 
 def _stable_id(prefix: str, *parts: object) -> str:
@@ -203,6 +204,28 @@ def validate_patch_graph(graph: PatchGraph, plan: PatchPlan) -> ValidationReport
     return ValidationReport(valid=not blocking, issues=ordered, **fields).seal()
 
 
+def standard_plan_steps() -> tuple[PatchStep, ...]:
+    """The plan's five phases, the same for every patch. A book page doesn't print these: it
+    prints steps worked out from the patch's cables (design engine ``operation_lines``)."""
+    phases = ("prep", "threshold", "peak", "release", "seal")
+    instructions = (
+        STARTUP_CHECK,
+        "Establish the primary source-to-destination path.",
+        "Raise modulation gradually while monitoring the output.",
+        "Reduce modulation and output levels in a controlled order.",
+        "Return levels low, remove feedback paths, then power down if rewiring.",
+    )
+    return tuple(
+        PatchStep(
+            position=index,
+            phase=phase,  # type: ignore[arg-type]
+            instruction=instructions[index],
+            warning=instructions[index] if phase == "prep" else None,
+        )
+        for index, phase in enumerate(phases)
+    )
+
+
 def compile_patch(
     *,
     run_id: str,
@@ -243,23 +266,7 @@ def compile_patch(
     )
     graph = PatchGraph(nodes=ordered_nodes, edges=ordered_edges, **common).seal()
     plan_title = title if title is not None else f"Signal Path {input_hash[:8].upper()}"
-    phases = ("prep", "threshold", "peak", "release", "seal")
-    instructions = (
-        "Power down, set levels low, and verify every destination range.",
-        "Establish the primary source-to-destination path.",
-        "Raise modulation gradually while monitoring the output.",
-        "Reduce modulation and output levels in a controlled order.",
-        "Return levels low, remove feedback paths, then power down if rewiring.",
-    )
-    steps = tuple(
-        PatchStep(
-            position=index,
-            phase=phase,  # type: ignore[arg-type]
-            instruction=instructions[index],
-            warning=instructions[index] if phase == "prep" else None,
-        )
-        for index, phase in enumerate(phases)
-    )
+    steps = standard_plan_steps()
     variation = PatchVariation(
         variation_id=_stable_id("variation", patch_id, 0),
         label="Primary deterministic variation",
