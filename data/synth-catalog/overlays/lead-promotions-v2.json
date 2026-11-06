@@ -1,0 +1,378 @@
+{
+ "dataset_version": "lead-promotions-v2",
+ "decided": "2026-11-04: owner decisions 1 and 53 (docs/evidence/OWNER_DECISIONS_2026-11-04.md), under spec 003 FR-034",
+ "reviewed_by": "Claude, for the owner",
+ "reviewed_at": "2026-11-05",
+ "policy": "A ModularGrid-derived lead becomes canonical only through manufacturer confirmation recorded with its source URL (FR-034). Each row's page was found on the maker's own site, read by plain GET with robots.txt honoured and nothing paid, and names the module. A lead that is a second name for a public row is held. Facts only. The old basis is archived first.",
+ "count": 46,
+ "rows": [
+  {
+   "slug": "1010-music-fxbox",
+   "brand": "1010 Music",
+   "name": "Fxbox",
+   "source_url": "https://1010music.com/product/fxbox-performance-effects-module",
+   "content_sha256": "b993370db3c9db69c4753d112c7887b80ad52d2b2a9ebe30b3593758ac079267",
+   "maker_quote": "Fxbox is a 26HP eurorack module that delivers performance effects. Fxbox combines 16 realtime effects"
+  },
+  {
+   "slug": "1010-music-laserbox",
+   "brand": "1010 Music",
+   "name": "Laserbox",
+   "source_url": "https://1010music.com/product/laserbox-pattern-generator-for-lasers",
+   "content_sha256": "576815e2315cdf58c730d5ce8546489caac580708bea68a68961141aa1e16f55",
+   "maker_quote": "Laserbox generates visual effects that are synchronized with your synthesizer performance. Out of stock"
+  },
+  {
+   "slug": "1010-music-toolbox",
+   "brand": "1010 Music",
+   "name": "Toolbox",
+   "source_url": "https://1010music.com/product/toolbox-sequencer-function-generator-eurorack-module",
+   "content_sha256": "9ac8bc03844c358a0c39f1835361208797dc0a7e0c183706defa43b4ce7aed65",
+   "maker_quote": "Toolbox is a touchscreen based sequencer and function generator for eurorack. It is designed to drive signal p"
+  },
+  {
+   "slug": "1v-oct-taipo",
+   "brand": "1V/Oct",
+   "name": "Taipo",
+   "source_url": "https://1voct.com/product/taipo/",
+   "content_sha256": "b5ea0b061341a63378f3153db997275f7647b93a7e2a3dd2f410aef3f7157719",
+   "maker_quote": "MIDI Extender for The Centre and Twins | 1V-OCT Eurorack Modular Synthesizer Taipo MIDI Extender for The Cen"
+  },
+  {
+   "slug": "4ms-company-qcd-quad-clock-distributor",
+   "brand": "4ms Company",
+   "name": "QCD: Quad Clock Distributor",
+   "source_url": "https://4mscompany.com/p.php?p=620&c=5",
+   "content_sha256": "a8f17b90914c159c1ef2c9ae18d1ff342b9125bc11ef3f78673911538a0ba6d4",
+   "maker_quote": "Quad Clock Distributor [QCD] tag / --> Quad Clock Distributor < Modules < Eurorack Four channel vo"
+  },
+  {
+   "slug": "afterlife-laboratories-video-motion",
+   "brand": "Afterlife Laboratories",
+   "name": "Video Motion",
+   "source_url": "https://www.afterlifelaboratories.com/shop/p/w7xa5n1lhsas6qx2eiysnv97ucj3eg",
+   "content_sha256": "f6e5ad24822a1fa18bb0b5897b7632699ea88671d1c50fe124a186ed7c63ef6f",
+   "maker_quote": "Video Motion is DC voltage generator designed to create degrees of randomization that are customizable and"
+  },
+  {
+   "slug": "afterlife-laboratories-video-multiplier",
+   "brand": "Afterlife Laboratories",
+   "name": "Video Multiplier",
+   "source_url": "https://www.afterlifelaboratories.com/shop/p/video-multiplier",
+   "content_sha256": "fc8b04d9d2be1c15b923f72a98f6a5a2f6a93737e0533174ba9f8f9b3aa65c5e",
+   "maker_quote": "rated at full video bandwidth. Sold Out Added! Two 4-quadrant multipliers rated at full video bandw"
+  },
+  {
+   "slug": "allen-synthesis-kompari",
+   "brand": "Allen Synthesis",
+   "name": "Kompari",
+   "source_url": "https://allensynthesis.co.uk/kompari",
+   "content_sha256": "cb9039992b37bf01ad65f0de462c38403f0b631fa9370dc23709a281b713af62",
+   "maker_quote": "The Kompari is a simple yet versatile comparator. The two inputs go through attenuverters, and are then compared to ea"
+  },
+  {
+   "slug": "altered-state-machines-aristotle",
+   "brand": "Altered State Machines",
+   "name": "Aristotle",
+   "source_url": "https://alteredstatemachines.com/aristotle",
+   "content_sha256": "5ea7d4e29a8bee012d0353928f2130a9d285f5da5746668523cc5ece7e66120f",
+   "maker_quote": "Nonlinear 2 Channel Counterpoint Voltage Sequencer Patterns Aristotle is an additive two channel control voltage sequenc"
+  },
+  {
+   "slug": "altered-state-machines-bubo",
+   "brand": "Altered State Machines",
+   "name": "Bubo",
+   "source_url": "https://alteredstatemachines.com/bubo",
+   "content_sha256": "130682844725b87c2115286895c77341716bf0aa4ecafe060916feb81ff37c85",
+   "maker_quote": "Dual Channel Octave Switcher Altered State Machines Bubo is a dual channel octave switcher for the"
+  },
+  {
+   "slug": "altered-state-machines-eris",
+   "brand": "Altered State Machines",
+   "name": "Eris",
+   "source_url": "https://alteredstatemachines.com/eris",
+   "content_sha256": "8df7ff375550fae2303f26c35aa577eda7a9d09ad4bdfe81fe657d92374074a8",
+   "maker_quote": "4 x 4 Matrix Mixer Eris is a four input, four output matrix mixer in 12hp. Each of the f"
+  },
+  {
+   "slug": "animal-factory-amplification-orobas",
+   "brand": "Animal Factory Amplification",
+   "name": "Orobas",
+   "source_url": "https://animalfactoryamps.com/products/eurorack-orobas-ii-vacuum-tube-vca-saturator-distortion-ef86-edition",
+   "content_sha256": "3929c019546adbafb585f8f986f3fa814134a363d687819a3fac7213cecf4f3f",
+   "maker_quote": "the Orobas tube VCA took Animal Factory back to its tube-amp-building origins. This versi"
+  },
+  {
+   "slug": "cwejman-ctg-vc",
+   "brand": "Cwejman",
+   "name": "CTG-VC",
+   "source_url": "https://www.cwejmanmusic.com/ctg-vc",
+   "content_sha256": "9ccc3dc1d55eceefedc768f3fe5581611582f55967075874db4c79f819335800",
+   "maker_quote": "COMPLEX TRANSIENT GENERATOR The CTG-VC provide control voltages that can be used for dynamic chan"
+  },
+  {
+   "slug": "cwejman-d-lfo",
+   "brand": "Cwejman",
+   "name": "D-LFO",
+   "source_url": "https://www.cwejmanmusic.com/d-lfo",
+   "content_sha256": "4c40b75ef6bdb28eea9f870710092eaad318c56e1bcee5993cc7e667edb0acb6",
+   "maker_quote": "MULTI FUNCTION DUAL LFO The D-LFO consists of two identical low frequency oscillators. The LF"
+  },
+  {
+   "slug": "cwejman-dmf-2",
+   "brand": "Cwejman",
+   "name": "DMF-2",
+   "source_url": "https://www.cwejmanmusic.com/dmf-2",
+   "content_sha256": "dfc32edee238f28e149c4250f5b5cf616ade65f4f377b3a4875f4cb3b7ea8223",
+   "maker_quote": "TWO MODES DUAL FILTER The DMF-2 is a dual mode and dual slope filter and emulates the famil"
+  },
+  {
+   "slug": "cwejman-fsh-1",
+   "brand": "Cwejman",
+   "name": "FSH-1",
+   "source_url": "https://www.cwejmanmusic.com/fsh-1",
+   "content_sha256": "02668c33d1cc6412d600415b2e54b1e34b624c35d2e9e817a16b23d6ff9265f7",
+   "maker_quote": "FREQUENCY SHIFTER The main purpose with the frequency shifter is to make frequency shif"
+  },
+  {
+   "slug": "doepfer-a-155",
+   "brand": "Doepfer",
+   "name": "A-155",
+   "source_url": "https://doepfer.de/a155.htm",
+   "content_sha256": "4d7d131cf22c757024def7b6d08c724e9aac7bc5ed5ffb87a49bf1d513080e26",
+   "maker_quote": "A-155 Analog/Trigger Sequencer Beispiele fr den Einsatz des A-155 als Graphik-VCO / Examples of A-15"
+  },
+  {
+   "slug": "doepfer-a-180-1",
+   "brand": "Doepfer",
+   "name": "A-180-1",
+   "source_url": "https://doepfer.de/a180.htm",
+   "content_sha256": "f453dd77a835c56c5326f721fa6e9e9ab4891d626bd5c186f8e9d15f95f7502f",
+   "maker_quote": "A-180-1 / A-180-2 Multiples click to enlarge (A-180-1) click to enlarge (A-180-2) A-180-1 Produkt"
+  },
+  {
+   "slug": "doepfer-a-185-1",
+   "brand": "Doepfer",
+   "name": "A-185-1",
+   "source_url": "https://doepfer.de/a185.htm",
+   "content_sha256": "e8b458a6dea897f76199c8f9cd612bec9ed0bde44a5c02ecf999169496888dce",
+   "maker_quote": "A-185-1 Bus Access nicht mehr lieferbar / no longer available Ersatz-Typ / Replacement :"
+  },
+  {
+   "slug": "endorphin-es-shuttle-system-black",
+   "brand": "Endorphin.es",
+   "name": "Shuttle System (black)",
+   "source_url": "https://www.endorphin.es/modules/p/shuttle-system",
+   "content_sha256": "8b3f63336b4707fffb5958a9468ac03ae28cb5294b29099ddce65c7a8e2a2bc2",
+   "maker_quote": "Color: BLACK GOLDEN Get notified by email when this product is in stock. Sign up to recei"
+  },
+  {
+   "slug": "endorphin-es-shuttle-system-golden",
+   "brand": "Endorphin.es",
+   "name": "Shuttle System (golden)",
+   "source_url": "https://www.endorphin.es/modules/p/shuttle-system",
+   "content_sha256": "8b3f63336b4707fffb5958a9468ac03ae28cb5294b29099ddce65c7a8e2a2bc2",
+   "maker_quote": "Color: BLACK GOLDEN Get notified by email when this product is in stock. Sign up to recei"
+  },
+  {
+   "slug": "erica-synths-dtech-vcf",
+   "brand": "Erica Synths",
+   "name": "Dtech VCF",
+   "source_url": "https://www.ericasynths.lv/diy-dtech-vcf-assembled-305/",
+   "content_sha256": "ff55da5b082ea5d92fed2732d60d07f368b42ae4bafb1c17eae871154035e0e8",
+   "maker_quote": "Dtech VCF has all buffered inputs with diode protection, diode protection on reversed power supply volt"
+  },
+  {
+   "slug": "erica-synths-erica-fusion-vcf",
+   "brand": "Erica Synths",
+   "name": "Erica Fusion VCF",
+   "source_url": "https://www.ericasynths.lv/fusion-vcf-v2-35/",
+   "content_sha256": "a7080db83d67f7dae869277789620cbf62739bef026f6bec2212318f75bc53d1",
+   "maker_quote": "Fusion VCF V2 - Erica Synths JavaScript seems to be disabled in your browser. For t"
+  },
+  {
+   "slug": "erica-synths-fusion-vca",
+   "brand": "Erica Synths",
+   "name": "Fusion VCA",
+   "source_url": "https://www.ericasynths.lv/fusion-vca-waveshaper-ringmodulator-1030/",
+   "content_sha256": "9a53cb5c78e3dcb0451224761b744b9a0b7f34f98d626bc06d6b7f4d88bf22ab",
+   "maker_quote": "The Fusion VCA/Waveshaper/Ringmodulator is a complex sound processor that combines VCA, waveshaper and ringmo"
+  },
+  {
+   "slug": "erica-synths-mixer-splitter",
+   "brand": "Erica Synths",
+   "name": "Mixer/Splitter",
+   "source_url": "https://www.ericasynths.lv/black-mixer-splitter-v2-57/",
+   "content_sha256": "6f2ff3633f12b349792794ff9fb664841dc9d59041debdb17973f79b4b8e9cb4",
+   "maker_quote": "Black Mixer/Splitter V2 - Erica Synths JavaScript seems to be disabled in your browser. For t"
+  },
+  {
+   "slug": "erica-synths-mutant-brain",
+   "brand": "Erica Synths",
+   "name": "Mutant Brain",
+   "source_url": "https://www.ericasynths.lv/hexinverter-mutant-brain-2515/",
+   "content_sha256": "1e673d40e5c82c8b8135ca206eb938034bfab5f17b0d0e465e5dcd8480736631",
+   "maker_quote": "Mutant Brain - Erica Synths JavaScript seems to be disabled in your browser. For t"
+  },
+  {
+   "slug": "erica-synths-pico-vc-eg",
+   "brand": "Erica Synths",
+   "name": "Pico VC EG",
+   "source_url": "https://www.ericasynths.lv/news/post/pico-vc-eg/",
+   "content_sha256": "ed36789e978e85829063f327c03f07df82f1a8c714a45292f0864499829129c6",
+   "maker_quote": "Pico VC EG is versatile looping AD/ASR envelope generator with voltage control over attack and decay"
+  },
+  {
+   "slug": "erica-synths-polivoks-vca",
+   "brand": "Erica Synths",
+   "name": "Polivoks VCA",
+   "source_url": "https://www.ericasynths.lv/diy-polivoks-vca-ii-full-kit-153/",
+   "content_sha256": "8eb9f028e25b8b61ef2b3890578e6df5b336914bd1574ed8899f3ee66e0e6aac",
+   "maker_quote": "The Polivoks VCA has distinctive architecture – two differential opamp (Russian ICs K118UD1B) based VCAs in series,"
+  },
+  {
+   "slug": "erica-synths-polivoks-vcf",
+   "brand": "Erica Synths",
+   "name": "Polivoks VCF",
+   "source_url": "https://www.ericasynths.lv/black-polivoks-vcf-v1-878/",
+   "content_sha256": "55cfeb0355795fcd1f7bd1d060760fad36730f7bffbf6fcf128b78de2abfe0bc",
+   "maker_quote": "Authentic Polivoks VCF emulation. Read More Shipping & Taxes EU customers: + VAT for customers in the"
+  },
+  {
+   "slug": "erica-synths-synth-voice",
+   "brand": "Erica Synths",
+   "name": "Synth Voice",
+   "source_url": "https://www.ericasynths.lv/diy-synth-voice-full-kit-164/",
+   "content_sha256": "ae6da70a0c27b716f4bd9153e8f097ee0c260e26317b33166d708e2bc5afd5e4",
+   "maker_quote": "DIY Synth Voice consists of all essential blocks for a versatile monosynth and is 100% patchab"
+  },
+  {
+   "slug": "expert-sleepers-disting-mk3",
+   "brand": "Expert Sleepers",
+   "name": "Disting mk3",
+   "source_url": "https://www.expert-sleepers.co.uk/distingmk3.html",
+   "content_sha256": "2d6b2964d342f9551b6c6754bc76d7128ae0588c55c669e5c35691c6e3566d5b",
+   "maker_quote": "many-in-1 multifunction module, offering a variety of CV and audio processes, including a selection"
+  },
+  {
+   "slug": "expert-sleepers-es-3",
+   "brand": "Expert Sleepers",
+   "name": "ES-3",
+   "source_url": "https://www.expert-sleepers.co.uk/es3.html",
+   "content_sha256": "f21ec82517fc8de0009d39cf856a5f47c0b48b1157c60e39426c0f5599ab0bb0",
+   "maker_quote": "The ES-3 is a Eurorack format module which converts eight channels of ADAT Lightpipe input to DC coupled o"
+  },
+  {
+   "slug": "expert-sleepers-es-3-mk2",
+   "brand": "Expert Sleepers",
+   "name": "ES-3 mk2",
+   "source_url": "https://www.expert-sleepers.co.uk/es3.html",
+   "content_sha256": "f21ec82517fc8de0009d39cf856a5f47c0b48b1157c60e39426c0f5599ab0bb0",
+   "maker_quote": "Functionally equivalent to the ES-3 mk2, the mk3 adds these improvements: Higher spec DACs and lower noise ci"
+  },
+  {
+   "slug": "expert-sleepers-es-3-mk3",
+   "brand": "Expert Sleepers",
+   "name": "ES-3 MK3",
+   "source_url": "https://www.expert-sleepers.co.uk/es3.html",
+   "content_sha256": "f21ec82517fc8de0009d39cf856a5f47c0b48b1157c60e39426c0f5599ab0bb0",
+   "maker_quote": "the ES-3 mk2, the mk3 adds these improvements: Higher spec DACs and lower noise circuitry Easier"
+  },
+  {
+   "slug": "expert-sleepers-es-3-mk4",
+   "brand": "Expert Sleepers",
+   "name": "ES-3 mk4",
+   "source_url": "https://www.expert-sleepers.co.uk/es3.html",
+   "content_sha256": "f21ec82517fc8de0009d39cf856a5f47c0b48b1157c60e39426c0f5599ab0bb0",
+   "maker_quote": "the ES-3 mk3, the mk4 adds these improvements: Illuminated jack sockets Less deep ES-3 mk3 Septe"
+  },
+  {
+   "slug": "expert-sleepers-es-4-spdif-cv-interface",
+   "brand": "Expert Sleepers",
+   "name": "ES-4 SPDIF/CV Interface",
+   "source_url": "https://www.expert-sleepers.co.uk/es4.html",
+   "content_sha256": "1638ba0a6ddf4759393c01f3e3c7ae06ad0331d454adf55445b6b701a012b078",
+   "maker_quote": "The ES-4 is a Eurorack format module which converts a standard S/PDIF input to five channels of control vo"
+  },
+  {
+   "slug": "expert-sleepers-es-40-spdif-interface",
+   "brand": "Expert Sleepers",
+   "name": "ES-40 SPDIF Interface",
+   "source_url": "https://www.expert-sleepers.co.uk/es40.html",
+   "content_sha256": "60890742351448a06f5a50f1f3e507458660902dc75beb4c2ae2ff03bc95cabf",
+   "maker_quote": "The ES-40 is a Eurorack format module which converts a standard S/PDIF input to five channels of expansion"
+  },
+  {
+   "slug": "expert-sleepers-es-5-mk2",
+   "brand": "Expert Sleepers",
+   "name": "ES-5 mk2",
+   "source_url": "https://www.expert-sleepers.co.uk/es5.html",
+   "content_sha256": "bf081364dcd22d9c5662064e359de89ec7da1971303764dfad71048e035f471d",
+   "maker_quote": "shipping in a revised \"mk2\" form, matching the look of the ESX-8GT mk2. There are no functional differ"
+  },
+  {
+   "slug": "expert-sleepers-es-6",
+   "brand": "Expert Sleepers",
+   "name": "ES-6",
+   "source_url": "https://www.expert-sleepers.co.uk/es6.html",
+   "content_sha256": "2d1139fd18642bea075328e7756561dbafd5e671f6d5c04d576c667dc0fe5a19",
+   "maker_quote": "The ES-6 is the counterpart to the ES-3 Lightpipe/CV Interface, offering up to 8 channels of CV i"
+  },
+  {
+   "slug": "expert-sleepers-es-6-mk2",
+   "brand": "Expert Sleepers",
+   "name": "ES-6 mk2",
+   "source_url": "https://www.expert-sleepers.co.uk/es6.html",
+   "content_sha256": "2d1139fd18642bea075328e7756561dbafd5e671f6d5c04d576c667dc0fe5a19",
+   "maker_quote": "ES-6 mk2 February 2017 sees the launch of the \"ES-6 mk2\". Functionally equivalent to the ori"
+  },
+  {
+   "slug": "expert-sleepers-es-7-cv-input-expander",
+   "brand": "Expert Sleepers",
+   "name": "ES-7 CV Input Expander",
+   "source_url": "https://www.expert-sleepers.co.uk/es7.html",
+   "content_sha256": "095fdafd102c5e39a5e3f4cc551c40e942bef3d925a70aa0da47bca5f2d84b3b",
+   "maker_quote": "The ES-7 provides two channels of DC-coupled CV input to a connected ES-4 , ES-40 or ES-6 module. Wh"
+  },
+  {
+   "slug": "expert-sleepers-esx-8gt-mk2-gate-expander",
+   "brand": "Expert Sleepers",
+   "name": "ESX-8GT mk2 Gate Expander",
+   "source_url": "https://www.expert-sleepers.co.uk/esx8gt.html",
+   "content_sha256": "c96173bca3ed959bf8aaf831452266864ce32fa7b757cdd622037faab6dbca23",
+   "maker_quote": "This page describes the ESX-8GT mk2 & mk3. For the original ESX-8GT aka the ES-4 Gate Expander please see"
+  },
+  {
+   "slug": "expert-sleepers-esx-8md-mk2",
+   "brand": "Expert Sleepers",
+   "name": "ESX-8MD mk2",
+   "source_url": "https://www.expert-sleepers.co.uk/esx8md.html",
+   "content_sha256": "14bbd73282e411b25f73b4e37e513f780d04e82e2dd1113d297ab5ccdf87e959",
+   "maker_quote": "shipping in a revised \"mk2\" form. Functionally the mk2 is equivalent to the mk1. However, MIDI output"
+  },
+  {
+   "slug": "expert-sleepers-fh-1-faderhost",
+   "brand": "Expert Sleepers",
+   "name": "FH-1 'faderHost'",
+   "source_url": "https://www.expert-sleepers.co.uk/fh1.html",
+   "content_sha256": "62606f6df20f2bc9cdc9ca3488b4bedf7051e5c15f9724581aea7dc65a3dc975",
+   "maker_quote": "is a USB MIDI Host in an 8HP Eurorack module, allowing you to directly connect a USB MIDI controll"
+  },
+  {
+   "slug": "expert-sleepers-fh-2-factotum",
+   "brand": "Expert Sleepers",
+   "name": "FH-2 'factotum'",
+   "source_url": "https://www.expert-sleepers.co.uk/fh2.html",
+   "content_sha256": "74f90914dfa0bbcdbf1831c1aee55ae33e5a5bf1a7ef7a2c8b467580994c2fb2",
+   "maker_quote": "MIDI to CV conversion including polyphonic and MPE operation. The FH-2 is simultaneously a"
+  },
+  {
+   "slug": "expert-sleepers-fhx-1-output-expander-for-fh-1",
+   "brand": "Expert Sleepers",
+   "name": "FHX-1 Output Expander for FH-1",
+   "source_url": "https://www.expert-sleepers.co.uk/fhx1.html",
+   "content_sha256": "486d314a541dad3a19098f9ecbe39d947d3207d27982eab20cdea276e983e1cb",
+   "maker_quote": "The FHX-1 is an expansion module for the FH-1 'faderHost' USB MIDI Host Eurorack module and for the FH-2 'factotum'"
+  }
+ ]
+}

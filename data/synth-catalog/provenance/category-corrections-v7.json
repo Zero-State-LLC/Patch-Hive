@@ -1,0 +1,305 @@
+{
+ "batch": "category-corrections-v7",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted. Each row is corrected in module_catalog and in modules, because the patch engine reads modules.module_type.",
+ "decided": "2026-11-04: owner decisions 1 and 18 (docs/evidence/OWNER_DECISIONS_2026-11-04.md). Pages read by plain GET on 2026-11-05.",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "expert-sleepers-disting-mk3",
+   "brand": "Expert Sleepers",
+   "name": "Disting mk3",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "UTIL",
+     "evidence_url": "https://www.expert-sleepers.co.uk/distingmk3.html",
+     "source_tag": "category-corrections-v7: \"multifunction\" on https://www.expert-sleepers.co.uk/distingmk3.html; VCO came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Expert Sleepers",
+   "name": "Disting mk3",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "UTIL",
+     "evidence_url": "https://www.expert-sleepers.co.uk/distingmk3.html",
+     "source_tag": "category-corrections-v7: \"multifunction\" on https://www.expert-sleepers.co.uk/distingmk3.html; VCO came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "expert-sleepers-es-3-mk3",
+   "brand": "Expert Sleepers",
+   "name": "ES-3 MK3",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIDI",
+     "value": "UTIL",
+     "evidence_url": "https://www.expert-sleepers.co.uk/es3.html",
+     "source_tag": "category-corrections-v7: \"Interface\" on https://www.expert-sleepers.co.uk/es3.html; MIDI came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Expert Sleepers",
+   "name": "ES-3 MK3",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIDI",
+     "value": "UTIL",
+     "evidence_url": "https://www.expert-sleepers.co.uk/es3.html",
+     "source_tag": "category-corrections-v7: \"Interface\" on https://www.expert-sleepers.co.uk/es3.html; MIDI came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "expert-sleepers-es-40-spdif-interface",
+   "brand": "Expert Sleepers",
+   "name": "ES-40 SPDIF Interface",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "UTIL",
+     "evidence_url": "https://www.expert-sleepers.co.uk/es40.html",
+     "source_tag": "category-corrections-v7: \"Interface\" on https://www.expert-sleepers.co.uk/es40.html; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Expert Sleepers",
+   "name": "ES-40 SPDIF Interface",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "UTIL",
+     "evidence_url": "https://www.expert-sleepers.co.uk/es40.html",
+     "source_tag": "category-corrections-v7: \"Interface\" on https://www.expert-sleepers.co.uk/es40.html; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "expert-sleepers-es-5-mk2",
+   "brand": "Expert Sleepers",
+   "name": "ES-5 mk2",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "MIDI",
+     "value": "UTIL",
+     "evidence_url": "https://www.expert-sleepers.co.uk/es5.html",
+     "source_tag": "category-corrections-v7: \"Expander\" on https://www.expert-sleepers.co.uk/es5.html; MIDI came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Expert Sleepers",
+   "name": "ES-5 mk2",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "MIDI",
+     "value": "UTIL",
+     "evidence_url": "https://www.expert-sleepers.co.uk/es5.html",
+     "source_tag": "category-corrections-v7: \"Expander\" on https://www.expert-sleepers.co.uk/es5.html; MIDI came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "expert-sleepers-esx-8md-mk2",
+   "brand": "Expert Sleepers",
+   "name": "ESX-8MD mk2",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "MIDI",
+     "evidence_url": "https://www.expert-sleepers.co.uk/esx8md.html",
+     "source_tag": "category-corrections-v7: \"MIDI\" on https://www.expert-sleepers.co.uk/esx8md.html; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Expert Sleepers",
+   "name": "ESX-8MD mk2",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "MIDI",
+     "evidence_url": "https://www.expert-sleepers.co.uk/esx8md.html",
+     "source_tag": "category-corrections-v7: \"MIDI\" on https://www.expert-sleepers.co.uk/esx8md.html; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "expert-sleepers-fh-1-faderhost",
+   "brand": "Expert Sleepers",
+   "name": "FH-1 'faderHost'",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "MIDI",
+     "evidence_url": "https://www.expert-sleepers.co.uk/fh1.html",
+     "source_tag": "category-corrections-v7: \"MIDI\" on https://www.expert-sleepers.co.uk/fh1.html; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Expert Sleepers",
+   "name": "FH-1 'faderHost'",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SEQ",
+     "value": "MIDI",
+     "evidence_url": "https://www.expert-sleepers.co.uk/fh1.html",
+     "source_tag": "category-corrections-v7: \"MIDI\" on https://www.expert-sleepers.co.uk/fh1.html; SEQ came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "expert-sleepers-fh-2-factotum",
+   "brand": "Expert Sleepers",
+   "name": "FH-2 'factotum'",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "MIDI",
+     "evidence_url": "https://www.expert-sleepers.co.uk/fh2.html",
+     "source_tag": "category-corrections-v7: \"MIDI\" on https://www.expert-sleepers.co.uk/fh2.html; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Expert Sleepers",
+   "name": "FH-2 'factotum'",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "MIDI",
+     "evidence_url": "https://www.expert-sleepers.co.uk/fh2.html",
+     "source_tag": "category-corrections-v7: \"MIDI\" on https://www.expert-sleepers.co.uk/fh2.html; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "erica-synths-mutant-brain",
+   "brand": "Erica Synths",
+   "name": "Mutant Brain",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "MIDI",
+     "evidence_url": "https://www.ericasynths.lv/hexinverter-mutant-brain-2515/",
+     "source_tag": "category-corrections-v7: \"MIDI\" on https://www.ericasynths.lv/hexinverter-mutant-brain-2515/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Erica Synths",
+   "name": "Mutant Brain",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "MIDI",
+     "evidence_url": "https://www.ericasynths.lv/hexinverter-mutant-brain-2515/",
+     "source_tag": "category-corrections-v7: \"MIDI\" on https://www.ericasynths.lv/hexinverter-mutant-brain-2515/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "erica-synths-synth-voice",
+   "brand": "Erica Synths",
+   "name": "Synth Voice",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VCO",
+     "evidence_url": "https://www.ericasynths.lv/diy-synth-voice-full-kit-164/",
+     "source_tag": "category-corrections-v7: \"Voice\" on https://www.ericasynths.lv/diy-synth-voice-full-kit-164/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Erica Synths",
+   "name": "Synth Voice",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "UTIL",
+     "value": "VCO",
+     "evidence_url": "https://www.ericasynths.lv/diy-synth-voice-full-kit-164/",
+     "source_tag": "category-corrections-v7: \"Voice\" on https://www.ericasynths.lv/diy-synth-voice-full-kit-164/; UTIL came from the lead seed",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}

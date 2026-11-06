@@ -912,6 +912,43 @@ def test_a_confirmed_lead_leaves_unknown_and_the_rest_stay_hidden(fresh_populati
         engine.dispose()
 
 
+def test_the_lead_search_confirms_its_rows_and_fixes_what_their_pages_contradict(fresh_population_url, tmp_path):
+    """A second overlay file promotes under its own batch, and second names stay hidden."""
+    missing = tmp_path / "none.json"
+    applied = populate(fresh_population_url, apply=True, verification_path=missing)
+    assert applied["conflicts_total"] == 0
+    engine = create_engine(fresh_population_url)
+    try:
+        with engine.connect() as conn:
+            d_lfo = conn.execute(text(
+                "SELECT access_basis, hp, hp_source, manufacturer_url FROM module_catalog WHERE slug = 'cwejman-d-lfo'"
+            )).one()
+            assert d_lfo.access_basis == "official_publication"
+            # Confirmed as a module, but its page contradicts itself on width, so the mark stays.
+            assert d_lfo.hp == 12 and d_lfo.hp_source == "legacy_unsourced"
+            assert d_lfo.manufacturer_url == "https://www.cwejmanmusic.com/d-lfo"
+            archived = dict(conn.execute(text(
+                "SELECT field, old_value FROM catalog_value_archive "
+                "WHERE batch = 'lead-promotions-v2' AND row_key = 'cwejman-d-lfo'"
+            )).all())
+            assert archived == {"access_basis": "unknown", "evidence_status": "CATALOG_OBSERVED"}
+            assert conn.execute(text(
+                "SELECT access_basis FROM module_catalog WHERE slug = 'doepfer-a-155'"
+            )).scalar_one() == "official_publication"
+            disting = conn.execute(text(
+                "SELECT category, hp FROM module_catalog WHERE slug = 'expert-sleepers-disting-mk3'"
+            )).one()
+            assert (disting.category, disting.hp) == ("UTIL", 4)
+            for hidden in ("expert-sleepers-es-2-2", "bastl-instruments-cv-trinity-expander", "dreadbox-hades"):
+                assert conn.execute(text(
+                    "SELECT access_basis FROM module_catalog WHERE slug = :slug"
+                ), {"slug": hidden}).scalar_one() == "unknown"
+        again = populate(fresh_population_url, apply=False, verification_path=missing)
+        assert again["lead_promotions"]["promoted"] == 0
+    finally:
+        engine.dispose()
+
+
 def test_noise_first_rows_become_noise_in_both_tables(fresh_population_url, tmp_path):
     """Owner decision 16: the patch engine reads module_type, so a noise source has to say so."""
     missing = tmp_path / "none.json"

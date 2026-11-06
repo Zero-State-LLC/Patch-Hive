@@ -5,10 +5,10 @@
     "firecrawl": 33.0
   },
   "calls_by_method": {
-    "free_http": 2493,
+    "free_http": 2778,
     "skipped_no_key": 2475,
-    "robots_unavailable": 3032,
-    "cache": 31974,
+    "robots_unavailable": 3036,
+    "cache": 32000,
     "context_dev": 2833,
     "robots_disallowed": 127,
     "firecrawl": 36,
@@ -16,5 +16,5 @@
     "blocked_url": 10,
     "robots_refused": 16
   },
-  "updated_at": "2026-11-06T00:01:54Z"
+  "updated_at": "2026-11-06T05:32:37Z"
 }
