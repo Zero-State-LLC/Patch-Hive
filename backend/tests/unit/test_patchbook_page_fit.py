@@ -42,7 +42,7 @@ def _cables(graph) -> list[str]:
 def _layout(plan, graph, **kwargs):
     return layout_patch_page(
         plan, graph, FAMILY, body_font="Helvetica", mono="Courier", width=WIDTH, height=HEIGHT,
-        cables=_cables(graph), **kwargs,
+        cables=_cables(graph), operation=[s.instruction for s in plan.steps], **kwargs,
     )
 
 
@@ -143,7 +143,7 @@ def test_body_text_and_cables_are_drawn_at_the_floor_or_above():
     for floor in (9.5, 10.5):
         page = layout_patch_page(
             plan, graph, FAMILY, body_font="Helvetica", mono="Courier",
-            width=WIDTH, height=HEIGHT, body_size=floor, cables=_cables(graph),
+            width=WIDTH, height=HEIGHT, body_size=floor, cables=_cables(graph), operation=[s.instruction for s in plan.steps],
         )
         required = [
             line for line in page
