@@ -167,18 +167,6 @@ PATCH_TYPES = [
     "Cloud",
 ]
 
-MECHANISM_TOKENS = [
-    "Cross-Mod",
-    "Clock-Lattice",
-    "Gate-Choir",
-    "Slew-Pulse",
-    "Sample-Loop",
-    "Reset Bloom",
-    "Feedback Lace",
-    "Accent Stack",
-    "Drift Engine",
-]
-
 DESCRIPTORS = {
     "Beginner": ["Clean", "Basic", "First", "Pocket", "Plain"],
     "Intermediate": ["Swing", "Spiral", "Hinge", "Cascade", "Offset"],
@@ -280,7 +268,7 @@ def name_patch_v2(
     features = build_patch_feature_vector(modules_by_id, connections)
     difficulty = _difficulty_from_features(features)
     descriptor = _select_descriptor(difficulty, patch_id, features)
-    mechanism = _select_mechanism(modules_by_id, connections, features, patch_id)
+    mechanism = _select_mechanism(modules_by_id, connections, features)
     humor_tag = _select_humor_tag(modules_by_id, connections, features, patch_id)
 
     if humor_tag:
@@ -348,8 +336,9 @@ def _select_mechanism(
     modules_by_id: Dict[int, Any],
     connections: Iterable[Any],
     features: Dict[str, Any],
-    patch_id: int | str,
 ) -> str:
+    """The title word for what these cables do. It is read from the cables and never drawn from
+    a hash, because each word names a structure and a title must not claim one the patch lacks."""
     if features.get("cycle_present"):
         return "Feedback Lace"
     if int(features.get("clock_edges", 0)) >= 2 and int(features.get("clock_modules", 0)) >= 2:
@@ -371,12 +360,47 @@ def _select_mechanism(
         if "reset" in from_port or "reset" in to_port:
             return "Reset Bloom"
 
-    for module in modules_by_id.values():
-        if "ACCENT" in _module_type(module):
-            return "Accent Stack"
+    for conn in connections:
+        for end in ("from_module_id", "to_module_id"):
+            if "ACCENT" in _module_type(modules_by_id.get(_get_attr(conn, end))):
+                return "Accent Stack"
 
-    seed = _stable_hash_seed("mechanism", patch_id, features)
-    return MECHANISM_TOKENS[seed % len(MECHANISM_TOKENS)]
+    return _mechanism_from_shape(modules_by_id, connections)
+
+
+def _mechanism_from_shape(modules_by_id: Dict[int, Any], connections: Iterable[Any]) -> str:
+    """Name the plain shape of a patch that no port or cable type above has named."""
+    audio: list[tuple[Any, Any]] = []
+    control: list[tuple[Any, Any]] = []
+    for conn in connections:
+        ends = (
+            modules_by_id.get(_get_attr(conn, "from_module_id")),
+            modules_by_id.get(_get_attr(conn, "to_module_id")),
+        )
+        (audio if _get_attr(conn, "cable_type") == "audio" else control).append(ends)
+
+    if not audio:
+        return "Control Line"
+    if any(_is_effect_module(dst) for _, dst in audio):
+        return "Effect Send"
+    if any(_is_envelope_module(src) and _is_filter_module(dst) for src, dst in control):
+        return "Filter Pluck"
+    if any("LFO" in _module_type(src) and _is_filter_module(dst) for src, dst in control):
+        return "Filter Sweep"
+    if any("LFO" in _module_type(src) for src, _ in control):
+        return "Drift Engine"
+    if any("NOISE" in _module_type(src) for src, _ in audio):
+        return "Noise Voice"
+    if any(_is_envelope_module(src) for src, _ in control):
+        return "Envelope Voice"
+    destinations = [
+        _get_attr(conn, "to_module_id")
+        for conn in connections
+        if _get_attr(conn, "cable_type") == "audio"
+    ]
+    if len(set(destinations)) < len(destinations):
+        return "Signal Blend"
+    return "Signal Path"
 
 
 def _select_humor_tag(
@@ -480,6 +504,21 @@ def _is_utility_module(module: Any) -> bool:
 def _is_voice_module(module: Any) -> bool:
     module_type = _module_type(module)
     return any(key in module_type for key in ["VCO", "OSC", "VOICE", "FILTER", "VCA", "NOISE"])
+
+
+def _is_filter_module(module: Any) -> bool:
+    module_type = _module_type(module)
+    return any(key in module_type for key in ["VCF", "FILTER"])
+
+
+def _is_effect_module(module: Any) -> bool:
+    module_type = _module_type(module)
+    return any(key in module_type for key in ["FX", "EFFECT", "REVERB", "DELAY"])
+
+
+def _is_envelope_module(module: Any) -> bool:
+    module_type = _module_type(module)
+    return any(key in module_type for key in ["ENV", "ADSR"])
 
 
 def _detect_cycle(connections: Iterable[Any]) -> bool:

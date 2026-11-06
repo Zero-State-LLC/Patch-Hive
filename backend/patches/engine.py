@@ -31,6 +31,13 @@ from core import (
 from modules.models import Module
 from racks.models import Rack, RackModule
 
+# How an intent line names each generic control input the rules wire.
+INPUT_WORDS: Dict[str, str] = {
+    "V/Oct": "pitch",
+    "FM In": "FM",
+    "Cutoff CV": "cutoff",
+    "CV In": "CV",
+}
 
 
 @dataclass
@@ -285,15 +292,9 @@ class PatchGenerator:
             # Determine category based on envelope characteristics
             category: PatchCategory = "Voice"
 
-            patch_seed = self.seed + i
-            patch = PatchSpec(
-                name=name_patch_v2(patch_seed, self.modules_by_id, connections),
-                category=category,
-                connections=connections,
-                description=f"Subtractive synthesis voice using {vco.name}",
-                generation_seed=patch_seed,
-            )
-            patches.append(patch)
+            # With no filter nothing is subtracted, so the rule has no claim to make.
+            claim = f"Subtractive synthesis voice using {vco.name}" if vcf is not None else None
+            patches.append(self._spec(self.seed + i, category, connections, claim))
 
         return patches
 
@@ -358,15 +359,9 @@ class PatchGenerator:
                 )
 
         if connections:
-            patch_seed = self.seed + 1000
-            patch = PatchSpec(
-                name=name_patch_v2(patch_seed, self.modules_by_id, connections),
-                category="Generative",
-                connections=connections,
-                description="Self-evolving generative patch with modulation",
-                generation_seed=patch_seed,
-            )
-            patches.append(patch)
+            # These are control cables only, on any rack: no audio leaves what they modulate, so
+            # there is no self-evolving sound to claim and the patch reads as its route.
+            patches.append(self._spec(self.seed + 1000, "Generative", connections))
 
         return patches
 
@@ -383,6 +378,7 @@ class PatchGenerator:
 
         connections: List[Connection] = []
         roles: Dict[int, str] = {}
+        claim: Optional[str] = None
 
         # Noise → VCF → VCA (classic snare/hi-hat)
         noise = self._first(self.analyzer.noise_sources, "noise", roles)
@@ -431,17 +427,10 @@ class PatchGenerator:
                         cable_type="cv",
                     )
                 )
+                claim = f"Noise voice shaped by {env.name}"
 
         if connections:
-            patch_seed = self.seed + 2000
-            patch = PatchSpec(
-                name=name_patch_v2(patch_seed, self.modules_by_id, connections),
-                category="Clock-Rhythm",
-                connections=connections,
-                description="Clock-Rhythm voice using noise and envelope",
-                generation_seed=patch_seed,
-            )
-            patches.append(patch)
+            patches.append(self._spec(self.seed + 2000, "Clock-Rhythm", connections, claim))
 
         return patches
 
@@ -458,7 +447,7 @@ class PatchGenerator:
 
         connections: List[Connection] = []
 
-        # Simple FX chain: IN → FX → OUT
+        # The mixer into the effect. Nothing here feeds the mixer, on any rack.
         roles: Dict[int, str] = {}
         fx = self._first(self.analyzer.effects, "fx", roles)
 
@@ -476,15 +465,7 @@ class PatchGenerator:
             )
 
         if connections:
-            patch_seed = self.seed + 3000
-            patch = PatchSpec(
-                name=name_patch_v2(patch_seed, self.modules_by_id, connections),
-                category="Texture-FX",
-                connections=connections,
-                description=f"Texture-FX processing chain using {fx.name}",
-                generation_seed=patch_seed,
-            )
-            patches.append(patch)
+            patches.append(self._spec(self.seed + 3000, "Texture-FX", connections))
 
         return patches
 
@@ -513,15 +494,70 @@ class PatchGenerator:
         )
 
     def _spec(
-        self, patch_seed: int, category: PatchCategory, connections: List[Connection], description: str
+        self,
+        patch_seed: int,
+        category: PatchCategory,
+        connections: List[Connection],
+        claim: Optional[str] = None,
     ) -> PatchSpec:
+        """``claim`` is a rule's own sentence, passed only when it wired what the sentence says."""
         return PatchSpec(
             name=name_patch_v2(patch_seed, self.modules_by_id, connections),
             category=category,
             connections=connections,
-            description=description,
+            description=self._describe(connections, claim),
             generation_seed=patch_seed,
         )
+
+    def _describe(self, connections: List[Connection], claim: Optional[str]) -> str:
+        """The patch's intent line: its claim or else its route, then what the cables leave open."""
+        gaps = self._gaps(connections)
+        sentences = [claim or self._route(connections), *gaps]
+        return ". ".join(sentences) + ("." if gaps else "")
+
+    def _route(self, connections: List[Connection]) -> str:
+        """The cables in words, audio first: "A through B into C, D into B cutoff"."""
+        runs: List[List[int]] = []
+        controls: List[str] = []
+        for cable in connections:
+            if cable.cable_type != "audio":
+                word = INPUT_WORDS.get(cable.to_port, cable.to_port)
+                controls.append(f"{self._name(cable.from_module_id)} into {self._name(cable.to_module_id)} {word}")
+            elif runs and runs[-1][-1] == cable.from_module_id:
+                runs[-1].append(cable.to_module_id)
+            else:
+                runs.append([cable.from_module_id, cable.to_module_id])
+        routes = []
+        for run in runs:
+            first, *middle, last = [self._name(module_id) for module_id in run]
+            through = f" through {' and '.join(middle)}" if middle else ""
+            routes.append(f"{first}{through} into {last}")
+        return ", ".join(routes + controls)
+
+    def _gaps(self, connections: List[Connection]) -> List[str]:
+        """What these cables leave unpatched. Each is a fact about the cables and not the
+        hardware: a VCA with nothing on its CV may still pass sound with its level turned up."""
+        a = self.analyzer
+        audio = [cable for cable in connections if cable.cable_type == "audio"]
+        fed = {cable.to_module_id for cable in audio}
+        sources = {module.id for module in a.vcos + a.noise_sources}
+        vcas = {module.id for module in a.vcas}
+        cv_in = {cable.to_module_id for cable in connections if cable.cable_type == "cv"}
+        gated = {cable.to_module_id for cable in connections if cable.cable_type in ("gate", "clock")}
+
+        gaps: List[str] = [] if audio else ["No audio is patched"]
+        for cable in audio:
+            if cable.from_module_id not in fed | sources:
+                gaps.append(f"Nothing is patched into {self._name(cable.from_module_id)}")
+            if cable.to_module_id in vcas and cable.to_module_id not in cv_in:
+                gaps.append(f"No CV is patched into {self._name(cable.to_module_id)}")
+        for cable in connections:
+            if cable.from_port == "Envelope Out" and cable.from_module_id not in gated:
+                gaps.append(f"No gate is patched into {self._name(cable.from_module_id)}")
+        return list(dict.fromkeys(gaps))
+
+    def _name(self, module_id: int) -> str:
+        return self.modules_by_id[module_id].name
 
     def _generate_sequenced_voices(self) -> List[PatchSpec]:
         """A sequencer plays each VCO (up to three): pitch to V/Oct, gate to an
@@ -632,7 +668,7 @@ class PatchGenerator:
                 to_port="FX In", cable_type="audio",
             ),
         ]
-        return [self._spec(self.seed + 9000, "Texture-FX", connections, f"{vco.name} through {fx.name}")]
+        return [self._spec(self.seed + 9000, "Texture-FX", connections)]
 
     def _generate_oscillator_mix(self) -> List[PatchSpec]:
         """Two oscillators blended in a mixer."""

@@ -192,7 +192,7 @@ if lfos and rng.random() > 0.5:
 
 #### Generative Patches
 
-**Concept**: Self-evolving patches with modulation sources driving oscillators and filters.
+**Concept**: Modulation sources driving oscillators and filters. These are control cables only: no rule here wires audio out of what they modulate, on any rack. A sequencer alone gives one cable, and the two LFO cables need two LFO modules (a quad LFO is one module).
 
 **Signal chain example**:
 ```
@@ -222,7 +222,7 @@ if len(lfos) >= 2:
 
 #### Clock-Rhythm
 
-**Concept**: Short, rhythmic structures using noise and envelopes.
+**Concept**: Noise through a VCA, shaped by an envelope. Nothing in this rule fires the envelope; the sequenced hats below do.
 
 **Signal chain**:
 ```
@@ -235,11 +235,11 @@ NOISE → [VCF] → VCA
 
 #### Texture-FX Chains
 
-**Concept**: Processing chains for external signals.
+**Concept**: A mixer into an effect, for signals brought in by hand. Nothing in this rule feeds the mixer, and a rack with no mixer gets no patch from it.
 
 **Signal chain**:
 ```
-MIXER → FX → OUT
+MIXER → FX
 ```
 
 **Category**: Always "Texture-FX"
@@ -261,20 +261,46 @@ Port names are still generic ("Audio Out", "Gate In"): most modules have no jack
 
 ## Deterministic Naming
 
-Each patch gets a deterministic name using the `generate_patch_name()` function:
+Each patch title comes from `name_patch_v2()`: a descriptor and a mechanism word, such as "First Control Line".
 
-```python
-name = generate_patch_name(seed=patch_seed, category="Voice")
-# Examples: "Deep Evolving Voice", "Bright Fast Voice"
-```
+- **Descriptor**: picked from a fixed list by a SHA-256 of the patch seed. The list depends on the cable count (Beginner up to 4 cables, Intermediate up to 8, Advanced above).
+- **Mechanism word**: read from the cables, never drawn from a hash, because each word names a structure. A title must not claim one the patch lacks.
 
-**Name generation**:
-1. Hash the seed using SHA-256
-2. Use hash bytes to pick from word lists:
-   - PATCH_PREFIXES: "Deep", "Bright", "Warm", etc.
-   - PATCH_TYPES: "Bass", "Lead", "Pad", etc.
-   - Category names: "Pad", "Lead", "Bass", etc.
-3. Combine prefix + type OR prefix + category
+| Word | The patch has |
+|---|---|
+| Feedback Lace | a cycle |
+| Clock-Lattice | two or more clock cables, with two clock modules in the rack |
+| Cross-Mod | eight or more modulation cables |
+| Gate-Choir | a gate cable |
+| Slew-Pulse, Sample-Loop, Reset Bloom | a port with that name in it |
+| Accent Stack | an accent module on its cables |
+| Control Line | no audio cable |
+| Effect Send | audio into an effect |
+| Filter Pluck | an envelope on a filter |
+| Filter Sweep | an LFO on a filter |
+| Drift Engine | an LFO on anything else |
+| Noise Voice | noise on an audio cable |
+| Envelope Voice | an envelope on anything else |
+| Signal Blend | two audio cables into one module |
+| Signal Path | any other audio cable |
+
+The first match down the table wins.
+
+## Intent Lines
+
+`PatchSpec.description` becomes the Intent line on the patch page. `PatchGenerator._describe()` reads it from the patch's cables:
+
+1. **The claim or the route.** A rule passes its own sentence only when it wired what the sentence says ("Plucked voice: Maths shapes filter and level"). Without one the line is the route in words ("Even VCO through Quad VCA into Clouds").
+2. **What the cables leave open**, as facts about the cables and not the hardware:
+
+| Sentence | When |
+|---|---|
+| No audio is patched | the patch has no audio cable |
+| Nothing is patched into *module* | a module that isn't a sound source sends audio and receives none |
+| No CV is patched into *VCA* | a VCA carries audio and has no CV cable |
+| No gate is patched into *envelope* | an envelope sends CV and has no gate or clock cable |
+
+A thin patch stays in the run and says plainly what it is. Whether it should get a page at all is an open product question.
 
 ## Provenance & Metadata
 
@@ -387,12 +413,16 @@ class PatchEngineConfig:
 
 ## Limitations
 
+### What changed in 1.2.0
+
+- The same seed wires the same cables, and now writes different words: mechanism words are read from the cables, and intent lines say what the cables leave open.
+
 ### What changed in 1.1.0
 
 - A module fills one role in a patch (owner decision 36). A rack whose modules each hold one class gets the same patches as before.
 - `allow_feedback=false` also drops a patch whose route through other modules comes back to where it began.
 
-### Current Version (1.1.0)
+### Current Version (1.2.0)
 
 - **Port matching**: Uses generic port names ("Audio Out", "CV In")
   - Real modules have specific port names

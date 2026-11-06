@@ -43,7 +43,7 @@ Checked against the code on `main` at 3688037 (0.3.0-alpha.6). The 2026-10-29 ta
 |---|---|---|
 | FR-001 | Implemented | Seeded engine [OBSERVED: backend/patches/engine.py]. Since #137 (T033) the 32-character `generation_ir_hash` covers the modules, seed, every parameter and the engine and ABX-Core versions, and a module change changes it [OBSERVED: backend/core/ir.py, backend/patches/routes.py]. |
 | FR-002 | Implemented | `random.Random(seed)` only; time is read for durations and timestamps, never for choices [OBSERVED: backend/patches/engine.py]. |
-| FR-003 | Implemented | `name_patch_v2` picks words from a SHA-256 of the seed [OBSERVED: backend/core/naming.py]. |
+| FR-003 | Implemented | `name_patch_v2` picks the descriptor from a SHA-256 of the seed. Since engine 1.2.0 the mechanism word comes from the patch's cables, from a fixed list, so a title can't name a structure the patch lacks [OBSERVED: backend/core/naming.py]. |
 | FR-004 | Implemented | Since #142 (T030) `run_generation` sends each validated patch through `canon.compiler.compile_patch`, which returns the graph, five-phase plan, report, variation, stage receipts and `ArtifactManifest` [OBSERVED: backend/export/patchbook/design/dual_write.py, backend/canon/compiler.py]. Export of a run with no sealed rows (runs from before #142) still takes the Path B fallback, which builds those artifacts outside the compiler [OBSERVED: backend/export/patchbook/design/content_spine.py]. |
 | FR-005 | Implemented | Readiness gate and confirmed-module filter (#88) [OBSERVED: backend/patches/inventory_gate.py]. Retired modules are warned with `MODULE_TOMBSTONED` (#122). |
 | FR-006 | Implemented | A provider that returns `USER_CONFIRMED` is refused [OBSERVED: backend/evidence/vision_provider.py]. |

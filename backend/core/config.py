@@ -105,7 +105,7 @@ class Settings(BaseSettings):
     decision_routing_target: str = ""
 
     # Patch Engine
-    patch_engine_version: str = "1.1.0"
+    patch_engine_version: str = "1.2.0"
     # Compatibility alias used by some call sites / older tests.
     generation_version: str = "1.0.0"
     max_patches_per_generation: int = 20

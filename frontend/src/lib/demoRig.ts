@@ -1,7 +1,7 @@
 /**
  * The golden demo rig and one of its patches, for the home page. Copied, not invented: this is
  * what scripts/seed_golden_demo.py writes for fixtures/golden_demo_seed.json (seed 13371337,
- * run fingerprint 8a9d64fb7a8f). The rig's modules and case come from the seeder's
+ * run fingerprint 7e477143e400). The rig's modules and case come from the seeder's
  * MODULE_FIXTURES and CASE_FIXTURE, placed in fixture order as the seeder places them; the patch
  * is the engine's patch "Offset Gate-Choir", one of the run's 14. Re-copy all of it if the seed,
  * the fixtures or the patch engine change.
