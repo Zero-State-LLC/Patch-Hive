@@ -114,13 +114,23 @@ Reading staging's public API afterwards: the catalog total went from 3,160 to 3,
 
 `/api/modules` reports 3,375 rows, and a read through its pages saw only 3,184 of them, because the list has no fixed order. That is a separate bug, fixed in its own PR.
 
-## Production, not yet loaded
+## Production
 
-Dry run [42136940478](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42136940478), from the same branch, wrote nothing. Its plan matches staging's.
+Loaded from `main` at `6826c36`, after [#308](https://github.com/Zero-State-LLC/Patch-Hive/pull/308) merged, on the owner's yes with these hashes. That yes also accepted that the same revision and seed can give different patches ([#295](https://github.com/Zero-State-LLC/Patch-Hive/issues/295)), and that these rows return to public reads while decision 39's wider question is with counsel.
 
 - `plan_hash`: `319ed5ddbecafcf4ef6ab7654e24f9d14ad3034359218a9d00645e1376c801e2`
 - `inputs_hash`: `0de24a57473e35893acef24d0a5ac00654e16853ec76c5bcea8d26daed5309fa`
 - 0 conflicts, no destructive SQL.
+
+| Step | Run | Result |
+|---|---|---|
+| Dry run, branch | [42136940478](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42136940478) | Wrote nothing |
+| Dry run, `main` | [42139037435](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42139037435) | Same hashes |
+| Apply | [42139434261](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42139434261) | 220 promoted. Leads went from 564 to 344, and the archive from 5,308 to 5,961 rows |
+| Second dry run | [42139855482](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42139855482) | Plans nothing |
+| Smoke | [42139878429](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42139878429) | 10/10 |
+
+Reading production's public API afterwards: the catalog total went from 3,160 to 3,380, and none of those rows mentions ModularGrid. No public row is `unknown`, none stores a width over 84, and 285 have no category. Every public catalog row matches staging's. Rows checked as still hidden stay hidden: Befaco ADSR, μAtt, A-101-4 and A-170-2.
 
 ## Not in this change
 
