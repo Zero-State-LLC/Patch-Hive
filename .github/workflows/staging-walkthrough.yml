@@ -3,9 +3,11 @@ name: Staging walkthrough
 # Manual only, staging only (008 T030b/T040b, 006 T060b). Seeds the golden demo into
 # the Neon staging branch, checks the seeded sign-in, runs the Design Engine
 # walkthrough against api-staging.patch-hive.com with test payments, then uploads one
-# generated test image, calls decision-resolution and generates through the API. Each
-# run makes new demo passwords that exist only in this job (masked, never stored); the
-# receipts hold statuses, codes and hashes only.
+# generated test image, calls decision-resolution and generates through the API. It then
+# generates another run, exports it with test credits and reads the pages of the PDF it
+# downloads. That pack stays in the job's memory: this repo is public, so never upload a
+# PDF or pack here. Each run makes new demo passwords that exist only in this job (masked,
+# never stored); the receipts hold statuses, codes, counts and hashes only.
 on:
   workflow_dispatch:
     inputs:
@@ -14,7 +16,7 @@ on:
         required: true
         type: choice
         default: both
-        options: [both, walkthrough, evidence, generate]
+        options: [both, walkthrough, evidence, generate, generated-export]
 
 permissions:
   contents: read
@@ -41,7 +43,7 @@ jobs:
           cache: pip
       - name: Install backend
         working-directory: backend
-        run: python -m pip install -e .
+        run: python -m pip install -e '.[staging-check]'
       - name: Demo passwords for this run
         run: |
           for name in PATCHHIVE_DEMO_USER_PASSWORD PATCHHIVE_DEMO_ADMIN_PASSWORD; do
@@ -67,6 +69,9 @@ jobs:
       - name: A real generate through the API
         if: ${{ !cancelled() && (inputs.checks == 'both' || inputs.checks == 'generate') }}
         run: python scripts/staging/generate_check.py --receipt-out generate-receipt.json
+      - name: Export a generated run and read its PDF
+        if: ${{ !cancelled() && (inputs.checks == 'both' || inputs.checks == 'generated-export') }}
+        run: python scripts/staging/generated_export_check.py --receipt-out generated-export-receipt.json
       - name: Keep the receipts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -76,5 +81,6 @@ jobs:
             design-walkthrough-receipt.json
             t060b-receipt.json
             generate-receipt.json
+            generated-export-receipt.json
           if-no-files-found: warn
           retention-days: 90
