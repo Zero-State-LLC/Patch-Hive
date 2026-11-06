@@ -382,7 +382,8 @@ def test_a_load_from_the_committed_inputs_has_no_conflict_and_fills_every_row(fr
     for entry in RULES["entries"] + REVIEWED["entries"]:
         row = catalog[entry["slug"]]
         expected = moved_to_noise.get(entry["slug"], entry["category"])
-        assert (row["brand"], row["name"], row["category"]) == (entry["brand"], entry["name"], expected)
+        brand = P.BRAND_RENAMES.get(entry["brand"], entry["brand"])
+        assert (row["brand"], row["name"], row["category"]) == (brand, entry["name"], expected)
         assert bool(row.get("tombstoned")) == (entry["slug"] in second_names)
     assert not {e["slug"] for e in RULES["entries"]} & {e["slug"] for e in REVIEWED["entries"]}
 

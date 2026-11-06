@@ -53,10 +53,10 @@ def test_no_row_was_already_retired() -> None:
         "plum-audio-ex2",  # the page states both 12 HP and 2 HP, so neither row can be called wrong
         "plum-audio-ex2-cv-expander",
         "stochastic-instruments-strange-r",  # the page sells a bundle of two sizes
-        "endorphin-es-milky-way-1u-silver",  # a separate 1U format
-        "joranalogue-filter-8",  # the brand split needs its own fix
+        "endorphin-es-milky-way-1u-silver",  # retired by v6, with the brand splits
+        "joranalogue-filter-8",
         "joranalogue-generate-3",
-        "mutable-instruments-ripples",  # so does this one
+        "mutable-instruments-ripples",
         "mutable-instruments-tides-2014-version",
         "analogue-systems-rs-650",  # robots.txt didn't answer
         "expert-sleepers-es-3-mk2",  # a revision the page names
