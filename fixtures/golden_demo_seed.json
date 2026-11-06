@@ -1,5 +1,5 @@
 {
-  "fixture_version": "1.0",
+  "fixture_version": "1.1",
   "name": "Golden Demo \u2014 Patch Book Builder",
   "seed": 13371337,
   "rig": {
@@ -62,7 +62,7 @@
     "allow_humor": true
   },
   "expected_hashes": {
-    "run_fingerprint": "8a9d64fb7a8f8eac3ccc97b797379255d3348cc7b3b3f01b5f7da748fb27ece7",
+    "run_fingerprint": "7e477143e40099281fa14ec869b6848af5e60f2df9130abe3997567b9f2d00d9",
     "patch_count": 14
   }
 }
