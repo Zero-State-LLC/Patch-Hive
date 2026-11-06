@@ -104,6 +104,8 @@ class GeneratePatchesResponse(BaseModel):
     # Confirmed-inventory gate (manual rack placements → USER_CONFIRMED).
     inventory_revision_id: Optional[str] = None
     inventory_gate_code: Optional[str] = None
+    # The condition that failed, on a NOT_COMPUTABLE answer (spec 001 D2).
+    inventory_gate_messages: Optional[list[str]] = None
     generation_status: Optional[str] = None
     # Port resolution and validation (spec 001 FR-016/017/019): blocking findings fail
     # the run; "unresolved" marks jacks whose names are not on file.

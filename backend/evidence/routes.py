@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 
 from canon.models import (
     ClassificationEvidenceRecord,
+    EvidenceDecisionRecord,
     ImageAssetRecord,
     SystemInventoryRevisionRecord,
 )
@@ -338,6 +339,8 @@ class CandidateResponse(BaseModel):
     gallery_revision_id: str | None = None
     gallery_module_id: str | None = None
     decision_advisory: dict | None = None
+    # The newest decision on this candidate, if any: confirm, reject, defer, replace, manual_add.
+    last_decision: str | None = None
 
 
 class CandidateListResponse(BaseModel):
@@ -494,6 +497,7 @@ def list_rack_evidence_candidates(
                 if key not in receipts_by_binding:
                     receipts_by_binding[key] = receipt
 
+    latest_decisions = _latest_decisions(db, rack_id)
     candidates = []
     for item in items:
         evidence_id = str(item["evidence_id"])
@@ -510,6 +514,8 @@ def list_rack_evidence_candidates(
             }
         payload = {k: v for k, v in item.items() if k != "_raw"}
         payload["decision_advisory"] = advisory
+        latest = latest_decisions.get(item["candidate_id"])
+        payload["last_decision"] = latest.status if latest else None
         candidates.append(CandidateResponse(**payload))
     return CandidateListResponse(total=len(candidates), candidates=candidates)
 
@@ -581,6 +587,45 @@ def _modules_to_place(
     return [
         ModuleToPlaceOut(**asdict(entry)) for entry in modules_still_to_place(db, rack, inventory)
     ]
+
+
+def _latest_decisions(db: Session, rack_id: int) -> dict[str, EvidenceDecisionRecord]:
+    """The newest recorded decision for each candidate on this rack."""
+    rows = (
+        db.query(EvidenceDecisionRecord)
+        .filter(EvidenceDecisionRecord.rack_id == rack_id)
+        .order_by(EvidenceDecisionRecord.decided_at.asc(), EvidenceDecisionRecord.id.asc())
+    )
+    return {row.candidate_id: row for row in rows}
+
+
+def _record_decisions(
+    db: Session,
+    rack_id: int,
+    requested: list[ConfirmationDecisionIn],
+    decisions: list,
+    inventory_revision_id: str,
+) -> None:
+    """Keep every decision, a reject included, and name the one a changed decision reverses
+    (spec 001 D8). A reject still leaves the candidate listed and canon unchanged."""
+    latest = _latest_decisions(db, rack_id)
+    for asked, decision in zip(requested, decisions, strict=True):
+        earlier = latest.get(decision.candidate_id)
+        db.add(
+            EvidenceDecisionRecord(
+                id=decision.confirmation_id,
+                rack_id=rack_id,
+                candidate_id=decision.candidate_id,
+                status=decision.status,
+                module_revision_id=asked.module_revision_id,
+                replacement_candidate_id=decision.replacement_candidate_id,
+                inventory_revision_id=inventory_revision_id,
+                reverses_decision_id=earlier.id if earlier and earlier.status != decision.status else None,
+                decided_by=decision.confirmed_by,
+                decided_at=decision.confirmed_at,
+            )
+        )
+    db.flush()
 
 
 @router.get(
@@ -752,6 +797,7 @@ def confirm_rack_evidence_candidates(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     persist_system_inventory_revision(db, inventory, rack_id=rack_id)
+    _record_decisions(db, rack_id, body.decisions, decisions, inventory.inventory_revision_id)
     # ClassificationEvidenceRecord is append-only; inventory linkage is via
     # SystemInventoryRevisionRecord + candidate source_candidate_ids, not mutation.
     db.commit()

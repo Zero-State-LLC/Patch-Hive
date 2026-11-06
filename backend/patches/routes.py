@@ -2,6 +2,7 @@
 FastAPI routes for Patch management and generation.
 """
 
+import logging
 from dataclasses import asdict
 from typing import Any, Optional
 
@@ -27,6 +28,8 @@ from .schemas import (
     PatchResponse,
     PatchUpdate,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -178,6 +181,27 @@ def generate_patches(
     return run_generation(db, rack, request)
 
 
+def _failure_reason(exc: Exception) -> str:
+    """An error's code or type. Never its message, which can hold data or secrets."""
+    if isinstance(exc, HTTPException):
+        return f"HTTP {exc.status_code}: {exc.detail}"[:200]
+    return type(exc).__name__[:200]
+
+
+def _keep_failure_receipt(db: Session, *, bridge: Any, seed: int, reason: str) -> None:
+    """A failed run's receipt, best effort: losing it must not hide the error that failed the run."""
+    if bridge is None:
+        return
+    from export.patchbook.design.dual_write import write_run_outcome_receipt
+
+    try:
+        write_run_outcome_receipt(db, bridge=bridge, seed=seed, status="failed", detail={"reason": reason})
+        db.commit()
+    except Exception:
+        db.rollback()
+        logger.exception("Could not keep the receipt of failed run %s", bridge.run_id)
+
+
 def run_generation(db: Session, rack: Rack, request: GeneratePatchesRequest) -> GeneratePatchesResponse:
     """The one generation path (spec 001 FR-018/FR-022): readiness gate, then a run that
     always ends terminal. Callers check ownership or admin rights first."""
@@ -196,6 +220,7 @@ def run_generation(db: Session, rack: Rack, request: GeneratePatchesRequest) -> 
     # NOT_COMPUTABLE answer and no run, generation record or library. The inventory
     # revision is kept: it is the evidence of what was checked.
     from canon.inventory_persist import persist_system_inventory_revision
+    from export.patchbook.design.dual_write import dual_write_generated_patches, write_run_outcome_receipt
     from patches.inventory_gate import evaluate_rack_inventory_gate
 
     gate_report, _ = evaluate_rack_inventory_gate(db, rack)
@@ -208,6 +233,7 @@ def run_generation(db: Session, rack: Rack, request: GeneratePatchesRequest) -> 
             run_id=None,
             inventory_revision_id=gate_report.inventory.inventory_revision_id,
             inventory_gate_code=gate_report.code,
+            inventory_gate_messages=list(gate_report.messages),
             generation_status="NOT_COMPUTABLE",
         )
 
@@ -220,6 +246,7 @@ def run_generation(db: Session, rack: Rack, request: GeneratePatchesRequest) -> 
     # Every exit after the run exists ends terminal (FR-018/FR-019): any error from here
     # on, including the export bridge and the Design Engine dual-write, fails the run.
     run_id = run.id
+    bridge = None
     try:
         # Matrix slice A: ensure canon FK targets + export bridge as soon as the run exists
         # (do not rely solely on GET /api/runs side-effect).
@@ -251,6 +278,13 @@ def run_generation(db: Session, rack: Rack, request: GeneratePatchesRequest) -> 
             # nothing is saved or added to the library (FR-016/FR-019).
             run.status = "validation_failed"
             run.validation_report = provenance_metrics.get("validation")
+            write_run_outcome_receipt(
+                db,
+                bridge=bridge,
+                seed=seed,
+                status="validation_failed",
+                detail=provenance_metrics.get("validation"),
+            )
             db.commit()
             return GeneratePatchesResponse(
                 generated_count=0,
@@ -305,20 +339,22 @@ def run_generation(db: Session, rack: Rack, request: GeneratePatchesRequest) -> 
         )
         db.flush()
         # Path A (KD-20): dual-write sealed GeneratedPatchRecord for Design Engine spine
-        from export.patchbook.design.dual_write import dual_write_generated_patches
-
         dual_write_generated_patches(db, bridge=bridge, patches=saved_patches)
+        if not saved_patches:
+            write_run_outcome_receipt(db, bridge=bridge, seed=seed, status="no_patches", detail=run.validation_report)
         if bridge.export_bridge_ready:
             ensure_rig_metrics_packet(
                 db, rig_revision_id=bridge.rig_revision_id, source_run_id=bridge.source_run_id
             )
         db.commit()
-    except Exception:
+    except Exception as exc:
         db.rollback()
         failed = db.get(Run, run_id)
         if failed is not None and failed.status in {"queued", "running"}:
             failed.status = "failed"
+            failed.failure_reason = _failure_reason(exc)
             db.commit()
+            _keep_failure_receipt(db, bridge=bridge, seed=seed, reason=failed.failure_reason)
         raise
 
     # Build responses
