@@ -22,6 +22,19 @@
 - [x] T023 Legacy rig and patch PDFs wrap text and continue on a new page; legacy `POST /api/export/patchbook` is off by default (410) and refuses patches from another rig (FR-003, FR-013; #133).
   - depends_on: []
 
+## Before publishing could return
+
+The threat model's remaining gaps. They gate T033, and none has any effect while publishing is off. Its SVG escaping item is done (#280), and its rate limit on the report route is done (#197, T037).
+
+- [ ] T038 Lengthen the random slug part to at least 96 bits, or add a separate random token for unlisted links (threat model P1).
+  - depends_on: []
+- [ ] T039 Send `X-Robots-Tag: noindex` on unlisted reads and `Cache-Control: no-store` on read and download, so removal takes effect (threat model P2).
+  - depends_on: []
+- [ ] T040 Add a rate limit to `/p/*` and the gallery. Add `Content-Disposition: attachment` and `X-Content-Type-Options: nosniff` to downloads, and decide on signed or short-lived download URLs (threat model P1, P4).
+  - depends_on: []
+- [ ] T041 Validate `cover_image_url` as an `https` URL on an allowlist, or drop the field (threat model P5).
+  - depends_on: []
+
 ## Gap closure (2026-10-29)
 
 - [x] T030 Add a `validate_book` stage to `compose_design_export_pack`: count the pages drawn against the manifest, write one manifest entry per page (index, kind, patch artifact id, page hash, SVG hash, status), write a SHA-256 per bundle file in `checksums.json`, recompute `composition_hash`, and fail with `PATCH_BOOK_PAGE_COUNT_MISMATCH`, `PATCH_BOOK_REFERENCE_UNRESOLVED` or `PATCH_BOOK_ASSET_HASH_MISMATCH` (FR-016, FR-017, FR-006; research R1). Done 2026-10-29: `validate_book` in design/engine.py writes `pages`, per-file `checksums.json` and `validation/book.json`; tests in test_patchbook_validate_book.py.
@@ -33,7 +46,7 @@
 - [x] T032 Refuse `draft` → `published` with 409 `PUBLICATION_BOOK_NOT_VALIDATED` when the export is not bound to a validated book, which today is every legacy export (FR-048; research R2 option 3). Done 2026-10-29: `update_publication` refuses it; the lifecycle API test changed with FR-048.
   - depends_on: []
 - [ ] T033 Only if the owner wants publishing back (OQ-6): bind each publication export to a canon export whose pack passed `validate_book`, and let T032's check pass for it (FR-048; research R2 option 1).
-  - depends_on: [T001, T030, T032]
+  - depends_on: [T001, T030, T032, T038, T039, T040, T041]
 - [x] T034 Default `PublicationCreate.visibility` to `unlisted` and type the gallery `export_type` as `patch` or `rack` (422 otherwise), with tests (FR-036, FR-042; research R3). Done 2026-10-29.
   - depends_on: []
 - [x] T035 Draw the cover's patent disclaimer at `body_size_pt()` with `_draw_wrapped`, and start the metadata block at the returned y, with a test that the two never overlap (FR-004; research R4). Done 2026-10-29.
@@ -43,5 +56,5 @@
 
 ## Polish
 
-- [ ] T090 Converge the code against the spec
+- [x] T090 Converge the code against the spec. Done 2026-11-06. The owner chose not to build the page and book compile machines (decision 37), so spec.md replaces them with the stages as built, tested in `backend/tests/unit/test_spec_002_compose_stages.py`. Each book page now draws its diagram and names its modules; it didn't before. A missing fact is an error (D7), a loop is marked and warned about, the colophon notice meets the floor, the pack has a README, and a stopped compose keeps a receipt. Spec text corrected for D1, D2, D4, D5, D8, D9, D10, D12 and D13. Still partial, and why, in spec.md's table: FR-012, FR-013, FR-015 (decision 38), FR-048 (T033).
   - depends_on: [T010, T030, T031, T032, T034, T035, T036, T037]

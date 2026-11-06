@@ -11,6 +11,7 @@ MIN_BODY_PT_PRINT = 9.5
 # 14 px at 96 dpi, the digital body-text floor (spec 002 FR-004).
 MIN_BODY_PT_DIGITAL = 10.5
 MIN_CONTRAST = 4.5
+REQUIRED_REGIONS = {"identity", "diagram", "intent", "construction", "operation"}
 
 
 def body_floor_pt(output_profile: str) -> float:
@@ -47,7 +48,7 @@ def validate_composition_a11y(
     if min_body < floor:
         # The renderer draws body text at body_size_pt(), never below the floor, so a
         # recipe asking for less is raised, not rejected. Text runs below the floor are
-        # still errors (TEXT_RUN_BELOW_MINIMUM, below).
+        # still errors (PATCH_PAGE_FONT_BELOW_MINIMUM, below).
         issues.append(
             A11yIssue(
                 code="BODY_SIZE_RAISED_TO_FLOOR",
@@ -64,22 +65,38 @@ def validate_composition_a11y(
             A11yIssue(
                 code="CONTRAST_BELOW_AA",
                 severity="error",
-                message=f"minimum_contrast_ratio {recipe.constraints.minimum_contrast_ratio} < {MIN_CONTRAST}",
+                message=(
+                    f"minimum_contrast_ratio {recipe.constraints.minimum_contrast_ratio} < "
+                    f"{MIN_CONTRAST}. Remediation: choose a recipe with more contrast."
+                ),
             )
         )
 
     if not recipe.constraints.color_independent_diagrams:
         issues.append(
             A11yIssue(
-                code="COLOR_ONLY_DIAGRAMS",
+                code="PATCH_PAGE_NON_COLOR_ENCODING_FAILED",
                 severity="error",
-                message="color_independent_diagrams must be true for production export",
+                message=(
+                    "color_independent_diagrams must be true for production export. "
+                    "Remediation: choose a recipe that encodes signals without color."
+                ),
             )
         )
 
     for page in pages:
         if page.page_kind in (PageKind.EXECUTION, PageKind.APPENDIX_EXECUTION):
             roles = {r.role for r in page.regions}
+            # FR-008: a layout can move a region, but can't leave one out.
+            for role in sorted(REQUIRED_REGIONS - roles):
+                issues.append(
+                    A11yIssue(
+                        code="PATCH_PAGE_REQUIRED_CONTENT_MISSING",
+                        severity="error",
+                        message=f"execution pages require a {role} region",
+                        page_id=page.page_id,
+                    )
+                )
             if "footer" not in roles:
                 issues.append(
                     A11yIssue(
@@ -112,9 +129,12 @@ def validate_composition_a11y(
             if run.style_role in {"body", "warning"} and run.font_size_pt < max(min_body, floor):
                 issues.append(
                     A11yIssue(
-                        code="TEXT_RUN_BELOW_MINIMUM",
+                        code="PATCH_PAGE_FONT_BELOW_MINIMUM",
                         severity="error",
-                        message=f"run {run.run_id} font_size_pt {run.font_size_pt} < {max(min_body, floor)}",
+                        message=(
+                            f"run {run.run_id} font_size_pt {run.font_size_pt} < {max(min_body, floor)}. "
+                            "Remediation: raise the recipe's body size."
+                        ),
                         page_id=page.page_id,
                     )
                 )

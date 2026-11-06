@@ -352,6 +352,35 @@ def compile_patch(
     )
 
 
+def export_failure_receipt(
+    *,
+    export_id: str,
+    run_id: str,
+    rig_revision_id: str,
+    attempt: int,
+    code: str,
+    detail: str,
+    created_at: datetime,
+) -> StageReceipt:
+    """The receipt of a compose that stopped (spec 002 FR-007). A failed attempt leaves no pack."""
+    return StageReceipt(
+        stage="export",
+        operation="compose_design_export_pack",
+        operation_version=GENERATOR_VERSION,
+        determinism_class="deterministic",
+        input_hash=canonical_sha256({"attempt": attempt, "export_id": export_id}),
+        output_hash=canonical_sha256({"code": code, "detail": detail}),
+        **_artifact_fields(
+            artifact_id=_stable_id("receipt", export_id, "failed", attempt),
+            entity_id=export_id,
+            run_id=run_id,
+            rig_revision_id=rig_revision_id,
+            seed=0,
+            created_at=created_at,
+        ),
+    ).seal()
+
+
 def run_outcome_receipt(
     *,
     run_id: str,

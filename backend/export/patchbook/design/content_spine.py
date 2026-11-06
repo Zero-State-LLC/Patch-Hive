@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from typing import Any, Literal
 
@@ -26,8 +26,9 @@ from canon.contracts import (
     canonical_json,
     canonical_sha256,
 )
-from canon.compiler import compile_patch
+from canon.compiler import _cycle_edges, compile_patch
 from canon.models import GeneratedPatchRecord, PatchLibraryRecord, RigRevisionRecord
+from modules.models import Module
 from patches.models import Patch
 from runs.bridge import native_artifact_manifest_hash
 from runs.models import Run
@@ -51,6 +52,15 @@ class LoadedLibraryItem:
 
 
 @dataclass(frozen=True)
+class ModuleDisplay:
+    """What a page prints about a module, read at export time (spec 002 P1). A sealed graph
+    holds only a module's id, so a rename reaches later exports without changing any seal."""
+
+    label: str
+    declared_jacks: frozenset[str] = frozenset()
+
+
+@dataclass(frozen=True)
 class LoadedLibrary:
     source_run_id: str
     source_rig_revision_id: str
@@ -58,6 +68,8 @@ class LoadedLibrary:
     library_content_hash: str
     load_path: LoadPath
     items: tuple[LoadedLibraryItem, ...]
+    # By module id. A module on no page's rig is left out, and composing that page fails.
+    module_display: dict[str, ModuleDisplay] = field(default_factory=dict)
 
 
 _GEN_RUN_RE = re.compile(r"^gen-run-(\d+)-([0-9a-f]{16})$")
@@ -92,7 +104,53 @@ def load_patch_compilations(
     require_sealed: bool = False,
 ) -> LoadedLibrary:
     """Path A then Path B. Never uses builder.py as Layer A."""
+    loaded = _load_compilations(
+        session,
+        source_run_id=source_run_id,
+        source_rig_revision_id=source_rig_revision_id,
+        artifact_manifest_hash=artifact_manifest_hash,
+        require_sealed=require_sealed,
+    )
+    return replace(loaded, module_display=_module_display(session, loaded))
 
+
+def _module_display(session: Session, library: LoadedLibrary) -> dict[str, ModuleDisplay]:
+    """The name and declared jacks of each module a page references, when the source rig
+    revision holds that module (spec 002 FR-013)."""
+    revision = session.get(RigRevisionRecord, library.source_rig_revision_id)
+    on_rig = _rig_modules(session, revision.canonical_rig if revision is not None else None)
+    referenced = {
+        node.module_instance_id
+        for item in library.items
+        for node in item.compilation.patch_graph.nodes
+    }
+    return {module_id: on_rig[module_id] for module_id in referenced & on_rig.keys()}
+
+
+def _rig_modules(session: Session, rig: Any) -> dict[str, ModuleDisplay]:
+    entries = rig.get("modules") or [] if isinstance(rig, dict) else []
+    ids = [int(entry["module_id"]) for entry in entries if str(entry.get("module_id")).isdigit()]
+    display: dict[str, ModuleDisplay] = {}
+    for module in session.query(Module).filter(Module.id.in_(ids)).all():
+        jacks = frozenset(
+            str(port.get("name"))
+            for port in (module.io_ports or [])
+            if isinstance(port, dict) and port.get("name")
+        )
+        display[str(module.id)] = ModuleDisplay(
+            label=f"{module.brand} {module.name}", declared_jacks=jacks
+        )
+    return display
+
+
+def _load_compilations(
+    session: Session,
+    *,
+    source_run_id: str,
+    source_rig_revision_id: str,
+    artifact_manifest_hash: str,
+    require_sealed: bool,
+) -> LoadedLibrary:
     library = (
         session.query(PatchLibraryRecord).filter(PatchLibraryRecord.run_id == source_run_id).first()
     )
@@ -192,6 +250,7 @@ def _load_path_b(
     if not patches:
         raise ContentSpineError("EXPORT_NO_PATCHES", "No patches for run")
 
+    rig_modules = _rig_modules(session, canonical_rig)
     items_list: list[LoadedLibraryItem] = []
     for position, patch in enumerate(patches):
         compilation = seal_orm_patch_to_compilation(
@@ -200,6 +259,7 @@ def _load_path_b(
             source_rig_revision_id=source_rig_revision_id,
             rig_snapshot=canonical_rig,
             position=position,
+            module_labels={mid: module.label for mid, module in rig_modules.items()},
         )
         items_list.append(
             LoadedLibraryItem(
@@ -307,6 +367,13 @@ def orm_patch_nodes_and_edges(
                 signal_type=_map_signal(conn.get("cable_type")),  # type: ignore[arg-type]
             )
         )
+    # A loop is declared, so the page can explain it and the report stays valid (spec 002 FR-011).
+    ports_to_nodes = {port.port_id: node.node_id for node in nodes for port in node.ports}
+    looped = _cycle_edges(tuple(edges), ports_to_nodes)
+    edges = [
+        edge.model_copy(update={"feedback_cycle_id": "feedback"}) if edge.edge_id in looped else edge
+        for edge in edges
+    ]
     return tuple(nodes), tuple(edges)
 
 
@@ -357,6 +424,7 @@ def seal_orm_patch_to_compilation(
     source_rig_revision_id: str,
     rig_snapshot: dict[str, Any],
     position: int = 0,
+    module_labels: dict[str, str] | None = None,
 ) -> PatchCompilation:
     """Deterministic pure seal from immutable run-bound patch JSON (Path B)."""
     # Fixed timestamp for determinism (Layer A seal must not depend on wall clock)
@@ -381,7 +449,7 @@ def seal_orm_patch_to_compilation(
         edges=edges,
     ).seal()
 
-    steps = _plan_steps_from_connections(connections)
+    steps = _plan_steps_from_connections(connections, module_labels or {})
     plan = PatchPlan(
         artifact_id=f"{artifact_base}-plan",
         entity_id=str(patch.id),
@@ -497,7 +565,9 @@ def _map_signal(cable_type: Any) -> str:
     return "unknown"
 
 
-def _plan_steps_from_connections(connections: list[dict[str, Any]]) -> tuple[PatchStep, ...]:
+def _plan_steps_from_connections(
+    connections: list[dict[str, Any]], labels: dict[str, str]
+) -> tuple[PatchStep, ...]:
     phases = ("prep", "threshold", "peak", "release", "seal")
     if not connections:
         return tuple(
@@ -518,10 +588,12 @@ def _plan_steps_from_connections(connections: list[dict[str, Any]]) -> tuple[Pat
         conn_idx = min(i, n - 1) if n else 0
         if i < n:
             conn = connections[i]
+            source = str(conn.get("from_module_id", "UNKNOWN"))
+            target = str(conn.get("to_module_id", "UNKNOWN"))
             instruction = (
-                f"Connect {conn.get('from_module_id', 'UNKNOWN')} "
+                f"Connect {labels.get(source, source)} "
                 f"{conn.get('from_port', 'UNKNOWN')} → "
-                f"{conn.get('to_module_id', 'UNKNOWN')} "
+                f"{labels.get(target, target)} "
                 f"{conn.get('to_port', 'UNKNOWN')}"
             )
         else:

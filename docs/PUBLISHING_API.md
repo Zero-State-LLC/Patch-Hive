@@ -37,7 +37,7 @@ Create export artifacts for a patch or rack.
 ```
 
 ### GET `/me/exports`
-List exports for current user.
+The account router owns this path, so it lists paid exports and this route never runs.
 
 ### POST `/me/publications`
 Create publication for an export.
@@ -62,7 +62,7 @@ Create publication for an export.
   "export_id": 1,
   "slug": "publication-title-abcdef12",
   "visibility": "public",
-  "status": "published",
+  "status": "draft",
   "allow_download": true,
   "allow_remix": false,
   "title": "Publication title",

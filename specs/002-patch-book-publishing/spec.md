@@ -1,6 +1,6 @@
 # 002: Patch-book compilation and publishing
 
-Status: DRAFT (2026-10-16). Filled by Opus 5.5 via OpenRouter from the repo docs and code listed under Sources. Each claim is labeled `[OBSERVED: <file>]` or `[INFERRED]`. The operator must confirm every `[INFERRED]` item before planning.
+Status: confirmed under the owner's delegation (T001, 2026-11-04) and converged at T090 (2026-11-06). An agent drafted it on 2026-10-16 from the repo docs and code listed under Sources. Each claim is labeled `[OBSERVED: <file>]`, `[INFERRED]`, or by the record that settled it: `[T001 D<n>]` is [the T001 record](T001_CONFIRMATION_2026-11-04.md), and a decision number is [the owner's decisions](../../docs/evidence/OWNER_DECISIONS_2026-11-04.md).
 
 ## Sources
 
@@ -11,7 +11,7 @@ Status: DRAFT (2026-10-16). Filled by Opus 5.5 via OpenRouter from the repo docs
 - `docs/FEATURE_FLAGS.md`
 - PatchHive Constitution 1.0.0, which governs this spec.
 
-The source extracts were truncated. Requirements that depend on missing source text are listed under [Open questions](#open-questions).
+The source extracts were truncated, and this spec wins over them (decision 38). What the generator doc has and this spec doesn't is listed under [Left to the generator doc](#left-to-the-generator-doc).
 
 ## Summary
 
@@ -21,45 +21,47 @@ This feature also specifies the historical publishing layer. That layer lets an 
 
 **Why:** Performers need a reproducible, accessible, printable manual that agrees with their confirmed inventory and canonical patch artifacts. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] Publishing lets owners share those artifacts with provenance. Moderation keeps the public surface accountable. [OBSERVED: PUBLISHING_IMPLEMENTATION.md]
 
-## Implementation status (2026-11-03)
+## Implementation status (2026-11-06)
 
-Checked against the code on `main` at 3688037 (0.3.0-alpha.6). The 2026-10-29 table (at 95ca9ee) had compilation 7 implemented, 15 partial, 2 missing and publishing 17, 2, 1; #138, #143 and #197 moved FR-006, FR-016, FR-017, FR-036, FR-042 and FR-048. Open gaps link to [research.md](research.md) and to the open tasks in [tasks.md](tasks.md). "Design Engine" means `backend/export/patchbook/design/`; "engine.py" below is `backend/export/patchbook/design/engine.py`. Totals: compilation 10 implemented, 14 partial, 0 missing; publishing 19 implemented, 1 partial, 0 missing.
+Checked against the code at T090, after 0.3.0-alpha.13. Open gaps link to [research.md](research.md) and to the open tasks in [tasks.md](tasks.md). "Design Engine" means `backend/export/patchbook/design/`; "engine.py" below is `backend/export/patchbook/design/engine.py`. Totals: compilation 19 implemented, 3 partial, 2 not built by decision; publishing 19 implemented, 1 partial.
+
+Until 2026-11-06 a paid book's PDF pages drew no diagram at all, and named modules by database id. The diagram went only to a separate SVG file in the pack. T090 fixed both.
 
 | FR | Status | Evidence |
 |---|---|---|
 | FR-001 | Implemented | One execution page per patch. Overflow fails instead of continuing (#101) [OBSERVED: design/engine.py `layout_patch_page`]. Plate mode is under FR-016. |
 | FR-002 | Implemented | No page has a QR code or companion link, so none can hold required content [OBSERVED: repo grep 2026-11-03]. |
 | FR-003 | Implemented | Text wraps by measured width (#101). The legacy rig and patch PDFs wrap and continue on a new page (#133). |
-| FR-004 | Partial | Body, steps, cables and the cover use the floor; the cover disclaimer wraps at `body_size_pt()` and the metadata block starts below it (#138, T035) [OBSERVED: design/engine.py `_render_execution_pdf`]. The colophon's patent disclaimer is still drawn at 8 pt (R4). |
+| FR-004 | Implemented | Body, steps, cables, the cover and the colophon use the floor; the cover and colophon notices wrap at `body_size_pt()` (T035, T090) [OBSERVED: design/engine.py `_render_execution_pdf`]. |
 | FR-005 | Implemented | Dash pattern, number and label per signal; preflight `COLOR_ONLY_DIAGRAMS` [OBSERVED: design/diagram_svg.py, design/a11y.py]. |
 | FR-006 | Implemented | `validate_book` reloads the layout IR from disk and replays `composition_hash`; a mismatch fails `PATCH_BOOK_ASSET_HASH_MISMATCH` (#143, T030) [OBSERVED: design/engine.py `validate_book`]. Two runs give the same hash and the same receipt bytes [OBSERVED: tests/unit/test_patchbook_svg_goldens.py, test_patchbook_validate_book.py]. The replay re-hashes the stored IR; it does not recompile from source. |
-| FR-007 | Partial | The pack has one `validate_book` receipt (`validation/book.json`) that is kept on failure (#143). The page stages are not separate and leave no receipts; Path A patches now carry the canonical compiler's receipts (#142, spec 001) [OBSERVED: design/engine.py, design/dual_write.py]. |
-| FR-008 | Partial | Preflight checks the diagram region and execution footer only (`DIAGRAM_REGION_MISSING`, `EXECUTION_FOOTER_MISSING`) [OBSERVED: design/a11y.py]. |
-| FR-009 | Partial | The three classes are typed. Each family has one default, with no fallback to another class [OBSERVED: design/families/registry.py]. |
+| FR-007 | Implemented | The stages in [Composing a book](#composing-a-book) run in order. `validate_book` writes `validation/book.json`, kept on failure (#143). A stage that stops the export leaves a stage receipt with its code and remediation (T090) [OBSERVED: canon/fulfillment.py `_keep_failure_receipt`]. |
+| FR-008 | Implemented | Every family's page holds all six regions in its layout IR, and preflight refuses one that doesn't. The PDF draws them: title and footer identity, intent, diagram, construction, operation (T090) [OBSERVED: design/engine.py `_lay_out`, design/a11y.py]. The category, difficulty and build time the generator doc lists under identity aren't printed. |
+| FR-009 | Implemented | The three classes are typed, and each family has one default, so selection is deterministic. `instruction_first` draws the diagram last; the other two draw it first (T090) [OBSERVED: design/families/registry.py]. There's no fallback to another class (decision 37). |
 | FR-010 | Implemented | Required content is never dropped; a page that can't hold it fails (#101). |
-| FR-011 | Partial | SVG first, numbered routes, arrows, dash encoding. Feedback cycles are not marked [OBSERVED: design/diagram_svg.py]. |
-| FR-012 | Partial | `CONTRAST_BELOW_AA`, `READING_ORDER_EMPTY`, a text companion and per-page JSON. No full WCAG 2.2 AA check [OBSERVED: design/a11y.py]. |
-| FR-013 | Partial | The legacy route refuses patches from another rig (#133). The Design Engine checks only for a patch with no cables (`NO_CABLES`) [OBSERVED: design/content_spine.py, backend/export/routes.py]. |
-| FR-014 | Partial | Same evidence as FR-013 [INFERRED]. |
-| FR-015 | Partial | Overflow codes (#101) and the font floor (#102). Label collisions and cable crossings are not checked (OQ-9). |
+| FR-011 | Implemented | One geometry drawn as the SVG and on the PDF page. Each module's box lists its jacks with their cable numbers, and those numbers match the connection list. Arrows mark direction, five dash patterns and a legend mark signal type, and loops are drawn heavier, tagged `FB` and warned about (T090) [OBSERVED: design/diagram_svg.py `layout_diagram`]. |
+| FR-012 | Partial | `CONTRAST_BELOW_AA`, `READING_ORDER_EMPTY`, a text companion with the page's own cable list and warnings, and per-page JSON. WCAG 2.2 AA can't be proven by these checks; the screen-reader and PDF pass is a human's [OBSERVED: design/a11y.py]. |
+| FR-013 | Partial | Modules must be on the source rig revision, or `PATCH_BOOK_REFERENCE_UNRESOLVED`. The connection list and the diagram both read the sealed graph. Every validation report issue prints on the page, including a normal being broken, and a failed report stops the export (T090). Jacks can't be resolved against the rig, which holds no jacks; see FR-014. The catalog holds no required modes or normals, so nothing sets them. The page's only safety wording is the compiler's fixed text, and no check looks for other claims. |
+| FR-014 | Implemented | A missing title, intent, step, cable, jack name or signal type stops the export with `PATCH_PAGE_REQUIRED_CONTENT_MISSING` (T090, D7) [OBSERVED: design/engine.py `check_semantics`]. Most catalog modules declare no jacks, so the generator's role names stay (spec 001 OQ-04). The page says so, naming those modules. Module names are read at export time, so a rename reaches later exports. |
+| FR-015 | Partial | Overflow codes (#101), the font floor (#102), and one page per patch. Jack labels sit inside module boxes, so they can't land on a route. Cable-crossing and ambiguity limits stay `NOT_COMPUTABLE` until the owner approves measured numbers (decision 38). |
 | FR-016 | Implemented | `validate_book` checks PDF pages drawn against the manifest, patches against patch pages, page order, references, per-diagram hashes and composition replay, and fails with the three `PATCH_BOOK_*` codes plus remediation (#143, T030) [OBSERVED: design/engine.py `validate_book`]. Plate mode (flag off by default) fails `PATCH_BOOK_PAGE_COUNT_MISMATCH` until plates are drawn (T031). The book has no table of contents or index to resolve. |
 | FR-017 | Implemented | The manifest lists one entry per page: index, kind, page id, patch artifact id, page hash, SVG hash, status [OBSERVED: design/engine.py manifest `"pages"`]. The page number is the 0-based `index`. |
-| FR-018 | Partial | PDF, manifest with page entries, `checksums.json` with a SHA-256 per file (read back after writing), `validation/book.json`, page JSON, diagram SVGs, library index, LICENSE, companion [OBSERVED: design/engine.py]. No README (#143). |
-| FR-019 | Partial | Book codes carry remediation (#143), and every preflight warning is listed in `validation/book.json` and its codes in the manifest (T036, #138, #143). Only a few other section 15 codes exist. |
+| FR-018 | Implemented | PDF, README, manifest with page entries, `checksums.json` with a SHA-256 per file (read back after writing), `validation/book.json`, page JSON, diagram SVGs, library index, LICENSE, companion (T090) [OBSERVED: design/engine.py]. The field is "can contain", and the source rig revision isn't copied in. |
+| FR-019 | Implemented | Errors use the section 15 codes where a stage exists, and carry remediation. Preflight warnings are listed in `validation/book.json` and the manifest (T036, #138, #143). Four codes have no stage to raise them: `PATCH_PAGE_LAYOUT_NOT_SUPPORTED`, `PATCH_PAGE_GRAYSCALE_FAILED` and `PATCH_PAGE_STANDALONE_EXECUTION_FAILED` (decision 37), and `PATCH_PAGE_LABEL_COLLISION` (decision 38). |
 | FR-020 | Implemented | Composition reads sealed compilations and writes only into the pack directory [INFERRED from design/engine.py]. |
-| FR-021 | Partial | The optional block goes first, then the export fails with a code (#101). No per-patch rejection and no other layout. |
+| FR-021 | Implemented | The optional block goes first, then the whole export fails with a code and the credits come back (#101, decision 37) [OBSERVED: tests/unit/test_spec_002_compose_stages.py]. |
 | FR-022 | Implemented | Cover and colophon are separate pages [OBSERVED: design/engine.py]. |
-| FR-023 | Partial | Stage receipts carry `determinism_class` and `operation_version`. The rune manifest declares full operation contracts, but only for the 8 generation operations, none for page or book compilation [OBSERVED: canon/contracts.py, patchhive/runes/manifest.json]. |
-| FR-024 | Partial | No `COMPILE_PATCH_PAGE` stage. The preflight, overflow gates and `validate_book` cover part of it. |
+| FR-023 | Not built, by decision | Composing isn't broken into runes (decision 37). Its receipts carry `determinism_class` and `operation_version` [OBSERVED: canon/contracts.py]. |
+| FR-024 | Not built, by decision | No `COMPILE_PATCH_PAGE` stage (decision 37). `check`, preflight, page fit and `validate_book` hold the conditions, apart from a standalone-execution check. |
 | FR-030 | Implemented | The router is mounted only when the flag is set; the default is false [OBSERVED: backend/main.py:202, backend/core/config.py:62]. |
 | FR-031 | Implemented | The publishing pages are deleted; the frontend keeps only API types in `frontend/src/types/api.ts`, and no page uses them [OBSERVED: repo grep 2026-11-03]. |
-| FR-032 | Implemented | With the flag off every route is 404 and changes nothing (OQ-5). Every lifecycle event and `create` is tested against an app built with the flag off (2026-11-03) [OBSERVED: backend/tests/unit/test_spec_002_transitions.py]. |
+| FR-032 | Implemented | With the flag off no publishing handler runs and nothing changes. Nine of the eleven paths answer 404. `POST /api/me/exports` answers 405 and `GET /api/me/exports` lists paid exports, because the account router owns that path (D1). All of it is tested against an app built with the flag off [OBSERVED: backend/tests/unit/test_spec_002_transitions.py]. |
 | FR-033 | Implemented | 403 `Export ownership mismatch` on export and publication create [OBSERVED: backend/publishing/routes.py:199,206,236]. |
 | FR-034 | Implemented | `unique_publication_export`, and 400 on a second create [OBSERVED: backend/publishing/models.py:60, routes.py]. |
 | FR-035 | Implemented | `slug` is unique [OBSERVED: backend/publishing/models.py:70]. |
 | FR-036 | Implemented | `PublicationCreate.visibility` defaults to `unlisted`; the gallery excludes unlisted (#138, T034) [OBSERVED: backend/publishing/schemas.py:40, routes.py `list_gallery`]. |
 | FR-037 | Implemented | `PublicationUpdate` has only the listed fields, and `status` takes only `published` or `hidden` [OBSERVED: backend/publishing/schemas.py]. |
-| FR-038 | Implemented | Only lifecycle pairs are accepted; anything else is 409 `INVALID_TRANSITION` (#101). The owner PATCH and admin hide and remove lock the row first (#197) and every row of the table is tested (#182) [OBSERVED: routes.py `OWNER_TRANSITIONS`, tests/unit/test_spec_002_transitions.py]. |
+| FR-038 | Implemented | Only lifecycle pairs are accepted (#101). An illegal pair answers 409 `INVALID_TRANSITION`, a removed row 409 `PUBLICATION_UNDER_MODERATION`, an unbound publish 409 `PUBLICATION_BOOK_NOT_VALIDATED`, and a report on a row that isn't public 404, so it looks like a missing row (D5). The owner PATCH and admin hide and remove lock the row first (#197), and every row of the table is tested (T010) [OBSERVED: routes.py `OWNER_TRANSITIONS`, tests/unit/test_spec_002_transitions.py]. |
 | FR-039 | Implemented | The public payload has no email or database id; the publisher shows as "PatchHive User" [OBSERVED: backend/publishing/routes.py `get_publication`]. |
 | FR-040 | Implemented | License and `run_id`, `generated_at`, `patch_count`, `manifest_hash` [OBSERVED: same]. |
 | FR-041 | Implemented | 403 `Downloads disabled` when `allow_download` is false [OBSERVED: routes.py:410]. |
@@ -70,15 +72,16 @@ Checked against the code on `main` at 3688037 (0.3.0-alpha.6). The 2026-10-29 ta
 | FR-046 | Implemented | Reads filter to `published`, and a removed publication refuses any PATCH with 409 (#130) [OBSERVED: routes.py:284]. |
 | FR-047 | Implemented | Separate `publication_exports` table [OBSERVED: backend/publishing/models.py]. |
 | FR-048 | Partial | `draft` → `published` answers 409 `PUBLICATION_BOOK_NOT_VALIDATED` unless `_bound_to_validated_book` is true, and it always returns false, so nothing can publish (#143, T032) [OBSERVED: backend/publishing/routes.py:297, `_bound_to_validated_book`]. The guard fails closed. Binding a publication export to a validated pack does not exist (T033, OQ-6). |
-| FR-049 | Implemented | Publishing imports no decision-layer code [OBSERVED: repo grep 2026-11-03]. |
+| FR-049 | Implemented | Publishing imports no decision-layer code, and the only writers of a publication's status are its routes and account closure (T010) [OBSERVED: tests/unit/test_spec_002_transitions.py]. |
+
+Known gap: no Alembic migration creates `publications`, `publication_exports` or `publication_reports`, so turning the flag on against a migrated database would fail at the first query (inferred, not run). T033 has to add one if publishing returns (D13).
 
 ## Scope
 
 In scope:
 
-- Compiling patch pages through the staged pipeline: build the page spec, score density, select a layout, route cables, render SVG, validate fit and accessibility, and bind the page manifest. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- Assembling and validating the book, then emitting the export bundle. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- Stage receipts and the machine-readable error taxonomy. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+- Composing a book in the stages under [Composing a book](#composing-a-book), then emitting the export bundle. [OBSERVED: backend/export/patchbook/design/engine.py]
+- Receipts and the machine-readable error taxonomy. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - The feature-flagged publication lifecycle: create, publish, hide, unhide, edit, report, admin hide, and admin remove. [OBSERVED: docs/PUBLISHING_API.md]
 - Public read, download gating, and the gallery. [OBSERVED: docs/PUBLISHING_API.md]
 
@@ -86,10 +89,11 @@ In scope:
 
 - The paid export debit, credits ledger, Stripe webhooks, download tokens, and fulfillment worker retry and compensation. These belong to the canonical payment and export surface (`/api/canon/*`). This spec only requires that compilation never mutates source artifacts and that the compiler can be replayed safely. [INFERRED] (scope split, from docs/FEATURE_FLAGS.md and docs/PATCH_BOOK_GENERATOR.md section 17)
 - Making legacy publishing a current product capability, or adding navigation to it. [OBSERVED: docs/PUBLISHING_API.md] [OBSERVED: docs/FEATURE_FLAGS.md]
-- Multi-page publication profiles and artistic dual-artifact packs (`ENABLE_PATCHBOOK_PUBLICATION_PROFILE`). See open question OQ-11. [INFERRED]
-- The Style Studio and Design Engine (`ENABLE_PATCHBOOK_DESIGN_ENGINE`). [INFERRED]
+- The per-patch page machine and book machine, per-patch rejection, other layouts as remediation, and decomposition recommendations. The generator doc's staged design isn't built (decision 37).
+- Multi-page publication profiles and artistic dual-artifact packs (`ENABLE_PATCHBOOK_PUBLICATION_PROFILE`). The flag stays off (decision 38).
+- The Style Studio and style recipes (`ENABLE_PATCHBOOK_DESIGN_ENGINE`; spec 008). The compile rules in `backend/export/patchbook/design/` are in scope (T001 D4).
 - Patch generation, rig verification, and inventory confirmation. This feature consumes those outputs. [INFERRED]
-- Decomposing a patch into new patches. The compiler can recommend decomposition, but it cannot create or change patch artifacts. [INFERRED] (from docs/PATCH_BOOK_GENERATOR.md sections 2 and 16)
+- Decomposing a patch into new patches. The compiler cannot create or change patch artifacts. [INFERRED] (from docs/PATCH_BOOK_GENERATOR.md sections 2 and 16)
 
 ## User stories
 
@@ -99,21 +103,21 @@ As a rig owner, I want each validated patch compiled into one complete page, so 
 
 Acceptance criteria:
 
-1. **Given** a patch with a PatchGraph, a PatchPlan, a passing ValidationReport, module display metadata, a book profile, and theme tokens, **when** compilation runs, **then** the patch produces exactly one accepted page. That page contains the identity header, diagram, intent, construction, operation, and footer identity regions. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-2. **Given** a patch whose content exceeds the page, **when** fit validation fails, **then** the compiler simplifies optional prose or selects another approved layout. If neither works, the compiler rejects the patch from the book profile with a machine-readable error and remediation. The compiler never truncates, clips, or uses an ellipsis on required content. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-3. **Given** any accepted page, **when** you render it in grayscale, **then** every cable and signal type stays distinguishable without color. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-4. **Given** a print profile, **when** the page is accepted, **then** no body text is smaller than 9.5 pt. For a digital profile, no body text is smaller than the 14 px equivalent. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-5. **Given** a patch that references a module or port missing from the source rig revision, **when** semantic validation runs, **then** compilation fails with an error code and no page is accepted. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+1. **Given** a patch with a PatchGraph, a PatchPlan, a passing ValidationReport, module display metadata, a book profile, and theme tokens, **when** the book is composed, **then** the patch produces exactly one page. That page contains the identity header, diagram, intent, construction, operation, and footer identity regions. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+2. **Given** a patch whose content exceeds the page, **when** the page is laid out, **then** the optional title block goes first. If the patch still doesn't fit, the whole export fails with a machine-readable error and remediation, and the customer's credits come back (decision 37). The compiler never truncates, clips, or uses an ellipsis on required content. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+3. **Given** any page, **when** you render it in grayscale, **then** every cable and signal type stays distinguishable without color. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+4. **Given** a print profile, **when** the page is drawn, **then** no body text is smaller than 9.5 pt. For a digital profile, no body text is smaller than the 14 px equivalent. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+5. **Given** a patch that references a module or port missing from the source rig revision, **when** semantic validation runs, **then** the export fails with an error code. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 
 ### P2: Assemble and validate a Patch Book [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 
-As a rig owner, I want accepted pages assembled into a validated, manifest-bound book, so that the PDF, the manifest, and the assets agree.
+As a rig owner, I want a book's pages assembled into a validated, manifest-bound book, so that the PDF, the manifest, and the assets agree.
 
 Acceptance criteria:
 
-1. **Given** a set of accepted pages, **when** assembly completes, **then** each PatchBookManifest page entry binds a page number, the patch ID where applicable, the page hash, the SVG asset hash, and the validation status. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+1. **Given** a book's pages, **when** assembly completes, **then** each PatchBookManifest page entry binds a page number, the patch ID where applicable, the page hash, the SVG asset hash, and the validation status. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 2. **Given** an assembled book, **when** book validation runs, **then** the patch count equals the patch-page count and the PDF page count equals the manifest page count. Every table of contents and index reference resolves, and every asset is present and hash-valid. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-3. **Given** a book validation failure, **when** the compiler stops, **then** it keeps every completed stage receipt and diagnostic and reports `PATCH_BOOK_PAGE_COUNT_MISMATCH`, `PATCH_BOOK_REFERENCE_UNRESOLVED`, or `PATCH_BOOK_ASSET_HASH_MISMATCH`. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+3. **Given** a book validation failure, **when** the compiler stops, **then** it keeps its receipt and diagnostics and reports `PATCH_BOOK_PAGE_COUNT_MISMATCH`, `PATCH_BOOK_REFERENCE_UNRESOLVED`, or `PATCH_BOOK_ASSET_HASH_MISMATCH`. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 4. **Given** front matter or back matter, **when** the book is assembled, **then** those pages are never placed inside a patch's required content. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 
 ### P3: Reproduce a book deterministically [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
@@ -189,12 +193,12 @@ Acceptance criteria:
 - **FR-001**: Each published patch must occupy exactly one page. A patch must not continue onto another page, share a page, or rely on its facing page. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **FR-002**: A QR code or online companion may extend a page, but it must not contain required execution information. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **FR-003**: Required content must not be hidden, clipped, truncated, or replaced by an ellipsis. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] Implemented 2026-10-28 (#101) for the Design Engine execution PDF: titles, intents, steps and cables wrap by measured width (`layout_patch_page`), and long diagram labels wrap inside their node instead of being cut at 18 characters. Implemented 2026-10-29 (#133) for the legacy rig and patch PDFs: text wraps and continues on a new page.
-- **FR-004**: Body text must not be smaller than 9.5 pt in print profiles or 14 px equivalent in digital profiles. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] Implemented 2026-10-28 (#102) for the Design Engine PDF: intent, steps and cables (required content) and cover and colophon text are drawn at `body_size_pt()`, the recipe minimum but never below 9.5 pt for print profiles or 10.5 pt (14 px) for digital ones. A recipe asking for less is raised, with a `BODY_SIZE_RAISED_TO_FLOOR` warning; any text run below the floor is an error. Captions, the title block and footers are not body text. The cover's patent disclaimer is still 8 pt (research R4).
+- **FR-004**: Body text must not be smaller than 9.5 pt in print profiles or 14 px equivalent in digital profiles. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] Implemented 2026-10-28 (#102) for the Design Engine PDF: intent, steps and cables (required content) and cover and colophon text are drawn at `body_size_pt()`, the recipe minimum but never below 9.5 pt for print profiles or 10.5 pt (14 px) for digital ones. A recipe asking for less is raised, with a `BODY_SIZE_RAISED_TO_FLOOR` warning; any text run below the floor is an error. Captions, diagram labels, the title block and footers are not body text. The cover's and colophon's patent notices are drawn at the floor.
 - **FR-005**: Color must not be the only way to encode a signal or cable. Pages must remain understandable in grayscale. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **FR-006**: Fixed normalized input, schema version, generator version, layout profile, and seed must produce canonical-equivalent output. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- **FR-007**: Compilation must run the pipeline stages in the order shown in [Page compilation machine](#page-compilation-machine-per-patch) and write a receipt for each stage. A terminal failure must keep all completed receipts and diagnostics. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+- **FR-007**: Composing must run the stages in the order shown in [Composing a book](#composing-a-book). A stage that stops the export must keep what's completed and a receipt of the failure with its code and remediation. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] (one pass instead of per-page stages: decision 37)
 - **FR-008**: Each patch page must contain these semantic regions: identity header, patch diagram, intent, construction, operation, and footer identity. A layout can move regions but must not omit required semantics. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- **FR-009**: The compiler must select a layout deterministically from three approved classes: `diagram_first`, `instruction_first`, and `performance_first`. Themes must not introduce unapproved semantic layouts. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+- **FR-009**: The compiler must select a layout deterministically from three approved classes: `diagram_first`, `instruction_first`, and `performance_first`. Each family has one default class. Themes must not introduce unapproved semantic layouts. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] (one default, no fallback: decision 37)
 - **FR-010**: Content budgets are profile inputs. The compiler can compress wording while preserving meaning. It must not delete a connection, safety condition, or required mode to achieve fit. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **FR-011**: Diagrams must meet these requirements: [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
   - Diagrams are SVG first.
@@ -204,22 +208,22 @@ Acceptance criteria:
   - Audio, CV, gate, trigger, and clock each have a distinct encoding that doesn't rely on color.
   - Feedback cycles are marked and carry a startup warning.
   - Node placement and edge routing are deterministic.
-- **FR-012**: Pages must target WCAG 2.2 AA for digital surfaces and equivalent print legibility. Every page must have a text equivalent of the graph and a text-first companion in JSON or HTML. An accessibility failure is a compilation failure for production output. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+- **FR-012**: Pages must target WCAG 2.2 AA for digital surfaces and equivalent print legibility. Every page must have a text equivalent of the graph and a text-first companion in JSON or HTML. An accessibility failure the checks can see is a compilation failure for production output. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **FR-013**: Semantic validation must check the following: [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
   - Patch, module, and port references resolve to the source rig revision.
   - Ordered connections exactly represent the PatchGraph.
   - Required modes and normal-break behavior are explicit.
   - Warnings match the ValidationReport.
   - Unsupported safety claims are absent.
-  - Implemented 2026-10-29 in part (#133): the legacy patch book refuses patches from another rig (`PATCH_BOOK_REFERENCE_UNRESOLVED`), and `POST /api/export/patchbook` is off by default (410).
-- **FR-014**: Compilation must use only confirmed inventory and capabilities. A missing physical or functional fact must produce an explicit error. The compiler must not invent a substitute fact. [INFERRED] (constitution principles 3 and 8)
+  - The legacy patch book also refuses patches from another rig (`PATCH_BOOK_REFERENCE_UNRESOLVED`), and `POST /api/export/patchbook` is off by default (410) (#133).
+- **FR-014**: Compilation must use only confirmed inventory and capabilities. A missing physical or functional fact must produce an explicit error. The compiler must not invent a substitute fact. A jack that isn't on file keeps the generator's role name (spec 001 OQ-04), and the page must say which modules that applies to. [INFERRED] (constitution principles 3 and 8)
 - **FR-015**: Page-fit validation must confirm the following: [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
   - The patch produces exactly one rendered page.
   - No block overflows its region.
   - No element is clipped.
   - The minimum font size holds.
   - No labels collide.
-  - Cable crossings and ambiguity stay within accepted thresholds.
+  - Cable crossings and ambiguity stay within accepted thresholds, once the owner approves them. Until then they're `NOT_COMPUTABLE` (decision 38).
   - The footer and checksum remain visible.
 - **FR-016**: Book validation must check the following: [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
   - Patch count equals patch-page count.
@@ -230,24 +234,24 @@ Acceptance criteria:
   - Deterministic replay reproduces the canonical JSON.
 - **FR-017**: Each manifest page entry must bind the page number, the patch ID where applicable, the page hash, the SVG asset hash, and the validation status. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **FR-018**: The export bundle can contain the PDF, the manifests and checksums, the page SVG and JSON files, the diagram SVG files, the source library and rig revision, the validation reports, the license file, and a README. The PDF is a presentation artifact. Canonical JSON and hashes are the reproducibility authority. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- **FR-019**: Errors must be machine-readable, use the codes in section 15 of the generator spec, and include remediation. Warnings must never silently become passes. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+- **FR-019**: Errors must be machine-readable, use the codes in section 15 of the generator spec where a stage exists to raise them, and include remediation. Warnings must never silently become passes: a warning lets the pack through and is recorded in the manifest and `validation/book.json` (OQ-7). [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **FR-020**: Page assembly must never change source artifacts. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- **FR-021**: When a page can't satisfy the constraints, the compiler must simplify optional prose, choose another approved layout, recommend decomposition, or reject the patch from the selected book profile. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] The compiler must only recommend decomposition. It must not create the decomposed patches. [INFERRED] (from FR-020) Implemented 2026-10-28 in part: when a page is full, the optional title block goes first; if required content still does not fit, the export fails with `PATCH_PAGE_TEXT_OVERFLOW` (or `PATCH_PAGE_DIAGRAM_OVERFLOW` for a label) and remediation, and the paid export is compensated. Rejecting only the one patch from the book, and alternative layouts, are not built yet.
+- **FR-021**: When a page can't satisfy the constraints, the optional title block goes first. If required content still doesn't fit, the export fails with `PATCH_PAGE_TEXT_OVERFLOW` or `PATCH_PAGE_DIAGRAM_OVERFLOW` and remediation, and the paid export is compensated. No patch is dropped from a book, because a customer shouldn't pay for a book missing a patch (decision 37). The compiler must not create decomposed patches. [INFERRED] (from FR-020)
 - **FR-022**: Front matter and back matter are exempt from the one-patch rule. They must never be inserted inside a patch's required content. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- **FR-023**: Each compiler rune must declare its input and output schemas, version, determinism class, permitted side effects, authority requirement, error taxonomy, and test vectors. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- **FR-024**: `COMPILE_PATCH_PAGE` succeeds only when signal validation, required-content validation, diagram legibility, page-fit validation, and standalone execution all pass. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+- **FR-023**: Any compiler rune must declare its input and output schemas, version, determinism class, permitted side effects, authority requirement, error taxonomy, and test vectors. Composing has no runes today (decision 37). [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+- **FR-024**: A book's page is drawn only when signal validation, required-content validation, and page-fit validation pass. `COMPILE_PATCH_PAGE` and its standalone-execution check aren't built (decision 37). [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 
 ### Publishing
 
 - **FR-030**: Publishing endpoints must be disabled unless `ENABLE_LEGACY_PUBLISHING=true`. The default is `false`. [OBSERVED: docs/FEATURE_FLAGS.md] [OBSERVED: docs/PUBLISHING_API.md]
 - **FR-031**: Publishing must not appear in active navigation or be described as a current product capability. [OBSERVED: docs/PUBLISHING_API.md] [OBSERVED: docs/FEATURE_FLAGS.md]
-- **FR-032**: When the flag is off, every publishing request must fail closed and change no state. [INFERRED] (constitution principle 9)
+- **FR-032**: When the flag is off, every publishing request must fail closed and change no state. No publishing handler runs. [INFERRED] (constitution principle 9)
 - **FR-033**: The system must enforce export ownership for export and publication creation. [OBSERVED: PUBLISHING_IMPLEMENTATION.md]
 - **FR-034**: An export can have at most one publication. [OBSERVED: backend/publishing/models.py]
 - **FR-035**: Each publication slug must be unique. [OBSERVED: backend/publishing/models.py]
 - **FR-036**: Visibility is either `unlisted` or `public`. The default is `unlisted`. The gallery must exclude unlisted publications. [OBSERVED: backend/publishing/models.py] [OBSERVED: PUBLISHING_IMPLEMENTATION.md]
 - **FR-037**: Owner updates are limited to `title`, `description`, `visibility`, `allow_download`, `allow_remix`, `cover_image_url`, and `status`. Status can only be set to `published` or `hidden`. [OBSERVED: docs/PUBLISHING_API.md]
-- **FR-038**: Publication status must change only through the [publication lifecycle transitions](#publication-lifecycle-machine). [OBSERVED: PUBLISHING_IMPLEMENTATION.md] ("immutable records (status transitions only)"; see OQ-4) Implemented 2026-10-28 (#101): creation starts in `draft`; owner, admin and report actions accept only the pairs in the lifecycle table and answer 409 `INVALID_TRANSITION` otherwise, with no state change.
+- **FR-038**: Publication status must change only through the [publication lifecycle transitions](#publication-lifecycle-machine). [OBSERVED: PUBLISHING_IMPLEMENTATION.md] ("immutable records (status transitions only)"; see OQ-4) Creation starts in `draft`. Anything the table doesn't list changes nothing and is refused, as the implementation status table lists.
 - **FR-039**: Public payloads must exclude email addresses and internal IDs. [OBSERVED: PUBLISHING_IMPLEMENTATION.md]
 - **FR-040**: The public read must include the license and provenance (`run_id`, `generated_at`, `patch_count`, `manifest_hash`). [OBSERVED: docs/PUBLISHING_API.md]
 - **FR-041**: Artifact downloads (`pdf`, `svg`, `zip`) must be served only when `allow_download` is `true`. [OBSERVED: docs/PUBLISHING_API.md]
@@ -262,10 +266,10 @@ Acceptance criteria:
 
 ## Key entities
 
-- **PatchPageSpec**: a versioned semantic description of one patch page. It covers identity, intent, construction, operation, indexing, and the canonical hash. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- **PageFitReport**: the fit and accessibility verdict for a page. Its status is `pass`, `warning`, or `fail`. It also lists overflows, clipping, and remediation. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+- **PatchPageSpec**: a versioned semantic description of one patch page, in the generator doc. Not built (decision 37): a page is laid out directly from the sealed plan and graph. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+- **PageFitReport**: the fit and accessibility verdict for a page, in the generator doc. Not built (decision 37): preflight and the page-fit check stop the export instead. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **PatchBookManifest**: the book-level binding of pages, assets, versions, and the canonical hash. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- **Stage receipt**: the record each pipeline stage writes. A terminal failure keeps all completed receipts. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+- **Stage receipt**: the record a stage writes. `validate_book` writes one, and a stage that stops an export writes one with its failure. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **Export bundle**: the set of PDF, SVG, JSON, and ZIP artifacts for a book. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **PublicationExport**: a historical sharing export with an owner, a patch or rack, a license, a run ID, a manifest hash, and artifact URLs. [OBSERVED: backend/publishing/models.py]
 - **Publication**: a slugged, status-bearing publication of exactly one export. [OBSERVED: backend/publishing/models.py]
@@ -274,42 +278,32 @@ Acceptance criteria:
 
 ## Adversary threat model: public publishing surfaces
 
-Scope: the unauthenticated read, download, gallery and report endpoints in `backend/publishing/routes.py` (decision on OQ-15, provisional, owner to confirm; see [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md)). Code was read on `main` at 176779e. Line numbers are in `backend/publishing/routes.py` unless a path is given. This is a legacy surface: the router mounts only when `ENABLE_LEGACY_PUBLISHING=true`, which defaults to false (`backend/main.py:202-205`, `backend/core/config.py:62`, `docs/FEATURE_FLAGS.md:8`). Moving a draft to `published` also needs a validated book, and `_bound_to_validated_book` always returns False today (`287-289,303-308`). So no publication can reach `published` through the API now. The risks below apply once either gate opens.
+Scope: the unauthenticated read, download, gallery and report endpoints in `backend/publishing/routes.py` (decision on OQ-15, provisional, owner to confirm; see [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md)). Code was read on `main` at 176779e, before #197 and #280, so the line numbers are out of date. They're in `backend/publishing/routes.py` unless a path is given. This is a legacy surface: the router mounts only when `ENABLE_LEGACY_PUBLISHING=true`, which defaults to false (`backend/main.py:202-205`, `backend/core/config.py:62`, `docs/FEATURE_FLAGS.md:8`). Moving a draft to `published` also needs a validated book, and `_bound_to_validated_book` always returns False today (`287-289,303-308`). So no publication can reach `published` through the API now. The risks below apply once either gate opens.
 
 | # | Adversary and attack | Existing mitigation | Gap |
 |---|---|---|---|
-| P1 | Slug enumeration: guess or crawl `/p/{slug}` to find publications | The slug is the title slug plus 8 hex characters from `uuid4` (`backend/publishing/utils.py:7-14`), about 32 random bits, and is unique in the database (`backend/publishing/models.py:70`). Only `published` rows resolve, and any other status returns the same 404 as a missing slug (`340-346`). | 32 bits is guessable by a patient crawler against a public host, and the title part is readable. No rate limit applies to any route in this file; the only limiter in `backend/` is the design-preview one (`backend/export/patchbook/design/rate_limit.py`). 404s are not logged or throttled. |
+| P1 | Slug enumeration: guess or crawl `/p/{slug}` to find publications | The slug is the title slug plus 8 hex characters from `uuid4` (`backend/publishing/utils.py:7-14`), about 32 random bits, and is unique in the database (`backend/publishing/models.py:70`). Only `published` rows resolve, and any other status returns the same 404 as a missing slug (`340-346`). | 32 bits is guessable by a patient crawler against a public host, and the title part is readable. Only the report route has a rate limit (#197). 404s are not logged or throttled. |
 | P2 | Unlisted leakage: an `unlisted` publication shows up in a listing or index | The gallery filters `visibility == "public"` and `status == "published"` (`418-423`). Cards carry only slug, title, description, cover and type (`440-449`). The public read returns a fixed publisher label and no avatar (`350-353`). The gallery cursor is a timestamp, not an id (`452-456`). | `/p/{slug}` serves an unlisted publication to anyone with the link, which is intended, but no `X-Robots-Tag` or `noindex` is set, so a shared link can be indexed. Public JSON includes `run_id` and `manifest_hash` (`369-374`). Hidden or removed items return 404, but no `Cache-Control` is set in this file, so a cache could keep serving an old copy. The cursor is the previous `published_at`, so rows sharing a timestamp can be skipped (correctness, not leakage). |
-| P3 | Report spam: flood `/p/{slug}/report` to bury the moderator queue or harass a publisher | Only a `published` publication can be reported (`469-472`). Reason is 3-200 characters and details at most 2000 (`backend/publishing/schemas.py:117-121`). The reporter id is stored when logged in (`476`). | Anonymous reports are allowed, with no rate limit, no per-reporter dedupe, no CAPTCHA, and no cap on reports per publication (`461-482`). Reports trigger no automatic action, so spam cannot auto-hide a publication, but it can flood the queue. 002 OQ-13 chose per-IP and per-user limits plus dedupe per (publication, reporter), and that is not built. Retention of reports and audit rows is undecided. |
+| P3 | Report spam: flood `/p/{slug}/report` to bury the moderator queue or harass a publisher | Only a `published` publication can be reported (`469-472`). Reason is 3-200 characters and details at most 2000 (`backend/publishing/schemas.py:117-121`). The reporter id is stored when logged in (`476`). | The route allows 10 reports an hour per address, and a signed-in reporter gets one report per publication (#197). Anonymous reports are bounded only by that limit, with no CAPTCHA and no cap per publication. Reports trigger no automatic action, so spam cannot auto-hide a publication, but it can flood the queue. Retention of reports and audit rows is undecided. |
 | P4 | Hotlinked downloads: embed `/api/p/{slug}/download/*` on another site to burn bandwidth | Downloads need `published` status and `allow_download` (`392-401`). The type is limited to `pdf`, `svg`, `zip` (`47,389-390`). The file path comes from the stored export record, not from the URL (`403`), so the URL gives no path traversal. | No referer check, signed URL, or per-IP or per-slug bandwidth limit. The response is a bare `FileResponse` (`407`) with no `Content-Disposition` or `X-Content-Type-Options`. Large zips are served from the app process. Artifacts live under `settings.export_dir` and nothing here removes them when a publication is removed (`50-69`). |
-| P5 | Malicious content: a publisher plants hostile content in title, description, cover URL or the artifacts to reach readers | Title is capped at 200 and description at 2000 characters (`backend/publishing/schemas.py:38-39`). Artifacts are generated server-side from the owner's own rack or patch (`77-175`), and export creation checks ownership (`185-201`). An admin can hide or remove with an audit row (`485-575`). | `cover_image_url` is an unvalidated string (`backend/publishing/schemas.py:43,54`), so it can point to a tracking pixel on a third-party host, an `http:` URL, or a `javascript:` or `data:` URL if a client renders it unsafely. The rack SVG interpolates `rack.name`, `case.name` and module names into markup with no escaping (`backend/export/visualization.py:49-50,89-92`; no `escape` call in the file). An SVG served from `/api/p/{slug}/download/svg` opens as a document, so a rack named with markup is stored XSS on the API origin. Title and description escaping is the client's job and is not tested here. |
+| P5 | Malicious content: a publisher plants hostile content in title, description, cover URL or the artifacts to reach readers | Title is capped at 200 and description at 2000 characters (`backend/publishing/schemas.py:38-39`). Artifacts are generated server-side from the owner's own rack or patch (`77-175`), and export creation checks ownership (`185-201`). An admin can hide or remove with an audit row (`485-575`). | `cover_image_url` is an unvalidated string (`backend/publishing/schemas.py:43,54`), so it can point to a tracking pixel on a third-party host, an `http:` URL, or a `javascript:` or `data:` URL if a client renders it unsafely. An SVG served from `/api/p/{slug}/download/svg` opens as a document, so names have to be escaped in it; they are (#280, `tests/api/test_svg_export_escaping.py`). Title and description escaping is the client's job and is not tested here. |
 
-Suggested tasks, not yet in `tasks.md`:
-
-1. Add a rate limit to `/p/*`, the gallery and the report route, plus dedupe per (publication, reporter). This is the 002 OQ-13 work (P1, P3, P4).
-2. Lengthen the random slug part to at least 96 bits, or add a separate random token for unlisted links (P1).
-3. Send `X-Robots-Tag: noindex` on unlisted reads and `Cache-Control: no-store` on read and download, so removal takes effect (P2).
-4. Add `Content-Disposition: attachment` and `X-Content-Type-Options: nosniff` to downloads, and decide on signed or short-lived download URLs (P4).
-5. XML-escape every interpolated name in `export/visualization.py` and add a hostile-name test (P5). This one is a code defect more than a design choice.
-6. Validate `cover_image_url` as an `https` URL on an allowlist, or drop the field (P5).
+The gaps that remain are T038 to T041 in [tasks.md](tasks.md). They gate T033, and none has any effect while publishing is off.
 
 ## Workflows
 
-Status: INFERRED skeleton. Confirm before you plan.
-
 - Governing workflows (skills): anti-slop-code, production-systems, google-developer-style.
-- Owners: FORGE decomposes, a cloud agent implements, SCRIBE files the compact artifact.
+- Owners: FORGE decomposes, and a cloud agent implements.
 - CI: reuse `.github/workflows/ci.yml` (jobs `backend` and `frontend`). Do not add a new CI path.
 
 ## Stateful behavior
 
-This feature has three state machines:
+This feature has one state machine and one pass:
 
 - [Publication lifecycle machine](#publication-lifecycle-machine)
-- [Page compilation machine (per patch)](#page-compilation-machine-per-patch)
-- [Book compilation machine](#book-compilation-machine)
+- [Composing a book](#composing-a-book), which has stages but no stored states
 
-Implementers treat each transitions table as the contract. Any (state, event) pair that a table doesn't list is rejected, and the state doesn't change. [INFERRED] (constitution principle 9)
+Implementers treat the transitions table as the contract. Any (state, event) pair it doesn't list is rejected, and the state doesn't change. [INFERRED] (constitution principle 9)
 
 ### Publication lifecycle machine
 
@@ -381,146 +375,44 @@ stateDiagram-v2
     removed --> [*]
 ```
 
-### Page compilation machine (per patch)
+### Composing a book
 
-Initial state: `queued`. Final states: `accepted` and `rejected`. One patch always produces zero or one accepted page. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+The owner chose not to build the page and book compile machines (decision 37). The staged design stays in `docs/PATCH_BOOK_GENERATOR.md` sections 3 and 12, and no task builds it.
 
-Each transition writes a stage receipt. A terminal state keeps all completed receipts and diagnostics. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+A book is composed in one pass, with no stored stage states. Any stage below that stops stops the whole export: the export ends `refunded`, the customer's credits come back, and a stage receipt keeps the code and remediation. No patch is dropped from a book, because a customer shouldn't pay for a book missing a patch. [OBSERVED: backend/canon/fulfillment.py, backend/export/patchbook/design/engine.py]
 
-States:
+| stage | what it does | stops with |
+|---|---|---|
+| `load` | Reads the sealed patches for the run, or compiles them from the run's patches, and the name and jacks of each module on the source rig revision. | `EXPORT_NO_PATCHES`, `EXPORT_BRIDGE_HASH_MISMATCH` |
+| `check` | Refuses a missing fact, a module not on the rig, or a failed validation report (FR-013, FR-014). | `PATCH_PAGE_REQUIRED_CONTENT_MISSING`, `PATCH_BOOK_REFERENCE_UNRESOLVED`, `PATCH_PAGE_GRAPH_MISMATCH` |
+| `preflight` | Checks each page's regions, reading order, contrast, non-color encoding and font floor (FR-005, FR-008, FR-012). A warning passes and is recorded (OQ-7). | `PATCH_PAGE_REQUIRED_CONTENT_MISSING`, `PATCH_PAGE_NON_COLOR_ENCODING_FAILED`, `PATCH_PAGE_FONT_BELOW_MINIMUM`, `CONTRAST_BELOW_AA` |
+| `draw` | Lays out and draws each page. The optional title block goes first if a page is full (FR-021). | `PATCH_PAGE_TEXT_OVERFLOW`, `PATCH_PAGE_DIAGRAM_OVERFLOW` |
+| `validate_book` | Counts pages against the manifest, resolves references, checks asset hashes, and replays the composition hash. Writes `validation/book.json` (FR-016). | `PATCH_BOOK_PAGE_COUNT_MISMATCH`, `PATCH_BOOK_REFERENCE_UNRESOLVED`, `PATCH_BOOK_ASSET_HASH_MISMATCH` |
+| `emit` | Writes a SHA-256 per file, reads each back, and checks that the required files exist. | `PATCH_BOOK_ASSET_HASH_MISMATCH`, `PACK_FILE_MISSING` |
 
-- `queued` [INFERRED]
-- `spec_built` [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] ("build PatchPageSpec")
-- `density_scored` [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- `layout_selected` [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- `routed` [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- `rendered` [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- `fit_passed` [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- `accessibility_passed` [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- `standalone_passed` [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] (section 12, `COMPILE_PATCH_PAGE` success conditions)
-- `remediating` [INFERRED] (from section 2 remediation options)
-- `accepted`: the page is bound into the page manifest. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- `rejected`: the patch is excluded from the book profile. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+A retry is another attempt at the same export. It must produce canonical-equivalent artifacts and must not create a conflicting immutable artifact, unless a module's name changed in the catalog between attempts, which changes the composition hash. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] (the rename [T001 D3, T090])
 
-| from | event | guard | to | effect |
-|---|---|---|---|---|
-| `queued` | `build_spec_ok` | the inputs are present and their versions are compatible; semantic validation passes | `spec_built` | Write the PatchPageSpec with its canonical hash and a stage receipt. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `queued` | `build_spec_fail` | an input is missing, a version is incompatible, or semantic validation fails | `rejected` | Write a receipt with `PATCH_PAGE_REQUIRED_CONTENT_MISSING` or `PATCH_PAGE_GRAPH_MISMATCH` and remediation. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] (fail-closed guard [INFERRED], constitution principle 9) |
-| `spec_built` | `score_density` | none | `density_scored` | Record text density and diagram density. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `density_scored` | `select_layout_ok` | an untried approved layout class supports the output profile | `layout_selected` | Record the selected layout deterministically. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `density_scored` | `select_layout_fail` | no approved layout class supports the page | `rejected` | Write `PATCH_PAGE_LAYOUT_NOT_SUPPORTED`. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `layout_selected` | `route_ok` | none | `routed` | Number routes to match the ordered connection list and place labels deterministically. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `routed` | `render_ok` | none | `rendered` | Write the canonical SVG asset and its hash. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `rendered` | `fit_pass` | PageFitReport status is `pass` | `fit_passed` | Write the PageFitReport. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `rendered` | `fit_fail` | status is `fail` or `warning`; a remediation option remains | `remediating` | Write the PageFitReport with error codes and remediation. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] (treating `warning` as not passing is [INFERRED]; see OQ-7) |
-| `rendered` | `fit_fail` | status is `fail` or `warning`; no remediation option remains | `rejected` | Write the PageFitReport and the terminal error code. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `remediating` | `simplify_prose` | optional prose remains to compress; no connection, safety condition, or required mode is removed | `spec_built` | Rebuild the spec with compressed optional wording. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `remediating` | `change_layout` | an untried approved layout class remains | `density_scored` | Mark the current layout as tried. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `remediating` | `recommend_decomposition` | no other remediation remains | `rejected` | Record a decomposition recommendation. Create no patches. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] (no-create effect [INFERRED], FR-021) |
-| `fit_passed` | `accessibility_pass` | grayscale, non-color encoding, reading order, contrast, and text equivalent checks pass | `accessibility_passed` | Write an accessibility receipt. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `fit_passed` | `accessibility_fail` | production output | `rejected` | Write `PATCH_PAGE_GRAYSCALE_FAILED` or `PATCH_PAGE_NON_COLOR_ENCODING_FAILED`. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `accessibility_passed` | `standalone_pass` | signal validation, required-content validation, and diagram legibility pass | `standalone_passed` | Write a standalone-execution receipt. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `accessibility_passed` | `standalone_fail` | any condition fails | `rejected` | Write `PATCH_PAGE_STANDALONE_EXECUTION_FAILED`. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `standalone_passed` | `bind_page_manifest` | none | `accepted` | Bind the page hash, the SVG asset hash, and the validation status. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-
-Remediation attempts run in a fixed, deterministic order, and each option is tried at most once, so the machine always terminates. [INFERRED] (constitution principle 1)
-
-Illegal transitions:
-
-- `accepted` or `rejected` → any state. [INFERRED]
-- Skipping a stage, such as `rendered` → `accepted` or `layout_selected` → `rendered`. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] (stage order)
-- `rendered` → `fit_passed` when the PageFitReport status is `warning`. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] ("Warnings never silently become passes")
-- Any remediation that deletes a connection, safety condition, or required mode. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- A second accepted page for the same patch. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- Any transition that a model or decision-layer component triggers on its own authority. [INFERRED] (constitution principle 4)
-
-```mermaid
-stateDiagram-v2
-    [*] --> queued
-    queued --> spec_built: build_spec_ok
-    queued --> rejected: build_spec_fail
-    spec_built --> density_scored: score_density
-    density_scored --> layout_selected: select_layout_ok
-    density_scored --> rejected: select_layout_fail
-    layout_selected --> routed: route_ok
-    routed --> rendered: render_ok
-    rendered --> fit_passed: fit_pass
-    rendered --> remediating: fit_fail [option remains]
-    rendered --> rejected: fit_fail [no option]
-    remediating --> spec_built: simplify_prose
-    remediating --> density_scored: change_layout
-    remediating --> rejected: recommend_decomposition
-    fit_passed --> accessibility_passed: accessibility_pass
-    fit_passed --> rejected: accessibility_fail
-    accessibility_passed --> standalone_passed: standalone_pass
-    accessibility_passed --> rejected: standalone_fail
-    standalone_passed --> accepted: bind_page_manifest
-    accepted --> [*]
-    rejected --> [*]
-```
-
-### Book compilation machine
-
-Initial state: `collecting`. Final states: `emitted` and `failed`. A terminal failure keeps all completed receipts and diagnostics. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] (state names [INFERRED])
-
-States:
-
-- `collecting`: page machines run for each patch in the book profile. [INFERRED]
-- `assembled`: the PatchBookManifest, front matter, and back matter exist. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- `validated`: book validation passed. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- `emitted`: the export bundle is written and hash-verified. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- `failed`: terminal failure with receipts. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-
-| from | event | guard | to | effect |
-|---|---|---|---|---|
-| `collecting` | `assemble` | every page machine is terminal; at least one page is accepted | `assembled` | Write the PatchBookManifest with stable page order. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] (the at-least-one guard is [INFERRED]; see OQ-8) |
-| `collecting` | `assemble_fail` | no page is accepted | `failed` | Write a receipt that lists every rejected patch and its error. [INFERRED] |
-| `assembled` | `validate_pass` | page counts match, references resolve, assets are hash-valid, and replay reproduces canonical JSON | `validated` | Write a book validation receipt. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `assembled` | `validate_fail` | any book check fails | `failed` | Write `PATCH_BOOK_PAGE_COUNT_MISMATCH`, `PATCH_BOOK_REFERENCE_UNRESOLVED`, or `PATCH_BOOK_ASSET_HASH_MISMATCH`. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `validated` | `emit_ok` | every bundle artifact is written and matches its checksum | `emitted` | Write `manifest/checksums.json`. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-| `validated` | `emit_fail` | an artifact is missing or its hash doesn't match | `failed` | Write `PATCH_BOOK_ASSET_HASH_MISMATCH`. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] |
-
-A retry starts a new attempt for the same source run. The retry must produce canonical-equivalent artifacts and must not create a conflicting immutable artifact. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-
-Illegal transitions:
-
-- `emitted` or `failed` → any state within the same attempt. [INFERRED]
-- `assembled` → `emitted` without validation. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- `assemble` while any page machine is non-terminal. [INFERRED]
-- Changing any source artifact in any state. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-
-```mermaid
-stateDiagram-v2
-    [*] --> collecting
-    collecting --> assembled: assemble
-    collecting --> failed: assemble_fail
-    assembled --> validated: validate_pass
-    assembled --> failed: validate_fail
-    validated --> emitted: emit_ok
-    validated --> failed: emit_fail
-    emitted --> [*]
-    failed --> [*]
-```
+Composing never changes a source artifact. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 
 ## Success criteria
 
-- **SC-001**: Every accepted page in a test library passes page-fit, accessibility, and standalone-execution validation, and no patch has more than one accepted page. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+- **SC-001**: Every page in a test library passes the checks in [Composing a book](#composing-a-book), and no patch has more than one page. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **SC-002**: Compiling a fixed source run twice produces identical canonical JSON and stable SVG structure. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
 - **SC-003**: For every emitted book, the patch count equals the patch-page count and the PDF page count equals the manifest page count. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- **SC-004**: Golden fixtures cover beginner, dense, feedback, performance, missing-data, long-label, grayscale, A4, and Letter cases. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] Visual diff thresholds are NOT_COMPUTABLE (OQ-9).
+- **SC-004**: Golden fixtures cover beginner, dense, feedback, performance, missing-data, long-label, grayscale, A4, and Letter cases. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md] Visual diff thresholds are `NOT_COMPUTABLE` until approved (decision 38). Today's fixtures cover dense, feedback, missing-data and long-label pages, and every page is US Letter.
 - **SC-005**: Publishing tests pass for export ownership, unlisted gallery exclusion, removed-publication inaccessibility, public payload redaction, download gating, and moderation audit logging. [OBSERVED: PUBLISHING_IMPLEMENTATION.md]
 - **SC-006**: With default configuration, every publishing endpoint fails closed and changes no state. [INFERRED]
-- **SC-007**: Every illegal transition in the three tables has a test that confirms the request is rejected and the state is unchanged. [INFERRED]
+- **SC-007**: Every illegal transition in the publication table has a test that confirms the request is rejected and the state is unchanged, and every stage of [Composing a book](#composing-a-book) has a test that stops there. [INFERRED]
 
 ## Edge cases
 
 - A patch reference that resolves to an older rig revision fails semantic validation. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- A feedback cycle without a startup warning fails page validation. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- A patch that fits US Letter but not A5 is rejected only from the A5 profile. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
-- Long module or port labels can't be truncated. They trigger remediation or rejection. [OBSERVED: docs/PATCH_BOOK_GENERATOR.md]
+- A feedback cycle is marked on the diagram and carries a startup warning on the page. The warning comes from the graph, so no cycle can go without one. [T090]
+- Every page is US Letter today, so no patch fits one size and not another. [OBSERVED: backend/export/patchbook/design/engine.py]
+- Long module or port labels can't be truncated. They wrap inside their box, and a box that makes the page too tall fails the export. [T090]
 - A missing jack, voltage, or mode fact produces an explicit error, never a placeholder. [INFERRED] (constitution principle 3)
 - The feature flag turns off while publications exist. Public reads stop, and stored state is unchanged. [INFERRED]
-- An owner and an admin act on the same publication at the same time. The admin transition wins, and a stale owner request is rejected. [INFERRED] (see OQ-10)
+- An owner and an admin act on the same publication at the same time. The admin ends with the hold whichever commits first, and a stale owner request is rejected. [T001 D6] (see OQ-10)
 - A report targets a hidden or removed publication. The system rejects it. [INFERRED]
 - A publication's source patch or rack is deleted. The export keeps its provenance because the patch and rack references are set to null. [OBSERVED: backend/publishing/models.py]
 
@@ -534,21 +426,26 @@ stateDiagram-v2
   - Resolved 2026-10-29 from the code: no. Admin remove accepts `published` or `hidden` only; a draft gets 409 `INVALID_TRANSITION` (research R6).
 - **OQ-4**: "Immutable records (status transitions only)" conflicts with owner metadata edits. Which fields are mutable after publish? NOT_COMPUTABLE. [OBSERVED: PUBLISHING_IMPLEMENTATION.md] **Answered (checked 2026-11-01):** FR-037 fields stay editable in draft/published/hidden; a removed publication refuses any PATCH (#130).
   - Resolved 2026-10-29 from the code: the FR-037 fields stay editable in `draft`, `published` and `hidden`. A removed publication refuses any edit (#130; research R6).
-- **OQ-5**: Which response code do publishing endpoints return when the flag is off? NOT_COMPUTABLE. **Answered (checked 2026-11-01):** 404: router not mounted when ENABLE_LEGACY_PUBLISHING is false (flag-off 404 untested per T010).
-  - Resolved 2026-10-29 from the code: 404. The router is not mounted, so no handler runs and no state changes (`backend/main.py`; research R6).
-- **OQ-6**: Must a publication export bind to a validated PatchBookManifest, given that it is isolated from paid MVP exports? NOT_COMPUTABLE. **Decided 2026-11-01 by Jev (owner-delegated):** `keep_off` (confidence 0.8) (a lawyer must confirm): Leave _bound_to_validated_book()=False; publish always 409 PUBLICATION_BOOK_NOT_VALIDATED (current state, T032 done). Cost 0; no gallery. Repo recommendation now. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
-  - Still open (owner). Today no publication export binds one, and publish checks nothing. Research R2 recommends refusing publish until one does.
+- **OQ-5**: Which response code do publishing endpoints return when the flag is off? NOT_COMPUTABLE. **Answered (checked 2026-11-01):** 404, because the router isn't mounted when ENABLE_LEGACY_PUBLISHING is false, so no handler runs and no state changes (`backend/main.py`; research R6). The two `/me/exports` paths are the exception: the account router owns them, so they answer 405 and 200 (T001 D1).
+- **OQ-6**: Must a publication export bind to a validated PatchBookManifest, given that it is isolated from paid MVP exports? NOT_COMPUTABLE. **Decided 2026-11-01 by Jev (owner-delegated):** `keep_off` (confidence 0.8) (a lawyer must confirm): Leave _bound_to_validated_book()=False; publish always 409 PUBLICATION_BOOK_NOT_VALIDATED (current state, T032 done). Cost 0; no gallery. Repo recommendation now. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md). Whether publishing comes back at all is T033, and stays with the owner and counsel.
 - **OQ-7**: Does a PageFitReport `warning` ever allow acceptance, and under which policy? NOT_COMPUTABLE. **Decided 2026-11-01 by Jev (owner-delegated):** `non_blocking_recorded` (confidence 0.88): Warnings pass but are recorded in manifest and validation/book.json (already built, T036). No code change. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
-  - Still open (owner). As built, a preflight warning allows the pack and is recorded nowhere (research R5).
 - **OQ-8**: Is a book with zero accepted patch pages valid? NOT_COMPUTABLE. **Answered (checked 2026-11-01):** No. Design Engine fails EXPORT_NO_PATCHES; legacy route returns 404.
   - Resolved 2026-10-29 from the code: no. The Design Engine fails `EXPORT_NO_PATCHES`, and the legacy route returns 404 (research R6).
-- **OQ-9**: Cable-crossing, ambiguity, and visual-diff thresholds aren't specified. NOT_COMPUTABLE. **Decided 2026-11-01 by Jev (owner-delegated):** `measured_thresholds` (confidence 0.89): Implement crossing count and label-box overlap checks, set thresholds from measurement over existing fixtures (e.g. max crossings per page, zero label overlaps) and a pixel-diff tolerance. Needs owner to approve numbers; effort M. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
-- **OQ-10**: How are concurrent owner and admin transitions ordered? NOT_COMPUTABLE. **Decided 2026-11-01 by Jev (owner-delegated):** `row_lock` (confidence 0.66): SELECT ... FOR UPDATE on the publication row in owner and admin handlers; admin then wins by ordering, and the owner path re-checks moderation_audit_id after the lock. Effort S, no migration; needs Postgres (no-op on SQLite). See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md). Implemented 2026-11-01 (T037): the owner PATCH and admin hide and remove load the row with `FOR UPDATE`; the owner path reads the moderation state after the lock.
-  - Still open (owner). As built, nothing orders them: there is no row lock or version check, so the last commit wins (research R7).
-- **OQ-11**: `ENABLE_PATCHBOOK_PUBLICATION_PROFILE` enables multi-page publications. How does it reconcile with the one-page publishing law? NOT_COMPUTABLE. [OBSERVED: docs/FEATURE_FLAGS.md] **Decided 2026-11-01 by Jev (owner-delegated):** `keep_off_deferred` (confidence 0.77): Leave flag off, plates undrawn, validation failing by design (T031). Decision postponed; zero cost. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
-  - Still open (owner). As built, each patch gets a non-executable plate, and its one-page execution page goes in the appendix (research R7).
+- **OQ-9**: Cable-crossing, ambiguity, and visual-diff thresholds aren't specified. NOT_COMPUTABLE. **Decided 2026-11-01 by Jev (owner-delegated):** `measured_thresholds` (confidence 0.89): Implement crossing count and label-box overlap checks, set thresholds from measurement over existing fixtures (e.g. max crossings per page, zero label overlaps) and a pixel-diff tolerance. Needs owner to approve numbers; effort M. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md). **Owner, 2026-11-04 (decision 38):** the thresholds stay `NOT_COMPUTABLE` until approved.
+- **OQ-10**: How are concurrent owner and admin transitions ordered? NOT_COMPUTABLE. **Decided 2026-11-01 by Jev (owner-delegated):** `row_lock` (confidence 0.66): SELECT ... FOR UPDATE on the publication row in owner and admin handlers; admin then wins by ordering, and the owner path re-checks moderation_audit_id after the lock. Effort S, no migration; needs Postgres (no-op on SQLite). See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md). Implemented 2026-11-01 (T037): the owner PATCH and admin hide and remove load the row with `FOR UPDATE`; the owner path reads the moderation state after the lock. T090 added the other order: an admin who acts after the owner's hide still ends with a hold (D6). No test runs the lock on Postgres.
+- **OQ-11**: `ENABLE_PATCHBOOK_PUBLICATION_PROFILE` enables multi-page publications. How does it reconcile with the one-page publishing law? NOT_COMPUTABLE. [OBSERVED: docs/FEATURE_FLAGS.md] **Decided 2026-11-01 by Jev (owner-delegated):** `keep_off_deferred` (confidence 0.77): Leave flag off, plates undrawn, validation failing by design (T031). Decision postponed; zero cost. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md). **Owner, 2026-11-04 (decision 38):** the flag stays off.
 - **OQ-12**: The legal effect and enforcement of the `CC BY-NC 4.0` default license and of `allow_remix` are unknown. NOT_COMPUTABLE. [OBSERVED: backend/publishing/models.py] **Decided 2026-11-01 by Jev (owner-delegated):** `owner_picks_license` (confidence 0.39) (provisional: low confidence, owner to confirm; a lawyer must confirm): Add a license choice (e.g. CC BY-NC, CC BY-NC-ND, all-rights-reserved) mapped from allow_remix (remix=false -> ND). Medium effort; schema change; clearer intent. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
 - **OQ-13**: Report rate limits, anonymous reporting rules, and data retention for reports and audit logs aren't specified. NOT_COMPUTABLE. **Decided 2026-11-01 by Jev (owner-delegated):** `limit_and_require_dedupe` (confidence 0.34) (provisional: low confidence, owner to confirm; a lawyer must confirm): Keep anonymous reports but add per-IP/per-user rate limit and dedupe per (publication, reporter); retention still undecided. Effort S-M. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
   - Implemented 2026-11-01 (T037): anonymous reports stay; the report route allows 10 an hour per client address (429 `REPORT_RATE_LIMIT`, in-process like the sign-in limit); a signed-in reporter's repeat report of the same publication answers 200 `already_reported` and stores nothing. Anonymous reports are limited but not de-duplicated (no reporter identity, no schema change). **Report and audit-log retention is still undecided** (research R6; owner and lawyer).
-- **OQ-14**: The source extracts were truncated. Requirements in the missing text are NOT_COMPUTABLE until the operator supplies them. **Decided 2026-11-01 by Jev (owner-delegated):** `operator_supplies` (confidence 0.83): Operator supplies the missing source text; spec is revised against it. Only path that truly answers it. See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
+- **OQ-14**: The source extracts were truncated. Requirements in the missing text are NOT_COMPUTABLE until the operator supplies them. **Owner, 2026-11-04 (decision 38):** the spec wins over the truncated extracts. This replaces Jev's `operator_supplies` of 2026-11-01. See [Left to the generator doc](#left-to-the-generator-doc).
 - **OQ-15**: Confirm the Workflows section, including whether ADVERSARY threat-models the public read, download, and report surfaces. NOT_COMPUTABLE. **Decided 2026-11-01 by Jev (owner-delegated):** `threat_model_now` (confidence 0.43) (provisional: low confidence, owner to confirm): Write a one-page threat model for /p/{slug}, download, gallery and report (enumeration of slugs, unlisted leakage, report spam, hotlinked downloads, malicious uploaded content). Effort S; doc only. **Done (provisional):** see "Adversary threat model: public publishing surfaces". See [the decision record](../../docs/evidence/JEV_DECISIONS_2026-11-01.md).
+
+## Left to the generator doc
+
+`docs/PATCH_BOOK_GENERATOR.md` is in this repo and isn't cut off. It has these, and this spec doesn't require them (T001 O7, decision 38):
+
+- Invariant 8: decorative art may not reduce technical legibility.
+- The content budget numbers (section 7).
+- The layout area targets (section 6).
+- The typeface rules (section 9).
+- Tagged PDF (section 10).

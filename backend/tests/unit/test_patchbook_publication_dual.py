@@ -51,7 +51,7 @@ def _minimal_library() -> LoadedLibrary:
         position=0,
     )
     item = LoadedLibraryItem(position=0, compilation=compilation, orm_patch_id=1)
-    from export.patchbook.design.content_spine import library_content_hash
+    from export.patchbook.design.content_spine import ModuleDisplay, library_content_hash
 
     return LoadedLibrary(
         source_run_id="gen-run-1-aaaaaaaaaaaaaaaa",
@@ -60,6 +60,7 @@ def _minimal_library() -> LoadedLibrary:
         library_content_hash=library_content_hash([item]),
         load_path="compile_on_export",
         items=(item,),
+        module_display={"1": ModuleDisplay("Fixture VCO"), "2": ModuleDisplay("Fixture VCA")},
     )
 
 

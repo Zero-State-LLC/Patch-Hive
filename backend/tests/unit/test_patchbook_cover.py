@@ -42,6 +42,9 @@ class _Recorder:
     def showPage(self):
         self.page += 1
 
+    def beginPath(self):
+        return _Recorder()
+
     def __getattr__(self, name):
         return lambda *a, **k: None
 
