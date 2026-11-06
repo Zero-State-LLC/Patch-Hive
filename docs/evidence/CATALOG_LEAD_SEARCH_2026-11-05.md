@@ -146,6 +146,26 @@ Reading staging's public API afterwards:
 - D-LFO keeps 12 HP, marked `legacy_unsourced`. A-155 reads 50 HP.
 - `cwejman-dmf-2` is public in the catalog, but `/api/modules` has no row for DMF-2. That's why the two totals grew by 46 and 45.
 
+## Production
+
+Loaded from `main` at `dd35349`, after [#314](https://github.com/Zero-State-LLC/Patch-Hive/pull/314) merged, on the owner's yes with these hashes. That yes also accepted that these rows return to public reads while decision 39's wider question is with counsel, that patches for a Rig holding one of them can change, and that ES-40 appears twice until the "Sleepers" row is cleaned up.
+
+- `plan_hash`: `14225be44f6e52e60135ae6cca8f74baec0400cf1dd7f0b9218b668029605f53`
+- `inputs_hash`: `2c2bcb7511632e0513d2e4be856d065a6c637108766673aaeffc8ad73a320bf6`
+- 0 conflicts, no destructive SQL.
+
+| Step | Run | Result |
+|---|---|---|
+| Dry run, branch | [42173130758](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42173130758) | Wrote nothing |
+| Dry run, `main` | [42175583408](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42175583408) | Same hashes |
+| Apply | [42175777859](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42175777859) | 46 promoted, and 220 already confirmed |
+| Second dry run | [42176222375](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42176222375) | Plans nothing |
+| Smoke | [42176507496](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42176507496) | 10/10 |
+
+Reading production's public API afterwards gave the same results as staging. The catalog holds 3,426 rows and `/api/modules` 3,420, with 0 ModularGrid mentions. Every public catalog row matches staging's. Health reports 0.3.0-alpha.12 with the database ok. 298 leads stay hidden.
+
+6 public catalog rows have no row in `/api/modules`, up from 5 with DMF-2: Knit Rider Expander, Cwejman AP-1, Cwejman DMF-2, Doepfer A-110, Erica Synths Pico DRUMS and Intellijel Metropolis. Why they have none hasn't been looked into.
+
 ## Not in this change
 
 T031 and T039 stay open.
