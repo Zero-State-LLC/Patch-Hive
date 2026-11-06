@@ -49,5 +49,5 @@
 
 ## Polish
 
-- [x] T090 Converge the code against the spec. Done 2026-11-06: D2, D5, D6 and D8 (#321), D3 (#289, owner decision 35), D9 and one role per module (#322, owner decision 36), and the spec edits for D1, D4, D7, D10 and D11 (#322). The code is on `main` and not deployed: #321's migration has to run first.
+- [x] T090 Converge the code against the spec. Done 2026-11-06: D2, D5, D6 and D8 (#321), D3 (#289, owner decision 35), D9 and one role per module (#322, owner decision 36), and the spec edits for D1, D4, D7, D10 and D11 (#322). Deployed in 0.3.0-alpha.13 on 2026-11-06, with #321's migration run first on each host. Not exercised on a deployed host: a failed run's reason and receipt, and reject records. Tests cover both.
   - depends_on: [T010, T030, T031, T032, T033, T034]
