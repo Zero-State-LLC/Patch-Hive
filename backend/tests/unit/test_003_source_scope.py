@@ -127,7 +127,8 @@ def _archive(db: Session, module: Module, *, field: str, action: str) -> None:
         text(
             "CREATE TABLE IF NOT EXISTS catalog_value_archive (id INTEGER PRIMARY KEY, "
             "batch TEXT, table_name TEXT, row_key TEXT, brand TEXT, name TEXT, field TEXT, "
-            "old_value TEXT, source_tag TEXT, maker_check TEXT, action TEXT, archived_at TEXT)"
+            "old_value TEXT, source_tag TEXT, maker_check TEXT, action TEXT, archived_at TEXT, "
+            "rolled_back_run_id TEXT)"
         )
     )
     db.execute(
