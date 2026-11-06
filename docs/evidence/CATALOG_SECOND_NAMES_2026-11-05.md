@@ -2,7 +2,7 @@
 
 The [lead search](CATALOG_LEAD_SEARCH_2026-11-05.md) found public rows that list one module under two names. This review covers every public row that shares a maker page with another public row, not only the 18 that record named, because the same fault runs through the maker crawl too.
 
-It retires 38 rows, which would take the public catalog from 3,426 to 3,388 rows. Retiring follows [spec 003 FR-036](../../specs/003-catalog-dataset-pipeline/spec.md): a tombstone with a reason, never a deletion. The list is `data/synth-catalog/overlays/catalog-retirements-v5.json`.
+It retires 38 rows, which took the public catalog from 3,426 to 3,388 rows. Retiring follows [spec 003 FR-036](../../specs/003-catalog-dataset-pipeline/spec.md): a tombstone with a reason, never a deletion. The list is `data/synth-catalog/overlays/catalog-retirements-v5.json`.
 
 ## Which row stays
 
@@ -133,3 +133,19 @@ Reading staging's public API afterwards:
 - Public catalog rows with no row in `/api/modules` went from 6 to 4: Cwejman AP-1, Cwejman DMF-2, Erica Synths Pico DRUMS and Intellijel Metropolis.
 
 The dry run counted 1 Rig holding 1 of these modules on staging. The count doesn't say which Rig or which module, so that Rig's warning wasn't read here. Tests cover the warning. The production dry run ([42182473769](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42182473769)) gave the same hashes and counted 0 Rigs.
+
+## Production
+
+Loaded from `main` at `e314a99`, after [#316](https://github.com/Zero-State-LLC/Patch-Hive/pull/316) merged, on the owner's yes with the hashes above. That yes also accepted that the finish variants retire, so Endorphin.es lists one row per module, and that AUTOPILOT's UTIL category is a judgment call.
+
+The apply was set to stop if the hashes differed, or if any Rig held one of these modules.
+
+| Step | Run | Result |
+|---|---|---|
+| Dry run, branch | [42182473769](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42182473769) | Wrote nothing |
+| Dry run, `main` | [42184785312](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42184785312) | Same hashes, and 0 Rigs hold these modules |
+| Apply | [42185053314](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42185053314) | 38 catalog rows and 36 module rows retired, 0 conflicts, no destructive SQL |
+| Second dry run | [42185729430](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42185729430) | Plans nothing |
+| Smoke | [42186006661](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42186006661) | 10/10 |
+
+Reading production's public API afterwards gave the same results as staging. The catalog holds 3,388 rows and `/api/modules` 3,384, with 0 ModularGrid mentions. Every public catalog row matches staging's. Health reports 0.3.0-alpha.12 with the database ok.
