@@ -82,3 +82,23 @@ Reading staging's public API afterwards and comparing every row with the read be
 - MILKY WAY 1U reads 22 HP.
 
 The production dry run ([42190602658](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42190602658)) gave the same hashes and counted 0 Rigs.
+
+## Production
+
+Loaded from `main` at `4f8825d`, after [#318](https://github.com/Zero-State-LLC/Patch-Hive/pull/318) merged, on the owner's yes with the hashes above. The apply was set to stop if the hashes differed, or if any Rig held one of the retiring modules.
+
+| Step | Run | Result |
+|---|---|---|
+| Dry run, branch | [42190602658](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42190602658) | Wrote nothing |
+| Dry run, `main` | [42194504539](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42194504539) | Same hashes, and 0 Rigs hold these modules |
+| Apply | [42194637856](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42194637856) | 19 rows moved and 5 retired in each table, 0 conflicts, no destructive SQL |
+| Second dry run | [42195167726](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42195167726) | Plans nothing |
+| Smoke | [42195296062](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42195296062) | 10/10 |
+
+Reading production's public API afterwards and comparing every row with the read before the load gave the same results as staging:
+
+- The catalog holds 3,383 rows and `/api/modules` 3,379, across 336 brands, with 0 ModularGrid mentions.
+- Only the expected rows changed: the 5 retired rows are gone, 19 rows changed brand and nothing else, and Generate 3 gained VCO.
+- Every public catalog row matches staging's. Health reports 0.3.0-alpha.12 with the database ok.
+
+4 public catalog rows have no row in `/api/modules`: Cwejman AP-1, Cwejman DMF-2, Erica Synths Pico DRUMS and Intellijel Metropolis. Why they have none hasn't been looked into.
