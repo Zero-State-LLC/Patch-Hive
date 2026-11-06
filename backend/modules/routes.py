@@ -109,7 +109,8 @@ def list_modules(
         query = query.filter(Module.tags.contains([tag]))
 
     total = query.count()
-    modules = query.offset(skip).limit(limit).all()
+    # A fixed order, or a row can repeat across pages while another never appears.
+    modules = query.order_by(Module.id).offset(skip).limit(limit).all()
 
     return ModuleListResponse(total=total, modules=modules)
 

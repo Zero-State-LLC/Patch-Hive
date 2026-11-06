@@ -128,10 +128,11 @@ def browse_module_catalog(
 
     # Apply sorting
     sort_column = getattr(ModuleCatalog, sort_by)
+    # Many rows share a brand or an HP, so the id settles ties and keeps pages from overlapping.
     if sort_order == "desc":
-        query = query.order_by(sort_column.desc())
+        query = query.order_by(sort_column.desc(), ModuleCatalog.id)
     else:
-        query = query.order_by(sort_column.asc())
+        query = query.order_by(sort_column.asc(), ModuleCatalog.id)
 
     # Apply pagination
     modules = query.offset(skip).limit(limit).all()
