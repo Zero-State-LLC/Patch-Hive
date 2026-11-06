@@ -118,6 +118,57 @@ def test_list_and_confirm_candidates(
     app.dependency_overrides.clear()
 
 
+def test_a_confirm_needs_a_candidate_the_rack_holds(
+    db_session: Session, sample_rack_basic: Rack, tmp_path
+) -> None:
+    """Spec 001: evidence can't jump to confirmed. A decision must name a listed candidate."""
+    from core import settings
+
+    settings.export_dir = str(tmp_path)
+    client = _client(db_session)
+    response = client.post(
+        f"/api/racks/{sample_rack_basic.id}/evidence/confirmations",
+        json={
+            "decisions": [
+                {"candidate_id": "not-a-candidate", "status": "confirm", "module_revision_id": "catalog-module-test-vco"},
+            ]
+        },
+    )
+    assert response.status_code == 400
+    assert "UNKNOWN_CANDIDATE:not-a-candidate" in response.text
+    assert db_session.query(SystemInventoryRevisionRecord).count() == 0
+    app.dependency_overrides.clear()
+
+
+def test_new_evidence_is_appended_and_leaves_earlier_evidence_unchanged(
+    db_session: Session, sample_rack_basic: Rack, tmp_path
+) -> None:
+    from canon.models import ClassificationEvidenceRecord
+    from core import settings
+
+    settings.export_dir = str(tmp_path)
+    client = _client(db_session)
+
+    def upload(colour: tuple[int, int, int]) -> None:
+        buffer = io.BytesIO()
+        Image.new("RGB", (128, 96), colour).save(buffer, format="JPEG")
+        response = client.post(
+            f"/api/racks/{sample_rack_basic.id}/evidence/images",
+            files=[("files", ("rig.jpg", buffer.getvalue(), "image/jpeg"))],
+            data={"run_vision_mock": "true", "retention_days": "30"},
+        )
+        assert response.status_code == 201, response.text
+
+    upload((11, 22, 33))
+    first = {row.id: row.evidence_packet for row in db_session.query(ClassificationEvidenceRecord)}
+    assert first
+    upload((200, 100, 50))
+    after = {row.id: row.evidence_packet for row in db_session.query(ClassificationEvidenceRecord)}
+    assert len(after) > len(first)
+    assert {key: after[key] for key in first} == first
+    app.dependency_overrides.clear()
+
+
 def test_candidate_list_decision_advisory_is_optional_and_non_authoritative(
     client, db_session, sample_rack_basic
 ) -> None:
