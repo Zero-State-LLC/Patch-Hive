@@ -322,7 +322,7 @@ States:
 - `hidden`: not publicly readable; can return to `published`. [OBSERVED: backend/publishing/models.py] [OBSERVED: docs/PUBLISHING_API.md]
 - `removed`: terminal; not accessible. [OBSERVED: backend/publishing/models.py] [OBSERVED: PUBLISHING_IMPLEMENTATION.md]
 
-Global guard: every event requires `ENABLE_LEGACY_PUBLISHING=true`. [OBSERVED: docs/FEATURE_FLAGS.md]
+Global guard: every event except `account_deleted` requires `ENABLE_LEGACY_PUBLISHING=true`. [OBSERVED: docs/FEATURE_FLAGS.md] Closing an account runs whether or not the flag is on, because a deleted account's text has to go either way. [OBSERVED: backend/account/deletion.py]
 
 `visibility` (`unlisted` or `public`), `allow_download`, and `allow_remix` are attributes, not states. [OBSERVED: backend/publishing/models.py]
 
@@ -333,19 +333,27 @@ Global guard: every event requires `ENABLE_LEGACY_PUBLISHING=true`. [OBSERVED: d
 | `published` | `owner_hide` | caller is the owner; the flag is on | `hidden` | Remove public read and gallery listing; update `updated_at`. [OBSERVED: docs/PUBLISHING_API.md] |
 | `hidden` | `owner_unhide` | caller is the owner; the flag is on; the publication wasn't hidden by moderation | `published` | Restore public read and update `updated_at`. [OBSERVED: docs/PUBLISHING_API.md] (moderation guard [INFERRED]; see OQ-2) |
 | `published` | `admin_hide` | caller is an admin; the flag is on | `hidden` | Write an admin audit log entry with delta and reason; set `moderation_audit_id`. [OBSERVED: docs/PUBLISHING_API.md] [OBSERVED: backend/publishing/models.py] |
+| `hidden` | `admin_hide` | caller is an admin; the flag is on; moderation hasn't already hidden it | `hidden` | Write an admin audit log entry with delta and reason; set `moderation_audit_id`, so the owner can no longer unhide it. An admin who acts after the owner's hide still ends with a hold. [T001 D6] |
 | `published` | `admin_remove` | caller is an admin; the flag is on; a reason is provided | `removed` | Write an admin audit log entry; set `removed_reason` and `moderation_audit_id`. [OBSERVED: docs/PUBLISHING_API.md] [OBSERVED: PUBLISHING_IMPLEMENTATION.md] |
 | `hidden` | `admin_remove` | caller is an admin; the flag is on; a reason is provided | `removed` | Write an admin audit log entry; set `removed_reason` and `moderation_audit_id`. [OBSERVED: docs/PUBLISHING_API.md] [OBSERVED: PUBLISHING_IMPLEMENTATION.md] |
 | `draft` | `edit_metadata` | caller is the owner; the flag is on; only allowed fields change | `draft` | Update fields and `updated_at`. [OBSERVED: docs/PUBLISHING_API.md] (see OQ-4) |
 | `published` | `edit_metadata` | caller is the owner; the flag is on; only allowed fields change | `published` | Update fields and `updated_at`. [OBSERVED: docs/PUBLISHING_API.md] (see OQ-4) |
 | `hidden` | `edit_metadata` | caller is the owner; the flag is on; only allowed fields change | `hidden` | Update fields and `updated_at`. [OBSERVED: docs/PUBLISHING_API.md] (see OQ-4) |
 | `published` | `report` | the flag is on; a reason is provided | `published` | Store a PublicationReport; status is unchanged. [OBSERVED: docs/PUBLISHING_API.md] (no status change [INFERRED]) |
+| `published` | `owner_set_same` | caller is the owner; the flag is on; moderation hasn't acted on it | `published` | Nothing changes, and the request answers 200. [T001 D9] |
+| `hidden` | `owner_set_same` | caller is the owner; the flag is on; moderation hasn't hidden it | `hidden` | Nothing changes, and the request answers 200. [T001 D9] |
+| `draft` | `account_deleted` | the owner closed their account | `removed` | Set `removed_reason` to `ACCOUNT_DELETED`, replace the title, clear the description and cover, and turn off downloads. `moderation_audit_id` is left as it was. [T001 D2] |
+| `published` | `account_deleted` | the owner closed their account | `removed` | Same effect. [T001 D2] |
+| `hidden` | `account_deleted` | the owner closed their account | `removed` | Same effect. [T001 D2] |
+| `removed` | `account_deleted` | the owner closed their account | `removed` | Same effect. The status doesn't change; the text is still cleared. [T001 D2] |
 
 Illegal transitions:
 
-- `removed` → any state, including `edit_metadata` and `report`. [INFERRED]
+- `removed` → any other state, including `edit_metadata` and `report`. [INFERRED]
 - `draft` → `hidden`. [INFERRED]
-- `draft` → `removed`. This stays rejected until OQ-3 is resolved. [INFERRED]
-- Any event while `ENABLE_LEGACY_PUBLISHING` is off. [OBSERVED: docs/FEATURE_FLAGS.md]
+- `draft` → `removed` through `admin_remove` (OQ-3). Only `account_deleted` removes a draft. [INFERRED]
+- A second `admin_hide` on a publication moderation already hid. It would replace the audit link. [T001 D6]
+- Any event except `account_deleted` while `ENABLE_LEGACY_PUBLISHING` is off. [OBSERVED: docs/FEATURE_FLAGS.md]
 - An owner event from someone other than the owner, or an admin event from someone other than an admin. [OBSERVED: docs/PUBLISHING_API.md]
 - An owner PATCH request that sets `status` to `draft` or `removed`. [OBSERVED: docs/PUBLISHING_API.md]
 - A second `create` for an export that already has a publication. [OBSERVED: backend/publishing/models.py]
@@ -360,11 +368,16 @@ stateDiagram-v2
     draft --> published: publish
     published --> hidden: owner_hide
     published --> hidden: admin_hide
+    hidden --> hidden: admin_hide [not moderation-hidden]
     hidden --> published: owner_unhide [not moderation-hidden]
-    published --> published: edit_metadata / report
-    hidden --> hidden: edit_metadata
+    published --> published: edit_metadata / report / owner_set_same
+    hidden --> hidden: edit_metadata / owner_set_same
     published --> removed: admin_remove
     hidden --> removed: admin_remove
+    draft --> removed: account_deleted
+    published --> removed: account_deleted
+    hidden --> removed: account_deleted
+    removed --> removed: account_deleted
     removed --> [*]
 ```
 
