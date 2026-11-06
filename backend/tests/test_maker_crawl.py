@@ -413,11 +413,22 @@ def test_listing_adapter_requires_product_pattern(tmp_path: Path) -> None:
 # --- curated sources file
 
 
+def test_a_maker_whose_host_refuses_us_is_never_resolved(monkeypatch: pytest.MonkeyPatch) -> None:
+    """D7, and T001 row 27: an adapter or an approval must not be able to send Frap to a paid backend."""
+    monkeypatch.setattr(crawl, "SOURCES", maker_adapters.load_sources())
+    assert crawl.resolve_brand("Frap Tools") == {
+        "brand": "Frap Tools", "homepage": None, "status": "curated_refused",
+    }
+
+
 def test_curated_sources_are_maker_sites_only() -> None:
     data = maker_adapters.load_sources()
-    # 25 top makers: 24 adapters, and Tiptop, whose site answers with a CAPTCHA (never fetched).
-    assert len(data["adapters"]) >= 24
+    # 25 top makers: 23 adapters, Tiptop, whose site answers with a CAPTCHA, and Frap, whose host
+    # refuses every connection. Neither of those two is ever fetched (D7).
+    assert len(data["adapters"]) >= 23
     assert data["homepages"]["Tiptop Audio"]["status"] == "challenged"
+    assert data["homepages"]["Frap Tools"]["status"] == "refused"
+    assert "Frap Tools" not in data["adapters"]
     homes = [c["homepage"] for c in data["adapters"].values()] + [
         h["homepage"] for h in data["homepages"].values()
     ]
