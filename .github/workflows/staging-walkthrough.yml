@@ -3,9 +3,9 @@ name: Staging walkthrough
 # Manual only, staging only (008 T030b/T040b, 006 T060b). Seeds the golden demo into
 # the Neon staging branch, checks the seeded sign-in, runs the Design Engine
 # walkthrough against api-staging.patch-hive.com with test payments, then uploads one
-# generated test image and calls decision-resolution, and generates through the API. Each run makes new demo
-# passwords that exist only in this job (masked, never stored); the receipts hold
-# statuses, codes and hashes only.
+# generated test image, calls decision-resolution and generates through the API. Each
+# run makes new demo passwords that exist only in this job (masked, never stored); the
+# receipts hold statuses, codes and hashes only.
 on:
   workflow_dispatch:
     inputs:
