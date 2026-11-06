@@ -68,3 +68,32 @@ ModularGrid is never fetched. Earlier batches did scrape it, and those values ar
   the ModularGrid host.
 - Manufacturer rows (703) stay in the database. The brand names remain in `seed-phase2-v1.json`, which is
   now labelled ModularGrid-derived and needs re-verification.
+
+## Roll back a load
+
+Every applied load records its receipt in `catalog_load_runs` and what it changed in `catalog_load_changes`, using the Actions run ID (spec 003 FR-031). Loads from before migration `20261106_catalog_load_runs` have no record, so they can't be rolled back.
+
+To roll one back, run `db-load.yml` with `rollback_run_id` set to that run ID:
+
+1. `mode=dry-run` writes nothing and reports what would be retired, restored and left alone.
+2. `mode=apply` with that dry run's `plan_hash` writes exactly that plan, after the usual dump.
+
+What a rollback does:
+
+- **Rows the load inserted:** retired, never deleted. `module_catalog` gets a tombstone and `modules` gets `status = tombstoned`.
+- **Fields the load changed:** restored, only while the field still holds what the load wrote. A field changed since is left alone and counted in `conflicts`.
+- **Archive rows the load added:** kept, marked with `rolled_back_run_id`, and no longer read by the reverify guards.
+- **`power_configs` and `manufacturers` rows the load inserted:** left in place and counted, because neither table has a retired state.
+- **Case writes:** reported in `cases_not_rolled_back`, not undone. Case tables have no retired state.
+
+A rollback doesn't touch committed files. Before the next load:
+
+- Revert or replace any fill-null overlay, or it fills the restored nulls again.
+- Write a new batch version for any provenance fix, because a rolled-back batch stays processed.
+- Expect a retired row to stay retired, because insert-if-absent sees its slug. Bringing one back needs its own decision.
+
+Each production rollback needs the owner's yes with its plan hash, like a production load.
+
+## Applied inputs
+
+`applied-inputs.json` records the SHA-256 of every seed, overlay and provenance file, and a test fails if one changes (FR-018). To change an input, write a new version and run `python scripts/freeze_catalog_inputs.py` to add it.
