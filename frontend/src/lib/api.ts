@@ -3,6 +3,7 @@
  */
 import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from "axios";
 import type {
+  CommerceStatus,
   CatalogMaterializeResponse,
   CatalogModuleListResponse,
   CatalogModuleStats,
@@ -505,6 +506,21 @@ export const canonApi = {
     api.get<RunListResponse>("/canon/runs", { params: { rig_id: rigId } }),
 
   getBalance: () => api.get<{ balance: number }>("/canon/credits/balance"),
+
+  /** What this user can buy and what they hold. Offers appear only while checkout is open. */
+  getCommerce: () => api.get<CommerceStatus>("/canon/commerce"),
+
+  startCreditCheckout: (credits: number) =>
+    api.post<{ checkout_url: string }>("/canon/checkout/credits", { credits }),
+
+  startPlanCheckout: (tier: string) =>
+    api.post<{ checkout_url: string }>("/canon/checkout/subscription", { tier }),
+
+  /** Ends the plan at the period end. Credits already granted stay. */
+  cancelPlan: () =>
+    api.post<{ cancel_at_period_end: boolean; current_period_end: string }>(
+      "/canon/subscription/cancel",
+    ),
 
   getCreditsSummary: () =>
     api.get<{

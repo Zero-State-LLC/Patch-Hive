@@ -7,6 +7,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import Hash from "@/components/Hash";
 import LoadFailure from "@/components/LoadFailure";
 import { canonApi } from "@/lib/api";
+import { exportRefusal } from "@/lib/commerce";
 import { failureKind } from "@/lib/loadError";
 import { shortHash } from "@/lib/format";
 import { useAuthStore } from "@/lib/store";
@@ -234,12 +235,7 @@ export default function PatchBookStyleStudioPage() {
         // Auto-offer download path in status; user clicks buttons below
       }
     } catch (error: unknown) {
-      const apiError = error as { response?: { data?: { detail?: string }; status?: number } };
-      if (apiError.response?.status === 402) {
-        setStatus("Not enough credits for this export. Nothing was charged.");
-      } else {
-        setStatus(apiError.response?.data?.detail || "Export failed");
-      }
+      setStatus(exportRefusal(error));
     } finally {
       setExporting(false);
     }
@@ -529,15 +525,7 @@ export default function PatchBookStyleStudioPage() {
                                 `Export ${shortHash(created.data.export_id)} requested (${created.data.status}), styled with “${entry.name}”.`,
                               );
                             } catch (error: unknown) {
-                              const apiError = error as {
-                                response?: { data?: { detail?: string }; status?: number };
-                              };
-                              setStatus(
-                                apiError.response?.status === 402
-                                  ? "Not enough credits for this export. Nothing was charged."
-                                  : apiError.response?.data?.detail ||
-                                      "The export failed. Nothing was charged.",
-                              );
+                              setStatus(exportRefusal(error));
                             } finally {
                               setExporting(false);
                             }

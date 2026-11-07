@@ -19,6 +19,8 @@ def test_dashboard_copy_compliance():
         assert line in content
 
     forbidden_terms = ["upgrade", "premium", "pro", "subscribe", "commission", "affiliate"]
-    lowered = content.lower()
+    # The commerce parts of the Account page live in their own files; the same words stay out.
+    commerce = [frontend_src() / "components" / "AccountCommerce.tsx", frontend_src() / "lib" / "commerce.ts"]
+    lowered = "\n".join([content, *(path.read_text(encoding="utf-8") for path in commerce)]).lower()
     for term in forbidden_terms:
         assert re.search(rf"\b{re.escape(term)}\b", lowered) is None
