@@ -159,3 +159,6 @@ Not decided here. Each default is a recommendation only.
 
 The owner settled these later on 2026-11-04 (`docs/evidence/OWNER_DECISIONS_2026-11-04.md`), and #292 built the first three: a paid invoice on a canceled subscription keeps granting (42); `active`, `trialing` and `past_due` can schedule a cancel (43); no reward goes to a deleted referrer (44). Before sales open, never-subscribed and lapsed users both get FREE (45). The STUDIO cap and operator resolve for subscription events wait for sales, and provider-data disclosure and retention after deletion go to counsel (46). Prices stay not ratified (32).
 
+## Closed since this review
+
+T090 closed D1 to D12 on 2026-11-06, in #344, #345, #346, #347 and the spec text PR. [tasks.md](tasks.md) has what each one became. This record stays as it was checked on 2026-11-04.
