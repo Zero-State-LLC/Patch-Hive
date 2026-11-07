@@ -13,7 +13,6 @@ Case rows have no retired state, so a run's case writes are reported, not undone
 from __future__ import annotations
 
 import json
-import os
 import uuid
 from pathlib import Path
 from typing import Any
@@ -158,12 +157,10 @@ def rollback(
     sql_path: Path | None = None,
     expected_plan_hash: str | None = None,
     require_plan_hash: bool = False,
+    this_run: str | None = None,
 ) -> dict[str, Any]:
     assert_local_database(database_url, allow_nonlocal)
-    this_run = os.environ.get("GITHUB_RUN_ID") or uuid.uuid4().hex
-    attempt = os.environ.get("GITHUB_RUN_ATTEMPT")
-    if attempt and attempt != "1":
-        this_run = f"{this_run}-{attempt}"
+    this_run = this_run or uuid.uuid4().hex
     started_at = _stamp()
     engine = create_engine(database_url)
     try:

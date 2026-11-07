@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "data" / "synth-catalog"))
 
 from catalog_rollback import rollback  # noqa: E402
+from load_runs import actions_run_id  # noqa: E402
 from population import (  # noqa: E402
     assert_at_head,
     dump_affected_tables,
@@ -143,6 +144,7 @@ def main() -> int:
                 sql_path=ARTIFACTS / "population-upsert.sql",
                 expected_plan_hash=os.environ.get("PATCHHIVE_PLAN_HASH", "").strip() or None,
                 require_plan_hash=mode == "apply",
+                this_run=actions_run_id(),
             )
         else:
             receipt = populate(
@@ -155,6 +157,7 @@ def main() -> int:
                 require_plan_hash=mode == "apply",
                 expected_inputs_hash=os.environ.get("PATCHHIVE_INPUTS_HASH", "").strip() or None,
                 require_inputs_hash=mode == "apply",
+                run_id=actions_run_id(),
             )
         receipt["alembic_head"] = head
         (ARTIFACTS / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")

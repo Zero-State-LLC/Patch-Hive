@@ -2634,6 +2634,7 @@ def populate(
     require_plan_hash: bool = False,
     expected_inputs_hash: str | None = None,
     require_inputs_hash: bool = False,
+    run_id: str | None = None,
 ) -> dict[str, Any]:
     """Plan, and with ``apply`` write, the catalog load.
 
@@ -2645,10 +2646,7 @@ def populate(
     (spec 003 OQ-9).
     """
     assert_local_database(database_url, allow_nonlocal)
-    run_id = os.environ.get("GITHUB_RUN_ID") or uuid.uuid4().hex
-    attempt = os.environ.get("GITHUB_RUN_ATTEMPT")
-    if attempt and attempt != "1":
-        run_id = f"{run_id}-{attempt}"
+    run_id = run_id or uuid.uuid4().hex
     started_at = _stamp()
     current_inputs = inputs_hash()
     engine = create_engine(database_url)

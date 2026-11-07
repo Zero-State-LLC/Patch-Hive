@@ -83,8 +83,6 @@ def url(monkeypatch: pytest.MonkeyPatch):
         population, "case_receipt",
         lambda engine, plan, apply: {"applied": {"inserted": 3}} if apply else {},
     )
-    monkeypatch.setenv("GITHUB_RUN_ID", "load-1")
-    monkeypatch.delenv("GITHUB_RUN_ATTEMPT", raising=False)
     yield database
     with admin.connect() as conn:
         conn.execute(
@@ -113,9 +111,16 @@ def _run(database: str, sql: str) -> None:
         engine.dispose()
 
 
-def _rollback(database: str, run_id: str = "load-1", monkeypatch=None) -> dict:
+def _load(database: str, apply: bool = True) -> dict:
+    return populate(database, apply=apply, run_id="load-1")
+
+
+def _rollback(database: str, run_id: str = "load-1") -> dict:
     planned = rollback(database, run_id, apply=False)
-    return rollback(database, run_id, apply=True, expected_plan_hash=planned["plan_hash"], require_plan_hash=True)
+    return rollback(
+        database, run_id, apply=True, expected_plan_hash=planned["plan_hash"], require_plan_hash=True,
+        this_run="rollback-1",
+    )
 
 
 def _counts(database: str) -> tuple:
@@ -127,7 +132,7 @@ def _counts(database: str) -> tuple:
 
 
 def test_a_load_records_its_receipt_and_exactly_what_it_changed(url):
-    populate(url, apply=True)
+    _load(url)
     run = _one(url, "SELECT kind, plan_hash, receipt, rolled_back_by FROM catalog_load_runs WHERE run_id = 'load-1'")
     assert run.kind == "apply" and run.rolled_back_by is None
     assert run.receipt["run_id"] == "load-1"
@@ -145,16 +150,16 @@ def test_a_load_records_its_receipt_and_exactly_what_it_changed(url):
 
 
 def test_a_dry_run_records_nothing_and_a_load_can_change_nothing(url, monkeypatch):
-    populate(url, apply=False)
+    _load(url, apply=False)
     assert _one(url, "SELECT COUNT(*) FROM catalog_load_runs")[0] == 0
     monkeypatch.setattr(population, "build_plan", lambda conn, verification_path=None: Plan())
-    populate(url, apply=True)
+    _load(url)
     assert _one(url, "SELECT COUNT(*) FROM catalog_load_runs")[0] == 1
     assert _one(url, "SELECT COUNT(*) FROM catalog_load_changes")[0] == 0
 
 
 def test_a_rollback_dry_run_writes_nothing(url):
-    populate(url, apply=True)
+    _load(url)
     before = _counts(url)
     receipt = rollback(url, "load-1", apply=False)
     assert receipt["mode"] == "rollback-dry-run"
@@ -166,10 +171,9 @@ def test_a_rollback_dry_run_writes_nothing(url):
     assert _one(url, "SELECT rolled_back_by FROM catalog_load_runs WHERE run_id = 'load-1'")[0] is None
 
 
-def test_a_rollback_retires_inserted_rows_restores_values_and_deletes_nothing(url, monkeypatch):
-    populate(url, apply=True)
+def test_a_rollback_retires_inserted_rows_restores_values_and_deletes_nothing(url):
+    _load(url)
     before = _counts(url)
-    monkeypatch.setenv("GITHUB_RUN_ID", "rollback-1")
     receipt = _rollback(url)
     assert receipt["conflicts_total"] == 0
     assert _counts(url) == before  # every row is still there
@@ -191,9 +195,8 @@ def test_a_rollback_retires_inserted_rows_restores_values_and_deletes_nothing(ur
     assert _one(url, "SELECT rolled_back_by FROM catalog_load_runs WHERE run_id = 'load-1'")[0] == "rollback-1"
 
 
-def test_a_rolled_back_flag_stops_blocking_placement_but_stays_in_the_archive(url, monkeypatch):
-    populate(url, apply=True)
-    monkeypatch.setenv("GITHUB_RUN_ID", "rollback-1")
+def test_a_rolled_back_flag_stops_blocking_placement_but_stays_in_the_archive(url):
+    _load(url)
     _rollback(url)
     row = _one(
         url, "SELECT action, rolled_back_run_id FROM catalog_value_archive "
@@ -219,10 +222,9 @@ def test_a_rolled_back_flag_stops_blocking_placement_but_stays_in_the_archive(ur
         engine.dispose()
 
 
-def test_a_field_changed_since_the_load_is_left_alone_and_reported(url, monkeypatch):
-    populate(url, apply=True)
+def test_a_field_changed_since_the_load_is_left_alone_and_reported(url):
+    _load(url)
     _run(url, f"UPDATE module_catalog SET hp = 16 WHERE slug = '{OLD_SLUG}'")
-    monkeypatch.setenv("GITHUB_RUN_ID", "rollback-1")
     receipt = _rollback(url)
     assert receipt["conflicts_total"] == 1
     assert receipt["conflicts"] == [
@@ -233,18 +235,17 @@ def test_a_field_changed_since_the_load_is_left_alone_and_reported(url, monkeypa
 
 
 def test_an_apply_must_name_the_reviewed_plan(url):
-    populate(url, apply=True)
+    _load(url)
     with pytest.raises(SystemExit, match="differs from the reviewed dry run"):
         rollback(url, "load-1", apply=True, expected_plan_hash="f" * 64, require_plan_hash=True)
     assert _one(url, f"SELECT hp FROM module_catalog WHERE slug = '{OLD_SLUG}'")[0] == 12
     assert _one(url, "SELECT COUNT(*) FROM catalog_load_runs")[0] == 1
 
 
-def test_what_cannot_be_rolled_back_is_refused(url, monkeypatch):
+def test_what_cannot_be_rolled_back_is_refused(url):
     with pytest.raises(SystemExit, match="no record of it"):
         rollback(url, "load-from-before-this-migration")
-    populate(url, apply=True)
-    monkeypatch.setenv("GITHUB_RUN_ID", "rollback-1")
+    _load(url)
     _rollback(url)
     with pytest.raises(SystemExit, match="rollback-1 already did"):
         rollback(url, "load-1")
@@ -252,18 +253,65 @@ def test_what_cannot_be_rolled_back_is_refused(url, monkeypatch):
         rollback(url, "rollback-1")
 
 
-def test_a_rerun_of_the_same_actions_run_gets_its_own_record(url, monkeypatch):
-    populate(url, apply=True)
+def test_two_applies_inside_one_ci_run_each_get_a_record(url, monkeypatch):
+    # CI sets this for every process it starts, so the loader must not take it unasked.
+    monkeypatch.setenv("GITHUB_RUN_ID", "77")
+    monkeypatch.delenv("GITHUB_RUN_ATTEMPT", raising=False)
+    first = populate(url, apply=True)
     monkeypatch.setattr(population, "build_plan", lambda conn, verification_path=None: Plan())
+    second = populate(url, apply=True)
+    assert first["run_id"] != second["run_id"]
+    assert "77" not in (first["run_id"], second["run_id"])
+
+
+def test_an_actions_run_id_keeps_a_rerun_apart(monkeypatch):
+    monkeypatch.delenv("GITHUB_RUN_ID", raising=False)
+    monkeypatch.delenv("GITHUB_RUN_ATTEMPT", raising=False)
+    assert load_runs.actions_run_id() is None
+    monkeypatch.setenv("GITHUB_RUN_ID", "77")
+    assert load_runs.actions_run_id() == "77"
+    monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
+    assert load_runs.actions_run_id() == "77"
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "2")
-    assert populate(url, apply=True)["run_id"] == "load-1-2"
+    assert load_runs.actions_run_id() == "77-2"
+
+
+@pytest.mark.parametrize("rollback_of, target, keyword", [("", "populate", "run_id"), ("5", "rollback", "this_run")])
+def test_the_actions_load_records_a_run_under_its_actions_id(monkeypatch, tmp_path, rollback_of, target, keyword):
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import catalog_actions_load
+
+    seen = {}
+
+    def fake(*args, **kwargs):
+        seen.update(kwargs)
+        return {"mode": "dry-run", "database": "x", "inserts": {}, "run_id": kwargs[keyword]}
+
+    monkeypatch.setattr(catalog_actions_load, target, fake)
+    monkeypatch.setattr(catalog_actions_load, "assert_at_head", lambda url: "head")
+    monkeypatch.setattr(catalog_actions_load, "table_counts", lambda url: {})
+    monkeypatch.setattr(catalog_actions_load, "_write_summary", lambda summary: None)
+    monkeypatch.setattr(catalog_actions_load, "_summary", lambda *args: "")
+    monkeypatch.setattr(catalog_actions_load, "ARTIFACTS", tmp_path)
+    monkeypatch.setattr(sys, "argv", ["catalog_actions_load.py", "--allow-nonlocal"])
+    for name, value in {
+        "DATABASE_URL": "postgresql://example/x",
+        "PATCHHIVE_DB_ENV": "staging",
+        "PATCHHIVE_LOAD_MODE": "dry-run",
+        "PATCHHIVE_ROLLBACK_RUN_ID": rollback_of,
+        "GITHUB_RUN_ID": "77",
+        "GITHUB_RUN_ATTEMPT": "3",
+    }.items():
+        monkeypatch.setenv(name, value)
+    assert catalog_actions_load.main() == 0
+    assert seen[keyword] == "77-3"
 
 
 def test_the_job_summary_says_what_a_rollback_will_do(url):
     sys.path.insert(0, str(ROOT / "scripts"))
     import catalog_actions_load
 
-    populate(url, apply=True)
+    _load(url)
     receipt = rollback(url, "load-1")
     summary = catalog_actions_load._summary({}, None, "dry-run", "staging", receipt)
     assert "rollback of load-1" in summary

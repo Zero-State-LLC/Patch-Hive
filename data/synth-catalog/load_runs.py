@@ -8,6 +8,7 @@ the apply transaction, records exactly that and works for any statement the plan
 from __future__ import annotations
 
 import json
+import os
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
@@ -20,6 +21,19 @@ TRACKED_TABLES = ("module_catalog", "modules", "power_configs", "manufacturers",
 # Bookkeeping that moves with every write, so a difference here isn't a change to restore.
 UNTRACKED_FIELDS = frozenset({"updated_at", "created_at"})
 INSERT_BATCH = 1000
+
+
+def actions_run_id() -> str | None:
+    """The ID a load takes from its GitHub Actions run, or None outside Actions.
+
+    Only the db-load entry point asks for it. One CI run sets this variable for every process it
+    starts, so a loader that read it unasked would give two applies in that run the same ID.
+    """
+    run_id = os.environ.get("GITHUB_RUN_ID")
+    if not run_id:
+        return None
+    attempt = os.environ.get("GITHUB_RUN_ATTEMPT")
+    return f"{run_id}-{attempt}" if attempt and attempt != "1" else run_id
 
 
 def json_safe(value: Any) -> Any:
