@@ -556,6 +556,32 @@ def handle_checkout_session_event(session: Session, event: dict[str, Any]) -> Ev
     raise UnresolvedEventError("PAYMENT_STATE_CONFLICT")
 
 
+def close_rejected_checkout(session: Session, record: StripeEventRecordModel) -> str | None:
+    """Machine B ``Unresolved --operator_rejects--> Abandoned``: fail closed.
+
+    Closes the checkout an operator-rejected event belongs to, if it is still open or
+    pending, and returns the status it left. A later verified event for it is then
+    ``unresolved`` (``PAYMENT_STATE_CONFLICT``), because ``Abandoned`` to ``Credited`` is
+    illegal. A credited checkout keeps its credits, and an event about anything else (a
+    refund, a dispute, a subscription session) closes nothing.
+    """
+
+    if record.event_type not in CHECKOUT_EVENT_TYPES or not record.object_id:
+        return None
+    payment = (
+        session.query(ProviderPaymentRecord)
+        .filter_by(checkout_session_id=record.object_id)
+        .with_for_update()
+        .one_or_none()
+    )
+    if payment is None or payment.status not in OPEN_STATUSES:
+        return None
+    left = payment.status
+    _touch(payment, "abandoned")
+    session.flush()
+    return left
+
+
 # --- Refunds and disputes (OQ-2, T053) ---------------------------------------------------
 
 CHARGE_REFUNDED = "charge.refunded"

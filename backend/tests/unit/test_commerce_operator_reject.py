@@ -1,7 +1,8 @@
 """Spec 004 T048: operator review of unresolved commerce events.
 
 Machine B ``Unresolved --operator_rejects--> Abandoned``: an Admin closes an unresolved
-provider event with a reason; it grants nothing and writes one
+provider event with a reason; it grants nothing, closes the event's checkout if that is
+still open (``tests/unit/test_spec_004_transitions.py``) and writes one
 ``CanonicalAdminAuditEventRecord`` (OQ-5 recommendation). Any other status is 409
 ``INVALID_TRANSITION`` with no change. ``operator_resolves`` is T048b
 (``tests/unit/test_commerce_operator_resolve.py``).
