@@ -11,6 +11,7 @@ only its RECEIPTED -> ADMITTED hash binding is covered (see ``test_plan_hash_*``
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -35,6 +36,13 @@ ROW_TRANSITIONS = [
     ("LIVE", "correct", "LIVE", ["archive_values", "correct_values", "archive_markers"]),
 ]
 ROW_STATES = {"LIVE", "FLAGGED", "TOMBSTONED"}
+SPEC = ROOT / "specs" / "003-catalog-dataset-pipeline" / "spec.md"
+# Every row of that table. Retiring plans different statements for each table, so its two rows are
+# tested by test_retire_tombstones_the_row_and_never_deletes.
+SPEC_ROWS = {(source, event, target) for source, event, target, _ in ROW_TRANSITIONS} | {
+    ("LIVE", "retire", "TOMBSTONED"),
+    ("FLAGGED", "retire", "TOMBSTONED"),
+}
 # Spec "Illegal transitions": TOMBSTONED -> any flag or correction.
 ACTIONS_ON_TOMBSTONED = ["flag", "null", "relabel", "keep", "correct"]
 
@@ -72,6 +80,14 @@ def _kinds(plan: P.Plan) -> list[str]:
     return [op.kind for op in plan.ops]
 
 
+def test_this_file_encodes_the_row_table_in_the_spec() -> None:
+    section = SPEC.read_text(encoding="utf-8").split("### Row lifecycle (admitted rows)")[1]
+    table = section.split("Illegal transitions:")[0]
+    states = "|".join(sorted(ROW_STATES))
+    rows = re.findall(rf"^\| ({states}) \| (\w+) \| .*? \| ({states}) \| ", table, re.M)
+    assert set(rows) == SPEC_ROWS and len(rows) == len(SPEC_ROWS)
+
+
 @pytest.mark.parametrize(("source", "event", "target", "kinds"), ROW_TRANSITIONS)
 def test_listed_row_transition_plans_exactly_the_listed_effect(source, event, target, kinds) -> None:
     modules = _module(source)
@@ -96,6 +112,27 @@ def test_flag_by_null_action_archives_then_nulls_the_value() -> None:
     assert _kinds(plan) == ["archive_values", "reverify_row", "archive_markers"]
     assert modules[(BRAND, NAME)]["verification_source_url"] is None
     assert "needs_reverify = TRUE" in plan.ops[1].sql
+
+
+def test_null_on_a_not_null_field_is_refused_and_changes_nothing() -> None:
+    """T001 row 28: modules.hp cannot be nulled (research R1), so this is a conflict, not a flag."""
+    modules = _module("LIVE")
+    plan = _schedule(_item("null", field="hp"), modules)
+    assert _kinds(plan) == ["archive_markers"]  # the row counts as processed; no value is touched
+    assert [c["reason"] for c in plan.conflicts] == ["not_nullable"]
+    assert modules[(BRAND, NAME)]["hp"] == 14
+
+
+@pytest.mark.parametrize("stored", [{"brand": "Other", "name": NAME}, {"brand": BRAND, "name": "Other"}])
+def test_a_slug_held_by_another_brand_or_name_is_reported_and_not_merged(stored) -> None:
+    """T001 row 20, OQ-6. The stored row keeps its identity and takes nothing from the incoming one."""
+    state = {**stored, "hp": None, "category": None}
+    catalog = {SLUG: state}
+    plan = P.Plan()
+    P._schedule_catalog(plan, catalog, {"brand": BRAND, "name": NAME, "slug": SLUG, "hp": 4}, {})
+    assert _kinds(plan) == []
+    assert [c["reason"] for c in plan.conflicts] == ["identity_mismatch"]
+    assert state["hp"] is None
 
 
 @pytest.mark.parametrize("source", ["LIVE", "FLAGGED"])

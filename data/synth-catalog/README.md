@@ -18,22 +18,17 @@ Sealed research packet from Abraxas skill **`modular-synth-catalog-research`**
 
 ## Admit into PatchHive
 
+`population.py` is the only writer of catalog rows (spec 003 D5).
+
 ```bash
-# Dry-run (writes receipt only when --receipt set)
-cd backend && python -m integrations.synth_catalog_importer --dry-run \
-  --receipt ../data/synth-catalog/receipts/seed-phase2-v1.dry-run.json
+# Local database: a dry run writes a receipt and changes nothing
+python scripts/import_catalog_population.py --dry-run
 
-# Catalog + curated full-spec
-python -m integrations.synth_catalog_importer
-
-# Fill null HP from manufacturer-curated specs (never invent)
-python -m integrations.synth_catalog_importer --enrich-hp
-
-# Or justfile
-just synth-catalog-import --dry-run
-just synth-catalog-import
-just synth-catalog-import -- --enrich-hp
+# Local database: apply
+python scripts/import_catalog_population.py
 ```
+
+For a deployed database, run `.github/workflows/db-load.yml`: a dry run first, then an apply with the `plan_hash` and `inputs_hash` it printed.
 
 ## Provenance rules
 
