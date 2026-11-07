@@ -80,7 +80,7 @@ class RackResponse(RackBase):
 
     id: int
     user_id: int
-    case_id: int
+    case_id: Optional[int] = None
     generation_seed: Optional[int]
     created_at: datetime
     updated_at: datetime

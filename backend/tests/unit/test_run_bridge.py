@@ -116,3 +116,19 @@ def test_layout_change_mints_new_immutable_revision(
     assert bridge2.rig_revision_id != first_rev_id
     assert db_session.get(RigRevisionRecord, first_rev_id) is not None
     assert db_session.get(RigRevisionRecord, bridge2.rig_revision_id) is not None
+
+
+def test_a_rig_with_no_case_snapshots_its_case_as_none(
+    db_session: Session, sample_user, sample_vco: Module
+) -> None:
+    rack = Rack(user_id=sample_user.id, case_id=None, name="From a photo", tags=[])
+    db_session.add(rack)
+    db_session.flush()
+    db_session.add(RackModule(rack_id=rack.id, module_id=sample_vco.id, row_index=0, start_hp=0))
+    db_session.commit()
+
+    snapshot = build_rack_content_snapshot(db_session, rack)
+
+    assert snapshot["case_id"] is None
+    assert snapshot["modules"] == [{"module_id": sample_vco.id, "row_index": 0, "start_hp": 0}]
+    assert len(rack_content_hash(snapshot)) == 64

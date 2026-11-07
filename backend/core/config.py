@@ -93,6 +93,11 @@ class Settings(BaseSettings):
     nvidia_base_url: str = "https://integrate.api.nvidia.com/v1"
     nvidia_timeout_seconds: float = 20.0
     decision_policy_version: str = "decision-policy-v1"
+    # Spec 009: who reads a Rig photo. DEFAULT "disabled", so a host takes no photo until
+    # it names a provider. "recorded" replays answers saved as <photo sha256>.json in
+    # photo_reading_recordings_dir, with no network; "nvidia" is the live provider.
+    photo_reading_provider: str = "disabled"
+    photo_reading_recordings_dir: str = ""
     # Spec 005 T080: outside development a decision provider runs only with a signed
     # spec 007 enablement receipt and its signature, read from these JSON files.
     decision_enablement_receipt_path: str = ""
@@ -193,6 +198,14 @@ class Settings(BaseSettings):
         normalized = value.strip().lower()
         if normalized not in {"disabled", "jev", "clef", "nvidia"}:
             raise ValueError("decision_provider must be 'disabled', 'jev', 'clef', or 'nvidia'")
+        return normalized
+
+    @field_validator("photo_reading_provider")
+    @classmethod
+    def _validate_photo_reading_provider(cls, value: str) -> str:
+        normalized = value.strip().lower()
+        if normalized not in {"disabled", "recorded", "nvidia"}:
+            raise ValueError("photo_reading_provider must be 'disabled', 'recorded', or 'nvidia'")
         return normalized
 
     @field_validator("nvidia_model")

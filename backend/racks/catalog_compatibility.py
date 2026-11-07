@@ -79,12 +79,21 @@ def _placements_to_compat_modules(
 
 def evaluate_case_module_catalog_compatibility(
     db: Session,
-    case_id: int,
+    case_id: int | None,
     placements: Sequence[_ModulePlacement],
     *,
     plan_close_lid: bool = False,
 ) -> dict[str, Any]:
     """Evaluate catalog compatibility for a case_id + module placements (pre- or post-persist)."""
+    if case_id is None:
+        # A Rig with no Case (spec 009) has nothing to check against, like an unlinked Case.
+        return {
+            "bridge_status": "incomplete",
+            "message": "Rig has no Case. Name a Case to enable catalog compatibility checks.",
+            "catalog_slug": None,
+            "case_id": None,
+            "compatibility": None,
+        }
     case = db.query(Case).filter(Case.id == case_id).first()
     if case is None:
         return {
@@ -138,7 +147,7 @@ def evaluate_case_module_catalog_compatibility(
 
 def dual_gate_catalog_errors_and_warnings(
     db: Session,
-    case_id: int,
+    case_id: int | None,
     placements: Sequence[_ModulePlacement],
     *,
     plan_close_lid: bool = False,

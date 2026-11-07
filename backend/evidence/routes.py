@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 import uuid
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
@@ -20,7 +21,7 @@ from canon.models import (
     SystemInventoryRevisionRecord,
 )
 from canon.visual_contracts import SystemInventoryRevision
-from core import get_db, settings
+from core import generate_rig_suggested_name, get_db, hash_string_to_seed, settings
 from core.storage import StorageError, get_file_store
 from evidence.images import (
     SignatureImageScanner,
@@ -74,10 +75,66 @@ class MultiImageUploadResponse(BaseModel):
     rejected: list[dict[str, str]] = Field(default_factory=list)
 
 
+class RigPhotoStartResponse(BaseModel):
+    rig_id: int
+    photo_id: str
+
+
 def _evidence_root() -> Path:
     root = Path(settings.export_dir) / "evidence"
     root.mkdir(parents=True, exist_ok=True)
     return root
+
+
+def _store_image_asset(
+    db: Session,
+    prepared: Any,
+    *,
+    rack_id: int,
+    user_id: int,
+    retention_days: int,
+    consent_provider_processing: bool,
+    now: datetime,
+) -> ImageAssetRecord:
+    """Make a prepared image's bytes durable, then record them as the rack's evidence.
+
+    Raises ``StorageError`` before recording anything when the bytes can't be kept.
+    """
+    storage_path = _evidence_root() / f"{prepared.sha256}.jpg"
+    if not storage_path.exists():
+        storage_path.write_bytes(prepared.content)
+    # Never record a path whose bytes are not durable.
+    get_file_store().persist(storage_path)
+    record = ImageAssetRecord(
+        id=f"img-{uuid.uuid4().hex[:20]}",
+        rack_id=rack_id,
+        user_id=user_id,
+        content_sha256=prepared.sha256,
+        media_type=prepared.media_type,
+        width=prepared.width,
+        height=prepared.height,
+        byte_length=len(prepared.content),
+        storage_path=str(storage_path),
+        retention_days=retention_days,
+        retention_expires_at=now + timedelta(days=retention_days),
+        consent_provider_processing=consent_provider_processing,
+        created_at=now,
+    )
+    db.add(record)
+    db.flush()
+    return record
+
+
+def _photo_rows(rows: str) -> tuple[int, int]:
+    """The rows a photo covers, first and last: "0", or "0-1" for rows 0 to 1."""
+    match = re.fullmatch(r"(\d+)(?:-(\d+))?", rows.strip())
+    if not match:
+        raise HTTPException(status_code=400, detail="ROWS_INVALID")
+    start = int(match.group(1))
+    end = int(match.group(2) or start)
+    if end < start:
+        raise HTTPException(status_code=400, detail="ROWS_INVALID")
+    return start, end
 
 
 def _asset_response(
@@ -148,7 +205,6 @@ async def upload_rack_evidence_images(
         allow_live_calls=False,
     )
     now = datetime.now(timezone.utc)
-    expires = now + timedelta(days=retention_days)
     user_id = int(rack.user_id)  # type: ignore[arg-type]
 
     for upload in files:
@@ -170,35 +226,20 @@ async def upload_rack_evidence_images(
                 )
                 continue
 
-            asset_id = f"img-{uuid.uuid4().hex[:20]}"
-            storage_name = f"{prepared.sha256}.jpg"
-            storage_path = _evidence_root() / storage_name
-            if not storage_path.exists():
-                storage_path.write_bytes(prepared.content)
-            # Never record a path whose bytes are not durable.
             try:
-                get_file_store().persist(storage_path)
+                record = _store_image_asset(
+                    db,
+                    prepared,
+                    rack_id=rack_id,
+                    user_id=user_id,
+                    retention_days=retention_days,
+                    consent_provider_processing=consent_provider_processing,
+                    now=now,
+                )
             except StorageError as exc:
                 rejected.append({"filename": filename, "reason": exc.code})
                 continue
-
-            record = ImageAssetRecord(
-                id=asset_id,
-                rack_id=rack_id,
-                user_id=user_id,
-                content_sha256=prepared.sha256,
-                media_type=prepared.media_type,
-                width=prepared.width,
-                height=prepared.height,
-                byte_length=len(prepared.content),
-                storage_path=str(storage_path),
-                retention_days=retention_days,
-                retention_expires_at=expires,
-                consent_provider_processing=consent_provider_processing,
-                created_at=now,
-            )
-            db.add(record)
-            db.flush()
+            asset_id = str(record.id)
 
             evidence_status = None
             if run_vision_mock:
@@ -245,6 +286,74 @@ async def upload_rack_evidence_images(
 
     db.commit()
     return MultiImageUploadResponse(uploaded=uploaded, rejected=rejected)
+
+
+@router.post("/evidence/rig-photos", response_model=RigPhotoStartResponse, status_code=201)
+async def start_rig_from_photo(
+    file: UploadFile = File(...),
+    rows: str = Form("0"),
+    rig_id: int | None = Form(None),
+    retention_days: int = Form(DEFAULT_RETENTION_DAYS),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+) -> RigPhotoStartResponse:
+    """Start a Rig from a photo of it, or add a photo to the owner's Rig (spec 009).
+
+    With no ``rig_id`` this creates the Rig, with no Case, and stores the photo as its
+    evidence in one request. The photo is re-encoded, metadata-stripped, private, and
+    expires like every evidence image. ``rows`` names the rows it covers. A host that reads
+    no photos refuses before storing anything.
+    """
+    if settings.photo_reading_provider == "disabled":
+        raise HTTPException(status_code=409, detail="PHOTO_READING_UNAVAILABLE")
+    _photo_rows(rows)  # checked here; the photo's Reading keeps it (spec 009 T021)
+    if retention_days < 1 or retention_days > MAX_RETENTION_DAYS:
+        raise HTTPException(status_code=400, detail="RETENTION_DAYS_INVALID")
+    rack = owned_private_rack(db, rig_id, current_user, label="Rig") if rig_id is not None else None
+
+    try:
+        prepared = prepare_image_evidence(
+            await file.read(),
+            declared_media_type=file.content_type,
+            scanner=SignatureImageScanner(),
+        )
+    except UnsafeImageError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from None
+    quality = assess_local_image_quality(prepared)
+    if not quality.accepted:
+        reason = quality.reasons[0] if quality.reasons else "QUALITY_REJECTED"
+        raise HTTPException(status_code=400, detail=reason)
+
+    if rack is None:
+        name = generate_rig_suggested_name([])
+        owner_id = int(current_user.id)  # type: ignore[arg-type]
+        rack = Rack(
+            user_id=owner_id,
+            case_id=None,
+            name=name,
+            name_suggested=name,
+            tags=[],
+            is_public=False,
+            generation_seed=hash_string_to_seed(f"rack-{owner_id}-photo-{prepared.sha256}"),
+        )
+        db.add(rack)
+        db.flush()
+    try:
+        # The photo is the Rig owner's evidence, as on the existing upload.
+        record = _store_image_asset(
+            db,
+            prepared,
+            rack_id=int(rack.id),  # type: ignore[arg-type]
+            user_id=int(rack.user_id),  # type: ignore[arg-type]
+            retention_days=retention_days,
+            consent_provider_processing=False,
+            now=datetime.now(timezone.utc),
+        )
+    except StorageError as exc:
+        db.rollback()
+        raise HTTPException(status_code=503, detail=exc.code) from None
+    db.commit()
+    return RigPhotoStartResponse(rig_id=int(rack.id), photo_id=str(record.id))  # type: ignore[arg-type]
 
 
 @router.get("/racks/{rack_id}/evidence/images", response_model=ImageAssetListResponse)

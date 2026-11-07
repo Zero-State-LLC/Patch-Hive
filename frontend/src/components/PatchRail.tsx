@@ -7,6 +7,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import RigRail, { type RailRack } from "@/components/RigRail";
+import { rigRowWidths } from "@/lib/rigRows";
 import type { Connection, Patch, RackModule } from "@/types/api";
 
 /** What the rail draws from a patch: its cables, named and keyed by the patch. */
@@ -100,7 +101,7 @@ export default function PatchRail({
     setSelected(null);
   }
 
-  const rows = useMemo(() => rack.case?.hp_per_row ?? [], [rack.case]);
+  const rows = useMemo(() => rigRowWidths(rack.case, rack.modules), [rack.case, rack.modules]);
 
   // First placement of each catalog module, by row then start HP; note modules placed twice.
   const { byModule, duplicated } = useMemo(() => {
@@ -230,8 +231,10 @@ export default function PatchRail({
         </div>
       ) : (
         <p className="muted">
-          This rig&apos;s case does not state HP per row, so its rail cannot be drawn. The cables
-          are listed below.
+          {rack.case
+            ? "This rig\u2019s case does not state HP per row, so its rail cannot be drawn."
+            : "This rig has no Case and no placed modules yet, so its rail cannot be drawn."}{" "}
+          The cables are listed below.
         </p>
       )}
 
