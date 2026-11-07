@@ -4,6 +4,8 @@
 **Date:** 2026-10-26  
 **Depends on:** Spec 007 (enablement receipt pinned), dual-path design F0–F4, Design Engine foundation.
 
+**Changed by [spec 009](../009-photo-to-patchbook/spec.md) (2026-11-07).** The staging walkthrough will start from a fixture Rig Photo instead of the seeded Rig, and its receipt will record the Reading and the confirmed revision (009 T060).
+
 ## Problem
 
 The frontend inventory list still reads the legacy path, the demo credentials drift from the seed, and readiness docs are not pinned to a walkthrough receipt, so no beta claim can be backed by evidence [OBSERVED: tasks.md, docs/KANBAN.md alpha-exit items].

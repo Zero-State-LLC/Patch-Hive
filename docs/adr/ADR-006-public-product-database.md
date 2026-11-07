@@ -1,6 +1,6 @@
 # ADR-006 — Expose the Device Registry as the Public Product Database
 
-Status: Accepted
+Status: Superseded by [ADR-007](ADR-007-photo-first-product.md) on 2026-11-07
 
 Date: 2026-07-20
 

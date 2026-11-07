@@ -4,6 +4,8 @@
 **Date:** 2026-10-24  
 **Depends on:** Spec 005 (DecisionProvider + DecisionPolicy + DecisionPacket), constitution authority boundaries, Neon staging branch, existing Vite frontend + FastAPI backend.
 
+**Changed by [spec 009](../009-photo-to-patchbook/spec.md) (2026-11-07).** The NVIDIA prompt through the Clef adapter returns every Sighting in a whole-rig photo in one structured answer (009 T022). The adapter's fail-closed rules don't change.
+
 ## Problem
 
 PatchHive is late-alpha. The domain `patch-hive.com` is now on Cloudflare. Production deploy has not been performed. A public beta requires an edge frontend, a reachable API hostname, continued use of Neon, and a vision-capable classifier that stays inside the Spec 005 authority boundary.
