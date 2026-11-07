@@ -928,6 +928,36 @@ test.describe("PatchHive canonical workspace", () => {
     return puts;
   }
 
+  test("rack builder drops what the signed-in reader had when they sign out", async ({ page }) => {
+    await signIn(page);
+    await mockMovableRig(page);
+    await page.route("**/api/community/auth/logout", (route) => route.fulfill({ status: 204 }));
+    await page.route("**/api/modules/**", (route) => {
+      const signedIn = Boolean(route.request().headers()["authorization"]);
+      const row = (id: number, name: string) => ({
+        id,
+        brand: "Sim",
+        name,
+        hp: 6,
+        module_type: "UTIL",
+        power_12v_ma: 20,
+      });
+      const modules = signedIn ? [row(10, "Gamma"), row(77, "Lead only")] : [row(10, "Gamma")];
+      return route.fulfill({ json: { total: modules.length, modules } });
+    });
+    await page.goto("/racks/7/edit");
+    const picker = page.getByLabel("Select module to place");
+    await expect(picker.getByRole("option", { name: /Lead only/ })).toHaveCount(1);
+    await picker.selectOption("77");
+
+    await page.getByRole("button", { name: /Sign out/ }).click();
+
+    await expect(page.getByRole("button", { name: /Sign out/ })).toHaveCount(0);
+    await expect(picker.getByRole("option", { name: /Gamma/ })).toHaveCount(1);
+    await expect(picker.getByRole("option", { name: /Lead only/ })).toHaveCount(0);
+    await expect(picker).toHaveValue("");
+  });
+
   test("rack builder moves a placed module by keyboard, and Undo puts it back", async ({
     page,
   }) => {
