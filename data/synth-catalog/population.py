@@ -23,6 +23,8 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Connection, Engine
 from sqlalchemy.exc import ProgrammingError, SQLAlchemyError
 
+import load_runs
+
 CATALOG = Path(__file__).resolve().parent
 ROOT = CATALOG.parents[1]
 VERIFICATION_STATUSES = {"verified", "corrected", "flagged", "unverified"}
@@ -33,6 +35,8 @@ MODULE_CATEGORIES = frozenset(
     {"VCO", "VCF", "VCA", "ENV", "LFO", "MIX", "FX", "SEQ", "UTIL", "SAMP", "MIDI", "VIDEO", "SYSTEM", "NOISE"}
 )
 AFFECTED_TABLES = (
+    "catalog_load_runs",
+    "catalog_load_changes",
     "catalog_value_archive",
     "manufacturers",
     "module_catalog",
@@ -478,7 +482,7 @@ def _reverify_history(conn: Connection) -> dict[tuple[str, str], list[tuple[str,
     rows = conn.execute(
         text(
             "SELECT table_name, row_key, field, action, archived_at FROM catalog_value_archive "
-            "WHERE action IN ('flag', 'relabel', 'null', 'correct')"
+            "WHERE action IN ('flag', 'relabel', 'null', 'correct') AND rolled_back_run_id IS NULL"
         )
     ).mappings()
     history: dict[tuple[str, str], list[tuple[str, str, Any]]] = {}
@@ -676,7 +680,7 @@ def _clear_reverify_if_resolved(plan: Plan, table: str, row_key: str, brand: str
     nulled_and_empty = [
         f"({column} IS NULL AND EXISTS (SELECT 1 FROM catalog_value_archive n "
         f"WHERE n.table_name = '{table}' AND n.row_key = :row_key AND n.field = '{column}' "
-        "AND n.action = 'null'))"
+        "AND n.action = 'null' AND n.rolled_back_run_id IS NULL))"
         for column in sorted(NULLABLE[table])
     ]
     plan.add_update(
@@ -692,15 +696,17 @@ def _clear_reverify_if_resolved(plan: Plan, table: str, row_key: str, brand: str
               AND EXISTS (
                 SELECT 1 FROM catalog_value_archive c
                 WHERE c.table_name = '{table}' AND c.row_key = :row_key AND c.action = 'correct'
+                  AND c.rolled_back_run_id IS NULL
               )
               AND NOT EXISTS (
                 SELECT 1 FROM catalog_value_archive a
                 WHERE a.table_name = '{table}' AND a.row_key = :row_key
-                  AND a.action IN ('flag', 'relabel') AND a.field <> '*'
+                  AND a.action IN ('flag', 'relabel') AND a.field <> '*' AND a.rolled_back_run_id IS NULL
                   AND NOT EXISTS (
                     SELECT 1 FROM catalog_value_archive c
                     WHERE c.table_name = a.table_name AND c.row_key = a.row_key
                       AND c.field = a.field AND c.action = 'correct' AND c.archived_at >= a.archived_at
+                      AND c.rolled_back_run_id IS NULL
                   )
               )
               AND NOT ({" OR ".join(nulled_and_empty)})
@@ -2490,19 +2496,31 @@ def plan_hash(plan: Plan, case_plan: dict[str, Any] | None = None) -> str:
     return digest.hexdigest()
 
 
-def inputs_hash() -> str:
-    """SHA-256 over every catalog input the plan reads: seeds, overlays, provenance."""
-    digest = hashlib.sha256()
+def input_files() -> list[Path]:
+    """Every catalog input the plan reads: seeds, overlays, provenance."""
     files = sorted(
         [*CATALOG.glob("seed-*.json"), *(CATALOG / "overlays").glob("*.json"),
          *(CATALOG / "provenance").glob("*.json"), POWER_CONFIG_RECEIPT, POWER_CONFIG_LABELS,
          POWER_CONFIG_DECISIONS,
          ROOT / "data" / "cases" / "seed-v1.json"]
     )
-    for path in files:
-        if path.is_file():
-            digest.update(str(path.relative_to(ROOT)).encode("utf-8"))
-            digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return [path for path in files if path.is_file()]
+
+
+def input_file_hashes() -> dict[str, str]:
+    """Each input's SHA-256, by path from the repo root (FR-018)."""
+    return {
+        str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in input_files()
+    }
+
+
+def inputs_hash() -> str:
+    """SHA-256 over every catalog input the plan reads, so an edit after review blocks an apply."""
+    digest = hashlib.sha256()
+    for path in input_files():
+        digest.update(str(path.relative_to(ROOT)).encode("utf-8"))
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
     return digest.hexdigest()
 
 
@@ -2616,6 +2634,7 @@ def populate(
     require_plan_hash: bool = False,
     expected_inputs_hash: str | None = None,
     require_inputs_hash: bool = False,
+    run_id: str | None = None,
 ) -> dict[str, Any]:
     """Plan, and with ``apply`` write, the catalog load.
 
@@ -2627,7 +2646,7 @@ def populate(
     (spec 003 OQ-9).
     """
     assert_local_database(database_url, allow_nonlocal)
-    run_id = os.environ.get("GITHUB_RUN_ID") or uuid.uuid4().hex
+    run_id = run_id or uuid.uuid4().hex
     started_at = _stamp()
     current_inputs = inputs_hash()
     engine = create_engine(database_url)
@@ -2656,17 +2675,31 @@ def populate(
                 f"(expected {expected_inputs_hash or 'none'}, current {current_inputs}). "
                 "Run a dry run, review it, and apply with its inputs_hash."
             )
-        cases = case_receipt(engine, case_plan, apply=apply)
+        before: dict[str, Any] = {}
         if apply:
-            with engine.begin() as conn:
-                apply_plan(conn, plan)
+            with engine.connect() as conn:
+                before = load_runs.snapshot(conn)
+        cases = case_receipt(engine, case_plan, apply=apply)
         receipt = receipt_for(plan, database_url=database_url, apply=apply, cases=cases)
         receipt["run_id"] = run_id
         receipt["started_at"] = started_at
         receipt["plan_hash"] = current_hash
         receipt["inputs_hash"] = current_inputs
+        receipt["input_files"] = input_file_hashes()
         receipt["provenance_counts_before"] = counts_before
         if apply:
+            with engine.begin() as conn:
+                apply_plan(conn, plan)
+                # In this transaction, so a load can't land without the record a rollback needs.
+                load_runs.record_run(
+                    conn,
+                    run_id=run_id,
+                    kind="apply",
+                    plan_hash=current_hash,
+                    inputs_hash=current_inputs,
+                    receipt=receipt,
+                    changes=load_runs.diff(before, load_runs.snapshot(conn)),
+                )
             with engine.connect() as conn:
                 receipt["provenance_counts_after"] = provenance_counts(conn)
     except SQLAlchemyError as exc:

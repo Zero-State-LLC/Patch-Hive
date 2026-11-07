@@ -121,9 +121,10 @@ def hp_needs_reverify(db: Session, module: Module) -> bool:
     row = db.execute(
         text(
             "SELECT 1 FROM catalog_value_archive f WHERE f.table_name = 'modules' "
-            "AND f.row_key = :key AND f.field = 'hp' AND f.action = 'flag' "
+            "AND f.row_key = :key AND f.field = 'hp' AND f.action = 'flag' AND f.rolled_back_run_id IS NULL "
             "AND NOT EXISTS (SELECT 1 FROM catalog_value_archive c WHERE c.table_name = 'modules' "
-            "AND c.row_key = :key AND c.field = 'hp' AND c.action = 'correct') LIMIT 1"
+            "AND c.row_key = :key AND c.field = 'hp' AND c.action = 'correct' "
+            "AND c.rolled_back_run_id IS NULL) LIMIT 1"
         ),
         {"key": f"{module.brand}::{module.name}"},
     ).first()

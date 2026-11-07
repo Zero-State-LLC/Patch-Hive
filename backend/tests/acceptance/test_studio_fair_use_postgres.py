@@ -269,4 +269,4 @@ def test_the_migration_refuses_to_downgrade_with_covered_exports_and_round_trips
         command.upgrade(config, "head")
     with engine.connect() as conn:
         version = conn.execute(text("SELECT version_num FROM alembic_version")).scalar()
-    assert version == "20261106_run_outcome_records"
+    assert version == "20261106_catalog_load_runs"

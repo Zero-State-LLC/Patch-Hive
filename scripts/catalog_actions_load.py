@@ -7,6 +7,7 @@ Environment:
   PATCHHIVE_LOAD_MODE   dry-run (default) or apply
   PATCHHIVE_PLAN_HASH   apply only: the plan_hash of the reviewed dry run (required)
   PATCHHIVE_INPUTS_HASH apply only: the inputs_hash of the reviewed dry run (required)
+  PATCHHIVE_ROLLBACK_RUN_ID  roll this load back instead of loading (spec 003 FR-031)
   GITHUB_STEP_SUMMARY   optional path for the job summary
 """
 
@@ -20,6 +21,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "data" / "synth-catalog"))
 
+from catalog_rollback import rollback  # noqa: E402
+from load_runs import actions_run_id  # noqa: E402
 from population import (  # noqa: E402
     assert_at_head,
     dump_affected_tables,
@@ -38,7 +41,22 @@ def _summary(
     receipt: dict | None = None,
 ) -> str:
     lines = [f"## Catalog load ({env_name}, {mode})", ""]
-    if receipt:
+    if receipt and receipt.get("rollback_of"):
+        lines = [f"## Catalog rollback of {receipt['rollback_of']} ({env_name}, {mode})", ""]
+        lines += [
+            f"- plan_hash: `{receipt['plan_hash']}`"
+            + (" (apply with this to write exactly this rollback)" if mode == "dry-run" else ""),
+            f"- run_id: {receipt['run_id']}",
+            f"- rows retired: {receipt['retired']}",
+            f"- fields restored: {receipt['restored']}",
+            f"- inserted rows left in place: {receipt['left_in_place']}",
+            f"- changed since the load, left alone: {receipt['conflicts_total']}",
+            f"- retired modules on Rigs: {receipt['retired_on_racks']}",
+            f"- case writes not rolled back: {receipt['cases_not_rolled_back']}",
+            "- Committed files are unchanged: revert or replace the overlay before the next load.",
+            "",
+        ]
+    elif receipt:
         lines += [
             f"- plan_hash: `{receipt['plan_hash']}`"
             + (" (apply with this to write exactly this plan)" if mode == "dry-run" else ""),
@@ -115,17 +133,32 @@ def main() -> int:
     try:
         if mode == "apply":
             dump_affected_tables(database_url, ARTIFACTS / "pre-apply.dump")
-        receipt = populate(
-            database_url,
-            apply=mode == "apply",
-            allow_nonlocal=True,
-            receipt_path=ARTIFACTS / "receipt.json",
-            sql_path=ARTIFACTS / "population-upsert.sql",
-            expected_plan_hash=os.environ.get("PATCHHIVE_PLAN_HASH", "").strip() or None,
-            require_plan_hash=mode == "apply",
-            expected_inputs_hash=os.environ.get("PATCHHIVE_INPUTS_HASH", "").strip() or None,
-            require_inputs_hash=mode == "apply",
-        )
+        rollback_of = os.environ.get("PATCHHIVE_ROLLBACK_RUN_ID", "").strip()
+        if rollback_of:
+            receipt = rollback(
+                database_url,
+                rollback_of,
+                apply=mode == "apply",
+                allow_nonlocal=True,
+                receipt_path=ARTIFACTS / "receipt.json",
+                sql_path=ARTIFACTS / "population-upsert.sql",
+                expected_plan_hash=os.environ.get("PATCHHIVE_PLAN_HASH", "").strip() or None,
+                require_plan_hash=mode == "apply",
+                this_run=actions_run_id(),
+            )
+        else:
+            receipt = populate(
+                database_url,
+                apply=mode == "apply",
+                allow_nonlocal=True,
+                receipt_path=ARTIFACTS / "receipt.json",
+                sql_path=ARTIFACTS / "population-upsert.sql",
+                expected_plan_hash=os.environ.get("PATCHHIVE_PLAN_HASH", "").strip() or None,
+                require_plan_hash=mode == "apply",
+                expected_inputs_hash=os.environ.get("PATCHHIVE_INPUTS_HASH", "").strip() or None,
+                require_inputs_hash=mode == "apply",
+                run_id=actions_run_id(),
+            )
         receipt["alembic_head"] = head
         (ARTIFACTS / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
         after = table_counts(database_url)
