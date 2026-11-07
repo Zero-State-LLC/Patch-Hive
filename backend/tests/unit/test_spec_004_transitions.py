@@ -354,8 +354,138 @@ def test_b_unresolved_operator_rejects_grants_nothing(db_session: Session, pair)
     db_session.commit()
 
     assert record.status == "rejected"
-    assert _b_state(db_session, payment) == CHECKOUT_OPEN
+    assert _b_state(db_session, payment) == ABANDONED
     assert _purchase_entries(db_session) == 0
+
+
+def _rejected_b_checkout(db: Session, admin: User, payment: ProviderPaymentRecord) -> None:
+    _deliver(
+        db, "evt_b_rej", "checkout.session.completed", _session_object(payment, customer="cus_other")
+    )
+    record = db.get(StripeEventRecordModel, "evt_b_rej")
+    assert record.status == "unresolved"
+    reject_unresolved_event(
+        db, record, actor_user_id=admin.id, actor_role="Admin", reason="not ours"
+    )
+    db.commit()
+
+
+def test_b_rejected_checkout_refuses_a_later_verified_event(db_session: Session, pair):
+    """T001 D4: the rejection closes the checkout, so only an operator can look further."""
+    admin, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    _rejected_b_checkout(db_session, admin, payment)
+
+    later = _deliver(
+        db_session, "evt_b_late", "checkout.session.completed", _session_object(payment)
+    )
+
+    assert (later.record.status, later.record.reason_code) == (
+        "unresolved",
+        "PAYMENT_STATE_CONFLICT",
+    )
+    assert _b_state(db_session, payment) == ABANDONED
+    assert _purchase_entries(db_session) == 0
+    assert credit_balance(db_session, buyer.id) == 0
+
+
+def test_b_rejected_checkout_then_expired_is_a_duplicate(db_session: Session, pair):
+    admin, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    _rejected_b_checkout(db_session, admin, payment)
+
+    later = _deliver(
+        db_session,
+        "evt_b_late_exp",
+        "checkout.session.expired",
+        _session_object(payment, payment_status="unpaid"),
+    )
+
+    assert (later.record.status, later.record.reason_code) == (
+        "duplicate",
+        "CHECKOUT_ALREADY_CLOSED",
+    )
+    assert _b_state(db_session, payment) == ABANDONED
+
+
+def test_b_pending_checkout_rejected_is_abandoned(db_session: Session, pair):
+    admin, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    _deliver(
+        db_session,
+        "evt_b_wait",
+        "checkout.session.completed",
+        _session_object(payment, payment_status="unpaid"),
+    )
+    db_session.refresh(payment)
+    assert payment.status == "pending"
+    _deliver(
+        db_session,
+        "evt_b_pend_bad",
+        "checkout.session.async_payment_succeeded",
+        _session_object(payment, amount_total=1),
+    )
+    record = db_session.get(StripeEventRecordModel, "evt_b_pend_bad")
+    assert (record.status, record.reason_code) == ("unresolved", "AMOUNT_MISMATCH")
+
+    reject_unresolved_event(
+        db_session, record, actor_user_id=admin.id, actor_role="Admin", reason="wrong amount"
+    )
+    db_session.commit()
+
+    assert _b_state(db_session, payment) == ABANDONED
+    assert _purchase_entries(db_session) == 0
+
+
+def test_b_credited_checkout_keeps_its_credits_when_an_event_is_rejected(
+    db_session: Session, pair
+):
+    admin, buyer = pair
+    payment = _open_checkout(db_session, buyer, credits=30)
+    _deliver(db_session, "evt_b_paid_r", "checkout.session.completed", _session_object(payment))
+    _deliver(
+        db_session,
+        "evt_b_exp_r",
+        "checkout.session.expired",
+        _session_object(payment, payment_status="unpaid"),
+    )
+    record = db_session.get(StripeEventRecordModel, "evt_b_exp_r")
+    assert (record.status, record.reason_code) == ("unresolved", "PAYMENT_STATE_CONFLICT")
+
+    reject_unresolved_event(
+        db_session, record, actor_user_id=admin.id, actor_role="Admin", reason="stale"
+    )
+    db_session.commit()
+
+    assert record.status == "rejected"
+    assert _b_state(db_session, payment) == CREDITED
+    assert credit_balance(db_session, buyer.id) == 30
+
+
+def test_b_rejected_dispute_leaves_the_payment_as_it_is(db_session: Session, pair):
+    admin, buyer = pair
+    payment = _open_checkout(db_session, buyer, credits=30)
+    _deliver(db_session, "evt_b_paid_d", "checkout.session.completed", _session_object(payment))
+    _deliver(
+        db_session,
+        "evt_b_dispute",
+        "charge.dispute.created",
+        {
+            "id": "dp_reject",
+            "object": "dispute",
+            "payment_intent": f"pi_{payment.checkout_session_id}",
+        },
+    )
+    record = db_session.get(StripeEventRecordModel, "evt_b_dispute")
+    assert (record.status, record.reason_code) == ("unresolved", "DISPUTE_OPENED")
+
+    reject_unresolved_event(
+        db_session, record, actor_user_id=admin.id, actor_role="Admin", reason="won at the provider"
+    )
+    db_session.commit()
+
+    assert _b_state(db_session, payment) == CREDITED
+    assert credit_balance(db_session, buyer.id) == 30
 
 
 class _Retriever:
