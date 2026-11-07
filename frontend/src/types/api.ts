@@ -484,6 +484,43 @@ export interface UserExportRecord {
   source?: "canon" | "legacy";
 }
 
+/** A paid plan's name stays in the data: the page says what a plan gives (COPY_COMPLIANCE.md). */
+export interface CommercePlan {
+  tier: string;
+  credits_per_period: number;
+  unlimited: boolean;
+  fair_use_exports_per_period: number | null;
+}
+
+export interface CommerceCreditOffer {
+  price_cents: number;
+  minimum_charge_cents: number;
+  currency: string;
+  max_credits: number;
+}
+
+export interface CommerceSubscription {
+  plan: CommercePlan | null;
+  status: string;
+  cancel_at_period_end: boolean;
+  current_period_end: string;
+  can_cancel: boolean;
+}
+
+export interface CommerceAllowance {
+  exports_used: number;
+  export_cap: number;
+  period_end: string;
+}
+
+export interface CommerceStatus {
+  test_mode: boolean;
+  credit_offer: CommerceCreditOffer | null;
+  plan_offers: CommercePlan[];
+  subscription: CommerceSubscription | null;
+  allowance: CommerceAllowance | null;
+}
+
 export interface ReferralRecord {
   referred_user_id: string;
   status: string;

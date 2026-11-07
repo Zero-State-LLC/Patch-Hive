@@ -18,11 +18,18 @@ import {
   type ModuleToPlace,
 } from "@/lib/api";
 import { rigDetailToRack } from "@/lib/canonRigAdapter";
+import {
+  allowanceCount,
+  allowanceReset,
+  allowanceUsage,
+  allowanceUsedUp,
+  exportRefusal,
+} from "@/lib/commerce";
 import { formatDateTime, runLabel, shortHash } from "@/lib/format";
 import { describeEmptyGeneration } from "@/lib/generateOutcome";
 import { patchName } from "@/lib/patchName";
 import { useAuthStore } from "@/lib/store";
-import type { Patch, Rack, Run } from "@/types/api";
+import type { CommerceAllowance, Patch, Rack, Run } from "@/types/api";
 
 type WorkspaceTab = "overview" | "patches" | "exports" | "gallery";
 
@@ -78,6 +85,7 @@ export default function RigDetailPage() {
   // Null until the balance arrives, so a balance that didn't load never reads as 0 credits.
   const [credits, setCredits] = useState<number | null>(null);
   const [creditsError, setCreditsError] = useState<unknown>(null);
+  const [allowance, setAllowance] = useState<CommerceAllowance | null>(null);
   const [runsError, setRunsError] = useState<unknown>(null);
   const [runsAttempt, setRunsAttempt] = useState(0);
   const [patchesError, setPatchesError] = useState<unknown>(null);
@@ -260,6 +268,12 @@ export default function RigDetailPage() {
         setCredits(null);
         setCreditsError(err);
       });
+    // A period allowance pays for exports instead of credits. The API checks again at export, so
+    // if this read fails the page goes by the balance alone.
+    canonApi
+      .getCommerce()
+      .then((response) => setAllowance(response.data.allowance))
+      .catch(() => setAllowance(null));
   };
 
   useEffect(refreshCredits, [signedIn]);
@@ -358,21 +372,21 @@ export default function RigDetailPage() {
         idempotency_key,
       });
       setExportStatus(
-        `Export ${shortHash(created.data.export_id)} requested (${created.data.status}). Its credits come off your balance; nothing else is charged.`,
+        `Export ${shortHash(created.data.export_id)} requested (${created.data.status}). ${
+          created.data.credit_cost === 0
+            ? "It counts toward this period's exports, and no credits come off your balance."
+            : "Its credits come off your balance; nothing else is charged."
+        }`,
       );
       refreshCredits();
     } catch (error: unknown) {
-      const apiError = error as { response?: { data?: { detail?: string }; status?: number } };
-      const detail = apiError.response?.data?.detail;
-      if (apiError.response?.status === 402) {
-        setExportStatus("Not enough credits for this export. Nothing was charged.");
-      } else {
-        setExportStatus(detail || "The export failed. Nothing was charged.");
-      }
+      setExportStatus(exportRefusal(error));
     } finally {
       setExporting(false);
     }
   };
+
+  const canSpend = allowance ? !allowanceUsedUp(allowance) : credits != null && credits > 0;
 
   // The patch path: how far this rig has come from inventory to book.
   const reached = hasRuns ? 2 : inventoryReady ? 1 : 0;
@@ -403,11 +417,13 @@ export default function RigDetailPage() {
         ? "After the first run"
         : !signedIn
           ? "Sign in to export"
-          : credits == null
-            ? creditsError
-              ? "Balance didn't load"
-              : "Checking your balance"
-            : `${credits} credit${credits === 1 ? "" : "s"} available`,
+          : allowance
+            ? allowanceUsage(allowance)
+            : credits == null
+              ? creditsError
+                ? "Balance didn't load"
+                : "Checking your balance"
+              : `${credits} credit${credits === 1 ? "" : "s"} available`,
       detail: "Review the patches, then export. Only exports cost credits.",
     },
   ];
@@ -731,6 +747,12 @@ export default function RigDetailPage() {
                 <dt>Available credits</dt>
                 <dd>{credits ?? "Not loaded"}</dd>
               </div>
+              {allowance ? (
+                <div>
+                  <dt>Exports this period</dt>
+                  <dd>{allowanceCount(allowance)}</dd>
+                </div>
+              ) : null}
             </dl>
           ) : null}
           {creditsError ? (
@@ -742,7 +764,7 @@ export default function RigDetailPage() {
                 className="button button-primary"
                 type="button"
                 onClick={handleExport}
-                disabled={credits == null || credits <= 0 || exporting || !activeRun}
+                disabled={!canSpend || exporting || !activeRun}
               >
                 {exporting ? "Requesting…" : "Export PDF patch book"}
               </button>
@@ -757,7 +779,9 @@ export default function RigDetailPage() {
             </div>
             {!signedIn ? (
               <p className="status status-warning">Sign in to export. Only exports cost credits.</p>
-            ) : credits != null && credits <= 0 ? (
+            ) : allowance && allowanceUsedUp(allowance) ? (
+              <p className="status status-warning">{allowanceReset(allowance)}</p>
+            ) : !allowance && credits != null && credits <= 0 ? (
               <p className="status status-warning">Credits are required only for exports.</p>
             ) : null}
           </div>

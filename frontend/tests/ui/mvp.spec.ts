@@ -158,6 +158,69 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(page.getByText(/Each export is a patch book of this run/)).toBeVisible();
   });
 
+  const allowance = (exports_used: number, export_cap: number) => ({
+    test_mode: true,
+    credit_offer: null,
+    plan_offers: [],
+    subscription: null,
+    allowance: { exports_used, export_cap, period_end: "2030-03-15T00:00:00Z" },
+  });
+
+  test("a period allowance pays for an export with no credits", async ({ page }) => {
+    await signIn(page);
+    await page.route("**/api/canon/commerce", (route) =>
+      route.fulfill({ json: allowance(12, 100) }),
+    );
+    await page.route("**/api/canon/exports", (route) =>
+      route.request().method() === "POST"
+        ? route.fulfill({
+            status: 201,
+            json: { export_id: "export-allowance-1", status: "queued", credit_cost: 0 },
+          })
+        : route.fallback(),
+    );
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+
+    await expect(page.getByText("Exports this period")).toBeVisible();
+    await expect(page.getByText("12 of 100", { exact: true })).toBeVisible();
+    await expect(page.getByText("Credits are required only for exports.")).toHaveCount(0);
+    const exportButton = page.getByRole("button", { name: "Export PDF patch book" });
+    await expect(exportButton).toBeEnabled();
+
+    await exportButton.click();
+    await expect(page.getByText(/counts toward this period's exports/)).toBeVisible();
+  });
+
+  test("a used-up allowance says when it resets, and the API's refusal reads in words", async ({
+    page,
+  }) => {
+    await signIn(page);
+    let allowanceRead = allowance(99, 100);
+    await page.route("**/api/canon/commerce", (route) => route.fulfill({ json: allowanceRead }));
+    await page.route("**/api/canon/exports", (route) =>
+      route.request().method() === "POST"
+        ? route.fulfill({ status: 429, json: { detail: "FAIR_USE_CAP_REACHED" } })
+        : route.fallback(),
+    );
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+    const exportButton = page.getByRole("button", { name: "Export PDF patch book" });
+    await expect(exportButton).toBeEnabled();
+
+    // The page read 99 of 100, and another tab took the last one.
+    await exportButton.click();
+    await expect(
+      page.getByText(/used this period's exports, so nothing was charged/),
+    ).toBeVisible();
+
+    allowanceRead = allowance(100, 100);
+    await page.reload();
+    await page.getByRole("tab", { name: "Exports" }).click();
+    await expect(exportButton).toBeDisabled();
+    await expect(page.getByText(/They reset on/)).toBeVisible();
+  });
+
   test("export boundary asks a signed-out visitor to sign in, not to buy credits", async ({
     page,
   }) => {

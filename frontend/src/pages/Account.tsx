@@ -3,6 +3,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AccountCommerce, { CheckoutReturnNotice } from "@/components/AccountCommerce";
 import DeleteAccount, { AccountDeleted } from "@/components/DeleteAccount";
 import { ListSkeleton, ReadoutSkeleton } from "@/components/Skeletons";
 import Hash from "@/components/Hash";
@@ -160,6 +161,8 @@ export default function AccountPage() {
       </header>
 
       <div className="ops-page account-grid">
+        <CheckoutReturnNotice />
+
         <section className="ops-section" aria-labelledby="credits-heading">
           <h2 id="credits-heading">Credits</h2>
           <dl className="readout account-balance">
@@ -210,6 +213,8 @@ export default function AccountPage() {
             <p className="muted">No canonical credit history yet.</p>
           )}
         </section>
+
+        <AccountCommerce />
 
         <section className="ops-section" aria-labelledby="exports-heading">
           <h2 id="exports-heading">Exports</h2>

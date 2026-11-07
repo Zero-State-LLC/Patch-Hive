@@ -143,7 +143,8 @@
   font-size: var(--text-3xl);
 }
 /* Deleting the account sits apart across both columns, with its terms ahead of its form */
-.account-delete {
+.account-delete,
+.account-notice {
   grid-column: 1 / -1;
 }
 .account-delete > .button {

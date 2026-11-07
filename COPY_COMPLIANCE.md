@@ -22,8 +22,9 @@ Do not use the following in publishing surfaces:
 - affiliate
 
 ## Forbidden Terms Scan
-Checked the dashboard/referral copy in `frontend/src/pages/Account.tsx`.
+Checked the dashboard/referral copy in `frontend/src/pages/Account.tsx`, and the buying and plan copy in `frontend/src/components/AccountCommerce.tsx` and `frontend/src/lib/commerce.ts`. `backend/tests/unit/test_copy_compliance.py` scans all three.
 - Forbidden terms not used: upgrade, premium, pro, subscribe, commission, affiliate.
+- So a paid plan is named by what it gives ("25 credits each billing period"), and the button says "Start this plan". The tier names stay in the data.
 
 ## Current publishing UI usage
 - `/account`: Publish an export, Unlisted, Public, Allow download
