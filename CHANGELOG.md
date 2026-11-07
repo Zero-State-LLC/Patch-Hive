@@ -4,6 +4,25 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.16](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.15...v0.3.0-alpha.16) (2026-11-07)
+
+
+### Added
+
+* **catalog:** roll a load back by run ID, and keep each load's record (spec 003 T090) ([#340](https://github.com/Zero-State-LLC/Patch-Hive/issues/340)) ([f4b80cc](https://github.com/Zero-State-LLC/Patch-Hive/commit/f4b80cc7cf2ff9deffe9e2571ae2e2d1387e935c))
+
+
+### Fixed
+
+* **catalog:** keep a fetch refusal apart from not found, and add the filter (spec 003 T090) ([#335](https://github.com/Zero-State-LLC/Patch-Hive/issues/335)) ([e507303](https://github.com/Zero-State-LLC/Patch-Hive/commit/e50730311337266d57f64a8320cc4e8ea4b2cc4c))
+* **catalog:** make the loader the only writer of catalog rows (spec 003 T090) ([#338](https://github.com/Zero-State-LLC/Patch-Hive/issues/338)) ([1349bcb](https://github.com/Zero-State-LLC/Patch-Hive/commit/1349bcb9176a418824a9abf36de0262d1f464148))
+
+
+### Documentation
+
+* record the 0.3.0-alpha.15 deploy ([#332](https://github.com/Zero-State-LLC/Patch-Hive/issues/332)) ([34e90c4](https://github.com/Zero-State-LLC/Patch-Hive/commit/34e90c484d1327821a8405c874c0decf549d9212))
+* **spec-003:** converge the spec with the code and tick T090 ([#339](https://github.com/Zero-State-LLC/Patch-Hive/issues/339)) ([b783f19](https://github.com/Zero-State-LLC/Patch-Hive/commit/b783f197025b412d05b55a23442be461313ffe3d))
+
 ## [0.3.0-alpha.15](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.14...v0.3.0-alpha.15) (2026-11-06)
 
 
