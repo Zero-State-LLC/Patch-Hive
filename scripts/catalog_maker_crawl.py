@@ -561,7 +561,7 @@ def resolve_brand(brand: str) -> dict:
         return {"brand": brand, "homepage": adapter["homepage"], "status": "resolved", "how": f"adapter:{adapter['kind']}"}
     curated = (SOURCES.get("homepages") or {}).get(brand)
     if curated:
-        if curated["status"] in ("rejected", "robots_disallowed", "challenged"):
+        if curated["status"] in ("rejected", "robots_disallowed", "challenged", "refused"):
             return {"brand": brand, "homepage": None, "status": f"curated_{curated['status']}"}
         if curated["status"] == "verified_free":
             return {"brand": brand, "homepage": curated["homepage"], "status": "resolved", "how": "curated"}

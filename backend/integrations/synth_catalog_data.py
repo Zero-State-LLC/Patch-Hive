@@ -236,3 +236,13 @@ def seed_stats(path: Optional[str] = None) -> Dict[str, Any]:
         "abraxas_pr": seed.get("abraxas_pr"),
         "seed_path": str(resolved),
     }
+
+
+def manufacturers_payload() -> Dict[str, Any]:
+    return {
+        "source": SOURCE_NAME,
+        "major_brands": get_major_brands(),
+        "major_count": len(get_major_brands()),
+        "brand_index_count": len(get_brand_index()),
+        "brands_sample": get_brand_index()[:50],
+    }
