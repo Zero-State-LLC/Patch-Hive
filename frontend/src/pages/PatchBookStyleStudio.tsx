@@ -10,7 +10,8 @@ import { canonApi } from "@/lib/api";
 import { exportRefusal } from "@/lib/commerce";
 import { failureKind } from "@/lib/loadError";
 import { shortHash } from "@/lib/format";
-import { useAuthStore } from "@/lib/store";
+import { useAuthStore, useReaderKey } from "@/lib/store";
+import { useMountedRef } from "@/lib/useMountedRef";
 import {
   ALL_INFLUENCE_IDS,
   ARTISTIC_MODES,
@@ -84,6 +85,11 @@ type BridgeFields = {
 };
 
 export default function PatchBookStyleStudioPage() {
+  return <PatchBookStyleStudio key={useReaderKey()} />;
+}
+
+function PatchBookStyleStudio() {
+  const mounted = useMountedRef();
   const { rigId } = useParams<{ rigId: string }>();
   const [search] = useSearchParams();
   const bridge: BridgeFields | null = useMemo(() => {
@@ -137,6 +143,8 @@ export default function PatchBookStyleStudioPage() {
         return;
       }
       const blob = await res.blob();
+      // A file saved after sign-out would hand the last reader's book to whoever is here now.
+      if (!mounted.current) return;
       const objectUrl = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = objectUrl;

@@ -6,7 +6,7 @@
  */
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useAuthStore } from "@/lib/store";
 import type { User } from "@/types/api";
@@ -17,7 +17,7 @@ const api = vi.hoisted(() => ({
   caseCatalogApi: { list: vi.fn(), compatibility: vi.fn() },
   moduleApi: { list: vi.fn() },
   evidenceApi: { listInventory: vi.fn() },
-  rackApi: { compatibility: vi.fn() },
+  rackApi: { compatibility: vi.fn(), create: vi.fn() },
 }));
 
 vi.mock("@/lib/api", () => api);
@@ -191,6 +191,52 @@ describe("a change of reader on the rack builder", () => {
 
     await waitFor(() => expect(api.canonApi.listRigs).toHaveBeenCalledTimes(2));
     expect(screen.queryByDisplayValue("Secret search")).toBeNull();
+  });
+
+  it("stays put when a rig created before sign-out comes back after it", async () => {
+    let answer: (value: unknown) => void = () => {};
+    api.rackApi.create.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          answer = resolve;
+        }),
+    );
+    function Where() {
+      const { pathname, search } = useLocation();
+      return <output data-testid="where">{`${pathname}${search}`}</output>;
+    }
+    const user = userEvent.setup();
+    signIn();
+    render(
+      <MemoryRouter initialEntries={["/racks/new?case_id=10"]}>
+        <Where />
+        <Routes>
+          <Route path="/racks/new" element={<RackBuilderPage />} />
+          <Route path="/racks/:id/edit" element={<RackBuilderPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    await user.click(await screen.findByRole("button", { name: "Create empty rig" }));
+    await waitFor(() => expect(api.rackApi.create).toHaveBeenCalledTimes(1));
+
+    act(() => useAuthStore.getState().clear());
+    await waitFor(() => expect(api.canonApi.listRigs).toHaveBeenCalledTimes(2));
+
+    await act(async () => answer({ data: { id: 7 } }));
+
+    expect(screen.getByTestId("where").textContent).toBe("/racks/new?case_id=10");
+  });
+
+  it("starts over when a renewal brings back a different account", async () => {
+    signIn();
+    renderCreate();
+    await screen.findByRole("option", { name: /Private rig/ });
+
+    act(() =>
+      useAuthStore.getState().setAuth({ id: 2, username: "other" } as unknown as User, "other"),
+    );
+
+    await waitFor(() => expect(api.canonApi.listRigs).toHaveBeenCalledTimes(2));
   });
 
   it("does nothing on a token renewal, which isn't a change of reader", async () => {
