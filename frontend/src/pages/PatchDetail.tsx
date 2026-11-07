@@ -11,12 +11,17 @@ import { canonApi, patchApi } from "@/lib/api";
 import { rigDetailToRack } from "@/lib/canonRigAdapter";
 import { failureReason } from "@/lib/loadError";
 import { patchName } from "@/lib/patchName";
+import { useReaderKey } from "@/lib/store";
 import type { Patch, Rack } from "@/types/api";
 import { difficultyFromConnections } from "./racksPageUtils";
 
 type LoadState = "loading" | "ready" | "missing" | "error";
 
 export default function PatchDetailPage() {
+  return <PatchDetail key={useReaderKey()} />;
+}
+
+function PatchDetail() {
   const { rigId, patchId } = useParams();
   const rigIdNum = Number(rigId);
   const patchIdNum = Number(patchId);

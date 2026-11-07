@@ -3,7 +3,8 @@ import type { CSSProperties } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { canonApi, exportApi, patchApi, rackApi, runApi } from "@/lib/api";
 import { filenameFromDisposition, saveBlob } from "@/lib/download";
-import { useAuthStore } from "@/lib/store";
+import { useAuthStore, useReaderKey } from "@/lib/store";
+import { useMountedRef } from "@/lib/useMountedRef";
 import PatchRail from "@/components/PatchRail";
 import RigRail from "@/components/RigRail";
 import Tabs from "@/components/Tabs";
@@ -51,6 +52,11 @@ function gateTone(status?: string | null): "success" | "warning" | "danger" | "n
 }
 
 export default function RacksPage() {
+  return <Racks key={useReaderKey()} />;
+}
+
+function Racks() {
+  const mounted = useMountedRef();
   const [racks, setRacks] = useState<Rack[]>([]);
   const [rackTotal, setRackTotal] = useState(0);
   const [loadingMoreRigs, setLoadingMoreRigs] = useState(false);
@@ -158,6 +164,8 @@ export default function RacksPage() {
     setListLoading(true);
     try {
       const response = await canonApi.listRigs({ limit: RIG_PAGE_SIZE });
+      // Past here the page may move to the reader's first rig, which the next reader can't open.
+      if (!mounted.current) return;
       const rows = response.data.rigs.map(rigSummaryToRack);
       setRacks(rows);
       setRackTotal(response.data.total ?? rows.length);
@@ -282,7 +290,7 @@ export default function RacksPage() {
       if (latestRuns[0]?.id) {
         await loadPatches(latestRuns[0].id);
       }
-      setActiveTab("patches");
+      if (mounted.current) setActiveTab("patches");
     } catch {
       setError("Patch generation failed. Please retry.");
     } finally {

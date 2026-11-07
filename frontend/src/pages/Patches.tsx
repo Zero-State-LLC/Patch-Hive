@@ -8,6 +8,7 @@ import ShowMore from "@/components/ShowMore";
 import { ListSkeleton } from "@/components/Skeletons";
 import { patchApi } from "@/lib/api";
 import { patchName } from "@/lib/patchName";
+import { useReaderKey } from "@/lib/store";
 import type { Patch } from "@/types/api";
 
 type LoadState = "loading" | "ready" | "empty" | "error";
@@ -15,6 +16,10 @@ type LoadState = "loading" | "ready" | "empty" | "error";
 const PAGE_SIZE = 100;
 
 export default function PatchesPage() {
+  return <Patches key={useReaderKey()} />;
+}
+
+function Patches() {
   const [patches, setPatches] = useState<Patch[]>([]);
   const [total, setTotal] = useState(0);
   const [state, setState] = useState<LoadState>("loading");

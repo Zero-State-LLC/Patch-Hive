@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import { accountApi } from "@/lib/api";
 import { failureReason } from "@/lib/loadError";
 import { endLocalSession } from "@/lib/session";
+import { useAuthStore } from "@/lib/store";
 
 const REMOVED = [
   "Your email address, username, display name, avatar URL, bio, password and referral code are replaced or cleared.",
@@ -60,9 +61,12 @@ function describeFailure(error: unknown): Failure {
 export default function DeleteAccount({
   username,
   onDeleted,
+  onHoldPage,
 }: {
   username: string;
   onDeleted: () => void;
+  /** True from asking until the outcome is told, so a session ending meanwhile doesn't hide it. */
+  onHoldPage?: (hold: boolean) => void;
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -100,6 +104,7 @@ export default function DeleteAccount({
     setTypedUsername("");
     setPassword("");
     setFailure(null);
+    onHoldPage?.(false);
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -107,6 +112,7 @@ export default function DeleteAccount({
     if (!canSubmit) return;
     setSubmitting(true);
     setFailure(null);
+    onHoldPage?.(true);
     try {
       await accountApi.deleteAccount(password);
     } catch (error: unknown) {
@@ -114,6 +120,8 @@ export default function DeleteAccount({
       if (next.wrongPassword) setPassword("");
       setFailure(next);
       setSubmitting(false);
+      // With the session gone, closing this control is what lets the page move on.
+      if (useAuthStore.getState().isAuthenticated()) onHoldPage?.(false);
       return;
     }
     endLocalSession();

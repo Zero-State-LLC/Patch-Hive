@@ -28,7 +28,8 @@ import {
 import { formatDateTime, runLabel, shortHash } from "@/lib/format";
 import { describeEmptyGeneration } from "@/lib/generateOutcome";
 import { patchName } from "@/lib/patchName";
-import { useAuthStore } from "@/lib/store";
+import { useAuthStore, useReaderKey } from "@/lib/store";
+import { useMountedRef } from "@/lib/useMountedRef";
 import type { CommerceAllowance, Patch, Rack, Run } from "@/types/api";
 
 type WorkspaceTab = "overview" | "patches" | "exports" | "gallery";
@@ -54,6 +55,11 @@ interface RigRevision {
 }
 
 export default function RigDetailPage() {
+  return <RigDetail key={useReaderKey()} />;
+}
+
+function RigDetail() {
+  const mounted = useMountedRef();
   const { rigId } = useParams();
   const rigIdNum = Number(rigId);
   const [rig, setRig] = useState<Rack | null>(null);
@@ -330,7 +336,7 @@ export default function RigDetailPage() {
         );
         setLastGenerateRunId(body.run_id ?? null);
         await reloadRunsAndSelect(body.run_id ?? null);
-        setActiveTab("patches");
+        if (mounted.current) setActiveTab("patches");
       }
       // Refresh inventory receipt after generate (gate may seal a placement-based revision).
       try {

@@ -10,7 +10,7 @@ import { canonApi } from "@/lib/api";
 import { exportRefusal } from "@/lib/commerce";
 import { failureKind } from "@/lib/loadError";
 import { shortHash } from "@/lib/format";
-import { useAuthStore } from "@/lib/store";
+import { useAuthStore, useReaderKey } from "@/lib/store";
 import {
   ALL_INFLUENCE_IDS,
   ARTISTIC_MODES,
@@ -84,6 +84,10 @@ type BridgeFields = {
 };
 
 export default function PatchBookStyleStudioPage() {
+  return <PatchBookStyleStudio key={useReaderKey()} />;
+}
+
+function PatchBookStyleStudio() {
   const { rigId } = useParams<{ rigId: string }>();
   const [search] = useSearchParams();
   const bridge: BridgeFields | null = useMemo(() => {

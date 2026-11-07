@@ -24,8 +24,9 @@ import { failureReason } from "@/lib/loadError";
 import { checkSlot, moveTo, slotPhrase, type Slot } from "@/lib/placementMove";
 import { firstFreeStartHp, packModulesOntoRows } from "@/lib/placementPack";
 import { placementPower, railMeter, summarizePower, type RailKey } from "@/lib/powerBudget";
-import { useAuthStore } from "@/lib/store";
+import { useAuthStore, useReaderKey } from "@/lib/store";
 import { useDebouncedValue } from "@/lib/useDebouncedValue";
+import { useMountedRef } from "@/lib/useMountedRef";
 import { useToast } from "@/lib/useToast";
 import type { Case, CatalogCaseListItem, Module, Rack, RackModuleSpec } from "@/types/api";
 
@@ -151,11 +152,11 @@ function nextFreeStartHp(
  * and an answer still on its way lands nowhere. A token renewal is not a change of reader.
  */
 export default function RackBuilderPage() {
-  const signedIn = useAuthStore((st) => st.isAuthenticated());
-  return <RackBuilder key={signedIn ? "signed-in" : "signed-out"} />;
+  return <RackBuilder key={useReaderKey()} />;
 }
 
 function RackBuilder() {
+  const mounted = useMountedRef();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { id: routeId } = useParams<{ id: string }>();
@@ -497,7 +498,7 @@ function RackBuilder() {
       });
       const id = res.data.id;
       const qs = preselectedModuleId != null ? `?module_id=${preselectedModuleId}` : "";
-      navigate(`/racks/${id}/edit${qs}`);
+      if (mounted.current) navigate(`/racks/${id}/edit${qs}`);
     } catch (err) {
       setCreateError(formatValidationError(err));
     } finally {

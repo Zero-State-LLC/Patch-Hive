@@ -24,10 +24,23 @@ function safeHttpUrl(value: string): string | null {
   }
 }
 
+/**
+ * A different account starts this page over. Losing the reader doesn't, because deleting an account
+ * ends the session with the page still showing what came of it; the page below deals with that.
+ */
 export default function AccountPage() {
+  const id = useAuthStore((st) => st.user?.id ?? null);
+  const [account, setAccount] = useState(id);
+  if (id !== null && id !== account) setAccount(id);
+  return <Account key={account ?? "signed-out"} />;
+}
+
+function Account() {
   const navigate = useNavigate();
   const { isAuthenticated, setUser, user } = useAuthStore();
+  const signedIn = isAuthenticated();
   const [deleted, setDeleted] = useState(false);
+  const [holdForDeletion, setHoldForDeletion] = useState(false);
   const [credits, setCredits] = useState<CreditsSummary | null>(null);
   const [exports, setExports] = useState<UserExportRecord[]>([]);
   const [referrals, setReferrals] = useState<ReferralSummary | null>(null);
@@ -38,7 +51,7 @@ export default function AccountPage() {
   const [copyStatus, setCopyStatus] = useState("");
   const [tokenBusy, setTokenBusy] = useState<string | null>(null);
   const [tokenMessage, setTokenMessage] = useState("");
-  const [loading, setLoading] = useState(() => isAuthenticated());
+  const [loading, setLoading] = useState(signedIn);
   // Each part fails on its own, so one that didn't load never reads as an empty one.
   const [failures, setFailures] = useState<{
     credits?: unknown;
@@ -51,13 +64,13 @@ export default function AccountPage() {
   const safeAvatarUrl = useMemo(() => safeHttpUrl(avatarUrl.trim()), [avatarUrl]);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!signedIn && !holdForDeletion) {
       navigate("/login", { replace: true, state: { from: "/account" } });
     }
-  }, [isAuthenticated, navigate]);
+  }, [signedIn, holdForDeletion, navigate]);
 
   useEffect(() => {
-    if (!isAuthenticated()) return;
+    if (!signedIn) return;
     let current = true;
     const loadDashboard = async () => {
       const [creditsRes, exportsRes, profileRes] = await Promise.allSettled([
@@ -102,7 +115,7 @@ export default function AccountPage() {
     return () => {
       current = false;
     };
-  }, [isAuthenticated, setUser, attempt]);
+  }, [signedIn, setUser, attempt]);
 
   const handleSaveProfile = async () => {
     setSaving(true);
@@ -149,16 +162,43 @@ export default function AccountPage() {
 
   if (deleted) return <AccountDeleted />;
 
+  const header = (
+    <header className="workspace-header">
+      <div>
+        <h1 id="account-title">Credits & profile</h1>
+        <p className="muted">
+          PatchHive is free to explore. You only pay when you export something you want to keep.
+        </p>
+      </div>
+    </header>
+  );
+
+  // A session that ends mid-request clears the user, and that failure still has to show. The key
+  // keeps the control, and what it holds, when it's the only thing left on the page.
+  const deleteControl =
+    user || profile || holdForDeletion ? (
+      <DeleteAccount
+        key="delete-account"
+        username={(user ?? profile)?.username ?? ""}
+        onDeleted={() => setDeleted(true)}
+        onHoldPage={setHoldForDeletion}
+      />
+    ) : null;
+
+  // Nothing of the reader's stays on screen once they're gone: the page is on its way to sign-in,
+  // or has only the outcome of a deletion left to tell.
+  if (!signedIn) {
+    return holdForDeletion ? (
+      <section aria-labelledby="account-title">
+        {header}
+        <div className="ops-page account-grid">{deleteControl}</div>
+      </section>
+    ) : null;
+  }
+
   return (
     <section aria-labelledby="account-title">
-      <header className="workspace-header">
-        <div>
-          <h1 id="account-title">Credits & profile</h1>
-          <p className="muted">
-            PatchHive is free to explore. You only pay when you export something you want to keep.
-          </p>
-        </div>
-      </header>
+      {header}
 
       <div className="ops-page account-grid">
         <CheckoutReturnNotice />
@@ -367,13 +407,7 @@ export default function AccountPage() {
           ) : null}
         </section>
 
-        {/* A session that ends mid-request clears the user, and that failure still has to show. */}
-        {user || profile ? (
-          <DeleteAccount
-            username={(user ?? profile)?.username ?? ""}
-            onDeleted={() => setDeleted(true)}
-          />
-        ) : null}
+        {deleteControl}
       </div>
     </section>
   );
