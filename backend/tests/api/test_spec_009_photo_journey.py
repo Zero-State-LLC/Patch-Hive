@@ -48,9 +48,6 @@ from modules.models import Module
 from racks.models import Rack
 from tests.conftest import bearer_headers
 
-T030 = pytest.mark.xfail(
-    strict=True, raises=AssertionError, reason="spec 009 T030: confirming a Reading"
-)
 T040 = pytest.mark.xfail(
     strict=True, raises=AssertionError, reason="spec 009 T040: the photo-reading capability"
 )
@@ -425,7 +422,6 @@ def _read_rig(client, user, shelf, storage, monkeypatch) -> tuple[int, list[dict
     return rig_id, _readings(client, user, rig_id)
 
 
-@T030
 def test_confirming_a_reading_counts_its_positions_as_placement(
     client: TestClient,
     sample_user: User,
@@ -459,7 +455,6 @@ def test_confirming_a_reading_counts_its_positions_as_placement(
     assert inventory["latest"]["ready_for_generation"] is True
 
 
-@T030
 def test_confirm_refuses_an_overlap_names_the_modules_and_writes_nothing(
     client: TestClient,
     sample_user: User,
@@ -484,7 +479,6 @@ def test_confirm_refuses_an_overlap_names_the_modules_and_writes_nothing(
     assert inventory["latest"] is None or inventory["latest"]["confirmed_count"] == 0
 
 
-@T030
 def test_the_journey_ends_in_a_book_of_exactly_the_confirmed_modules(
     client: TestClient,
     db_session: Session,
