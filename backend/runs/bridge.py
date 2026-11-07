@@ -63,7 +63,8 @@ def _stable_hash(label: str) -> str:
 def build_rack_content_snapshot(db: Session, rack: Rack) -> dict[str, Any]:
     """Deterministic layout snapshot for RigRevision.canonical_rig."""
     rack_id = int(rack.id)  # type: ignore[arg-type]
-    case_id = int(rack.case_id)  # type: ignore[arg-type]
+    # A Rig started from a photo has no Case (spec 009); its snapshot says so.
+    case_id = None if rack.case_id is None else int(rack.case_id)  # type: ignore[arg-type]
     rows = (
         db.query(RackModule)
         .filter(RackModule.rack_id == rack_id)

@@ -48,9 +48,6 @@ from modules.models import Module
 from racks.models import Rack
 from tests.conftest import bearer_headers
 
-T020 = pytest.mark.xfail(
-    strict=True, raises=AssertionError, reason="spec 009 T020: a Rig starts from a photo"
-)
 T021 = pytest.mark.xfail(
     strict=True, raises=AssertionError, reason="spec 009 T021: Readings and Sightings"
 )
@@ -305,7 +302,6 @@ def test_photo_reading_is_closed_by_default_and_a_closed_host_stores_nothing(
 # --- starting a Rig from a photo (T020) ------------------------------------------------------
 
 
-@T020
 def test_a_signed_out_visitor_cannot_upload_a_rig_photo(
     client: TestClient, db_session: Session, storage: Path
 ) -> None:
@@ -317,7 +313,6 @@ def test_a_signed_out_visitor_cannot_upload_a_rig_photo(
     assert _rigs(db_session) == rigs
 
 
-@T020
 def test_a_rig_starts_from_a_photo_with_no_case(
     client: TestClient,
     db_session: Session,

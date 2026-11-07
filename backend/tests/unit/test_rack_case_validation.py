@@ -164,3 +164,44 @@ def test_modules_with_no_known_draw_still_warn_on_an_unspecified_case(db_session
     assert ok
     assert _codes(warnings) == [("POWER_UNSPECIFIED", None)]
     assert warnings[0].details["unknown_draw_count"] == {"+12V": 1, "-12V": 1, "+5V": 1}
+
+
+# --- a Rig with no Case (spec 009) -----------------------------------------------------------
+
+
+def test_with_no_case_a_row_is_as_wide_as_its_modules(db_session: Session):
+    mod = _mod(db_session, hp=12)
+    ok, errors, _ = validate_rack_configuration(
+        db_session, None, [RackModuleSpec(module_id=mod.id, row_index=3, start_hp=200)]
+    )
+    assert ok and errors == []
+
+
+def test_with_no_case_overlaps_are_still_refused(db_session: Session):
+    a, b = _mod(db_session, hp=12), _mod(db_session, hp=8)
+    ok, errors, _ = validate_rack_configuration(
+        db_session,
+        None,
+        [
+            RackModuleSpec(module_id=a.id, row_index=0, start_hp=0),
+            RackModuleSpec(module_id=b.id, row_index=0, start_hp=10),
+        ],
+    )
+    assert not ok
+    assert [e.details["overlapping_hp"] for e in errors] == [10]
+
+
+def test_with_no_case_the_power_budget_is_unknown_never_zero(db_session: Session):
+    mod = _mod(db_session, p12=50)
+    ok, errors, warnings = validate_rack_configuration(
+        db_session, None, [RackModuleSpec(module_id=mod.id, row_index=0, start_hp=0)]
+    )
+    assert ok and errors == []
+    (warning,) = warnings
+    assert warning.details["code"] == "POWER_UNSPECIFIED"
+    assert warning.details["total_power_12v"] == 50
+    assert "No Case" in warning.message
+
+
+def test_with_no_case_and_nothing_placed_there_is_nothing_to_say(db_session: Session):
+    assert validate_rack_configuration(db_session, None, []) == (True, [], [])

@@ -1,19 +1,24 @@
 /**
  * RigRail — read-only drawing of a rig's placed modules on its case rows, to HP scale.
- * Draws only when the case states its HP per row; nothing is guessed.
+ * Draws a case's rows only when it states its HP per row; nothing is guessed. A rig with no
+ * Case (spec 009) is drawn as wide as its modules reach, with no capacity to fill.
  */
 import type { CSSProperties } from "react";
+import { rigRowWidths } from "@/lib/rigRows";
 import type { Rack } from "@/types/api";
 
 /** What the rail draws from a rig: its name, its case's rows and the modules placed on them. */
 export type RailRack = Pick<Rack, "name" | "case" | "modules">;
 
 export default function RigRail({ rack }: { rack: RailRack }) {
-  const rows = rack.case?.hp_per_row ?? [];
+  const rows = rigRowWidths(rack.case, rack.modules);
   if (rows.length === 0) return null;
 
   const placed = rack.modules.filter((m) => (m.module?.hp ?? 0) > 0);
-  const summary = `${rack.name}: ${placed.length} module${placed.length === 1 ? "" : "s"} on ${rows.length} row${rows.length === 1 ? "" : "s"} of ${rows.join(" and ")} HP`;
+  const counted = `${rack.name}: ${placed.length} module${placed.length === 1 ? "" : "s"} on ${rows.length} row${rows.length === 1 ? "" : "s"}`;
+  const summary = rack.case
+    ? `${counted} of ${rows.join(" and ")} HP`
+    : `${counted}, no Case named`;
 
   return (
     <div className="rig-rail" role="img" aria-label={summary}>
@@ -25,12 +30,14 @@ export default function RigRail({ rack }: { rack: RailRack }) {
           fill >= 1 ? "danger" : fill >= 0.85 ? "warning" : fill > 0 ? "success" : "neutral";
         return (
           <div key={rowIndex} className="rack-row-map" aria-hidden="true">
-            <div className="usage-bar">
-              <div
-                className={`usage-bar__fill usage-bar__fill--${tone}`}
-                style={{ "--fill": fill } as CSSProperties}
-              />
-            </div>
+            {rack.case ? (
+              <div className="usage-bar">
+                <div
+                  className={`usage-bar__fill usage-bar__fill--${tone}`}
+                  style={{ "--fill": fill } as CSSProperties}
+                />
+              </div>
+            ) : null}
             <div className="rack-row-map__track" style={{ "--row-hp": capacity } as CSSProperties}>
               {inRow.map((m, i) => {
                 const hp = m.module?.hp ?? 0;
@@ -56,9 +63,7 @@ export default function RigRail({ rack }: { rack: RailRack }) {
             </div>
             <div className="rack-row-map__scale">
               <span>Row {rowIndex}</span>
-              <span>
-                {used}/{capacity} HP
-              </span>
+              <span>{rack.case ? `${used}/${capacity} HP` : `${used} HP`}</span>
             </div>
           </div>
         );

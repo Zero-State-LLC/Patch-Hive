@@ -180,6 +180,21 @@ describe("PatchRail", () => {
     expect(screen.getByRole("button", { name: "Cable 1" })).toBeInTheDocument();
   });
 
+  it("draws a rig with no Case as wide as its modules reach", () => {
+    const caseless = { ...rackWith(modules), case: undefined };
+    const { container } = render(<PatchRail rack={caseless} patch={patchWith([cable(1, 2)])} />);
+    expect(container.querySelector(".patch-rail__cables")).not.toBeNull();
+    expect(container.querySelector(".usage-bar")).toBeNull();
+    expect(screen.getByRole("img", { name: /no Case named/ })).toBeInTheDocument();
+  });
+
+  it("explains the missing rail of a rig with no Case and nothing placed", () => {
+    render(
+      <PatchRail rack={{ ...rackWith([]), case: undefined }} patch={patchWith([cable(1, 2)])} />,
+    );
+    expect(screen.getByText(/has no Case and no placed modules yet/)).toBeInTheDocument();
+  });
+
   it("has no automated axe violations", async () => {
     const { container } = render(
       <main>
