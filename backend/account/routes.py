@@ -1,7 +1,7 @@
 """Routes for account dashboard data."""
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from sqlalchemy import desc, func
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from community import login_guard, sessions
@@ -9,12 +9,12 @@ from community.auth import require_auth
 from community.models import User
 from core import get_db, settings
 from core.security import burn_password_check, verify_and_update_password
+from monetization.referrals import get_referral_summary
 
 from .deletion import anonymize_user, purge_user_images
-from .models import CreditLedgerEntry, ExportRecord, Referral
+from .models import ExportRecord
 from .schemas import (
     AccountDeleteRequest,
-    CreditsSummaryResponse,
     ExportRecordResponse,
     ReferralRecordResponse,
     ReferralSummaryResponse,
@@ -55,24 +55,6 @@ def delete_account(
     return response
 
 
-@router.get("/credits", response_model=CreditsSummaryResponse)
-def get_credits(current_user: User = Depends(require_auth), db: Session = Depends(get_db)):
-    """Get current credit balance and recent ledger entries."""
-    balance = (
-        db.query(func.coalesce(func.sum(CreditLedgerEntry.amount), 0))
-        .filter(CreditLedgerEntry.user_id == current_user.id)
-        .scalar()
-    )
-    entries = (
-        db.query(CreditLedgerEntry)
-        .filter(CreditLedgerEntry.user_id == current_user.id)
-        .order_by(desc(CreditLedgerEntry.created_at))
-        .limit(20)
-        .all()
-    )
-    return CreditsSummaryResponse(balance=balance, entries=entries)
-
-
 @router.get("/exports", response_model=list[ExportRecordResponse])
 def get_exports(current_user: User = Depends(require_auth), db: Session = Depends(get_db)):
     """Get recent exports for the current user."""
@@ -88,44 +70,29 @@ def get_exports(current_user: User = Depends(require_auth), db: Session = Depend
 
 @router.get("/referrals", response_model=ReferralSummaryResponse)
 def get_referrals(current_user: User = Depends(require_auth), db: Session = Depends(get_db)):
-    """Get referral summary for the current user."""
+    """The referral summary for the current user (spec 004 FR-031), from the append-only
+    ``referrals`` rows and the canonical reward grants that Machine A writes."""
     if not settings.enable_referrals:
         raise HTTPException(status_code=404, detail="Referrals are not enabled")
     referral_code = ensure_referral_code(db, current_user)
-    referrals = (
-        db.query(Referral)
-        .filter(Referral.referrer_user_id == current_user.id)
-        .order_by(desc(Referral.created_at))
-        .limit(10)
-        .all()
+    summary = get_referral_summary(db, user=current_user)
+    pending = summary["pending_referrals"]
+    rewarded = summary["rewarded_referrals"]
+    newest_first = sorted(
+        [*pending, *rewarded], key=lambda referral: (referral.created_at, referral.id), reverse=True
     )
-
-    pending_count = (
-        db.query(func.count(Referral.id))
-        .filter(Referral.referrer_user_id == current_user.id, Referral.status == "pending")
-        .scalar()
-    )
-    earned_count = (
-        db.query(func.count(Referral.id))
-        .filter(Referral.referrer_user_id == current_user.id, Referral.status == "earned")
-        .scalar()
-    )
-
-    recent_referrals = [
-        ReferralRecordResponse(
-            referred_user_id=mask_user_id(referral.referred_user_id),
-            status=referral.status,
-            rewarded_at=referral.rewarded_at,
-        )
-        for referral in referrals
-    ]
-
-    referral_link = build_referral_link(settings.frontend_base_url, referral_code)
-
     return ReferralSummaryResponse(
         referral_code=referral_code,
-        referral_link=referral_link,
-        pending_count=pending_count,
-        earned_count=earned_count,
-        recent_referrals=recent_referrals,
+        referral_link=build_referral_link(settings.frontend_base_url, referral_code),
+        pending_count=len(pending),
+        rewarded_count=len(rewarded),
+        earned_credits=summary["earned_credits"],
+        recent_referrals=[
+            ReferralRecordResponse(
+                referred_user_id=mask_user_id(referral.referred_user_id),
+                status=referral.status,
+                rewarded_at=referral.rewarded_at,
+            )
+            for referral in newest_first[:10]
+        ],
     )

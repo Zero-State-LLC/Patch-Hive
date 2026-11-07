@@ -494,7 +494,8 @@ export interface ReferralSummary {
   referral_code: string;
   referral_link: string;
   pending_count: number;
-  earned_count: number;
+  rewarded_count: number;
+  earned_credits: number;
   recent_referrals: ReferralRecord[];
 }
 
