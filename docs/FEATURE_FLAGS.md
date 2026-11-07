@@ -49,7 +49,7 @@ See also: `docs/design/PATCHBOOK_STAGING_ENABLEMENT.md`
 | Client surface | Preferred path | Residual legacy |
 |---|---|---|
 | Rig workspace credits + patch-book debit | `canonApi` → `/api/canon/credits/balance`, `POST /api/canon/exports` | `exportApi.patchbookExport` deprecated; **not used by active UI** |
-| Account credits + export list | `accountApi` → `/api/canon/credits/summary`, `GET /api/canon/exports` | `/api/me/credits`, `/api/me/exports` still on server |
+| Account credits + export list | `accountApi` → `/api/canon/credits/summary`, `GET /api/canon/exports` | `/api/me/exports` still on server; `/api/me/credits` is gone (spec 004 FR-009) |
 | PDF/SVG file bytes | still `/api/export/...` GETs | Artifact delivery only — **no new debits** |
 | Acceptance debit tests | **`POST /api/canon/exports`** | Legacy path only if `ENABLE_LEGACY_PATCHBOOK_DEBIT=true` |
 | RigDetail / Racks run list | **`canonApi.listRuns` → GET `/api/canon/runs?rig_id=`** | Legacy `GET /api/runs?rack_id=` remains |

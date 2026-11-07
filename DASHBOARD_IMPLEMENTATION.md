@@ -15,12 +15,12 @@
   - Returns current user profile.
 
 ### Account Dashboard
-- `GET /api/me/credits`
-  - Returns `{ balance, entries[] }` derived from `credit_ledger_entries`.
+- `GET /api/canon/credits/summary`
+  - Returns the balance and recent entries from the canonical ledger. `GET /api/me/credits` is gone (spec 004 FR-009).
 - `GET /api/me/exports`
   - Returns recent `export_records` for the current user.
 - `GET /api/me/referrals`
-  - Returns referral summary with counts and recent masked referrals.
+  - Returns the referral code and link, pending and rewarded counts, credits earned and recent masked referrals (spec 004 FR-031).
 
 ### Leaderboards (Aggregate-Only)
 - `GET /api/leaderboards/modules/popular`

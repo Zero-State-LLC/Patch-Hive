@@ -6,22 +6,6 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-class CreditLedgerEntryResponse(BaseModel):
-    id: int
-    entry_type: str
-    amount: int
-    description: Optional[str] = None
-    created_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-class CreditsSummaryResponse(BaseModel):
-    balance: int
-    entries: list[CreditLedgerEntryResponse]
-
-
 class ExportRecordResponse(BaseModel):
     id: int
     export_type: str
@@ -45,7 +29,8 @@ class ReferralSummaryResponse(BaseModel):
     referral_code: str
     referral_link: str
     pending_count: int
-    earned_count: int
+    rewarded_count: int
+    earned_credits: int
     recent_referrals: list[ReferralRecordResponse]
 
 
