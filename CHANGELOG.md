@@ -4,6 +4,13 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.19](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.18...v0.3.0-alpha.19) (2026-11-07)
+
+
+### Documentation
+
+* record the 0.3.0-alpha.18 deploy ([#356](https://github.com/Zero-State-LLC/Patch-Hive/issues/356)) ([fb348b6](https://github.com/Zero-State-LLC/Patch-Hive/commit/fb348b66fa09794f569990cd4ee9868dc2e869f7))
+
 ## [0.3.0-alpha.18](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.17...v0.3.0-alpha.18) (2026-11-07)
 
 
