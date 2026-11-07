@@ -5,6 +5,8 @@
 **Acceptance:** [acceptance.md](acceptance.md) is the acceptance checklist for every FR below.  
 **Depends on:** VSI evidence contracts, canonical inventory, module registry, deterministic patch compiler
 
+**Changed by [spec 009](../009-photo-to-patchbook/spec.md) (2026-11-07).** Candidates now arrive per Sighting: one whole-rig photo yields many Sightings, each with a Position and at most five candidates (FR-003 applied per Sighting). DecisionPolicy still sets every disposition. The evaluation gate (FR-010) is measured on whole-rig photos (spec 007).
+
 ## Problem
 
 PatchHive can collect photo/manual/hybrid evidence and represent candidate module matches, but repeated ambiguous decisions still require provider-specific logic or manual resolution. The product needs a provider-neutral decision layer that can classify and rank bounded possibilities without giving probabilistic systems canonical authority.

@@ -2,6 +2,8 @@
 
 Status: CONFIRMED by an agent under the owner's delegation (T001, 2026-11-04), and converged with the code at T090 (2026-11-06). Written from the repo docs and code listed under Sources. Labels mark where a claim came from: `[OBSERVED: <file>]`, or `[INFERRED]` where the [T001 record](T001_CONFIRMATION_2026-11-04.md) classifies it.
 
+**Changed by [spec 009](../009-photo-to-patchbook/spec.md) (2026-11-07).** The catalog is now the reference a Reading matches against, and the search used to fix a misread Module. It is no longer a public product to browse: the Modules, Products and Cases pages leave the product (decision 58, [ADR-007](../../docs/adr/ADR-007-photo-first-product.md), superseding ADR-006). Nothing in this pipeline changes, and anonymous reads of the catalog API stay as decision 39 left them.
+
 ## Owner decisions (2026-10-27)
 
 Recorded after the T001 review. These are confirmed and override the `[INFERRED]` text below where they differ. The other open questions are still open, so T001 stays open.

@@ -60,7 +60,7 @@ Spec 001, 002, 003 and 004's T001 reviews (#282, #279, #284, #281) left these op
 
 | # | Decision |
 |---|---|
-| 35 | A photo-confirmed Module is listed as still to place, with placement through the existing rack route. The API doesn't say `ready_for_generation: true` until it's placed. No auto-placement (#283). |
+| 35 | Superseded by 59 on 2026-11-07. A photo-confirmed Module is listed as still to place, with placement through the existing rack route. The API doesn't say `ready_for_generation: true` until it's placed. No auto-placement (#283). |
 | 36 | A Module doesn't fill two roles in one Patch unless the catalog declares separate sections. |
 | 37 | The spec 002 page and book compile machines aren't built. If a patch doesn't fit, the whole export fails and the customer's credits come back. |
 | 38 | Book thresholds stay `NOT_COMPUTABLE` until approved, the publication profile flag stays off, and the spec wins over the truncated source extracts. |
@@ -82,3 +82,15 @@ Spec 001, 002, 003 and 004's T001 reviews (#282, #279, #284, #281) left these op
 | 54 | LZX DC Distro 3A and 5A become SYSTEM. The other 9 rows that link to video only through their brand stay as they are until a maker page says otherwise. |
 | 55 | The 3 Rings-derived rows come out of the overlay until a maker page settles their category, under decision 50. |
 | 56 | For this load, accept that the same rig revision and seed can give different patches, because the revision hash omits `module_type`. Old runs don't change. The hash gap is filed as its own bug, because changing the hash would invalidate every existing revision. |
+
+## Photo-first product (2026-11-07)
+
+The owner chose each recommendation, after an agent showed how far the product had drifted from its central job: a photo of the Rig in, a Patch Book out. [Spec 009](../../specs/009-photo-to-patchbook/spec.md) and [ADR-007](../adr/ADR-007-photo-first-product.md) carry them.
+
+| # | Decision |
+|---|---|
+| 57 | A Rig owner gives PatchHive a photo of the whole Rig, or one per row for a big Case. PatchHive reads every Module and its Position, and asks for a closer photo only when it can't tell a Module apart. |
+| 58 | Modules, Products and Cases leave the navigation and the public routes. The catalog stays as what a Reading matches against, and searching it is how a misread Module gets fixed. The placement editor becomes "correct the layout". |
+| 59 | Positions read from a photo count as placement once the owner confirms the Reading, so generation doesn't wait for manual placement. A Position can still be corrected. This supersedes decision 35. |
+| 60 | The journey is tested at two seams: the API journey from photo to exported book with a recorded provider answer, in CI, and the staging walkthrough starting from a fixture photo. |
+

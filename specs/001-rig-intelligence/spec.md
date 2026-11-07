@@ -2,6 +2,8 @@
 
 Status: DRAFT (2026-10-16). Filled by Opus 5.5 via OpenRouter from the repo docs and code listed under Sources. Each claim is labeled `[OBSERVED: <file>]` or `[INFERRED]`. The operator must confirm every `[INFERRED]` item before planning.
 
+**Changed by [spec 009](../009-photo-to-patchbook/spec.md) (2026-11-07).** A Rig usually starts from a Rig Photo: its Modules and their Positions are what the owner confirmed from the Reading, and a Case is optional. Positions confirmed from a photo count as placement (decision 59), which supersedes decision 35 in the evidence rules below. Generation itself doesn't change.
+
 - `[OBSERVED: <file>]` means a retained source states it.
 - `[INFERRED]` means a rule derived it from observed inputs.
 
@@ -376,7 +378,7 @@ This lifecycle enforces the rule that probabilistic systems propose and determin
 
 Initial state: `EVIDENCE_RECEIVED`. Final states: `CONFIRMED`, `REJECTED`.
 
-No code has these five states (D7). The rules run through the spec 005 resolution machine and the owner's decisions, as `plan.md` maps them, and `tests/unit/test_spec_001_evidence_rules.py` names the test that holds each row. Every decision is recorded in `evidence_decisions` (D8). A decision stays final in that its row never changes, and an owner who changes their mind adds a new row that names the decision it reverses. A photo-confirmed module is listed as still to place, and it reaches generation once it's placed through the rack route (D3, owner decision 35).
+No code has these five states (D7). The rules run through the spec 005 resolution machine and the owner's decisions, as `plan.md` maps them, and `tests/unit/test_spec_001_evidence_rules.py` names the test that holds each row. Every decision is recorded in `evidence_decisions` (D8). A decision stays final in that its row never changes, and an owner who changes their mind adds a new row that names the decision it reverses. A photo-confirmed module is listed as still to place, and it reaches generation once it's placed through the rack route (D3, owner decision 35). Spec 009 supersedes this: a module confirmed with a Position from a Reading counts as placed (decision 59).
 
 #### States
 
@@ -396,7 +398,7 @@ No code has these five states (D7). The rules run through the spec 005 resolutio
 | EVIDENCE_RECEIVED | evidence_invalid | malformed, incompatible, or provider unavailable | UNRESOLVED | record the explicit unresolved reason [OBSERVED: constitution] |
 | PROPOSED | conflict_or_low_confidence | confidence below policy threshold or a conflict is detected | UNRESOLVED | route to catalog lookup, retrieval, or human review [OBSERVED: constitution] |
 | UNRESOLVED | new_evidence | new evidence is attached | EVIDENCE_RECEIVED | append the evidence and leave prior evidence unchanged [OBSERVED: constitution] |
-| PROPOSED | confirmed | a human or authoritative source confirms | CONFIRMED | record the disposition and an inventory revision; placing the module creates the new rig revision that includes it (owner decision 35) |
+| PROPOSED | confirmed | a human or authoritative source confirms | CONFIRMED | record the disposition and an inventory revision; placing the module creates the new rig revision that includes it (owner decision 35; since decision 59, confirming a Reading with Positions creates that revision directly) |
 | PROPOSED | rejected | a human or authoritative source rejects | REJECTED | record the disposition and leave canon unchanged [INFERRED] |
 
 #### Illegal transitions

@@ -4,6 +4,8 @@
 **Date:** 2026-10-26  
 **Depends on:** Spec 005 (DecisionProvider, DecisionPolicy, DecisionPacket, evaluation harness), Spec 006 (ClefProvider behind the same policy, flag default off).
 
+**Changed by [spec 009](../009-photo-to-patchbook/spec.md) (2026-11-07).** The corpus's unit becomes a whole-rig photo, labelled with each Module's identity and Position and with its Blank Panels. The measures add detection recall and precision, and Position error in HP; false canonicalization must still be zero (009 T070a). The owner's corpus request (T010b) becomes whole-rig photos (009 T070b).
+
 ## Problem
 
 Spec 005 FR-010 and Spec 006 FR-007 keep Jev and Clef flagged off until a retained labeled corpus meets operator-approved thresholds. Nothing yet turns a reviewed pilot into a frozen corpus, a baseline run, approved thresholds, and a staging-only enablement that later gates can verify [OBSERVED: specs/005-decision-intelligence/tasks.md T061c–T070].

@@ -18,6 +18,7 @@ Every feature follows:
 - [006 — Cloudflare Edge Deploy with Clef Classifier](006-cloudflare-edge-clef/spec.md)
 - [007 — Evaluation Corpus Freeze & Controlled Staging Enablement (draft spec)](007-evaluation-staging-enablement/spec.md)
 - [008 — Dual-Path F5 Cutover & Design Engine Staging Receipts (draft spec)](008-dual-path-f5-design-receipts/spec.md)
+- [009 — Photo to Patch Book (ready for agent)](009-photo-to-patchbook/spec.md): the central journey. A photo of the Rig in, a Patch Book out.
 
 ## Task dependencies
 
