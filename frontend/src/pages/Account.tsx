@@ -11,6 +11,7 @@ import LoadFailure from "@/components/LoadFailure";
 import { accountApi, authApi, canonApi } from "@/lib/api";
 import { formatDateTime } from "@/lib/format";
 import { useAuthStore } from "@/lib/store";
+import { useMountedRef } from "@/lib/useMountedRef";
 import type { CreditsSummary, UserExportRecord, ReferralSummary, User } from "@/types/api";
 
 /** Only allow http(s) avatar URLs — blocks javascript:/data: DOM XSS vectors. */
@@ -36,6 +37,7 @@ export default function AccountPage() {
 }
 
 function Account() {
+  const mounted = useMountedRef();
   const navigate = useNavigate();
   const { isAuthenticated, setUser, user } = useAuthStore();
   const signedIn = isAuthenticated();
@@ -124,6 +126,7 @@ function Account() {
         display_name: displayName,
         avatar_url: avatarUrl || undefined,
       });
+      if (!mounted.current) return;
       setProfile(res.data);
       setUser(res.data);
     } finally {

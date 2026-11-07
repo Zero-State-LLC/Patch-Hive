@@ -11,7 +11,12 @@ import { useAuthStore } from "@/lib/store";
 import type { User } from "@/types/api";
 
 const api = vi.hoisted(() => ({
-  canonApi: { listStyleRecipes: vi.fn() },
+  canonApi: {
+    listStyleRecipes: vi.fn(),
+    createExport: vi.fn(),
+    createDownloadToken: vi.fn(),
+    exportArtifactUrl: vi.fn(),
+  },
 }));
 
 vi.mock("@/lib/api", () => api);
@@ -48,6 +53,8 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
   vi.resetAllMocks();
   useAuthStore.getState().clear();
 });
@@ -96,6 +103,45 @@ describe("a change of reader in the style studio", () => {
     await act(async () => answer({ data: [RECIPE] }));
 
     expect(screen.queryByText("My private recipe")).toBeNull();
+  });
+
+  it("doesn't save the reader's PatchBook when it arrives after sign-out", async () => {
+    let answer: (value: unknown) => void = () => {};
+    const fetch = vi.fn(
+      () =>
+        new Promise((resolve) => {
+          answer = resolve;
+        }),
+    );
+    vi.stubGlobal("fetch", fetch);
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    URL.createObjectURL = vi.fn(() => "blob:patchbook");
+    URL.revokeObjectURL = vi.fn();
+    api.canonApi.createExport.mockResolvedValue({
+      data: { export_id: "exp-1", status: "succeeded" },
+    });
+    api.canonApi.createDownloadToken.mockResolvedValue({ data: { token: "download-token" } });
+    api.canonApi.exportArtifactUrl.mockReturnValue("https://api.example.test/exports/exp-1.pdf");
+    const user = userEvent.setup();
+    signIn();
+    const bridge = `source_run_id=gen-run-11&source_rig_revision_id=rig-rev-a&artifact_manifest_hash=${"a".repeat(64)}`;
+    render(
+      <MemoryRouter initialEntries={[`/rigs/7/patchbook-studio?${bridge}`]}>
+        <Routes>
+          <Route path="/rigs/:rigId/patchbook-studio" element={<PatchBookStyleStudioPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    await user.click(await screen.findByRole("button", { name: "Export with recipe" }));
+    await user.click(await screen.findByRole("button", { name: "Download PDF" }));
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+
+    act(() => useAuthStore.getState().clear());
+
+    await act(async () => answer({ ok: true, blob: async () => new Blob(["%PDF"]) }));
+
+    expect(click).not.toHaveBeenCalled();
+    expect(URL.createObjectURL).not.toHaveBeenCalled();
   });
 
   it("does nothing on a token renewal, which isn't a change of reader", async () => {

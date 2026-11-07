@@ -77,6 +77,12 @@ function serve() {
   });
 }
 
+/** The header's name for whoever the store holds. */
+function Reader() {
+  const username = useAuthStore((st) => st.user?.username ?? "nobody");
+  return <p>Store holds {username}</p>;
+}
+
 function LoginProbe() {
   const { state } = useLocation();
   return <h1>Login screen, back to {(state as { from?: string } | null)?.from}</h1>;
@@ -85,6 +91,7 @@ function LoginProbe() {
 const renderPage = () =>
   render(
     <MemoryRouter initialEntries={["/account"]}>
+      <Reader />
       <Routes>
         <Route path="/account" element={<AccountPage />} />
         <Route path="/login" element={<LoginProbe />} />
@@ -203,6 +210,53 @@ describe("a change of reader on the account page", () => {
     await act(async () => answer({ data: USER }));
 
     expect(useAuthStore.getState().user).toBeNull();
+  });
+
+  it("keeps the next account when the last one's profile save lands after it", async () => {
+    let answer: (value: unknown) => void = () => {};
+    api.authApi.updateProfile.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          answer = resolve;
+        }),
+    );
+    const user = userEvent.setup();
+    renderPage();
+    await loaded();
+    await user.click(screen.getByRole("button", { name: "Save profile" }));
+
+    act(() => useAuthStore.getState().clear());
+    await screen.findByRole("heading", { name: "Login screen, back to /account" });
+    act(() => useAuthStore.getState().setAuth(SECOND, "second-token"));
+
+    await act(async () => answer({ data: USER }));
+
+    expect(useAuthStore.getState().user).toBe(SECOND);
+    expect(screen.getByText("Store holds second-user")).toBeInTheDocument();
+    expect(screen.queryByText(/demo-user/)).toBeNull();
+  });
+
+  it("drops a profile save's answer once the page has gone, even for the same account", async () => {
+    let answer: (value: unknown) => void = () => {};
+    api.authApi.updateProfile.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          answer = resolve;
+        }),
+    );
+    const user = userEvent.setup();
+    renderPage();
+    await loaded();
+    await user.click(screen.getByRole("button", { name: "Save profile" }));
+
+    act(() => useAuthStore.getState().clear());
+    await screen.findByRole("heading", { name: "Login screen, back to /account" });
+    const signedInAgain = { ...USER, display_name: "From sign-in" };
+    act(() => useAuthStore.getState().setAuth(signedInAgain, "new-token"));
+
+    await act(async () => answer({ data: { ...USER, display_name: "From the old save" } }));
+
+    expect(useAuthStore.getState().user).toBe(signedInAgain);
   });
 
   it("does nothing on a token renewal, which isn't a change of reader", async () => {

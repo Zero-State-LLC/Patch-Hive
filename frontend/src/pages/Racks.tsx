@@ -267,6 +267,8 @@ function Racks() {
     setPdfError(null);
     try {
       const res = await exportApi.downloadRackPdf(rackId);
+      // A file saved after sign-out would hand the last reader's PDF to whoever is here now.
+      if (!mounted.current) return;
       saveBlob(
         res.data,
         filenameFromDisposition(res.headers["content-disposition"], `rack_${rackId}.pdf`),

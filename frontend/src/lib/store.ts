@@ -57,9 +57,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ user, token });
   },
 
-  // Only for a session still held: a profile answer that lands after sign-out must not put the
-  // reader back.
-  setUser: (user) => set((state) => (state.token ? { user } : state)),
+  // Only refreshes the account already held: a profile answer that lands after sign-out must not
+  // put its reader back, or replace whoever signed in since.
+  setUser: (user) => set((state) => (state.token && state.user?.id === user.id ? { user } : state)),
 
   clear: () => set({ user: null, token: null }),
 

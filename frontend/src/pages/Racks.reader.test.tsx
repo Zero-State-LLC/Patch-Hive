@@ -18,7 +18,13 @@ const api = vi.hoisted(() => ({
   exportApi: { downloadRackPdf: vi.fn() },
 }));
 
+const download = vi.hoisted(() => ({
+  saveBlob: vi.fn(),
+  filenameFromDisposition: (_header: unknown, fallback: string) => fallback,
+}));
+
 vi.mock("@/lib/api", () => api);
+vi.mock("@/lib/download", () => download);
 
 import RacksPage from "./Racks";
 
@@ -235,6 +241,28 @@ describe("a change of reader on the rigs page", () => {
     await act(async () => answer({ data: { run_id: 11, generated_count: 1, patches: [PATCH] } }));
 
     expect(where()).toBe(before);
+  });
+
+  it("doesn't save the reader's PDF when it arrives after sign-out", async () => {
+    let answer: (value: unknown) => void = () => {};
+    api.exportApi.downloadRackPdf.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          answer = resolve;
+        }),
+    );
+    const user = userEvent.setup();
+    signIn();
+    renderAt(`/racks/${PRIVATE_RIG}?tab=exports`);
+    await user.click(await screen.findByRole("button", { name: "Export Patch Book PDF" }));
+    await waitFor(() => expect(api.exportApi.downloadRackPdf).toHaveBeenCalledTimes(1));
+
+    signOut();
+    await screen.findByText("Unable to load rig details. Please try again.");
+
+    await act(async () => answer({ data: new Blob(["%PDF"]), headers: {} }));
+
+    expect(download.saveBlob).not.toHaveBeenCalled();
   });
 
   it("does nothing on a token renewal, which isn't a change of reader", async () => {
