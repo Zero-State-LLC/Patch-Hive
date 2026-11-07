@@ -234,61 +234,9 @@ GET /api/modules/             # List modules with full specs
 
 ## Population Strategy
 
-### Phase 1: Bootstrap (Current)
+### Loading the catalog
 
-Populate catalog from our curated 32 modules:
-
-```bash
-python -m integrations.catalog_populator
-```
-
-**Result**: 32 modules in catalog
-
-### Phase 2: CSV Import (Manual)
-
-User exports from ModularGrid → CSV:
-
-```bash
-python -m integrations.catalog_populator --csv modulargrid_export.csv
-```
-
-**ModularGrid Export Format**:
-```csv
-Brand,Module,HP,Category,Image URL,ModularGrid URL
-Mutable Instruments,Plaits,12,VCO,https://...,https://...
-```
-
-**Result**: Thousands of modules in catalog
-
-### Phase 3: API Integration (Future)
-
-If ModularGrid offers API:
-
-```python
-async def fetch_modulargrid_catalog():
-    """Fetch entire catalog from ModularGrid API."""
-    # Implementation when API available
-    pass
-```
-
-### Phase 4: Community Contributions
-
-Users can submit missing modules via PR:
-
-```python
-# Add to integrations/modulargrid_data.py
-CATALOG_ADDITIONS = [
-    {
-        "brand": "Your Brand",
-        "name": "Module Name",
-        "hp": 12,
-        "category": "VCO",
-        ...
-    }
-]
-```
-
----
+`data/synth-catalog/population.py` is the only writer of catalog rows (spec 003 D5). Run a dry run first, then apply with the hashes it printed, through `.github/workflows/db-load.yml`. Locally, use `scripts/import_catalog_population.py`.
 
 ## Benefits
 
