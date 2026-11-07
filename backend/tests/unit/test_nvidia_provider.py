@@ -27,6 +27,7 @@ from intelligence.nvidia_provider import (
     NvidiaVisionProvider,
     answer_schema,
 )
+from tests.edge_config import edge_source, wrangler
 
 
 def _choice_request() -> ChoiceRequest:
@@ -297,17 +298,8 @@ def test_the_route_passes_the_configured_fallback_and_timeout(monkeypatch) -> No
     assert exc.value.code == "NVIDIA_DISABLED"
 
 
-def _wrangler() -> dict:
-    """edge/api/wrangler.jsonc with its // comments removed (no comment markers in strings)."""
-    import re
-    from pathlib import Path
-
-    text = (Path(__file__).resolve().parents[3] / "edge" / "api" / "wrangler.jsonc").read_text(encoding="utf-8")
-    return json.loads(re.sub(r"^\s*//.*$|\s+//[^\"\n]*$", "", text, flags=re.MULTILINE))
-
-
 def test_staging_raises_the_nvidia_timeout_and_keeps_the_provider_off() -> None:
-    config = _wrangler()
+    config = wrangler()
     staging = config["env"]["staging"]["vars"]
     assert float(staging["NVIDIA_TIMEOUT_SECONDS"]) == 60
     assert "ENABLE_NVIDIA_PROVIDER" not in staging
@@ -317,9 +309,7 @@ def test_staging_raises_the_nvidia_timeout_and_keeps_the_provider_off() -> None:
 
 
 def test_the_edge_forwards_the_timeout_only_outside_production() -> None:
-    from pathlib import Path
-
-    source = (Path(__file__).resolve().parents[3] / "edge" / "api" / "src" / "index.ts").read_text(encoding="utf-8")
+    source = edge_source()
     flag_vars = source.split("const FLAG_VARS = [", 1)[1].split("] as const;", 1)[0]
     assert '"NVIDIA_TIMEOUT_SECONDS"' in flag_vars
     assert 'if (env.ENVIRONMENT !== "production") names.push(...FLAG_VARS' in source

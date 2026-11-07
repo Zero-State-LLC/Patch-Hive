@@ -33,7 +33,7 @@ from evidence.images import (
     prepare_image_evidence,
 )
 from evidence.cloud_provider import select_vision_provider
-from evidence.readings import read_photo
+from evidence.readings import photo_reading_closed_reason, read_photo
 from evidence.vision_provider import (
     VisionProviderContext,
     bind_packet_to_evidence,
@@ -77,6 +77,12 @@ class ImageAssetListResponse(BaseModel):
 class MultiImageUploadResponse(BaseModel):
     uploaded: list[ImageAssetResponse]
     rejected: list[dict[str, str]] = Field(default_factory=list)
+
+
+class PhotoReadingCapability(BaseModel):
+    available: bool
+    # Why not, as a reason code, when it isn't.
+    reason: str | None = None
 
 
 class RigPhotoStartResponse(BaseModel):
@@ -324,6 +330,14 @@ async def upload_rack_evidence_images(
     return MultiImageUploadResponse(uploaded=uploaded, rejected=rejected)
 
 
+@router.get("/evidence/photo-reading", response_model=PhotoReadingCapability)
+def photo_reading_capability() -> PhotoReadingCapability:
+    """Whether this host reads Rig photos, and why not when it doesn't (spec 009). Read-only,
+    and open to anyone, so the Photo screen can offer manual entry instead."""
+    reason = photo_reading_closed_reason()
+    return PhotoReadingCapability(available=reason is None, reason=reason)
+
+
 @router.post("/evidence/rig-photos", response_model=RigPhotoStartResponse, status_code=201)
 async def start_rig_from_photo(
     file: UploadFile = File(...),
@@ -341,7 +355,7 @@ async def start_rig_from_photo(
     at once, and ``reading_id`` names its Reading, ``read`` or ``failed``. A host that reads
     no photos refuses before storing anything.
     """
-    if settings.photo_reading_provider == "disabled":
+    if photo_reading_closed_reason():
         raise HTTPException(status_code=409, detail="PHOTO_READING_UNAVAILABLE")
     covered = _photo_rows(rows)
     if retention_days < 1 or retention_days > MAX_RETENTION_DAYS:

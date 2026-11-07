@@ -107,11 +107,11 @@ class RecordedProvider:
     name = "recorded"
 
     def __init__(self, directory: str) -> None:
+        if not directory or not Path(directory).is_dir():
+            raise ReadingFailed("RECORDINGS_NOT_CONFIGURED")
         self.directory = directory
 
     def answer(self, photo_sha256: str, image: bytes) -> object:
-        if not self.directory:
-            raise ReadingFailed("RECORDINGS_NOT_CONFIGURED")
         path = Path(self.directory) / f"{photo_sha256}.json"
         try:
             text = path.read_text(encoding="utf-8")
@@ -134,6 +134,15 @@ def configured_provider() -> PhotoProvider:
         # T022 wires NVIDIA's whole-rig answer through the Clef adapter.
         raise ReadingFailed("PROVIDER_UNAVAILABLE")
     raise ReadingFailed("PROVIDER_DISABLED")
+
+
+def photo_reading_closed_reason() -> str | None:
+    """Why this host reads no photos, as a reason code, or None when it reads them."""
+    try:
+        configured_provider()
+    except ReadingFailed as closed:
+        return closed.code
+    return None
 
 
 def check_answer(payload: object, *, rows: int) -> ProviderAnswer:

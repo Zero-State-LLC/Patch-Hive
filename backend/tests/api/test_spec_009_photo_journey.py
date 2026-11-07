@@ -51,9 +51,6 @@ from tests.conftest import bearer_headers
 T030 = pytest.mark.xfail(
     strict=True, raises=AssertionError, reason="spec 009 T030: confirming a Reading"
 )
-T040 = pytest.mark.xfail(
-    strict=True, raises=AssertionError, reason="spec 009 T040: the photo-reading capability"
-)
 
 DISPOSITIONS = {"auto_propose", "user_review", "unresolved"}
 KINDS = {"module", "blank_panel", "unknown", "not_eurorack"}
@@ -107,6 +104,7 @@ def _open_reading(monkeypatch: pytest.MonkeyPatch, recordings: Path) -> None:
     assert "photo_reading_provider" in fields and "photo_reading_recordings_dir" in fields, (
         "spec 009 T020: settings have no photo-reading provider yet"
     )
+    recordings.mkdir(parents=True, exist_ok=True)
     monkeypatch.setattr(settings, "photo_reading_provider", "recorded")
     monkeypatch.setattr(settings, "photo_reading_recordings_dir", str(recordings))
 
@@ -278,7 +276,6 @@ def _confirm_body(shelf: dict[str, Module], readings: list[dict]) -> dict:
 # --- the capability (T040) -------------------------------------------------------------------
 
 
-@T040
 def test_photo_reading_is_closed_by_default_and_a_closed_host_stores_nothing(
     client: TestClient, db_session: Session, sample_user: User, storage: Path
 ) -> None:
