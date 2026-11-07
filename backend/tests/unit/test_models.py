@@ -362,16 +362,18 @@ class TestRackModel:
         with pytest.raises(IntegrityError):
             db_session.commit()
 
-    def test_rack_case_id_required(self, db_session: Session, sample_user: User):
-        """Test that case_id is required."""
+    def test_rack_case_id_optional(self, db_session: Session, sample_user: User):
+        """A Rig started from a photo has no Case until its owner names one (spec 009)."""
         rack = Rack(
             user_id=sample_user.id,
             name="Test Rack",
         )
         db_session.add(rack)
+        db_session.commit()
+        db_session.refresh(rack)
 
-        with pytest.raises(IntegrityError):
-            db_session.commit()
+        assert rack.case_id is None
+        assert rack.case is None
 
     def test_rack_default_public_false(
         self, db_session: Session, sample_user: User, sample_case: Case
