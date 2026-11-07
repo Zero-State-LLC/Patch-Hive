@@ -83,7 +83,7 @@ The catalog stops being something to browse. It stays as the reference a reading
 
 ### A Reading and its Sightings
 
-- A photo's **Reading** is evidence, never canon. It has a status (`reading`, `read`, `failed`), the provider and its version, the photo's hash and the decision policy version, and a list of **Sightings**.
+- A photo's **Reading** is evidence, never canon. It has a status (`reading`, `read` or `failed`, then `confirmed` or `superseded`), the provider and its version, the photo's hash and the decision policy version, and a list of **Sightings**.
 - A Sighting is one thing seen in the photo:
   - `box`: the bounds in the photo, normalised from 0 to 1.
   - `kind`: one of `module`, `blank_panel`, `unknown` or `not_eurorack`.
@@ -95,12 +95,15 @@ The catalog stops being something to browse. It stays as the reference a reading
 - The provider is NVIDIA's vision model through the Clef adapter (spec 006). It returns every Sighting in a photo in one structured answer. A malformed answer, a timeout or a disabled provider ends the Reading `failed` with a reason code, and stores no Sightings.
 - A photo that covers rows *i* to *j* counts its Sightings' `row_index` in the Rig's rows, starting at *i*.
 - The Reading screen refreshes until the Reading is `read` or `failed`. A `failed` Reading shows its reason in words, with Retry.
+- **Retry** reads the same stored photo again as a new Reading, and the failed one becomes `superseded`. It is refused when the photo has expired or been deleted, and the owner retakes instead: a Reading never outlives its photo.
+- A **Retake** is a new photo that names the Reading it replaces, which becomes `superseded`. A new photo that names none is another photo of the Rig, so two photos of one row never cancel each other.
 - Dispositions are shown in words: "Sure", "Check this" or "Couldn't tell". The list puts "Couldn't tell" first, then "Check this", then "Sure", and orders each group by row and HP.
 - A recorded provider answer replays a Reading with no network. Tests use it, and so does the staging walkthrough until spec 007 enables the live provider there.
 
 ### Confirming a Reading
 
-- Confirming applies to the whole Rig, across every current Reading of it, and needs each of those Readings to be `read`. It submits the final list: each kept Sighting with its chosen catalog Module and position, any Module added by hand, the Sightings left out, and an optional Case.
+- Confirming applies to the whole Rig, across every current Reading of it, and needs each of those Readings to be `read`. A `superseded` Reading isn't current. It submits the final list for the rows those Readings cover: each kept Sighting with its chosen catalog Module and position, any Module added by hand, the Sightings left out, and an optional Case.
+- Placements on rows no current Reading covers stay as they are: a photo of one row says nothing about the others. The overlap and Case checks run across the whole resulting Rig.
 - It creates a new, immutable Rig revision (ADR 0001) authored as a photo confirmation, and that revision's placements are the confirmed positions.
 - Confirmed positions count as placement (decision 59, superseding decision 35). Readiness for generation no longer waits for manual placement, and "still to place" lists only confirmed Modules that have no position.
 - Confirmation refuses overlapping HP within a row. It also refuses a row wider than its Case, when a Case is named. Each refusal names the Modules involved and changes nothing.
@@ -145,10 +148,11 @@ The journey's own machine, per Rig photo. Generation runs keep spec 001's machin
 | none | upload | signed in; photo reading available | `reading` |
 | `reading` | provider answers | answer parses and every Sighting is bounded | `read` |
 | `reading` | provider fails, times out or is off | any | `failed` |
-| `failed` | retry | photo reading available | `reading` |
+| `failed` | retry | photo reading available; the photo is still stored | `superseded`, with a new Reading of the same photo `reading` |
+| `failed` | retry | the photo has expired or been deleted | `failed`, refused |
 | `read` | confirm (for the whole Rig) | every current Reading of the Rig is `read`; no overlap; no row past a named Case | `confirmed`, with one new Rig revision for all of them |
 | `read` | confirm (for the whole Rig) | a Reading still `reading` or `failed`, an overlap or an overflow | `read`, refused, nothing written |
-| `read` | retake | any | `superseded`, with the new photo `reading` |
+| `read` or `failed` | retake (a new photo naming this Reading) | photo reading available | `superseded`, with the new photo `reading` |
 
 Illegal:
 - A Sighting reaching inventory without a confirmation.
