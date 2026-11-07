@@ -692,6 +692,66 @@ class EvidenceDecisionRecord(Base):
     decided_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
 
 
+class PhotoReadingRecord(Base):
+    """A Rig photo's Reading (spec 009): evidence, never canon.
+
+    ``status`` is ``reading``, then ``read`` or ``failed`` (with ``reason_code`` and no
+    Sightings). ``photo_sha256`` is the file as uploaded; the stored evidence is its
+    re-encoded copy. ``first_row`` and ``last_row`` are the Rig rows the photo covers.
+    """
+
+    __tablename__ = "photo_readings"
+
+    id = Column(String(64), primary_key=True)
+    rack_id = Column(
+        Integer, ForeignKey("racks.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    image_asset_id = Column(
+        String(64), ForeignKey("image_assets.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    status = Column(String(16), nullable=False)
+    reason_code = Column(String(64), nullable=True)
+    provider = Column(String(32), nullable=False)
+    provider_version = Column(String(64), nullable=True)
+    photo_sha256 = Column(String(64), nullable=False, index=True)
+    policy_version = Column(String(64), nullable=False)
+    first_row = Column(Integer, nullable=False)
+    last_row = Column(Integer, nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+
+
+class PhotoSightingRecord(Base):
+    """One thing a Reading saw in its photo (spec 009). Append-only.
+
+    ``box`` is normalised to the photo (0 to 1), ``row_index`` is counted in the Rig's rows,
+    ``candidates`` are at most five catalog Modules with scores, and ``disposition`` is the
+    DecisionPolicy's (spec 005), never the provider's.
+    """
+
+    __tablename__ = "photo_sightings"
+    __table_args__ = (
+        UniqueConstraint("reading_id", "position", name="uq_photo_sightings_position"),
+    )
+
+    id = Column(String(64), primary_key=True)
+    reading_id = Column(
+        String(64), ForeignKey("photo_readings.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    position = Column(Integer, nullable=False)
+    box = Column(JSON, nullable=False)
+    kind = Column(String(16), nullable=False)
+    row_index = Column(Integer, nullable=False)
+    start_hp = Column(Integer, nullable=False)
+    hp = Column(Integer, nullable=False)
+    candidates = Column(JSON, nullable=False)
+    disposition = Column(String(16), nullable=False)
+    policy_reason = Column(String(64), nullable=False)
+
+
 IMMUTABLE_RECORDS = (
     RigRevisionRecord,
     RigMetricsPacketRecord,
@@ -707,6 +767,7 @@ IMMUTABLE_RECORDS = (
     SystemInventoryRevisionRecord,
     ClassificationEvidenceRecord,
     EvidenceDecisionRecord,
+    PhotoSightingRecord,
 )
 
 for _record in IMMUTABLE_RECORDS:

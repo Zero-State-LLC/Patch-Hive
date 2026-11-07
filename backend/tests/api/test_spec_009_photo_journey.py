@@ -48,9 +48,6 @@ from modules.models import Module
 from racks.models import Rack
 from tests.conftest import bearer_headers
 
-T021 = pytest.mark.xfail(
-    strict=True, raises=AssertionError, reason="spec 009 T021: Readings and Sightings"
-)
 T030 = pytest.mark.xfail(
     strict=True, raises=AssertionError, reason="spec 009 T030: confirming a Reading"
 )
@@ -343,7 +340,6 @@ def test_a_rig_starts_from_a_photo_with_no_case(
 # --- Readings and Sightings (T021) -----------------------------------------------------------
 
 
-@T021
 def test_a_reading_replays_its_recorded_answer_as_bounded_sightings(
     client: TestClient,
     sample_user: User,
@@ -378,7 +374,6 @@ def test_a_reading_replays_its_recorded_answer_as_bounded_sightings(
     assert sightings[1]["disposition"] != "auto_propose"
 
 
-@T021
 @pytest.mark.parametrize(
     "recording",
     ["missing", "malformed", "too_many_candidates"],

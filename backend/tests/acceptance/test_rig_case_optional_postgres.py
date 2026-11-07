@@ -61,4 +61,4 @@ def test_the_migration_round_trips_empty_and_refuses_while_a_rig_has_no_case(
     assert _case_optional(engine)
     with engine.connect() as conn:
         version = conn.execute(text("SELECT version_num FROM alembic_version")).scalar()
-    assert version == "20261107_rig_case_optional"
+    assert version == "20261107_photo_readings"
