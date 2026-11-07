@@ -4,6 +4,21 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.18](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.17...v0.3.0-alpha.18) (2026-11-07)
+
+
+### Fixed
+
+* **frontend:** account data leaves the screen when the reader signs out ([#354](https://github.com/Zero-State-LLC/Patch-Hive/issues/354)) ([4b37e9a](https://github.com/Zero-State-LLC/Patch-Hive/commit/4b37e9a8febd1e1750e93c5e88a57639e1be4efa))
+* **frontend:** size the patch rail's cable layer by its stage ([#352](https://github.com/Zero-State-LLC/Patch-Hive/issues/352)) ([81418ec](https://github.com/Zero-State-LLC/Patch-Hive/commit/81418ec2669f629c5e4fd617f41057ac8ca346b0))
+* **frontend:** the rack builder starts over when the reader changes ([#351](https://github.com/Zero-State-LLC/Patch-Hive/issues/351)) ([4b3dede](https://github.com/Zero-State-LLC/Patch-Hive/commit/4b3dede9bdb0101013f1bbdf3e7ac773bf02482c))
+
+
+### Documentation
+
+* record the 0.3.0-alpha.17 deploy ([#349](https://github.com/Zero-State-LLC/Patch-Hive/issues/349)) ([f57ceb5](https://github.com/Zero-State-LLC/Patch-Hive/commit/f57ceb5620fd186d799226eb39498284534a3514))
+* **specs:** make the photo of the Rig the product's starting point (spec 009) ([#355](https://github.com/Zero-State-LLC/Patch-Hive/issues/355)) ([d31dfe9](https://github.com/Zero-State-LLC/Patch-Hive/commit/d31dfe9376c4d3ce1153a876d2bbea10203cdbf9))
+
 ## [0.3.0-alpha.17](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.16...v0.3.0-alpha.17) (2026-11-07)
 
 
