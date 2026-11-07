@@ -11,7 +11,7 @@ export interface CanonRigSummaryDto {
   rig_id: number;
   rack_id: number;
   user_id: number;
-  case_id: number;
+  case_id: number | null;
   name: string | null;
   name_suggested: string | null;
   description: string | null;

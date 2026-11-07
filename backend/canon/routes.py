@@ -349,7 +349,7 @@ class CanonRigSummary(BaseModel):
     rig_id: int
     rack_id: int
     user_id: int
-    case_id: int
+    case_id: int | None = None
     name: str | None = None
     name_suggested: str | None = None
     description: str | None = None
@@ -384,7 +384,7 @@ def _canon_rig_summary_from_rack(db: Session, rack: Any) -> CanonRigSummary:
         rig_id=int(rack.id),
         rack_id=int(rack.id),
         user_id=int(rack.user_id),
-        case_id=int(rack.case_id),
+        case_id=None if rack.case_id is None else int(rack.case_id),
         name=rack.name,
         name_suggested=rack.name_suggested,
         description=rack.description,

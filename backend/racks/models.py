@@ -11,7 +11,10 @@ from core.database import Base
 
 
 class Rack(Base):
-    """User's rack configuration: a case filled with modules."""
+    """User's rack configuration: a case filled with modules.
+
+    A Rig started from a photo has no Case until its owner names one (spec 009).
+    """
 
     __tablename__ = "racks"
 
@@ -22,7 +25,7 @@ class Rack(Base):
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     case_id = Column(
-        Integer, ForeignKey("cases.id", ondelete="CASCADE"), nullable=False, index=True
+        Integer, ForeignKey("cases.id", ondelete="CASCADE"), nullable=True, index=True
     )
 
     # Metadata

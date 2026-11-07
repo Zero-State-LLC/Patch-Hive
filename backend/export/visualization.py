@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from cases.models import Case
 from modules.models import Module
+from racks.layout import rack_row_widths
 from racks.models import Rack, RackModule
 
 
@@ -26,19 +27,19 @@ def generate_rack_layout_svg(db: Session, rack: Rack, width: int = 1200, hp_widt
     Returns:
         SVG string
     """
-    # Get case
+    # Get case and rack modules; a Rig with no Case (spec 009) is as wide as its Modules.
     case = db.query(Case).filter(Case.id == rack.case_id).first()
-    if not case:
+    rack_modules = db.query(RackModule).filter(RackModule.rack_id == rack.id).all()
+    rows = rack_row_widths(db, case, rack_modules)
+    if not rows:
         return "<svg></svg>"
+    case_label = f"{case.brand} {case.name}" if case else "No Case"
 
     # Calculate dimensions
     module_h = 120
     row_gap = 60
     row_height = module_h + row_gap
-    total_height = row_height * case.rows + 40
-
-    # Get rack modules
-    rack_modules = db.query(RackModule).filter(RackModule.rack_id == rack.id).all()
+    total_height = row_height * len(rows) + 40
 
     # Build SVG
     svg = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -48,12 +49,11 @@ def generate_rack_layout_svg(db: Session, rack: Rack, width: int = 1200, hp_widt
 
   <!-- Title -->
   <text x="20" y="25" fill="#fff" font-family="Arial, sans-serif" font-size="18" font-weight="bold">{html.escape(rack.name)}</text>
-  <text x="20" y="45" fill="#888" font-family="Arial, sans-serif" font-size="12">{html.escape(case.brand)} {html.escape(case.name)}</text>
+  <text x="20" y="45" fill="#888" font-family="Arial, sans-serif" font-size="12">{html.escape(case_label)}</text>
 """
 
     # Draw each row
-    for row_idx in range(case.rows):
-        row_hp = case.hp_per_row[row_idx]
+    for row_idx, row_hp in enumerate(rows):
         row_y = 60 + row_idx * row_height
 
         # Row background
@@ -121,12 +121,12 @@ def generate_patch_diagram_svg(
     Returns:
         SVG string
     """
-    # Get case and modules
+    # Get case and modules; a Rig with no Case (spec 009) is as wide as its Modules.
     case = db.query(Case).filter(Case.id == rack.case_id).first()
-    if not case:
-        return "<svg></svg>"
-
     rack_modules = db.query(RackModule).filter(RackModule.rack_id == rack.id).all()
+    rows = rack_row_widths(db, case, rack_modules)
+    if not rows:
+        return "<svg></svg>"
 
     # Build module position map
     module_positions: Dict[int, tuple[float, float, int]] = {}
@@ -145,7 +145,7 @@ def generate_patch_diagram_svg(
         module_positions[module.id] = (module_x, module_y, rm.row_index)
 
     # Calculate height
-    total_height = row_height * case.rows + 40
+    total_height = row_height * len(rows) + 40
 
     # Start SVG
     svg = f"""<?xml version="1.0" encoding="UTF-8"?>

@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from cases.models import Case
 from modules.models import Module
+from racks.layout import placed_spans, row_widths
 from racks.models import Rack, RackModule
 
 from .models import PatchSchematic, WiringConnection
@@ -74,16 +75,18 @@ def render_patch_schematic(
 
     wiring_list = build_wiring_list(connections, modules)
 
+    # A Rig with no Case (spec 009) is drawn as wide as its Modules.
     case = db.query(Case).filter(Case.id == rack.case_id).first()
-    if not case or not rack_modules:
+    rows = row_widths(case, placed_spans(rack_modules, modules))
+    if not rows or not rack_modules:
         return PatchSchematic(diagram_svg=None, wiring_list=wiring_list)
 
     module_h = 80
     row_gap = 40
     row_height = module_h + row_gap
     hp_width = 8
-    width = max(case.hp_per_row) * hp_width + 80
-    height = row_height * case.rows + 40
+    width = max(rows) * hp_width + 80
+    height = row_height * len(rows) + 40
 
     module_positions: dict[int, tuple[float, float]] = {}
     for rm in rack_modules:

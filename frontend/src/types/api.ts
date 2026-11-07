@@ -291,7 +291,8 @@ export interface RackModule extends RackModuleSpec {
 export interface Rack {
   id: number;
   user_id: number;
-  case_id: number;
+  /** Null for a rig started from a photo, until its owner names a Case (spec 009). */
+  case_id: number | null;
   name: string;
   name_suggested?: string;
   description?: string;
