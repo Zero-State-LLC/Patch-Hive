@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import os
 import re
 import uuid
@@ -18,6 +19,8 @@ from canon.models import (
     ClassificationEvidenceRecord,
     EvidenceDecisionRecord,
     ImageAssetRecord,
+    PhotoReadingRecord,
+    PhotoSightingRecord,
     SystemInventoryRevisionRecord,
 )
 from canon.visual_contracts import SystemInventoryRevision
@@ -30,6 +33,7 @@ from evidence.images import (
     prepare_image_evidence,
 )
 from evidence.cloud_provider import select_vision_provider
+from evidence.readings import read_photo
 from evidence.vision_provider import (
     VisionProviderContext,
     bind_packet_to_evidence,
@@ -78,6 +82,38 @@ class MultiImageUploadResponse(BaseModel):
 class RigPhotoStartResponse(BaseModel):
     rig_id: int
     photo_id: str
+    reading_id: str
+
+
+class SightingResponse(BaseModel):
+    sighting_id: str
+    box: dict[str, float]
+    kind: str
+    row_index: int
+    start_hp: int
+    hp: int
+    candidates: list[dict[str, Any]]
+    disposition: str
+
+
+class PhotoReadingResponse(BaseModel):
+    reading_id: str
+    photo_id: str
+    status: str
+    reason_code: str | None = None
+    provider: str
+    provider_version: str | None = None
+    photo_sha256: str
+    policy_version: str
+    first_row: int
+    last_row: int
+    created_at: datetime
+    completed_at: datetime | None = None
+    sightings: list[SightingResponse]
+
+
+class PhotoReadingListResponse(BaseModel):
+    readings: list[PhotoReadingResponse]
 
 
 def _evidence_root() -> Path:
@@ -301,19 +337,21 @@ async def start_rig_from_photo(
 
     With no ``rig_id`` this creates the Rig, with no Case, and stores the photo as its
     evidence in one request. The photo is re-encoded, metadata-stripped, private, and
-    expires like every evidence image. ``rows`` names the rows it covers. A host that reads
+    expires like every evidence image. ``rows`` names the rows it covers. The photo is read
+    at once, and ``reading_id`` names its Reading, ``read`` or ``failed``. A host that reads
     no photos refuses before storing anything.
     """
     if settings.photo_reading_provider == "disabled":
         raise HTTPException(status_code=409, detail="PHOTO_READING_UNAVAILABLE")
-    _photo_rows(rows)  # checked here; the photo's Reading keeps it (spec 009 T021)
+    covered = _photo_rows(rows)
     if retention_days < 1 or retention_days > MAX_RETENTION_DAYS:
         raise HTTPException(status_code=400, detail="RETENTION_DAYS_INVALID")
     rack = owned_private_rack(db, rig_id, current_user, label="Rig") if rig_id is not None else None
 
+    raw = await file.read()
     try:
         prepared = prepare_image_evidence(
-            await file.read(),
+            raw,
             declared_media_type=file.content_type,
             scanner=SignatureImageScanner(),
         )
@@ -352,8 +390,79 @@ async def start_rig_from_photo(
     except StorageError as exc:
         db.rollback()
         raise HTTPException(status_code=503, detail=exc.code) from None
+    reading = read_photo(
+        db,
+        asset=record,
+        photo_sha256=hashlib.sha256(raw).hexdigest(),
+        image=prepared.content,
+        rows=covered,
+    )
     db.commit()
-    return RigPhotoStartResponse(rig_id=int(rack.id), photo_id=str(record.id))  # type: ignore[arg-type]
+    return RigPhotoStartResponse(
+        rig_id=int(rack.id),  # type: ignore[arg-type]
+        photo_id=str(record.id),
+        reading_id=str(reading.id),
+    )
+
+
+@router.get("/racks/{rack_id}/evidence/readings", response_model=PhotoReadingListResponse)
+def list_rack_photo_readings(
+    rack_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+) -> PhotoReadingListResponse:
+    """The Rig's Readings, oldest first, each with its Sightings by row and HP (spec 009)."""
+    private_rack(db, rack_id, current_user, label="Rig")
+    readings = (
+        db.query(PhotoReadingRecord)
+        .filter(PhotoReadingRecord.rack_id == rack_id)
+        .order_by(PhotoReadingRecord.created_at.asc(), PhotoReadingRecord.id.asc())
+        .all()
+    )
+    sightings: dict[str, list[PhotoSightingRecord]] = {r.id: [] for r in readings}  # type: ignore[misc]
+    if readings:
+        for sighting in (
+            db.query(PhotoSightingRecord)
+            .filter(PhotoSightingRecord.reading_id.in_(list(sightings)))
+            .order_by(
+                PhotoSightingRecord.row_index.asc(),
+                PhotoSightingRecord.start_hp.asc(),
+                PhotoSightingRecord.position.asc(),
+            )
+        ):
+            sightings[str(sighting.reading_id)].append(sighting)
+    return PhotoReadingListResponse(
+        readings=[
+            PhotoReadingResponse(
+                reading_id=str(r.id),
+                photo_id=str(r.image_asset_id),
+                status=str(r.status),
+                reason_code=r.reason_code,
+                provider=str(r.provider),
+                provider_version=r.provider_version,
+                photo_sha256=str(r.photo_sha256),
+                policy_version=str(r.policy_version),
+                first_row=int(r.first_row),  # type: ignore[arg-type]
+                last_row=int(r.last_row),  # type: ignore[arg-type]
+                created_at=r.created_at,
+                completed_at=r.completed_at,
+                sightings=[
+                    SightingResponse(
+                        sighting_id=str(s.id),
+                        box=dict(s.box),
+                        kind=str(s.kind),
+                        row_index=int(s.row_index),  # type: ignore[arg-type]
+                        start_hp=int(s.start_hp),  # type: ignore[arg-type]
+                        hp=int(s.hp),  # type: ignore[arg-type]
+                        candidates=list(s.candidates),
+                        disposition=str(s.disposition),
+                    )
+                    for s in sightings[str(r.id)]
+                ],
+            )
+            for r in readings
+        ]
+    )
 
 
 @router.get("/racks/{rack_id}/evidence/images", response_model=ImageAssetListResponse)
