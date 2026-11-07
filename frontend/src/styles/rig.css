@@ -850,9 +850,12 @@ div.rack-row-map__block {
 .patch-rail .rack-row-map:not(:has(.rack-row-map__block)) {
   display: none;
 }
+/* Sized by the stage, not by its last measurement, so it can't outgrow the stage between frames. */
 .patch-rail__cables {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: var(--z-raised);
   overflow: visible;
   pointer-events: none;

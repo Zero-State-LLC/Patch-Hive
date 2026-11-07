@@ -193,8 +193,6 @@ export default function PatchRail({
           <RigRail rack={rack} />
           <svg
             className="patch-rail__cables"
-            width={size.width}
-            height={size.height}
             viewBox={`0 0 ${size.width || 1} ${size.height || 1}`}
             aria-hidden="true"
             key={patch.id}

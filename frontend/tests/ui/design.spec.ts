@@ -514,6 +514,51 @@ for (const theme of ["dark", "light"] as const) {
   }
 }
 
+test.describe("the patch rail's cable layer", () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  async function openPatch(page: Page) {
+    const screen = SCREENS.find((s) => s.name === "patch detail") as Screen;
+    await mockApi(page, { signedIn: screen.signedIn });
+    await arrive(page, screen);
+    await expect(page.locator(".patch-rail .patch-cable").first()).toBeVisible();
+  }
+
+  // The page lays the rail out more than once, and the rail's measurement only catches up on the
+  // next frame. Reading both in one task sees what the guard above saw when it failed sometimes.
+  test("is never wider than its stage, even before the rail has measured again", async ({
+    page,
+  }) => {
+    await openPatch(page);
+    const widths = await page.evaluate(() => {
+      const stage = document.querySelector<HTMLElement>(".patch-rail__stage");
+      const layer = document.querySelector(".patch-rail__cables");
+      if (!stage || !layer) return null;
+      stage.style.width = "400px";
+      return {
+        layer: layer.getBoundingClientRect().width,
+        stage: stage.getBoundingClientRect().width,
+      };
+    });
+    expect(widths).toEqual({ layer: 400, stage: 400 });
+  });
+
+  test("draws at the stage's own scale, so plugs land on the faceplates", async ({ page }) => {
+    await openPatch(page);
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const stage = document.querySelector(".patch-rail__stage")?.getBoundingClientRect();
+          const box = document.querySelector<SVGSVGElement>(".patch-rail__cables")?.viewBox.baseVal;
+          return stage && box
+            ? [Math.round(box.width - stage.width), Math.round(box.height - stage.height)]
+            : null;
+        }),
+      )
+      .toEqual([0, 0]);
+  });
+});
+
 /** Every screen that reads data, reached signed in while the rest of the API is unreachable. */
 const API_DOWN: { path: string; name: string }[] = [
   { path: "/racks", name: "rigs" },
