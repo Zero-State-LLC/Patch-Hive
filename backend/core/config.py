@@ -128,7 +128,7 @@ class Settings(BaseSettings):
     enable_credit_checkout: bool = False
     stripe_secret_key: str = ""
     stripe_api_base: str = "https://api.stripe.com"
-    # OQ-1, ratified provisionally 2026-11-01: $0.20 per credit, $5.00 minimum charge, USD.
+    # OQ-1, not ratified (owner decision 32): $0.20 per credit, $5.00 minimum charge, USD.
     credit_price_cents: int = 20
     credit_minimum_charge_cents: int = 500
     credit_currency: str = "usd"

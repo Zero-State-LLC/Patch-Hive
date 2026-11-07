@@ -842,7 +842,7 @@ Source: `docs/evidence/JEV_DECISIONS_2026-11-01.md` and `jev-decisions-2026-11-0
 - **Question.** Ratify $4.99/$14.99/$29.99, 25/100/unlimited credits, $0.20 per credit, $5 minimum, USD only?
 - **Jev's pick.** `A_ratify_as_is` (0.47).
 - **Alternatives.** `B_adjust_ladder` (0.19), `C_credits_first` (0.17), `D_regional_tax` (0.17).
-- **Built on it.** Nothing charges. Sales are deferred (004 OQ-13 `D_defer_sales`, 0.95); Machines B and C (T046, T049) and resolve (T048b) are not built. #184 (admin reject of unresolved events) and #183 (referrals need a verified purchase) do not depend on prices.
+- **Built on it.** Nothing charges. Sales are deferred (004 OQ-13 `D_defer_sales`, 0.95); Machines B and C (T046, T049) and resolve (T048b) are not built. (Correction 2026-11-06: they were built on 2026-11-02 behind flags that stay off.) #184 (admin reject of unresolved events) and #183 (referrals need a verified purchase) do not depend on prices.
 - **Recommendation.** Change the record to "not ratified; revisit when counsel has drafted terms". When you do ratify, use the sheet recommended in section 6 (not A).
 
 #### 2.8 Operator steps for 2.6 (GitHub `production` environment)

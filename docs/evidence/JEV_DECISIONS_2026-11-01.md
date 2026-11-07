@@ -140,7 +140,7 @@ The raw research, options and Jev answers are in [jev-decisions-2026-11-01.json]
 - 004 OQ-12: account deletion that anonymizes the user and keeps the ledger and referral rows (a lawyer must confirm retention).
 - Spec text only: 003 OQ-4 (sealed seed gets its own state), OQ-5 (plan-hash apply is the verification ritual) and OQ-7 (coverage stays raw counts); 005 OQ-4 (routing target stays empty) and OQ-5 (thresholds equal the baseline); 002 OQ-6, OQ-7 and OQ-11 (unchanged).
 
-**How the commerce decisions fit together.** 004 OQ-13 chose to defer sales until counsel drafts terms. Machines B and C (T046, T049) and resolve (T048b) are therefore not built now, even though OQ-2, 3, 4, 5, 7 and 8 fix how they will work. The prices in OQ-1 were ratified only provisionally (confidence 0.29) and stay unused until sales start.
+**How the commerce decisions fit together.** 004 OQ-13 chose to defer sales until counsel drafts terms. Machines B and C (T046, T049) and resolve (T048b) are therefore not built now, even though OQ-2, 3, 4, 5, 7 and 8 fix how they will work. (Correction 2026-11-06: they were built on 2026-11-02 behind flags that stay off, and sales are still deferred.) The prices in OQ-1 were ratified only provisionally (confidence 0.29) and stay unused until sales start. (Owner decision 32, 2026-11-04: not ratified.)
 
 **Only the owner can do these:**
 
