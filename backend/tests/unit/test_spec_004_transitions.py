@@ -1462,15 +1462,15 @@ def test_b_refund_for_a_subscription_invoice_payment_is_unresolved(
 
 # --- Append-only: what the code enforces (FR-008, FR-029, research R2) --------------------
 #
-# Enforced: the canonical ledger rejects UPDATE and DELETE with Postgres triggers
-# (migration ``20261029_ledger_append_only``, proved on Postgres by
-# ``tests/acceptance/test_ledger_append_only.py``); ledger idempotency keys, grant keys,
-# grant invoice ids and (subscription, period) pairs are unique; a stripe event id replayed
-# with a different payload is refused. SQLite, which this file runs on, has no triggers.
-# Not enforced anywhere (reported as gaps, not asserted): UPDATE and DELETE on the
-# ``Referral`` rows, the legacy ``credits_ledger``, ``subscription_period_grants`` and
-# ``stripe_event_records`` (whose status and reason code are written after intake by
-# design). The tests below show that the commerce code paths append and never rewrite.
+# Enforced: the canonical ledger, the legacy ledgers, the ``Referral`` rows and
+# ``subscription_period_grants`` reject UPDATE and DELETE with Postgres triggers (migrations
+# ``20261029_ledger_append_only`` and ``20261106_commerce_append_only``, proved on Postgres by
+# ``tests/acceptance/test_ledger_append_only.py`` and ``test_commerce_append_only.py``); ledger
+# idempotency keys, grant keys, grant invoice ids and (subscription, period) pairs are unique;
+# a stripe event id replayed with a different payload is refused. SQLite, which this file runs
+# on, has no triggers. Not enforced anywhere (reported as a gap, not asserted): UPDATE and
+# DELETE on ``stripe_event_records``, whose status and reason code are written after intake by
+# design. The tests below show that the commerce code paths append and never rewrite.
 
 
 def _ledger_rows(db: Session) -> dict[str, tuple]:

@@ -9,7 +9,7 @@
 - Vision adapters are provider-neutral (`VisionEvidenceProvider`); CI uses mock/fixture providers only — no live paid model calls in tests.
 - OCR/image-embedded text and filenames are untrusted (prompt-injection surface); never execute or elevate them to inventory truth.
 - JWT verification uses PyJWT; the vulnerable `python-jose`/`ecdsa` stack was removed.
-- Canonical admin events and credit entries are append-only.
+- Canonical admin events, credit entries in every ledger, referral rows and subscription period grants are append-only, enforced by Postgres triggers. A referral code changes only while it's empty or as its account is deleted.
 - Stripe-style webhooks use constant-time HMAC comparison, timestamp tolerance, unique event IDs, replay-conflict detection, and a livemode rejection gate.
 - Errors at canonical boundaries use stable codes without stack traces or provider payloads.
 
