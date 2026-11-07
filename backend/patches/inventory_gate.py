@@ -133,10 +133,12 @@ def build_manual_inventory_from_rack(
 
 @dataclass(frozen=True)
 class ModuleToPlace:
-    """A photo-confirmed module not on the rack yet (owner decision 35, #283).
+    """A photo-confirmed module not on the rack yet (#283).
 
-    A photo gives no reliable row or HP, so nothing places it automatically. ``module_id``
-    is what the rack route takes, and None when no single catalog row matches.
+    A confirmed candidate has no row or HP, so nothing places it automatically. A Reading's
+    confirmed positions are placements (decision 59, superseding 35), so its Modules are
+    never listed here. ``module_id`` is what the rack route takes, and None when no single
+    catalog row matches.
     """
 
     instance_id: str

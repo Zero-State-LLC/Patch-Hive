@@ -2,10 +2,9 @@
 
 The tests drive the API from outside and check what a person or a later step can see: the
 Reading and its Sightings, the new Rig revision and its placements, readiness, the run, and the
-book. Nothing here is built yet, so each journey test is a strict xfail that names the ticket
-that builds its step. It fails on an assertion about missing behavior, and a setup error still
-fails the run. When a ticket lands, its marker comes off. The last test is the manual path's
-book: it passes today, and it guards the step the journey ends on.
+book. Each journey test began as a strict xfail naming the ticket that built its step, and its
+marker came off when that ticket landed (T020, T021, T030 and T040). The last test is the
+manual path's book, which guards the step the journey ends on.
 
 Contracts these tests set, which spec 009 leaves to its tickets:
 
@@ -47,10 +46,6 @@ from main import app
 from modules.models import Module
 from racks.models import Rack
 from tests.conftest import bearer_headers
-
-T030 = pytest.mark.xfail(
-    strict=True, raises=AssertionError, reason="spec 009 T030: confirming a Reading"
-)
 
 DISPOSITIONS = {"auto_propose", "user_review", "unresolved"}
 KINDS = {"module", "blank_panel", "unknown", "not_eurorack"}
@@ -422,7 +417,6 @@ def _read_rig(client, user, shelf, storage, monkeypatch) -> tuple[int, list[dict
     return rig_id, _readings(client, user, rig_id)
 
 
-@T030
 def test_confirming_a_reading_counts_its_positions_as_placement(
     client: TestClient,
     sample_user: User,
@@ -456,7 +450,6 @@ def test_confirming_a_reading_counts_its_positions_as_placement(
     assert inventory["latest"]["ready_for_generation"] is True
 
 
-@T030
 def test_confirm_refuses_an_overlap_names_the_modules_and_writes_nothing(
     client: TestClient,
     sample_user: User,
@@ -481,7 +474,6 @@ def test_confirm_refuses_an_overlap_names_the_modules_and_writes_nothing(
     assert inventory["latest"] is None or inventory["latest"]["confirmed_count"] == 0
 
 
-@T030
 def test_the_journey_ends_in_a_book_of_exactly_the_confirmed_modules(
     client: TestClient,
     db_session: Session,
