@@ -303,8 +303,12 @@ export default function AccountPage() {
                   <dd>{referrals.pending_count ?? "Not stated"}</dd>
                 </div>
                 <div>
-                  <dt>Earned</dt>
-                  <dd>{referrals.earned_count ?? "Not stated"}</dd>
+                  <dt>Rewarded</dt>
+                  <dd>{referrals.rewarded_count ?? "Not stated"}</dd>
+                </div>
+                <div>
+                  <dt>Credits earned</dt>
+                  <dd>{referrals.earned_credits ?? "Not stated"}</dd>
                 </div>
               </dl>
             </>
