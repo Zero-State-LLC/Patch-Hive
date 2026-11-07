@@ -4,6 +4,26 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.17](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.16...v0.3.0-alpha.17) (2026-11-07)
+
+
+### Added
+
+* **account:** buy credits, hold a plan and cancel it, behind the checkout flags (spec 004 T090) ([#347](https://github.com/Zero-State-LLC/Patch-Hive/issues/347)) ([69f14c8](https://github.com/Zero-State-LLC/Patch-Hive/commit/69f14c8db33a4e766015438aeb413b528cea77b2))
+
+
+### Fixed
+
+* **account:** one balance route, and a referral summary from the real rows (spec 004 T090) ([#345](https://github.com/Zero-State-LLC/Patch-Hive/issues/345)) ([8045b4d](https://github.com/Zero-State-LLC/Patch-Hive/commit/8045b4da9d91155f81853391973fa474f564d88a))
+* **commerce:** an operator's rejection closes the checkout (spec 004 T090) ([#344](https://github.com/Zero-State-LLC/Patch-Hive/issues/344)) ([690a9bf](https://github.com/Zero-State-LLC/Patch-Hive/commit/690a9bfdaa73117e5cfc870e8c0c6ccae43b8d3f))
+* **commerce:** guard the other ledgers and referral codes in the database (spec 004 T090) ([#346](https://github.com/Zero-State-LLC/Patch-Hive/issues/346)) ([59f4001](https://github.com/Zero-State-LLC/Patch-Hive/commit/59f4001d680d07f7b2ae188c9b3963cd21836036))
+
+
+### Documentation
+
+* record the 0.3.0-alpha.16 deploy ([#341](https://github.com/Zero-State-LLC/Patch-Hive/issues/341)) ([cade89c](https://github.com/Zero-State-LLC/Patch-Hive/commit/cade89c83849c217ce4de60ed95030cf5beb3924))
+* **specs:** converge spec 004 with the code and tick T090 ([#348](https://github.com/Zero-State-LLC/Patch-Hive/issues/348)) ([422e61c](https://github.com/Zero-State-LLC/Patch-Hive/commit/422e61c8e283d19afc50dfaf2765e025478d43de))
+
 ## [0.3.0-alpha.16](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.15...v0.3.0-alpha.16) (2026-11-07)
 
 
