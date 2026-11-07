@@ -33,6 +33,7 @@ from evidence.images import (
     prepare_image_evidence,
 )
 from evidence.cloud_provider import select_vision_provider
+from evidence.reading_confirm import ConfirmRefused, ReadingConfirmRequest, confirm_readings
 from evidence.readings import read_photo
 from evidence.vision_provider import (
     VisionProviderContext,
@@ -595,7 +596,7 @@ class ConfirmationBatchResponse(BaseModel):
     inventory_canonical_hash: str | None
     confirmed_count: int
     unresolved_candidate_ids: list[str]
-    # Generation's own gate answer for this Rig (owner decision 35, #283).
+    # Generation's own gate answer for this Rig (#283).
     ready_for_generation: bool
     modules_to_place: list[ModuleToPlaceOut]
 
@@ -781,7 +782,7 @@ class InventoryRevisionSummary(BaseModel):
     confirmed_count: int
     unresolved_count: int
     # Generation reads the Rig's placements, not a revision, so every summary carries the
-    # gate's one answer for the Rig as it is now (owner decision 35, #283).
+    # gate's one answer for the Rig as it is now (#283).
     ready_for_generation: bool
     canonical_hash: str | None = None
     created_by: str | None = None
@@ -1021,7 +1022,8 @@ def confirm_rack_evidence_candidates(
     # ClassificationEvidenceRecord is append-only; inventory linkage is via
     # SystemInventoryRevisionRecord + candidate source_candidate_ids, not mutation.
     db.commit()
-    # A confirmation adds no placement; generation reads placements (owner decision 35, #283).
+    # A candidate has no position, so confirming it adds no placement; generation reads
+    # placements (#283). Confirming a Reading does place its Modules (decision 59).
     gate_report, _ = evaluate_rack_inventory_gate(db, rack)
     return ConfirmationBatchResponse(
         inventory_revision_id=inventory.inventory_revision_id,
@@ -1030,6 +1032,52 @@ def confirm_rack_evidence_candidates(
         unresolved_candidate_ids=list(inventory.unresolved_candidate_ids),
         ready_for_generation=gate_report.ready,
         modules_to_place=_modules_to_place(db, rack, inventory),
+    )
+
+
+class ReadingConfirmResponse(BaseModel):
+    rig_revision_id: str
+    inventory_revision_id: str
+    ready_for_generation: bool
+    placements: list[dict[str, int]]
+    modules_to_place: list[ModuleToPlaceOut]
+    # Advisories on the layout, such as POWER_UNSPECIFIED when no Case states a budget.
+    warnings: list[dict[str, Any]] = Field(default_factory=list)
+
+
+@router.post(
+    "/racks/{rack_id}/evidence/readings/confirm",
+    response_model=ReadingConfirmResponse,
+    status_code=201,
+)
+def confirm_rack_photo_readings(
+    rack_id: int,
+    body: ReadingConfirmRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+) -> ReadingConfirmResponse:
+    """Confirm the Rig's current Readings as its layout (spec 009).
+
+    The owner's final list becomes the Rig's placements, in one new Rig revision, and
+    readiness counts those positions. A refusal answers ``{"code", "modules"}`` and writes
+    nothing.
+    """
+    from patches.inventory_gate import evaluate_rack_inventory_gate
+
+    rack = owned_private_rack(db, rack_id, current_user, label="Rig")
+    try:
+        result = confirm_readings(db, rack, body, confirmed_by=f"user:{current_user.id}")
+    except ConfirmRefused as refused:
+        raise HTTPException(status_code=refused.status_code, detail=refused.detail) from None
+    db.commit()
+    gate_report, _ = evaluate_rack_inventory_gate(db, rack)
+    return ReadingConfirmResponse(
+        rig_revision_id=result.rig_revision_id,
+        inventory_revision_id=result.inventory.inventory_revision_id,
+        ready_for_generation=gate_report.ready,
+        placements=result.placements,
+        modules_to_place=_modules_to_place(db, rack, result.inventory),
+        warnings=[w.model_dump() for w in result.warnings],
     )
 
 

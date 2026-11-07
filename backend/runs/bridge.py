@@ -94,6 +94,31 @@ def rack_content_hash(snapshot: dict[str, Any]) -> str:
     return _sha256_hex(encoded)
 
 
+def ensure_rig_revision(db: Session, rack: Rack) -> RigRevisionRecord:
+    """The revision of the rack's current layout, minted once per content hash.
+
+    Revisions are append-only: the same layout always names the same ``rig-rev-*`` id, and
+    a changed layout mints a new one. A photo confirmation and a later generation of the
+    same layout therefore share it.
+    """
+    snapshot = build_rack_content_snapshot(db, rack)
+    content_hash = rack_content_hash(snapshot)
+    revision_id = native_rig_revision_id(content_hash)
+    existing = db.get(RigRevisionRecord, revision_id)
+    if existing is not None:
+        return existing
+    record = RigRevisionRecord(
+        id=revision_id,
+        rig_id=int(rack.id),  # type: ignore[arg-type]
+        schema_version="patchhive.canon.v1",
+        canonical_rig=snapshot,
+        canonical_hash=content_hash,
+    )
+    db.add(record)
+    db.flush()
+    return record
+
+
 def legacy_artifact_manifest_hash(
     run_id: int, rack_id: int, content_hash: str | None = None
 ) -> str:
@@ -211,8 +236,7 @@ def ensure_legacy_run_export_bridge(
     if rack is None:
         return bridge_for_run(run)
 
-    snapshot = build_rack_content_snapshot(db, rack)
-    content_hash = rack_content_hash(snapshot)
+    content_hash = str(ensure_rig_revision(db, rack).canonical_hash)
     bridge = bridge_for_run(run, content_hash=content_hash)
 
     user_id = int(rack.user_id)  # type: ignore[arg-type]
@@ -220,20 +244,6 @@ def ensure_legacy_run_export_bridge(
     source_run_id = bridge.source_run_id
     library_id = f"library-{source_run_id}"
     manifest_hash = bridge.artifact_manifest_hash
-
-    existing_rev = db.get(RigRevisionRecord, revision_id)
-    if existing_rev is None:
-        db.add(
-            RigRevisionRecord(
-                id=revision_id,
-                rig_id=bridge.rack_id,
-                schema_version="patchhive.canon.v1",
-                canonical_rig=snapshot,
-                canonical_hash=content_hash,
-            )
-        )
-        db.flush()
-    # else: immutable — same content_hash means same revision id; do not mutate
 
     if db.get(GenerationRunRecord, source_run_id) is None:
         db.add(
