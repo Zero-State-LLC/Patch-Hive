@@ -144,7 +144,18 @@ function nextFreeStartHp(
   return firstFreeStartHp(rowIndex, moduleHp, placements, resolveHp, rowCapacity) ?? 0;
 }
 
+/**
+ * What this page holds depends on who's reading: the module picker has more rows for a signed-in
+ * reader (owner decision 39), and rigs and photo evidence belong to an account. Signing out stays
+ * on the page, so a change of reader starts it over: nothing the last reader had stays on screen,
+ * and an answer still on its way lands nowhere. A token renewal is not a change of reader.
+ */
 export default function RackBuilderPage() {
+  const signedIn = useAuthStore((st) => st.isAuthenticated());
+  return <RackBuilder key={signedIn ? "signed-in" : "signed-out"} />;
+}
+
+function RackBuilder() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { id: routeId } = useParams<{ id: string }>();
