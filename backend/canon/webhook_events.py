@@ -15,8 +15,9 @@ and leaves the record in a final disposition with ``processed_at`` set:
 - ``ignored``: no handler exists for the event type.
 
 No event stays ``received``. An operator may then move an ``unresolved`` event to
-``rejected`` (spec 004 Machine B ``operator_rejects``, T048): it grants nothing and
-writes one ``CanonicalAdminAuditEventRecord``. ``operator_resolves`` (T048b) is
+``rejected`` (spec 004 Machine B ``operator_rejects``, T048): it grants nothing, closes
+the event's checkout if that is still open, and writes one
+``CanonicalAdminAuditEventRecord``. ``operator_resolves`` (T048b) is
 ``canon.checkout.resolve_unresolved_event``.
 """
 
@@ -176,10 +177,6 @@ def _hash_state(state: dict[str, Any]) -> str:
     return sha256(json.dumps(state, sort_keys=True).encode("utf-8")).hexdigest()
 
 
-def _state_hash(record: StripeEventRecordModel) -> str:
-    return _hash_state({"status": record.status, "reason_code": record.reason_code})
-
-
 def reject_unresolved_event(
     session: Session,
     record: StripeEventRecordModel,
@@ -193,7 +190,9 @@ def reject_unresolved_event(
     Only an ``unresolved`` event may be rejected, checked and written in one conditional
     update; any other status (including a concurrent reject that won) raises
     ``InvalidEventTransitionError`` and changes nothing. The record keeps its
-    ``reason_code`` so the original failure stays visible.
+    ``reason_code`` so the original failure stays visible. The event's checkout closes too
+    if it is still open, so a later event cannot credit it (T001 D4); the audit hashes
+    cover that change. Imported here because canon.checkout imports this module.
     """
 
     if actor_role not in COMMERCE_OPERATOR_ROLES:
@@ -201,7 +200,7 @@ def reject_unresolved_event(
     reason = (reason or "").strip()
     if not reason:
         raise ValueError("a reason is required")
-    before = {"status": "unresolved", "reason_code": record.reason_code}
+    before: dict[str, Any] = {"status": "unresolved", "reason_code": record.reason_code}
     # A conditional update makes the check and the write one step, so of two overlapping
     # rejects only one changes the row and writes an audit record; the other sees 0 rows.
     changed = (
@@ -215,6 +214,13 @@ def reject_unresolved_event(
     session.refresh(record)
     if changed != 1:
         raise InvalidEventTransitionError(record.status)
+    from canon.checkout import close_rejected_checkout
+
+    after: dict[str, Any] = {"status": record.status, "reason_code": record.reason_code}
+    checkout_left = close_rejected_checkout(session, record)
+    if checkout_left is not None:
+        before["checkout_status"] = checkout_left
+        after["checkout_status"] = "abandoned"
     audit = CanonicalAdminAuditEventRecord(
         id=f"audit-{uuid.uuid4().hex}",
         actor_user_id=actor_user_id,
@@ -223,7 +229,7 @@ def reject_unresolved_event(
         target_type="stripe_event",
         target_id=record.stripe_event_id,
         before_hash=_hash_state(before),
-        after_hash=_state_hash(record),
+        after_hash=_hash_state(after),
         reason=reason,
         created_at=datetime.now(timezone.utc),
     )
