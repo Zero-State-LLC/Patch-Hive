@@ -78,9 +78,7 @@ def _caseless_rig(db: Session, user: User, *placements: tuple[Module, int, int])
     db.flush()
     for module, row_index, start_hp in placements:
         db.add(
-            RackModule(
-                rack_id=rack.id, module_id=module.id, row_index=row_index, start_hp=start_hp
-            )
+            RackModule(rack_id=rack.id, module_id=module.id, row_index=row_index, start_hp=start_hp)
         )
     db.commit()
     return rack
@@ -279,3 +277,22 @@ def test_a_rig_with_no_case_is_drawn_as_wide_as_its_modules(
     widest = max(sample_vco.hp, 4 + sample_vcf.hp)
     assert f'width="{widest * 8 + 80}"' in schematic.diagram_svg
     assert f'height="{120 * 2 + 40}"' in schematic.diagram_svg
+
+
+def test_a_photo_is_kept_from_providers_unless_the_owner_agrees(
+    client: TestClient, sample_user: User, reading_open: None
+) -> None:
+    kept = _start(client, sample_user, _photo(40)).json()
+    shared = _start(
+        client,
+        sample_user,
+        _photo(90),
+        rig_id=str(kept["rig_id"]),
+        consent_provider_processing="true",
+    ).json()
+
+    images = client.get(
+        f"/api/racks/{kept['rig_id']}/evidence/images", headers=bearer_headers(sample_user)
+    ).json()["assets"]
+    consent = {asset["id"]: asset["consent_provider_processing"] for asset in images}
+    assert consent == {kept["photo_id"]: False, shared["photo_id"]: True}

@@ -53,7 +53,69 @@ SYSTEM_PROMPT = (
     "do not show enough to tell, spread probability rather than guess."
 )
 
-__all__ = ["NvidiaVisionProvider", "NVIDIA_MODELS", "DEFAULT_MODEL", "DEFAULT_BASE_URL", "answer_schema"]
+__all__ = [
+    "NvidiaVisionProvider",
+    "NVIDIA_MODELS",
+    "DEFAULT_MODEL",
+    "DEFAULT_BASE_URL",
+    "answer_schema",
+    "answer_object",
+    "post_chat",
+]
+
+
+def post_chat(
+    client: httpx.Client | None,
+    *,
+    base_url: str,
+    api_key: str,
+    timeout: float,
+    payload: dict[str, Any],
+) -> dict[str, Any]:
+    """POST one chat completion and return its body. httpx errors propagate; a body that
+    isn't a JSON object raises ``_ClefMalformed``."""
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+    owns_client = client is None
+    client = client or httpx.Client(timeout=timeout)
+    try:
+        response = client.post(
+            f"{base_url}/chat/completions", headers=headers, json=payload, timeout=timeout
+        )
+        response.raise_for_status()
+        try:
+            body = response.json()
+        except ValueError as exc:
+            raise _ClefMalformed("invalid json") from exc
+    finally:
+        if owns_client:
+            client.close()
+    if not isinstance(body, dict):
+        raise _ClefMalformed("non-object response")
+    return body
+
+
+def answer_object(body: dict[str, Any]) -> dict[str, Any]:
+    """The JSON object a finished chat completion answers with, or ``_ClefMalformed``."""
+    choices = body.get("choices")
+    if not isinstance(choices, list) or len(choices) != 1 or not isinstance(choices[0], dict):
+        raise _ClefMalformed("expected one choice")
+    if choices[0].get("finish_reason") not in (None, "stop"):
+        raise _ClefMalformed("generation did not finish")
+    message = choices[0].get("message")
+    text = message.get("content") if isinstance(message, dict) else None
+    if not isinstance(text, str):
+        raise _ClefMalformed("missing content")
+    try:
+        answer = json.loads(text)
+    except ValueError as exc:
+        raise _ClefMalformed("content is not json") from exc
+    if not isinstance(answer, dict):
+        raise _ClefMalformed("answer is not an object")
+    return answer
 
 
 def answer_schema(question: dict[str, Any]) -> dict[str, Any]:
@@ -189,28 +251,13 @@ class NvidiaVisionProvider(ClefDecisionProvider):
                 "json_schema": {"name": "decision", "schema": answer_schema(question), "strict": True},
             },
         }
-        headers = {
-            "Authorization": f"Bearer {self._api_token}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
-        owns_client = self._client is None
-        client = self._client or httpx.Client(timeout=self._timeout)
-        try:
-            response = client.post(
-                f"{self._base_url}/chat/completions", headers=headers, json=payload, timeout=self._timeout
-            )
-            response.raise_for_status()
-            try:
-                body = response.json()
-            except ValueError as exc:
-                raise _ClefMalformed("invalid json") from exc
-        finally:
-            if owns_client:
-                client.close()
-        if not isinstance(body, dict):
-            raise _ClefMalformed("non-object response")
-        return body
+        return post_chat(
+            self._client,
+            base_url=self._base_url,
+            api_key=self._api_token,
+            timeout=self._timeout,
+            payload=payload,
+        )
 
     def _build_packet(
         self,
@@ -218,21 +265,7 @@ class NvidiaVisionProvider(ClefDecisionProvider):
         body: dict[str, Any],
         mapper: Callable[[dict[str, Any], str], DecisionPacket],
     ) -> DecisionPacket:
-        choices = body.get("choices")
-        if not isinstance(choices, list) or len(choices) != 1 or not isinstance(choices[0], dict):
-            raise _ClefMalformed("expected one choice")
-        if choices[0].get("finish_reason") not in (None, "stop"):
-            raise _ClefMalformed("generation did not finish")
-        message = choices[0].get("message")
-        text = message.get("content") if isinstance(message, dict) else None
-        if not isinstance(text, str):
-            raise _ClefMalformed("missing content")
-        try:
-            answer = json.loads(text)
-        except ValueError as exc:
-            raise _ClefMalformed("content is not json") from exc
-        if not isinstance(answer, dict):
-            raise _ClefMalformed("answer is not an object")
+        answer = answer_object(body)
         raw_hash = hashlib.sha256(
             json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
         ).hexdigest()

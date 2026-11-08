@@ -98,6 +98,8 @@ class Settings(BaseSettings):
     # photo_reading_recordings_dir, with no network; "nvidia" is the live provider.
     photo_reading_provider: str = "disabled"
     photo_reading_recordings_dir: str = ""
+    # A whole Rig's answer arrives in one response, so it gets far longer than one Module's.
+    photo_reading_timeout_seconds: float = 120.0
     # Spec 005 T080: outside development a decision provider runs only with a signed
     # spec 007 enablement receipt and its signature, read from these JSON files.
     decision_enablement_receipt_path: str = ""
