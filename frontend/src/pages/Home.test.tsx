@@ -62,34 +62,48 @@ describe("Home", () => {
     ).toEqual(["Audio", "CV", "Gate"]);
   });
 
-  it("walks the path from rig to book in order", () => {
+  it("walks the path from photo to book in order", () => {
     renderHome();
-    const path = screen.getByRole("region", { name: "From rig to book" });
+    const path = screen.getByRole("region", { name: "From photo to book" });
     expect(
       within(path)
         .getAllByRole("listitem")
         .map((li) => li.querySelector("strong")?.textContent),
-    ).toEqual(["Confirm the rig", "Generate patches", "Export the book"]);
+    ).toEqual(["Photograph the Rig", "Check the reading", "Export the book"]);
     expect(screen.queryByText("Product law")).not.toBeInTheDocument();
   });
 
-  it("offers sign-in when accounts are open and the visitor is signed out", () => {
+  it("shows an example reading of the demo rig, in words", () => {
     renderHome();
-    expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/login");
-    expect(screen.getByRole("link", { name: "Placeable modules" })).toHaveClass("button-secondary");
+    const example = screen.getByRole("list", { name: "An example reading" });
+    const items = within(example).getAllByRole("listitem");
+    expect(items).toHaveLength(3);
+    expect(items[0]).toHaveTextContent(/^Sure/);
+    expect(items[0]).toHaveTextContent(DEMO_RIG.modules[0].module?.name ?? "");
   });
 
-  it("opens rigs for a signed-in visitor", () => {
+  it("asks a signed-out visitor to sign in before photographing their Rig", () => {
+    renderHome();
+    expect(screen.getByRole("link", { name: "Photograph your Rig" })).toHaveAttribute(
+      "href",
+      "/login",
+    );
+    // The catalog is what a reading matches against, not something to browse (decision 58).
+    expect(screen.queryByRole("link", { name: "Placeable modules" })).not.toBeInTheDocument();
+  });
+
+  it("takes a signed-in owner straight to the photo, and to their Rigs", () => {
     useAuthStore.setState({ token: "token" });
     renderHome();
-    expect(screen.getByRole("link", { name: "Open rigs" })).toHaveAttribute("href", "/racks");
-    expect(screen.queryByRole("link", { name: "Sign in" })).not.toBeInTheDocument();
+    const primary = screen.getByRole("link", { name: "Photograph your Rig" });
+    expect(primary).toHaveAttribute("href", "/rigs/new/photo");
+    expect(primary).toHaveClass("button-primary");
+    expect(screen.getByRole("link", { name: "My Rigs" })).toHaveAttribute("href", "/racks");
   });
 
-  it("leaves only the catalog when accounts are closed", () => {
+  it("keeps the photo as the main action when accounts are closed", () => {
     accounts.open = false;
     renderHome();
-    expect(screen.queryByRole("link", { name: "Sign in" })).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Placeable modules" })).toHaveClass("button-primary");
+    expect(screen.getByRole("link", { name: "Photograph your Rig" })).toHaveClass("button-primary");
   });
 });

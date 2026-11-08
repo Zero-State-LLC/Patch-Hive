@@ -96,6 +96,8 @@ export const moduleApi = {
     hp_min?: number;
     hp_max?: number;
     tag?: string;
+    /** Every word must appear in the maker or the name. */
+    q?: string;
   }) => api.get<ModuleListResponse>("/modules/", { params }),
 
   /** Lightweight research/curated catalog browse (module_catalog table). */
@@ -445,6 +447,108 @@ export const evidenceApi = {
 
   listInventory: (rackId: number) =>
     api.get<InventoryRevisionListResponse>(evidencePath(rackId, "inventory")),
+};
+
+// Spec 009: a photo of the whole Rig in, its Reading out.
+export interface PhotoReadingCapability {
+  available: boolean;
+  /** Why not, as a reason code, when it isn't. */
+  reason: string | null;
+}
+
+export interface ReadingCandidate {
+  module_id: number;
+  score: number;
+  brand: string | null;
+  name: string | null;
+  hp: number | null;
+}
+
+export type SightingKind = "module" | "blank_panel" | "unknown" | "not_eurorack";
+export type SightingDisposition = "auto_propose" | "user_review" | "unresolved";
+
+export interface Sighting {
+  sighting_id: string;
+  /** Bounds in the photo, from 0 to 1. */
+  box: { x: number; y: number; w: number; h: number };
+  kind: SightingKind;
+  row_index: number;
+  start_hp: number;
+  hp: number;
+  candidates: ReadingCandidate[];
+  disposition: SightingDisposition;
+}
+
+export type ReadingStatus = "reading" | "read" | "failed" | "confirmed" | "superseded";
+
+export interface PhotoReading {
+  reading_id: string;
+  photo_id: string;
+  status: ReadingStatus;
+  reason_code: string | null;
+  provider: string;
+  provider_version: string | null;
+  first_row: number;
+  last_row: number;
+  created_at: string;
+  completed_at: string | null;
+  sightings: Sighting[];
+}
+
+export interface RigPhotoStart {
+  rig_id: number;
+  photo_id: string;
+  reading_id: string;
+}
+
+export interface ReadingConfirmRequest {
+  items: { sighting_id: string; module_id: number; row_index: number; start_hp: number }[];
+  added: { module_id: number; row_index: number; start_hp: number }[];
+  excluded: string[];
+  case_id: number | null;
+}
+
+export interface ReadingConfirmResponse {
+  rig_revision_id: string;
+  inventory_revision_id: string;
+  ready_for_generation: boolean;
+  placements: { module_id: number; row_index: number; start_hp: number }[];
+}
+
+const readingsPath = (rigId: number, suffix = "") => `/racks/${rigId}/evidence/readings${suffix}`;
+
+export const photoApi = {
+  capability: () => api.get<PhotoReadingCapability>("/evidence/photo-reading"),
+
+  /** Start a Rig from a photo, or add one to `rigId`; a Retake names the Reading it replaces. */
+  start: (
+    file: File,
+    options: { rows: string; consent: boolean; rigId?: number; replacesReadingId?: string },
+  ) => {
+    const form = new FormData();
+    form.append("file", file);
+    form.append("rows", options.rows);
+    form.append("consent_provider_processing", String(options.consent));
+    if (options.rigId != null) form.append("rig_id", String(options.rigId));
+    if (options.replacesReadingId) form.append("replaces_reading_id", options.replacesReadingId);
+    return api.post<RigPhotoStart>("/evidence/rig-photos", form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
+
+  readings: (rigId: number) => api.get<{ readings: PhotoReading[] }>(readingsPath(rigId)),
+
+  /** The owner's photo, private: fetched with their session, then shown from memory. */
+  photo: (rigId: number, photoId: string) =>
+    api.get<Blob>(`/racks/${rigId}/evidence/images/${encodeURIComponent(photoId)}/content`, {
+      responseType: "blob",
+    }),
+
+  retry: (rigId: number, readingId: string) =>
+    api.post<RigPhotoStart>(readingsPath(rigId, `/${encodeURIComponent(readingId)}/retry`)),
+
+  confirm: (rigId: number, body: ReadingConfirmRequest) =>
+    api.post<ReadingConfirmResponse>(readingsPath(rigId, "/confirm"), body),
 };
 
 // Run API — list prefers canon alias; patches still legacy until dual-written.
