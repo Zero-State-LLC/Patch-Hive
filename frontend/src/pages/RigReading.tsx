@@ -23,11 +23,13 @@ import {
   apiModules,
   clashes,
   confirmBody,
+  CURRENT_STATUSES,
   dispositionTone,
   dispositionWords,
   initialDecision,
   isDecided,
   moduleLabel,
+  namePlaced,
   orderSightings,
   pastCase,
   photoRefusal,
@@ -37,7 +39,6 @@ import {
 import { useReaderKey } from "@/lib/store";
 import type { Module, Rack } from "@/types/api";
 
-const CURRENT = new Set(["reading", "read", "failed"]);
 // A Reading still being read is asked about again after this long.
 const REFRESH_MS = 2000;
 
@@ -98,7 +99,10 @@ function RigReading() {
     };
   }, [load]);
 
-  const current = useMemo(() => (readings ?? []).filter((r) => CURRENT.has(r.status)), [readings]);
+  const current = useMemo(
+    () => (readings ?? []).filter((r) => CURRENT_STATUSES.has(r.status)),
+    [readings],
+  );
   const stillReading = current.some((r) => r.status === "reading");
 
   useEffect(() => {
@@ -316,12 +320,14 @@ function RigReading() {
             ) : null}
             {clashing.size > 0 ? (
               <p className="status status-danger" role="alert">
-                Some Modules overlap in a row. Move them apart before confirming.
+                These overlap in a row: {namePlaced(placed, clashing)}. Move them apart before
+                confirming.
               </p>
             ) : null}
             {past.size > 0 ? (
               <p className="status status-danger" role="alert">
-                Some Modules sit past the end of a row of the Case. Move them before confirming.
+                These sit past the end of a row of the Case: {namePlaced(placed, past)}. Move them
+                before confirming.
               </p>
             ) : null}
             {undecided.length > 0 ? (

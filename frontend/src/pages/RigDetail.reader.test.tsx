@@ -1,6 +1,6 @@
 /**
  * A rig's workspace holds what belongs to its owner: the rig, its runs, its revisions, its inventory
- * receipt, and the reader's own credits. Signing out stays on this page, so none of it may stay on
+ * receipt, its photos, and the reader's own credits. Signing out stays on this page, so none of it may stay on
  * screen. Each mock answers for whoever holds the token at the time of the call, as the API would.
  */
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
@@ -21,6 +21,7 @@ const api = vi.hoisted(() => ({
     createExport: vi.fn(),
   },
   evidenceApi: { listInventory: vi.fn() },
+  photoApi: { photos: vi.fn(), readings: vi.fn() },
   patchApi: { generate: vi.fn() },
   runApi: { patches: vi.fn() },
   legacyPatchRef: (id: number) => `legacy-patch-${id}`,
@@ -94,6 +95,13 @@ function serveByReader() {
     ownerOnly({ latest: null, modules_to_place: [] }),
   );
   api.runApi.patches.mockImplementation(ownerOnly({ patches: [] }));
+  api.photoApi.photos.mockImplementation(
+    ownerOnly({
+      total: 1,
+      assets: [{ id: "img-1", created_at: STAMP, retention_expires_at: "2026-01-31T00:00:00Z" }],
+    }),
+  );
+  api.photoApi.readings.mockImplementation(ownerOnly({ readings: [] }));
   api.canonApi.getBalance.mockImplementation(async () => ({ data: { balance: 41 } }));
   api.canonApi.getCommerce.mockImplementation(async () => ({ data: { allowance: null } }));
 }
@@ -127,12 +135,13 @@ afterEach(() => {
 });
 
 describe("a change of reader on a rig's workspace", () => {
-  it("drops the rig, its runs and the reader's credits on sign-out, and asks again", async () => {
+  it("drops the rig, its runs, its photos and the reader's credits on sign-out, and asks again", async () => {
     signIn();
     renderPage();
     await screen.findByRole("heading", { level: 1, name: "Private rig" });
     await screen.findByLabelText("Rig revision");
     await screen.findByText(/41 credits available/);
+    await screen.findByText(/kept until/);
 
     signOut();
 
@@ -142,6 +151,8 @@ describe("a change of reader on a rig's workspace", () => {
     expect(screen.queryByText(/Private rig/)).toBeNull();
     expect(screen.queryByLabelText("Rig revision")).toBeNull();
     expect(screen.queryByText(/41 credit/)).toBeNull();
+    expect(screen.queryByRole("region", { name: "Photos" })).toBeNull();
+    expect(screen.queryByText(/kept until/)).toBeNull();
   });
 
   it("shows nothing from the last reader while the new answers are on their way", async () => {

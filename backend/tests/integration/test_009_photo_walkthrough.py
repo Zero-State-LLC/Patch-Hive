@@ -1,13 +1,19 @@
-"""Spec 009 T060a: the staging walkthrough from a photo, run in-process.
+"""Spec 009 T060a: the staging walkthrough from a photo, run in-process. This is Seam 2.
 
 The walkthrough signs in as the seeded owner, uploads a fixture photo with its recorded provider
 answer, confirms the Reading, generates, and exports a book. Its receipt records the Reading, the
-revision, the run and the export, and is sealed. No staging host is contacted: the API is the app
-under a TestClient, and the golden demo seed is synthetic fixture data.
+revision, the run and the export, and is sealed. It holds the photo's hash, never the photo. No
+staging host is contacted: the API is the app under a TestClient, and the golden demo seed is
+synthetic fixture data.
+
+It runs beside spec 008's walkthrough, which still starts from the seeded Rig, with a receipt of
+its own (decision 62). So Seam 2 is tested here, at the walkthrough and its receipt, rather than
+through spec 008's receipt as T010 first set it.
 """
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import importlib.util
 import io
@@ -137,6 +143,18 @@ def test_a_photo_becomes_a_book_and_the_receipt_records_each_stage(
     )
 
     assert result["outcome"] == "PASS", result["steps"]
+    # It starts from the photo: the Reading is confirmed before generating, and the book after.
+    steps = _steps(result)
+    assert steps[:7] == [
+        "login_user",
+        "capability",
+        "photo_start",
+        "reading",
+        "confirm",
+        "generate",
+        "export_sources",
+    ]
+    assert steps[7:] and all(step.startswith("book_") for step in steps[7:])
     reading = receipt["reading"]
     assert (reading["status"], reading["provider"], reading["provider_version"]) == (
         "read",
@@ -160,7 +178,9 @@ def test_a_photo_becomes_a_book_and_the_receipt_records_each_stage(
     assert receipt_intact(receipt)
 
 
-def test_the_receipt_is_sealed_and_holds_no_secret(client: TestClient, seeded, host: Path) -> None:
+def test_the_receipt_is_sealed_and_holds_no_secret_and_never_the_photo(
+    client: TestClient, seeded, host: Path
+) -> None:
     user, admin, modules = seeded
     photo = _photo()
     _record(host, photo, modules)
@@ -176,8 +196,15 @@ def test_the_receipt_is_sealed_and_holds_no_secret(client: TestClient, seeded, h
     text = json.dumps(receipt)
     assert user.password not in text and admin.password not in text
     assert "access_token" not in text and "Bearer" not in text
-    tampered = {**receipt, "run": {**receipt["run"], "generated_count": 999}}
-    assert not receipt_intact(tampered)
+    # The photo's hash, never the photo: not as base64, as hex, or as a data URL.
+    assert hashlib.sha256(photo).hexdigest() in text
+    assert base64.b64encode(photo).decode()[:64] not in text
+    assert photo.hex()[:64] not in text and "data:image" not in text
+    for tampered in (
+        {**receipt, "run": {**receipt["run"], "generated_count": 999}},
+        {**receipt, "reading": {**receipt["reading"], "photo_sha256": "e" * 64}},
+    ):
+        assert not receipt_intact(tampered)
 
 
 def test_a_photo_with_no_recording_fails_at_the_reading_and_goes_no_further(

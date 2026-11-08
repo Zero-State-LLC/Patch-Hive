@@ -181,6 +181,18 @@ function formFields(request: Request): Record<string, string> {
 }
 
 test.describe("the photo journey", () => {
+  test("the home page's example reading is listed as the Reading screen lists it", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    const items = page.getByRole("list", { name: "An example reading" }).getByRole("listitem");
+    await expect(items).toHaveCount(3);
+    await expect(items.nth(0)).toContainText("Check this");
+    await expect(items.nth(1)).toContainText("Sure");
+    await expect(items.nth(2)).toContainText("Sure");
+  });
+
   test("a visitor is asked to sign in before photographing their Rig", async ({ page }) => {
     await page.goto("/");
 
@@ -297,8 +309,69 @@ test.describe("the photo journey", () => {
     // Move the Filter onto the Oscillator's HP.
     await items.nth(0).getByLabel("Start HP").fill("4");
 
-    await expect(page.getByRole("alert")).toContainText(/overlap/i);
+    // The warning names both Modules and where they sit, not only a red border.
+    const warning = page.getByRole("alert");
+    await expect(warning).toContainText(/overlap/i);
+    await expect(warning).toContainText("Sim Co Oscillator (row 0, HP 0 to 10)");
+    await expect(warning).toContainText("Sim Co Filter A (row 0, HP 4 to 12)");
     await expect(page.getByRole("button", { name: "Confirm the Rig" })).toBeDisabled();
+  });
+
+  test("the Rig screen leads back to an open Reading and deletes a photo when asked twice", async ({
+    page,
+  }) => {
+    await signIn(page);
+    await mockReading(page, () => [reading("read", SIGHTINGS)]);
+    let photos = [{ id: "img-1", created_at: STAMP, retention_expires_at: "2026-01-31T00:00:00Z" }];
+    const deleted: string[] = [];
+    await page.route(`**/api/racks/${RIG}/evidence/images`, (route) =>
+      route.fulfill({ json: { total: photos.length, assets: photos } }),
+    );
+    await page.route(`**/api/racks/${RIG}/evidence/images/img-1`, (route) => {
+      if (route.request().method() !== "DELETE") return route.fallback();
+      deleted.push("img-1");
+      photos = [];
+      return route.fulfill({ json: { status: "deleted" } });
+    });
+    await page.goto(`/rigs/${RIG}`);
+
+    const panel = page.getByRole("region", { name: "Photos" });
+    await expect(panel.getByRole("link", { name: "Check the reading" })).toHaveAttribute(
+      "href",
+      `/rigs/${RIG}/reading`,
+    );
+    await expect(panel.getByRole("link", { name: "Take a new photo" })).toHaveAttribute(
+      "href",
+      `/rigs/${RIG}/photo`,
+    );
+    await expect(panel).toContainText("kept until");
+
+    // Each step's button replaces the one pressed, and focus moves with it.
+    const ask = panel.getByRole("button", { name: /^Delete the photo taken/ });
+    await ask.click();
+    expect(deleted).toEqual([]);
+    await expect(panel.getByRole("button", { name: "Delete it now" })).toBeFocused();
+    await panel.getByRole("button", { name: "Keep it" }).click();
+    await expect(ask).toBeFocused();
+    await ask.click();
+    await panel.getByRole("button", { name: "Delete it now" }).click();
+
+    await expect(panel).toContainText("No photo of this Rig is kept.");
+    await expect(panel.getByRole("heading", { name: "Photos" })).toBeFocused();
+    expect(deleted).toEqual(["img-1"]);
+  });
+
+  test("a confirmed Rig has no Reading to go back to", async ({ page }) => {
+    await signIn(page);
+    await mockReading(page, () => [reading("confirmed", SIGHTINGS)]);
+    await page.route(`**/api/racks/${RIG}/evidence/images`, (route) =>
+      route.fulfill({ json: { total: 0, assets: [] } }),
+    );
+    await page.goto(`/rigs/${RIG}`);
+
+    const panel = page.getByRole("region", { name: "Photos" });
+    await expect(panel.getByRole("link", { name: "Take a new photo" })).toBeVisible();
+    await expect(panel.getByRole("link", { name: "Check the reading" })).toHaveCount(0);
   });
 
   test("the Rig's other rows stay, and a Module added over one of them is named", async ({
@@ -320,6 +393,7 @@ test.describe("the photo journey", () => {
     await add.getByRole("button", { name: "Add to the Rig" }).click();
 
     await expect(page.getByRole("alert")).toContainText(/overlap/i);
+    await expect(page.getByRole("alert")).toContainText("Sim Co Sequencer (row 1, HP 0 to 16)");
     await expect(page.getByRole("button", { name: "Confirm the Rig" })).toBeDisabled();
   });
 

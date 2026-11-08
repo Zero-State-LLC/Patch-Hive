@@ -100,6 +100,9 @@ export function confirmBody(
   return { body, undecided };
 }
 
+/** A Reading the owner can still check, retry or retake; a confirmed or superseded one is done. */
+export const CURRENT_STATUSES = new Set(["reading", "read", "failed"]);
+
 /** The keys of Modules a named Case can't hold: on a row it doesn't have, or past a row's end.
  * With no Case, a row is as wide as what's on it, so nothing is past it. */
 export function pastCase(
@@ -128,6 +131,20 @@ export function clashes(
     }
   });
   return found;
+}
+
+/** The Modules behind some keys, each with where it sits, in the order they're shown, so a
+ * warning says which ones are in the way rather than only colouring them. */
+export function namePlaced(
+  placed: { key: string; row: number; startHp: number; hp: number; label: string }[],
+  keys: Set<string>,
+): string {
+  const names = placed
+    .filter((p) => keys.has(p.key))
+    .map((p) => `${p.label} (row ${p.row}, HP ${p.startHp} to ${p.startHp + p.hp})`);
+  return names.length > 1
+    ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`
+    : names.join("");
 }
 
 const READING_REASONS: Record<string, string> = {

@@ -1123,6 +1123,9 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(
       page.getByRole("button", { name: "Generate patches (may be blocked)" }),
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: /Confirm inventory/i })).toBeVisible();
+    // The way to fix the Rig before generating; spec 009 names it as the Reading screen does.
+    await expect(
+      page.getByRole("link", { name: "Correct the layout" }).filter({ visible: true }).first(),
+    ).toHaveAttribute("href", "/racks/1/edit");
   });
 });

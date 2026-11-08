@@ -105,11 +105,11 @@ The catalog stops being something to browse. It stays as the reference a reading
 
 - Confirming applies to the whole Rig, across every current Reading of it, and needs each of those Readings to be `read`. A `superseded` Reading isn't current. It submits the final list for the rows those Readings cover: each kept Sighting with its chosen catalog Module and position, any Module added by hand, the Sightings left out, and an optional Case.
 - Placements on rows no current Reading covers stay as they are: a photo of one row says nothing about the others. The overlap and Case checks run across the whole resulting Rig.
-- It creates a new, immutable Rig revision (ADR 0001) authored as a photo confirmation, and that revision's placements are the confirmed positions.
+- It seals an inventory revision that records it came from a photo confirmation, who confirmed it, and each item's Sighting. With it comes the immutable Rig revision (ADR 0001) of the confirmed layout, whose placements are the confirmed positions. A Rig revision is named by its content, so a later generation of the same layout uses the same one.
 - Confirmed positions count as placement (decision 59, superseding decision 35). Readiness for generation no longer waits for manual placement, and "still to place" lists only confirmed Modules that have no position.
 - Confirmation refuses overlapping HP within a row. It also refuses a row wider than its Case, when a Case is named. Each refusal names the Modules involved and changes nothing.
 - With no Case, a row's width is the span of its confirmed Modules, and the power budget is reported as unknown, never as zero.
-- A later photo of the same Rig makes a new Reading. Confirming it makes a new revision. Earlier runs and books stay as they were (spec 001 FR-020).
+- A later photo of the same Rig makes a new Reading. Confirming it makes a new revision when the layout changed. Earlier runs and books stay as they were (spec 001 FR-020).
 
 ### Generation and the Book
 
@@ -173,7 +173,7 @@ Illegal:
   - Repeat with the provider off: the Reading fails closed and nothing reaches inventory.
 
   Prior art: the golden-demo export acceptance tests, spec 001's transitions tests for generation and readiness, the evidence tests that use the fake vision provider, and the export API tests that use the fair-use grant.
-- **Seam 2, the staging walkthrough.** It starts from a fixture photo, which is the owner's own photo per decision 33, instead of the seeded Rig. It replays the recorded provider answer until spec 007 enables the live provider on staging. Its receipt records the Reading, the revision, the run and the export. Prior art: the staging walkthrough workflow and its design walkthrough receipt.
+- **Seam 2, the staging walkthrough.** It starts from a fixture photo, which is the owner's own photo per decision 33, instead of the seeded Rig. It replays the recorded provider answer until spec 007 enables the live provider on staging. Its receipt records the Reading, the revision, the run and the export. It runs beside spec 008's walkthrough, with a receipt of its own (decision 62). Prior art: the staging walkthrough workflow and its design walkthrough receipt.
 - The existing browser tests, which mock the API, are updated for the new home page, navigation and reading screen. They are not a third seam.
 
 ## Out of Scope
@@ -193,7 +193,7 @@ Illegal:
   - Spec 003: the catalog's role.
   - Specs 005 and 006: per-Sighting candidates from one whole-rig answer.
   - Spec 007: the corpus unit and the owner's photo request.
-  - Spec 008: the walkthrough's starting point.
+  - Spec 008: a walkthrough from a photo beside its own (decision 62).
   - Spec 002 and spec 004 don't change.
 - **Not deployed anywhere today.** As of 2026-11-07, neither host reads photos. Production also fulfils no export. Until spec 007 and counsel clear photo reading, the manual-entry path is the only way to a book in production, and only once production fulfils exports.
 - **Accuracy is unknown.** No whole-rig corpus exists yet, so no one knows how well a Reading performs until spec 007's baseline runs. The manual path and the reading screen's corrections exist so that a weak Reading still ends in a correct Rig.
