@@ -93,6 +93,7 @@ The catalog stops being something to browse. It stays as the reference a reading
   - `disposition`: set by the deterministic DecisionPolicy (spec 005), never by the provider.
 - A `blank_panel` is shown as empty HP and can never become inventory. An `unknown` Sighting is never filled with a guessed identity (constitution 3).
 - The provider is NVIDIA's vision model through the Clef adapter (spec 006). It returns every Sighting in a photo in one structured answer. A malformed answer, a timeout or a disabled provider ends the Reading `failed` with a reason code, and stores no Sightings.
+- A provider that sends the photo away reads it only when its owner agreed to that when they uploaded it (decision 61). Without that agreement the Reading fails `CONSENT_NOT_GRANTED` and the photo isn't sent.
 - A photo that covers rows *i* to *j* counts its Sightings' `row_index` in the Rig's rows, starting at *i*.
 - The Reading screen refreshes until the Reading is `read` or `failed`. A `failed` Reading shows its reason in words, with Retry.
 - **Retry** reads the same stored photo again as a new Reading, and the failed one becomes `superseded`. It is refused when the photo has expired or been deleted, and the owner retakes instead: a Reading never outlives its photo.

@@ -38,9 +38,13 @@ def host(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(config_mod.settings, "export_dir", str(tmp_path))
     monkeypatch.setattr(config_mod.settings, "export_store_root", str(tmp_path))
 
-    def configure(provider: str, recordings: str = "") -> None:
+    def configure(provider: str, recordings: str = "", **nvidia: object) -> None:
         monkeypatch.setattr(config_mod.settings, "photo_reading_provider", provider)
         monkeypatch.setattr(config_mod.settings, "photo_reading_recordings_dir", recordings)
+        monkeypatch.setattr(config_mod.settings, "enable_nvidia_provider", False)
+        monkeypatch.setattr(config_mod.settings, "nvidia_api_key", "")
+        for name, value in nvidia.items():
+            monkeypatch.setattr(config_mod.settings, name, value)
 
     return configure
 
@@ -57,13 +61,20 @@ def test_a_host_with_recorded_answers_is_open(client: TestClient, host, tmp_path
     assert client.get("/api/evidence/photo-reading").json() == {"available": True, "reason": None}
 
 
+def test_a_host_with_nvidia_switched_on_and_a_key_is_open(client: TestClient, host) -> None:
+    host("nvidia", enable_nvidia_provider=True, nvidia_api_key="nvapi-test")
+
+    assert client.get("/api/evidence/photo-reading").json() == {"available": True, "reason": None}
+
+
 @pytest.mark.parametrize(
-    ("provider", "recordings", "reason"),
+    ("provider", "recordings", "nvidia", "reason"),
     [
-        ("disabled", "", "PROVIDER_DISABLED"),
-        ("nvidia", "", "PROVIDER_UNAVAILABLE"),
-        ("recorded", "", "RECORDINGS_NOT_CONFIGURED"),
-        ("recorded", "/no/such/recordings", "RECORDINGS_NOT_CONFIGURED"),
+        ("disabled", "", {}, "PROVIDER_DISABLED"),
+        ("nvidia", "", {}, "PROVIDER_DISABLED"),
+        ("nvidia", "", {"enable_nvidia_provider": True}, "PROVIDER_NOT_CONFIGURED"),
+        ("recorded", "", {}, "RECORDINGS_NOT_CONFIGURED"),
+        ("recorded", "/no/such/recordings", {}, "RECORDINGS_NOT_CONFIGURED"),
     ],
 )
 def test_a_closed_host_says_why_and_refuses_the_upload(
@@ -73,9 +84,10 @@ def test_a_closed_host_says_why_and_refuses_the_upload(
     host,
     provider: str,
     recordings: str,
+    nvidia: dict,
     reason: str,
 ) -> None:
-    host(provider, recordings)
+    host(provider, recordings, **nvidia)
 
     answer = client.get("/api/evidence/photo-reading").json()
     upload = client.post(

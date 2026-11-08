@@ -93,4 +93,5 @@ The owner chose each recommendation, after an agent showed how far the product h
 | 58 | Modules, Products and Cases leave the navigation and the public routes. The catalog stays as what a Reading matches against, and searching it is how a misread Module gets fixed. The placement editor becomes "correct the layout". |
 | 59 | Positions read from a photo count as placement once the owner confirms the Reading, so generation doesn't wait for manual placement. A Position can still be corrected. This supersedes decision 35. |
 | 60 | The journey is tested at two seams: the API journey from photo to exported book with a recorded provider answer, in CI, and the staging walkthrough starting from a fixture photo. |
+| 61 | A provider that sends a photo away, such as NVIDIA, reads only a photo whose owner agreed to that when they uploaded it, and the Photo screen asks. Without that agreement the Reading fails `CONSENT_NOT_GRANTED` and nothing is sent. This sits beside the host gate: counsel still answers decision 33 before anyone's photo is read outside staging. Chosen 2026-11-07, on T022. |
 

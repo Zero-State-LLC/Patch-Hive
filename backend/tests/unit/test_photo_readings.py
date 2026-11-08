@@ -21,11 +21,12 @@ class _Answers:
     """A provider that gives one fixed answer, or raises."""
 
     name = "recorded"
+    sends_photo = False
 
     def __init__(self, answer: object = None, raises: BaseException | None = None) -> None:
         self._answer, self._raises = answer, raises
 
-    def answer(self, photo_sha256: str, image: bytes) -> object:
+    def answer(self, photo_sha256: str, image: bytes, *, rows: int, catalog) -> object:
         if self._raises:
             raise self._raises
         return self._answer
@@ -198,19 +199,29 @@ def test_a_provider_that_cannot_answer_fails_the_reading(
 
 
 @pytest.mark.parametrize(
-    ("setting", "code"),
-    [("disabled", "PROVIDER_DISABLED"), ("nvidia", "PROVIDER_UNAVAILABLE")],
+    ("setting", "nvidia", "code"),
+    [
+        ("disabled", {}, "PROVIDER_DISABLED"),
+        # NVIDIA reads only behind its switch, and only with a key.
+        ("nvidia", {}, "PROVIDER_DISABLED"),
+        ("nvidia", {"enable_nvidia_provider": True}, "PROVIDER_NOT_CONFIGURED"),
+    ],
 )
-def test_a_provider_that_is_off_or_not_wired_fails_the_reading(
+def test_a_provider_that_is_off_or_not_configured_fails_the_reading(
     db_session: Session,
     asset: ImageAssetRecord,
     monkeypatch: pytest.MonkeyPatch,
     setting: str,
+    nvidia: dict,
     code: str,
 ) -> None:
     import core.config as config_mod
 
     monkeypatch.setattr(config_mod.settings, "photo_reading_provider", setting)
+    monkeypatch.setattr(config_mod.settings, "enable_nvidia_provider", False)
+    monkeypatch.setattr(config_mod.settings, "nvidia_api_key", "")
+    for name, value in nvidia.items():
+        monkeypatch.setattr(config_mod.settings, name, value)
 
     reading = read_photo(db_session, asset=asset, photo_sha256=SHA, image=b"", rows=(0, 0))
 

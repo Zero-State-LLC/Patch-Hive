@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import json
 import logging
+import re
+import unicodedata
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -71,6 +73,10 @@ class Box(_Answer):
         return self
 
 
+# What a Sighting is; only a ``module`` names candidates.
+SightingKind = Literal["module", "blank_panel", "unknown", "not_eurorack"]
+
+
 class Candidate(_Answer):
     module_id: int = Field(ge=1)
     score: float = Field(ge=0, le=1)
@@ -78,7 +84,7 @@ class Candidate(_Answer):
 
 class SightingAnswer(_Answer):
     box: Box
-    kind: Literal["module", "blank_panel", "unknown", "not_eurorack"]
+    kind: SightingKind
     row_index: int = Field(ge=0)
     start_hp: int = Field(ge=0)
     hp: int = Field(ge=1)
@@ -102,23 +108,71 @@ class ProviderAnswer(_Answer):
     sightings: list[SightingAnswer]
 
 
+def _name_key(text: str) -> str:
+    # Letters in any script and digits count; case, spaces and punctuation don't.
+    return re.sub(r"[\W_]+", "", unicodedata.normalize("NFKC", text).casefold())
+
+
+class CatalogNames:
+    """Catalog Modules by maker and name, for a provider that names its candidates rather
+    than knowing their ids.
+
+    Case, spaces and punctuation are ignored. The name must be a Module's name, and the maker
+    its brand or the start of it (or the brand the start of the maker), so "Mutable" finds
+    "Mutable Instruments". A candidate matches only when exactly one Module fits: one that
+    fits two matches neither, so a candidate is never guessed.
+    """
+
+    def __init__(self, db: Session) -> None:
+        self._db = db
+        self._by_name: dict[str, list[tuple[str, int]]] | None = None
+
+    def module_id(self, maker: str, name: str) -> int | None:
+        maker_key, name_key = _name_key(maker), _name_key(name)
+        if not (maker_key and name_key):
+            return None
+        if self._by_name is None:
+            by_name: dict[str, list[tuple[str, int]]] = {}
+            for module_id, brand, model in self._db.query(
+                Module.id, Module.brand, Module.name
+            ).filter(Module.status != "tombstoned"):
+                by_name.setdefault(_name_key(model), []).append((_name_key(brand), int(module_id)))
+            self._by_name = by_name
+        fits = {
+            module_id
+            for brand, module_id in self._by_name.get(name_key, ())
+            if brand and (brand.startswith(maker_key) or maker_key.startswith(brand))
+        }
+        return fits.pop() if len(fits) == 1 else None
+
+
 class PhotoProvider(Protocol):
     name: str
+    # Whether reading sends the photo to someone else, which needs the owner's consent.
+    sends_photo: bool
 
-    def answer(self, photo_sha256: str, image: bytes) -> object: ...
+    def answer(
+        self, photo_sha256: str, image: bytes, *, rows: int, catalog: CatalogNames
+    ) -> object:
+        """Every Sighting in the photo, shaped as ``ProviderAnswer``. ``rows`` is how many
+        Rig rows the photo covers."""
+        ...
 
 
 class RecordedProvider:
     """Replays answers saved as ``<photo sha256>.json`` in a directory, with no network."""
 
     name = "recorded"
+    sends_photo = False
 
     def __init__(self, directory: str) -> None:
         if not directory or not Path(directory).is_dir():
             raise ReadingFailed("RECORDINGS_NOT_CONFIGURED")
         self.directory = directory
 
-    def answer(self, photo_sha256: str, image: bytes) -> object:
+    def answer(
+        self, photo_sha256: str, image: bytes, *, rows: int, catalog: CatalogNames
+    ) -> object:
         path = Path(self.directory) / f"{photo_sha256}.json"
         try:
             text = path.read_text(encoding="utf-8")
@@ -138,8 +192,20 @@ def configured_provider() -> PhotoProvider:
     if name == "recorded":
         return RecordedProvider(settings.photo_reading_recordings_dir)
     if name == "nvidia":
-        # T022 wires NVIDIA's whole-rig answer through the Clef adapter.
-        raise ReadingFailed("PROVIDER_UNAVAILABLE")
+        # NVIDIA reads only behind the switch it shares with the Module-identity provider.
+        if not settings.enable_nvidia_provider:
+            raise ReadingFailed("PROVIDER_DISABLED")
+        if not settings.nvidia_api_key:
+            raise ReadingFailed("PROVIDER_NOT_CONFIGURED")
+        from evidence.nvidia_reading import NvidiaRigReader
+
+        return NvidiaRigReader(
+            enabled=True,
+            api_key=settings.nvidia_api_key,
+            model=settings.nvidia_model,
+            base_url=settings.nvidia_base_url,
+            timeout_seconds=settings.photo_reading_timeout_seconds,
+        )
     raise ReadingFailed("PROVIDER_DISABLED")
 
 
@@ -282,7 +348,11 @@ def read_photo(
 
     try:
         source = provider or configured_provider()
-        answer = check_answer(source.answer(photo_sha256, image), rows=rows[1] - rows[0] + 1)
+        if source.sends_photo and not asset.consent_provider_processing:
+            raise ReadingFailed("CONSENT_NOT_GRANTED")
+        count = rows[1] - rows[0] + 1
+        payload = source.answer(photo_sha256, image, rows=count, catalog=CatalogNames(db))
+        answer = check_answer(payload, rows=count)
         _check_catalog(db, answer)
     except ReadingFailed as failure:
         reading.status, reading.reason_code = "failed", failure.code

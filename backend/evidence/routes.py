@@ -388,6 +388,7 @@ async def start_rig_from_photo(
     rig_id: int | None = Form(None),
     replaces_reading_id: str | None = Form(None),
     retention_days: int = Form(DEFAULT_RETENTION_DAYS),
+    consent_provider_processing: bool = Form(False),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_auth),
 ) -> RigPhotoStartResponse:
@@ -397,7 +398,8 @@ async def start_rig_from_photo(
     evidence in one request. The photo is re-encoded, metadata-stripped, private, and
     expires like every evidence image. ``rows`` names the rows it covers. The photo is read
     at once, and ``reading_id`` names its Reading, ``read`` or ``failed``. A host that reads
-    no photos refuses before storing anything.
+    no photos refuses before storing anything. A provider that sends the photo away reads it
+    only when ``consent_provider_processing`` says the owner agreed.
 
     A Retake names the Rig's current Reading it replaces in ``replaces_reading_id``, and that
     Reading becomes ``superseded``. A photo that names none is another photo of the Rig.
@@ -464,7 +466,7 @@ async def start_rig_from_photo(
             rack_id=int(rack.id),  # type: ignore[arg-type]
             user_id=int(rack.user_id),  # type: ignore[arg-type]
             retention_days=retention_days,
-            consent_provider_processing=False,
+            consent_provider_processing=consent_provider_processing,
             now=datetime.now(timezone.utc),
         )
     except StorageError as exc:
