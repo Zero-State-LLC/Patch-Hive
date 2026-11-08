@@ -60,6 +60,54 @@ export function allowanceReset(allowance: CommerceAllowance): string {
   return `You've used this period's exports. They reset on ${formatDate(allowance.period_end)}.`;
 }
 
+const creditWords = (n: number) => `${n} credit${n === 1 ? "" : "s"}`;
+
+/** An export's price, shown before the owner commits (spec 009 story 29), and whether it can be
+ * asked for. A plan's allowance pays instead of credits while the period has exports left. The
+ * server sets the price; with no price or no balance to show, nothing is asked for. */
+export function exportOffer({
+  allowance,
+  credits,
+  cost,
+}: {
+  allowance: CommerceAllowance | null;
+  credits: number | null;
+  cost: number | null;
+}): { canExport: boolean; button: string; price: string } {
+  const plain = "Export the Patch Book";
+  if (allowance) {
+    return allowanceUsedUp(allowance)
+      ? { canExport: false, button: plain, price: allowanceReset(allowance) }
+      : {
+          canExport: true,
+          button: plain,
+          price: `Your plan covers this export (${allowanceCount(allowance)} used this period).`,
+        };
+  }
+  if (cost == null)
+    return { canExport: false, button: plain, price: "The export's price didn't load." };
+  if (cost === 0) return { canExport: true, button: plain, price: "This export is free." };
+  const button = `Export for ${creditWords(cost)}`;
+  if (credits == null) {
+    return {
+      canExport: false,
+      button,
+      price: `This export costs ${creditWords(cost)}. Your balance didn't load.`,
+    };
+  }
+  return credits >= cost
+    ? {
+        canExport: true,
+        button,
+        price: `This export costs ${creditWords(cost)}. You have ${credits}, so ${credits - cost} will be left.`,
+      }
+    : {
+        canExport: false,
+        button,
+        price: `This export costs ${creditWords(cost)}, and you have ${credits}.`,
+      };
+}
+
 const REFUSALS: Record<string, string> = {
   PAYMENTS_DISABLED: "Buying isn't open right now. Nothing was charged.",
   PRODUCTION_PAYMENTS_DISABLED: "Buying isn't open right now. Nothing was charged.",

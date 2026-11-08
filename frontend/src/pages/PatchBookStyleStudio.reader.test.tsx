@@ -1,5 +1,6 @@
 /**
- * Style recipes belong to an account, and the studio holds the one being worked on. Signing out
+ * Style recipes belong to an account, and the studio holds the one being worked on and the
+ * reader's balance. Signing out
  * stays on this page, so none of it may stay on screen. Each mock answers for whoever holds the
  * token at the time of the call, as the API would.
  */
@@ -13,6 +14,8 @@ import type { User } from "@/types/api";
 const api = vi.hoisted(() => ({
   canonApi: {
     listStyleRecipes: vi.fn(),
+    getBalance: vi.fn(),
+    getCommerce: vi.fn(),
     createExport: vi.fn(),
     createDownloadToken: vi.fn(),
     exportArtifactUrl: vi.fn(),
@@ -49,6 +52,14 @@ beforeEach(() => {
     if (hasToken()) return { data: [RECIPE] };
     throw refused();
   });
+  api.canonApi.getBalance.mockImplementation(async () => {
+    if (hasToken()) return { data: { balance: 41 } };
+    throw refused();
+  });
+  api.canonApi.getCommerce.mockImplementation(async () => {
+    if (hasToken()) return { data: { allowance: null, export_cost: 3 } };
+    throw refused();
+  });
 });
 
 afterEach(() => {
@@ -60,14 +71,16 @@ afterEach(() => {
 });
 
 describe("a change of reader in the style studio", () => {
-  it("drops the reader's recipes on sign-out and asks again", async () => {
+  it("drops the reader's recipes and balance on sign-out and asks again", async () => {
     signIn();
     renderPage();
     await screen.findByText("My private recipe");
+    await screen.findByText(/You have 41/);
 
     act(() => useAuthStore.getState().clear());
 
     expect(screen.queryByText("My private recipe")).toBeNull();
+    expect(screen.queryByText(/You have 41/)).toBeNull();
     await waitFor(() => expect(api.canonApi.listStyleRecipes).toHaveBeenCalledTimes(2));
     expect(screen.queryByText("My private recipe")).toBeNull();
   });

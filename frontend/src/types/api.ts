@@ -522,6 +522,8 @@ export interface CommerceStatus {
   plan_offers: CommercePlan[];
   subscription: CommerceSubscription | null;
   allowance: CommerceAllowance | null;
+  /** What one export costs in credits; the server sets it. */
+  export_cost: number;
 }
 
 export interface ReferralRecord {

@@ -124,22 +124,91 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(navigation.getByText("Leaderboards")).toHaveCount(0);
   });
 
-  test("export boundary explains zero-credit state", async ({ page }) => {
-    // A balance is an account's, so the zero-credit state is a signed-in one.
-    await signIn(page);
-    await page.goto("/rigs/1");
-    await page.getByRole("tab", { name: "Exports" }).click();
-    await expect(page.getByRole("button", { name: "Export PDF patch book" })).toBeDisabled();
-    await expect(page.getByText("Credits are required only for exports.")).toBeVisible();
-    await expect(page.getByText(/Each export is a patch book of this run/)).toBeVisible();
-  });
-
-  const allowance = (exports_used: number, export_cap: number) => ({
+  const commerce = (allowance: unknown = null) => ({
     test_mode: true,
     credit_offer: null,
     plan_offers: [],
     subscription: null,
-    allowance: { exports_used, export_cap, period_end: "2030-03-15T00:00:00Z" },
+    allowance,
+    export_cost: 3,
+  });
+  const allowance = (exports_used: number, export_cap: number) =>
+    commerce({ exports_used, export_cap, period_end: "2030-03-15T00:00:00Z" });
+
+  test("export boundary explains zero-credit state", async ({ page }) => {
+    // A balance is an account's, so the zero-credit state is a signed-in one.
+    await signIn(page);
+    await page.route("**/api/canon/commerce", (route) => route.fulfill({ json: commerce() }));
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+    await expect(page.getByRole("button", { name: "Export for 3 credits" })).toBeDisabled();
+    await expect(page.getByText("This export costs 3 credits, and you have 0.")).toBeVisible();
+    await expect(page.getByText(/Each export is a patch book of this run/)).toBeVisible();
+  });
+
+  test("an export names its price in credits before it's asked for", async ({ page }) => {
+    await signIn(page);
+    await page.route("**/api/canon/credits/balance", (route) =>
+      route.fulfill({ json: { balance: 41 } }),
+    );
+    await page.route("**/api/canon/commerce", (route) => route.fulfill({ json: commerce() }));
+    let asked = 0;
+    await page.route("**/api/canon/exports", (route) => {
+      if (route.request().method() !== "POST") return route.fallback();
+      asked += 1;
+      return route.fulfill({
+        status: 201,
+        json: { export_id: "export-credits-1", status: "queued", credit_cost: 3 },
+      });
+    });
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+
+    // The price is on the button and beside it, before anything is asked for.
+    const exportButton = page.getByRole("button", { name: "Export for 3 credits" });
+    await expect(exportButton).toBeEnabled();
+    await expect(exportButton).toHaveAccessibleDescription(
+      "This export costs 3 credits. You have 41, so 38 will be left.",
+    );
+    expect(asked).toBe(0);
+
+    await exportButton.click();
+    await expect.poll(() => asked).toBe(1);
+  });
+
+  test("with no price to show, an export waits", async ({ page }) => {
+    await signIn(page);
+    await page.route("**/api/canon/credits/balance", (route) =>
+      route.fulfill({ json: { balance: 41 } }),
+    );
+    await page.route("**/api/canon/commerce", (route) =>
+      route.fulfill({ status: 503, json: { detail: "unavailable" } }),
+    );
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+
+    await expect(page.getByRole("button", { name: "Export the Patch Book" })).toBeDisabled();
+    await expect(page.getByText("The export's price didn't load.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
+  });
+
+  test("the Style Studio names the export's price, and waits for enough credits", async ({
+    page,
+  }) => {
+    await signIn(page);
+    await page.route("**/api/canon/credits/balance", (route) =>
+      route.fulfill({ json: { balance: 2 } }),
+    );
+    await page.route("**/api/canon/commerce", (route) => route.fulfill({ json: commerce() }));
+    await page.goto(
+      `/rigs/1/patchbook-studio?source_run_id=gen-run-1&source_rig_revision_id=rig-rev-1&artifact_manifest_hash=${"a".repeat(64)}`,
+    );
+
+    const exportButton = page.getByRole("button", { name: "Export with recipe" });
+    await expect(exportButton).toHaveAccessibleDescription(
+      "This export costs 3 credits, and you have 2.",
+    );
+    await expect(exportButton).toBeDisabled();
   });
 
   test("a period allowance pays for an export with no credits", async ({ page }) => {
@@ -160,9 +229,11 @@ test.describe("PatchHive canonical workspace", () => {
 
     await expect(page.getByText("Exports this period")).toBeVisible();
     await expect(page.getByText("12 of 100", { exact: true })).toBeVisible();
-    await expect(page.getByText("Credits are required only for exports.")).toHaveCount(0);
-    const exportButton = page.getByRole("button", { name: "Export PDF patch book" });
+    const exportButton = page.getByRole("button", { name: "Export the Patch Book" });
     await expect(exportButton).toBeEnabled();
+    await expect(exportButton).toHaveAccessibleDescription(
+      "Your plan covers this export (12 of 100 used this period).",
+    );
 
     await exportButton.click();
     await expect(page.getByText(/counts toward this period's exports/)).toBeVisible();
@@ -181,7 +252,7 @@ test.describe("PatchHive canonical workspace", () => {
     );
     await page.goto("/rigs/1");
     await page.getByRole("tab", { name: "Exports" }).click();
-    const exportButton = page.getByRole("button", { name: "Export PDF patch book" });
+    const exportButton = page.getByRole("button", { name: "Export the Patch Book" });
     await expect(exportButton).toBeEnabled();
 
     // The page read 99 of 100, and another tab took the last one.
@@ -202,7 +273,7 @@ test.describe("PatchHive canonical workspace", () => {
   }) => {
     await page.goto("/rigs/1");
     await page.getByRole("tab", { name: "Exports" }).click();
-    await expect(page.getByRole("button", { name: "Export PDF patch book" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Export the Patch Book" })).toBeDisabled();
     await expect(page.getByText("Sign in to export. Only exports cost credits.")).toBeVisible();
     await expect(page.getByText("Available credits")).toHaveCount(0);
   });
