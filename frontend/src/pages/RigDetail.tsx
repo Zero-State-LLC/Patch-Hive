@@ -19,13 +19,7 @@ import {
   type ModuleToPlace,
 } from "@/lib/api";
 import { rigDetailToRack } from "@/lib/canonRigAdapter";
-import {
-  allowanceCount,
-  allowanceReset,
-  allowanceUsage,
-  allowanceUsedUp,
-  exportRefusal,
-} from "@/lib/commerce";
+import { allowanceCount, allowanceUsage, exportOffer, exportRefusal } from "@/lib/commerce";
 import { formatDateTime, runLabel, shortHash } from "@/lib/format";
 import { describeEmptyGeneration } from "@/lib/generateOutcome";
 import { patchName } from "@/lib/patchName";
@@ -93,6 +87,8 @@ function RigDetail() {
   const [credits, setCredits] = useState<number | null>(null);
   const [creditsError, setCreditsError] = useState<unknown>(null);
   const [allowance, setAllowance] = useState<CommerceAllowance | null>(null);
+  // What one export costs, as the server sets it; null until it loads.
+  const [exportCost, setExportCost] = useState<number | null>(null);
   const [runsError, setRunsError] = useState<unknown>(null);
   const [runsAttempt, setRunsAttempt] = useState(0);
   const [patchesError, setPatchesError] = useState<unknown>(null);
@@ -277,12 +273,18 @@ function RigDetail() {
         setCredits(null);
         setCreditsError(err);
       });
-    // A period allowance pays for exports instead of credits. The API checks again at export, so
-    // if this read fails the page goes by the balance alone.
+    // The export's price, and a period allowance that pays for exports instead of credits. With
+    // no price to show, nothing is asked for (spec 009 story 29).
     canonApi
       .getCommerce()
-      .then((response) => setAllowance(response.data.allowance))
-      .catch(() => setAllowance(null));
+      .then((response) => {
+        setAllowance(response.data.allowance);
+        setExportCost(response.data.export_cost ?? null);
+      })
+      .catch(() => {
+        setAllowance(null);
+        setExportCost(null);
+      });
   };
 
   useEffect(refreshCredits, [signedIn]);
@@ -395,7 +397,7 @@ function RigDetail() {
     }
   };
 
-  const canSpend = allowance ? !allowanceUsedUp(allowance) : credits != null && credits > 0;
+  const offer = exportOffer({ allowance, credits, cost: exportCost });
 
   // The patch path: how far this rig has come from inventory to book.
   const reached = hasRuns ? 2 : inventoryReady ? 1 : 0;
@@ -783,9 +785,10 @@ function RigDetail() {
                 className="button button-primary"
                 type="button"
                 onClick={handleExport}
-                disabled={!canSpend || exporting || !activeRun}
+                disabled={!offer.canExport || exporting || !activeRun}
+                aria-describedby={signedIn ? "export-price" : undefined}
               >
-                {exporting ? "Requesting…" : "Export PDF patch book"}
+                {exporting ? "Requesting…" : offer.button}
               </button>
               {activeRun?.export_bridge_ready ? (
                 <Link
@@ -798,11 +801,24 @@ function RigDetail() {
             </div>
             {!signedIn ? (
               <p className="status status-warning">Sign in to export. Only exports cost credits.</p>
-            ) : allowance && allowanceUsedUp(allowance) ? (
-              <p className="status status-warning">{allowanceReset(allowance)}</p>
-            ) : !allowance && credits != null && credits <= 0 ? (
-              <p className="status status-warning">Credits are required only for exports.</p>
-            ) : null}
+            ) : (
+              // The price, before the owner commits to it.
+              <p
+                id="export-price"
+                className={offer.canExport ? "muted" : "status status-warning"}
+                role="status"
+              >
+                {offer.price}
+                {exportCost == null && !allowance ? (
+                  <>
+                    {" "}
+                    <button className="button button-quiet" type="button" onClick={refreshCredits}>
+                      Try again
+                    </button>
+                  </>
+                ) : null}
+              </p>
+            )}
           </div>
           {exportStatus ? (
             <p role="status" className="status">

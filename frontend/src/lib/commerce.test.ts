@@ -5,6 +5,7 @@ import {
   commerceRefusal,
   describePlan,
   describePlanStatus,
+  exportOffer,
   exportRefusal,
   formatMoney,
   isHttpsUrl,
@@ -139,5 +140,68 @@ describe("the link to the provider", () => {
     "",
   ])("may not be %j", (url) => {
     expect(isHttpsUrl(url)).toBe(false);
+  });
+});
+
+describe("what an export costs, shown before it's asked for (spec 009 story 29)", () => {
+  const ALLOWANCE = { exports_used: 2, export_cap: 30, period_end: "2026-12-01T00:00:00Z" };
+
+  it("says a plan's allowance covers it while the period has exports left", () => {
+    expect(exportOffer({ allowance: ALLOWANCE, credits: 0, cost: 3 })).toEqual({
+      canExport: true,
+      button: "Export the Patch Book",
+      price: "Your plan covers this export (2 of 30 used this period).",
+    });
+  });
+
+  it("waits once the allowance is used up, and says when it resets", () => {
+    const offer = exportOffer({
+      allowance: { ...ALLOWANCE, exports_used: 30 },
+      credits: 50,
+      cost: 3,
+    });
+
+    expect(offer.canExport).toBe(false);
+    expect(offer.price).toMatch(/^You've used this period's exports\. They reset on /);
+  });
+
+  it("names the price in credits on the button, and what will be left", () => {
+    expect(exportOffer({ allowance: null, credits: 41, cost: 3 })).toEqual({
+      canExport: true,
+      button: "Export for 3 credits",
+      price: "This export costs 3 credits. You have 41, so 38 will be left.",
+    });
+    expect(exportOffer({ allowance: null, credits: 5, cost: 1 }).button).toBe(
+      "Export for 1 credit",
+    );
+  });
+
+  it("waits for enough credits, as the server would refuse", () => {
+    expect(exportOffer({ allowance: null, credits: 2, cost: 3 })).toEqual({
+      canExport: false,
+      button: "Export for 3 credits",
+      price: "This export costs 3 credits, and you have 2.",
+    });
+  });
+
+  it("never exports at a price it couldn't show, or against a balance it couldn't read", () => {
+    expect(exportOffer({ allowance: null, credits: 41, cost: null })).toEqual({
+      canExport: false,
+      button: "Export the Patch Book",
+      price: "The export's price didn't load.",
+    });
+    expect(exportOffer({ allowance: null, credits: null, cost: 3 })).toEqual({
+      canExport: false,
+      button: "Export for 3 credits",
+      price: "This export costs 3 credits. Your balance didn't load.",
+    });
+  });
+
+  it("says a free export is free", () => {
+    expect(exportOffer({ allowance: null, credits: 0, cost: 0 })).toEqual({
+      canExport: true,
+      button: "Export the Patch Book",
+      price: "This export is free.",
+    });
   });
 });
