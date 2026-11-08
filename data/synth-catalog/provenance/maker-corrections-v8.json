@@ -1,0 +1,24 @@
+{
+ "batch": "maker-corrections-v8",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted.",
+ "decided": "2026-11-08: owner decisions 1 and 18 (docs/evidence/OWNER_DECISIONS_2026-11-04.md). Doepfer's page read by plain GET on 2026-11-08. maker-corrections-v4 left this row alone because it recorded no modules row for the module; the deployed databases have held one since 2026-10-17.",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "modules",
+   "brand": "Doepfer",
+   "name": "A-138m",
+   "fields": [
+    {
+     "field": "hp",
+     "action": "correct",
+     "only_if_value": 8,
+     "value": 20,
+     "evidence_url": "https://doepfer.de/A138m.htm",
+     "source_tag": "maker-corrections-v8: 20 HP (\"Breite/Width: 20 TE/HP\") on https://doepfer.de/A138m.htm; 8 is the unsourced module-catalog-hp-v1 value that maker-corrections-v4 corrected in module_catalog only",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}
