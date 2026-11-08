@@ -87,9 +87,9 @@ def test_the_photo_start_names_the_reading_it_made(
     assert reading["reading_id"] == started.json()["reading_id"]
     assert reading["photo_id"] == started.json()["photo_id"]
     assert reading["status"] == "read"
-    assert [s["candidates"] for s in reading["sightings"]] == [
-        [{"module_id": sample_vco.id, "score": 0.95}]
-    ]
+    assert [
+        [(c["module_id"], c["score"]) for c in s["candidates"]] for s in reading["sightings"]
+    ] == [[(sample_vco.id, 0.95)]]
 
 
 def test_a_photo_with_no_recording_still_starts_the_rig_with_a_failed_reading(

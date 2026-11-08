@@ -31,6 +31,8 @@ const PatchDetailPage = lazy(() => import("@/pages/PatchDetail"));
 const PrivacyPage = lazy(() => import("@/pages/Privacy"));
 const RackBuilderPage = lazy(() => import("@/pages/RackBuilder"));
 const RegistryPage = lazy(() => import("@/pages/Registry"));
+const RigPhotoPage = lazy(() => import("@/pages/RigPhoto"));
+const RigReadingPage = lazy(() => import("@/pages/RigReading"));
 
 type Theme = "dark" | "light";
 
@@ -50,6 +52,9 @@ function AppRoutes() {
       <Route path="/racks/new" element={<RackBuilderPage />} />
       <Route path="/racks/:id/edit" element={<RackBuilderPage />} />
       <Route path="/racks/:rigId" element={<RacksPage />} />
+      <Route path="/rigs/new/photo" element={<RigPhotoPage />} />
+      <Route path="/rigs/:rigId/photo" element={<RigPhotoPage />} />
+      <Route path="/rigs/:rigId/reading" element={<RigReadingPage />} />
       <Route path="/rigs/:rigId" element={<RigDetailPage />} />
       <Route path="/rigs/:rigId/patchbook-studio" element={<PatchBookStyleStudioPage />} />
       <Route path="/rigs/:rigId/patches/:patchId" element={<PatchDetailPage />} />

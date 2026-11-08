@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -50,6 +50,7 @@ from community.auth import require_auth
 from community.models import User
 from intelligence.evidence_images import ImageAccessDecision, image_access_decision
 from racks.access import owned_private_rack, private_rack
+from modules.models import Module
 from racks.models import Rack
 
 router = APIRouter()
@@ -197,13 +198,12 @@ PHOTO_GONE = frozenset(
 )
 
 
-def _stored_photo(db: Session, reading: PhotoReadingRecord) -> tuple[ImageAssetRecord, bytes]:
-    """A Reading's stored photo and its bytes, refused with ``PHOTO_EXPIRED`` once it has
-    expired or been deleted: a Reading never outlives its photo. Bytes that aren't the stored
-    photo, or that went while it was read, are as good as gone."""
-    asset = db.get(ImageAssetRecord, reading.image_asset_id)
-    if asset is None or image_access_decision(asset, now=datetime.now(timezone.utc)) in PHOTO_GONE:
-        raise HTTPException(status_code=409, detail="PHOTO_EXPIRED")
+def _photo_bytes(asset: ImageAssetRecord) -> bytes | None:
+    """A stored photo's bytes, or None once it has expired or been deleted. Bytes that aren't
+    the stored photo, or that went while it was read, are as good as gone. A store that can't
+    answer is a 503."""
+    if image_access_decision(asset, now=datetime.now(timezone.utc)) in PHOTO_GONE:
+        return None
     path = Path(str(asset.storage_path))
     try:
         stored = get_file_store().ensure_local(path)
@@ -212,8 +212,17 @@ def _stored_photo(db: Session, reading: PhotoReadingRecord) -> tuple[ImageAssetR
     try:
         image = path.read_bytes() if stored else None
     except FileNotFoundError:
-        image = None
+        return None
     if image is None or hashlib.sha256(image).hexdigest() != str(asset.content_sha256):
+        return None
+    return image
+
+
+def _stored_photo(db: Session, reading: PhotoReadingRecord) -> tuple[ImageAssetRecord, bytes]:
+    """A Reading's stored photo and its bytes, refused with ``PHOTO_EXPIRED`` once it is gone:
+    a Reading never outlives its photo."""
+    asset = db.get(ImageAssetRecord, reading.image_asset_id)
+    if asset is None or (image := _photo_bytes(asset)) is None:
         raise HTTPException(status_code=409, detail="PHOTO_EXPIRED")
     return asset, image
 
@@ -487,6 +496,17 @@ async def start_rig_from_photo(
     )
 
 
+def _named_candidate(candidate: dict[str, Any], modules: dict[int, Module]) -> dict[str, Any]:
+    """A candidate with its Module's maker, name and width, so the Reading screen can offer it."""
+    module = modules.get(int(candidate["module_id"]))
+    return {
+        **candidate,
+        "brand": module.brand if module else None,
+        "name": module.name if module else None,
+        "hp": module.hp if module else None,
+    }
+
+
 @router.get("/racks/{rack_id}/evidence/readings", response_model=PhotoReadingListResponse)
 def list_rack_photo_readings(
     rack_id: int,
@@ -513,6 +533,10 @@ def list_rack_photo_readings(
             )
         ):
             sightings[str(sighting.reading_id)].append(sighting)
+    named = {
+        int(c["module_id"]) for found in sightings.values() for s in found for c in s.candidates
+    }
+    modules = {int(m.id): m for m in db.query(Module).filter(Module.id.in_(named))} if named else {}
     return PhotoReadingListResponse(
         readings=[
             PhotoReadingResponse(
@@ -536,7 +560,7 @@ def list_rack_photo_readings(
                         row_index=int(s.row_index),  # type: ignore[arg-type]
                         start_hp=int(s.start_hp),  # type: ignore[arg-type]
                         hp=int(s.hp),  # type: ignore[arg-type]
-                        candidates=list(s.candidates),
+                        candidates=[_named_candidate(c, modules) for c in s.candidates],
                         disposition=str(s.disposition),
                     )
                     for s in sightings[str(r.id)]
@@ -608,6 +632,31 @@ def list_rack_evidence_images(
     return ImageAssetListResponse(
         total=len(rows),
         assets=[_asset_response(row) for row in rows],
+    )
+
+
+@router.get("/racks/{rack_id}/evidence/images/{asset_id}/content")
+def rack_evidence_image_content(
+    rack_id: int,
+    asset_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+) -> Response:
+    """The owner's photo, for the Reading screen (spec 009): private, and never cached. Gone
+    once it has expired or been deleted."""
+    owned_private_rack(db, rack_id, current_user, label="Rig")
+    record = (
+        db.query(ImageAssetRecord)
+        .filter(ImageAssetRecord.id == asset_id, ImageAssetRecord.rack_id == rack_id)
+        .first()
+    )
+    image = _photo_bytes(record) if record is not None else None
+    if record is None or image is None:
+        raise HTTPException(status_code=404, detail="PHOTO_NOT_FOUND")
+    return Response(
+        content=image,
+        media_type=str(record.media_type),
+        headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"},
     )
 
 

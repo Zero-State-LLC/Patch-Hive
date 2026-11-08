@@ -2,11 +2,13 @@
 FastAPI routes for Module management.
 """
 
+import re
 from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from admin.dependencies import require_admin_mutate
@@ -88,13 +90,20 @@ def list_modules(
     hp_min: Optional[int] = None,
     hp_max: Optional[int] = None,
     tag: Optional[str] = None,
+    q: Optional[str] = Query(None, max_length=100),
     db: Session = Depends(get_db),
     reader: Optional[User] = Depends(get_catalog_reader),
 ):
-    """List modules with optional filters."""
+    """List modules with optional filters. ``q`` finds Modules whose maker or name holds every
+    word of it, in any case, as text rather than a pattern."""
     query = db.query(Module).filter(Module.status != "tombstoned")
     if reader is None:
         query = query.filter(MODULE_KNOWN_BASIS)
+    for word in (q or "").split():
+        like = "%" + re.sub(r"([\\%_])", r"\\\1", word) + "%"
+        query = query.filter(
+            or_(Module.brand.ilike(like, escape="\\"), Module.name.ilike(like, escape="\\"))
+        )
 
     # Apply filters
     if brand:

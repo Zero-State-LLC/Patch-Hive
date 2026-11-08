@@ -4,6 +4,7 @@
  * No backend: the API is mocked here, and anything not mocked answers 404, so a screen is
  * checked in its loaded, empty or error state.
  */
+import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { expect, test, type Page } from "@playwright/test";
 
@@ -339,6 +340,78 @@ async function mockBuilder(page: Page) {
   );
 }
 
+const RIG_PHOTO = readFileSync(new URL("./fixtures/rig-photo.jpg", import.meta.url));
+
+const sighting = (id: string, over: Record<string, unknown>) => ({
+  sighting_id: id,
+  box: { x: 0.0, y: 0.06, w: 0.12, h: 0.88 },
+  kind: "module",
+  row_index: 0,
+  start_hp: 0,
+  hp: 12,
+  candidates: [],
+  disposition: "unresolved",
+  ...over,
+});
+
+const READINGS = {
+  readings: [
+    {
+      reading_id: "read-1",
+      photo_id: "img-1",
+      status: "read",
+      reason_code: null,
+      provider: "recorded",
+      provider_version: "recorded-1",
+      first_row: 0,
+      last_row: 0,
+      created_at: STAMP,
+      completed_at: STAMP,
+      sightings: [
+        sighting("s-1", {
+          disposition: "auto_propose",
+          candidates: [{ module_id: 11, score: 0.95, brand: "Sim Co", name: "Oscillator", hp: 12 }],
+        }),
+        sighting("s-2", {
+          disposition: "user_review",
+          start_hp: 14,
+          hp: 10,
+          box: { x: 0.125, y: 0.06, w: 0.11, h: 0.88 },
+          candidates: [
+            { module_id: 12, score: 0.6, brand: "Sim Co", name: "Filter", hp: 10 },
+            { module_id: 14, score: 0.3, brand: "Sim Co", name: "Filter II", hp: 10 },
+          ],
+        }),
+        sighting("s-3", {
+          kind: "unknown",
+          start_hp: 30,
+          hp: 8,
+          box: { x: 0.25, y: 0.06, w: 0.11, h: 0.88 },
+        }),
+        sighting("s-4", {
+          kind: "blank_panel",
+          start_hp: 38,
+          hp: 4,
+          box: { x: 0.375, y: 0.06, w: 0.1, h: 0.88 },
+        }),
+      ],
+    },
+  ],
+};
+
+const photoReading = (available: boolean) => async (page: Page) => {
+  await page.route("**/api/evidence/photo-reading", (route) =>
+    route.fulfill(json({ available, reason: available ? null : "PROVIDER_DISABLED" })),
+  );
+};
+
+async function mockReading(page: Page) {
+  await page.route("**/api/racks/1/evidence/readings", (route) => route.fulfill(json(READINGS)));
+  await page.route("**/api/racks/1/evidence/images/img-1/content", (route) =>
+    route.fulfill({ body: RIG_PHOTO, contentType: "image/jpeg" }),
+  );
+}
+
 interface Screen {
   path: string;
   name: string;
@@ -387,6 +460,37 @@ const SCREENS: Screen[] = [
     signature: ".patch-rail .patch-cable",
   },
   { path: "/rigs/1/patchbook-studio", name: "style studio", signedIn: true },
+  {
+    path: "/rigs/new/photo",
+    name: "photo",
+    signedIn: true,
+    signature: ".photo-guidance",
+    mock: photoReading(true),
+  },
+  {
+    path: "/rigs/new/photo",
+    name: "photo, reading closed",
+    signedIn: true,
+    signature: ".photo-closed",
+    mock: photoReading(false),
+  },
+  {
+    path: "/rigs/1/reading",
+    name: "reading",
+    signedIn: true,
+    signature: ".reading-photo__box",
+    mock: mockReading,
+  },
+  {
+    path: "/rigs/1/reading",
+    name: "reading, correcting the layout",
+    signedIn: true,
+    signature: ".rig-rail",
+    mock: mockReading,
+    open: async (page) => {
+      await page.getByRole("button", { name: "Correct the layout" }).click();
+    },
+  },
   // The one catalog case is chosen on load, so the builder opens on step 2.
   {
     path: "/racks/new",
