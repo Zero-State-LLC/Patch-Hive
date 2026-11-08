@@ -35,7 +35,7 @@ The agent put 56 decisions to the owner over several rounds, each with a recomme
 | 28 | Report limits stand as built. How long to keep reports goes to counsel. |
 | 29 | Fix the SVG escaping in `backend/export/visualization.py` now, not when publishing returns. |
 | 32 | Prices (004 OQ-1) are **not ratified**, and there are no sales during beta. This replaces the record that says provisionally ratified. T046 to T053 stay open. |
-| 33 | Counsel's answers are required before real sales, publishing, or sending anyone's photos to NVIDIA outside staging. On staging, the provider only sees the owner's own photos. |
+| 33 | Counsel's answers are required before real sales, publishing, or sending anyone's photos to NVIDIA outside staging. On staging, the provider only sees the owner's own photos. Changed by 64 on 2026-11-08: on staging it may also see the corpus's openly licensed Commons photos. |
 | 34 | Publishing stays off through beta, and T033 waits until after it. |
 
 ## Process and platform
@@ -43,7 +43,7 @@ The agent put 56 decisions to the owner over several rounds, each with a recomme
 | # | Decision |
 |---|---|
 | 8 | Vocabulary: Rig is canonical and Rack is legacy; Case is the enclosure; Module Category and Patch Category are separate terms. |
-| 9 | Corpus photos come from the owner's own modules, and the validator's minimum of 50 stays. |
+| 9 | Changed by 64 on 2026-11-08. Corpus photos come from the owner's own modules, and the validator's minimum of 50 stays. |
 | 10 | 006 T060b verifies only the wired provider (NVIDIA through the Clef adapter), with no separate Clef evaluation. |
 | 11 | `frontend-e2e`, `backend-lint`, `secrets`, `audit` and `migrations` become required checks once #276 lands, so every future migration needs a working downgrade on an empty database. The owner applies this. |
 | 12 | The repo stays public. |
@@ -96,4 +96,5 @@ The owner chose each recommendation, after an agent showed how far the product h
 | 61 | A provider that sends a photo away, such as NVIDIA, reads only a photo whose owner agreed to that when they uploaded it, and the Photo screen asks. Without that agreement the Reading fails `CONSENT_NOT_GRANTED` and nothing is sent. This sits beside the host gate: counsel still answers decision 33 before anyone's photo is read outside staging. Chosen 2026-11-07, on T022. |
 | 62 | The staging walkthrough from a photo (spec 009 T060a) runs beside spec 008's walkthrough, with a receipt of its own. Spec 008's walkthrough still starts from the seeded Rig, and its receipt still gates `BETA_ELIGIBLE`. Spec 009's Seam 2 is tested at the photo walkthrough and its receipt, not through spec 008's receipt as T010 first set it. Chosen 2026-11-08, on T090 (D1). |
 | 63 | The rig builder's per-Module photo step (spec 005) is removed: the whole-Rig photo is the product's one way in for photos (ADR-007). Its mock detector derives candidates from each photo's hash, so in production it would offer someone Modules no one saw; it never runs in production. Staging keeps it for its evidence check on a test card (006 T060b). The evidence, confirmation and reconciliation APIs stay. Chosen 2026-11-08, on T090 (D14). |
+| 64 | The evaluation corpus starts from the owner's own Rig. Openly licensed Wikimedia Commons photos may fill the Modules and cohorts it doesn't cover, each with its licence, author and source page recorded. Only Commons qualifies for now: the other sources a search turned up (Reddit, Facebook, shops and blogs) carry no open licence. The photos stay on Commons, pinned by hash, and aren't committed. An agent may draft a photo's labels, but a case counts only once the owner has checked them. On staging, the provider may read these Commons photos as well as the owner's own, and no one else's. This changes decisions 9 and 33. Chosen 2026-11-08, on T070b. |
 
