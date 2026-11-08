@@ -2,9 +2,6 @@
 // Anything else gets a real 404 so the site never answers every path with 200.
 export const APP_ROUTES = [
   "/",
-  "/modules",
-  "/cases",
-  "/cases/:slug",
   "/racks",
   "/racks/new",
   "/racks/:id/edit",
@@ -16,7 +13,6 @@ export const APP_ROUTES = [
   "/rigs/:rigId/patchbook-studio",
   "/rigs/:rigId/patches/:patchId",
   "/patches",
-  "/products",
   "/login",
   "/account",
   "/privacy",
@@ -29,12 +25,21 @@ export const APP_ROUTES = [
   "/admin/leaderboards",
 ] as const;
 
-const MATCHERS = APP_ROUTES.map(
-  (route) => new RegExp(`^${route.replace(/:[A-Za-z]+/g, "[^/]+")}/?$`),
-);
+// The catalog pages left the public routes (spec 009, decision 58). An old link to one lands
+// on the home page, for good, so it still leads somewhere useful.
+export const RETIRED_ROUTES = ["/modules", "/products", "/cases", "/cases/:slug"] as const;
+
+const matchers = (routes: readonly string[]) =>
+  routes.map((route) => new RegExp(`^${route.replace(/:[A-Za-z]+/g, "[^/]+")}/?$`));
+const MATCHERS = matchers(APP_ROUTES);
+const RETIRED = matchers(RETIRED_ROUTES);
 
 export function isAppRoute(pathname: string): boolean {
   return MATCHERS.some((re) => re.test(pathname));
+}
+
+export function isRetired(pathname: string): boolean {
+  return RETIRED.some((re) => re.test(pathname));
 }
 
 // A path whose last segment has an extension asks for a file, never a page.

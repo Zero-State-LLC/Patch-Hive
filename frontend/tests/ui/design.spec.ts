@@ -412,6 +412,10 @@ async function mockReading(page: Page) {
   );
 }
 
+const RETIRED_LINKS = ["/modules", "/products", "/cases"]
+  .flatMap((path) => [`a[href="${path}"]`, `a[href^="${path}/"]`, `a[href^="${path}?"]`])
+  .join(", ");
+
 interface Screen {
   path: string;
   name: string;
@@ -429,15 +433,6 @@ const SCREENS: Screen[] = [
   { path: "/login", name: "sign in", signedIn: false },
   { path: "/privacy", name: "privacy notice", signedIn: false },
   { path: "/no-such-route", name: "not found", signedIn: false, signature: ".broken-patch" },
-  { path: "/modules", name: "modules", signedIn: true, signature: ".module-mockup" },
-  { path: "/cases", name: "cases", signedIn: true },
-  {
-    path: `/cases/${CASE_DETAIL.slug}`,
-    name: "case detail",
-    signedIn: true,
-    signature: ".capacity-rail",
-  },
-  { path: "/products", name: "products", signedIn: true },
   { path: "/patches", name: "patches", signedIn: true },
   { path: "/account", name: "account", signedIn: true },
   {
@@ -612,6 +607,8 @@ for (const theme of ["dark", "light"] as const) {
 
           expect(await overflowing(page), "elements past the viewport").toEqual([]);
           expect(await axeViolations(page), "axe violations").toEqual([]);
+          // The catalog pages left the public routes (spec 009, decision 58): nothing links there.
+          await expect(page.locator(RETIRED_LINKS)).toHaveCount(0);
         });
       }
     });
@@ -671,10 +668,6 @@ const API_DOWN: { path: string; name: string }[] = [
   { path: "/rigs/1/patchbook-studio", name: "style studio" },
   { path: "/racks/new", name: "rig builder, new" },
   { path: "/racks/1/edit", name: "rig builder, placement" },
-  { path: "/modules", name: "modules" },
-  { path: "/cases", name: "cases" },
-  { path: `/cases/${CASE_DETAIL.slug}`, name: "case detail" },
-  { path: "/products", name: "products" },
   { path: "/patches", name: "patches" },
   { path: "/account", name: "account" },
   { path: "/admin/users", name: "ops users" },
@@ -706,7 +699,7 @@ test.describe("privacy notice", () => {
 
   test("reads at 320 px with no horizontal scroll, and the footer reaches it", async ({ page }) => {
     await mockApi(page, { signedIn: false });
-    await page.goto("/modules");
+    await page.goto("/patches");
     await page.getByRole("contentinfo").getByRole("link", { name: "Privacy notice" }).click();
     await expect(page).toHaveURL(/\/privacy$/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Privacy notice");
@@ -835,7 +828,7 @@ test.describe("accessibility protocol pre-pass", () => {
 
   test("the skip link is the first tab stop and moves focus to the workspace", async ({ page }) => {
     await mockApi(page, { signedIn: false });
-    await page.goto("/modules");
+    await page.goto("/patches");
     await expect(page.locator("main")).toBeVisible();
     await page.keyboard.press("Tab");
     const skip = page.getByRole("link", { name: "Skip to workspace" });

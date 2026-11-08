@@ -34,14 +34,12 @@ describe("ModulesToPlace", () => {
     );
   });
 
-  it("sends a module with no catalog match to the gallery, and never guesses an id", () => {
+  it("says a module with no catalog match can't be placed yet, and never guesses an id", () => {
     renderList({ modules: [{ ...matched, module_id: null }], rackId: 3 });
-    expect(screen.getByRole("status")).toHaveTextContent("no catalog match yet");
-    expect(screen.queryByRole("link", { name: "Place it" })).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "module gallery" })).toHaveAttribute(
-      "href",
-      "/modules",
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "no catalog match yet, so it can't be placed until the catalog has it",
     );
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 
   it("falls back to the revision label when a confirmed item has no name", () => {

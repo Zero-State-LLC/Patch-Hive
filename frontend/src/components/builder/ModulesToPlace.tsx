@@ -21,9 +21,7 @@ export default function ModulesToPlace({ modules, rackId }: ModulesToPlaceProps)
             {[module.manufacturer, module.model].filter(Boolean).join(" ") ||
               module.module_revision_id}
             {module.module_id == null ? (
-              <>
-                , no catalog match yet. Find it in the <Link to="/modules">module gallery</Link>.
-              </>
+              <>, no catalog match yet, so it can&apos;t be placed until the catalog has it.</>
             ) : rackId != null ? (
               <>
                 {" "}

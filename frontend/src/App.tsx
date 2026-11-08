@@ -1,15 +1,13 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { BrowserRouter, NavLink, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, NavLink, Route, Routes, useLocation } from "react-router-dom";
 import { RouteErrorBoundary } from "@/components/ErrorBoundary";
 import PrimaryNav from "@/components/PrimaryNav";
 import RouteEffects from "@/components/RouteEffects";
 import { ListSkeleton } from "@/components/Skeletons";
 import { restoreSession, signOut } from "@/lib/session";
 import { sessionHint, useAuthStore } from "@/lib/store";
-import CasesPage from "@/pages/Cases";
 import Home from "@/pages/Home";
 import LoginPage from "@/pages/Login";
-import ModulesPage from "@/pages/Modules";
 import NotFoundPage from "@/pages/NotFound";
 import PatchesPage from "@/pages/Patches";
 import RacksPage from "@/pages/Racks";
@@ -25,12 +23,10 @@ const AdminLeaderboards = lazy(() => import("@/pages/admin/AdminLeaderboards"));
 const AdminModules = lazy(() => import("@/pages/admin/AdminModules"));
 const AdminRuns = lazy(() => import("@/pages/admin/AdminRuns"));
 const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
-const CaseDetailPage = lazy(() => import("@/pages/CaseDetail"));
 const PatchBookStyleStudioPage = lazy(() => import("@/pages/PatchBookStyleStudio"));
 const PatchDetailPage = lazy(() => import("@/pages/PatchDetail"));
 const PrivacyPage = lazy(() => import("@/pages/Privacy"));
 const RackBuilderPage = lazy(() => import("@/pages/RackBuilder"));
-const RegistryPage = lazy(() => import("@/pages/Registry"));
 const RigPhotoPage = lazy(() => import("@/pages/RigPhoto"));
 const RigReadingPage = lazy(() => import("@/pages/RigReading"));
 
@@ -45,9 +41,11 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/modules" element={<ModulesPage />} />
-      <Route path="/cases" element={<CasesPage />} />
-      <Route path="/cases/:slug" element={<CaseDetailPage />} />
+      {/* The catalog pages left the public routes (spec 009, decision 58); old links go home. */}
+      <Route path="/modules" element={<Navigate to="/" replace />} />
+      <Route path="/products" element={<Navigate to="/" replace />} />
+      <Route path="/cases" element={<Navigate to="/" replace />} />
+      <Route path="/cases/:slug" element={<Navigate to="/" replace />} />
       <Route path="/racks" element={<RacksPage />} />
       <Route path="/racks/new" element={<RackBuilderPage />} />
       <Route path="/racks/:id/edit" element={<RackBuilderPage />} />
@@ -59,7 +57,6 @@ function AppRoutes() {
       <Route path="/rigs/:rigId/patchbook-studio" element={<PatchBookStyleStudioPage />} />
       <Route path="/rigs/:rigId/patches/:patchId" element={<PatchDetailPage />} />
       <Route path="/patches" element={<PatchesPage />} />
-      <Route path="/products" element={<RegistryPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/account" element={<AccountPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />

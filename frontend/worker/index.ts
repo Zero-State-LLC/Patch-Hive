@@ -2,7 +2,7 @@
 // Missing files and unknown routes answer 404 (the SPA shell still renders its
 // not-found page for unknown routes); only real client routes fall back to the shell.
 import { securityHeaders } from "./headers";
-import { isAppRoute, looksLikeFile } from "./routes";
+import { isAppRoute, isRetired, looksLikeFile } from "./routes";
 
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
@@ -31,6 +31,11 @@ export default {
 
 async function serve(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
+  if (isRetired(url.pathname)) {
+    // Straight to the apex home page, even from www: one hop, not two.
+    const host = url.hostname === "www.patch-hive.com" ? "https://patch-hive.com" : url.origin;
+    return Response.redirect(`${host}/`, 301);
+  }
   if (url.hostname === "www.patch-hive.com") {
     url.hostname = "patch-hive.com";
     return Response.redirect(url.toString(), 301);

@@ -166,8 +166,8 @@ src/
 ├── components/     # Reusable UI components (future)
 ├── pages/          # Page components (one per route)
 │   ├── Home.tsx
-│   ├── Modules.tsx
-│   ├── Cases.tsx
+│   ├── RigPhoto.tsx      # spec 009: a photo of the Rig in
+│   ├── RigReading.tsx    # spec 009: its Reading, corrected and confirmed
 │   ├── Racks.tsx
 │   ├── RackBuilder.tsx
 │   ├── Patches.tsx

@@ -1092,10 +1092,7 @@ function RackBuilder() {
               {liveRack?.case ? caseLine(liveRack.case) : ""}.
             </p>
           ) : (
-            <p className="muted">
-              Choose a case, create the rig, then place modules from the{" "}
-              <Link to="/modules">module gallery</Link>.
-            </p>
+            <p className="muted">Choose a case, create the rig, then place its modules.</p>
           )}
         </div>
         {rackId != null ? (

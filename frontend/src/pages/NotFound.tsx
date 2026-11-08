@@ -89,11 +89,11 @@ export default function NotFound() {
           <Link to="/" className="button button-primary">
             Return home
           </Link>
-          <Link to="/modules" className="button button-secondary">
-            Browse modules
+          <Link to="/rigs/new/photo" className="button button-secondary">
+            Photograph your Rig
           </Link>
           <Link to="/racks" className="button button-quiet">
-            Open rigs
+            My Rigs
           </Link>
         </div>
 

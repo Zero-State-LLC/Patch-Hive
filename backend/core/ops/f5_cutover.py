@@ -85,10 +85,10 @@ REQUIRED_GATE_ROUTES: tuple[tuple[str, str], ...] = (
 )
 
 # Active inventory list pages that must read the canon alias (T020). The rig builder
-# lists rigs for its evidence picker, so it is one of them.
+# lists rigs for its evidence picker, so it is one of them. The Modules page and its rig
+# picker left with spec 009 (decision 58).
 REQUIRED_FE_LIST_PAGES: tuple[str, ...] = (
     "frontend/src/pages/Racks.tsx",
-    "frontend/src/pages/Modules.tsx",
     "frontend/src/pages/RackBuilder.tsx",
 )
 
