@@ -68,6 +68,7 @@ from intelligence.contracts import (  # noqa: E402
 )
 from intelligence.enablement_gate import enablement_gate_failures  # noqa: E402
 from intelligence.evaluation_corpus import (  # noqa: E402
+    MODULE_UNIT,
     CorpusFreeze,
     CorpusFreezeError,
     freeze_corpus,
@@ -428,6 +429,10 @@ def cmd_freeze(args: argparse.Namespace) -> None:
         corpus = freeze_corpus(manifest)
     except CorpusFreezeError as exc:
         raise Refused(exc.code, exc.detail) from exc
+    if corpus.unit != MODULE_UNIT:
+        # This chain measures photos of one Module; whole-rig photos (spec 009) are scored
+        # by backend/evidence/rig_evaluation.py.
+        raise Refused("CORPUS_UNIT_NOT_SUPPORTED", corpus.unit)
     _write(args.dir, CORPUS, corpus)
     _out(f"corpus_sha256={corpus.corpus_sha256} cases={corpus.case_count} identities={corpus.identity_count}")
 

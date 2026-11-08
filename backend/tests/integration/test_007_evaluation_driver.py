@@ -22,6 +22,7 @@ from tests.eval007_helpers import (
     HARNESS_SHA,
     SOURCE_SHA,
     admitted_manifest,
+    admitted_rig_manifest,
     assisted_cases,
     install_allowlist,
     throwaway_approver,
@@ -207,6 +208,16 @@ def test_approve_without_explicit_flag_is_refused(driver, workspace, capsys):
     assert _cli(driver, workspace, "approve", "--approved-by", "approver-test") == 1
     assert "EXPLICIT_SIGN_OFF_REQUIRED" in capsys.readouterr().err
     assert not (workspace["dir"] / "approval.json").exists()
+
+
+def test_a_whole_rig_corpus_is_not_frozen_for_the_single_module_chain(driver, workspace, capsys):
+    # Spec 009's whole-rig photos are scored by evidence/rig_evaluation.py, not this chain.
+    manifest = workspace["root"] / "rig-manifest.json"
+    manifest.write_text(json.dumps(admitted_rig_manifest()), encoding="utf-8")
+
+    assert _cli(driver, workspace, "freeze", "--manifest", str(manifest)) == 1
+    assert "CORPUS_UNIT_NOT_SUPPORTED" in capsys.readouterr().err
+    assert not (workspace["dir"] / "corpus.json").exists()
 
 
 def test_unknown_approver_is_refused(driver, workspace, capsys):

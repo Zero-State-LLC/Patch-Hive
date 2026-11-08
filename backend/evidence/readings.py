@@ -354,8 +354,7 @@ def _policy() -> DecisionPolicy:
     )
 
 
-def _disposition(
-    policy: DecisionPolicy,
+def sighting_decision(
     sighting: SightingAnswer,
     *,
     key: str,
@@ -363,9 +362,9 @@ def _disposition(
     provider_version: str,
     photo_sha256: str,
     now: datetime,
-) -> tuple[str, str]:
-    """The policy's disposition for a Sighting's identity, as a choice among its candidates
-    or none of them. A Sighting with no candidates abstains, so it stays unresolved."""
+) -> tuple[DecisionPacket, ChoiceRequest]:
+    """A Sighting's identity put to the policy: a choice among its candidates, closest first,
+    or none of them. A Sighting with no candidates selects none of them."""
     ranked = sorted(sighting.candidates, key=lambda c: (-c.score, c.module_id))
     request = ChoiceRequest(
         request_id=key,
@@ -392,8 +391,7 @@ def _disposition(
         candidate_set_hash=request.candidate_set_hash(),
         created_at=now,
     )
-    result = policy.evaluate(packet, request)
-    return DISPOSITIONS.get(result.disposition, "unresolved"), result.reason_codes[0]
+    return packet, request
 
 
 def move_readings(
@@ -464,14 +462,16 @@ def read_photo(
         policy = _policy()
         for position, sighting in enumerate(answer.sightings):
             sighting_id = f"sight-{uuid.uuid4().hex[:20]}"
-            disposition, reason = _disposition(
-                policy,
-                sighting,
-                key=sighting_id,
-                provider=reading.provider,
-                provider_version=answer.provider_version,
-                photo_sha256=photo_sha256,
-                now=now,
+            # A Sighting with no candidates abstains, so it stays unresolved.
+            result = policy.evaluate(
+                *sighting_decision(
+                    sighting,
+                    key=sighting_id,
+                    provider=reading.provider,
+                    provider_version=answer.provider_version,
+                    photo_sha256=photo_sha256,
+                    now=now,
+                )
             )
             db.add(
                 PhotoSightingRecord(
@@ -484,8 +484,8 @@ def read_photo(
                     start_hp=sighting.start_hp,
                     hp=sighting.hp,
                     candidates=[c.model_dump() for c in sighting.candidates],
-                    disposition=disposition,
-                    policy_reason=reason,
+                    disposition=DISPOSITIONS.get(result.disposition, "unresolved"),
+                    policy_reason=result.reason_codes[0],
                 )
             )
         reading.status, reading.provider_version = "read", answer.provider_version

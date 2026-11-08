@@ -1,0 +1,53 @@
+{
+  "pilot_version": "patchhive.whole-rig.fixture",
+  "status": "SYNTHETIC_TEST_ONLY",
+  "unit": "whole_rig",
+  "cases": [
+    {
+      "case_id": "rig-a",
+      "partition": "validation",
+      "cohort": "clear_front_panel",
+      "rights_and_consent": {
+        "rights_status": "RIGHTS_CONFIRMED",
+        "source_url": "https://example.invalid/evidence/rig-a"
+      },
+      "image_asset_hashes": [
+        "sha256:582604ac8560f81bc34b64ff395ce99ca59fd92d357cbf0d268f9c9ead6295de"
+      ],
+      "rows": 2,
+      "labels": [
+        {"kind": "module", "maker": "Mutable Instruments", "name": "Plaits", "row_index": 0, "start_hp": 0, "hp": 12},
+        {"kind": "module", "maker": "Make Noise", "name": "Maths", "row_index": 0, "start_hp": 12, "hp": 20},
+        {"kind": "blank_panel", "row_index": 0, "start_hp": 32, "hp": 4},
+        {"kind": "module", "maker": "Expert Sleepers", "name": "Disting EX", "row_index": 1, "start_hp": 0, "hp": 14},
+        {"kind": "module", "open_set": true, "row_index": 1, "start_hp": 14, "hp": 8}
+      ],
+      "ground_truth_status": "OPERATOR_VERIFIED",
+      "annotation_status": "REVIEWED",
+      "reviewers": ["operator-1"],
+      "contamination": {"used_for_tuning": false, "notes": null}
+    },
+    {
+      "case_id": "rig-b",
+      "partition": "locked_test",
+      "cohort": "cable_obscured",
+      "rights_and_consent": {
+        "rights_status": "RIGHTS_CONFIRMED",
+        "source_url": "https://example.invalid/evidence/rig-b"
+      },
+      "image_asset_hashes": [
+        "sha256:c78d15febd578b443d6f69be4b9411023b483723432d402a8c2c8b24db52ab2f"
+      ],
+      "rows": 1,
+      "labels": [
+        {"kind": "module", "maker": "Mutable Instruments", "name": "Rings", "row_index": 0, "start_hp": 0, "hp": 14},
+        {"kind": "module", "maker": "Make Noise", "name": "Maths", "row_index": 0, "start_hp": 14, "hp": 20},
+        {"kind": "module", "maker": "Mutable Instruments", "name": "Plaits", "row_index": 0, "start_hp": 34, "hp": 12}
+      ],
+      "ground_truth_status": "TWO_SOURCE_VERIFIED",
+      "annotation_status": "REVIEWED",
+      "reviewers": ["operator-1", "operator-2"],
+      "contamination": {"used_for_tuning": false, "notes": null}
+    }
+  ]
+}

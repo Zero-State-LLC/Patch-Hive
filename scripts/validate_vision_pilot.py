@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import re
+import unicodedata
 from collections import Counter
 from pathlib import Path
 
@@ -23,10 +24,84 @@ REQUIRED_COHORTS = {
     "low_light_or_glare", "revision_or_panel_variant", "hard_negative", "unknown_open_set"
 }
 
+# A case is a photo of one Module (the default) or of a whole Rig (spec 009).
+UNITS = {"module", "whole_rig"}
+LABEL_KINDS = {"module", "blank_panel"}
+
 
 def stable_sha(value: object) -> str:
     payload = json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(payload).hexdigest()
+
+
+def _is_count(value: object, least: int) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= least
+
+
+def _name_key(text: str) -> str:
+    # As the catalog compares names: case, spaces and punctuation don't count.
+    return re.sub(r"[\W_]+", "", unicodedata.normalize("NFKC", text).casefold())
+
+
+def _check_module_case(case: dict, cid: str, partition: str, errors: list[str]) -> set[str]:
+    """A photo of one Module: one expected choice among a fixed candidate set."""
+    if case.get("none_of_above_allowed") is not True:
+        errors.append(f"{cid}:none_of_above_missing")
+    if not case.get("candidate_set_hash"):
+        errors.append(f"{cid}:candidate_set_hash_missing")
+    expected_choice = case.get("expected_choice")
+    if not expected_choice:
+        errors.append(f"{cid}:expected_choice_missing")
+    elif partition != "unknown_open_set" and expected_choice not in set(case.get("ground_truth_inventory", [])):
+        errors.append(f"{cid}:expected_choice_not_in_ground_truth")
+    if partition == "unknown_open_set" and expected_choice != "none_of_above":
+        errors.append(f"{cid}:open_set_must_expect_none_of_above")
+    return set(case.get("ground_truth_inventory", []))
+
+
+def _check_rig_case(case: dict, cid: str, partition: str, errors: list[str]) -> set[str]:
+    """A photo of a whole Rig: every Module's identity, row and start HP, plus its Blank
+    Panels. A Module the catalog doesn't have is labelled ``open_set``."""
+    if len(case.get("image_asset_hashes") or []) > 1:
+        errors.append(f"{cid}:rig_needs_one_photo")
+    rows = case.get("rows")
+    if not _is_count(rows, 1):
+        errors.append(f"{cid}:rows_invalid")
+    labels = case.get("labels")
+    if not isinstance(labels, list) or not labels:
+        errors.append(f"{cid}:labels_missing")
+        return set()
+    identities: set[str] = set()
+    spans: list[tuple[int, int, int]] = []
+    for index, label in enumerate(labels):
+        if not (
+            isinstance(label, dict)
+            and label.get("kind") in LABEL_KINDS
+            and _is_count(label.get("row_index"), 0)
+            and _is_count(label.get("start_hp"), 0)
+            and _is_count(label.get("hp"), 1)
+        ):
+            errors.append(f"{cid}:label_invalid:{index}")
+            continue
+        row, start = label["row_index"], label["start_hp"]
+        end = start + label["hp"]
+        if _is_count(rows, 1) and row >= rows:
+            errors.append(f"{cid}:label_outside_rows:{index}")
+        if any(row == other and start < other_end and other_start < end
+               for other, other_start, other_end in spans):
+            errors.append(f"{cid}:labels_overlap:{index}")
+        spans.append((row, start, end))
+        if label["kind"] == "module" and label.get("open_set") is not True:
+            maker, name = _name_key(str(label.get("maker") or "")), _name_key(str(label.get("name") or ""))
+            if maker and name:
+                identities.add(f"{maker}/{name}")
+            else:
+                errors.append(f"{cid}:label_identity_missing:{index}")
+    if partition == "unknown_open_set" and not any(
+        isinstance(label, dict) and label.get("open_set") is True for label in labels
+    ):
+        errors.append(f"{cid}:open_set_case_without_open_set_label")
+    return identities
 
 
 def validate(manifest: dict) -> dict:
@@ -37,6 +112,10 @@ def validate(manifest: dict) -> dict:
     cohorts = Counter()
     identities: set[str] = set()
     image_hash_partition: dict[str, str] = {}
+    unit = manifest.get("unit", "module")
+    if unit not in UNITS:
+        errors.append("invalid_unit")
+    check_case = _check_rig_case if unit == "whole_rig" else _check_module_case
 
     for case in cases:
         cid = case.get("case_id")
@@ -62,15 +141,7 @@ def validate(manifest: dict) -> dict:
             errors.append(f"{cid}:ground_truth_not_verified")
         if not case.get("reviewers"):
             errors.append(f"{cid}:missing_reviewer")
-        if case.get("none_of_above_allowed") is not True:
-            errors.append(f"{cid}:none_of_above_missing")
-        if not case.get("candidate_set_hash"):
-            errors.append(f"{cid}:candidate_set_hash_missing")
-        expected_choice = case.get("expected_choice")
-        if not expected_choice:
-            errors.append(f"{cid}:expected_choice_missing")
-        elif partition != "unknown_open_set" and expected_choice not in set(case.get("ground_truth_inventory", [])):
-            errors.append(f"{cid}:expected_choice_not_in_ground_truth")
+        identities.update(check_case(case, cid, partition, errors))
         hashes = case.get("image_asset_hashes", [])
         if not hashes:
             errors.append(f"{cid}:image_hash_missing")
@@ -82,12 +153,9 @@ def validate(manifest: dict) -> dict:
                 if prior_partition is not None and prior_partition != partition:
                     errors.append(f"{cid}:cross_partition_image_leakage:{image_hash}")
                 image_hash_partition.setdefault(image_hash, partition)
-        if partition == "unknown_open_set" and expected_choice != "none_of_above":
-            errors.append(f"{cid}:open_set_must_expect_none_of_above")
         contamination = case.get("contamination")
         if not isinstance(contamination, dict) or "used_for_tuning" not in contamination:
             errors.append(f"{cid}:contamination_status_missing")
-        identities.update(case.get("ground_truth_inventory", []))
         if partition == "locked_test" and case.get("contamination", {}).get("used_for_tuning"):
             errors.append(f"{cid}:locked_test_contaminated")
 
@@ -102,6 +170,7 @@ def validate(manifest: dict) -> dict:
     )
     return {
         "pilot_version": manifest.get("pilot_version"),
+        "unit": unit,
         "manifest_sha256": stable_sha(manifest),
         "case_count": len(cases),
         "identity_count": len(identities),
