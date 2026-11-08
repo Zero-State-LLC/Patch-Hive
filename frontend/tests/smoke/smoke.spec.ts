@@ -78,11 +78,9 @@ test("pages carry their security headers", async ({ request }) => {
 
 test("deep links serve the app and unknown paths answer 404", async ({ request }) => {
   for (const path of [
-    "/modules",
-    "/cases",
-    "/products",
     "/patches",
     "/racks",
+    "/rigs/new/photo",
     "/login",
     "/privacy",
     "/admin/leaderboards",
@@ -96,33 +94,44 @@ test("deep links serve the app and unknown paths answer 404", async ({ request }
   expect(await missing.text()).toContain('id="root"');
 });
 
+test("the retired catalog pages move to the home page for good", async ({ request }) => {
+  for (const path of ["/modules", "/products", "/cases", "/cases/smoke-case"]) {
+    const res = await request.get(`${BASE}${path}`, { maxRedirects: 0 });
+    expect(res.status(), path).toBe(301);
+    expect(res.headers()["location"], path).toBe(`${BASE}/`);
+  }
+});
+
+test("photo reading is open on staging and closed in production", async ({ request }) => {
+  const res = await request.get(`${API}/api/evidence/photo-reading`);
+  expect(res.status()).toBe(200);
+  // Staging replays recorded answers; production reads no photos until spec 009's T080.
+  expect(await res.json()).toEqual(
+    IS_STAGING
+      ? { available: true, reason: null }
+      : { available: false, reason: "PROVIDER_DISABLED" },
+  );
+});
+
 const PAGES: { path: string; check: (page: Page) => Promise<void> }[] = [
   {
     path: "/",
     check: async (page) => {
       await expect(page.locator(".home-rig .patch-cable").first()).toBeVisible();
+      // The book's page is lazy, so it loads only once it's scrolled to.
+      const bookPage = page.locator(".home-example__page img");
+      await bookPage.scrollIntoViewIfNeeded();
+      await expect
+        .poll(() => bookPage.evaluate((img: HTMLImageElement) => img.naturalWidth))
+        .toBeGreaterThan(0);
     },
   },
   {
-    path: "/modules",
+    path: "/patches",
     check: async (page) => {
-      await expect(page.locator(".results-meta").first()).toHaveText(
-        /Showing \d+ of [1-9]\d* catalog modules/,
-      );
-    },
-  },
-  {
-    path: "/products",
-    check: async (page) => {
-      await expect(page.locator(".side-item").first()).toBeVisible();
-    },
-  },
-  {
-    path: "/cases",
-    check: async (page) => {
-      await expect(page.locator(".results-meta").first()).toHaveText(
-        /Showing \d+ of [1-9]\d* catalog cases/,
-      );
+      await expect(page.getByRole("heading", { level: 1, name: "Patches" })).toBeVisible();
+      // The list answered: its rows or its empty state.
+      await expect(page.locator(".results-meta, .empty-title").first()).toBeVisible();
     },
   },
   {
