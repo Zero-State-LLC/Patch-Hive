@@ -51,7 +51,9 @@ class RackBase(BaseModel):
 class RackCreate(RackBase):
     """Schema for creating a new rack."""
 
-    case_id: int
+    # Optional, as for a Rig started from a photo (spec 009): with no Case, each row is as wide
+    # as what's on it.
+    case_id: Optional[int] = None
     modules: list[RackModuleSpec] = Field(default_factory=list)
     generation_seed: Optional[int] = None
 

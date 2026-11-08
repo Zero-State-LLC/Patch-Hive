@@ -397,6 +397,75 @@ test.describe("the photo journey", () => {
     await expect(page.getByRole("button", { name: "Confirm the Rig" })).toBeDisabled();
   });
 
+  test("the owner can name the Rig's Case, and a Module past its rows is named", async ({
+    page,
+  }) => {
+    await signIn(page);
+    await mockReading(page, () => [reading("read", SIGHTINGS.slice(0, 2))]);
+    const caseOf = (id: number, name: string, hp: number) => ({
+      id,
+      brand: "Sim Co",
+      name,
+      total_hp: hp,
+      rows: 1,
+      hp_per_row: [hp],
+    });
+    await page.route("**/api/cases/?**", (route) =>
+      route.fulfill({
+        json: { total: 2, cases: [caseOf(1, "Tiny 12", 12), caseOf(2, "Sim 84", 84)] },
+      }),
+    );
+    let confirmed: { case_id?: number | null } | null = null;
+    await page.route(`**/api/racks/${RIG}/evidence/readings/confirm`, (route) => {
+      confirmed = route.request().postDataJSON();
+      return route.fulfill({
+        status: 201,
+        json: {
+          rig_revision_id: "rig-rev-1",
+          inventory_revision_id: "inv-rev-1",
+          ready_for_generation: true,
+          placements: [],
+          modules_to_place: [],
+          warnings: [],
+        },
+      });
+    });
+    await page.goto(`/rigs/${RIG}/reading`);
+
+    const yourCase = page.getByRole("region", { name: "Your Case" });
+    await expect(yourCase).toContainText("No Case named");
+    await yourCase.getByRole("button", { name: "Name your Case" }).click();
+    // Focus follows each step: into the search, then back to the button that opens it.
+    await expect(yourCase.getByLabel("Search Cases")).toBeFocused();
+    await yourCase.getByLabel("Search Cases").fill("sim");
+    await yourCase.getByRole("button", { name: /^Use Sim Co Tiny 12/ }).click();
+    await expect(yourCase.getByRole("button", { name: "Name a different Case" })).toBeFocused();
+    // The Filter, at HP 10 to 18, runs past a 12 HP row.
+    await expect(page.getByRole("alert")).toContainText(
+      "These sit past the end of a row of the Case: Sim Co Filter A (row 0, HP 10 to 18)",
+    );
+    await expect(page.getByRole("button", { name: "Confirm the Rig" })).toBeDisabled();
+
+    await yourCase.getByRole("button", { name: "Name a different Case" }).click();
+    await yourCase.getByLabel("Search Cases").fill("sim");
+    await yourCase.getByRole("button", { name: /^Use Sim Co Sim 84/ }).click();
+    await expect(yourCase).toContainText("Sim Co Sim 84, 84 HP.");
+    await page.getByRole("button", { name: "Confirm the Rig" }).click();
+
+    await expect.poll(() => confirmed?.case_id).toBe(2);
+  });
+
+  test("the Rig screen draws a Rig with no Case as wide as its Modules", async ({ page }) => {
+    await signIn(page);
+    await mockReading(page, () => [], [placedModule(901, 21, "Sequencer", 0, 0, 16)]);
+    await page.route(`**/api/racks/${RIG}/evidence/images`, (route) =>
+      route.fulfill({ json: { total: 0, assets: [] } }),
+    );
+    await page.goto(`/rigs/${RIG}`);
+
+    await expect(page.getByRole("img", { name: /1 module on 1 row, no Case named/ })).toBeVisible();
+  });
+
   test("leaving a Module out and keeping it again brings back the owner's choice", async ({
     page,
   }) => {

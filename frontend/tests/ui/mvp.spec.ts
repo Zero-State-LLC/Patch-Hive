@@ -732,7 +732,7 @@ test.describe("PatchHive canonical workspace", () => {
   });
 
   /** Rig 7 on a two-row case, served from state the PUTs change, as the API would. */
-  async function mockMovableRig(page: Page) {
+  async function mockMovableRig(page: Page, { withCase = true } = {}) {
     const MODULES: Record<number, { name: string; hp: number }> = {
       10: { name: "Gamma", hp: 12 },
       11: { name: "Delta", hp: 6 },
@@ -747,7 +747,7 @@ test.describe("PatchHive canonical workspace", () => {
     const rig = () => ({
       id: 7,
       name: "Sim rack",
-      case_id: 10,
+      case_id: withCase ? 10 : null,
       user_id: 1,
       generation_seed: 1,
       modules: state.modules.map((m, i) => ({
@@ -761,17 +761,19 @@ test.describe("PatchHive canonical workspace", () => {
           ...MODULES[m.module_id],
         },
       })),
-      case: {
-        id: 10,
-        brand: "Sim Co",
-        name: "Sim 168",
-        total_hp: 168,
-        rows: 2,
-        hp_per_row: [84, 84],
-        power_12v_ma: 2000,
-        power_neg12v_ma: 1200,
-        power_5v_ma: 500,
-      },
+      case: withCase
+        ? {
+            id: 10,
+            brand: "Sim Co",
+            name: "Sim 168",
+            total_hp: 168,
+            rows: 2,
+            hp_per_row: [84, 84],
+            power_12v_ma: 2000,
+            power_neg12v_ma: 1200,
+            power_5v_ma: 500,
+          }
+        : null,
     });
     await page.route(RIG_7, async (route) => {
       const request = route.request();
@@ -867,6 +869,51 @@ test.describe("PatchHive canonical workspace", () => {
       { module_id: 10, row_index: 0, start_hp: 0 },
       { module_id: 11, row_index: 0, start_hp: 12 },
     ]);
+  });
+
+  test("rack builder places a Rig with no Case on open rows, with no row end", async ({ page }) => {
+    const puts = await mockMovableRig(page, { withCase: false });
+    await page.goto("/racks/7/edit");
+    await expect(page.locator('.placement-rail [data-module="11"]')).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(
+      page.getByText(/no Case named, so each row is as wide as the Modules on it/),
+    ).toBeVisible();
+    // Its one used row, and an empty one past it to place on.
+    await expect(page.getByText("18HP placed, no Case named")).toBeVisible();
+    await expect(page.getByText("0HP placed, no Case named")).toBeVisible();
+
+    await page.getByLabel("Select module to place").selectOption("11");
+    await page.getByLabel("Row index").fill("1");
+    await page.getByLabel("Start HP").fill("120");
+    await page.getByRole("button", { name: "Add placement" }).click();
+
+    await expect.poll(() => puts.length).toBe(1);
+    expect(puts[0]).toContainEqual(
+      expect.objectContaining({ module_id: 11, row_index: 1, start_hp: 120 }),
+    );
+  });
+
+  test("rack builder creates a Rig with no Case, for entering one by hand", async ({ page }) => {
+    await signIn(page);
+    let created: unknown = null;
+    await page.route(
+      (url) => url.pathname.replace(/\/$/, "").endsWith("/api/racks"),
+      async (route) => {
+        if (route.request().method() !== "POST") return route.fallback();
+        created = route.request().postDataJSON();
+        await route.fulfill({ status: 201, json: { id: 7 } });
+      },
+    );
+    await mockMovableRig(page, { withCase: false });
+    await page.goto("/racks/new");
+
+    await page.getByRole("checkbox", { name: "Go on without a Case" }).check();
+    await page.getByRole("button", { name: "Create empty rig" }).click();
+
+    await expect(page).toHaveURL(/\/racks\/7\/edit$/);
+    expect(created).toMatchObject({ case_id: null, modules: [] });
   });
 
   test("rack builder shows a blocked slot and never saves it", async ({ page }) => {

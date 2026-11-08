@@ -21,6 +21,9 @@ interface CaseStepProps {
   onSelectCatalog: (slug: string | null) => void;
   selectedCaseId: number | null;
   onSelectLegacy: (id: number | null) => void;
+  /** The owner goes on with no Case, so each row is as wide as what's on it (spec 009). */
+  withoutCase: boolean;
+  onWithoutCase: (without: boolean) => void;
   selectedCatalogCase: CatalogCaseListItem | null;
   selectedLegacyCase: Case | null;
   compatNote: string | null;
@@ -63,6 +66,8 @@ export default function CaseStep({
   onSelectCatalog,
   selectedCaseId,
   onSelectLegacy,
+  withoutCase,
+  onWithoutCase,
   selectedCatalogCase,
   selectedLegacyCase,
   compatNote,
@@ -81,8 +86,11 @@ export default function CaseStep({
     <>
       <section className="builder-step" aria-labelledby="case-step-title">
         <div className="builder-step__head">
-          <h2 id="case-step-title">Choose a case</h2>
-          <p className="muted">Only Eurorack cases take placements.</p>
+          <h2 id="case-step-title">Choose a case, if you know it</h2>
+          <p className="muted">
+            Only Eurorack cases take placements. Without one, each row is as wide as the Modules on
+            it.
+          </p>
         </div>
 
         <div className="panel">
@@ -145,6 +153,16 @@ export default function CaseStep({
               </select>
             </label>
           </div>
+
+          <label className="case-optional" htmlFor="case-optional">
+            <input
+              id="case-optional"
+              type="checkbox"
+              checked={withoutCase}
+              onChange={(e) => onWithoutCase(e.target.checked)}
+            />
+            <span>Go on without a Case</span>
+          </label>
 
           {selectedCatalogCase ? (
             <div className="stat-row case-summary">
