@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import Hash from "@/components/Hash";
 import LoadFailure from "@/components/LoadFailure";
+import { ListSkeleton } from "@/components/Skeletons";
 import { canonApi } from "@/lib/api";
 import { exportRefusal } from "@/lib/commerce";
 import { failureKind } from "@/lib/loadError";
@@ -122,6 +123,7 @@ function PatchBookStyleStudio() {
   } | null>(null);
   const [serverLibrary, setServerLibrary] = useState<ServerRecipe[]>([]);
   const [libraryError, setLibraryError] = useState<unknown>(null);
+  const [libraryLoading, setLibraryLoading] = useState(true);
   const [recipeName, setRecipeName] = useState("");
   const [libraryBusy, setLibraryBusy] = useState(false);
   const [lastExportId, setLastExportId] = useState<string | null>(null);
@@ -162,6 +164,7 @@ function PatchBookStyleStudio() {
   };
 
   const refreshServerLibrary = useCallback(async () => {
+    setLibraryLoading(true);
     setLibraryError(null);
     try {
       const res = await canonApi.listStyleRecipes();
@@ -170,6 +173,8 @@ function PatchBookStyleStudio() {
       setServerLibrary([]);
       // Signed out, the library is refused and simply empty; any other failure is shown.
       if (failureKind(err) !== "denied") setLibraryError(err);
+    } finally {
+      setLibraryLoading(false);
     }
   }, []);
 
@@ -480,7 +485,9 @@ function PatchBookStyleStudio() {
                 Save to account
               </button>
             </div>
-            {libraryError ? (
+            {libraryLoading && serverLibrary.length === 0 ? (
+              <ListSkeleton label="Loading saved recipes…" rows={2} />
+            ) : libraryError ? (
               <LoadFailure
                 what="Your saved recipes"
                 error={libraryError}

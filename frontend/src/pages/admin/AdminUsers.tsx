@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import LoadFailure from "@/components/LoadFailure";
+import { ListSkeleton } from "@/components/Skeletons";
 import { adminApi } from "@/lib/api";
 import type { AdminUser } from "@/types/admin";
 import { AdminGuard } from "./AdminGuard";
 import { AdminNav } from "./AdminNav";
+import { useAdminChange } from "./useAdminChange";
 
 const ROLE_OPTIONS = ["Admin", "Ops", "Support", "ReadOnly", "User"];
 
@@ -12,8 +14,11 @@ export default function AdminUsers() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [reasonByUser, setReasonByUser] = useState<Record<number, string>>({});
   const [loadError, setLoadError] = useState<unknown>(null);
+  const [loading, setLoading] = useState(true);
+  const { busy, failure, run } = useAdminChange();
 
   const fetchUsers = async () => {
+    setLoading(true);
     setLoadError(null);
     try {
       const response = await adminApi.listUsers(query || undefined);
@@ -21,6 +26,8 @@ export default function AdminUsers() {
     } catch (err: unknown) {
       setUsers([]);
       setLoadError(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,11 +59,19 @@ export default function AdminUsers() {
             className="button button-secondary"
             type="button"
             onClick={() => void fetchUsers()}
+            disabled={loading}
           >
             Search
           </button>
         </div>
-        {users.length ? (
+        {failure ? (
+          <p className="status status-danger" role="alert">
+            {failure}
+          </p>
+        ) : null}
+        {loading && !users.length ? (
+          <ListSkeleton label="Loading users…" rows={3} />
+        ) : users.length ? (
           <div className="ops-table-wrap">
             <table className="data-table ops-table-stack">
               <thead>
@@ -82,9 +97,11 @@ export default function AdminUsers() {
                         <span className="visually-hidden">Role</span>
                         <select
                           value={user.role}
+                          disabled={busy}
                           onChange={async (e) => {
                             const reason = reasonByUser[user.id] || "role update";
-                            await adminApi.updateUserRole(user.id, e.target.value, reason);
+                            const role = e.target.value;
+                            await run(() => adminApi.updateUserRole(user.id, role, reason));
                             void fetchUsers();
                           }}
                         >
@@ -114,9 +131,10 @@ export default function AdminUsers() {
                         <button
                           type="button"
                           className="button button-primary"
+                          disabled={busy}
                           onClick={async () => {
                             const reason = reasonByUser[user.id] || "grant credits";
-                            await adminApi.grantCredits(user.id, 3, reason);
+                            await run(() => adminApi.grantCredits(user.id, 3, reason));
                             void fetchUsers();
                           }}
                         >
@@ -125,9 +143,10 @@ export default function AdminUsers() {
                         <button
                           type="button"
                           className="button button-quiet"
+                          disabled={busy}
                           onClick={async () => {
                             const reason = reasonByUser[user.id] || "clear avatar";
-                            await adminApi.updateUserAvatar(user.id, null, reason);
+                            await run(() => adminApi.updateUserAvatar(user.id, null, reason));
                             void fetchUsers();
                           }}
                         >

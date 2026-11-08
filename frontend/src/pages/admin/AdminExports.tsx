@@ -2,6 +2,7 @@ import { useState } from "react";
 import { adminApi } from "@/lib/api";
 import { AdminGuard } from "./AdminGuard";
 import { AdminNav } from "./AdminNav";
+import { useAdminChange } from "./useAdminChange";
 
 export default function AdminExports() {
   const [exportId, setExportId] = useState("");
@@ -9,6 +10,7 @@ export default function AdminExports() {
   const [cacheExportType, setCacheExportType] = useState("");
   const [reason, setReason] = useState("");
   const [message, setMessage] = useState("");
+  const { busy, failure, run } = useAdminChange();
 
   return (
     <AdminGuard>
@@ -25,6 +27,11 @@ export default function AdminExports() {
         {message ? (
           <p className="status status-success" role="status">
             {message}
+          </p>
+        ) : null}
+        {failure ? (
+          <p className="status status-danger" role="alert">
+            {failure}
           </p>
         ) : null}
         <section className="ops-section">
@@ -49,10 +56,13 @@ export default function AdminExports() {
             <button
               type="button"
               className="button button-primary"
+              disabled={busy}
               onClick={async () => {
                 if (!exportId) return;
-                await adminApi.unlockExport(Number(exportId), reason || "unlock");
-                setMessage(`Granted access to export ${exportId}`);
+                setMessage("");
+                if (await run(() => adminApi.unlockExport(Number(exportId), reason || "unlock"))) {
+                  setMessage(`Granted access to export ${exportId}`);
+                }
               }}
             >
               Grant
@@ -60,10 +70,13 @@ export default function AdminExports() {
             <button
               type="button"
               className="button button-secondary"
+              disabled={busy}
               onClick={async () => {
                 if (!exportId) return;
-                await adminApi.revokeExport(Number(exportId), reason || "revoke");
-                setMessage(`Revoked export ${exportId}`);
+                setMessage("");
+                if (await run(() => adminApi.revokeExport(Number(exportId), reason || "revoke"))) {
+                  setMessage(`Revoked export ${exportId}`);
+                }
               }}
             >
               Revoke
@@ -92,13 +105,17 @@ export default function AdminExports() {
             <button
               type="button"
               className="button button-secondary"
+              disabled={busy}
               onClick={async () => {
-                await adminApi.invalidateCache({
-                  run_id: cacheRunId ? Number(cacheRunId) : undefined,
-                  export_type: cacheExportType || undefined,
-                  reason: reason || "cache invalidate",
-                });
-                setMessage("Cache invalidation requested");
+                setMessage("");
+                const done = await run(() =>
+                  adminApi.invalidateCache({
+                    run_id: cacheRunId ? Number(cacheRunId) : undefined,
+                    export_type: cacheExportType || undefined,
+                    reason: reason || "cache invalidate",
+                  }),
+                );
+                if (done) setMessage("Cache invalidation requested");
               }}
             >
               Invalidate

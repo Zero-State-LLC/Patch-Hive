@@ -1,15 +1,30 @@
 import { useEffect, useState } from "react";
+import LoadFailure from "@/components/LoadFailure";
+import { ListSkeleton } from "@/components/Skeletons";
 import { adminApi } from "@/lib/api";
 import type { AdminGalleryRevision } from "@/types/admin";
 import { AdminGuard } from "./AdminGuard";
 import { AdminNav } from "./AdminNav";
+import { useAdminChange } from "./useAdminChange";
 
 export default function AdminGallery() {
   const [revisions, setRevisions] = useState<AdminGalleryRevision[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<unknown>(null);
+  const { busy, failure, run } = useAdminChange();
 
   const fetchRevisions = async () => {
-    const response = await adminApi.listGalleryRevisions();
-    setRevisions(response.data.revisions);
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const response = await adminApi.listGalleryRevisions();
+      setRevisions(response.data.revisions);
+    } catch (err: unknown) {
+      setRevisions([]);
+      setLoadError(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -28,12 +43,26 @@ export default function AdminGallery() {
             className="button button-secondary"
             type="button"
             onClick={() => void fetchRevisions()}
+            disabled={loading}
           >
             Refresh
           </button>
         </header>
         <AdminNav />
-        {revisions.length ? (
+        {failure ? (
+          <p className="status status-danger" role="alert">
+            {failure}
+          </p>
+        ) : null}
+        {loading && !revisions.length ? (
+          <ListSkeleton label="Loading gallery revisions…" rows={3} />
+        ) : loadError ? (
+          <LoadFailure
+            what="The gallery revisions"
+            error={loadError}
+            onRetry={() => void fetchRevisions()}
+          />
+        ) : revisions.length ? (
           <div className="ops-table-wrap">
             <table className="data-table ops-table-stack">
               <thead>
@@ -57,8 +86,9 @@ export default function AdminGallery() {
                         <button
                           type="button"
                           className="button button-primary"
+                          disabled={busy}
                           onClick={async () => {
-                            await adminApi.approveRevision(revision.id);
+                            await run(() => adminApi.approveRevision(revision.id));
                             void fetchRevisions();
                           }}
                         >
@@ -67,8 +97,9 @@ export default function AdminGallery() {
                         <button
                           type="button"
                           className="button button-secondary"
+                          disabled={busy}
                           onClick={async () => {
-                            await adminApi.confirmRevision(revision.id);
+                            await run(() => adminApi.confirmRevision(revision.id));
                             void fetchRevisions();
                           }}
                         >

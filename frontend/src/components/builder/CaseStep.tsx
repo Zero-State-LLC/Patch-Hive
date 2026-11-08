@@ -32,6 +32,7 @@ interface CaseStepProps {
   error: string;
   /** Admin and Ops only: copy every Eurorack catalog case into placement cases. */
   canSyncCatalog: boolean;
+  syncing: boolean;
   syncNote: string;
   onSyncCatalog: () => void;
 }
@@ -73,6 +74,7 @@ export default function CaseStep({
   onCreate,
   error,
   canSyncCatalog,
+  syncing,
   syncNote,
   onSyncCatalog,
 }: CaseStepProps) {
@@ -201,8 +203,13 @@ export default function CaseStep({
             <>
               <hr className="section-rule" />
               <div className="builder-admin">
-                <button type="button" className="button button-quiet" onClick={onSyncCatalog}>
-                  Sync all Eurorack catalog cases
+                <button
+                  type="button"
+                  className="button button-quiet"
+                  onClick={onSyncCatalog}
+                  disabled={syncing}
+                >
+                  {syncing ? "Syncing…" : "Sync all Eurorack catalog cases"}
                 </button>
                 <p className="muted builder-note" role={syncNote ? "status" : undefined}>
                   {syncNote || "Copies catalog cases into placement cases. Safe to run again."}

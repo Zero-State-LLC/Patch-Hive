@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import LoadFailure from "@/components/LoadFailure";
+import { ListSkeleton } from "@/components/Skeletons";
 import { adminApi, moduleApi } from "@/lib/api";
 import type { Module } from "@/types/api";
 import { AdminGuard } from "./AdminGuard";
 import { AdminNav } from "./AdminNav";
+import { useAdminChange } from "./useAdminChange";
 
 const STATUS_OPTIONS = ["active", "deprecated", "tombstoned"];
 
@@ -10,10 +13,22 @@ export default function AdminModules() {
   const [modules, setModules] = useState<Module[]>([]);
   const [reason, setReason] = useState("");
   const [mergeTarget, setMergeTarget] = useState<Record<number, number>>({});
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<unknown>(null);
+  const { busy, failure, run } = useAdminChange();
 
   const fetchModules = async () => {
-    const response = await moduleApi.list({ limit: 50 });
-    setModules(response.data.modules);
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const response = await moduleApi.list({ limit: 50 });
+      setModules(response.data.modules);
+    } catch (err: unknown) {
+      setModules([]);
+      setLoadError(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -42,7 +57,20 @@ export default function AdminModules() {
             />
           </label>
         </div>
-        {modules.length ? (
+        {failure ? (
+          <p className="status status-danger" role="alert">
+            {failure}
+          </p>
+        ) : null}
+        {loading && !modules.length ? (
+          <ListSkeleton label="Loading modules…" rows={3} />
+        ) : loadError ? (
+          <LoadFailure
+            what="The module list"
+            error={loadError}
+            onRetry={() => void fetchModules()}
+          />
+        ) : modules.length ? (
           <div className="ops-table-wrap">
             <table className="data-table ops-table-stack">
               <thead>
@@ -65,11 +93,15 @@ export default function AdminModules() {
                       <label className="inline-field">
                         <span className="visually-hidden">Status</span>
                         <select
+                          disabled={busy}
                           onChange={async (e) => {
-                            await adminApi.updateModuleStatus(
-                              module.id,
-                              e.target.value,
-                              reason || "status update",
+                            const status = e.target.value;
+                            await run(() =>
+                              adminApi.updateModuleStatus(
+                                module.id,
+                                status,
+                                reason || "status update",
+                              ),
                             );
                             void fetchModules();
                           }}
@@ -104,10 +136,13 @@ export default function AdminModules() {
                       <button
                         type="button"
                         className="button button-secondary"
+                        disabled={busy}
                         onClick={async () => {
                           const replacementId = mergeTarget[module.id];
                           if (!replacementId) return;
-                          await adminApi.mergeModule(module.id, replacementId, reason || "merge");
+                          await run(() =>
+                            adminApi.mergeModule(module.id, replacementId, reason || "merge"),
+                          );
                           void fetchModules();
                         }}
                       >
