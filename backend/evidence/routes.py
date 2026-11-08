@@ -278,7 +278,8 @@ async def upload_rack_evidence_images(
     """Upload one or more images as untrusted evidence for a rack.
 
     Images are re-encoded and metadata-stripped. Provider processing consent is
-    recorded; live cloud providers are not invoked — mock evidence only.
+    recorded; live cloud providers are not invoked. Mock evidence never runs in production:
+    there the photo is stored and nothing is read.
     """
     rack = owned_private_rack(db, rack_id, current_user)
     if not files:
@@ -336,7 +337,10 @@ async def upload_rack_evidence_images(
             asset_id = str(record.id)
 
             evidence_status = None
-            if run_vision_mock:
+            # The mock derives what it "sees" from the photo's hash, so production never runs it:
+            # there a Module nobody saw would be offered (decision 63). Staging keeps it for its
+            # checks on test cards (006 T060b).
+            if run_vision_mock and settings.environment.strip().lower() != "production":
                 packet = collect_evidence_packet(
                     provider,
                     VisionProviderContext(

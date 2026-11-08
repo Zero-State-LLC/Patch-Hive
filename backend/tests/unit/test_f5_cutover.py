@@ -358,7 +358,9 @@ def test_blank_p0_entries_are_ignored(art, enablement) -> None:
 @pytest.mark.parametrize(
     ("fe_sources", "generate", "code"),
     [
-        ({"frontend/src/pages/Racks.tsx": "canonApi.listRigs("}, GOOD_GENERATE, "FE_LIST_PAGE_NOT_CUT_OVER"),
+        # A required list page that doesn't read the canon alias (only Racks.tsx is required
+        # since the rig builder's evidence picker left, decision 63).
+        ({"frontend/src/pages/Racks.tsx": "const rigs = await loadRigs();"}, GOOD_GENERATE, "FE_LIST_PAGE_NOT_CUT_OVER"),
         ({**FE_SOURCES_OK, "frontend/src/pages/Other.tsx": "rackApi.list("}, GOOD_GENERATE, "FE_LIST_NOT_ON_CANON_ALIAS"),
         (FE_SOURCES_OK, {**GOOD_GENERATE, "export_bridge_ready": False}, "DUAL_WRITE_REGRESSION"),
     ],
