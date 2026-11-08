@@ -30,6 +30,13 @@ logger = logging.getLogger(__name__)
 MAX_CANDIDATES = 5
 MAX_SIGHTINGS = 200
 NONE_OF_ABOVE = "none_of_above"
+
+# A Reading is ``reading``, then ``read`` or ``failed``, then ``confirmed`` or ``superseded``.
+# A confirmation applies to the current ones; the other two are done.
+CURRENT_STATUSES = ("reading", "read", "failed")
+# A Retake replaces a Reading in one of these, and a Retry reads a failed one again.
+REPLACEABLE_STATUSES = ("read", "failed")
+RETRYABLE_STATUSES = ("failed",)
 # The policy's other dispositions (UNRESOLVED, ESCALATE, REJECT) all read as "unresolved".
 DISPOSITIONS = {
     DecisionDisposition.AUTO_PROPOSE: "auto_propose",
@@ -222,6 +229,24 @@ def _disposition(
     )
     result = policy.evaluate(packet, request)
     return DISPOSITIONS.get(result.disposition, "unresolved"), result.reason_codes[0]
+
+
+def move_readings(
+    db: Session, reading_ids: list[str], *, from_statuses: tuple[str, ...], to: str
+) -> int:
+    """Move the Readings still in ``from_statuses`` to ``to``, and say how many moved.
+
+    The update is conditional, so when two requests race for one Reading (a confirm and a
+    Retake, or two Retries) only one moves it, and the other sees it already moved.
+    """
+    return (
+        db.query(PhotoReadingRecord)
+        .filter(
+            PhotoReadingRecord.id.in_(reading_ids),
+            PhotoReadingRecord.status.in_(from_statuses),
+        )
+        .update({PhotoReadingRecord.status: to}, synchronize_session="fetch")
+    )
 
 
 def read_photo(

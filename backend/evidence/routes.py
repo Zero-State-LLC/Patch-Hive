@@ -34,7 +34,13 @@ from evidence.images import (
 )
 from evidence.cloud_provider import select_vision_provider
 from evidence.reading_confirm import ConfirmRefused, ReadingConfirmRequest, confirm_readings
-from evidence.readings import photo_reading_closed_reason, read_photo
+from evidence.readings import (
+    REPLACEABLE_STATUSES,
+    RETRYABLE_STATUSES,
+    move_readings,
+    photo_reading_closed_reason,
+    read_photo,
+)
 from evidence.vision_provider import (
     VisionProviderContext,
     bind_packet_to_evidence,
@@ -42,6 +48,7 @@ from evidence.vision_provider import (
 )
 from community.auth import require_auth
 from community.models import User
+from intelligence.evidence_images import ImageAccessDecision, image_access_decision
 from racks.access import owned_private_rack, private_rack
 from racks.models import Rack
 
@@ -178,6 +185,41 @@ def _photo_rows(rows: str) -> tuple[int, int]:
     if end < start:
         raise HTTPException(status_code=400, detail="ROWS_INVALID")
     return start, end
+
+
+# A photo in one of these is no longer stored, so nothing can read it again.
+PHOTO_GONE = frozenset(
+    {
+        ImageAccessDecision.ASSET_MISSING,
+        ImageAccessDecision.ASSET_DELETED,
+        ImageAccessDecision.RETENTION_EXPIRED,
+    }
+)
+
+
+def _stored_photo(db: Session, reading: PhotoReadingRecord) -> tuple[ImageAssetRecord, bytes]:
+    """A Reading's stored photo and its bytes, refused with ``PHOTO_EXPIRED`` once it has
+    expired or been deleted: a Reading never outlives its photo. Bytes that aren't the stored
+    photo, or that went while it was read, are as good as gone."""
+    asset = db.get(ImageAssetRecord, reading.image_asset_id)
+    if asset is None or image_access_decision(asset, now=datetime.now(timezone.utc)) in PHOTO_GONE:
+        raise HTTPException(status_code=409, detail="PHOTO_EXPIRED")
+    path = Path(str(asset.storage_path))
+    try:
+        stored = get_file_store().ensure_local(path)
+    except StorageError as exc:
+        raise HTTPException(status_code=503, detail=exc.code) from None
+    try:
+        image = path.read_bytes() if stored else None
+    except FileNotFoundError:
+        image = None
+    if image is None or hashlib.sha256(image).hexdigest() != str(asset.content_sha256):
+        raise HTTPException(status_code=409, detail="PHOTO_EXPIRED")
+    return asset, image
+
+
+def _supersede(db: Session, reading_id: str, *, statuses: tuple[str, ...]) -> bool:
+    return move_readings(db, [reading_id], from_statuses=statuses, to="superseded") == 1
 
 
 def _asset_response(
@@ -344,6 +386,7 @@ async def start_rig_from_photo(
     file: UploadFile = File(...),
     rows: str = Form("0"),
     rig_id: int | None = Form(None),
+    replaces_reading_id: str | None = Form(None),
     retention_days: int = Form(DEFAULT_RETENTION_DAYS),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_auth),
@@ -355,13 +398,31 @@ async def start_rig_from_photo(
     expires like every evidence image. ``rows`` names the rows it covers. The photo is read
     at once, and ``reading_id`` names its Reading, ``read`` or ``failed``. A host that reads
     no photos refuses before storing anything.
+
+    A Retake names the Rig's current Reading it replaces in ``replaces_reading_id``, and that
+    Reading becomes ``superseded``. A photo that names none is another photo of the Rig.
     """
     if photo_reading_closed_reason():
         raise HTTPException(status_code=409, detail="PHOTO_READING_UNAVAILABLE")
     covered = _photo_rows(rows)
     if retention_days < 1 or retention_days > MAX_RETENTION_DAYS:
         raise HTTPException(status_code=400, detail="RETENTION_DAYS_INVALID")
+    if replaces_reading_id is not None and rig_id is None:
+        raise HTTPException(status_code=400, detail="RETAKE_NEEDS_RIG")
     rack = owned_private_rack(db, rig_id, current_user, label="Rig") if rig_id is not None else None
+    if replaces_reading_id is not None:
+        replaced = (
+            db.query(PhotoReadingRecord)
+            .filter(
+                PhotoReadingRecord.id == replaces_reading_id,
+                PhotoReadingRecord.rack_id == rig_id,
+            )
+            .first()
+        )
+        if replaced is None:
+            raise HTTPException(status_code=404, detail="READING_NOT_FOUND")
+        if replaced.status not in REPLACEABLE_STATUSES:
+            raise HTTPException(status_code=409, detail="READING_NOT_REPLACEABLE")
 
     raw = await file.read()
     try:
@@ -391,6 +452,10 @@ async def start_rig_from_photo(
         )
         db.add(rack)
         db.flush()
+    if replaces_reading_id is not None and not _supersede(
+        db, replaces_reading_id, statuses=REPLACEABLE_STATUSES
+    ):
+        raise HTTPException(status_code=409, detail="READING_NOT_REPLACEABLE")
     try:
         # The photo is the Rig owner's evidence, as on the existing upload.
         record = _store_image_asset(
@@ -477,6 +542,47 @@ def list_rack_photo_readings(
             )
             for r in readings
         ]
+    )
+
+
+@router.post(
+    "/racks/{rack_id}/evidence/readings/{reading_id}/retry",
+    response_model=RigPhotoStartResponse,
+    status_code=201,
+)
+def retry_rack_photo_reading(
+    rack_id: int,
+    reading_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+) -> RigPhotoStartResponse:
+    """Read a ``failed`` Reading's stored photo again as a new Reading, and supersede the
+    failed one (spec 009). Once the photo has expired or been deleted, the owner retakes."""
+    owned_private_rack(db, rack_id, current_user, label="Rig")
+    reading = (
+        db.query(PhotoReadingRecord)
+        .filter(PhotoReadingRecord.id == reading_id, PhotoReadingRecord.rack_id == rack_id)
+        .first()
+    )
+    if reading is None:
+        raise HTTPException(status_code=404, detail="READING_NOT_FOUND")
+    if photo_reading_closed_reason():
+        raise HTTPException(status_code=409, detail="PHOTO_READING_UNAVAILABLE")
+    if reading.status not in RETRYABLE_STATUSES:
+        raise HTTPException(status_code=409, detail="READING_NOT_FAILED")
+    asset, image = _stored_photo(db, reading)
+    if not _supersede(db, reading_id, statuses=RETRYABLE_STATUSES):
+        raise HTTPException(status_code=409, detail="READING_NOT_FAILED")
+    fresh = read_photo(
+        db,
+        asset=asset,
+        photo_sha256=str(reading.photo_sha256),
+        image=image,
+        rows=(int(reading.first_row), int(reading.last_row)),
+    )
+    db.commit()
+    return RigPhotoStartResponse(
+        rig_id=rack_id, photo_id=str(reading.image_asset_id), reading_id=str(fresh.id)
     )
 
 
@@ -1082,6 +1188,7 @@ def confirm_rack_photo_readings(
     try:
         result = confirm_readings(db, rack, body, confirmed_by=f"user:{current_user.id}")
     except ConfirmRefused as refused:
+        db.rollback()  # a refusal writes nothing, even after the Readings were claimed
         raise HTTPException(status_code=refused.status_code, detail=refused.detail) from None
     db.commit()
     gate_report, _ = evaluate_rack_inventory_gate(db, rack)
