@@ -128,7 +128,21 @@ On a throwaway Postgres, loaded with everything except these two manifests and w
 
 ## Dry run
 
-DRY_RUN_RESULTS
+Run through `db-load.yml` from branch `claude/catalog-a138m-analogue-systems` at `2dbeb7f`. **Neither run wrote anything, and no load has been applied.**
+
+| Environment | Run | Result |
+|---|---|---|
+| Staging | [42537413747](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42537413747) | 13 values to archive and correct (7 in `modules`, 6 in `module_catalog`), 0 conflicts, no destructive SQL, table counts unchanged |
+| Production | [42537569004](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42537569004) | Refused before planning, so it has no hashes: the database is at `20261106_commerce_append_only`, and this code's head is `20261107_photo_readings` |
+
+The staging hashes, for the owner's yes on a staging load:
+
+- `plan_hash`: `479df9425d7cc67ef3db87ac80f06c9f8a224a7134a45848f34f148a916c84f1`
+- `inputs_hash`: `8c69037d063cf57a61e97d1d07842475d9c505970b749d640ac157b0c1a7cb23`
+
+The local check gave the same two hashes. An apply refuses if the plan or the committed inputs have changed since, and this record isn't an input.
+
+Production needs `db-migrate.yml` first. That is the owner's step and wasn't taken here. A production dry run can then give production's own hashes for the owner's yes. The rows these manifests touch read the same on both public APIs, so the plan should match staging's (INFERRED).
 
 ## Not changed here
 
