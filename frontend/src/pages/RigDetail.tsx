@@ -573,12 +573,22 @@ function RigDetail() {
           {rig ? (
             <section className="rig-placed" aria-labelledby="rig-placed-title">
               <h3 id="rig-placed-title">On the rail</h3>
-              {rig.case?.hp_per_row?.length ? (
+              {/* With no Case, each row is as wide as what's on it (spec 009 story 24). */}
+              {rig.case ? (
+                rig.case.hp_per_row?.length ? (
+                  <RigRail rack={rig} />
+                ) : (
+                  <p className="muted">
+                    This rig&apos;s case doesn&apos;t state its row sizes yet, so its rail
+                    can&apos;t be drawn. <Link to={`/racks/${rigIdNum}/edit`}>Place modules</Link>
+                  </p>
+                )
+              ) : rig.modules.some((m) => (m.module?.hp ?? 0) > 0) ? (
                 <RigRail rack={rig} />
               ) : (
                 <p className="muted">
-                  This rig&apos;s case doesn&apos;t state its row sizes yet, so its rail can&apos;t
-                  be drawn. <Link to={`/racks/${rigIdNum}/edit`}>Place modules</Link>
+                  Nothing is placed on this Rig yet.{" "}
+                  <Link to={`/racks/${rigIdNum}/edit`}>Place modules</Link>
                 </p>
               )}
             </section>

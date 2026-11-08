@@ -137,6 +137,38 @@ class TestRacksAPI:
         assert detail.get("message") == "Rack validation failed"
         assert any("overlap" in (e.get("message") or "").lower() for e in detail.get("errors", []))
 
+    def test_create_rack_with_no_case_for_manual_entry(
+        self, client: TestClient, sample_vco: Module, sample_vcf: Module
+    ):
+        """Spec 009 story 36: entering a Rig by hand needs no Case, as starting from a photo
+        doesn't. Each row is then as wide as what's on it, and overlaps are still refused."""
+        payload = {
+            "modules": [
+                {"module_id": sample_vco.id, "row_index": 0, "start_hp": 0},
+                {"module_id": sample_vcf.id, "row_index": 1, "start_hp": 90},
+            ],
+        }
+
+        response = client.post("/api/racks", json=payload)
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["case_id"] is None
+        assert [(m["row_index"], m["start_hp"]) for m in data["modules"]] == [(0, 0), (1, 90)]
+
+        overlap = client.post(
+            "/api/racks",
+            json={
+                "modules": [
+                    {"module_id": sample_vco.id, "row_index": 0, "start_hp": 0},
+                    {"module_id": sample_vco.id, "row_index": 0, "start_hp": 5},
+                ],
+            },
+        )
+        assert overlap.status_code == 400
+        errors = (overlap.json().get("detail") or {}).get("errors", [])
+        assert any("overlap" in (e.get("message") or "").lower() for e in errors)
+
     def test_list_racks_empty(self, client: TestClient):
         """Test listing racks when none exist."""
         response = client.get("/api/racks")

@@ -29,13 +29,16 @@
   flex-basis: 100%;
   margin: 0;
 }
-.photo-consent {
+/* A checkbox with its words beside it: photo consent, and going on without a Case */
+.photo-consent,
+.case-optional {
   display: flex;
   align-items: start;
   gap: var(--space-xs);
   color: var(--color-ink);
 }
-.photo-consent input {
+.photo-consent input,
+.case-optional input {
   margin-top: 0.2em;
   accent-color: var(--color-accent);
 }
@@ -285,4 +288,10 @@
 }
 .home-example__list li {
   overflow-wrap: anywhere;
+}
+
+/* The Rig's Case, named on the Reading screen if the owner knows it */
+.case-picker {
+  display: grid;
+  gap: var(--space-xs);
 }

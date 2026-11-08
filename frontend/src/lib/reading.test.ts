@@ -143,6 +143,11 @@ describe("confirming", () => {
     });
   });
 
+  it("names the Case the owner chose, and leaves the Rig's own when none was chosen", () => {
+    expect(confirmBody({ a: kept }, [], 42).body.case_id).toBe(42);
+    expect(confirmBody({ a: kept }, []).body.case_id).toBeNull();
+  });
+
   it("names every Sighting still to decide", () => {
     const { undecided } = confirmBody(
       {

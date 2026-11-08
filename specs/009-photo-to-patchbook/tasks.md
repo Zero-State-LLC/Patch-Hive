@@ -36,5 +36,5 @@ Each task is a ticket sized for one fresh context window. **AFK** tickets are fu
     - depends_on: [T070a]
 - [ ] T080 (HITL) Production enablement: after spec 007's signed receipt (007:T083), counsel's answer on decision 33 and the production evidence-expiry job (decision 21), the operator turns photo reading on in production. No code default changes.
   - depends_on: [T070b, T060b, 007:T083]
-- [ ] T090 Converge the code against the spec, then mark which user stories are done, open, or moved. In progress since 2026-11-07: the drifts found are D1 to D14 in [plan.md](plan.md#convergence-t090). D1 to D10 are fixed in the first PR (#370; D1 by decision 62), and D11 to D14 follow.
+- [ ] T090 Converge the code against the spec, then mark which user stories are done, open, or moved. In progress since 2026-11-07: the drifts found are D1 to D14 in [plan.md](plan.md#convergence-t090). D1 to D10 are fixed in the first PR (#370; D1 by decision 62), D11 in #372, D14 waits on the owner, and D12 and D13 follow.
   - depends_on: [T051, T060b, T022]

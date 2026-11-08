@@ -76,11 +76,14 @@ export function initialDecision(s: Sighting): Decision | null {
 }
 
 /** The confirmation the owner's decisions make, and the Sightings still to decide. */
+/** The confirmation of a Reading. `caseId` is a Case the owner named; with none, the Rig keeps
+ * the Case it has, if any. */
 export function confirmBody(
   decisions: Record<string, Decision>,
   added: AddedModule[],
+  caseId: number | null = null,
 ): { body: ReadingConfirmRequest; undecided: string[] } {
-  const body: ReadingConfirmRequest = { items: [], added: [], excluded: [], case_id: null };
+  const body: ReadingConfirmRequest = { items: [], added: [], excluded: [], case_id: caseId };
   const undecided: string[] = [];
   for (const [sightingId, decision] of Object.entries(decisions)) {
     if (decision.kind === "keep") {

@@ -30,7 +30,7 @@ T090 checked every user story and Implementation Decision against the code on 20
 | D8 | The home page's example reading wasn't in the Reading screen's order. | 3, 13 | Fixed (#370). |
 | D9 | The Rig screen still spoke of inventory evidence and photo/manual confirmation. | 27, 35 | Fixed (#370). |
 | D10 | Nothing on the site deleted a photo, though the Photo screen said you could. | 33 | Fixed (#370): each kept photo on the Rig screen, with the day it goes. |
-| D11 | A Case can't be named on the Reading screen, manual entry refuses a Rig with no Case, and the Rig screen draws no rail for a Rig with no Case. | 23, 24, 36 | Next PR. |
+| D11 | A Case can't be named on the Reading screen, manual entry refuses a Rig with no Case, and the Rig screen draws no rail for a Rig with no Case. The placement editor also couldn't place anything on a Rig with no Case, so a Rig started from a photo couldn't be corrected there. | 23, 24, 36 | Fixed (#372): the Reading screen names a Case, the editor goes on without one and places on open rows, and the Rig screen draws a Rig with no Case. |
 | D12 | Export shows the balance but not the export's price before it is committed. | 29 | A later PR. |
 | D13 | The home page has an example reading as text, with no photo, no boxes and no book page. | 3 | A later PR, or with T060b's owner photo. |
-| D14 | The placement editor still has spec 005's per-Module photo step, which uploads outside spec 009's photo reading. | 35 | To check with D11. |
+| D14 | The placement editor still has spec 005's per-Module photo step. It uploads outside spec 009's photo reading on every host, and its mock provider makes up candidates from each photo's hash. Each must still be confirmed by hand, and production accounts aren't open yet. | 20, 35 | Waiting on the owner: remove the step, or keep it only where a provider can read. |

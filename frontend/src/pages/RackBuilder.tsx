@@ -24,6 +24,7 @@ import { failureReason } from "@/lib/loadError";
 import { checkSlot, moveTo, slotPhrase, type Slot } from "@/lib/placementMove";
 import { firstFreeStartHp, packModulesOntoRows } from "@/lib/placementPack";
 import { placementPower, railMeter, summarizePower, type RailKey } from "@/lib/powerBudget";
+import { openRowWidths } from "@/lib/rigRows";
 import { useAuthStore, useReaderKey } from "@/lib/store";
 import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import { useMountedRef } from "@/lib/useMountedRef";
@@ -197,6 +198,8 @@ function RackBuilder() {
   const [legacyCases, setLegacyCases] = useState<Case[]>([]);
   const [casesLoading, setCasesLoading] = useState(false);
   const [selectedCaseId, setSelectedCaseId] = useState<number | null>(preselectedCaseId);
+  // The owner goes on with no Case (spec 009 story 36): each row is as wide as what's on it.
+  const [withoutCase, setWithoutCase] = useState(false);
   const [selectedCatalogSlug, setSelectedCatalogSlug] = useState<string | null>(
     preselectedCatalogSlug,
   );
@@ -326,10 +329,18 @@ function RackBuilder() {
         m.start_hp === spec.start_hp,
     )?.module ?? galleryModules.find((m) => m.id === spec.module_id);
 
-  /** Per-row HP occupancy for visual usage bars. */
+  /** Per-row HP occupancy for visual usage bars. A Rig with no Case (spec 009) has open rows,
+   * as wide as what's on them. */
   const rowHpUsage = useMemo(() => {
-    if (!liveRack?.case)
-      return [] as { row: number; capacity: number; used: number; free: number }[];
+    if (!liveRack) return [] as { row: number; capacity: number; used: number; free: number }[];
+    if (!liveRack.case) {
+      return openRowWidths(placementModules, resolveModuleHp).map((capacity, row) => {
+        const used = placementModules
+          .filter((spec) => spec.row_index === row)
+          .reduce((sum, spec) => sum + (resolveModuleHp(spec.module_id) ?? 0), 0);
+        return { row, capacity, used, free: capacity - used, open: true };
+      });
+    }
     const rows = liveRack.case.rows || liveRack.case.hp_per_row?.length || 1;
     const hpPerRow = liveRack.case.hp_per_row?.length
       ? liveRack.case.hp_per_row
@@ -352,7 +363,7 @@ function RackBuilder() {
     return galleryModules.find((m) => m.id === preselectedModuleId) ?? null;
   }, [galleryModules, preselectedModuleId]);
 
-  const builderStep = liveMode ? 3 : selectedCatalogSlug || selectedCaseId ? 2 : 1;
+  const builderStep = liveMode ? 3 : selectedCatalogSlug || selectedCaseId || withoutCase ? 2 : 1;
 
   const selectedLegacyCase = useMemo(
     () => legacyCases.find((c) => c.id === selectedCaseId) ?? null,
@@ -365,24 +376,24 @@ function RackBuilder() {
 
   /** Smart start HP: snap to first free gap when module or row changes. */
   useEffect(() => {
-    if (!liveMode || addModuleId == null || !liveRack?.case) return;
+    if (!liveMode || addModuleId == null || !liveRack) return;
     const modHp = resolveModuleHp(addModuleId);
     if (modHp == null || modHp <= 0) return;
-    const capacity =
-      liveRack.case.hp_per_row?.[addRow] ??
-      (liveRack.case.rows
-        ? Math.floor(liveRack.case.total_hp / liveRack.case.rows)
-        : liveRack.case.total_hp);
+    const rigCase = liveRack.case;
+    const capacity = !rigCase
+      ? Number.POSITIVE_INFINITY
+      : (rigCase.hp_per_row?.[addRow] ??
+        (rigCase.rows ? Math.floor(rigCase.total_hp / rigCase.rows) : rigCase.total_hp));
     const next = nextFreeStartHp(
       addRow,
       modHp,
       placementModules,
       resolveModuleHp,
-      capacity || liveRack.case.total_hp,
+      capacity || rigCase?.total_hp || 0,
     );
     setAddStartHp(next);
     // Only when selection changes — not every keystroke of start HP
-  }, [liveMode, addModuleId, addRow, placementModules, liveRack?.case, resolveModuleHp]);
+  }, [liveMode, addModuleId, addRow, placementModules, liveRack, resolveModuleHp]);
 
   useEffect(() => {
     if (rackId != null) {
@@ -486,13 +497,13 @@ function RackBuilder() {
           return exists ? prev : [...prev, mat.data.case];
         });
       }
-      if (caseId == null) {
-        setCreateError("Select a Eurorack case (catalog or legacy) before creating a rig.");
+      if (caseId == null && !withoutCase) {
+        setCreateError("Choose a Eurorack Case, or go on without one, before creating a rig.");
         setCreating(false);
         return;
       }
       const res = await rackApi.create({
-        case_id: caseId,
+        case_id: withoutCase ? null : caseId,
         name: rigName.trim() || undefined,
         modules: [],
       });
@@ -597,13 +608,17 @@ function RackBuilder() {
 
   /** Each row's HP, declared before the checks and saves that read it. */
   const rowCapacities = useMemo(() => {
-    if (!liveRack?.case) return [] as number[];
+    if (!liveRack) return [] as number[];
+    // Open rows have no end to run past; only an overlap stops a placement.
+    if (!liveRack.case) {
+      return openRowWidths(placementModules, resolveModuleHp).map(() => Number.POSITIVE_INFINITY);
+    }
     const c = liveRack.case;
     if (c.hp_per_row?.length) return c.hp_per_row;
     const rows = c.rows || 1;
     const each = Math.floor((c.total_hp || 0) / rows) || c.total_hp || 0;
     return Array.from({ length: rows }, () => each);
-  }, [liveRack]);
+  }, [liveRack, placementModules, resolveModuleHp]);
 
   /** A placed module's name, for messages: the rig's record, else the gallery's. */
   const placementName = (spec: RackModuleSpec) => {
@@ -1089,7 +1104,12 @@ function RackBuilder() {
           {liveMode ? (
             <p className="muted builder-rig-line">
               <strong>{liveRack?.name ?? "This rig"}</strong>
-              {liveRack?.case ? caseLine(liveRack.case) : ""}.
+              {liveRack?.case
+                ? caseLine(liveRack.case)
+                : liveRack
+                  ? ", with no Case named, so each row is as wide as the Modules on it"
+                  : ""}
+              .
             </p>
           ) : (
             <p className="muted">Choose a case, create the rig, then place its modules.</p>
@@ -1226,12 +1246,26 @@ function RackBuilder() {
             selectedCatalogSlug={selectedCatalogSlug}
             onSelectCatalog={(slug) => {
               setSelectedCatalogSlug(slug);
-              if (slug) setSelectedCaseId(null);
+              if (slug) {
+                setSelectedCaseId(null);
+                setWithoutCase(false);
+              }
             }}
             selectedCaseId={selectedCaseId}
             onSelectLegacy={(id) => {
               setSelectedCaseId(id);
-              if (id != null) setSelectedCatalogSlug(null);
+              if (id != null) {
+                setSelectedCatalogSlug(null);
+                setWithoutCase(false);
+              }
+            }}
+            withoutCase={withoutCase}
+            onWithoutCase={(without) => {
+              setWithoutCase(without);
+              if (without) {
+                setSelectedCaseId(null);
+                setSelectedCatalogSlug(null);
+              }
             }}
             selectedCatalogCase={selectedCatalogCase}
             selectedLegacyCase={selectedLegacyCase}
