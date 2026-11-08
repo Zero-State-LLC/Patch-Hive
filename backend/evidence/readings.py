@@ -23,7 +23,12 @@ from sqlalchemy.orm import Session
 
 from canon.models import ImageAssetRecord, PhotoReadingRecord, PhotoSightingRecord
 from core import settings
-from intelligence.contracts import ChoiceOption, ChoiceRequest, DecisionPacket, DecisionPurpose
+from intelligence.contracts import (
+    ChoiceOption,
+    ChoiceRequest,
+    DecisionPacket,
+    DecisionPurpose,
+)
 from intelligence.policy import DecisionDisposition, DecisionPolicy, PolicyThresholds
 from modules.models import Module
 
@@ -146,6 +151,80 @@ class CatalogNames:
         return fits.pop() if len(fits) == 1 else None
 
 
+# A provider that can't know catalog ids names each candidate by maker and name instead: NVIDIA,
+# or a recording made to fit any catalog. ``resolve_named_answer`` turns those names into ids.
+# How far past the photo's edge a box may reach and still be read as touching it.
+_EDGE = 0.02
+
+
+class NamedCandidate(_Answer):
+    maker: str = Field(min_length=1, max_length=100)
+    name: str = Field(min_length=1, max_length=200)
+    score: float = Field(ge=0, le=1)
+
+
+class NamedBox(_Answer):
+    """A box as the model gives it, before it is trimmed to the photo."""
+
+    x: float = Field(ge=0, le=1)
+    y: float = Field(ge=0, le=1)
+    w: float = Field(gt=0, le=1)
+    h: float = Field(gt=0, le=1)
+
+    def on_photo(self) -> Box:
+        if self.x + self.w > 1 + _EDGE or self.y + self.h > 1 + _EDGE:
+            raise ReadingFailed("ANSWER_MALFORMED")
+        return Box(x=self.x, y=self.y, w=min(self.w, 1 - self.x), h=min(self.h, 1 - self.y))
+
+
+class NamedSighting(_Answer):
+    box: NamedBox
+    kind: SightingKind
+    row_index: int = Field(ge=0)
+    start_hp: int = Field(ge=0)
+    hp: int = Field(ge=1)
+    candidates: list[NamedCandidate] = Field(default_factory=list)
+
+
+class NamedAnswer(_Answer):
+    sightings: list[NamedSighting]
+
+
+def resolve_named_answer(raw: object, catalog: CatalogNames, *, version: str) -> dict[str, object]:
+    """An answer that names its candidates, in ``ProviderAnswer``'s shape: checked against its
+    bounds before any name resolves, since dropping a name could hide a bad answer."""
+    try:
+        named = NamedAnswer.model_validate(raw)
+    except ValidationError:
+        raise ReadingFailed("ANSWER_MALFORMED") from None
+    if len(named.sightings) > MAX_SIGHTINGS:
+        raise ReadingFailed("TOO_MANY_SIGHTINGS")
+    if any(len(s.candidates) > MAX_CANDIDATES for s in named.sightings):
+        raise ReadingFailed("TOO_MANY_CANDIDATES")
+    sightings = []
+    for sighting in named.sightings:
+        if sum(c.score for c in sighting.candidates) > 1 + 1e-6 or (
+            sighting.kind != "module" and sighting.candidates
+        ):
+            raise ReadingFailed("ANSWER_MALFORMED")
+        scores: dict[int, float] = {}
+        for candidate in sighting.candidates:
+            module_id = catalog.module_id(candidate.maker, candidate.name)
+            if module_id is not None:
+                scores[module_id] = scores.get(module_id, 0.0) + candidate.score
+        sightings.append(
+            {
+                **sighting.model_dump(exclude={"box", "candidates"}),
+                "box": sighting.box.on_photo().model_dump(),
+                "candidates": [
+                    {"module_id": module_id, "score": min(score, 1.0)}
+                    for module_id, score in scores.items()
+                ],
+            }
+        )
+    return {"provider_version": version, "sightings": sightings}
+
+
 class PhotoProvider(Protocol):
     name: str
     # Whether reading sends the photo to someone else, which needs the owner's consent.
@@ -157,6 +236,18 @@ class PhotoProvider(Protocol):
         """Every Sighting in the photo, shaped as ``ProviderAnswer``. ``rows`` is how many
         Rig rows the photo covers."""
         ...
+
+
+def _names_candidates(data: object) -> bool:
+    """Whether a recorded answer names any candidate by maker and name rather than by id."""
+    if not isinstance(data, dict) or not isinstance(data.get("sightings"), list):
+        return False
+    return any(
+        isinstance(candidate, dict) and "maker" in candidate
+        for sighting in data["sightings"]
+        if isinstance(sighting, dict) and isinstance(sighting.get("candidates"), list)
+        for candidate in sighting["candidates"]
+    )
 
 
 class RecordedProvider:
@@ -181,9 +272,17 @@ class RecordedProvider:
         except OSError:
             raise ReadingFailed("RECORDING_UNREADABLE") from None
         try:
-            return json.loads(text)
+            data = json.loads(text)
         except ValueError:
             raise ReadingFailed("ANSWER_MALFORMED") from None
+        if not _names_candidates(data):
+            return data
+        # A recording that names its candidates by maker and name fits any catalog's ids.
+        body = dict(data)
+        version = body.pop("provider_version", None)
+        if not isinstance(version, str) or not version:
+            raise ReadingFailed("ANSWER_MALFORMED")
+        return resolve_named_answer(body, catalog, version=version)
 
 
 def configured_provider() -> PhotoProvider:

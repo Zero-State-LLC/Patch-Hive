@@ -24,7 +24,7 @@ Each task is a ticket sized for one fresh context window. **AFK** tickets are fu
   - depends_on: [T050]
 - [ ] T060 Staging walkthrough from a photo.
   - depends_on: [T030]
-  - [ ] T060a (AFK) The walkthrough starts from a fixture photo with its recorded provider answer. Its receipt records the Reading, the revision, the run and the export. Done when the receipt builder's tests pass.
+  - [x] T060a (AFK) The walkthrough starts from a fixture photo with its recorded provider answer. Its receipt records the Reading, the revision, the run and the export. Done when the receipt builder's tests pass. Done 2026-11-07: `core/ops/photo_walkthrough.py` signs in as the seeded owner, checks photo reading is open, uploads the fixture photo with consent, confirms its Reading (each Module at its closest match), generates, and exports a book through the Design Engine walkthrough; it stops at the first step that fails. Its sealed receipt (`patchhive.staging-photo-walkthrough.v1`) records the Reading (provider, version, photo hash, Sightings by kind and disposition), the revision, the run (from that revision) and the export (pack hashes), with no password, token or photo. `scripts/staging/photo_walkthrough.py` runs it on staging (the workflow's `photo` choice) and refuses unless the repo ships the photo's recording. Staging reads recorded answers from `backend/data/photo-readings` (shipped in the image; `PHOTO_READING_*` in the edge's staging-only `FLAG_VARS`), and a recording may name candidates by maker and name, so it fits any catalog's ids.
     - depends_on: [T030, T010]
   - [ ] T060b (HITL) The owner supplies the fixture photo of their own Rig (decision 33), and the operator runs the walkthrough on staging and keeps the receipt.
     - depends_on: [T060a]

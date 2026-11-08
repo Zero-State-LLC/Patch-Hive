@@ -40,6 +40,9 @@ const FLAG_VARS = [
   "ENABLE_CANON_EXPORT_FULFILLMENT",
   "ENABLE_INLINE_EXPORT_FULFILLMENT",
   "ENABLE_PATCHBOOK_PUBLICATION_PROFILE",
+  // Spec 009 T060a: staging reads Rig photos from recorded answers; production never does.
+  "PHOTO_READING_PROVIDER",
+  "PHOTO_READING_RECORDINGS_DIR",
 ] as const;
 
 // OptionalName secrets: forwarded in every environment when set.
