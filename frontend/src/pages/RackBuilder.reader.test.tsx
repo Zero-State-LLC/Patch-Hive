@@ -12,7 +12,7 @@ import { useAuthStore } from "@/lib/store";
 import type { User } from "@/types/api";
 
 const api = vi.hoisted(() => ({
-  canonApi: { listRigs: vi.fn(), getRig: vi.fn() },
+  canonApi: { getRig: vi.fn() },
   caseApi: { list: vi.fn() },
   caseCatalogApi: { list: vi.fn(), compatibility: vi.fn() },
   moduleApi: { list: vi.fn() },
@@ -61,6 +61,9 @@ const hasToken = () => Boolean(useAuthStore.getState().token);
 const signIn = (token = "token") =>
   useAuthStore.getState().setAuth({ id: 1, username: "reader" } as unknown as User, token);
 const modulesFor = (rows: unknown[]) => ({ data: { total: rows.length, modules: rows } });
+// The create page asks for the Case lists once when it opens, and again for each search: the
+// asks with no search say how many times it has started over.
+const opened = () => api.caseApi.list.mock.calls.filter(([params]) => !params?.q).length;
 
 function serveByReader({ publicRig = true } = {}) {
   api.moduleApi.list.mockImplementation(async () =>
@@ -70,9 +73,6 @@ function serveByReader({ publicRig = true } = {}) {
     if (hasToken() || publicRig) return { data: RIG };
     throw Object.assign(new Error("not found"), { response: { status: 404 } });
   });
-  api.canonApi.listRigs.mockImplementation(async () => ({
-    data: { total: 0, rigs: hasToken() ? [RIG] : [] },
-  }));
   api.rackApi.compatibility.mockResolvedValue({
     data: { bridge_status: "ok", message: "ok", compatibility: null },
   });
@@ -169,18 +169,6 @@ describe("a change of reader on the rack builder", () => {
     expect(after.value).not.toBe("2");
   });
 
-  it("drops the signed-in reader's rigs from the create page on sign-out", async () => {
-    signIn();
-    renderCreate();
-    await screen.findByRole("option", { name: /Private rig/ });
-
-    act(() => useAuthStore.getState().clear());
-
-    await waitFor(() => expect(api.canonApi.listRigs).toHaveBeenCalledTimes(2));
-    await screen.findByText(/Create a rig first/);
-    expect(screen.queryByRole("option", { name: /Private rig/ })).toBeNull();
-  });
-
   it("clears what the signed-in reader typed on the create page", async () => {
     const user = userEvent.setup();
     signIn();
@@ -189,7 +177,7 @@ describe("a change of reader on the rack builder", () => {
 
     act(() => useAuthStore.getState().clear());
 
-    await waitFor(() => expect(api.canonApi.listRigs).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(opened()).toBe(2));
     expect(screen.queryByDisplayValue("Secret search")).toBeNull();
   });
 
@@ -220,7 +208,7 @@ describe("a change of reader on the rack builder", () => {
     await waitFor(() => expect(api.rackApi.create).toHaveBeenCalledTimes(1));
 
     act(() => useAuthStore.getState().clear());
-    await waitFor(() => expect(api.canonApi.listRigs).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(opened()).toBe(2));
 
     await act(async () => answer({ data: { id: 7 } }));
 
@@ -228,15 +216,17 @@ describe("a change of reader on the rack builder", () => {
   });
 
   it("starts over when a renewal brings back a different account", async () => {
+    const user = userEvent.setup();
     signIn();
     renderCreate();
-    await screen.findByRole("option", { name: /Private rig/ });
+    await user.type(await screen.findByLabelText(/search cases/i), "First account");
 
     act(() =>
       useAuthStore.getState().setAuth({ id: 2, username: "other" } as unknown as User, "other"),
     );
 
-    await waitFor(() => expect(api.canonApi.listRigs).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(opened()).toBe(2));
+    expect(screen.queryByDisplayValue("First account")).toBeNull();
   });
 
   it("does nothing on a token renewal, which isn't a change of reader", async () => {
@@ -245,11 +235,11 @@ describe("a change of reader on the rack builder", () => {
     renderCreate();
     const search = await screen.findByLabelText(/search cases/i);
     await user.type(search, "Keep this");
-    const reads = api.canonApi.listRigs.mock.calls.length;
+    await waitFor(() => expect(opened()).toBe(1));
 
     act(() => signIn("renewed-token"));
 
     expect((screen.getByLabelText(/search cases/i) as HTMLInputElement).value).toBe("Keep this");
-    expect(api.canonApi.listRigs).toHaveBeenCalledTimes(reads);
+    expect(opened()).toBe(1);
   });
 });

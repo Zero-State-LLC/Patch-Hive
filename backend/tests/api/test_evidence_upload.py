@@ -125,6 +125,37 @@ def test_retention_expiry(db_session: Session, sample_rack_basic: Rack, tmp_path
     app.dependency_overrides.clear()
 
 
+def test_production_keeps_the_photo_but_makes_up_no_candidates(
+    db_session: Session, sample_rack_basic: Rack, tmp_path, monkeypatch
+) -> None:
+    """Decision 63: the mock detector derives its candidates from a photo's hash, so in production
+    it would show someone Modules no one saw. There the photo is stored, and nothing is read.
+    Staging keeps the mock, which its evidence check (006 T060b) reads on a test card."""
+    from core import settings
+
+    settings.export_dir = str(tmp_path)
+    client = _client(db_session)
+
+    def upload() -> str | None:
+        resp = client.post(
+            f"/api/racks/{sample_rack_basic.id}/evidence/images",
+            files=[("files", ("a.jpg", _jpeg_bytes(), "image/jpeg"))],
+            data={"consent_provider_processing": "false", "run_vision_mock": "true"},
+        )
+        assert resp.status_code == 201, resp.text
+        return resp.json()["uploaded"][0]["evidence_status"]
+
+    monkeypatch.setattr(settings, "environment", "Production")
+    assert upload() is None
+    listed = client.get(f"/api/racks/{sample_rack_basic.id}/evidence/candidates")
+    assert listed.status_code == 200
+    assert listed.json()["candidates"] == []
+
+    monkeypatch.setattr(settings, "environment", "staging")
+    assert upload() is not None
+    app.dependency_overrides.clear()
+
+
 def _upload(client: TestClient, rack: Rack, **data: str) -> dict:
     resp = client.post(
         f"/api/racks/{rack.id}/evidence/images",

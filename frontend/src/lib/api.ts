@@ -296,44 +296,7 @@ export const patchApi = {
     api.post<GeneratePatchesResponse>(`/patches/generate/${rackId}`, request),
 };
 
-// Visual evidence API (photo → candidates → confirmation → inventory)
-export interface EvidenceCandidate {
-  candidate_id: string;
-  entity_type: string;
-  manufacturer?: string | null;
-  model?: string | null;
-  confidence: number;
-  confidence_method: string;
-  alternative_candidates: string[];
-  classification_status: string;
-  evidence_id: string;
-  image_asset_id?: string | null;
-  gallery_revision_id?: string | null;
-  gallery_module_id?: string | null;
-  /** Optional, non-authoritative Decision Intelligence projection. */
-  decision_advisory?: {
-    disposition: "auto_propose" | "user_review" | "unresolved" | "escalate" | "reject";
-    provider?: string;
-    confidence?: number | null;
-    reason_codes?: string[];
-  } | null;
-}
-
-export interface EvidenceCandidateListResponse {
-  total: number;
-  candidates: EvidenceCandidate[];
-}
-
-export interface MultiImageUploadResponse {
-  uploaded: Array<{
-    id: string;
-    rack_id: number;
-    content_sha256: string;
-    evidence_status?: string | null;
-  }>;
-  rejected: Array<{ filename: string; reason: string }>;
-}
-
+// Visual evidence API: the Rig's confirmed inventory
 /** A photo-confirmed module not on the rig yet. `module_id` is null with no single catalog match. */
 export interface ModuleToPlace {
   instance_id: string;
@@ -341,15 +304,6 @@ export interface ModuleToPlace {
   manufacturer?: string | null;
   model?: string | null;
   module_id?: number | null;
-}
-
-export interface ConfirmationBatchResponse {
-  inventory_revision_id: string;
-  inventory_canonical_hash?: string | null;
-  confirmed_count: number;
-  unresolved_candidate_ids: string[];
-  ready_for_generation: boolean;
-  modules_to_place: ModuleToPlace[];
 }
 
 export interface InventoryRevisionSummary {
@@ -375,71 +329,6 @@ export interface InventoryRevisionListResponse {
 const evidencePath = (rigId: number, suffix: string) => `/canon/rigs/${rigId}/evidence/${suffix}`;
 
 export const evidenceApi = {
-  uploadImages: (
-    rackId: number,
-    files: File[],
-    options?: {
-      retention_days?: number;
-      consent_provider_processing?: boolean;
-      run_vision_mock?: boolean;
-    },
-  ) => {
-    const form = new FormData();
-    files.forEach((file) => form.append("files", file));
-    form.append("retention_days", String(options?.retention_days ?? 30));
-    form.append(
-      "consent_provider_processing",
-      String(options?.consent_provider_processing ?? false),
-    );
-    form.append("run_vision_mock", String(options?.run_vision_mock ?? true));
-    return api.post<MultiImageUploadResponse>(evidencePath(rackId, "images"), form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-  },
-
-  listImages: (rackId: number) => api.get(evidencePath(rackId, "images")),
-
-  listCandidates: (rackId: number) =>
-    api.get<EvidenceCandidateListResponse>(evidencePath(rackId, "candidates")),
-
-  reconcile: (rackId: number) =>
-    api.get<{
-      image_asset_ids: string[];
-      image_count: number;
-      fused_entities: Array<{
-        fuse_id: string;
-        entity_key: string;
-        manufacturer?: string | null;
-        model?: string | null;
-        entity_type: string;
-        observation_count: number;
-        supporting_image_ids: string[];
-        mean_confidence: number;
-        max_confidence: number;
-        conflict: boolean;
-        conflict_notes: string[];
-        classification_status: string;
-        representative_candidate_id?: string | null;
-      }>;
-      unmatched_candidate_ids: string[];
-      conflict_count: number;
-      status: string;
-      note: string;
-    }>(evidencePath(rackId, "reconcile")),
-
-  confirm: (
-    rackId: number,
-    body: {
-      confirmed_by?: string;
-      decisions: Array<{
-        candidate_id: string;
-        status: string;
-        module_revision_id?: string | null;
-        notes?: string | null;
-      }>;
-    },
-  ) => api.post<ConfirmationBatchResponse>(evidencePath(rackId, "confirmations"), body),
-
   listInventory: (rackId: number) =>
     api.get<InventoryRevisionListResponse>(evidencePath(rackId, "inventory")),
 };
