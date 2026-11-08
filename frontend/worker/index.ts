@@ -1,7 +1,9 @@
 // Edge entry for the static SPA: canonicalize www to the apex, then serve assets.
 // Missing files and unknown routes answer 404 (the SPA shell still renders its
 // not-found page for unknown routes); only real client routes fall back to the shell.
+// Every shell carries the head written for its page (pageHead.ts).
 import { securityHeaders } from "./headers";
+import { writePageHead } from "./pageHead";
 import { isAppRoute, isRetired, looksLikeFile } from "./routes";
 
 interface Env {
@@ -42,15 +44,28 @@ async function serve(request: Request, env: Env): Promise<Response> {
   }
   const res = await env.ASSETS.fetch(request);
   const html = (res.headers.get("content-type") ?? "").startsWith("text/html");
-  // With SPA fallback on, a missing asset comes back as the index page.
-  if (!html || url.pathname.endsWith(".html") || isAppRoute(url.pathname)) {
+  if (!html || url.pathname.endsWith(".html")) {
     return res;
   }
-  if (looksLikeFile(url.pathname)) {
+  // With SPA fallback on, a missing asset comes back as the index page.
+  const page = isAppRoute(url.pathname);
+  if (!page && looksLikeFile(url.pathname)) {
     return new Response("Not found\n", {
       status: 404,
       headers: { "content-type": "text/plain; charset=utf-8" },
     });
   }
-  return new Response(res.body, { status: 404, headers: res.headers });
+  return withPageHead(res, url.pathname, page ? res.status : 404);
+}
+
+// The shell with its head written for this page. Only a full body is rewritten, and the result
+// is no longer the file its ETag names, so the ETag and length go with it.
+async function withPageHead(res: Response, pathname: string, status: number): Promise<Response> {
+  if (res.status !== 200) {
+    return new Response(res.body, { status, headers: res.headers });
+  }
+  const headers = new Headers(res.headers);
+  headers.delete("content-length");
+  headers.delete("etag");
+  return new Response(writePageHead(await res.text(), pathname), { status, headers });
 }

@@ -23,6 +23,14 @@ describe("security headers", () => {
     expect(csp).not.toMatch(/script-src[^;]*unsafe-inline/);
   });
 
+  it("lets the page load its own icons, manifest and preview image", () => {
+    const csp = contentSecurityPolicy("patch-hive.com");
+    // No manifest-src, so the manifest falls back to default-src: same origin only.
+    expect(csp).toContain("default-src 'self';");
+    expect(csp).not.toContain("manifest-src");
+    expect(csp).toMatch(/img-src 'self'/);
+  });
+
   it("enforces the policy", () => {
     const headers = securityHeaders("patch-hive.com");
     expect(headers["Content-Security-Policy"]).toBe(contentSecurityPolicy("patch-hive.com"));

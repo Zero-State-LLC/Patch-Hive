@@ -1,4 +1,10 @@
 User-agent: *
 Disallow: /account
 Disallow: /admin
+Disallow: /racks/new
+Disallow: /racks/*/edit
+Disallow: /rigs/new/
+Disallow: /rigs/*/photo
+Disallow: /rigs/*/reading
+Disallow: /rigs/*/patchbook-studio
 Sitemap: https://patch-hive.com/sitemap.xml
