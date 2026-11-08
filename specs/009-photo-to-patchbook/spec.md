@@ -173,7 +173,7 @@ Illegal:
   - Repeat with the provider off: the Reading fails closed and nothing reaches inventory.
 
   Prior art: the golden-demo export acceptance tests, spec 001's transitions tests for generation and readiness, the evidence tests that use the fake vision provider, and the export API tests that use the fair-use grant.
-- **Seam 2, the staging walkthrough.** It starts from a fixture photo, which is the owner's own photo per decision 33, instead of the seeded Rig. It replays the recorded provider answer until spec 007 enables the live provider on staging. Its receipt records the Reading, the revision, the run and the export. Prior art: the staging walkthrough workflow and its design walkthrough receipt.
+- **Seam 2, the staging walkthrough.** It starts from a fixture photo, which is the owner's own photo per decision 33, instead of the seeded Rig. It replays the recorded provider answer until spec 007 enables the live provider on staging. Its receipt records the Reading, the revision, the run and the export. It runs beside spec 008's walkthrough, with a receipt of its own (decision 62). Prior art: the staging walkthrough workflow and its design walkthrough receipt.
 - The existing browser tests, which mock the API, are updated for the new home page, navigation and reading screen. They are not a third seam.
 
 ## Out of Scope
@@ -193,7 +193,7 @@ Illegal:
   - Spec 003: the catalog's role.
   - Specs 005 and 006: per-Sighting candidates from one whole-rig answer.
   - Spec 007: the corpus unit and the owner's photo request.
-  - Spec 008: the walkthrough's starting point.
+  - Spec 008: a walkthrough from a photo beside its own (decision 62).
   - Spec 002 and spec 004 don't change.
 - **Not deployed anywhere today.** As of 2026-11-07, neither host reads photos. Production also fulfils no export. Until spec 007 and counsel clear photo reading, the manual-entry path is the only way to a book in production, and only once production fulfils exports.
 - **Accuracy is unknown.** No whole-rig corpus exists yet, so no one knows how well a Reading performs until spec 007's baseline runs. The manual path and the reading screen's corrections exist so that a weak Reading still ends in a correct Rig.
