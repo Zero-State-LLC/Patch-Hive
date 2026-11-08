@@ -16,15 +16,13 @@ from __future__ import annotations
 from typing import Any, NoReturn, get_args
 
 import httpx
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
-
 from evidence.readings import (
     MAX_CANDIDATES,
     MAX_SIGHTINGS,
-    Box,
     CatalogNames,
     ReadingFailed,
     SightingKind,
+    resolve_named_answer,
 )
 from intelligence.clef_provider import (
     _MAX_IMAGE_BYTES,
@@ -45,8 +43,6 @@ from intelligence.nvidia_provider import (
 
 # Room for a full answer: about 150 tokens a Sighting, for up to 200 of them.
 _MAX_TOKENS = 32768
-# How far past the photo's edge a box may reach and still be read as touching it.
-_EDGE = 0.02
 
 SYSTEM_PROMPT = (
     "You read photos of Eurorack synthesizer cases for a documentation app. List everything "
@@ -59,49 +55,16 @@ SYSTEM_PROMPT = (
 __all__ = ["NvidiaRigReader", "rig_schema"]
 
 
-class _Named(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
-
-
-class NamedCandidate(_Named):
-    maker: str = Field(min_length=1, max_length=100)
-    name: str = Field(min_length=1, max_length=200)
-    score: float = Field(ge=0, le=1)
-
-
-class NamedBox(_Named):
-    """A box as the model gives it, before it is trimmed to the photo."""
-
-    x: float = Field(ge=0, le=1)
-    y: float = Field(ge=0, le=1)
-    w: float = Field(gt=0, le=1)
-    h: float = Field(gt=0, le=1)
-
-    def on_photo(self) -> Box:
-        if self.x + self.w > 1 + _EDGE or self.y + self.h > 1 + _EDGE:
-            raise ReadingFailed("ANSWER_MALFORMED")
-        return Box(x=self.x, y=self.y, w=min(self.w, 1 - self.x), h=min(self.h, 1 - self.y))
-
-
-class NamedSighting(_Named):
-    box: NamedBox
-    kind: SightingKind
-    row_index: int = Field(ge=0)
-    start_hp: int = Field(ge=0)
-    hp: int = Field(ge=1)
-    candidates: list[NamedCandidate] = Field(default_factory=list)
-
-
-class NamedAnswer(_Named):
-    sightings: list[NamedSighting]
-
-
 def rig_schema(rows: int) -> dict[str, Any]:
     """The JSON schema the model fills for a photo of ``rows`` Rig rows."""
     number = {"type": "number", "minimum": 0, "maximum": 1}
     candidate = {
         "type": "object",
-        "properties": {"maker": {"type": "string"}, "name": {"type": "string"}, "score": number},
+        "properties": {
+            "maker": {"type": "string"},
+            "name": {"type": "string"},
+            "score": number,
+        },
         "required": ["maker", "name", "score"],
         "additionalProperties": False,
     }
@@ -118,7 +81,11 @@ def rig_schema(rows: int) -> dict[str, Any]:
             "row_index": {"type": "integer", "minimum": 0, "maximum": rows - 1},
             "start_hp": {"type": "integer", "minimum": 0},
             "hp": {"type": "integer", "minimum": 1},
-            "candidates": {"type": "array", "maxItems": MAX_CANDIDATES, "items": candidate},
+            "candidates": {
+                "type": "array",
+                "maxItems": MAX_CANDIDATES,
+                "items": candidate,
+            },
         },
         "required": ["box", "kind", "row_index", "start_hp", "hp", "candidates"],
         "additionalProperties": False,
@@ -142,40 +109,6 @@ def _instructions(rows: int) -> str:
         f"its width in HP. For a module, name at most {MAX_CANDIDATES} candidates by maker and "
         "model, each with a probability, adding up to at most 1."
     )
-
-
-def _resolve(raw: dict[str, Any], catalog: CatalogNames, *, version: str) -> dict[str, Any]:
-    """The answer in ``ProviderAnswer``'s shape, once it parses and is inside its bounds."""
-    try:
-        named = NamedAnswer.model_validate(raw)
-    except ValidationError:
-        raise ReadingFailed("ANSWER_MALFORMED") from None
-    if len(named.sightings) > MAX_SIGHTINGS:
-        raise ReadingFailed("TOO_MANY_SIGHTINGS")
-    if any(len(s.candidates) > MAX_CANDIDATES for s in named.sightings):
-        raise ReadingFailed("TOO_MANY_CANDIDATES")
-    sightings = []
-    for sighting in named.sightings:
-        if sum(c.score for c in sighting.candidates) > 1 + 1e-6 or (
-            sighting.kind != "module" and sighting.candidates
-        ):
-            raise ReadingFailed("ANSWER_MALFORMED")
-        scores: dict[int, float] = {}
-        for candidate in sighting.candidates:
-            module_id = catalog.module_id(candidate.maker, candidate.name)
-            if module_id is not None:
-                scores[module_id] = scores.get(module_id, 0.0) + candidate.score
-        sightings.append(
-            {
-                **sighting.model_dump(exclude={"box", "candidates"}),
-                "box": sighting.box.on_photo().model_dump(),
-                "candidates": [
-                    {"module_id": module_id, "score": min(score, 1.0)}
-                    for module_id, score in scores.items()
-                ],
-            }
-        )
-    return {"provider_version": version, "sightings": sightings}
 
 
 class NvidiaRigReader:
@@ -246,7 +179,11 @@ class NvidiaRigReader:
             "chat_template_kwargs": {"enable_thinking": False},
             "response_format": {
                 "type": "json_schema",
-                "json_schema": {"name": "rig", "schema": rig_schema(rows), "strict": True},
+                "json_schema": {
+                    "name": "rig",
+                    "schema": rig_schema(rows),
+                    "strict": True,
+                },
             },
         }
         try:
@@ -267,7 +204,7 @@ class NvidiaRigReader:
         except Exception:  # anything else, such as a bad base URL, fails closed too
             self._fail(ClefAdapterEvent.UNAVAILABLE, "PROVIDER_ERROR")
         try:
-            answer = _resolve(raw, catalog, version=self._model)
+            answer = resolve_named_answer(raw, catalog, version=self._model)
         except ReadingFailed as failed:
             self._fail(ClefAdapterEvent.MALFORMED, failed.code)
         self.last_state = adapter_transition(

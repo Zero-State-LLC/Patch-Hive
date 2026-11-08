@@ -59,7 +59,13 @@ def asset(db_session: Session, sample_user: User) -> ImageAssetRecord:
 
 
 def _sighting(
-    start_hp: int = 0, hp: int = 10, *, kind: str = "module", candidates=(), row=0, box=None
+    start_hp: int = 0,
+    hp: int = 10,
+    *,
+    kind: str = "module",
+    candidates=(),
+    row=0,
+    box=None,
 ):
     return {
         "box": box or {"x": start_hp / 84, "y": 0.1, "w": hp / 84, "h": 0.8},
@@ -135,7 +141,10 @@ def test_a_photo_of_later_rows_counts_its_rows_in_the_rigs(
     ("answer", "code"),
     [
         ({"sightings": []}, "ANSWER_MALFORMED"),
-        ({"provider_version": "r", "sightings": [{"kind": "module"}]}, "ANSWER_MALFORMED"),
+        (
+            {"provider_version": "r", "sightings": [{"kind": "module"}]},
+            "ANSWER_MALFORMED",
+        ),
         ({"provider_version": "r", "sightings": [], "extra": 1}, "ANSWER_MALFORMED"),
         ("not an object", "ANSWER_MALFORMED"),
         (
@@ -145,8 +154,14 @@ def test_a_photo_of_later_rows_counts_its_rows_in_the_rigs(
             },
             "ANSWER_MALFORMED",
         ),
-        ({"provider_version": "r", "sightings": [_sighting(row=1)]}, "ROW_OUTSIDE_PHOTO"),
-        ({"provider_version": "r", "sightings": [_sighting()] * 201}, "TOO_MANY_SIGHTINGS"),
+        (
+            {"provider_version": "r", "sightings": [_sighting(row=1)]},
+            "ROW_OUTSIDE_PHOTO",
+        ),
+        (
+            {"provider_version": "r", "sightings": [_sighting()] * 201},
+            "TOO_MANY_SIGHTINGS",
+        ),
     ],
 )
 def test_an_answer_past_its_bounds_fails_the_reading_and_keeps_no_sightings(
@@ -164,11 +179,17 @@ def test_candidates_must_be_a_bounded_distribution_of_catalog_modules(
     vco, vcf = sample_vco.id, sample_vcf.id
     cases = {
         "TOO_MANY_CANDIDATES": [{"module_id": vco + i, "score": 0.1} for i in range(6)],
-        "ANSWER_MALFORMED": [{"module_id": vco, "score": 0.6}, {"module_id": vcf, "score": 0.6}],
+        "ANSWER_MALFORMED": [
+            {"module_id": vco, "score": 0.6},
+            {"module_id": vcf, "score": 0.6},
+        ],
         "CANDIDATE_NOT_IN_CATALOG": [{"module_id": 999_999, "score": 0.9}],
     }
     for code, candidates in cases.items():
-        answer = {"provider_version": "r", "sightings": [_sighting(candidates=candidates)]}
+        answer = {
+            "provider_version": "r",
+            "sightings": [_sighting(candidates=candidates)],
+        }
         assert _read(db_session, asset, _Answers(answer)).reason_code == code
     repeated = [{"module_id": vco, "score": 0.4}, {"module_id": vco, "score": 0.4}]
     answer = {"provider_version": "r", "sightings": [_sighting(candidates=repeated)]}
@@ -225,7 +246,11 @@ def test_a_provider_that_is_off_or_not_configured_fails_the_reading(
 
     reading = read_photo(db_session, asset=asset, photo_sha256=SHA, image=b"", rows=(0, 0))
 
-    assert (reading.status, reading.reason_code, reading.provider) == ("failed", code, setting)
+    assert (reading.status, reading.reason_code, reading.provider) == (
+        "failed",
+        code,
+        setting,
+    )
 
 
 def test_the_recorded_provider_without_a_directory_fails_the_reading(
@@ -280,3 +305,49 @@ def test_only_a_reading_still_in_the_named_status_moves(
         == 1
     )
     assert (failed.status, read.status) == ("superseded", "confirmed")
+
+
+# --- a recording that names its candidates ---------------------------------------------------
+
+
+def test_a_recording_can_name_its_candidates_by_maker_and_name(
+    db_session: Session,
+    asset: ImageAssetRecord,
+    sample_vco: Module,
+    tmp_path,
+    monkeypatch,
+) -> None:
+    import json
+
+    import core.config as config_mod
+
+    monkeypatch.setattr(config_mod.settings, "photo_reading_provider", "recorded")
+    monkeypatch.setattr(config_mod.settings, "photo_reading_recordings_dir", str(tmp_path))
+    named = {
+        "provider_version": "recorded-named-1",
+        "sightings": [
+            _sighting(candidates=[{"maker": "test mfg", "name": "Test VCO", "score": 0.97}])
+        ],
+    }
+    (tmp_path / f"{SHA}.json").write_text(json.dumps(named))
+
+    reading = _read(db_session, asset, None)
+
+    assert (reading.status, reading.provider_version) == ("read", "recorded-named-1")
+    (sighting,) = _sightings(db_session, reading)
+    assert sighting.candidates == [{"module_id": sample_vco.id, "score": 0.97}]
+
+
+def test_a_named_recording_without_its_version_is_malformed(
+    db_session: Session, asset: ImageAssetRecord, tmp_path, monkeypatch
+) -> None:
+    import json
+
+    import core.config as config_mod
+
+    monkeypatch.setattr(config_mod.settings, "photo_reading_provider", "recorded")
+    monkeypatch.setattr(config_mod.settings, "photo_reading_recordings_dir", str(tmp_path))
+    unversioned = {"sightings": [_sighting(candidates=[{"maker": "M", "name": "N", "score": 0.5}])]}
+    (tmp_path / f"{SHA}.json").write_text(json.dumps(unversioned))
+
+    assert _read(db_session, asset, None).reason_code == "ANSWER_MALFORMED"

@@ -3,9 +3,11 @@ name: Staging walkthrough
 # Manual only, staging only (008 T030b/T040b, 006 T060b). Seeds the golden demo into
 # the Neon staging branch, checks the seeded sign-in, runs the Design Engine
 # walkthrough against api-staging.patch-hive.com with test payments, then uploads one
-# generated test image, calls decision-resolution and generates through the API. Each
-# run makes new demo passwords that exist only in this job (masked, never stored); the
-# receipts hold statuses, codes and hashes only.
+# generated test image, calls decision-resolution and generates through the API. The
+# `photo` choice instead runs spec 009's walkthrough from a fixture photo of a Rig, which
+# staging reads from its recorded answer (backend/data/photo-readings). Each run makes new
+# demo passwords that exist only in this job (masked, never stored); the receipts hold
+# statuses, codes and hashes only.
 on:
   workflow_dispatch:
     inputs:
@@ -14,7 +16,17 @@ on:
         required: true
         type: choice
         default: both
-        options: [both, walkthrough, evidence, generate]
+        options: [both, walkthrough, evidence, generate, photo]
+      photo:
+        description: The fixture photo of a Rig, for the photo walkthrough (spec 009 T060)
+        required: false
+        type: string
+        default: fixtures/photo-walkthrough/rig.jpg
+      rows:
+        description: The rows that photo covers, "0" or "0-1"
+        required: false
+        type: string
+        default: "0"
 
 permissions:
   contents: read
@@ -67,6 +79,12 @@ jobs:
       - name: A real generate through the API
         if: ${{ !cancelled() && (inputs.checks == 'both' || inputs.checks == 'generate') }}
         run: python scripts/staging/generate_check.py --receipt-out generate-receipt.json
+      - name: Photo walkthrough (spec 009 T060)
+        if: ${{ !cancelled() && inputs.checks == 'photo' }}
+        env:
+          PHOTO: ${{ inputs.photo }}
+          ROWS: ${{ inputs.rows }}
+        run: python scripts/staging/photo_walkthrough.py --photo "$PHOTO" --rows "$ROWS" --receipt-out photo-walkthrough-receipt.json
       - name: Keep the receipts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -76,5 +94,6 @@ jobs:
             design-walkthrough-receipt.json
             t060b-receipt.json
             generate-receipt.json
+            photo-walkthrough-receipt.json
           if-no-files-found: warn
           retention-days: 90
