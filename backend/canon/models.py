@@ -696,7 +696,8 @@ class PhotoReadingRecord(Base):
     """A Rig photo's Reading (spec 009): evidence, never canon.
 
     ``status`` is ``reading``, then ``read`` or ``failed`` (with ``reason_code`` and no
-    Sightings). ``photo_sha256`` is the file as uploaded; the stored evidence is its
+    Sightings), then ``confirmed``, or ``superseded`` by a Retry or a Retake.
+    ``photo_sha256`` is the file as uploaded; the stored evidence is its
     re-encoded copy. ``first_row`` and ``last_row`` are the Rig rows the photo covers.
     """
 

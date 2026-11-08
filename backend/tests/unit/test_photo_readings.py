@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from canon.models import ImageAssetRecord, PhotoReadingRecord, PhotoSightingRecord
 from community.models import User
-from evidence.readings import ReadingFailed, read_photo
+from evidence.readings import ReadingFailed, move_readings, read_photo
 from modules.models import Module
 from racks.models import Rack
 
@@ -57,7 +57,9 @@ def asset(db_session: Session, sample_user: User) -> ImageAssetRecord:
     return record
 
 
-def _sighting(start_hp: int = 0, hp: int = 10, *, kind: str = "module", candidates=(), row=0, box=None):
+def _sighting(
+    start_hp: int = 0, hp: int = 10, *, kind: str = "module", candidates=(), row=0, box=None
+):
     return {
         "box": box or {"x": start_hp / 84, "y": 0.1, "w": hp / 84, "h": 0.8},
         "kind": kind,
@@ -136,7 +138,10 @@ def test_a_photo_of_later_rows_counts_its_rows_in_the_rigs(
         ({"provider_version": "r", "sightings": [], "extra": 1}, "ANSWER_MALFORMED"),
         ("not an object", "ANSWER_MALFORMED"),
         (
-            {"provider_version": "r", "sightings": [_sighting(80, hp=10, box={"x": 0.95, "y": 0, "w": 0.1, "h": 1})]},
+            {
+                "provider_version": "r",
+                "sightings": [_sighting(80, hp=10, box={"x": 0.95, "y": 0, "w": 0.1, "h": 1})],
+            },
             "ANSWER_MALFORMED",
         ),
         ({"provider_version": "r", "sightings": [_sighting(row=1)]}, "ROW_OUTSIDE_PHOTO"),
@@ -168,7 +173,10 @@ def test_candidates_must_be_a_bounded_distribution_of_catalog_modules(
     answer = {"provider_version": "r", "sightings": [_sighting(candidates=repeated)]}
     assert _read(db_session, asset, _Answers(answer)).reason_code == "ANSWER_MALFORMED"
     panel = [{"module_id": vco, "score": 0.9}]
-    answer = {"provider_version": "r", "sightings": [_sighting(kind="blank_panel", candidates=panel)]}
+    answer = {
+        "provider_version": "r",
+        "sightings": [_sighting(kind="blank_panel", candidates=panel)],
+    }
     assert _read(db_session, asset, _Answers(answer)).reason_code == "ANSWER_MALFORMED"
 
 
@@ -236,6 +244,28 @@ def test_a_sighting_cannot_be_changed_once_kept(
     db_session.commit()
     (sighting,) = _sightings(db_session, reading)
 
-    sighting.disposition = "auto_propose" if sighting.disposition != "auto_propose" else "unresolved"
+    sighting.disposition = (
+        "auto_propose" if sighting.disposition != "auto_propose" else "unresolved"
+    )
     with pytest.raises(ValueError, match="append-only"):
         db_session.commit()
+
+
+# --- moving a Reading on ----------------------------------------------------------------------
+
+
+def test_only_a_reading_still_in_the_named_status_moves(
+    db_session: Session, asset: ImageAssetRecord
+) -> None:
+    failed = _read(db_session, asset, _Answers(raises=TimeoutError()))
+    read = _read(db_session, asset, _Answers({"provider_version": "r1", "sightings": []}))
+
+    # A Retry wins the failed one; a second Retry of it, a moment later, finds it moved.
+    assert move_readings(db_session, [failed.id], from_statuses=("failed",), to="superseded") == 1
+    assert move_readings(db_session, [failed.id], from_statuses=("failed",), to="superseded") == 0
+    # A confirmation of both moves only the one still read.
+    assert (
+        move_readings(db_session, [failed.id, read.id], from_statuses=("read",), to="confirmed")
+        == 1
+    )
+    assert (failed.status, read.status) == ("superseded", "confirmed")
