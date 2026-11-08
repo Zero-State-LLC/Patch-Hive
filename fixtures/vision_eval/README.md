@@ -54,3 +54,16 @@ python scripts/validate_vision_pilot.py fixtures/vision_eval/pilot-manifest.json
 The validator fails closed on unconfirmed rights, unreviewed/unverified ground truth, missing candidate hashes, missing `none_of_above`, locked-test contamination, insufficient identity/cohort coverage, or missing validation/locked/open-set partitions.
 
 Research-derived Device Registry evidence may seed the candidate universe. It may not self-label pilot images.
+
+## Whole-rig photos (spec 009)
+
+A manifest with `"unit": "whole_rig"` is a corpus of whole-Rig photos. Each case is one photo, with:
+
+- `rows`: how many Rig rows the photo covers.
+- `labels`: every Module and Blank Panel on it. Each has a `kind` (`module` or `blank_panel`), `row_index`, `start_hp` and `hp`. A Module names its `maker` and `name`; one the catalog doesn't have is `"open_set": true` instead.
+
+The rights, review, partition, cohort and contamination rules are the same as for photos of one Module. A whole-rig case has no `expected_choice`, `candidate_set_hash`, `none_of_above_allowed` or `ground_truth_inventory`. An `unknown_open_set` case shows at least one off-catalog Module. Its frozen record keeps a digest of its rows and labels.
+
+`backend/evidence/rig_evaluation.py` scores each photo's provider answer against its labels. It reports identity accuracy per Sighting, detection recall and precision, position error in HP, and false canonicalization, which must stay zero.
+
+`whole_rig/` is a two-photo synthetic corpus with recorded answers, for the harness tests. It is far below admission size.

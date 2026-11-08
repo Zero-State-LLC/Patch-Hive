@@ -79,6 +79,50 @@ def admitted_manifest() -> dict:
     }
 
 
+# Spec 009 T070a: a whole-rig corpus at admission size, one catalog Module per photo.
+def rig_pilot_case(index: int) -> dict:
+    case_id = f"rig-{index:03d}"
+    cohort = COHORTS[index % len(COHORTS)]
+    open_set = cohort == "unknown_open_set"
+    labels = [
+        {
+            "kind": "module",
+            "maker": "Maker",
+            "name": f"Model {index:03d}",
+            "row_index": 0,
+            "start_hp": 0,
+            "hp": 10,
+        },
+        {"kind": "blank_panel", "row_index": 0, "start_hp": 10, "hp": 4},
+    ]
+    if open_set:
+        labels.append({"kind": "module", "open_set": True, "row_index": 0, "start_hp": 14, "hp": 6})
+    return {
+        "case_id": case_id,
+        "partition": "unknown_open_set" if open_set else PARTITIONS[index % len(PARTITIONS)],
+        "cohort": cohort,
+        "rights_and_consent": {
+            "rights_status": "RIGHTS_CONFIRMED",
+            "source_url": f"https://example.invalid/evidence/{case_id}",
+        },
+        "image_asset_hashes": [image_hash(case_id)],
+        "rows": 1,
+        "labels": labels,
+        "ground_truth_status": "OPERATOR_VERIFIED",
+        "annotation_status": "REVIEWED",
+        "reviewers": ["operator-1"],
+        "contamination": {"used_for_tuning": False, "notes": None},
+    }
+
+
+def admitted_rig_manifest() -> dict:
+    return {
+        "pilot_version": "patchhive.whole-rig.test",
+        "unit": "whole_rig",
+        "cases": [rig_pilot_case(index) for index in range(64)],
+    }
+
+
 def _packet(case_id: str, provider: str, selected: str, probabilities: dict[str, float]) -> DecisionPacket:
     return DecisionPacket(
         decision_id=f"{provider}-{case_id}",

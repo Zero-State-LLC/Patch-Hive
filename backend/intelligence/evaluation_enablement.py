@@ -46,7 +46,7 @@ from intelligence.evaluation import (  # noqa: F401  (re-exported for existing c
     evaluate,
     structural_false_canonicalizations,
 )
-from intelligence.evaluation_corpus import CorpusFreeze, verify_corpus_freeze
+from intelligence.evaluation_corpus import MODULE_UNIT, CorpusFreeze, verify_corpus_freeze
 from intelligence.policy import DecisionPolicy
 from intelligence.receipt_signing import (
     ApproverAllowlist,
@@ -249,6 +249,9 @@ def run_baseline_comparison(
     """Evaluate baseline vs provider-assisted packets on the exact frozen corpus."""
     if corpus is None or not verify_corpus_freeze(corpus):
         raise EnablementError("CORPUS_MISSING_OR_UNFROZEN")
+    if corpus.unit != MODULE_UNIT:
+        # Whole-rig photos (spec 009) are scored by evidence/rig_evaluation.py.
+        raise EnablementError("CORPUS_UNIT_NOT_SUPPORTED", corpus.unit)
     if not is_pinned_sha(harness_sha):
         raise EnablementError("HARNESS_SHA_NOT_PINNED")
     if assisted_provider_id not in ENABLEABLE_PROVIDERS:

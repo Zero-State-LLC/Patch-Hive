@@ -9,6 +9,10 @@ defense-in-depth cross-partition leakage check and refuses to freeze anything th
 validator did not admit. Nothing here promotes a case, edits evidence, chooses
 thresholds, or performs network, database, or provider calls. Image bytes are
 never read: only retained image hashes are referenced.
+
+A corpus's ``unit`` is a photo of one Module (the default) or, for spec 009, a photo
+of a whole Rig. A whole-rig case freezes a digest of its rows and labels in place of
+an expected choice and candidate set.
 """
 
 from __future__ import annotations
@@ -18,12 +22,17 @@ import re
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from intelligence.contracts import stable_sha256
 
 CORPUS_FREEZE_SCHEMA = "patchhive.eval-corpus-freeze.v1"
 ADMITTED_STATUS = "ADMITTED_FOR_BASELINE"
+MODULE_UNIT = "module"
+WHOLE_RIG_UNIT = "whole_rig"
+# Left out of a record's digest while unused, so a single-Module corpus keeps the digest
+# it was frozen with before whole-rig photos.
+_OPTIONAL_CASE_FIELDS = ("expected_choice", "candidate_set_hash", "labels_sha256")
 
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
 _IMAGE_HASH = re.compile(r"^sha256:[0-9a-f]{64}$")
@@ -48,9 +57,12 @@ class FrozenCorpusCase(BaseModel):
     case_id: str = Field(min_length=1)
     partition: str = Field(min_length=1)
     cohort: str = Field(min_length=1)
-    expected_choice: str = Field(min_length=1)
     image_asset_hashes: tuple[str, ...] = Field(min_length=1)
-    candidate_set_hash: str = Field(min_length=1)
+    # A single-Module case: the choice it expects, among a fixed candidate set.
+    expected_choice: str | None = Field(default=None, min_length=1)
+    candidate_set_hash: str | None = Field(default=None, min_length=1)
+    # A whole-rig case: its rows and labels.
+    labels_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
 
     @field_validator("image_asset_hashes")
     @classmethod
@@ -59,6 +71,13 @@ class FrozenCorpusCase(BaseModel):
             if not _IMAGE_HASH.match(item):
                 raise ValueError("image_asset_hashes must be sha256:<64 hex>")
         return value
+
+    @model_validator(mode="after")
+    def _one_kind_of_case(self) -> "FrozenCorpusCase":
+        choice = (self.expected_choice is not None, self.candidate_set_hash is not None)
+        if choice != ((False, False) if self.labels_sha256 else (True, True)):
+            raise ValueError("a case expects one choice or is labelled as a whole Rig")
+        return self
 
     def image_sha256_hex(self) -> frozenset[str]:
         return frozenset(item.split(":", 1)[1] for item in self.image_asset_hashes)
@@ -75,6 +94,7 @@ class CorpusFreeze(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     schema_version: str = CORPUS_FREEZE_SCHEMA
+    unit: str = MODULE_UNIT
     pilot_version: str = Field(min_length=1)
     corpus_sha256: str
     validator_manifest_sha256: str
@@ -86,8 +106,25 @@ class CorpusFreeze(BaseModel):
     cases: tuple[FrozenCorpusCase, ...]
     record_sha256: str = ""
 
+    @model_validator(mode="after")
+    def _cases_fit_the_unit(self) -> "CorpusFreeze":
+        if self.unit not in (MODULE_UNIT, WHOLE_RIG_UNIT):
+            raise ValueError("unknown corpus unit")
+        if any(
+            (case.labels_sha256 is not None) != (self.unit == WHOLE_RIG_UNIT) for case in self.cases
+        ):
+            raise ValueError("every case is of the corpus's unit")
+        return self
+
     def content_sha256(self) -> str:
-        return stable_sha256(self.model_dump(mode="json", exclude={"record_sha256"}))
+        payload = self.model_dump(mode="json", exclude={"record_sha256"})
+        if payload["unit"] == MODULE_UNIT:
+            del payload["unit"]
+        for case in payload["cases"]:
+            for name in _OPTIONAL_CASE_FIELDS:
+                if case[name] is None:
+                    del case[name]
+        return stable_sha256(payload)
 
     def case_index(self) -> Mapping[str, FrozenCorpusCase]:
         return {case.case_id: case for case in self.cases}
@@ -101,7 +138,11 @@ def corpus_manifest_sha256(manifest: Mapping[str, Any]) -> str:
     """
     cases = manifest.get("cases") or []
     rows = sorted((dict(case) for case in cases), key=lambda row: str(row.get("case_id")))
-    return stable_sha256({"pilot_version": manifest.get("pilot_version"), "cases": rows})
+    payload: dict[str, Any] = {"pilot_version": manifest.get("pilot_version"), "cases": rows}
+    # A single-Module manifest, which names no unit, keeps the digest it had before units.
+    if manifest.get("unit", MODULE_UNIT) != MODULE_UNIT:
+        payload["unit"] = manifest.get("unit")
+    return stable_sha256(payload)
 
 
 def cross_partition_leakage(manifest: Mapping[str, Any]) -> tuple[str, ...]:
@@ -144,6 +185,25 @@ def load_pilot_validator(path: Path | None = None) -> Validator:
     return validate
 
 
+def _frozen_case(case: Mapping[str, Any], unit: str) -> FrozenCorpusCase:
+    common = {
+        "case_id": case["case_id"],
+        "partition": case["partition"],
+        "cohort": case["cohort"],
+        "image_asset_hashes": tuple(case["image_asset_hashes"]),
+    }
+    if unit == WHOLE_RIG_UNIT:
+        labels = sorted(case["labels"], key=lambda label: (label["row_index"], label["start_hp"]))
+        return FrozenCorpusCase(
+            **common, labels_sha256=stable_sha256({"rows": case["rows"], "labels": labels})
+        )
+    return FrozenCorpusCase(
+        **common,
+        expected_choice=case["expected_choice"],
+        candidate_set_hash=case["candidate_set_hash"],
+    )
+
+
 def freeze_corpus(
     manifest: Mapping[str, Any] | None,
     *,
@@ -158,6 +218,10 @@ def freeze_corpus(
     pilot_version = manifest.get("pilot_version")
     if not isinstance(pilot_version, str) or not pilot_version.strip():
         raise CorpusFreezeError("CORPUS_VERSION_MISSING")
+
+    unit = manifest.get("unit", MODULE_UNIT)
+    if unit not in (MODULE_UNIT, WHOLE_RIG_UNIT):
+        raise CorpusFreezeError("CORPUS_UNIT_INVALID")
 
     leakage = cross_partition_leakage(manifest)
     if leakage:
@@ -176,25 +240,13 @@ def freeze_corpus(
 
     try:
         frozen_cases = tuple(
-            sorted(
-                (
-                    FrozenCorpusCase(
-                        case_id=case["case_id"],
-                        partition=case["partition"],
-                        cohort=case["cohort"],
-                        expected_choice=case["expected_choice"],
-                        image_asset_hashes=tuple(case["image_asset_hashes"]),
-                        candidate_set_hash=case["candidate_set_hash"],
-                    )
-                    for case in cases
-                ),
-                key=lambda row: row.case_id,
-            )
+            sorted((_frozen_case(case, unit) for case in cases), key=lambda row: row.case_id)
         )
     except (KeyError, TypeError, ValueError) as exc:
         raise CorpusFreezeError("CORPUS_CASE_INVALID") from exc
 
     record = CorpusFreeze(
+        unit=unit,
         pilot_version=pilot_version,
         corpus_sha256=corpus_manifest_sha256(manifest),
         validator_manifest_sha256=str(report.get("manifest_sha256", "")),
