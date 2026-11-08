@@ -1,0 +1,297 @@
+{
+ "file": "commons-180.jpg",
+ "rows": 3,
+ "row_capacity_hp": [
+  84,
+  84,
+  84
+ ],
+ "px_per_hp": [
+  33.3,
+  32.3,
+  31.7
+ ],
+ "cohort_suggestions": [
+  "clear_front_panel",
+  "cable_obscured",
+  "unknown_open_set",
+  "revision_or_panel_variant",
+  "hard_negative"
+ ],
+ "labels": [
+  {
+   "kind": "module",
+   "maker": "Doepfer",
+   "name": "A-110-1",
+   "row_index": 0,
+   "start_hp": 0,
+   "hp": 10,
+   "n": 1,
+   "catalog_id": 535,
+   "confidence": "high",
+   "evidence": "read 'A-110-1 VCO STANDARD VCO'"
+  },
+  {
+   "kind": "module",
+   "maker": "Doepfer",
+   "name": "A-110-1",
+   "row_index": 0,
+   "start_hp": 10,
+   "hp": 10,
+   "n": 2,
+   "catalog_id": 535,
+   "confidence": "high",
+   "evidence": "read 'A-110-1 VCO STANDARD VCO'; white and blue cables plugged in, header clear"
+  },
+  {
+   "kind": "module",
+   "maker": "Doepfer",
+   "name": "A-114",
+   "row_index": 0,
+   "start_hp": 20,
+   "hp": 4,
+   "n": 3,
+   "catalog_id": 312,
+   "confidence": "high",
+   "evidence": "read 'A114 RING MOD.'"
+  },
+  {
+   "kind": "module",
+   "maker": "Doepfer",
+   "name": "A-115",
+   "row_index": 0,
+   "start_hp": 24,
+   "hp": 8,
+   "n": 4,
+   "catalog_id": 313,
+   "confidence": "high",
+   "evidence": "read 'A-115 DIV. Audio Divider'"
+  },
+  {
+   "kind": "module",
+   "maker": "Doepfer",
+   "name": "A-116",
+   "row_index": 0,
+   "start_hp": 32,
+   "hp": 8,
+   "n": 5,
+   "catalog_id": 314,
+   "confidence": "high",
+   "evidence": "read 'A-116 WP VC Waveform Processor'"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 0,
+   "start_hp": 40,
+   "hp": 8,
+   "n": 6,
+   "confidence": "medium",
+   "observed": "Doepfer A-138b (exponential mixer)",
+   "evidence": "read 'A-138 MIXER a/lin(empty) b/exp(filled)' = A-138b; catalog's only A-138 row is 'A-138m' (matrix mixer, a different module), so open_set"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 0,
+   "start_hp": 48,
+   "hp": 8,
+   "n": 7,
+   "confidence": "medium",
+   "observed": "Doepfer A-120 VCF 1 (24dB low pass)",
+   "evidence": "read 'A-120 VCF1 LOW PASS FILTER'; no A-120 in catalog"
+  },
+  {
+   "kind": "module",
+   "maker": "Doepfer",
+   "name": "A-106-6",
+   "row_index": 0,
+   "start_hp": 56,
+   "hp": 12,
+   "n": 8,
+   "catalog_id": 304,
+   "confidence": "high",
+   "evidence": "read 'A-106-6 XP VCF 16-fold VC XPander Filter'"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 0,
+   "start_hp": 68,
+   "hp": 8,
+   "n": 9,
+   "confidence": "medium",
+   "observed": "Doepfer A-131 (exponential VCA)",
+   "evidence": "read 'A-131 VCA EXP. VCA'; no A-131 in catalog. Red and blue cables cross the lower panel"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 0,
+   "start_hp": 76,
+   "hp": 8,
+   "n": 10,
+   "confidence": "medium",
+   "observed": "Doepfer A-130 (linear VCA)",
+   "evidence": "read 'A-130 VCA LINEAR VCA'; no A-130 in catalog"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 1,
+   "start_hp": 0,
+   "hp": 12,
+   "n": 11,
+   "confidence": "medium",
+   "observed": "Doepfer A-190-4 USB/MIDI-CV/Gate/Sync interface",
+   "evidence": "read 'A-190-4 USB/Midi to CV/Gate/Sync Inte..' and 'CHn' LED display; no A-190 in catalog"
+  },
+  {
+   "kind": "module",
+   "maker": "Doepfer",
+   "name": "A-118-1",
+   "row_index": 1,
+   "start_hp": 12,
+   "hp": 8,
+   "n": 12,
+   "catalog_id": 316,
+   "confidence": "medium",
+   "evidence": "panel reads 'A-118 NOISE +RANDOM VOLT.' (8 HP); Doepfer now sells this module as A-118-1 (doepfer.de/a118.htm), so matched to catalog A-118-1 by renumbering, not by an exact read"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 1,
+   "start_hp": 20,
+   "hp": 4,
+   "n": 13,
+   "confidence": "medium",
+   "observed": "Doepfer A-148 Dual S&H",
+   "evidence": "read 'A148' and 'DU..S&H' (middle hidden by a white cable); no A-148 in catalog"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 1,
+   "start_hp": 24,
+   "hp": 8,
+   "n": 14,
+   "confidence": "medium",
+   "observed": "Doepfer A-145-1 LFO",
+   "evidence": "read '..145-1 LFO' and 'Lo.. Frequency Oscillator' through crossing blue/white/red cables; no A-145 in catalog"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 1,
+   "start_hp": 32,
+   "hp": 8,
+   "n": 15,
+   "confidence": "medium",
+   "observed": "Doepfer A-146 LFO 2 (variable waveform)",
+   "evidence": "read 'A-146 LFO2 Variable Waveform LFO'; no A-146 in catalog. Red cable crosses it"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 1,
+   "start_hp": 40,
+   "hp": 4,
+   "n": 16,
+   "confidence": "medium",
+   "observed": "Doepfer A-160-1 Clock Divider",
+   "evidence": "read 'A160-1 CLOCK DIV.' with /2../64 outputs; catalog has only 'A-160-2' (id 326, a different divider), so open_set: near-miss name"
+  },
+  {
+   "kind": "module",
+   "maker": "Doepfer",
+   "name": "A-161",
+   "row_index": 1,
+   "start_hp": 44,
+   "hp": 4,
+   "n": 17,
+   "catalog_id": 327,
+   "confidence": "high",
+   "evidence": "read 'A161 CLK SEQU.'"
+  },
+  {
+   "kind": "module",
+   "maker": "Doepfer",
+   "name": "A-180-1",
+   "row_index": 1,
+   "start_hp": 48,
+   "hp": 4,
+   "n": 18,
+   "catalog_id": 332,
+   "confidence": "high",
+   "evidence": "read 'A180-1 MULTIPLES'"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 1,
+   "start_hp": 52,
+   "hp": 8,
+   "n": 19,
+   "confidence": "medium",
+   "observed": "Doepfer A-138a (linear mixer)",
+   "evidence": "read 'A-138 MIXER a/lin(filled) b/exp(empty)' = A-138a; catalog has only 'A-138m' (matrix mixer), so open_set"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 1,
+   "start_hp": 60,
+   "hp": 8,
+   "n": 20,
+   "confidence": "medium",
+   "observed": "Doepfer A-170 Dual Slew Limiter",
+   "evidence": "read 'A-170 SL DUAL SLEW LIMITER'; no A-170 in catalog. Yellow, red and blue cables cross it"
+  },
+  {
+   "kind": "module",
+   "maker": "Doepfer",
+   "name": "A-140",
+   "row_index": 1,
+   "start_hp": 68,
+   "hp": 8,
+   "n": 21,
+   "catalog_id": 321,
+   "confidence": "medium",
+   "evidence": "read 'A-140-1 A..R Envelope Gene..' (red cable over the name); doepfer.de/a140.htm says A-140 was renamed A-140-1, so matched to catalog A-140 by renumbering"
+  },
+  {
+   "kind": "module",
+   "maker": "Doepfer",
+   "name": "A-140",
+   "row_index": 1,
+   "start_hp": 76,
+   "hp": 8,
+   "n": 22,
+   "catalog_id": 321,
+   "confidence": "medium",
+   "evidence": "read 'A-140. ADSR Envelope Generator' (digit after A-140 hidden by a blue cable); same panel as n21, factory BS2 has two A-140; matched by renumbering"
+  },
+  {
+   "kind": "blank_panel",
+   "row_index": 2,
+   "start_hp": 0,
+   "hp": 42,
+   "n": 23,
+   "confidence": "high",
+   "evidence": "plain blank panel, screws at corners, one seam at the middle of the row; measures ~42 HP"
+  },
+  {
+   "kind": "blank_panel",
+   "row_index": 2,
+   "start_hp": 42,
+   "hp": 42,
+   "n": 24,
+   "confidence": "high",
+   "evidence": "plain blank panel; measures ~41.2-41.3 HP visible, right end slightly tucked under the case frame like rows 0-1"
+  }
+ ],
+ "catalog_hp_disagreements": [],
+ "excluded": "Headphones, power adapter, patch cables hanging below the case and a paper sheet at right are not part of the case",
+ "notes": "Doepfer A-100BS2 in a 3-row (9U, P9-style) suitcase. Rows 0 and 1 are full 84 HP rows exactly as Doepfer's BS2 module list; row 2 is two ~42 HP blank panels (the brief's 'lower row partly empty' is this blank row). All widths match Doepfer's published widths; positions come from per-row fits of x = L + s*hp at the top and bottom panel edges (keystone: scale shrinks downward, 33.7 -> 31.5 px/HP). Implied right ends sit at ~83.6-83.8 HP, so the last ~0.3 HP of each row is under the frame; no empty rail detected. 11 of 22 modules are off-catalog (open_set) because the catalog has only 51 Doepfer rows. Three matches rely on Doepfer renumbering rather than an exact read: n12 panel 'A-118' -> catalog 'A-118-1'; n21/n22 panel 'A-140-1' -> catalog 'A-140'. Two near-miss names to watch as hard negatives: A-160-1 (here) vs catalog A-160-2; A-138a/b (here) vs catalog A-138m. Commons description only says 'Doepfer A-100BS2 linked to a Linnstrument'."
+}
