@@ -61,6 +61,57 @@ The catalog stops being something to browse. It stays as the reference a reading
 43. As an operator, I want a staging walkthrough that starts from a photo and ends with an exported book, so that the deployed journey is tested, not a seeded Rig.
 44. As an operator, I want readings to fail closed when the provider is off, slow or wrong, so that a failure never turns into a guessed Rig.
 
+## Story status
+
+T090's convergence, 2026-11-08: 42 stories done, story 3 part done with the rest moved, and story 43 open. The drifts it found and fixed are D1 to D14 in [plan.md](plan.md#convergence-t090).
+
+| Story | Status | Where |
+|---|---|---|
+| 1 | Done | The home page's headline (T050). |
+| 2 | Done | "Photograph your Rig" is the home page's one action (T050). |
+| 3 | Part done, part moved | The example reading, and a real page of the demo Rig's book (#375). The reading on a photo, with its numbered boxes, follows T060b's photo. |
+| 4 | Done | Uploading needs a signed-in owner (T020, T050). |
+| 5 | Done | A Rig starts from a photo with no Case (T020, T050). |
+| 6 | Done | The Photo screen's guidance (T050). |
+| 7 | Done | The file input opens the camera on a phone (T050). |
+| 8 | Done | One photo at a time, each naming its rows, through "Add a photo of another row" (T050). |
+| 9 | Done | The Reading screen refreshes while a Reading is being read (T050). |
+| 10 | Done | Numbered boxes on the photo, numbered as the list (T050). |
+| 11 | Done | Each Sighting's name, row and HP span (T050). |
+| 12 | Done | "Sure", "Check this" and "Couldn't tell" (T050). |
+| 13 | Done | Couldn't tell, then Check this, then Sure, each by row and HP (T050). |
+| 14 | Done | The closest matches, one tap each (T022, T050). |
+| 15 | Done | Catalog search on the Reading screen (T050). |
+| 16 | Done | "Not a Module" (T050). |
+| 17 | Done | Blank Panels shown as empty HP (T050). |
+| 18 | Done | "Add a Module" at a chosen position (T050). |
+| 19 | Done | "Leave out" (T050). |
+| 20 | Done | An unknown thing is shown as unknown, never guessed (T021, T050). The editor's mock detector, which made up candidates, is gone (#373, decision 63). |
+| 21 | Done | "Correct the layout" on the Reading screen (T050). |
+| 22 | Done | Overlaps and rows past a Case are named before confirming (T050, #370). |
+| 23 | Done | "Your Case" on the Reading screen (#372). |
+| 24 | Done | Rows as wide as what's on them, on the Reading screen, in the editor and on the Rig screen (T030, #372). |
+| 25 | Done | One confirmation for the whole Rig (T030, T050). |
+| 26 | Done | Nothing joins the Rig until it's confirmed (T030). |
+| 27 | Done | Confirming leads straight to the Rig screen, which generates (T030, T050). |
+| 28 | Done | A run that can't be computed says why in words (#370). An unknown jack never stops a run: its jacks print by role (spec 002). |
+| 29 | Done | The export's price shows before the click, on the Rig screen and in the Style Studio (#374). |
+| 30 | Done | "Take a new photo" on the Rig screen (#370); a changed layout makes a new revision (T030). |
+| 31 | Done | Retake, before anything is confirmed (T031, T050). |
+| 32 | Done | The Photo screen says 30 days (T050), and each kept photo shows the day it goes (#370). |
+| 33 | Done | Each kept photo can be deleted from the Rig screen (#370). |
+| 34 | Done | The Reading screen's list holds everything the photo shows, in text, and warnings name the Modules (T050, #370). |
+| 35 | Done | Where photo reading is closed, the Photo screen says so and offers manual entry (T040, T050). |
+| 36 | Done | Manual entry places Modules on rows, with or without a Case (#372). |
+| 37 | Done | My Rigs lists the owner's Rigs, newest first (T051, #370). |
+| 38 | Done | My Rigs, Patches, Account, and Admin for an Admin (T051). |
+| 39 | Done | The old catalog pages redirect to the home page (T051). |
+| 40 | Done | The admin catalog tools stay (T051). |
+| 41 | Done | Each Reading keeps its provider, version and photo hash (T021). |
+| 42 | Done | Production can't open photo reading by config (T040). Turning it on is T080. |
+| 43 | Open | The walkthrough from a photo is built (T060a). Running it on staging waits on the owner's photo (T060b). |
+| 44 | Done | A provider that's off, slow or wrong fails the Reading closed (T021, T022). |
+
 ## Implementation Decisions
 
 ### The journey and its screens

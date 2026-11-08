@@ -193,6 +193,19 @@ test.describe("the photo journey", () => {
     await expect(items.nth(2)).toContainText("Sure");
   });
 
+  test("the home page shows a real page of the example Rig's book, and it loads", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    const figure = page.getByRole("figure", { name: /A page of this Rig's Patch Book/ });
+    const image = figure.getByRole("img", { name: /A Patch Book page titled Offset Gate-Choir/ });
+    await image.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() => image.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth))
+      .toBe(1000);
+  });
+
   test("a visitor is asked to sign in before photographing their Rig", async ({ page }) => {
     await page.goto("/");
 

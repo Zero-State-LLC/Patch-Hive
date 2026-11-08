@@ -16,7 +16,7 @@ The same as spec 001's [plan](../001-rig-intelligence/plan.md): Python 3.11 with
 
 ## Convergence (T090)
 
-T090 checked every user story and Implementation Decision against the code on 2026-11-07, at `e1e03dd`. It found these drifts. Each is fixed, waiting on the owner, or left with a reason. The story-by-story status is added to spec.md when the last of them closes.
+T090 checked every user story and Implementation Decision against the code on 2026-11-07, at `e1e03dd`. It found these drifts. Each is fixed, or moved with a reason. The story-by-story status is in spec.md's [Story status](spec.md#story-status).
 
 | # | Drift | Stories | State |
 |---|---|---|---|
@@ -32,5 +32,5 @@ T090 checked every user story and Implementation Decision against the code on 20
 | D10 | Nothing on the site deleted a photo, though the Photo screen said you could. | 33 | Fixed (#370): each kept photo on the Rig screen, with the day it goes. |
 | D11 | A Case can't be named on the Reading screen, manual entry refuses a Rig with no Case, and the Rig screen draws no rail for a Rig with no Case. The placement editor also couldn't place anything on a Rig with no Case, so a Rig started from a photo couldn't be corrected there. | 23, 24, 36 | Fixed (#372): the Reading screen names a Case, the editor goes on without one and places on open rows, and the Rig screen draws a Rig with no Case. |
 | D12 | Export shows the balance but not the export's price before it is committed. | 29 | Fixed (#374): the commerce answer names `export_cost`, and the Rig screen's and the Style Studio's exports show the price, or the plan that covers it, before the click. They wait while the balance is short or the price didn't load. |
-| D13 | The home page has an example reading as text, with no photo, no boxes and no book page. | 3 | A later PR, or with T060b's owner photo. |
+| D13 | The home page has an example reading as text, with no photo, no boxes and no book page. | 3 | Book page fixed (#375): the home page shows the demo patch's real page from the seeded run's exported book, beside the reading. The reading on a photo with its numbered boxes moves to follow T060b, the owner's photo. |
 | D14 | The placement editor still has spec 005's per-Module photo step. It uploads outside spec 009's photo reading on every host, and its mock provider makes up candidates from each photo's hash. Each must still be confirmed by hand, and production accounts aren't open yet. | 20, 35 | Fixed (#373): the owner had it removed (decision 63). The mock detector never runs in production, so a photo sent to that API there is stored and no candidate is made up. Staging keeps it for its evidence check on a test card (006 T060b). |
