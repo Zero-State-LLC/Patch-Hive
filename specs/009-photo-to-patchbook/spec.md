@@ -105,11 +105,11 @@ The catalog stops being something to browse. It stays as the reference a reading
 
 - Confirming applies to the whole Rig, across every current Reading of it, and needs each of those Readings to be `read`. A `superseded` Reading isn't current. It submits the final list for the rows those Readings cover: each kept Sighting with its chosen catalog Module and position, any Module added by hand, the Sightings left out, and an optional Case.
 - Placements on rows no current Reading covers stay as they are: a photo of one row says nothing about the others. The overlap and Case checks run across the whole resulting Rig.
-- It creates a new, immutable Rig revision (ADR 0001) authored as a photo confirmation, and that revision's placements are the confirmed positions.
+- It seals an inventory revision that records it came from a photo confirmation, who confirmed it, and each item's Sighting. With it comes the immutable Rig revision (ADR 0001) of the confirmed layout, whose placements are the confirmed positions. A Rig revision is named by its content, so a later generation of the same layout uses the same one.
 - Confirmed positions count as placement (decision 59, superseding decision 35). Readiness for generation no longer waits for manual placement, and "still to place" lists only confirmed Modules that have no position.
 - Confirmation refuses overlapping HP within a row. It also refuses a row wider than its Case, when a Case is named. Each refusal names the Modules involved and changes nothing.
 - With no Case, a row's width is the span of its confirmed Modules, and the power budget is reported as unknown, never as zero.
-- A later photo of the same Rig makes a new Reading. Confirming it makes a new revision. Earlier runs and books stay as they were (spec 001 FR-020).
+- A later photo of the same Rig makes a new Reading. Confirming it makes a new revision when the layout changed. Earlier runs and books stay as they were (spec 001 FR-020).
 
 ### Generation and the Book
 

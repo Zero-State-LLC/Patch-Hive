@@ -490,6 +490,13 @@ export interface PhotoReading {
   sightings: Sighting[];
 }
 
+/** A photo kept as a Rig's evidence, private to its owner. */
+export interface RigPhotoAsset {
+  id: string;
+  created_at: string;
+  retention_expires_at: string;
+}
+
 export interface RigPhotoStart {
   rig_id: number;
   photo_id: string;
@@ -538,6 +545,14 @@ export const photoApi = {
     api.get<Blob>(`/racks/${rigId}/evidence/images/${encodeURIComponent(photoId)}/content`, {
       responseType: "blob",
     }),
+
+  /** The Rig's kept photos, newest first; a deleted one isn't listed. */
+  photos: (rigId: number) =>
+    api.get<{ total: number; assets: RigPhotoAsset[] }>(`/racks/${rigId}/evidence/images`),
+
+  /** Delete a photo now: its file goes, and its Reading keeps only what was read. */
+  deletePhoto: (rigId: number, photoId: string) =>
+    api.delete(`/racks/${rigId}/evidence/images/${encodeURIComponent(photoId)}`),
 
   retry: (rigId: number, readingId: string) =>
     api.post<RigPhotoStart>(readingsPath(rigId, `/${encodeURIComponent(readingId)}/retry`)),

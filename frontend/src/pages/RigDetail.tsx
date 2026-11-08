@@ -5,6 +5,7 @@ import Hash from "@/components/Hash";
 import LoadFailure from "@/components/LoadFailure";
 import PatchOverlay from "@/components/PatchOverlay";
 import PatchRail from "@/components/PatchRail";
+import RigPhotos from "@/components/RigPhotos";
 import RigRail from "@/components/RigRail";
 import Tabs from "@/components/Tabs";
 import { ChainSkeleton, ListSkeleton } from "@/components/Skeletons";
@@ -106,6 +107,8 @@ function RigDetail() {
   const [generating, setGenerating] = useState(false);
   // Generating writes to the rig, which belongs to its owner (the server enforces it).
   const signedIn = useAuthStore((st) => st.isAuthenticated());
+  // Only the owner sees the Rig's photos and Readings, which stay private to them.
+  const isOwner = useAuthStore((st) => st.user?.id != null && st.user.id === rig?.user_id);
   const [generateStatus, setGenerateStatus] = useState("");
   const [generateTone, setGenerateTone] = useState<"success" | "warning">("success");
   const [lastGenerateRunId, setLastGenerateRunId] = useState<number | null>(null);
@@ -352,7 +355,7 @@ function RigDetail() {
       const detail = apiError.response?.data?.detail;
       setGenerateTone("warning");
       setGenerateStatus(
-        typeof detail === "string" ? detail : "Generation failed. Confirm inventory and retry.",
+        typeof detail === "string" ? detail : "Generation failed. Try again in a moment.",
       );
     } finally {
       setGenerating(false);
@@ -398,15 +401,14 @@ function RigDetail() {
   const reached = hasRuns ? 2 : inventoryReady ? 1 : 0;
   const stages = [
     {
-      title: "Confirm inventory",
+      title: "Confirm the Rig",
       state: inventoryReady
-        ? "Sealed and ready"
+        ? "Confirmed and ready"
         : modulesToPlace.length
           ? `Confirmed, ${modulesToPlace.length} still to place`
-          : inventorySealed
-            ? "Sealed, candidates open"
-            : "Not sealed yet",
-      detail: "Photo evidence or manual placements, never auto-confirmed.",
+          : "Nothing confirmed yet",
+      detail:
+        "A reading of its photo, or Modules placed by hand. Nothing joins it until you confirm.",
     },
     {
       title: "Generate patches",
@@ -524,13 +526,13 @@ function RigDetail() {
           aria-labelledby="tab-overview"
         >
           <div className="rig-tabpanel__head">
-            <h2>{hasRuns ? "Rig ready" : "Build the source of truth"}</h2>
+            <h2>{hasRuns ? "Rig ready" : "Confirm what's on this Rig"}</h2>
             <p className="muted">
               {runsError
                 ? "Its revisions and runs are unknown until they load."
                 : hasRuns
                   ? `${revisions.length} revision${revisions.length === 1 ? "" : "s"}, ${runs.length} generation run${runs.length === 1 ? "" : "s"}.`
-                  : "Add modules manually or review photo evidence before generating."}
+                  : "Confirm a reading of its photo, or place its Modules by hand, before generating."}
             </p>
             {activeRevisionId ? (
               <p className="muted">
@@ -582,6 +584,8 @@ function RigDetail() {
             </section>
           ) : null}
 
+          {isOwner && rigIdNum ? <RigPhotos rigId={rigIdNum} /> : null}
+
           <div className="rig-detail-grid">
             <div className="panel" aria-label="Confirmed inventory receipt">
               <h3>Confirmed inventory</h3>
@@ -612,7 +616,8 @@ function RigDetail() {
                 </>
               ) : !inventoryError ? (
                 <p className="muted" role="status">
-                  No sealed inventory revision yet. Confirm photo or manual candidates first.
+                  Nothing on this Rig is confirmed yet. Confirm a reading of its photo, or place its
+                  Modules by hand.
                 </p>
               ) : null}
               <ModulesToPlace modules={modulesToPlace} rackId={rigIdNum || null} />
@@ -622,10 +627,10 @@ function RigDetail() {
               <h3>Generate patches</h3>
               <p id="generate-help" className="muted">
                 {inventoryReady
-                  ? "Sealed inventory is ready. Generation uses modules placed on the rig only."
+                  ? "Ready. Patches use only the Modules confirmed on this Rig."
                   : inventorySealed
-                    ? "Inventory is sealed but not ready for generation: resolve candidates or place modules, then retry."
-                    : "No sealed inventory yet. You can still open evidence confirmation; generation fails closed if no modules are placed on the rig."}
+                    ? "Not ready yet: nothing on this Rig is confirmed. Check the reading or correct the layout, then generate."
+                    : "Nothing on this Rig is confirmed yet, so generating makes no patches. Confirm a reading of its photo, or place its Modules by hand."}
               </p>
               <div className="page-hero-actions">
                 <button
@@ -646,9 +651,7 @@ function RigDetail() {
                   className={inventoryReady ? "button button-secondary" : "button button-primary"}
                   to={`/racks/${rigId}/edit`}
                 >
-                  {inventorySealed
-                    ? "Update inventory evidence"
-                    : "Confirm inventory (photo / manual)"}
+                  Correct the layout
                 </Link>
                 {hasRuns ? (
                   <button
@@ -815,7 +818,7 @@ function RigDetail() {
           </div>
           <div className="page-hero-actions">
             <Link className="button button-secondary" to={`/racks/${rigId}/edit`}>
-              Open photo / inventory confirmation
+              Correct the layout
             </Link>
           </div>
         </div>

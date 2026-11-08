@@ -28,15 +28,22 @@ const path = [
 
 const PHOTO_STEP = "/rigs/new/photo";
 
-// An example reading of the demo rig's first Modules, in the words the Reading screen uses.
+// An example reading of the demo rig's first Modules, in the words the Reading screen uses and
+// in its order: the one to check first, then the rest by row and HP.
 const EXAMPLE_WORDS = ["Sure", "Check this", "Sure"] as const;
-const example = DEMO_RIG.modules.slice(0, EXAMPLE_WORDS.length).map((placed, index) => ({
-  words: EXAMPLE_WORDS[index],
-  name: `${placed.module?.brand ?? ""} ${placed.module?.name ?? ""}`.trim(),
-  row: placed.row_index,
-  from: placed.start_hp,
-  to: placed.start_hp + (placed.module?.hp ?? 0),
-}));
+const example = DEMO_RIG.modules
+  .slice(0, EXAMPLE_WORDS.length)
+  .map((placed, index) => ({
+    words: EXAMPLE_WORDS[index],
+    name: `${placed.module?.brand ?? ""} ${placed.module?.name ?? ""}`.trim(),
+    row: placed.row_index,
+    from: placed.start_hp,
+    to: placed.start_hp + (placed.module?.hp ?? 0),
+  }))
+  .sort(
+    (a, b) =>
+      Number(a.words === "Sure") - Number(b.words === "Sure") || a.row - b.row || a.from - b.from,
+  );
 
 const SIGNAL_NAMES = { audio: "Audio", cv: "CV", gate: "Gate" } as const;
 const signals = (Object.keys(SIGNAL_NAMES) as (keyof typeof SIGNAL_NAMES)[]).filter((signal) =>

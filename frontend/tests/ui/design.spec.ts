@@ -232,6 +232,24 @@ async function mockApi(page: Page, { signedIn }: { signedIn: boolean }) {
     (route) => route.fulfill(json({ total: 1, rigs: [RIG_SUMMARY] })),
   );
   await page.route("**/api/canon/rigs/1", (route) => route.fulfill(json(RIG_DETAIL)));
+  // The owner's photos of rig 1, on its Rig screen: one kept photo, and no Reading still open.
+  await page.route("**/api/racks/1/evidence/images", (route) =>
+    route.fulfill(
+      json({
+        total: 1,
+        assets: [
+          {
+            id: "img-1",
+            created_at: "2026-01-01T00:00:00Z",
+            retention_expires_at: "2026-01-31T00:00:00Z",
+          },
+        ],
+      }),
+    ),
+  );
+  await page.route("**/api/racks/1/evidence/readings", (route) =>
+    route.fulfill(json({ readings: [] })),
+  );
   await page.route("**/api/canon/rigs/1/revisions", (route) =>
     route.fulfill(
       json({

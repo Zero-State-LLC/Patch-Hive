@@ -63,6 +63,8 @@ function Racks() {
   const [moreRigsError, setMoreRigsError] = useState<unknown>(null);
   // Users own their racks: only the owner can generate patches for one.
   const currentUserId = useAuthStore((st) => st.user?.id ?? null);
+  // Signed in, the list is the reader's own Rigs (spec 009 story 37); signed out, the shared ones.
+  const ownRigs = currentUserId ?? undefined;
   const [pdfDownloading, setPdfDownloading] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
   // The selected rig, tab and patch live in the URL (/racks/:rigId?tab=&patch=), so a view
@@ -163,7 +165,7 @@ function Racks() {
     setError(null);
     setListLoading(true);
     try {
-      const response = await canonApi.listRigs({ limit: RIG_PAGE_SIZE });
+      const response = await canonApi.listRigs({ limit: RIG_PAGE_SIZE, user_id: ownRigs });
       // Past here the page may move to the reader's first rig, which the next reader can't open.
       if (!mounted.current) return;
       const rows = response.data.rigs.map(rigSummaryToRack);
@@ -187,7 +189,11 @@ function Racks() {
     setLoadingMoreRigs(true);
     setMoreRigsError(null);
     try {
-      const response = await canonApi.listRigs({ skip: racks.length, limit: RIG_PAGE_SIZE });
+      const response = await canonApi.listRigs({
+        skip: racks.length,
+        limit: RIG_PAGE_SIZE,
+        user_id: ownRigs,
+      });
       const rows = response.data.rigs.map(rigSummaryToRack);
       // A rig created meanwhile shifts the pages, so one already shown is not added twice.
       setRacks((shown) => [
@@ -332,13 +338,15 @@ function Racks() {
     <div className="split-workspace">
       <aside className="split-aside" aria-label="Rig list">
         <div className="split-aside-head">
-          <h1>Rigs</h1>
-          <Link className="button button-primary" to="/racks/new">
+          <h1>{ownRigs != null ? "My Rigs" : "Rigs"}</h1>
+          <Link className="button button-primary" to="/rigs/new/photo">
             New
           </Link>
         </div>
         <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
-          Rig-centric workspace. Each rig carries runs and patch libraries.
+          {ownRigs != null
+            ? "Your Rigs, newest first. Each keeps its runs and Patch Books."
+            : "Rigs people have shared, newest first."}
         </p>
         <div className="side-list">
           {listLoading ? <ListSkeleton label="Loading rigs…" /> : null}
@@ -383,8 +391,8 @@ function Racks() {
           {!listLoading && racks.length === 0 && !error ? (
             <div className="panel">
               <p className="status status-warning">No rigs yet.</p>
-              <Link className="button button-primary" to="/racks/new">
-                Create your first rig
+              <Link className="button button-primary" to="/rigs/new/photo">
+                Photograph your first Rig
               </Link>
             </div>
           ) : null}
@@ -692,12 +700,9 @@ function Racks() {
                     <Link className="button button-secondary" to={`/racks/${selectedRack.id}/edit`}>
                       Place modules
                     </Link>
-                    <Link className="button button-secondary" to="/racks/new">
-                      Create rig
+                    <Link className="button button-secondary" to="/rigs/new/photo">
+                      New Rig
                     </Link>
-                    <button type="button" className="button button-quiet" disabled>
-                      Upload rig (soon)
-                    </button>
                   </div>
                   <p className="muted" style={{ marginBottom: 0, marginTop: "var(--space-3)" }}>
                     Generate once. Patches and exports open as tabs after a run exists. Placement
@@ -914,11 +919,9 @@ function Racks() {
         ) : (
           <div className="panel">
             <h2 style={{ marginTop: 0 }}>Select a rig to begin</h2>
-            <p className="muted">
-              Choose a rig from the list, or create a new one to confirm inventory.
-            </p>
-            <Link className="button button-primary" to="/racks/new">
-              New rig
+            <p className="muted">Choose a Rig from the list, or start a new one from a photo.</p>
+            <Link className="button button-primary" to="/rigs/new/photo">
+              New Rig
             </Link>
           </div>
         )}

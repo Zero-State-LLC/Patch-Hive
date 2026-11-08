@@ -28,23 +28,28 @@ describe("describeEmptyGeneration", () => {
     expect(message).toContain("Nothing was saved");
     expect(message).toContain("VCF: 'LP Out' is not a declared input.");
     expect(message).not.toContain("not on file");
-    expect(message).not.toContain("Confirm inventory");
+    expect(message).not.toContain("nothing on this Rig is confirmed");
   });
 
-  it("keeps the inventory hint, in words, when nothing can be computed", () => {
+  it("says in words that nothing is confirmed when the run can't be computed", () => {
+    // What the API answers today: the inventory gate's code is NOT_COMPUTABLE itself, with a
+    // message meant for logs.
     const message = describeEmptyGeneration({
       ...base,
       generation_status: "NOT_COMPUTABLE",
-      inventory_gate_code: "NO_CONFIRMED_MODULES",
+      inventory_gate_code: "NOT_COMPUTABLE",
+      inventory_gate_messages: [
+        "No USER_CONFIRMED modules in rack inventory; hardware-constrained generation is not computable.",
+      ],
     });
-    expect(message).toContain("Confirm inventory modules");
-    expect(message).toContain("this rig has no confirmed modules yet");
-    expect(message).not.toContain("NO_CONFIRMED_MODULES");
+    expect(message).toBe(
+      "No patches yet: nothing on this Rig is confirmed. Confirm a reading of its photo, or place its Modules by hand, then generate again.",
+    );
   });
 
   it("says no rule fits for zero patches on a computed run", () => {
     expect(describeEmptyGeneration({ ...base, generation_status: "OK" })).toBe(
-      "No patch rule fits this rack.",
+      "No patch rule fits the Modules on this Rig.",
     );
   });
 

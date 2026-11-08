@@ -13,3 +13,24 @@ The same as spec 001's [plan](../001-rig-intelligence/plan.md): Python 3.11 with
 3. T050 and T051, the frontend, once the backend contracts pass.
 4. T060 and T070, whose `b` halves wait on the owner's photos.
 5. T080, last, on the operator's word.
+
+## Convergence (T090)
+
+T090 checked every user story and Implementation Decision against the code on 2026-11-07, at `e1e03dd`. It found these drifts. Each is fixed, waiting on the owner, or left with a reason. The story-by-story status is added to spec.md when the last of them closes.
+
+| # | Drift | Stories | State |
+|---|---|---|---|
+| D1 | T010 set Seam 2's contract as spec 008's walkthrough receipt carrying the Reading (`PhotoReadingEvidence`, `capture_walkthrough_receipt(reading=)`). T060a built a separate photo walkthrough with its own receipt instead, and left T010's four strict xfails in place. Spec 008's note says its walkthrough starts from a photo "instead of the seeded Rig". | 43 | Waiting on the owner: move spec 008's receipt onto the photo, or keep the two walkthroughs apart and rewrite Seam 2's tests against the photo receipt. |
+| D2 | The spec said confirming makes a Rig revision "authored as a photo confirmation", and always a new one. A Rig revision is named by its content and shared with generation of the same layout. The authorship lives on the inventory revision sealed with it. | 30 | Fixed (#370): the spec says what was built. |
+| D3 | My Rigs listed the owner's Rigs together with everyone's public ones, and an Admin's list held every Rig. | 37 | Fixed (#370). |
+| D4 | A run that couldn't be computed showed a general hint: the frontend mapped a code the API never sends. | 28 | Fixed (#370). An unknown jack never stops a run: its jacks print by role (spec 002), so it has no reason to show. |
+| D5 | The Reading screen could only be reached from the upload, and a new photo only from the Reading screen. | 30, 31 | Fixed (#370): the Rig screen's Photos section. |
+| D6 | My Rigs' New went to manual entry, not the photo step. | 2, 5 | Fixed (#370). The photo step still offers manual entry. |
+| D7 | The Reading screen's own overlap and past-the-Case warnings didn't name the Modules; only a red border did. | 22, 34 | Fixed (#370). |
+| D8 | The home page's example reading wasn't in the Reading screen's order. | 3, 13 | Fixed (#370). |
+| D9 | The Rig screen still spoke of inventory evidence and photo/manual confirmation. | 27, 35 | Fixed (#370). |
+| D10 | Nothing on the site deleted a photo, though the Photo screen said you could. | 33 | Fixed (#370): each kept photo on the Rig screen, with the day it goes. |
+| D11 | A Case can't be named on the Reading screen, manual entry refuses a Rig with no Case, and the Rig screen draws no rail for a Rig with no Case. | 23, 24, 36 | Next PR. |
+| D12 | Export shows the balance but not the export's price before it is committed. | 29 | A later PR. |
+| D13 | The home page has an example reading as text, with no photo, no boxes and no book page. | 3 | A later PR, or with T060b's owner photo. |
+| D14 | The placement editor still has spec 005's per-Module photo step, which uploads outside spec 009's photo reading. | 35 | To check with D11. |
