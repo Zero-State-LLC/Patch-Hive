@@ -87,6 +87,16 @@ describe("Home", () => {
     expect(items[2]).toHaveTextContent(DEMO_RIG.modules[2].module?.name ?? "");
   });
 
+  it("shows a page of the book the example Rig's patches make, in words as well", () => {
+    renderHome();
+    const page = screen.getByRole("figure", { name: /A page of this Rig's Patch Book/ });
+    const image = within(page).getByRole("img");
+    // The real page, as the export prints it: the demo patch's own page of the book.
+    expect(image).toHaveAttribute("src", "/examples/patch-book-page.webp");
+    expect(image).toHaveAccessibleName(new RegExp(`page titled ${DEMO_PATCH.name}`));
+    expect(image).toHaveAccessibleName(/five cables in order/);
+  });
+
   it("asks a signed-out visitor to sign in before photographing their Rig", () => {
     renderHome();
     expect(screen.getByRole("link", { name: "Photograph your Rig" })).toHaveAttribute(
