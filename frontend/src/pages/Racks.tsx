@@ -435,15 +435,18 @@ function Racks() {
                   <div className="panel placement-cta" role="region" aria-label="Place modules">
                     <h3>This rig has no modules yet</h3>
                     <p className="muted">
-                      Place catalog modules by row and start HP, or prepare placeable rows from the
-                      module gallery first.
+                      Place catalog modules by row and start HP, or photograph the Rig and confirm
+                      what PatchHive reads.
                     </p>
                     <div className="page-hero-actions">
                       <Link className="button button-primary" to={`/racks/${selectedRack.id}/edit`}>
                         Place modules
                       </Link>
-                      <Link className="button button-secondary" to="/modules?hp=known">
-                        Browse placeable catalog
+                      <Link
+                        className="button button-secondary"
+                        to={`/rigs/${selectedRack.id}/photo`}
+                      >
+                        Photograph this Rig
                       </Link>
                     </div>
                   </div>

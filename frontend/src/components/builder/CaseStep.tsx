@@ -82,10 +82,7 @@ export default function CaseStep({
       <section className="builder-step" aria-labelledby="case-step-title">
         <div className="builder-step__head">
           <h2 id="case-step-title">Choose a case</h2>
-          <p className="muted">
-            Only Eurorack cases take placements. Other formats stay in the{" "}
-            <Link to="/cases">case catalog</Link>.
-          </p>
+          <p className="muted">Only Eurorack cases take placements.</p>
         </div>
 
         <div className="panel">
@@ -190,16 +187,13 @@ export default function CaseStep({
             <LoadFailure what="The case list" error={casesError} onRetry={onRetryCases} />
           ) : !casesLoading && catalogCases.length === 0 && legacyCases.length === 0 ? (
             <p className="status status-warning">
-              No Eurorack cases available.{" "}
+              No Eurorack cases available.
               {import.meta.env.DEV ? (
                 <>
-                  Import <code>data/cases/seed-v1.json</code> via the catalog populator, or
-                  open{" "}
+                  {" "}
+                  Import <code>data/cases/seed-v1.json</code> via the catalog populator.
                 </>
-              ) : (
-                "Open "
-              )}
-              <Link to="/cases">Cases</Link>.
+              ) : null}
             </p>
           ) : null}
 

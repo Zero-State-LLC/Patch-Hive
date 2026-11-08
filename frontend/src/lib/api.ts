@@ -30,11 +30,6 @@ import type {
   User,
   CanonicalExportRecord,
   ReferralSummary,
-  RegistryCoverage,
-  RegistryManufacturerList,
-  RegistrySearchResult,
-  Manufacturer,
-  DeviceModel,
 } from "@/types/api";
 import type {
   AdminUserList,
@@ -966,18 +961,6 @@ export const accountApi = {
    */
   deleteAccount: (password: string) =>
     api.delete<void>("/me", { data: { password }, withCredentials: true, timeout: 60_000 }),
-};
-
-// Registry / PDB API (Phase 2)
-export const registryApi = {
-  listManufacturers: (params?: { limit?: number; offset?: number }) =>
-    api.get<RegistryManufacturerList>("/registry/manufacturers", { params }),
-  search: (q: string, limit = 20, config?: Pick<AxiosRequestConfig, "signal">) =>
-    api.get<RegistrySearchResult>("/registry/search", { ...config, params: { q, limit } }),
-  getCoverage: () => api.get<RegistryCoverage>("/registry/coverage"),
-  getManufacturer: (slug: string) => api.get<Manufacturer>(`/registry/manufacturers/${slug}`),
-  listModelsForManufacturer: (slug: string) =>
-    api.get<{ models: DeviceModel[] }>(`/registry/manufacturers/${slug}/models`),
 };
 
 export default api;

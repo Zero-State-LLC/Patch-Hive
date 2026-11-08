@@ -12,10 +12,10 @@ describe("titleFor", () => {
     ["/racks/7/edit", "Place modules, PatchHive"],
     ["/rigs/7", "Rig workspace, PatchHive"],
     ["/rigs/7/patchbook-studio", "Patch book style, PatchHive"],
-    ["/cases/sim-co-sim-84", "Case, PatchHive"],
+    ["/rigs/7/reading", "Check the reading, PatchHive"],
     ["/privacy", "Privacy notice, PatchHive"],
-    ["/admin", "Ops, PatchHive"],
-    ["/admin/exports", "Ops exports, PatchHive"],
+    ["/admin", "Admin, PatchHive"],
+    ["/admin/exports", "Admin exports, PatchHive"],
   ])("names %s", (path, title) => {
     expect(titleFor(path)).toBe(title);
   });

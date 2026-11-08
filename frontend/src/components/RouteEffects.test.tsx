@@ -9,15 +9,15 @@ function Shell({ start }: { start: string }) {
     <MemoryRouter initialEntries={[start]}>
       <RouteEffects />
       <nav>
-        <Link to="/modules">Modules</Link>
-        <Link to="/modules#filters">Filters</Link>
+        <Link to="/patches">Patches</Link>
+        <Link to="/patches#filters">Filters</Link>
         <Link to="/racks/2">Second rig</Link>
       </nav>
       <main id="main-content" tabIndex={-1}>
         <Routes>
           <Route path="/racks" element={<p>Rigs screen</p>} />
           <Route path="/racks/:rigId" element={<p>Rigs screen, one rig chosen</p>} />
-          <Route path="/modules" element={<p>Modules screen</p>} />
+          <Route path="/patches" element={<p>Patches screen</p>} />
         </Routes>
       </main>
     </MemoryRouter>
@@ -46,12 +46,12 @@ describe("RouteEffects", () => {
     const user = userEvent.setup();
     render(<Shell start="/racks" />);
 
-    await user.click(screen.getByRole("link", { name: "Modules" }));
+    await user.click(screen.getByRole("link", { name: "Patches" }));
 
     // Navigations are transitions: wait for the new screen before checking what followed it.
-    expect(await screen.findByText("Modules screen")).toBeInTheDocument();
+    expect(await screen.findByText("Patches screen")).toBeInTheDocument();
     await waitFor(() => expect(document.getElementById("main-content")).toHaveFocus());
-    expect(document.title).toBe("Modules, PatchHive");
+    expect(document.title).toBe("Patches, PatchHive");
     expect(scrollTo).toHaveBeenCalledWith(0, 0);
   });
 
@@ -61,8 +61,8 @@ describe("RouteEffects", () => {
 
     await user.click(screen.getByRole("link", { name: "Filters" }));
 
-    expect(await screen.findByText("Modules screen")).toBeInTheDocument();
-    await waitFor(() => expect(document.title).toBe("Modules, PatchHive"));
+    expect(await screen.findByText("Patches screen")).toBeInTheDocument();
+    await waitFor(() => expect(document.title).toBe("Patches, PatchHive"));
     expect(scrollTo).not.toHaveBeenCalled();
     expect(document.getElementById("main-content")).not.toHaveFocus();
   });
