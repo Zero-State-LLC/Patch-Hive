@@ -128,7 +128,7 @@ On a throwaway Postgres, loaded with everything except these two manifests and w
 
 ## Dry run
 
-Run through `db-load.yml` from branch `claude/catalog-a138m-analogue-systems`. **None of these runs wrote anything, and no load has been applied.**
+Run through `db-load.yml` from branch `claude/catalog-a138m-analogue-systems`. **None of these runs wrote anything.** The loads came after, under [Loads](#loads).
 
 | Environment | Run | Commit | Result |
 |---|---|---|---|
@@ -146,6 +146,21 @@ The plan hash covers every statement and its parameters, so both databases would
 `cd0df87` only adds this record to `2dbeb7f`. The commits on `main` after this branch was cut (`a9594f2`, `5cecd49`) touch no catalog input, loader code or migration.
 
 The one difference between the databases is outside this plan: `catalog_value_archive` holds 6,209 rows on production and 6,325 on staging.
+
+## Loads
+
+The owner approved both hashes on 2026-11-08. #379 merged as `50467ef`, and both loads ran from that commit in `apply` mode, staging first, with `plan_hash` `479df9425d7cc67ef3db87ac80f06c9f8a224a7134a45848f34f148a916c84f1` and `inputs_hash` `8c69037d063cf57a61e97d1d07842475d9c505970b749d640ac157b0c1a7cb23`.
+
+| Database | Run | Result | `catalog_value_archive` |
+|---|---|---|---|
+| Staging | [42542529212](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42542529212) | 13 corrections, 0 conflicts, no destructive SQL | 6,325 to 6,351 |
+| Production | [42542863263](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42542863263) | 13 corrections, 0 conflicts, no destructive SQL | 6,209 to 6,235 |
+
+Each load corrected 7 `modules` rows and 6 `module_catalog` rows. The archive grew by 26 on each host: the 13 old values, and one marker for each of the 13 rows processed. The receipt's `catalog_value_archive_markers: 2` counts the insert statements, one per manifest.
+
+These are the first loads with a lasting record on either host: `catalog_load_runs` went from 0 to 1 and `catalog_load_changes` from 0 to 39. No other table's row count changed.
+
+Reading each host's public API afterwards, A-138m is 20 HP, RS-20 and RS-610N are FX, RS-85, RS-380 and RS-380N are LFO, and RS-70 is UTIL. `/api/modules` still has 3,379 rows on both. Production's public catalog still has 3,383 rows, and none of them mentions ModularGrid.
 
 ## Not changed here
 
