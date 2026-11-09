@@ -303,23 +303,39 @@ def test_free_fetch_unaffected_by_approval_gate(tmp_path):
     assert _paid_calls(transport) == []
 
 
-def test_committed_approvals_file_has_only_the_owner_approved_corpus_photo_entry():
-    """The committed file holds exactly the owner's 2026-11-02 approval (300 context.dev searches
-    for 007 corpus photos), with its baseline at the ledger totals of that day."""
+def test_committed_approvals_file_has_only_the_owner_approved_entries():
+    """The committed file holds exactly the owner's approvals: 300 context.dev searches for 007
+    corpus photos, baselined at the ledger totals of that day, and the 2026-11-09 maker render."""
     doc = json.loads((ROOT / "data" / "synth-catalog" / "receipts" / "fetch-approvals.json").read_text())
-    assert doc["entries"] == [
-        {
-            "id": "corpus-photos-2026-11",
-            "approver": "Daniel Meyer (owner; approved in chat 2026-11-02: 300 searches, context.dev)",
-            "approved_at": "2026-11-02T11:00:00Z",
-            "expires_at": "2026-11-30T23:59:59Z",
-            "brands": ["corpus-photos-2026-11"],
-            "cap_fetches": 300,
-            "cap_credits": 300,
-            "ledger_baseline_fetches": 2569,
-            "ledger_baseline_credits": 1149,
-        }
-    ]
+    corpus, render = doc["entries"]
+    assert corpus == {
+        "id": "corpus-photos-2026-11",
+        "approver": "Daniel Meyer (owner; approved in chat 2026-11-02: 300 searches, context.dev)",
+        "approved_at": "2026-11-02T11:00:00Z",
+        "expires_at": "2026-11-30T23:59:59Z",
+        "brands": ["corpus-photos-2026-11"],
+        "cap_fetches": 300,
+        "cap_credits": 300,
+        "ledger_baseline_fetches": 2569,
+        "ledger_baseline_credits": 1149,
+    }
+    assert render["id"] == "maker-render-2026-11"
+    assert render["approver"] == "Daniel Meyer (owner; approved in chat 2026-11-09: 500 credits, context.dev)"
+    assert (render["cap_fetches"], render["cap_credits"]) == (500, 500)
+    assert (render["ledger_baseline_fetches"], render["ledger_baseline_credits"]) == (2869, 1444)
+    assert len(render["brands"]) == 21
+
+
+def test_the_maker_render_approval_is_closed(tmp_path):
+    """The run was stopped after going past bot checks, so its unused credits can't be spent."""
+    import catalog_scrape as cs
+    from datetime import datetime, timezone
+
+    approvals = ROOT / "data" / "synth-catalog" / "receipts" / "fetch-approvals.json"
+    ledger = tmp_path / "ledger.json"
+    ledger.write_text(json.dumps({"paid_fetches": 3130, "credits_by_backend": {"context_dev": 1665, "firecrawl": 33}}))
+    now = datetime(2026, 11, 10, tzinfo=timezone.utc).timestamp()
+    assert not cs.check_paid_approval(approvals, ledger, ("ADDAC System",), now=now)[0]
 
 
 def test_parallel_reservations_cannot_overspend_the_approval(tmp_path):
@@ -598,6 +614,25 @@ def test_a_refused_connection_cannot_be_told_from_a_timeout(tmp_path, monkeypatc
     transport.routes[CONTEXT_SCRAPE_URL] = (200, PAID_ANSWER)
     result = _scraper(tmp_path, transport, max_paid_fetches=1).fetch(PAGE)
     assert result.ok and result.receipt["method"] == "context_dev"
+
+
+ONE_MOMENT = (
+    b'<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf8">\n'
+    b'<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>One moment, please...</title>'
+)
+
+
+@pytest.mark.parametrize("render", [False, True])
+def test_a_one_moment_page_is_a_bot_check(tmp_path, paid_keys, render):
+    """It arrives with a 200, so without its title it reads as a thin page and gets rendered."""
+    transport = FakeTransport()
+    transport.routes[PAGE] = (200, ONE_MOMENT)
+    scraper = _would_pay(tmp_path, transport)
+    result = scraper.fetch(PAGE, render=render)
+    assert not result.ok and result.text is None
+    assert _paid_calls(transport) == []
+    assert scraper.paid_attempts == 0
+    assert scraper.receipts[-1].get("note") == "challenge"
 
 
 # ---- robots.txt fails closed: a host whose robots.txt cannot be read gets no fetch, free or paid ----
