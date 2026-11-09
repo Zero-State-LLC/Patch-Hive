@@ -55,7 +55,7 @@ RETRY_STATUSES = {0, 429, 500, 502, 503, 504}
 # A 200 that is really a bot check. A refusal (spec 003 D7): recorded as a failed free fetch,
 # never parsed as content and never retried through a paid backend that renders or proxies.
 CHALLENGE = re.compile(
-    rb"(cf-chl-|challenge-platform|<title>\s*(?:Just a moment|Attention Required|Access denied|Are you a robot))", re.I
+    rb"(cf-chl-|challenge-platform|<title>\s*(?:Just a moment|One moment, please|Attention Required|Access denied|Are you a robot))", re.I
 )
 # The site said no (owner decision 3, 2026-11-04; spec 003 D7 and FR-008): recorded, never sent to a
 # paid backend. On a page, 429, 5xx and timeouts are load, not refusal, and stay eligible for a paid
