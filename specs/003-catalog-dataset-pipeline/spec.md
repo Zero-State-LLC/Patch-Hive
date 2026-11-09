@@ -18,7 +18,7 @@ Recorded after the T001 review. These are confirmed and override the `[INFERRED]
   - The fetch job targets official manufacturer product pages and manuals (`access_basis = official_publication`).
   - Retailer pages (Perfect Circuit, Thomann and others) are allowed only as one-off manual lookups, recorded as `RETAILER_OBSERVED` (`access_basis = manual_research`). They are never canonical and never bulk-crawled.
   - ModularGrid is never fetched.
-  - **Update 2026-11-04 (`docs/evidence/OWNER_DECISIONS_2026-11-04.md`, option C).** `official_publication` covers facts only (name, HP, power, depth, category), under the conditions in [EXTERNAL_SOURCE_POLICY.md](../../docs/EXTERNAL_SOURCE_POLICY.md). A maker who opts out, or whose terms forbid automated access, is set to `unknown` and left out. Anything beyond facts needs the maker's permission first (`maker_permission`).
+  - **Update 2026-11-04 (`docs/evidence/OWNER_DECISIONS_2026-11-04.md`, option C).** `official_publication` covers facts only (name, HP, power, depth, category), under the conditions in [EXTERNAL_SOURCE_POLICY.md](../../docs/EXTERNAL_SOURCE_POLICY.md). A maker who opts out, or whose terms forbid automated access, is set to `unknown` and left out. **Update 2026-11-08 (decision 65).** `official_publication` also covers descriptions, manuals and pictures on a maker's own site, so they no longer need `maker_permission` first.
 
 ## Owner decisions (2026-10-28)
 
