@@ -46,7 +46,7 @@ The owner decided this on 2026-11-04 (option C, `docs/evidence/OWNER_DECISIONS_2
 Official maker sites count as publication (`access_basis = official_publication`) for name, HP, power, depth and category, and for descriptions, manuals and pictures. That holds only under these conditions:
 
 - Maker-owned domains only.
-- robots.txt is honoured. If it cannot be read, that host is not fetched.
+- robots.txt is honoured. If it cannot be read, that host is not fetched. A 403 that is a file-storage service's own error reply means the host has no robots.txt (decision 66).
 - Where a maker's licence sets conditions, such as credit, they apply.
 - A per-host delay between requests.
 - No route around a block. Spec 003 FR-008 and D7 define what counts as a refusal.

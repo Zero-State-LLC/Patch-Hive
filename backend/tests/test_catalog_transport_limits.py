@@ -29,15 +29,29 @@ class _Resp:
         return False
 
 
-def _serve(monkeypatch, resp: _Resp):
+def _serve(monkeypatch, resp: _Resp, url: str = "https://maker.example/p"):
     class _Opener:
         def open(self, request, timeout=None):
             return resp
 
     monkeypatch.setattr(cs, "public_http_url", lambda url: True)
     monkeypatch.setattr(cs.urllib.request, "build_opener", lambda *a: _Opener())
-    request = cs.HttpRequest("GET", "https://maker.example/p", {}, None, 5.0)
+    request = cs.HttpRequest("GET", url, {}, None, 5.0)
     return cs.default_transport(request)
+
+
+def test_a_robots_txt_served_as_a_generic_file_is_read(monkeypatch):
+    rules = b"User-agent: *\nDisallow: /private\n"
+    headers = {"Content-Type": "application/octet-stream"}
+    resp = _serve(monkeypatch, _Resp(rules, headers), "https://maker.example/robots.txt")
+    assert resp.status == 200 and resp.body == rules
+
+
+@pytest.mark.parametrize("media", ["application/pdf", "image/png"])
+def test_a_robots_txt_of_any_other_type_is_still_refused(monkeypatch, media):
+    resp = _serve(monkeypatch, _Resp(b"%PDF", {"Content-Type": media}), "https://maker.example/robots.txt")
+    assert resp.status == 0 and resp.body == b""
+    assert resp.headers[cs.REFUSED_HEADER] == "MIME_NOT_ALLOWED"
 
 
 def test_html_is_read_and_headers_kept(monkeypatch):
