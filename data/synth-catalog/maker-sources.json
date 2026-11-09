@@ -499,11 +499,25 @@
    "homepage": "https://www.doepfer.de/",
    "kind": "listing",
    "entries": [
+    "/a100.htm",
+    "/a100n_e.htm",
+    "/a100s_e.htm",
     "/a100p_e.htm",
-    "/a100_man/a100m_e.htm"
+    "/a100z_e.htm",
+    "/new_e.htm"
    ],
-   "product": "^/a1\\d\\d[^/]*\\.htm$",
-   "exclude": "^/a100(e|p_e|s_e|n_e|z_e|_mc|_systems_e|_diy_kits|r_hr|_custom)\\.htm$"
+   "product": "(?i)^/a1\\d\\d[^/]*\\.htm$",
+   "exclude": "^/a100(e|p_e|s_e|n_e|z_e|_mc|_systems_e|_diy_kits|r_hr|_custom)\\.htm$",
+   "max_pages": 700
+  },
+  "Analogue Systems": {
+   "homepage": "https://www.analoguesystems.co.uk/",
+   "kind": "listing",
+   "entries": [
+    "/index.php"
+   ],
+   "product": "(?i)^/index\\.php/as-modules/[^/]+$",
+   "max_pages": 200
   },
   "Endorphin.es": {
    "homepage": "https://www.endorphin.es/",

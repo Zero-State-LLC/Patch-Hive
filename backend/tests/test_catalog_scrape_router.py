@@ -667,6 +667,80 @@ def test_a_readable_robots_txt_keeps_paid_retries_for_load_on_the_page(tmp_path,
     assert result.ok and result.receipt["method"] == "context_dev"
 
 
+# ---- A file-storage service's own 403 on robots.txt means no robots file (owner decision 66) ----
+
+S3_ACCESS_DENIED = (
+    b'<?xml version="1.0" encoding="UTF-8"?>\n'
+    b"<Error><Code>AccessDenied</Code><Message>Access Denied</Message></Error>"
+)
+CLOUDFRONT_MISSING_KEY = (
+    b'<?xml version="1.0" encoding="UTF-8"?>'
+    b"<Error><Code>MissingKey</Code><Message>Missing Key-Pair-Id query parameter or cookie value</Message></Error>"
+)
+API_GATEWAY_NO_ROUTE = b'{"message":"Missing Authentication Token"}'
+
+
+@pytest.mark.parametrize("reply", [S3_ACCESS_DENIED, CLOUDFRONT_MISSING_KEY, API_GATEWAY_NO_ROUTE])
+def test_a_storage_error_on_robots_txt_means_the_host_has_no_rules(tmp_path, reply):
+    transport = FakeTransport()
+    transport.routes[ROBOTS] = (403, reply)
+    transport.routes[PAGE] = (200, b"<html>12 HP</html>")
+    result = _scraper(tmp_path, transport).fetch(PAGE)
+    assert result.ok and result.receipt["method"] == "free_http"
+    assert [c.url for c in transport.calls] == [ROBOTS, PAGE]
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [
+        b"Forbidden",
+        b"no",
+        b"<!DOCTYPE html><html><body><h1>Access Denied</h1></body></html>",
+        b"<html><body><Error><Code>AccessDenied</Code></Error></body></html>",
+        b"<Error><Code>SignatureDoesNotMatch</Code></Error>",
+        b'{"message":"Forbidden"}',
+    ],
+)
+def test_any_other_403_on_robots_txt_stays_a_refusal(tmp_path, paid_keys, reply):
+    transport = FakeTransport()
+    transport.routes[ROBOTS] = (403, reply)
+    scraper = _would_pay(tmp_path, transport)
+    assert not scraper.fetch(PAGE).ok
+    assert _paid_calls(transport) == []
+    assert [c.url for c in transport.calls] == [ROBOTS]
+    assert [(r["method"], r.get("note")) for r in scraper.receipts] == [("robots_refused", "robots.txt answered 403")]
+
+
+def test_a_storage_error_only_counts_as_a_403(tmp_path, paid_keys):
+    transport = FakeTransport()
+    transport.routes[ROBOTS] = (401, S3_ACCESS_DENIED)
+    scraper = _would_pay(tmp_path, transport)
+    assert not scraper.fetch(PAGE).ok
+    assert [c.url for c in transport.calls] == [ROBOTS]
+    assert scraper.receipts[0]["method"] == "robots_refused"
+
+
+def test_the_access_basis_script_reads_robots_txt_the_same_way():
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from build_access_basis_overlay import robots_answer
+
+    url = "https://ex.com/p"
+    assert robots_answer({"https://ex.com": (403, S3_ACCESS_DENIED.decode())}, url) is None
+    assert robots_answer({"https://ex.com": (403, "Forbidden")}, url) == "robots_unavailable_403"
+
+
+def test_a_storage_error_on_a_page_stays_a_refusal(tmp_path, paid_keys):
+    """Only robots.txt reads this way. A file that answers 403 is still a site saying no."""
+    transport = FakeTransport()
+    transport.routes[ROBOTS] = (403, S3_ACCESS_DENIED)
+    transport.routes[PAGE] = (403, S3_ACCESS_DENIED)
+    scraper = _would_pay(tmp_path, transport)
+    result = scraper.fetch(PAGE)
+    assert not result.ok and result.text is None
+    assert _paid_calls(transport) == []
+    assert scraper.paid_attempts == 0
+
+
 # ---- The opt-out: a left-out maker's host is never fetched, whichever script or brand name asks ----
 
 
