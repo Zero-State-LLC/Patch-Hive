@@ -128,21 +128,24 @@ On a throwaway Postgres, loaded with everything except these two manifests and w
 
 ## Dry run
 
-Run through `db-load.yml` from branch `claude/catalog-a138m-analogue-systems` at `2dbeb7f`. **Neither run wrote anything, and no load has been applied.**
+Run through `db-load.yml` from branch `claude/catalog-a138m-analogue-systems`. **None of these runs wrote anything, and no load has been applied.**
 
-| Environment | Run | Result |
-|---|---|---|
-| Staging | [42537413747](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42537413747) | 13 values to archive and correct (7 in `modules`, 6 in `module_catalog`), 0 conflicts, no destructive SQL, table counts unchanged |
-| Production | [42537569004](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42537569004) | Refused before planning, so it has no hashes: the database is at `20261106_commerce_append_only`, and this code's head is `20261107_photo_readings` |
+| Environment | Run | Commit | Result |
+|---|---|---|---|
+| Staging | [42537413747](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42537413747) | `2dbeb7f` | 13 values to archive and correct (7 in `modules`, 6 in `module_catalog`), 0 conflicts, no destructive SQL, table counts unchanged |
+| Production | [42537569004](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42537569004) | `2dbeb7f` | Refused before planning: the database was at `20261106_commerce_append_only`, one migration behind this code's `20261107_photo_readings` |
+| Production, after its migration | [42540690340](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42540690340) | `cd0df87` | The same as staging, with the same hashes |
 
-The staging hashes, for the owner's yes on a staging load:
+The owner chose the production dry run on 2026-11-08. Staging and production gave the same two hashes, for the owner's yes on each load:
 
 - `plan_hash`: `479df9425d7cc67ef3db87ac80f06c9f8a224a7134a45848f34f148a916c84f1`
 - `inputs_hash`: `8c69037d063cf57a61e97d1d07842475d9c505970b749d640ac157b0c1a7cb23`
 
-The local check gave the same two hashes. An apply refuses if the plan or the committed inputs have changed since, and this record isn't an input.
+The plan hash covers every statement and its parameters, so both databases would receive the same writes. The local check gave the same two hashes. An apply refuses if the plan or the committed inputs have changed since, and this record isn't an input.
 
-Production needs `db-migrate.yml` first. That is the owner's step and wasn't taken here. A production dry run can then give production's own hashes for the owner's yes. The rows these manifests touch read the same on both public APIs, so the plan should match staging's (INFERRED).
+`cd0df87` only adds this record to `2dbeb7f`. The commits on `main` after this branch was cut (`a9594f2`, `5cecd49`) touch no catalog input, loader code or migration.
+
+The one difference between the databases is outside this plan: `catalog_value_archive` holds 6,209 rows on production and 6,325 on staging.
 
 ## Not changed here
 
