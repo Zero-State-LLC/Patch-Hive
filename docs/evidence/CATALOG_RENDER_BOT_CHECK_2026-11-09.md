@@ -26,13 +26,12 @@ It came to light when 316 of the 363 files linked from the rendered pages came b
 ## What was done
 
 - The run was stopped by hand at 254 credits. By then its second pass was spending on API and duplicate addresses.
-- The 226 pages were taken out of the crawl data and the indexes built from it. They were never in the repository. No manuals or pictures from these hosts were saved.
+- The 226 pages were taken out of the crawl data and the indexes built from it. They were never in the repository, and they were permanently deleted on the owner's word on 2026-11-09. No manuals or pictures from these hosts were saved.
 - The approval is closed, so its unused credits can't be spent.
 - `CHALLENGE` now includes this title, so these hosts are refused on a free or a paid fetch.
 
 ## Still open
 
-- The 226 pages are held outside the repository until the owner decides whether to delete them.
 - These eight makers need their own permission before anything of theirs is read.
 
 The spend and every paid address are in [`receipts/maker-render-2026-11.json`](../../data/synth-catalog/receipts/maker-render-2026-11.json).
