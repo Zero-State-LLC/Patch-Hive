@@ -209,6 +209,11 @@ def test_both_readings_complete_and_agreeing_is_accepted():
             "duplicate_names",
         ),
         (
+            _reading(_jack("Out 1", "audio_out"), _jack("Out 2", "audio_out")),
+            _reading(_jack("Out", "audio_out"), _jack("Out", "audio_out")),
+            "duplicate_names",
+        ),
+        (
             _reading(_jack("Gate In", "gate_in")),
             _reading(_jack("Gate In", "gate_in")),
             "no_outputs",
@@ -220,6 +225,22 @@ def test_anything_less_is_rejected_with_its_reason(first, second, reason):
 
 
 # --- the run, with the API faked ---
+
+
+def test_a_relative_out_folder_downloads_to_the_right_place(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    seen = {}
+
+    def run(command, **kwargs):
+        seen.update(command=command, cwd=kwargs["cwd"])
+        return SimpleNamespace(returncode=0, stderr="")
+
+    monkeypatch.setattr(jacks.subprocess, "run", run)
+    jacks._fetch_shard("shards/a.tar", Path("RUN/pdf/a.tar"), "bucket", Path("edge/api"))
+    command = seen["command"]
+    assert command[command.index("--file") + 1] == str((tmp_path / "RUN/pdf/a.tar").resolve())
+    assert command[0] == str((tmp_path / "edge/api/node_modules/.bin/wrangler").resolve())
+    assert seen["cwd"] == (tmp_path / "edge/api").resolve()
 
 
 def _plan(out: Path, *, manual: bool = True) -> dict:

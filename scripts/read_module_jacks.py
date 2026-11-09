@@ -367,6 +367,8 @@ def command_plan(args: argparse.Namespace) -> int:
 
 
 def _fetch_shard(key: str, target: Path, bucket: str, wrangler_cwd: Path) -> None:
+    # Wrangler runs from its own folder, where a relative path would mean somewhere else.
+    target, wrangler_cwd = target.resolve(), wrangler_cwd.resolve()
     done = subprocess.run(  # nosec B603
         [
             str(wrangler_cwd / "node_modules/.bin/wrangler"),
@@ -719,9 +721,10 @@ def decide_document(text: str, a: dict | None, b: dict | None) -> tuple[list[dic
     words = _words(text)
     if not all(quote_found(j["quote"], words) for j in a["jacks"] + b["jacks"]):
         return None, "quote_not_in_document"
-    names = [" ".join(_words(j["name"])) for j in a["jacks"]]
-    if len(set(names)) != len(names) or not all(names):
-        return None, "duplicate_names"
+    for reading in (a, b):
+        names = [" ".join(_words(j["name"])) for j in reading["jacks"]]
+        if len(set(names)) != len(names) or not all(names):
+            return None, "duplicate_names"
     # The pilot's passive splitter, whose jacks work either way, came back as nine inputs.
     if not any(_shape(jack)[0] == "out" for jack in a["jacks"]):
         return None, "no_outputs"
