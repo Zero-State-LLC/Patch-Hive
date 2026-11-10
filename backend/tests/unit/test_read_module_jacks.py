@@ -265,6 +265,18 @@ def test_a_dual_module_with_each_channel_listed_is_accepted():
     assert jacks.decide_document(doc, one, one)[1] == "accepted"
 
 
+def test_two_of_a_modules_own_parts_means_one_list_is_not_complete():
+    doc = "Decay\nTwo voltage controlled decay envelopes.\nGate In and Out L"
+    one = _reading(_jack("Gate In", "gate_in"), _jack("Output", "audio_out"))
+    assert jacks.decide_document(doc, one, one) == (None, "one_channel_of_many")
+
+
+def test_an_advert_further_down_is_not_the_modules_own_description():
+    doc = "One envelope. Gate In and Out L." + " " * 900 + "Pair it with our dual VCA."
+    one = _reading(_jack("Gate In", "gate_in"), _jack("Output", "audio_out"))
+    assert jacks.decide_document(doc, one, one)[1] == "accepted"
+
+
 def test_a_list_for_a_single_channel_module_needs_no_channel_marks():
     one = _reading(_jack("Gate In", "gate_in"), _jack("Output", "audio_out"))
     assert jacks.decide_document("Gate In and Out L", one, one)[1] == "accepted"

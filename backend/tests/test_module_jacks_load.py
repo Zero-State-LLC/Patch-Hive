@@ -50,7 +50,7 @@ def _plan_for(entry: dict, row: dict | None) -> Plan:
 
 def test_the_overlay_has_the_reviewed_lists_and_no_quotes():
     entries = OVERLAY["entries"]
-    assert len(entries) == 230
+    assert len(entries) == 224
     assert len(OVERLAY["proposal_sha256"]) == 64
     assert len({(e["brand"], e["name"]) for e in entries}) == len(entries)
     assert not any({"quote", "evidence"} & set(e) for e in entries)

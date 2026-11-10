@@ -102,6 +102,16 @@ MANY_CHANNELS = re.compile(
     r"channels?|channels? (?:2|two|b)\b|second channel)",
     re.I,
 )
+# The same thing said of the Module's own parts, near the top where a document describes it.
+# Further down, "our dual VCA" is usually an advert for another module.
+MANY_PARTS = re.compile(
+    r"\b(?:dual|twin|double|two|2|three|3|triple|four|4|quad|six|6|eight|8)[- ]"
+    r"(?:[a-z-]+ ){0,3}?"
+    r"(?:envelopes?|egs?|adsrs?|vcas?|vcfs?|lfos?|lpgs?|mixers?|attenuators?|attenuverters?|slews?"
+    r"|comparators?)\b",
+    re.I,
+)
+DESCRIPTION_CHARS = 800
 CHANNEL_MARK = re.compile(
     r"(?:^|[\s_(/-])(?:\d+|[a-dlrxy]|i{1,3}|iv|left|right|ch\d*|channel|odd|even|top|bottom|upper|lower)"
     r"(?:$|[\s_)/:-])",
@@ -944,7 +954,8 @@ def decide_document(text: str, a: dict | None, b: dict | None) -> tuple[list[dic
     # The pilot's passive splitter, whose jacks work either way, came back as nine inputs.
     if not any(_shape(jack)[0] == "out" for jack in a["jacks"]):
         return None, "no_outputs"
-    if MANY_CHANNELS.search(text) and not any(CHANNEL_MARK.search(j["name"]) for j in a["jacks"]):
+    many = MANY_CHANNELS.search(text) or MANY_PARTS.search(text[:DESCRIPTION_CHARS])
+    if many and not any(CHANNEL_MARK.search(j["name"]) for j in a["jacks"]):
         return None, "one_channel_of_many"
     reason = lists_agree(a["jacks"], b["jacks"])
     return (None, reason) if reason else (a["jacks"], "accepted")

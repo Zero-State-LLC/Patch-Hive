@@ -1,6 +1,6 @@
 # Module jack lists, 2026-11-09
 
-`overlays/module-jacks-v1.json` proposes jack lists for 230 Modules: 1,638 jacks from 66 makers, read from 148 user manuals and 82 maker pages. Before this, 2 of the 3,379 public Modules declared jacks, so Patch Books printed role names such as "Audio Out".
+`overlays/module-jacks-v1.json` proposes jack lists for 224 Modules: 1,606 jacks from 65 makers, read from 147 user manuals and 77 maker pages. Before this, 2 of the 3,379 public Modules declared jacks, so Patch Books printed role names such as "Audio Out".
 
 ## How the lists were chosen
 
@@ -15,14 +15,15 @@ A Module was proposed only when, for one document:
 - the list had at least one output
 - the list didn't look like one channel of a multi-channel Module
 
-Of the 2,514 Modules read, 230 passed. Most of the rest fell short because the document doesn't name every jack.
+Of the 2,514 Modules read, 224 passed. Most of the rest fell short because the document doesn't name every jack.
 
 ## Hand check
 
 25 accepted lists were compared with their documents, 10 from a 100-Module test and 15 chosen at random from the full run.
 
 - 23 were right. For the 15 from the full run only the jack-related lines of each document were read, and two or three of those lists could be confirmed only in part.
-- 2 were incomplete: Mutable Streams and Bard VTG are dual-channel, and both readings listed one channel. The last check above was added because of them, and took the count from 240 to 230. It also removes some good lists and can't catch every case.
+- 2 were incomplete: Mutable Streams and Bard VTG are dual-channel, and both readings listed one channel. The last check above was added because of them, and took the count from 240 to 230.
+- Code review on the pull request then found a third: shkrjn's Decay manual says two envelopes but describes one set of jacks. Widening the check took the count to 224. The check also removes some good lists, such as Pittsburgh Modular's LFO2, and can't catch every case.
 
 ## Limits
 
@@ -34,7 +35,7 @@ Of the 2,514 Modules read, 230 passed. Most of the rest fell short because the d
 
 | File | SHA-256 |
 |---|---|
-| `data/synth-catalog/overlays/module-jacks-v1.json` | `beff940d2af549c5b95792a214b2028f8094c977b80539994a19a4666f39961e` |
-| Private proposal, with the quote behind every jack (not in this repository) | `7c0ec9a60dea70ea87a7a9a1ddce35cfc10e8b60a5e3dc3c4300e52ca49e232e` |
+| `data/synth-catalog/overlays/module-jacks-v1.json` | `9d37ec3945467db6264df02e65cb59badcfe11f65f4aa2b282008c4000b24bf1` |
+| Private proposal, with the quote behind every jack (not in this repository) | `1818174f7f009f957bddd04c20177a6049c414fd6fbd663480df361111c79de7` |
 
 The loader fills `io_ports` only where it's empty, and a list that differs from a stored one is reported as a conflict and left alone (spec 003 FR-041). Each load needs the owner's yes on its plan and inputs hashes.

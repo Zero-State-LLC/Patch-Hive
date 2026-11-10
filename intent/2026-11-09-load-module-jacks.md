@@ -2,11 +2,11 @@
 
 ## Problem
 
-Almost no catalog row has `io_ports`, so Patch Books print role names. `scripts/read_module_jacks.py` has proposed complete jack lists for 230 Modules, but the loader has no way to write them.
+Almost no catalog row has `io_ports`, so Patch Books print role names. `scripts/read_module_jacks.py` has proposed complete jack lists for 224 Modules, but the loader has no way to write them.
 
 ## Proposed outcome
 
-- `overlays/module-jacks-v1.json` holds the 230 lists: each jack's name and type, and the maker document read.
+- `overlays/module-jacks-v1.json` holds the 224 lists: each jack's name and type, and the maker document read.
 - The loader fills `modules.io_ports` from it, only where the list is empty.
 
 Out of scope: applying the load, which needs the owner's yes on the plan and inputs hashes for each database.
@@ -30,8 +30,8 @@ Whether to admit the lists both readings agree on when only one reading calls th
 
 | Claim | Label | Basis |
 |---|---|---|
-| The overlay holds 230 lists, 1,638 jacks, 66 makers | `OBSERVED` | `overlays/module-jacks-v1.json` |
-| 23 of 25 accepted lists checked by hand were right, and the 2 others are excluded by a later check | `OBSERVED` | `docs/evidence/CATALOG_MODULE_JACKS_2026-11-09.md` |
+| The overlay holds 224 lists, 1,606 jacks, 65 makers | `OBSERVED` | `overlays/module-jacks-v1.json` |
+| 23 of 25 accepted lists checked by hand were right, and the 2 others, plus a third found in code review, are excluded by a later check | `OBSERVED` | `docs/evidence/CATALOG_MODULE_JACKS_2026-11-09.md` |
 | A rollback restores an empty list | `OBSERVED` | `backend/tests/test_module_jacks_load.py` against Postgres |
 | A list matches the physical panel | `NOT_COMPUTABLE` | Lists were checked against documents only |
 

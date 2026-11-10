@@ -1,6 +1,6 @@
 {
   "schema": "module-jacks/1",
-  "proposal_sha256": "7c0ec9a60dea70ea87a7a9a1ddce35cfc10e8b60a5e3dc3c4300e52ca49e232e",
+  "proposal_sha256": "1818174f7f009f957bddd04c20177a6049c414fd6fbd663480df361111c79de7",
   "entries": [
     {
       "brand": "2hp",
@@ -5327,23 +5327,6 @@
     },
     {
       "brand": "Pittsburgh Modular",
-      "name": "ADSR",
-      "hp": 6,
-      "source_kind": "page",
-      "source_url": "https://pittsburghmodular.com/adsr",
-      "io_ports": [
-        {
-          "name": "INPUT",
-          "type": "gate_in"
-        },
-        {
-          "name": "OUTPUT",
-          "type": "cv_out"
-        }
-      ]
-    },
-    {
-      "brand": "Pittsburgh Modular",
       "name": "Analog Replicator",
       "hp": 16,
       "source_kind": "page",
@@ -5522,43 +5505,6 @@
     },
     {
       "brand": "Pittsburgh Modular",
-      "name": "Envelope",
-      "hp": 8,
-      "source_kind": "page",
-      "source_url": "https://pittsburghmodular.com/envelope",
-      "io_ports": [
-        {
-          "name": "RISE CV IN",
-          "type": "cv_in"
-        },
-        {
-          "name": "BOTH CV IN",
-          "type": "cv_in"
-        },
-        {
-          "name": "FALL CV IN",
-          "type": "cv_in"
-        },
-        {
-          "name": "SIGNAL INPUT",
-          "type": "audio_in"
-        },
-        {
-          "name": "END OF ATTACK OUT",
-          "type": "gate_out"
-        },
-        {
-          "name": "TRIGGER OUT",
-          "type": "clock_out"
-        },
-        {
-          "name": "SIGNAL OUT",
-          "type": "audio_out"
-        }
-      ]
-    },
-    {
-      "brand": "Pittsburgh Modular",
       "name": "Filter",
       "hp": 12,
       "source_kind": "page",
@@ -5625,31 +5571,6 @@
     },
     {
       "brand": "Pittsburgh Modular",
-      "name": "LFO2",
-      "hp": 6,
-      "source_kind": "page",
-      "source_url": "https://pittsburghmodular.com/lfo2",
-      "io_ports": [
-        {
-          "name": "SHAPE",
-          "type": "cv_out"
-        },
-        {
-          "name": "PULSE",
-          "type": "cv_out"
-        },
-        {
-          "name": "TRIANGLE",
-          "type": "cv_out"
-        },
-        {
-          "name": "SQUARE",
-          "type": "cv_out"
-        }
-      ]
-    },
-    {
-      "brand": "Pittsburgh Modular",
       "name": "Lifeforms 2+2 Mixer",
       "hp": 8,
       "source_kind": "page",
@@ -5686,31 +5607,6 @@
         {
           "name": "Mix (3+4) Out",
           "type": "audio_out"
-        }
-      ]
-    },
-    {
-      "brand": "Pittsburgh Modular",
-      "name": "Lifeforms ADSR",
-      "hp": 6,
-      "source_kind": "page",
-      "source_url": "https://pittsburghmodular.com/lifeforms-adsr",
-      "io_ports": [
-        {
-          "name": "Input",
-          "type": "gate_in"
-        },
-        {
-          "name": "Trigger Out",
-          "type": "gate_out"
-        },
-        {
-          "name": "Inverted Out",
-          "type": "cv_out"
-        },
-        {
-          "name": "Output",
-          "type": "cv_out"
         }
       ]
     },
@@ -8106,59 +8002,6 @@
       ]
     },
     {
-      "brand": "VBrazil Systems",
-      "name": "Aether Oscillator",
-      "hp": 20,
-      "source_kind": "page",
-      "source_url": "https://www.vbrazilsystems.com/aether-oscillator.html",
-      "io_ports": [
-        {
-          "name": "CV",
-          "type": "cv_in"
-        },
-        {
-          "name": "HSYNC",
-          "type": "gate_in"
-        },
-        {
-          "name": "FLFO",
-          "type": "cv_in"
-        },
-        {
-          "name": "FM",
-          "type": "cv_in"
-        },
-        {
-          "name": "PWM",
-          "type": "cv_in"
-        },
-        {
-          "name": "SAW",
-          "type": "audio_out"
-        },
-        {
-          "name": "SINE",
-          "type": "audio_out"
-        },
-        {
-          "name": "TRIANGLE",
-          "type": "audio_out"
-        },
-        {
-          "name": "PULSE",
-          "type": "audio_out"
-        },
-        {
-          "name": "SUB1",
-          "type": "audio_out"
-        },
-        {
-          "name": "SUB2",
-          "type": "audio_out"
-        }
-      ]
-    },
-    {
       "brand": "Verbos Electronics",
       "name": "Amp & Tone (2020 Version)",
       "hp": 10,
@@ -8596,31 +8439,6 @@
         {
           "name": "out 2",
           "type": "audio_out"
-        }
-      ]
-    },
-    {
-      "brand": "shkrjn",
-      "name": "Dual Voltage Controlled Decay Envelope",
-      "hp": 4,
-      "source_kind": "manual",
-      "source_url": "https://www.shkrjn.com/s/shkrjn-Decay-manual.pdf",
-      "io_ports": [
-        {
-          "name": "strike",
-          "type": "gate_in"
-        },
-        {
-          "name": "out",
-          "type": "cv_out"
-        },
-        {
-          "name": "strngth",
-          "type": "cv_in"
-        },
-        {
-          "name": "decay",
-          "type": "cv_in"
         }
       ]
     }
