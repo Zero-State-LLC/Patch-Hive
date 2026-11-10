@@ -13,6 +13,7 @@ The run writes files only and never touches a database:
   collect   fetch a finished batch
   read      the same two readings through OpenRouter, in place of submit and collect (spends)
   decide    write the proposal, its hash and a review sample
+  overlay   turn the reviewed proposal into the loader's overlay, leaving out the quotes
 
 A Module is proposed only when both readings of one document call the list complete, agree on
 every jack, and quote text that is in the document. A partial list is worse than none: the engine
@@ -31,6 +32,7 @@ Usage (repo root):
   python scripts/read_module_jacks.py collect --out RUN
   python scripts/read_module_jacks.py read --out RUN --max-usd 1 --limit 100
   python scripts/read_module_jacks.py decide --out RUN
+  python scripts/read_module_jacks.py overlay --out RUN --to OVERLAY.json
 
 `read` takes its key from OPENROUTER_API_KEY. `submit` and `collect` use the Anthropic SDK's login.
 """
@@ -100,6 +102,16 @@ MANY_CHANNELS = re.compile(
     r"channels?|channels? (?:2|two|b)\b|second channel)",
     re.I,
 )
+# The same thing said of the Module's own parts, near the top where a document describes it.
+# Further down, "our dual VCA" is usually an advert for another module.
+MANY_PARTS = re.compile(
+    r"\b(?:dual|twin|double|two|2|three|3|triple|four|4|quad|six|6|eight|8)[- ]"
+    r"(?:[a-z-]+ ){0,3}?"
+    r"(?:envelopes?|egs?|adsrs?|vcas?|vcfs?|lfos?|lpgs?|mixers?|attenuators?|attenuverters?|slews?"
+    r"|comparators?)\b",
+    re.I,
+)
+DESCRIPTION_CHARS = 800
 CHANNEL_MARK = re.compile(
     r"(?:^|[\s_(/-])(?:\d+|[a-dlrxy]|i{1,3}|iv|left|right|ch\d*|channel|odd|even|top|bottom|upper|lower)"
     r"(?:$|[\s_)/:-])",
@@ -942,7 +954,8 @@ def decide_document(text: str, a: dict | None, b: dict | None) -> tuple[list[dic
     # The pilot's passive splitter, whose jacks work either way, came back as nine inputs.
     if not any(_shape(jack)[0] == "out" for jack in a["jacks"]):
         return None, "no_outputs"
-    if MANY_CHANNELS.search(text) and not any(CHANNEL_MARK.search(j["name"]) for j in a["jacks"]):
+    many = MANY_CHANNELS.search(text) or MANY_PARTS.search(text[:DESCRIPTION_CHARS])
+    if many and not any(CHANNEL_MARK.search(j["name"]) for j in a["jacks"]):
         return None, "one_channel_of_many"
     reason = lists_agree(a["jacks"], b["jacks"])
     return (None, reason) if reason else (a["jacks"], "accepted")
@@ -1034,6 +1047,50 @@ def command_decide(args: argparse.Namespace) -> int:
     return decide(args.out, args.sample)
 
 
+def clean_jack_name(name: str) -> str:
+    """Drop a trailing "Jack" or "Socket", which the prompts ask for and readers sometimes keep."""
+    name = name.strip()
+    return re.sub(r"\s+(?:jacks?|sockets?)$", "", name, flags=re.I) or name
+
+
+def write_overlay(out: Path, target: Path) -> int:
+    """The loader's input. Quotes from makers' documents stay in the private proposal."""
+    raw = (out / "module-jacks.proposal.json").read_bytes()
+    entries, dropped = [], 0
+    for item in json.loads(raw)["modules"]:
+        ports = [
+            {"name": clean_jack_name(port["name"]), "type": port["type"]}
+            for port in item["io_ports"]
+        ]
+        # Removing a word can make two names the same. The engine tells jacks apart by name.
+        if len({" ".join(_words(port["name"])) for port in ports}) != len(ports):
+            dropped += 1
+            continue
+        entries.append(
+            {
+                "brand": item["brand"],
+                "name": item["name"],
+                "hp": item["hp"],
+                "source_kind": item["source_kind"],
+                "source_url": item["source_url"],
+                "io_ports": ports,
+            }
+        )
+    entries.sort(key=lambda entry: (entry["brand"], entry["name"]))
+    overlay = {
+        "schema": "module-jacks/1",
+        "proposal_sha256": _sha256(raw),
+        "entries": entries,
+    }
+    target.write_text(json.dumps(overlay, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"entries: {len(entries)}\ndropped: {dropped}\nsha256: {_sha256_file(target)}")
+    return 0
+
+
+def command_overlay(args: argparse.Namespace) -> int:
+    return write_overlay(args.out, args.to)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     commands = parser.add_subparsers(required=True)
@@ -1076,6 +1133,11 @@ def main(argv: list[str] | None = None) -> int:
     choose.add_argument("--out", required=True, type=Path)
     choose.add_argument("--sample", type=int, default=40)
     choose.set_defaults(run=command_decide)
+
+    overlay = commands.add_parser("overlay")
+    overlay.add_argument("--out", required=True, type=Path)
+    overlay.add_argument("--to", required=True, type=Path)
+    overlay.set_defaults(run=command_overlay)
 
     args = parser.parse_args(argv)
     try:
