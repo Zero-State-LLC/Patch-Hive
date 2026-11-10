@@ -276,6 +276,7 @@ def build_rack_response(
                         "power_neg12v_ma": module.power_neg12v_ma,
                         "power_5v_ma": module.power_5v_ma,
                         "depth_mm": module.depth_mm,
+                        "io_ports": module.io_ports or [],
                         "status": module.status,
                         "tombstone_reason": note["reason"] if note else None,
                         "alternatives": note["alternatives"] if note else [],
