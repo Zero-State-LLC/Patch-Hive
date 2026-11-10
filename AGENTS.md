@@ -94,4 +94,4 @@ This section is my standing authorization. Do not ask me to approve anything lis
 ### Where things are
 - Keys: 1Password. Never ask for a pasted key; if you cannot find one, ask where it is stored and record the vault name here. Variable names are listed in `.env.example`.
 - Board: `docs/KANBAN.md`. Live plan: `CURRENT_STATE.md` (roadmap: `docs/ROADMAP.md`). Facts: `FACTS.md`. Hand-offs: `docs/handoff/NEXT.md`.
-- Hosting: Render (`render.yaml`). `azure.yaml` and `frontend/vercel.json` are also present; confirm the active target with me before deploying. (hosted, not local)
+- Hosting: Cloudflare Workers (frontend `frontend/wrangler.jsonc`; API `edge/api/wrangler.jsonc`) with Neon Postgres. Production is patch-hive.com and api.patch-hive.com; staging is staging.patch-hive.com. Deploys are manual `wrangler deploy`; there is no deploy workflow. `render.yaml`, `azure.yaml`, `infra/` and `frontend/vercel.json` are old packaging and not in use. (hosted, not local)
