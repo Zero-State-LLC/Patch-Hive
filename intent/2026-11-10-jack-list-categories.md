@@ -37,7 +37,7 @@ The owner decides:
 | 19 of the 224 rows have no category on production | `OBSERVED` | `overlays/module-jacks-v1.json` joined with the public API, 2026-11-10 |
 | Each of the 9 categories follows from the maker's document | `OBSERVED` | Read by hand; `backend/tests/test_jack_list_categories.py` checks the rule |
 | A dry run plans 9 fills and 9 `module_type` updates with 0 conflicts | `OBSERVED` | Throwaway Postgres loaded without the overlay |
-| A deployed database gets the same plan | `NOT_COMPUTABLE` | No dry run has been dispatched yet |
+| Both deployed databases get the same plan | `OBSERVED` | Dry runs 42926869828 (staging) and 42926874415 (production), same `plan_hash` and `inputs_hash` |
 | Mosaic Bass Drum's jack list is incomplete | `INFERRED` | The document describes CV control the list doesn't have; no physical panel was checked |
 
 ## Author / date

@@ -138,8 +138,22 @@ On a throwaway Postgres, loaded with everything except this overlay:
 | Second dry run | Plans nothing |
 | Load from empty | The same 9 categories in `module_catalog` and `modules` |
 
-A local database isn't a deployed one, so these hashes aren't the ones to approve.
+It gave the same `plan_hash` as both deployed dry runs below.
 
 ## Dry run
 
-Not run yet. A dry run through `db-load.yml` needs the owner's go-ahead, and each load needs the owner's yes on its `plan_hash` and `inputs_hash`.
+The owner gave the go-ahead on 2026-11-10. Both runs went through `db-load.yml` from branch `claude/n5-catalog-category-fills` at `ff312a9`. **Neither run wrote anything.**
+
+| Environment | Run | Result |
+|---|---|---|
+| Staging | [42926869828](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42926869828) | 9 categories to fill, 9 `module_type` values to set from the placeholder, 9 old values to archive. 0 conflicts, no destructive SQL, table counts unchanged |
+| Production | [42926874415](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42926874415) | The same as staging, with the same hashes |
+
+The owner's yes on each load needs these two hashes:
+
+- `plan_hash`: `0dd5d92289d863d27e22d214bdc0bb877dc04204bd39a9e016d1cf71af9ab1c0`
+- `inputs_hash`: `9985cf9ad95de5e8786b95cf7ce9d66093bc17850ca2c85757b627a2be1ed97c`
+
+The plan hash covers every statement and its parameters, so both databases would receive the same writes. An apply refuses if the plan or the committed inputs have changed since, and this record isn't an input.
+
+The one difference between the databases is outside this plan: `catalog_value_archive` holds 6,235 rows on production and 6,351 on staging.
