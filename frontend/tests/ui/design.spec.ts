@@ -786,12 +786,12 @@ const PROTOCOL_SCREENS = SCREENS.filter((s) =>
   [
     "home",
     "sign in",
-    "modules",
-    "cases",
     "patches",
     "account",
     "rig detail",
     "rig builder, placement",
+    "photo",
+    "reading",
   ].includes(s.name),
 );
 
