@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
+import urllib.error
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -63,6 +65,27 @@ def test_a_longer_name_that_merely_begins_the_same_is_another_product():
     assert jacks.pick_page("LFO", [_page("LFO2 — Maker", "https://x/lfo2")]) is None
     assert jacks.pick_page("Mix", [_page("Mixer", "https://x/mixer")]) is None
     assert jacks.pick_page("LFO", [_page("LFO — Maker", "https://x/a")])["url"] == "https://x/a"
+
+
+@pytest.mark.parametrize(
+    "title", ["TB-EFA Rev2 – Maker", "TB-EFA II", "TB-EFA Mk2 - Maker", "TB-EFA 2"]
+)
+def test_a_page_for_a_later_version_is_not_this_row(title):
+    assert jacks.pick_page("TB-EFA", [_page(title, "https://x/a")]) is None
+
+
+def test_a_width_after_the_name_is_not_a_version():
+    assert jacks.pick_page("LFO", [_page("LFO 8HP", "https://x/a")])["url"] == "https://x/a"
+
+
+def test_a_micro_sign_is_part_of_the_name():
+    assert jacks.norm("\u00b5VCA") == "uvca"
+    assert jacks.norm("\u03bcVCA") == "uvca"
+    assert jacks.pick_page("VCA", [_page("\u00b5VCA - Maker", "https://x/a")]) is None
+    assert (
+        jacks.pick_page("\u00b5VCA", [_page("\u00b5VCA - Maker", "https://x/a")])["url"]
+        == "https://x/a"
+    )
 
 
 def test_a_page_stating_another_width_is_another_revision():
@@ -224,6 +247,28 @@ def test_anything_less_is_rejected_with_its_reason(first, second, reason):
     assert jacks.decide_document(DOC, first, second) == (None, reason)
 
 
+def test_one_channel_of_a_dual_module_is_not_a_complete_list():
+    doc = "A dual channel gate. Gate In and Out L. Use channel 2 the same way."
+    one = _reading(_jack("Gate In", "gate_in"), _jack("Output", "audio_out"))
+    assert jacks.decide_document(doc, one, one) == (None, "one_channel_of_many")
+
+
+def test_a_dual_module_with_each_channel_listed_is_accepted():
+    doc = "A dual channel gate. Gate In and Out L. Use channel 2 the same way."
+    one = _reading(
+        _jack("Gate In 1", "gate_in"),
+        _jack("Out 1", "audio_out"),
+        _jack("Gate In 2", "gate_in"),
+        _jack("Out 2", "audio_out"),
+    )
+    assert jacks.decide_document(doc, one, one)[1] == "accepted"
+
+
+def test_a_list_for_a_single_channel_module_needs_no_channel_marks():
+    one = _reading(_jack("Gate In", "gate_in"), _jack("Output", "audio_out"))
+    assert jacks.decide_document("Gate In and Out L", one, one)[1] == "accepted"
+
+
 # --- the run, with the API faked ---
 
 
@@ -381,15 +426,211 @@ def test_collect_records_what_the_batch_cost(tmp_path):
     assert spend["usd"] == pytest.approx((1000 * 0.10 + 200 * 0.50) / 1e6 * 0.5, abs=1e-4)
 
 
+GOOD = _reading(_jack("Gate In", "gate_in"), _jack("Out L", "audio_out"))
+PARTIAL = _reading(_jack("Gate In", "gate_in"), coverage="partial")
+
+
+# --- the run through OpenRouter, with the network faked ---
+
+
+def _answer(reading: dict | None, *, finish: str = "stop", cost: float | None = 0.001) -> dict:
+    usage = {"prompt_tokens": 1000, "completion_tokens": 200}
+    if cost is not None:
+        usage["cost"] = cost
+    content = "not json" if reading is None else json.dumps(reading)
+    return {"choices": [{"finish_reason": finish, "message": {"content": content}}], "usage": usage}
+
+
+def _read(out: Path, call, *, max_usd: float | None = 5.0, dry_run: bool = False) -> int:
+    return jacks.read_documents(
+        out,
+        model=jacks.OPENROUTER_MODEL,
+        max_usd=max_usd,
+        limit=None,
+        dry_run=dry_run,
+        call=call,
+        workers=1,
+        pause=lambda _seconds: None,
+    )
+
+
+def _recording(answer):
+    calls: list = []
+
+    def call(body):
+        calls.append(body)
+        return answer(body) if callable(answer) else answer
+
+    return call, calls
+
+
+def test_an_openrouter_request_keeps_the_schema_and_asks_for_its_cost(tmp_path):
+    _plan(tmp_path, manual=False)
+    call, calls = _recording(_answer(GOOD))
+    assert _read(tmp_path, call) == 0
+    body = calls[0]
+    assert body["model"] == "anthropic/claude-haiku-5.5"
+    assert [m["role"] for m in body["messages"]] == ["system", "user"]
+    assert "--- DOCUMENT START ---" in body["messages"][1]["content"]
+    assert body["response_format"]["json_schema"]["strict"] is True
+    assert body["response_format"]["json_schema"]["schema"] == jacks.READING_SCHEMA
+    assert body["provider"] == {"require_parameters": True}
+    assert body["usage"] == {"include": True}
+    assert body["reasoning"] == {"effort": "low"}
+    assert "tools" not in body
+
+
+def test_a_dry_read_spends_nothing(tmp_path, capsys):
+    _plan(tmp_path)
+    call, calls = _recording(_answer(GOOD))
+    assert _read(tmp_path, call, max_usd=None, dry_run=True) == 0
+    assert calls == []
+    assert "requests: 4" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("cap", [None, 0.00001])
+def test_reading_without_a_big_enough_cap_is_refused(tmp_path, cap):
+    _plan(tmp_path)
+    call, calls = _recording(_answer(GOOD))
+    with pytest.raises(jacks.Refused) as refused:
+        _read(tmp_path, call, max_usd=cap)
+    assert refused.value.code == "OVER_BUDGET"
+    assert calls == []
+
+
+def test_openrouter_readings_reach_the_gate_and_their_cost_is_recorded(tmp_path):
+    _plan(tmp_path, manual=False)
+    call, _calls = _recording(_answer(GOOD, cost=0.002))
+    assert _read(tmp_path, call) == 0
+    spend = json.loads((tmp_path / "spend.jsonl").read_text())
+    assert spend["provider"] == "openrouter"
+    assert spend["requests"] == 2
+    assert spend["tokens"] == [2000, 400]
+    assert spend["usd"] == pytest.approx(0.004)
+    assert jacks.decide(tmp_path, sample=5) == 0
+    proposal = json.loads((tmp_path / "module-jacks.proposal.json").read_text())
+    assert proposal["modules"][0]["module_id"] == 7
+
+
+def test_the_list_price_counts_when_openrouter_reports_no_cost(tmp_path):
+    _plan(tmp_path, manual=False)
+    call, _calls = _recording(_answer(GOOD, cost=None))
+    _read(tmp_path, call)
+    expected = 2 * (1000 * 0.10 + 200 * 0.50) / 1e6
+    assert json.loads((tmp_path / "spend.jsonl").read_text())["usd"] == pytest.approx(
+        expected, abs=1e-4
+    )
+
+
+def test_reading_stops_when_real_charges_reach_the_cap(tmp_path, capsys):
+    _plan(tmp_path)
+    call, calls = _recording(_answer(GOOD, cost=0.6))
+    assert _read(tmp_path, call, max_usd=1.0) == 3
+    assert len(calls) == 2
+    assert "2 requests unsent" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("status", [401, 402, 403])
+def test_a_rejected_key_or_empty_account_stops_the_run_at_once(tmp_path, status):
+    _plan(tmp_path)
+
+    def answer(_body):
+        raise jacks.HttpFailure(status, "API key expired.")
+
+    call, calls = _recording(answer)
+    with pytest.raises(jacks.Refused) as refused:
+        _read(tmp_path, call)
+    assert refused.value.code == "OPENROUTER_REFUSED"
+    assert len(calls) == 1
+    assert json.loads((tmp_path / "spend.jsonl").read_text())["usd"] == 0
+
+
+def test_a_rate_limit_is_retried(tmp_path):
+    _plan(tmp_path, manual=False)
+    replies = [jacks.HttpFailure(429, "slow down"), _answer(GOOD), _answer(GOOD)]
+
+    def answer(_body):
+        reply = replies.pop(0)
+        if isinstance(reply, Exception):
+            raise reply
+        return reply
+
+    call, calls = _recording(answer)
+    assert _read(tmp_path, call) == 0
+    assert len(calls) == 3
+    assert all(r["reading"] for r in jacks.load_readings(tmp_path).values())
+
+
+def test_a_request_that_keeps_failing_is_paid_for_only_when_it_succeeds(tmp_path):
+    _plan(tmp_path, manual=False)
+    seen = []
+
+    def answer(body):
+        seen.append(body["messages"][0]["content"])
+        if body["messages"][0]["content"] == jacks.PROMPTS["b"]:
+            raise jacks.HttpFailure(500, "boom")
+        return _answer(GOOD)
+
+    call, _calls = _recording(answer)
+    assert _read(tmp_path, call) == 0
+    readings = jacks.load_readings(tmp_path)
+    assert readings["m7-page-a"]["reading"] == GOOD
+    assert readings["m7-page-b"]["status"] == "http_500"
+    again, more = _recording(_answer(GOOD))
+    assert _read(tmp_path, again) == 0
+    assert [b["messages"][0]["content"] for b in more] == [jacks.PROMPTS["b"]]
+
+
+def test_a_cut_off_openrouter_answer_is_not_a_reading(tmp_path):
+    _plan(tmp_path, manual=False)
+    call, _calls = _recording(_answer(GOOD, finish="length"))
+    _read(tmp_path, call)
+    assert jacks.load_readings(tmp_path)["m7-page-a"]["reading"] is None
+
+
+def test_an_unparsable_openrouter_answer_is_not_a_reading(tmp_path):
+    _plan(tmp_path, manual=False)
+    call, _calls = _recording(_answer(None))
+    _read(tmp_path, call)
+    record = jacks.load_readings(tmp_path)["m7-page-a"]
+    assert record["reading"] is None
+    assert record["status"] == "unparsable"
+
+
+def test_reading_without_a_key_is_refused_but_a_dry_read_is_not(tmp_path, monkeypatch, capsys):
+    _plan(tmp_path, manual=False)
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    assert jacks.main(["read", "--out", str(tmp_path), "--max-usd", "1"]) == 1
+    assert "NO_API_KEY" in capsys.readouterr().err
+    assert jacks.main(["read", "--out", str(tmp_path), "--dry-run"]) == 0
+
+
+def test_the_openrouter_call_sends_the_key_and_reports_a_refusal(monkeypatch):
+    seen = {}
+
+    def urlopen(request, timeout):
+        seen["authorization"] = request.get_header("Authorization")
+        seen["url"] = request.full_url
+        raise urllib.error.HTTPError(
+            request.full_url, 401, "Unauthorized", {}, io.BytesIO(b'{"error":"API key expired."}')
+        )
+
+    monkeypatch.setattr(jacks.urllib.request, "urlopen", urlopen)
+    with pytest.raises(jacks.HttpFailure) as failure:
+        jacks.post_openrouter({"model": "x"}, "secret-value")
+    assert failure.value.status == 401
+    assert "secret-value" not in str(failure.value)
+    assert seen == {
+        "authorization": "Bearer secret-value",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+    }
+
+
 def _decide(tmp_path: Path, results: tuple) -> dict:
     _submit(tmp_path, _client())
     jacks.collect(tmp_path, lambda: _client(results=results))
     assert jacks.decide(tmp_path, sample=5) == 0
     return json.loads((tmp_path / "module-jacks.proposal.json").read_text())
-
-
-GOOD = _reading(_jack("Gate In", "gate_in"), _jack("Out L", "audio_out"))
-PARTIAL = _reading(_jack("Gate In", "gate_in"), coverage="partial")
 
 
 def test_a_complete_manual_is_proposed_with_its_source_and_quotes(tmp_path):
