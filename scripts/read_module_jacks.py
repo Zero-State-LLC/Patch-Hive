@@ -562,6 +562,14 @@ def estimate_usd(requests: list[dict], model: str, discount: float = BATCH_DISCO
     return full * discount
 
 
+def largest_charge(request: dict, model: str) -> float:
+    """The most one request can cost, held against the cap while its answer is outstanding."""
+    params = request["params"]
+    chars = len(params["system"]) + len(params["messages"][0]["content"])
+    price_in, price_out = PRICES[model]
+    return (chars / CHARS_PER_TOKEN * price_in + MAX_OUTPUT_TOKENS * price_out) / 1e6
+
+
 def load_readings(out: Path) -> dict[str, dict]:
     """Every reading collected so far. The latest one for a custom id wins."""
     path = out / "readings.jsonl"
@@ -805,27 +813,30 @@ def read_documents(
 
     lock, stop = threading.Lock(), threading.Event()
     statuses, tokens = collections.Counter(), [0, 0]
-    spent = 0.0
+    spent = reserved = 0.0
 
     def work(request: dict) -> None:
-        nonlocal spent
-        if stop.is_set():
-            return
+        nonlocal spent, reserved
+        hold = largest_charge(request, model)
+        with lock:
+            # Several requests are out at once, so what they could cost counts before it's charged.
+            if stop.is_set() or spent + reserved + hold > max_usd:
+                stop.set()
+                return
+            reserved += hold
         try:
             record = _read_one(request, model, call, pause)
         except Refused:
             stop.set()
             raise
         with lock:
+            reserved -= hold
             handle.write(json.dumps(record) + "\n")
             handle.flush()
             statuses[record["status"]] += 1
             tokens[0] += record["usage"][0]
             tokens[1] += record["usage"][1]
             spent += record["usd"]
-            # The estimate can be wrong, so the cap is also held against what's really charged.
-            if spent >= max_usd:
-                stop.set()
 
     with (out / "readings.jsonl").open("a") as handle:
         try:

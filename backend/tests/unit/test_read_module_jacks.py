@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import io
 import json
+import time
 import urllib.error
 from pathlib import Path
 from types import SimpleNamespace
@@ -520,6 +521,33 @@ def test_the_list_price_counts_when_openrouter_reports_no_cost(tmp_path):
     assert json.loads((tmp_path / "spend.jsonl").read_text())["usd"] == pytest.approx(
         expected, abs=1e-4
     )
+
+
+def test_requests_in_flight_cannot_carry_spending_past_the_cap(tmp_path, capsys):
+    row = _plan(tmp_path)
+    requests, _counts = jacks.build_requests([row], tmp_path, jacks.OPENROUTER_MODEL)
+    hold = max(jacks.largest_charge(r, jacks.OPENROUTER_MODEL) for r in requests)
+    cap = hold * 2.5
+
+    def answer(_body):
+        time.sleep(0.05)  # Every worker has tried to send before any charge comes back.
+        return _answer(GOOD, cost=hold)
+
+    call, calls = _recording(answer)
+    result = jacks.read_documents(
+        tmp_path,
+        model=jacks.OPENROUTER_MODEL,
+        max_usd=cap,
+        limit=None,
+        dry_run=False,
+        call=call,
+        workers=4,
+        pause=lambda _seconds: None,
+    )
+    assert result == 3
+    assert len(calls) == 2
+    assert json.loads((tmp_path / "spend.jsonl").read_text())["usd"] <= cap
+    assert "2 requests unsent" in capsys.readouterr().out
 
 
 def test_reading_stops_when_real_charges_reach_the_cap(tmp_path, capsys):

@@ -10,7 +10,7 @@ Almost no catalog row has `io_ports` (2 of 3,379 public Modules on 2026-11-09), 
 
 A Module is proposed only when two differently worded readings of one document both call the list complete, agree on every jack, and quote text found in that document.
 
-`read` does the same reading through OpenRouter, which the owner chose on 2026-11-09. It uses the same Haiku 5.5 model the pilot checked by hand. OpenRouter's price is the batch price doubled, so `read` also stops when real charges reach the cap.
+`read` does the same reading through OpenRouter, which the owner chose on 2026-11-09. It uses the same Haiku 5.5 model the pilot checked by hand. OpenRouter's price is the batch price doubled, so `read` also holds each request's largest possible charge against the cap before sending it.
 
 Out of scope: running the paid step, which needs the owner's API key and a spending cap, and loading any list. A load needs a reviewed PR and the owner's yes on its hashes.
 
