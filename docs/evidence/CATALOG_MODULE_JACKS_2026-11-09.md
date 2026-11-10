@@ -1,6 +1,6 @@
 # Module jack lists, 2026-11-09
 
-`overlays/module-jacks-v1.json` proposes jack lists for 224 Modules: 1,606 jacks from 65 makers, read from 147 user manuals and 77 maker pages. Before this, 2 of the 3,379 public Modules declared jacks, so Patch Books printed role names such as "Audio Out".
+`overlays/module-jacks-v1.json` proposes jack lists for 224 Modules: 1,606 jacks from 65 makers, read from 147 user manuals and 77 maker pages. Before this, 2 of the 3,379 public Modules declared jacks, so Patch Books printed role names such as "Audio Out". Both databases now hold these lists, as recorded under [Loads](#loads).
 
 ## How the lists were chosen
 
@@ -30,6 +30,23 @@ Of the 2,514 Modules read, 224 passed. Most of the rest fell short because the d
 - "Complete" means the document appears to cover every jack. No list was checked against a physical panel.
 - A document can describe a different revision from the row. A page for a later version (Rev2, II, Mk2) is no longer matched, but a manual can still cover a sibling revision, as with µVCA and the µVCA II manual.
 - Two readings by one model catch slips, not a mistake both make.
+
+## Loads
+
+The owner approved each load on its hashes. Both ran through `db-load.yml` in `apply` mode on 2026-11-10 UTC, staging first, with the same `plan_hash` `2dc0e298e2255efb59578f1848d3ecf79970d2a9877d631bb0a3da40cdc6281a` and `inputs_hash` `a18108914c293f5e1a87e9278976626547894ff01450db9fb28430fe89a8e086`.
+
+| Database | Run | Commit | Result |
+|---|---|---|---|
+| Staging | [42738704964](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42738704964) | `c3aa686` | 224 lists filled, 0 conflicts, no inserts, no destructive SQL |
+| Production | [42752081150](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42752081150) | `88efb73` | 224 lists filled, 0 conflicts, no inserts, no destructive SQL |
+
+On each host `catalog_load_runs` went from 1 to 2 and `catalog_load_changes` from 39 to 263, one change per list. No other table's row count changed.
+
+Reading each host's public API after 0.3.0-alpha.20 was deployed, `/api/modules` has 3,379 rows, 226 of them declare jacks, and all 224 lists are served exactly as the overlay has them.
+
+To undo a load, run `db-load.yml` with its run ID as `rollback_run_id`, which restores the empty lists. No rollback has been run on a deployed database.
+
+Engine 1.3.0 (#390) went live with that deploy. It takes a filter's lowpass output for a generic audio cable, which changes the jack chosen for 5 of these lists and not the lists themselves.
 
 ## Files
 
