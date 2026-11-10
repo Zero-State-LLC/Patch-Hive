@@ -1,6 +1,6 @@
 ## Current next milestone — closed staging beta
 
-PatchHive remains late alpha (`v0.3.0-alpha`; 0.3.0-alpha.19 runs on staging and production since 2026-11-08) and production payments remain disabled. The next milestone is a closed staging beta. Done so far (2026-11-03): the Cyber Hive UI landed (#96, then the rail redesign and its follow-ups #215–#238), demo authentication matches the seed on staging (008 T030b), the Design Engine walkthrough passed on staging with flags on in test mode (008 T040b, #216), and the staging host is the Cloudflare pair (`staging.patch-hive.com`, `api-staging.patch-hive.com`). Remaining: pin the readiness docs to the walkthrough SHA (008 T050b, which waits on the signed spec 007 receipt) and pass the beta's staging exit criteria below. No calendar ship date is claimed.
+PatchHive remains late alpha (`v0.3.0-alpha`; 0.3.0-alpha.20 runs on staging and production since 2026-11-10) and production payments remain disabled. The next milestone is a closed staging beta. Done so far (2026-11-03): the Cyber Hive UI landed (#96, then the rail redesign and its follow-ups #215–#238), demo authentication matches the seed on staging (008 T030b), the Design Engine walkthrough passed on staging with flags on in test mode (008 T040b, #216), and the staging host is the Cloudflare pair (`staging.patch-hive.com`, `api-staging.patch-hive.com`). Remaining: pin the readiness docs to the walkthrough SHA (008 T050b, which waits on the signed spec 007 receipt) and pass the beta's staging exit criteria below. No calendar ship date is claimed.
 
 # PatchHive roadmap
 
@@ -26,7 +26,7 @@ Status vocabulary:
 |---|---|---|---|
 | `0.1.x` | historical prototype | early rig, patch, publishing, experimental surfaces | superseded / compatibility-only |
 | `0.2.x` | canon-aligned MVP | immutable rigs/runs, deterministic compiler, validation, canonical export/credit boundary | **COMPLETE on main** (not production released) |
-| `0.3.0-alpha` | Patch Book + VSI + Design Engine | one-page contracts, VSI P0, Style Studio / design packs (flags off) | **ACTIVE / late alpha** (`v0.3.0-alpha.19` deployed 2026-11-08) |
+| `0.3.0-alpha` | Patch Book + VSI + Design Engine | one-page contracts, VSI P0, Style Studio / design packs (flags off) | **ACTIVE / late alpha** (`v0.3.0-alpha.20` deployed 2026-11-10) |
 | `0.3.0-beta` | closed staging beta | named staging, Design Engine E2E, a11y protocol, dual-path thinning | **PLANNED** (released as `0.3.0-beta.1` when the beta exit criteria pass) |
 | `0.3.0-rc` | Patch Book release candidate | freeze SHA, full export matrix, concurrency/debit evidence | **PLANNED** |
 | `0.4.x` | production hardening | ops maturity, scanner, SLOs, support, payment readiness (still off) | **PLANNED** |
