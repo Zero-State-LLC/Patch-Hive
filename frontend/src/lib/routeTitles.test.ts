@@ -39,6 +39,12 @@ describe("titleFor", () => {
     expect(metaFor("/rigs/7/reading").description).toMatch(/^Fix anything PatchHive got wrong/);
   });
 
+  it("does not offer a retired catalog page as a live screen", () => {
+    for (const path of ["/modules", "/products", "/cases", "/cases/eurorack-104"]) {
+      expect(metaFor(path)).toMatchObject({ title: "Not found, PatchHive", canonical: null });
+    }
+  });
+
   it("gives distinct screens distinct titles", () => {
     const paths = ["/", "/patches", "/privacy", "/login", "/account", "/racks", "/racks/new"]
       .concat(["/racks/7/edit", "/rigs/new/photo", "/rigs/7/photo", "/rigs/7/reading", "/rigs/7"])

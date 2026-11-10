@@ -31,6 +31,12 @@ describe("page head", () => {
     expect(block(indexHtml)).toBe(squash(pageHead("/")));
   });
 
+  it("names no canonical URL for a retired catalog page", () => {
+    for (const path of ["/modules", "/products", "/cases", "/cases/eurorack-104"]) {
+      expect(pageHead(path)).not.toMatch(/rel="canonical"|og:url/);
+    }
+  });
+
   it("names each public page, with its canonical URL", () => {
     const head = pageHead("/privacy");
     expect(head).toContain("<title>Privacy notice, PatchHive</title>");

@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { PUBLIC_PAGES } from "../src/lib/pageMeta";
-import { isAppRoute } from "./routes";
+import { isAppRoute, isRetired } from "./routes";
 
 const publicDir = resolve(__dirname, "../public");
 const read = (name: string) => readFileSync(resolve(publicDir, name));
@@ -48,6 +48,12 @@ describe("sitemap.xml", () => {
     const paths = locs.map((loc) => new URL(loc).pathname);
     expect(paths.sort()).toEqual(Object.keys(PUBLIC_PAGES).sort());
     for (const path of paths) expect(isAppRoute(path)).toBe(true);
+  });
+
+  it("offers no retired catalog page as a live one", () => {
+    const sitemap = read("sitemap.xml").toString("utf8");
+    const locs = [...sitemap.matchAll(/<loc>([^<]*)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
+    for (const path of [...locs, ...Object.keys(PUBLIC_PAGES)]) expect(isRetired(path)).toBe(false);
   });
 });
 
