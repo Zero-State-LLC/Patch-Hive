@@ -406,6 +406,8 @@ export interface GeneratePatchesResponse {
   artifact_manifest_hash?: string | null;
   inventory_revision_id?: string | null;
   inventory_gate_code?: string | null;
+  // The condition that failed, on a NOT_COMPUTABLE answer; worded for logs, not people.
+  inventory_gate_messages?: string[] | null;
   generation_status?: string | null;
   validation?: GenerationValidation | null;
 }
@@ -520,6 +522,8 @@ export interface CommerceStatus {
   plan_offers: CommercePlan[];
   subscription: CommerceSubscription | null;
   allowance: CommerceAllowance | null;
+  /** What one export costs in credits; the server sets it. */
+  export_cost: number;
 }
 
 export interface ReferralRecord {

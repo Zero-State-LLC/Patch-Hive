@@ -1,6 +1,6 @@
 # Vision evaluation fixtures
 
-**License:** synthetic internal fixtures only — not a production dataset.  
+**License:** the harness fixtures are synthetic and internal, not a production dataset. The Commons cases' photos keep their authors' licences (`commons/CREDITS.md`).  
 **Version:** `vision-eval.v1`
 
 ## Purpose
@@ -67,3 +67,17 @@ The rights, review, partition, cohort and contamination rules are the same as fo
 `backend/evidence/rig_evaluation.py` scores each photo's provider answer against its labels. It reports identity accuracy per Sighting, detection recall and precision, position error in HP, and false canonicalization, which must stay zero.
 
 `whole_rig/` is a two-photo synthetic corpus with recorded answers, for the harness tests. It is far below admission size.
+
+## The Commons cases in `pilot-manifest.json`
+
+The corpus starts from the owner's own Rig, and openly licensed Wikimedia Commons photos fill what it doesn't cover (decision 64). Five such cases are in `pilot-manifest.json`. An agent drafted their labels from the photo, the catalog and the makers' own sites, and the owner checked them.
+
+- The photos aren't committed. Each case pins its photo's SHA-256 and names its address in `asset_source`. To fetch them and check each hash:
+
+  ```bash
+  python scripts/fetch_corpus_photos.py --out ~/patchhive-corpus/photos
+  ```
+
+  A photo that has changed on Commons is refused, so it's never scored against labels made for another picture.
+- `commons/CREDITS.md` names each photo's author and licence.
+- `commons/review-notes/` keeps what the owner checked against: each label's `n` (its place in the manifest's list), confidence and evidence, and what each off-catalog Module appears to be.

@@ -32,6 +32,7 @@ const NOTHING: CommerceStatus = {
   plan_offers: [],
   subscription: null,
   allowance: null,
+  export_cost: 3,
 };
 const CREDIT_OFFER = {
   price_cents: 20,

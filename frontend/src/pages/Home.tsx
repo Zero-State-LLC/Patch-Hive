@@ -28,15 +28,30 @@ const path = [
 
 const PHOTO_STEP = "/rigs/new/photo";
 
-// An example reading of the demo rig's first Modules, in the words the Reading screen uses.
+// An example reading of the demo rig's first Modules, in the words the Reading screen uses and
+// in its order: the one to check first, then the rest by row and HP.
 const EXAMPLE_WORDS = ["Sure", "Check this", "Sure"] as const;
-const example = DEMO_RIG.modules.slice(0, EXAMPLE_WORDS.length).map((placed, index) => ({
-  words: EXAMPLE_WORDS[index],
-  name: `${placed.module?.brand ?? ""} ${placed.module?.name ?? ""}`.trim(),
-  row: placed.row_index,
-  from: placed.start_hp,
-  to: placed.start_hp + (placed.module?.hp ?? 0),
-}));
+const example = DEMO_RIG.modules
+  .slice(0, EXAMPLE_WORDS.length)
+  .map((placed, index) => ({
+    words: EXAMPLE_WORDS[index],
+    name: `${placed.module?.brand ?? ""} ${placed.module?.name ?? ""}`.trim(),
+    row: placed.row_index,
+    from: placed.start_hp,
+    to: placed.start_hp + (placed.module?.hp ?? 0),
+  }))
+  .sort(
+    (a, b) =>
+      Number(a.words === "Sure") - Number(b.words === "Sure") || a.row - b.row || a.from - b.from,
+  );
+
+// The demo patch's own page of the book, as the export prints it: page 9 of PatchBook.pdf in the
+// seeded run's pack (composition 17b4977023a6, engine 0.3.0), rendered at 1000px wide. Re-make it
+// when the seed, the patch engine or the book's layout change: export the seeded run in-process
+// (as backend/tests/integration/test_008_f5_live.py does), find the patch's page in the pack's
+// pages/json, render that page of PatchBook.pdf, and save it as WebP.
+const BOOK_PAGE = "/examples/patch-book-page.webp";
+const BOOK_PAGE_ALT = `A Patch Book page titled ${DEMO_PATCH.name}: its cable diagram, the five cables in order, seven steps to play it, and a note that one Module's jack names are generic.`;
 
 const SIGNAL_NAMES = { audio: "Audio", cv: "CV", gate: "Gate" } as const;
 const signals = (Object.keys(SIGNAL_NAMES) as (keyof typeof SIGNAL_NAMES)[]).filter((signal) =>
@@ -98,19 +113,37 @@ export default function Home() {
       </section>
 
       <section className="home-example" aria-labelledby="home-example-title">
-        <h2 id="home-example-title">What a reading looks like</h2>
-        <ol className="home-example__list" aria-label="An example reading">
-          {example.map((item) => (
-            <li key={item.name}>
-              <span
-                className={`status-chip status-chip--${item.words === "Sure" ? "success" : "warning"}`}
-              >
-                {item.words}
-              </span>{" "}
-              {item.name}, row {item.row}, HP {item.from} to {item.to}
-            </li>
-          ))}
-        </ol>
+        <h2 id="home-example-title">What you get</h2>
+        <div className="home-example__parts">
+          <div>
+            <h3>A reading of the Rig</h3>
+            <ol className="home-example__list" aria-label="An example reading">
+              {example.map((item) => (
+                <li key={item.name}>
+                  <span
+                    className={`status-chip status-chip--${item.words === "Sure" ? "success" : "warning"}`}
+                  >
+                    {item.words}
+                  </span>{" "}
+                  {item.name}, row {item.row}, HP {item.from} to {item.to}
+                </li>
+              ))}
+            </ol>
+          </div>
+          <figure className="home-example__page" aria-labelledby="home-example-page">
+            <img
+              src={BOOK_PAGE}
+              alt={BOOK_PAGE_ALT}
+              width={1000}
+              height={1294}
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption id="home-example-page">
+              A page of this Rig&apos;s Patch Book, as the export prints it: {DEMO_PATCH.name}.
+            </figcaption>
+          </figure>
+        </div>
       </section>
 
       <section className="home-path" aria-labelledby="home-path-title">

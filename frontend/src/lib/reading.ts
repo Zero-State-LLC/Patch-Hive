@@ -76,11 +76,14 @@ export function initialDecision(s: Sighting): Decision | null {
 }
 
 /** The confirmation the owner's decisions make, and the Sightings still to decide. */
+/** The confirmation of a Reading. `caseId` is a Case the owner named; with none, the Rig keeps
+ * the Case it has, if any. */
 export function confirmBody(
   decisions: Record<string, Decision>,
   added: AddedModule[],
+  caseId: number | null = null,
 ): { body: ReadingConfirmRequest; undecided: string[] } {
-  const body: ReadingConfirmRequest = { items: [], added: [], excluded: [], case_id: null };
+  const body: ReadingConfirmRequest = { items: [], added: [], excluded: [], case_id: caseId };
   const undecided: string[] = [];
   for (const [sightingId, decision] of Object.entries(decisions)) {
     if (decision.kind === "keep") {
@@ -99,6 +102,9 @@ export function confirmBody(
   body.added = added.map((a) => ({ module_id: a.moduleId, row_index: a.row, start_hp: a.startHp }));
   return { body, undecided };
 }
+
+/** A Reading the owner can still check, retry or retake; a confirmed or superseded one is done. */
+export const CURRENT_STATUSES = new Set(["reading", "read", "failed"]);
 
 /** The keys of Modules a named Case can't hold: on a row it doesn't have, or past a row's end.
  * With no Case, a row is as wide as what's on it, so nothing is past it. */
@@ -128,6 +134,20 @@ export function clashes(
     }
   });
   return found;
+}
+
+/** The Modules behind some keys, each with where it sits, in the order they're shown, so a
+ * warning says which ones are in the way rather than only colouring them. */
+export function namePlaced(
+  placed: { key: string; row: number; startHp: number; hp: number; label: string }[],
+  keys: Set<string>,
+): string {
+  const names = placed
+    .filter((p) => keys.has(p.key))
+    .map((p) => `${p.label} (row ${p.row}, HP ${p.startHp} to ${p.startHp + p.hp})`);
+  return names.length > 1
+    ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`
+    : names.join("");
 }
 
 const READING_REASONS: Record<string, string> = {

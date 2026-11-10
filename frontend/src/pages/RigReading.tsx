@@ -9,6 +9,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import CasePicker from "@/components/CasePicker";
 import CatalogSearch from "@/components/CatalogSearch";
 import LoadFailure from "@/components/LoadFailure";
 import RigRail, { type RailRack } from "@/components/RigRail";
@@ -23,11 +24,13 @@ import {
   apiModules,
   clashes,
   confirmBody,
+  CURRENT_STATUSES,
   dispositionTone,
   dispositionWords,
   initialDecision,
   isDecided,
   moduleLabel,
+  namePlaced,
   orderSightings,
   pastCase,
   photoRefusal,
@@ -35,9 +38,8 @@ import {
   refusalWords,
 } from "@/lib/reading";
 import { useReaderKey } from "@/lib/store";
-import type { Module, Rack } from "@/types/api";
+import type { Case, Module, Rack } from "@/types/api";
 
-const CURRENT = new Set(["reading", "read", "failed"]);
 // A Reading still being read is asked about again after this long.
 const REFRESH_MS = 2000;
 
@@ -59,6 +61,8 @@ function RigReading() {
   const [retryError, setRetryError] = useState<{ readingId: string; text: string } | null>(null);
   // The Rig as it is now: its Case, and the Placements on rows no current photo covers.
   const [rig, setRig] = useState<Rack | null>(null);
+  // A Case the owner names here, which the confirmation gives the Rig (story 23).
+  const [chosenCase, setChosenCase] = useState<Case | null>(null);
   // What the owner had decided before leaving a Sighting out, so "Keep it" brings it back.
   const setAside = useRef<Record<string, Decision>>({});
   const live = useRef(true);
@@ -98,7 +102,10 @@ function RigReading() {
     };
   }, [load]);
 
-  const current = useMemo(() => (readings ?? []).filter((r) => CURRENT.has(r.status)), [readings]);
+  const current = useMemo(
+    () => (readings ?? []).filter((r) => CURRENT_STATUSES.has(r.status)),
+    [readings],
+  );
   const stillReading = current.some((r) => r.status === "reading");
 
   useEffect(() => {
@@ -123,7 +130,9 @@ function RigReading() {
         initialDecision(s) ?? { kind: "undecided", row: s.row_index, startHp: s.start_hp },
     );
 
-  const { body, undecided } = confirmBody(decisions, added);
+  const { body, undecided } = confirmBody(decisions, added, chosenCase?.id ?? null);
+  // The Case the confirmed Rig will have: the one named here, else the Rig's own.
+  const rigCase = chosenCase ?? rig?.case;
   // A photo of some rows says nothing about the others: their Placements stay (T031).
   const covered = new Set(
     current.flatMap((r) =>
@@ -150,7 +159,7 @@ function RigReading() {
     ...kept,
   ];
   const clashing = clashes(placed);
-  const past = pastCase(placed, rig?.case?.hp_per_row);
+  const past = pastCase(placed, rigCase?.hp_per_row);
   const flagged = new Set([...clashing, ...past]);
   const waiting = current.filter((r) => r.status !== "read");
   const canConfirm =
@@ -162,7 +171,7 @@ function RigReading() {
 
   const preview: RailRack = {
     name: "Your Rig as it will be confirmed",
-    case: rig?.case,
+    case: rigCase,
     modules: placed.map((p, i) => ({
       id: i + 1,
       module_id: p.moduleId,
@@ -299,6 +308,7 @@ function RigReading() {
           ) : null}
 
           <div className="panel reading-confirm">
+            <CasePicker current={rig?.case ?? null} chosen={chosenCase} onChoose={setChosenCase} />
             {placed.length > 0 ? (
               <>
                 <p className="muted">Your Rig as it will be confirmed</p>
@@ -316,12 +326,14 @@ function RigReading() {
             ) : null}
             {clashing.size > 0 ? (
               <p className="status status-danger" role="alert">
-                Some Modules overlap in a row. Move them apart before confirming.
+                These overlap in a row: {namePlaced(placed, clashing)}. Move them apart before
+                confirming.
               </p>
             ) : null}
             {past.size > 0 ? (
               <p className="status status-danger" role="alert">
-                Some Modules sit past the end of a row of the Case. Move them before confirming.
+                These sit past the end of a row of the Case: {namePlaced(placed, past)}. Move them
+                before confirming.
               </p>
             ) : null}
             {undecided.length > 0 ? (

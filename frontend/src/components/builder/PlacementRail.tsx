@@ -32,6 +32,8 @@ export interface RailRow {
   capacity: number;
   used: number;
   free: number;
+  /** A row of a Rig with no Case: drawn to a width, but with no end to fill or run past. */
+  open?: boolean;
 }
 
 /** What a block needs to draw a module: its name, its width, and whether it states +12V draw. */
@@ -435,7 +437,9 @@ export default function PlacementRail({
             <div className="hp-usage__meta">
               <span>Row {row.row}</span>
               <span className="muted">
-                {row.used}/{row.capacity}HP used, {row.free} free
+                {row.open
+                  ? `${row.used}HP placed, no Case named`
+                  : `${row.used}/${row.capacity}HP used, ${row.free} free`}
               </span>
             </div>
             <div

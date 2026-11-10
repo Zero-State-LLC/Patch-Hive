@@ -1,87 +1,26 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import {
-  canonApi,
-  caseApi,
-  caseCatalogApi,
-  moduleApi,
-  evidenceApi,
-  rackApi,
-  type EvidenceCandidate,
-  type ModuleToPlace,
-} from "@/lib/api";
-import { rigDetailToRack, rigSummaryToRack } from "@/lib/canonRigAdapter";
+import { canonApi, caseApi, caseCatalogApi, moduleApi, rackApi } from "@/lib/api";
+import { rigDetailToRack } from "@/lib/canonRigAdapter";
 import CaseStep from "@/components/builder/CaseStep";
-import EvidenceStep, {
-  type CandidateStatus,
-  type EvidenceState,
-  type FusedEntityView,
-  type ReviewCandidate,
-} from "@/components/builder/EvidenceStep";
 import PlacementStep, { type RackCompat } from "@/components/builder/PlacementStep";
 import Toast from "@/components/Toast";
 import { failureReason } from "@/lib/loadError";
 import { checkSlot, moveTo, slotPhrase, type Slot } from "@/lib/placementMove";
 import { firstFreeStartHp, packModulesOntoRows } from "@/lib/placementPack";
 import { placementPower, railMeter, summarizePower, type RailKey } from "@/lib/powerBudget";
+import { openRowWidths } from "@/lib/rigRows";
 import { useAuthStore, useReaderKey } from "@/lib/store";
 import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import { useMountedRef } from "@/lib/useMountedRef";
 import { useToast } from "@/lib/useToast";
 import type { Case, CatalogCaseListItem, Module, Rack, RackModuleSpec } from "@/types/api";
 
-/** Demo ranked set when no rack id is available (create flow); shown with a Demo label. */
-const DEMO_CANDIDATES: ReviewCandidate[] = [
-  {
-    id: "cand-mod-a",
-    label: "Oscillator A",
-    manufacturer: "MockAudio",
-    confidence: 0.81,
-    alternatives: ["Oscillator A (higher-gain revision)"],
-    status: "inferred",
-    moduleRevisionId: "catalog-module-osc-a",
-  },
-  {
-    id: "cand-mod-b",
-    label: "VCA B",
-    manufacturer: "MockAudio",
-    confidence: 0.64,
-    alternatives: [],
-    status: "inferred",
-    moduleRevisionId: "catalog-module-vca-b",
-  },
-];
-
 const BUILDER_STEPS = [
   { n: 1, label: "Case" },
   { n: 2, label: "Create rig" },
   { n: 3, label: "Place modules" },
 ] as const;
-
-function mapApiCandidates(rows: EvidenceCandidate[]): ReviewCandidate[] {
-  return rows.map((row) => ({
-    id: row.candidate_id,
-    label: row.model || row.entity_type || row.candidate_id,
-    manufacturer: row.manufacturer || "Unknown",
-    confidence: row.confidence,
-    alternatives: row.alternative_candidates ?? [],
-    status: "inferred",
-    moduleRevisionId:
-      row.gallery_revision_id ||
-      (row.gallery_module_id ? `gallery-${row.gallery_module_id}` : `catalog-${row.candidate_id}`),
-    decision: row.decision_advisory
-      ? {
-          disposition: row.decision_advisory.disposition,
-          provider: row.decision_advisory.provider,
-          confidence: row.decision_advisory.confidence,
-          reasonCodes: row.decision_advisory.reason_codes,
-        }
-      : undefined,
-  }));
-}
-
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_BYTES = 12 * 1024 * 1024;
 
 function formatValidationError(
   err: unknown,
@@ -147,7 +86,7 @@ function nextFreeStartHp(
 
 /**
  * What this page holds depends on who's reading: the module picker has more rows for a signed-in
- * reader (owner decision 39), and rigs and photo evidence belong to an account. Signing out stays
+ * reader (owner decision 39), and rigs belong to an account. Signing out stays
  * on the page, so a change of reader starts it over: nothing the last reader had stays on screen,
  * and an answer still on its way lands nowhere. A token renewal is not a change of reader.
  */
@@ -166,37 +105,20 @@ function RackBuilder() {
   const preselectedCatalogSlug = searchParams.get("catalog_slug") || null;
   const preselectedModuleId = Number(searchParams.get("module_id") || "") || null;
 
-  const [racks, setRacks] = useState<Rack[]>([]);
-  const [selectedRackId, setSelectedRackId] = useState<number | null>(rackId);
-  const [evidenceState, setEvidenceState] = useState<EvidenceState>("idle");
-  const [fileLabel, setFileLabel] = useState("");
-  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
-  /** Photo evidence errors; rig creation keeps its own in createError. */
-  const [error, setError] = useState("");
   // Rigs belong to the signed-in user, so creating one needs an account.
   const signedIn = useAuthStore((st) => st.isAuthenticated());
   // Bulk materialize rewrites shared catalog data; the API allows only Admin and Ops.
   const canBulkMaterialize = useAuthStore(
     (st) => st.user?.role === "Admin" || st.user?.role === "Ops",
   );
-  const [candidates, setCandidates] = useState<ReviewCandidate[]>(DEMO_CANDIDATES);
-  const [inventoryRevisionId, setInventoryRevisionId] = useState<string | null>(null);
-  const [readyForGeneration, setReadyForGeneration] = useState(false);
-  const [modulesToPlace, setModulesToPlace] = useState<ModuleToPlace[]>([]);
-  const [fromLiveApi, setFromLiveApi] = useState(false);
-  const [fused, setFused] = useState<FusedEntityView[]>([]);
-  /** User-applied fusion decisions keyed by fuse_id (still maps to candidate rows). */
-  const [fusedApplied, setFusedApplied] = useState<Record<string, CandidateStatus>>({});
-  const [fusionFeedback, setFusionFeedback] = useState<string | null>(null);
-  const [reconcileStatus, setReconcileStatus] = useState<string | null>(null);
-  const [reconcileNote, setReconcileNote] = useState<string | null>(null);
-  const [imageCount, setImageCount] = useState(0);
 
   /** C0: case-bound create on /racks/new — catalog-first with legacy materialize bridge */
   const [catalogCases, setCatalogCases] = useState<CatalogCaseListItem[]>([]);
   const [legacyCases, setLegacyCases] = useState<Case[]>([]);
   const [casesLoading, setCasesLoading] = useState(false);
   const [selectedCaseId, setSelectedCaseId] = useState<number | null>(preselectedCaseId);
+  // The owner goes on with no Case (spec 009 story 36): each row is as wide as what's on it.
+  const [withoutCase, setWithoutCase] = useState(false);
   const [selectedCatalogSlug, setSelectedCatalogSlug] = useState<string | null>(
     preselectedCatalogSlug,
   );
@@ -240,8 +162,6 @@ function RackBuilder() {
   const [batchPlaceNote, setBatchPlaceNote] = useState("");
   /** Label for module_id deep-link when gallery list is not yet loaded (create flow). */
   const [preselectedLabel, setPreselectedLabel] = useState<string | null>(null);
-
-  const activeRackId = selectedRackId ?? rackId;
 
   useEffect(() => {
     if (preselectedModuleId == null) {
@@ -328,10 +248,18 @@ function RackBuilder() {
         m.start_hp === spec.start_hp,
     )?.module ?? galleryModules.find((m) => m.id === spec.module_id);
 
-  /** Per-row HP occupancy for visual usage bars. */
+  /** Per-row HP occupancy for visual usage bars. A Rig with no Case (spec 009) has open rows,
+   * as wide as what's on them. */
   const rowHpUsage = useMemo(() => {
-    if (!liveRack?.case)
-      return [] as { row: number; capacity: number; used: number; free: number }[];
+    if (!liveRack) return [] as { row: number; capacity: number; used: number; free: number }[];
+    if (!liveRack.case) {
+      return openRowWidths(placementModules, resolveModuleHp).map((capacity, row) => {
+        const used = placementModules
+          .filter((spec) => spec.row_index === row)
+          .reduce((sum, spec) => sum + (resolveModuleHp(spec.module_id) ?? 0), 0);
+        return { row, capacity, used, free: capacity - used, open: true };
+      });
+    }
     const rows = liveRack.case.rows || liveRack.case.hp_per_row?.length || 1;
     const hpPerRow = liveRack.case.hp_per_row?.length
       ? liveRack.case.hp_per_row
@@ -354,7 +282,7 @@ function RackBuilder() {
     return galleryModules.find((m) => m.id === preselectedModuleId) ?? null;
   }, [galleryModules, preselectedModuleId]);
 
-  const builderStep = liveMode ? 3 : selectedCatalogSlug || selectedCaseId ? 2 : 1;
+  const builderStep = liveMode ? 3 : selectedCatalogSlug || selectedCaseId || withoutCase ? 2 : 1;
 
   const selectedLegacyCase = useMemo(
     () => legacyCases.find((c) => c.id === selectedCaseId) ?? null,
@@ -367,45 +295,24 @@ function RackBuilder() {
 
   /** Smart start HP: snap to first free gap when module or row changes. */
   useEffect(() => {
-    if (!liveMode || addModuleId == null || !liveRack?.case) return;
+    if (!liveMode || addModuleId == null || !liveRack) return;
     const modHp = resolveModuleHp(addModuleId);
     if (modHp == null || modHp <= 0) return;
-    const capacity =
-      liveRack.case.hp_per_row?.[addRow] ??
-      (liveRack.case.rows
-        ? Math.floor(liveRack.case.total_hp / liveRack.case.rows)
-        : liveRack.case.total_hp);
+    const rigCase = liveRack.case;
+    const capacity = !rigCase
+      ? Number.POSITIVE_INFINITY
+      : (rigCase.hp_per_row?.[addRow] ??
+        (rigCase.rows ? Math.floor(rigCase.total_hp / rigCase.rows) : rigCase.total_hp));
     const next = nextFreeStartHp(
       addRow,
       modHp,
       placementModules,
       resolveModuleHp,
-      capacity || liveRack.case.total_hp,
+      capacity || rigCase?.total_hp || 0,
     );
     setAddStartHp(next);
     // Only when selection changes — not every keystroke of start HP
-  }, [liveMode, addModuleId, addRow, placementModules, liveRack?.case, resolveModuleHp]);
-
-  useEffect(() => {
-    if (rackId != null) {
-      setSelectedRackId(rackId);
-      return;
-    }
-    // Spec 008 F5: inventory reads go through the canon alias; writes stay on rackApi.
-    canonApi
-      .listRigs({ limit: 50 })
-      .then((res) => {
-        const rows = (res.data.rigs ?? []).map(rigSummaryToRack);
-        setRacks(rows);
-        if (rows.length && selectedRackId == null) {
-          setSelectedRackId(rows[0].id);
-        }
-      })
-      .catch(() => {
-        setRacks([]);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- initial rack list only
-  }, [rackId]);
+  }, [liveMode, addModuleId, addRow, placementModules, liveRack, resolveModuleHp]);
 
   useEffect(() => {
     if (liveMode) return;
@@ -488,13 +395,13 @@ function RackBuilder() {
           return exists ? prev : [...prev, mat.data.case];
         });
       }
-      if (caseId == null) {
-        setCreateError("Select a Eurorack case (catalog or legacy) before creating a rig.");
+      if (caseId == null && !withoutCase) {
+        setCreateError("Choose a Eurorack Case, or go on without one, before creating a rig.");
         setCreating(false);
         return;
       }
       const res = await rackApi.create({
-        case_id: caseId,
+        case_id: withoutCase ? null : caseId,
         name: rigName.trim() || undefined,
         modules: [],
       });
@@ -560,25 +467,6 @@ function RackBuilder() {
       .catch(() => setGalleryModules([]));
   }, [liveMode, rackId, preselectedModuleId]);
 
-  // A placement can make a sealed revision's rig ready, so ask again when placements change.
-  useEffect(() => {
-    if (inventoryRevisionId == null || !fromLiveApi || activeRackId == null) return;
-    let current = true;
-    evidenceApi
-      .listInventory(activeRackId)
-      .then((inventory) => {
-        if (!current) return;
-        setReadyForGeneration(Boolean(inventory.data.latest?.ready_for_generation));
-        setModulesToPlace(inventory.data.modules_to_place ?? []);
-      })
-      .catch(() => {
-        /* keep the last answer */
-      });
-    return () => {
-      current = false;
-    };
-  }, [placementModules, inventoryRevisionId, fromLiveApi, activeRackId]);
-
   /** Saves placements once the server accepts them. Says whether it saved. */
   const savePlacements = async (next: RackModuleSpec[]): Promise<boolean> => {
     if (rackId == null) return false;
@@ -599,13 +487,17 @@ function RackBuilder() {
 
   /** Each row's HP, declared before the checks and saves that read it. */
   const rowCapacities = useMemo(() => {
-    if (!liveRack?.case) return [] as number[];
+    if (!liveRack) return [] as number[];
+    // Open rows have no end to run past; only an overlap stops a placement.
+    if (!liveRack.case) {
+      return openRowWidths(placementModules, resolveModuleHp).map(() => Number.POSITIVE_INFINITY);
+    }
     const c = liveRack.case;
     if (c.hp_per_row?.length) return c.hp_per_row;
     const rows = c.rows || 1;
     const each = Math.floor((c.total_hp || 0) / rows) || c.total_hp || 0;
     return Array.from({ length: rows }, () => each);
-  }, [liveRack]);
+  }, [liveRack, placementModules, resolveModuleHp]);
 
   /** A placed module's name, for messages: the rig's record, else the gallery's. */
   const placementName = (spec: RackModuleSpec) => {
@@ -859,229 +751,6 @@ function RackBuilder() {
     }
   };
 
-  const ranked = useMemo(
-    () => [...candidates].sort((a, b) => b.confidence - a.confidence),
-    [candidates],
-  );
-
-  const allResolved = ranked.every((c) => c.status !== "inferred");
-  const confirmedCount = ranked.filter((c) => c.status === "confirmed").length;
-
-  const selectPhotos = (list?: FileList | null) => {
-    setError("");
-    setInventoryRevisionId(null);
-    setReadyForGeneration(false);
-    setModulesToPlace([]);
-    setFused([]);
-    setFusedApplied({});
-    setFusionFeedback(null);
-    setReconcileStatus(null);
-    setReconcileNote(null);
-    setImageCount(0);
-    if (!list || list.length === 0) return;
-
-    const accepted: File[] = [];
-    const reasons: string[] = [];
-    Array.from(list).forEach((file) => {
-      if (!ALLOWED_TYPES.includes(file.type) || file.size > MAX_BYTES) {
-        reasons.push(`${file.name}: type/size rejected`);
-        return;
-      }
-      accepted.push(file);
-    });
-    if (!accepted.length) {
-      setError(reasons.join("; ") || "Choose JPEG, PNG, or WebP images ≤ 12 MB.");
-      setEvidenceState("idle");
-      setPendingFiles([]);
-      return;
-    }
-    if (reasons.length) {
-      setError(`Some files skipped: ${reasons.join("; ")}`);
-    }
-    setPendingFiles(accepted);
-    setFileLabel(
-      accepted.length === 1
-        ? accepted[0].name
-        : `${accepted.length} photos (${accepted.map((f) => f.name).join(", ")})`,
-    );
-    setFromLiveApi(false);
-    setCandidates(DEMO_CANDIDATES.map((c) => ({ ...c, status: "inferred" as const })));
-    setEvidenceState("ready");
-  };
-
-  const setStatus = (id: string, status: CandidateStatus) => {
-    setCandidates((prev) => prev.map((c) => (c.id === id ? { ...c, status } : c)));
-  };
-
-  /** Apply a fusion-panel decision onto the matching candidate row (still user-initiated). */
-  const applyFusedDecision = (entity: FusedEntityView, status: CandidateStatus) => {
-    const targetId = entity.representative_candidate_id;
-    if (!targetId) {
-      setError("Fused entity has no representative candidate id to resolve.");
-      setFusionFeedback(null);
-      return;
-    }
-    if (entity.conflict && status === "confirmed") {
-      setError(
-        "Cannot confirm a conflicted fusion from the panel: resolve the underlying candidates individually.",
-      );
-      setFusionFeedback(null);
-      return;
-    }
-    setError("");
-    setStatus(targetId, status);
-    setFusedApplied((prev) => ({ ...prev, [entity.fuse_id]: status }));
-    const label = entity.model || entity.fuse_id;
-    setFusionFeedback(`Applied ${status} to fused “${label}” (candidate ${targetId}).`);
-  };
-
-  const confirmAllNonConflictFused = () => {
-    setError("");
-    const eligible = fused.filter((e) => !e.conflict && e.representative_candidate_id);
-    const confirmIds = new Set(eligible.map((e) => e.representative_candidate_id as string));
-    const blocked = fused.length - confirmIds.size;
-    if (!confirmIds.size) {
-      setError(
-        blocked
-          ? "No non-conflict fused entities to confirm. Resolve conflicts in the candidate list."
-          : "No fused entities available.",
-      );
-      setFusionFeedback(null);
-      return;
-    }
-    setCandidates((prev) =>
-      prev.map((c) => (confirmIds.has(c.id) ? { ...c, status: "confirmed" as const } : c)),
-    );
-    setFusedApplied((prev) => {
-      const next = { ...prev };
-      eligible.forEach((e) => {
-        next[e.fuse_id] = "confirmed";
-      });
-      return next;
-    });
-    setFusionFeedback(
-      `Confirmed ${eligible.length} non-conflict fusion${eligible.length === 1 ? "" : "s"}` +
-        (blocked ? `, ${blocked} blocked (conflict or missing rep)` : ""),
-    );
-  };
-
-  const detectModules = async () => {
-    setError("");
-    if (!pendingFiles.length) {
-      setError("Choose at least one rig photo first.");
-      return;
-    }
-    // Live path: multi-image upload → candidates → multi-photo reconcile
-    if (activeRackId != null) {
-      setEvidenceState("uploading");
-      try {
-        const upload = await evidenceApi.uploadImages(activeRackId, pendingFiles, {
-          run_vision_mock: true,
-          consent_provider_processing: false,
-        });
-        if (upload.data.rejected?.length && !upload.data.uploaded?.length) {
-          setError(upload.data.rejected.map((r) => `${r.filename}: ${r.reason}`).join("; "));
-          setEvidenceState("error");
-          return;
-        }
-        const listed = await evidenceApi.listCandidates(activeRackId);
-        const mapped = mapApiCandidates(listed.data.candidates ?? []);
-        if (mapped.length) {
-          setCandidates(mapped);
-          setFromLiveApi(true);
-        } else {
-          setCandidates(DEMO_CANDIDATES.map((c) => ({ ...c, status: "inferred" })));
-          setFromLiveApi(false);
-        }
-        try {
-          const recon = await evidenceApi.reconcile(activeRackId);
-          setFused(recon.data.fused_entities ?? []);
-          setFusedApplied({});
-          setFusionFeedback(null);
-          setReconcileStatus(recon.data.status);
-          setReconcileNote(recon.data.note);
-          setImageCount(recon.data.image_count);
-        } catch {
-          setFused([]);
-          setFusedApplied({});
-          setReconcileStatus(null);
-          setReconcileNote("Reconciliation API unavailable; showing per-image candidates only.");
-        }
-        setEvidenceState("review");
-      } catch {
-        setError("Evidence upload or detection failed. Falling back to local demo candidates.");
-        setCandidates(DEMO_CANDIDATES.map((c) => ({ ...c, status: "inferred" })));
-        setFromLiveApi(false);
-        setFused([]);
-        setEvidenceState("review");
-      }
-      return;
-    }
-    // Create flow without rack: local demo only.
-    setFromLiveApi(false);
-    setCandidates(DEMO_CANDIDATES.map((c) => ({ ...c, status: "inferred" })));
-    setFused([]);
-    setReconcileStatus(pendingFiles.length >= 2 ? "DEMO_MULTI" : "DEMO_SINGLE");
-    setReconcileNote(
-      pendingFiles.length >= 2
-        ? "Multi-photo fusion needs a target rig."
-        : "Choose a target rig to reconcile your photos.",
-    );
-    setEvidenceState("review");
-  };
-
-  const createInventoryRevision = async () => {
-    if (!allResolved || confirmedCount < 1) {
-      setError(
-        "Confirm at least one module and resolve every candidate before creating a revision.",
-      );
-      return;
-    }
-    setError("");
-
-    if (activeRackId != null && fromLiveApi) {
-      try {
-        const decisions = ranked.map((c) => {
-          if (c.status === "confirmed") {
-            return {
-              candidate_id: c.id,
-              status: "confirm",
-              module_revision_id: c.moduleRevisionId,
-            };
-          }
-          if (c.status === "rejected") {
-            return { candidate_id: c.id, status: "reject" };
-          }
-          return { candidate_id: c.id, status: "defer" };
-        });
-        const result = await evidenceApi.confirm(activeRackId, {
-          confirmed_by: "workspace-user",
-          decisions,
-        });
-        setInventoryRevisionId(result.data.inventory_revision_id);
-        setReadyForGeneration(result.data.ready_for_generation);
-        setModulesToPlace(result.data.modules_to_place ?? []);
-        setEvidenceState("confirmed");
-        return;
-      } catch {
-        setError("Confirmation API failed. Inventory was not persisted.");
-        return;
-      }
-    }
-
-    const material = ranked
-      .filter((c) => c.status === "confirmed")
-      .map((c) => `${c.id}:${c.moduleRevisionId}`)
-      .join("|");
-    const syntheticId = `inv-rev-local-${Math.abs(
-      Array.from(material).reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) | 0, 7),
-    ).toString(16)}`;
-    setInventoryRevisionId(syntheticId);
-    // A demo revision stays in this browser: there is no rig for generation to accept.
-    setReadyForGeneration(false);
-    setEvidenceState("confirmed");
-  };
-
   return (
     <section
       className="builder"
@@ -1091,16 +760,21 @@ function RackBuilder() {
     >
       <header className="workspace-header">
         <div>
-          <h1 id="builder-title">
-            {liveMode ? "Module placement" : "Establish your module inventory"}
-          </h1>
+          <h1 id="builder-title">{liveMode ? "Module placement" : "Enter your Rig by hand"}</h1>
           {liveMode ? (
             <p className="muted builder-rig-line">
               <strong>{liveRack?.name ?? "This rig"}</strong>
-              {liveRack?.case ? caseLine(liveRack.case) : ""}.
+              {liveRack?.case
+                ? caseLine(liveRack.case)
+                : liveRack
+                  ? ", with no Case named, so each row is as wide as the Modules on it"
+                  : ""}
+              .
             </p>
           ) : (
-            <p className="muted">Choose a case, create the rig, then place its modules.</p>
+            <p className="muted">
+              Choose a Case if you know it, create the Rig, then place its Modules.
+            </p>
           )}
         </div>
         {rackId != null ? (
@@ -1235,12 +909,26 @@ function RackBuilder() {
             selectedCatalogSlug={selectedCatalogSlug}
             onSelectCatalog={(slug) => {
               setSelectedCatalogSlug(slug);
-              if (slug) setSelectedCaseId(null);
+              if (slug) {
+                setSelectedCaseId(null);
+                setWithoutCase(false);
+              }
             }}
             selectedCaseId={selectedCaseId}
             onSelectLegacy={(id) => {
               setSelectedCaseId(id);
-              if (id != null) setSelectedCatalogSlug(null);
+              if (id != null) {
+                setSelectedCatalogSlug(null);
+                setWithoutCase(false);
+              }
+            }}
+            withoutCase={withoutCase}
+            onWithoutCase={(without) => {
+              setWithoutCase(without);
+              if (without) {
+                setSelectedCaseId(null);
+                setSelectedCatalogSlug(null);
+              }
             }}
             selectedCatalogCase={selectedCatalogCase}
             selectedLegacyCase={selectedLegacyCase}
@@ -1257,38 +945,6 @@ function RackBuilder() {
             onSyncCatalog={() => void materializeAllEurorack()}
           />
         )}
-
-        <EvidenceStep
-          rackChoices={liveMode ? null : racks}
-          selectedRackId={selectedRackId}
-          onSelectRack={setSelectedRackId}
-          targetRackId={activeRackId}
-          state={evidenceState}
-          error={error}
-          fileLabel={fileLabel}
-          pendingCount={pendingFiles.length}
-          onSelectPhotos={selectPhotos}
-          onDetect={() => void detectModules()}
-          candidates={ranked}
-          fromLiveApi={fromLiveApi}
-          onSetStatus={setStatus}
-          fusion={{
-            entities: fused,
-            applied: fusedApplied,
-            feedback: fusionFeedback,
-            status: reconcileStatus,
-            note: reconcileNote,
-            imageCount,
-            onApply: applyFusedDecision,
-            onConfirmAll: confirmAllNonConflictFused,
-          }}
-          confirmedCount={confirmedCount}
-          allResolved={allResolved}
-          onCreateRevision={() => void createInventoryRevision()}
-          revisionId={inventoryRevisionId}
-          readyForGeneration={readyForGeneration}
-          modulesToPlace={modulesToPlace}
-        />
       </div>
       <Toast toast={toast} onDismiss={dismissToast} actionDisabled={placementSaving} />
     </section>

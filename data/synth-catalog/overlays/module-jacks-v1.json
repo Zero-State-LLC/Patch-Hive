@@ -1,0 +1,8446 @@
+{
+  "schema": "module-jacks/1",
+  "proposal_sha256": "1818174f7f009f957bddd04c20177a6049c414fd6fbd663480df361111c79de7",
+  "entries": [
+    {
+      "brand": "2hp",
+      "name": "Arp",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/2hp_Arp_Manual_2023.pdf",
+      "io_ports": [
+        {
+          "name": "Trig Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Root CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Chord CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Reset Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "Buff",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/Buff_Manual_2023.pdf",
+      "io_ports": [
+        {
+          "name": "Input 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Output 1",
+          "type": "audio_out"
+        },
+        {
+          "name": "Output 2",
+          "type": "audio_out"
+        },
+        {
+          "name": "Output 3",
+          "type": "audio_out"
+        },
+        {
+          "name": "Input 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "Output 4",
+          "type": "audio_out"
+        },
+        {
+          "name": "Output 5",
+          "type": "audio_out"
+        },
+        {
+          "name": "Output 6",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "Comp",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/2hp_Comp.pdf",
+      "io_ports": [
+        {
+          "name": "In",
+          "type": "audio_in"
+        },
+        {
+          "name": "Key",
+          "type": "gate_in"
+        },
+        {
+          "name": "Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "Delay",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/Delay_Manual-9wbg.pdf",
+      "io_ports": [
+        {
+          "name": "IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "TIME CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "FDBK CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "MIX CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "Grain",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/2hp_Grain_Manual.pdf",
+      "io_ports": [
+        {
+          "name": "In",
+          "type": "audio_in"
+        },
+        {
+          "name": "Density CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Mix CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "V/Oct",
+          "type": "cv_in"
+        },
+        {
+          "name": "Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "Hat",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/2hp_Hat.pdf",
+      "io_ports": [
+        {
+          "name": "Closed",
+          "type": "gate_in"
+        },
+        {
+          "name": "Open",
+          "type": "gate_in"
+        },
+        {
+          "name": "Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "LFO",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/2hp_LFO-ynwt.pdf",
+      "io_ports": [
+        {
+          "name": "Reset Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Rate CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Wave CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Primary Waveform Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Secondary Waveform Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "Out",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/2hp_Out.pdf",
+      "io_ports": [
+        {
+          "name": "In L",
+          "type": "audio_in"
+        },
+        {
+          "name": "In R",
+          "type": "audio_in"
+        },
+        {
+          "name": "Out Left",
+          "type": "audio_out"
+        },
+        {
+          "name": "Out Right",
+          "type": "audio_out"
+        },
+        {
+          "name": "HP Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "Pluck",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/2hp_Pluck.pdf",
+      "io_ports": [
+        {
+          "name": "Trig",
+          "type": "gate_in"
+        },
+        {
+          "name": "Damp CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Decay CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "V/Oct CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "Rnd",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/2hp_Rnd.pdf",
+      "io_ports": [
+        {
+          "name": "Clock Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Gate Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Smooth Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Quant Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "Swarm",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/2hp_Swarm_v1-0.pdf",
+      "io_ports": [
+        {
+          "name": "Voices CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "1V/Oct Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Detune CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Audio Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "Tape Stop",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/2hp_Tape_Stop.pdf",
+      "io_ports": [
+        {
+          "name": "Audio Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Clock Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Trig Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Lag CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Audio Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "VCA",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/VCA_Manual_2023.pdf",
+      "io_ports": [
+        {
+          "name": "Ch. 1 Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Ch. 1 CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Ch. 1 Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Ch. 2 Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Ch. 2 CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Ch. 2 Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "VCO",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/2hp_VCO.pdf",
+      "io_ports": [
+        {
+          "name": "V/Oct",
+          "type": "cv_in"
+        },
+        {
+          "name": "FM",
+          "type": "cv_in"
+        },
+        {
+          "name": "SYNC",
+          "type": "gate_in"
+        },
+        {
+          "name": "PWM",
+          "type": "cv_in"
+        },
+        {
+          "name": "Triangle Out",
+          "type": "audio_out"
+        },
+        {
+          "name": "Ramp Out",
+          "type": "audio_out"
+        },
+        {
+          "name": "Pulse Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "2hp",
+      "name": "Verb",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/Verb_Manual.pdf",
+      "io_ports": [
+        {
+          "name": "IN L",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN R",
+          "type": "audio_in"
+        },
+        {
+          "name": "MIX CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT L",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT R",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "4ms Company",
+      "name": "Dual EnvVCA",
+      "hp": 16,
+      "source_kind": "manual",
+      "source_url": "https://4mscompany.com/media/ENVVCA/manual/Dual-EnvVCA-manual-1.0.pdf",
+      "io_ports": [
+        {
+          "name": "Trigger A",
+          "type": "gate_in"
+        },
+        {
+          "name": "Trigger B",
+          "type": "gate_in"
+        },
+        {
+          "name": "Cycle",
+          "type": "gate_in"
+        },
+        {
+          "name": "EOR",
+          "type": "gate_out"
+        },
+        {
+          "name": "EOF",
+          "type": "gate_out"
+        },
+        {
+          "name": "Audio In A",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Out A",
+          "type": "audio_out"
+        },
+        {
+          "name": "Audio In B",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Out B",
+          "type": "audio_out"
+        },
+        {
+          "name": "VCA CV A",
+          "type": "cv_in"
+        },
+        {
+          "name": "VCA CV B",
+          "type": "cv_in"
+        },
+        {
+          "name": "Time CV A",
+          "type": "cv_in"
+        },
+        {
+          "name": "Time CV B",
+          "type": "cv_in"
+        },
+        {
+          "name": "Follow A",
+          "type": "cv_in"
+        },
+        {
+          "name": "Follow B",
+          "type": "cv_in"
+        },
+        {
+          "name": "Env Out A",
+          "type": "cv_out"
+        },
+        {
+          "name": "Env Out B",
+          "type": "cv_out"
+        },
+        {
+          "name": "OR",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "4ms Company",
+      "name": "Ensemble Oscillator",
+      "hp": 16,
+      "source_kind": "manual",
+      "source_url": "https://4mscompany.com/media/ENOSC/manual/Ensemble-Osc-manual-v1.1f.pdf",
+      "io_ports": [
+        {
+          "name": "Pitch",
+          "type": "cv_in"
+        },
+        {
+          "name": "Root",
+          "type": "cv_in"
+        },
+        {
+          "name": "Spread",
+          "type": "cv_in"
+        },
+        {
+          "name": "Scale",
+          "type": "cv_in"
+        },
+        {
+          "name": "Balance",
+          "type": "cv_in"
+        },
+        {
+          "name": "Cross FM",
+          "type": "cv_in"
+        },
+        {
+          "name": "Twist",
+          "type": "cv_in"
+        },
+        {
+          "name": "Warp",
+          "type": "cv_in"
+        },
+        {
+          "name": "Learn",
+          "type": "gate_in"
+        },
+        {
+          "name": "Freeze",
+          "type": "gate_in"
+        },
+        {
+          "name": "Out A",
+          "type": "audio_out"
+        },
+        {
+          "name": "Out B",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "4ms Company",
+      "name": "EnvVCA",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://4mscompany.com/media/ENVVCA/manual/EnvVCA-manual-v1.0.pdf",
+      "io_ports": [
+        {
+          "name": "Time CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Cycle",
+          "type": "gate_in"
+        },
+        {
+          "name": "Env",
+          "type": "cv_out"
+        },
+        {
+          "name": "EOR",
+          "type": "gate_out"
+        },
+        {
+          "name": "Audio In",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Out",
+          "type": "audio_out"
+        },
+        {
+          "name": "Trigger",
+          "type": "gate_in"
+        },
+        {
+          "name": "Follow",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "4ms Company",
+      "name": "Listen Up",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "http://4mscompany.com/media/LISTEN/manual/Listen_Up_User_Manual_v1.0.pdf",
+      "io_ports": [
+        {
+          "name": "Left In",
+          "type": "audio_in"
+        },
+        {
+          "name": "Right In",
+          "type": "audio_in"
+        },
+        {
+          "name": "Left Out",
+          "type": "audio_out"
+        },
+        {
+          "name": "Right Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "4ms Company",
+      "name": "Looping Delay",
+      "hp": 16,
+      "source_kind": "manual",
+      "source_url": "https://4mscompany.com/media/LD/manual/LoopingDelay-manual-v1.0.pdf",
+      "io_ports": [
+        {
+          "name": "Ping",
+          "type": "clock_in"
+        },
+        {
+          "name": "Hold",
+          "type": "gate_in"
+        },
+        {
+          "name": "Reverse CV",
+          "type": "gate_in"
+        },
+        {
+          "name": "Time CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Feedback CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Delay Feed CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Mix CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "In",
+          "type": "audio_in"
+        },
+        {
+          "name": "Return",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Out",
+          "type": "audio_out"
+        },
+        {
+          "name": "Send",
+          "type": "audio_out"
+        },
+        {
+          "name": "Clock Out",
+          "type": "clock_out"
+        },
+        {
+          "name": "Loop Clk Out",
+          "type": "clock_out"
+        }
+      ]
+    },
+    {
+      "brand": "4ms Company",
+      "name": "SCM Plus",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://4mscompany.com/media/SCMPLUS/manual/SCM-plus-manual-1.0.pdf",
+      "io_ports": [
+        {
+          "name": "Clock In",
+          "type": "clock_in"
+        },
+        {
+          "name": "x1",
+          "type": "gate_out"
+        },
+        {
+          "name": "x2",
+          "type": "gate_out"
+        },
+        {
+          "name": "x8",
+          "type": "gate_out"
+        },
+        {
+          "name": "S3",
+          "type": "gate_out"
+        },
+        {
+          "name": "S4",
+          "type": "gate_out"
+        },
+        {
+          "name": "S5",
+          "type": "gate_out"
+        },
+        {
+          "name": "S6",
+          "type": "gate_out"
+        },
+        {
+          "name": "S8",
+          "type": "gate_out"
+        },
+        {
+          "name": "Resync",
+          "type": "gate_in"
+        },
+        {
+          "name": "Rotate",
+          "type": "cv_in"
+        },
+        {
+          "name": "Slip",
+          "type": "cv_in"
+        },
+        {
+          "name": "Shuffle",
+          "type": "cv_in"
+        },
+        {
+          "name": "Skip",
+          "type": "cv_in"
+        },
+        {
+          "name": "PW",
+          "type": "cv_in"
+        },
+        {
+          "name": "4x Fast",
+          "type": "gate_in"
+        },
+        {
+          "name": "Mute",
+          "type": "gate_in"
+        }
+      ]
+    },
+    {
+      "brand": "4ms Company",
+      "name": "Tapographic Delay",
+      "hp": 18,
+      "source_kind": "manual",
+      "source_url": "https://4mscompany.com/TAPO/Tapographic-Delay-User-Manual-1_0.pdf",
+      "io_ports": [
+        {
+          "name": "Audio In",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Out 1",
+          "type": "audio_out"
+        },
+        {
+          "name": "Audio Out 2",
+          "type": "audio_out"
+        },
+        {
+          "name": "Time CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Feedback CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Modulation CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Dry/Wet CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Gate Out",
+          "type": "gate_out"
+        },
+        {
+          "name": "Repeat",
+          "type": "gate_in"
+        },
+        {
+          "name": "Tap/Next",
+          "type": "gate_in"
+        },
+        {
+          "name": "Velocity/Morph CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Ext Clock",
+          "type": "clock_in"
+        }
+      ]
+    },
+    {
+      "brand": "4ms Company",
+      "name": "WAV Recorder",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://4mscompany.com/media/REC/manual/WAV-Recorder-v1.2a.pdf",
+      "io_ports": [
+        {
+          "name": "Left IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "Right IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "Left OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "Right OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "Record Trigger",
+          "type": "gate_in"
+        }
+      ]
+    },
+    {
+      "brand": "ACL",
+      "name": "M/S-MATRIX",
+      "hp": 10,
+      "source_kind": "manual",
+      "source_url": "https://acl-synth.com/downloads/ms-matrix_eng.pdf",
+      "io_ports": [
+        {
+          "name": "L IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "R IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "M OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "S OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "M IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "S IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "L OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "R OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "ACL",
+      "name": "Mini MIDI",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://acl-synth.com/downloads/mini-midi_eng.pdf",
+      "io_ports": [
+        {
+          "name": "PITCH",
+          "type": "cv_out"
+        },
+        {
+          "name": "GATE",
+          "type": "gate_out"
+        },
+        {
+          "name": "CC",
+          "type": "cv_out"
+        },
+        {
+          "name": "START",
+          "type": "gate_out"
+        },
+        {
+          "name": "CLOCK",
+          "type": "clock_out"
+        }
+      ]
+    },
+    {
+      "brand": "ACL",
+      "name": "QLFO",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://acl-synth.com/downloads/qlfo_eng.pdf",
+      "io_ports": [
+        {
+          "name": "RATE CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "1V/OCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "SIN",
+          "type": "audio_out"
+        },
+        {
+          "name": "COSIN",
+          "type": "audio_out"
+        },
+        {
+          "name": "INV/SIN",
+          "type": "audio_out"
+        },
+        {
+          "name": "INV/COSIN",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "ACL",
+      "name": "VC Panning Amplifier",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://acl-synth.com/downloads/vc-panning-amplifier_eng.pdf",
+      "io_ports": [
+        {
+          "name": "IN 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV1",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV2",
+          "type": "cv_in"
+        },
+        {
+          "name": "PAN CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT 1",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT 2",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "ACL",
+      "name": "Variable Sync VCO",
+      "hp": 16,
+      "source_kind": "manual",
+      "source_url": "https://acl-synth.com/downloads/variable-sync-vco_eng.pdf",
+      "io_ports": [
+        {
+          "name": "FM 1&2 input",
+          "type": "cv_in"
+        },
+        {
+          "name": "LIN FM",
+          "type": "cv_in"
+        },
+        {
+          "name": "1V/OCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "SYNC",
+          "type": "clock_in"
+        },
+        {
+          "name": "SYNC CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "PWM",
+          "type": "cv_in"
+        },
+        {
+          "name": "Saw Wave",
+          "type": "audio_out"
+        },
+        {
+          "name": "Inverted Saw Wave",
+          "type": "audio_out"
+        },
+        {
+          "name": "Triangle Wave",
+          "type": "audio_out"
+        },
+        {
+          "name": "Sine Wave",
+          "type": "audio_out"
+        },
+        {
+          "name": "Pulse Wave",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "AJH Synth",
+      "name": "Chance Delay",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://ajhsynth.com/ChanceDelay.html",
+      "io_ports": [
+        {
+          "name": "CHA input",
+          "type": "cv_in"
+        },
+        {
+          "name": "DEL input",
+          "type": "cv_in"
+        },
+        {
+          "name": "LEN input",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN - input",
+          "type": "gate_in"
+        },
+        {
+          "name": "OUT - output",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "AJH Synth",
+      "name": "Entropic Doom",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://ajhsynth.com/pdf/Entropic Doom User Guide.pdf",
+      "io_ports": [
+        {
+          "name": "Frequency CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Resonance CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Sync Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "XOR-VCA CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "XOR-VCA Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "RX-V-IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "Ring Modulator Y Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Ring Modulator Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Bright Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Dark Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "1v/Octave Input",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "AJH Synth",
+      "name": "FINALISER R-EQ",
+      "hp": 18,
+      "source_kind": "manual",
+      "source_url": "https://ajhsynth.com/pdf/Finaliser REQ User Manual V1.0.pdf",
+      "io_ports": [
+        {
+          "name": "L/MONO IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "RIGHT IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "REV-CV IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT - R",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT - L",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "AJH Synth",
+      "name": "MiniMod Contour",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://ajhsynth.com/pdf/MiniMod Dual Contour User Manual.pdf",
+      "io_ports": [
+        {
+          "name": "EG 1 Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "EG 2 Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "EG 1 Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "EG 2 Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "AJH Synth",
+      "name": "MiniMod Glide & Noise Mk2",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://ajhsynth.com/pdf/MiniMod Glide User Manual.pdf",
+      "io_ports": [
+        {
+          "name": "White Noise Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Pink Noise Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Red Noise Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Glide CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Hold CV Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Glide CV Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "AJH Synth",
+      "name": "MiniMod VCA",
+      "hp": 10,
+      "source_kind": "manual",
+      "source_url": "https://ajhsynth.com/pdf/MiniMod VCA User Manual.pdf",
+      "io_ports": [
+        {
+          "name": "Audio Input 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Input 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV Input 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV Input 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "Master CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Audio Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "AJH Synth",
+      "name": "Muting Mixer",
+      "hp": 10,
+      "source_kind": "manual",
+      "source_url": "https://ajhsynth.com/pdf/Muting Mixer and VCA User Manual V2.pdf",
+      "io_ports": [
+        {
+          "name": "IN 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN 3",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN 4",
+          "type": "audio_in"
+        },
+        {
+          "name": "Input 5",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "AJH Synth",
+      "name": "Next Phase 12 stage phaser",
+      "hp": 18,
+      "source_kind": "manual",
+      "source_url": "https://ajhsynth.com/pdf/Next Phase User Guide.pdf",
+      "io_ports": [
+        {
+          "name": "Input 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Input 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "FCV 1 Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "FCV 2 Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Depth CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Emphasis CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Wet Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "LFO Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Left Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Right Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "AJH Synth",
+      "name": "V-Shape",
+      "hp": 10,
+      "source_kind": "manual",
+      "source_url": "https://www.ajhsynth.com/pdf/V Shape User Guide.pdf",
+      "io_ports": [
+        {
+          "name": "Main Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Shape CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Shape Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Distortion Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Distortion CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Distortion Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Alyseum",
+      "name": "PUSH",
+      "hp": 3,
+      "source_kind": "manual",
+      "source_url": "https://www.alyseum.com/wa_files/ALYSEUM_User_27s_20Manual_PUSH_V1_2_EN.pdf",
+      "io_ports": [
+        {
+          "name": "CLK IN",
+          "type": "clock_in"
+        },
+        {
+          "name": "SW 1 input",
+          "type": "gate_in"
+        },
+        {
+          "name": "SW 1 output",
+          "type": "gate_out"
+        },
+        {
+          "name": "SW 2 output",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-120",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://www.analoguesystems.co.uk/images/AS_manuals/RS120.pdf",
+      "io_ports": [
+        {
+          "name": "CV-IN 1V/OCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV-IN VARY",
+          "type": "cv_in"
+        },
+        {
+          "name": "SIG 1 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "SIG 2 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-160",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://www.analoguesystems.co.uk/images/AS_manuals/RS160-165.pdf",
+      "io_ports": [
+        {
+          "name": "IN-1",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN-2",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN-3",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN-4",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-165",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs165",
+      "io_ports": [
+        {
+          "name": "IN-1",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN-2",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN-3",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN-4",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-180",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs180",
+      "io_ports": [
+        {
+          "name": "CV1-IN LIN",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV2-IN LOG",
+          "type": "cv_in"
+        },
+        {
+          "name": "SIG 1 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "SIG 2 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-215",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://www.analoguesystems.co.uk/images/AS_manuals/RS210-215.pdf",
+      "io_ports": [
+        {
+          "name": "IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-240",
+      "hp": 24,
+      "source_kind": "manual",
+      "source_url": "https://www.analoguesystems.co.uk/images/AS_manuals/RS240.pdf",
+      "io_ports": [
+        {
+          "name": "CV1",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV2",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV3",
+          "type": "cv_in"
+        },
+        {
+          "name": "SIGNAL INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT A",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT B",
+          "type": "audio_out"
+        },
+        {
+          "name": "MIX OUT (X3)",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-260",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://www.analoguesystems.co.uk/images/AS_manuals/RS260.pdf",
+      "io_ports": [
+        {
+          "name": "V-IN 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "V-IN 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "TRANS IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "GATE IN",
+          "type": "gate_in"
+        },
+        {
+          "name": "TRIG OUT",
+          "type": "gate_out"
+        },
+        {
+          "name": "OUT",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-340",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://www.analoguesystems.co.uk/images/AS_manuals/RS340.pdf",
+      "io_ports": [
+        {
+          "name": "GATE IN",
+          "type": "gate_in"
+        },
+        {
+          "name": "TRIG OUT",
+          "type": "gate_out"
+        },
+        {
+          "name": "GATE OUT",
+          "type": "gate_out"
+        },
+        {
+          "name": "RESET IN",
+          "type": "gate_in"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-35",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-35-processor",
+      "io_ports": [
+        {
+          "name": "FREQ IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "FREQ-V V-OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "HELD-V OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "LEVEL-V OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "TRIG OUT",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-35N",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs35n",
+      "io_ports": [
+        {
+          "name": "FREQ IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "FREQ-V V-OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "HELD-V OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "LEVEL-V OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "TRIG OUT",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-420",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://www.analoguesystems.co.uk/images/AS_manuals/RS420.pdf",
+      "io_ports": [
+        {
+          "name": "CV1-IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV2-IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV1-OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "CV2-OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "CV3-OUT",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-430",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://www.analoguesystems.co.uk/images/AS_manuals/RS430.pdf",
+      "io_ports": [
+        {
+          "name": "SIGNAL IN 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "SIGNAL IN 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV-IN DRIVE",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV-IN MIX",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUTPUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-440",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs440",
+      "io_ports": [
+        {
+          "name": "CV-IN FIXED",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV-IN VARY",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV-IN MIX",
+          "type": "cv_in"
+        },
+        {
+          "name": "SIGNAL IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUTPUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-500e",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://www.analoguesystems.co.uk/images/AS_manuals/RS500E.pdf",
+      "io_ports": [
+        {
+          "name": "CV-IN FIXED",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV-IN VARY",
+          "type": "cv_in"
+        },
+        {
+          "name": "RESPONSE CV-IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "SIG IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "audio output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-70",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs70",
+      "io_ports": [
+        {
+          "name": "Inverter IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "Inverter OUT A",
+          "type": "audio_out"
+        },
+        {
+          "name": "Inverter OUT B",
+          "type": "audio_out"
+        },
+        {
+          "name": "Pre-Amp LOW",
+          "type": "audio_in"
+        },
+        {
+          "name": "Pre-Amp HIGH",
+          "type": "audio_in"
+        },
+        {
+          "name": "Pre-Amp OUT A",
+          "type": "audio_out"
+        },
+        {
+          "name": "Pre-Amp OUT B",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "AvonSynth",
+      "name": "AVS-ADSR-1",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://avonsynth.com/wp-content/uploads/2018/11/AVS-ADSR-1-User-Guide-Rev1.pdf",
+      "io_ports": [
+        {
+          "name": "Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Envelope Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Inverted Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "AvonSynth",
+      "name": "AVS-RING-1",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://avonsynth.com/wp-content/uploads/2023/11/AVS-RING-1-Manual-Rev1.pdf",
+      "io_ports": [
+        {
+          "name": "Carrier ('X') Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Modulator ('Y') Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Ring Modulated Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "AvonSynth",
+      "name": "AVS-S&R-1",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://avonsynth.com/wp-content/uploads/2024/12/AVS-SR-1-Manual-Rev1.pdf",
+      "io_ports": [
+        {
+          "name": "Send Inputs",
+          "type": "audio_in"
+        },
+        {
+          "name": "Return Inputs",
+          "type": "audio_in"
+        },
+        {
+          "name": "Send Outputs",
+          "type": "audio_out"
+        },
+        {
+          "name": "Return Outputs",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Bastl Instruments",
+      "name": "ABC",
+      "hp": 5,
+      "source_kind": "manual",
+      "source_url": "https://bastl-instruments.com/files/manual-abc-web.pdf",
+      "io_ports": [
+        {
+          "name": "A",
+          "type": "audio_in"
+        },
+        {
+          "name": "B",
+          "type": "audio_in"
+        },
+        {
+          "name": "C",
+          "type": "audio_in"
+        },
+        {
+          "name": "D",
+          "type": "audio_in"
+        },
+        {
+          "name": "E",
+          "type": "audio_in"
+        },
+        {
+          "name": "F",
+          "type": "audio_in"
+        },
+        {
+          "name": "A+B+C",
+          "type": "audio_out"
+        },
+        {
+          "name": "D+E+F",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Bastl Instruments",
+      "name": "Cinnamon",
+      "hp": 5,
+      "source_kind": "manual",
+      "source_url": "https://bastl-instruments.com/content/files/manual-cinnamon-web-v1.4.pdf",
+      "io_ports": [
+        {
+          "name": "INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "HIGH-PASS",
+          "type": "audio_out"
+        },
+        {
+          "name": "BAND-PASS",
+          "type": "audio_out"
+        },
+        {
+          "name": "LOW-PASS",
+          "type": "audio_out"
+        },
+        {
+          "name": "LEFT CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "RIGHT CV",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Bastl Instruments",
+      "name": "Ikarie",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://bastl-instruments.com/files/manual-ikarie-web.pdf",
+      "io_ports": [
+        {
+          "name": "L IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "R IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "L OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "R OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "MOD",
+          "type": "cv_in"
+        },
+        {
+          "name": "V/OCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "STEREO",
+          "type": "cv_in"
+        },
+        {
+          "name": "RESONANCE",
+          "type": "cv_in"
+        },
+        {
+          "name": "VCA CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "BEYOND",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Bastl Instruments",
+      "name": "Tea Kick",
+      "hp": 5,
+      "source_kind": "manual",
+      "source_url": "https://bastl-instruments.com/files/manual-teakick-web.pdf",
+      "io_ports": [
+        {
+          "name": "TRIGGER input",
+          "type": "gate_in"
+        },
+        {
+          "name": "CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "WTF input",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUTPUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "SQUARE OUT",
+          "type": "gate_out"
+        },
+        {
+          "name": "click output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Bastl Instruments",
+      "name": "Waver",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://bastl-instruments.com/files/manual-waver-web.pdf",
+      "io_ports": [
+        {
+          "name": "A INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "A CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "B INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "C INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "C CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "MIX OUTPUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "SHAPE CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "SHAPE OUTPUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "BREAK CV",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Black Corporation",
+      "name": "ISE-NIN VOICE",
+      "hp": 36,
+      "source_kind": "manual",
+      "source_url": "https://black-corporation.com/m/assets/support/7/ise-non_voice_manual_eng_a.pdf",
+      "io_ports": [
+        {
+          "name": "1V/OCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "GATE",
+          "type": "gate_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Black Noise",
+      "name": "SLEW-LFO",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://raw.githack.com/BlackNoiseModular/Eurorack/main/Slew-LFO/Manual/BLACK-NOISE_SLEW-LFO-V1_User-Manual_V1.pdf",
+      "io_ports": [
+        {
+          "name": "Rise CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Fall CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Signal Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Signal Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Blood Cells Audio",
+      "name": "MUM",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0491/7641/2319/files/MUM_User_Guide.pdf?v=1730417761",
+      "io_ports": [
+        {
+          "name": "IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "CV IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "PULSE OUTPUT",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "David Haillant",
+      "name": "Piezo",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://www.davidhaillant.com/piezo/",
+      "io_ports": [
+        {
+          "name": "External jack input",
+          "type": "audio_in"
+        },
+        {
+          "name": "AUDIO output",
+          "type": "audio_out"
+        },
+        {
+          "name": "ENV output",
+          "type": "cv_out"
+        },
+        {
+          "name": "GATE output",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Doepfer",
+      "name": "A-107",
+      "hp": 26,
+      "source_kind": "page",
+      "source_url": "https://www.doepfer.de/a107.htm",
+      "io_ports": [
+        {
+          "name": "Step CV 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "Step CV 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "Morph. CV 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "Morph. CV 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "Frequ. CV 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "Frequ. CV 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "Resonance CV1",
+          "type": "cv_in"
+        },
+        {
+          "name": "Resonance CV2",
+          "type": "cv_in"
+        },
+        {
+          "name": "Amplitude CV1",
+          "type": "cv_in"
+        },
+        {
+          "name": "Amplitude CV2",
+          "type": "cv_in"
+        },
+        {
+          "name": "Audio In",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Out",
+          "type": "audio_out"
+        },
+        {
+          "name": "Step Clock",
+          "type": "clock_in"
+        },
+        {
+          "name": "Step Reset",
+          "type": "gate_in"
+        }
+      ]
+    },
+    {
+      "brand": "Doepfer",
+      "name": "A-111-5",
+      "hp": 24,
+      "source_kind": "manual",
+      "source_url": "https://www.doepfer.de/a100_man/A111_5_manual.pdf",
+      "io_ports": [
+        {
+          "name": "VCO Frequency Control Input (1V/Octave)",
+          "type": "cv_in"
+        },
+        {
+          "name": "VCO Pulsewidth Control Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "VCF Frequency Control Input (1V/Octave)",
+          "type": "cv_in"
+        },
+        {
+          "name": "VCA Amplification Control Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "ADSR Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "VCF External Audio Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Inverted LFO1 Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "ADSR Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Audio Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "EarthQuaker Devices",
+      "name": "The Wave Transformer Eurorack Transfiguration Oscillator",
+      "hp": 20,
+      "source_kind": "manual",
+      "source_url": "https://www.earthquakerdevices.com/s/EQD-Wave-Transformer-Manual-English-WEB-R1.pdf",
+      "io_ports": [
+        {
+          "name": "Hard Sync",
+          "type": "gate_in"
+        },
+        {
+          "name": "Soft Sync",
+          "type": "gate_in"
+        },
+        {
+          "name": "Shape Insert",
+          "type": "audio_in"
+        },
+        {
+          "name": "V/OCTAVE",
+          "type": "cv_in"
+        },
+        {
+          "name": "LIN FM",
+          "type": "cv_in"
+        },
+        {
+          "name": "EXPO FM",
+          "type": "cv_in"
+        },
+        {
+          "name": "PULSE WIDTH CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "TRANSFORM CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "μTUNE CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "SINE",
+          "type": "audio_out"
+        },
+        {
+          "name": "TRIANGLE",
+          "type": "audio_out"
+        },
+        {
+          "name": "SAW",
+          "type": "audio_out"
+        },
+        {
+          "name": "COMPLEX",
+          "type": "audio_out"
+        },
+        {
+          "name": "RECTANGLE",
+          "type": "audio_out"
+        },
+        {
+          "name": "SUB PULSE",
+          "type": "audio_out"
+        },
+        {
+          "name": "SUB SQUARE",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Eowave",
+      "name": "EO-310",
+      "hp": 5,
+      "source_kind": "page",
+      "source_url": "https://www.eowave.com/modules/eo-310",
+      "io_ports": [
+        {
+          "name": "sensor input",
+          "type": "cv_in"
+        },
+        {
+          "name": "gate",
+          "type": "gate_out"
+        },
+        {
+          "name": "out",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Eowave",
+      "name": "TITAN",
+      "hp": 5,
+      "source_kind": "page",
+      "source_url": "https://www.eowave.com/modules/titan",
+      "io_ports": [
+        {
+          "name": "SYNC",
+          "type": "gate_in"
+        },
+        {
+          "name": "MLI",
+          "type": "cv_in"
+        },
+        {
+          "name": "ENTREE CT",
+          "type": "cv_in"
+        },
+        {
+          "name": "MOD2",
+          "type": "cv_in"
+        },
+        {
+          "name": "SCIE",
+          "type": "audio_out"
+        },
+        {
+          "name": "CARREE",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Euterpe",
+      "name": "Itinera",
+      "hp": 18,
+      "source_kind": "manual",
+      "source_url": "https://euterpesynth.com/wp-content/uploads/2025/01/Itinera-Manualetto_STAMPA.pdf",
+      "io_ports": [
+        {
+          "name": "Cf CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Attenuated Cf CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Audio input 11",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio input 12",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV Formant",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV Vindicta",
+          "type": "cv_in"
+        },
+        {
+          "name": "Audio output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Feedback",
+      "name": "1BIT Multitap Delay",
+      "hp": 22,
+      "source_kind": "page",
+      "source_url": "https://feedback-modules.myshopify.com/products/1bit-multitap-delay",
+      "io_ports": [
+        {
+          "name": "FB1 CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "FB2 CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "EXT MOD",
+          "type": "cv_in"
+        },
+        {
+          "name": "INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "LOOP",
+          "type": "gate_in"
+        },
+        {
+          "name": "TAP1",
+          "type": "audio_out"
+        },
+        {
+          "name": "TAP2",
+          "type": "audio_out"
+        },
+        {
+          "name": "MIX",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Feedback",
+      "name": "PRE BX",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://feedback-modules.myshopify.com/products/pre-bx",
+      "io_ports": [
+        {
+          "name": "audio input",
+          "type": "audio_in"
+        },
+        {
+          "name": "audio output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Feedback",
+      "name": "PRE CR",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://feedback-modules.myshopify.com/products/pre-cr",
+      "io_ports": [
+        {
+          "name": "audio input",
+          "type": "audio_in"
+        },
+        {
+          "name": "audio output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Feedback",
+      "name": "PRE KM 2",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://feedback-modules.myshopify.com/products/pre-km",
+      "io_ports": [
+        {
+          "name": "audio input",
+          "type": "audio_in"
+        },
+        {
+          "name": "audio output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Feedback",
+      "name": "PUNK",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://feedback-modules.myshopify.com/products/punk",
+      "io_ports": [
+        {
+          "name": "one input",
+          "type": "audio_in"
+        },
+        {
+          "name": "one output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Feedback",
+      "name": "Squeeze 2",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://feedback-modules.myshopify.com/products/squeeze",
+      "io_ports": [
+        {
+          "name": "IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Feedback",
+      "name": "VCA100",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://feedback-modules.myshopify.com/products/vca100",
+      "io_ports": [
+        {
+          "name": "Audio in",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio out",
+          "type": "audio_out"
+        },
+        {
+          "name": "CV in",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Flight of Harmony",
+      "name": "Facehugger",
+      "hp": 16,
+      "source_kind": "manual",
+      "source_url": "https://flightofharmony.com/manuals/Facehugger/FAC-E_OMr1-5_Oct2025.pdf",
+      "io_ports": [
+        {
+          "name": "Out",
+          "type": "cv_out"
+        },
+        {
+          "name": "Ext In",
+          "type": "cv_in"
+        },
+        {
+          "name": "Speed",
+          "type": "cv_in"
+        },
+        {
+          "name": "Root",
+          "type": "cv_in"
+        },
+        {
+          "name": "Trigger",
+          "type": "gate_in"
+        },
+        {
+          "name": "Scale",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Fully Wired Electronics",
+      "name": "Simple Triple Mixer",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://www.fullywiredelectronics.com/_files/ugd/d1aaf0_f5f96b8fe82e484aae0200771a9def4b.pdf",
+      "io_ports": [
+        {
+          "name": "IN 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN 3",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Ge0sync Synth",
+      "name": "GS1-L",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://geosyncsynth.com/2022/05/18/gs1-l/",
+      "io_ports": [
+        {
+          "name": "CV Inputs: Frequency",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV Output: LFO Out",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Ge0sync Synth",
+      "name": "GS1-O",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://geosyncsynth.com/2023/02/25/gs1-o/",
+      "io_ports": [
+        {
+          "name": "V/Oct",
+          "type": "cv_in"
+        },
+        {
+          "name": "Sync In",
+          "type": "gate_in"
+        },
+        {
+          "name": "FM CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "PW CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Sync Out",
+          "type": "gate_out"
+        },
+        {
+          "name": "Triangle",
+          "type": "audio_out"
+        },
+        {
+          "name": "Sawtooth",
+          "type": "audio_out"
+        },
+        {
+          "name": "Ramp Saw",
+          "type": "audio_out"
+        },
+        {
+          "name": "Not so Sine",
+          "type": "audio_out"
+        },
+        {
+          "name": "Pulse/Square",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Ge0sync Synth",
+      "name": "TB-EFA Rev2",
+      "hp": 14,
+      "source_kind": "page",
+      "source_url": "https://geosyncsynth.com/2025/10/28/tb-efa-rev2/",
+      "io_ports": [
+        {
+          "name": "Gate",
+          "type": "gate_in"
+        },
+        {
+          "name": "Accent",
+          "type": "gate_in"
+        },
+        {
+          "name": "Cutoff",
+          "type": "cv_in"
+        },
+        {
+          "name": "Resonance",
+          "type": "cv_in"
+        },
+        {
+          "name": "Envelope Mod",
+          "type": "cv_in"
+        },
+        {
+          "name": "Env Decay",
+          "type": "cv_in"
+        },
+        {
+          "name": "Drive",
+          "type": "cv_in"
+        },
+        {
+          "name": "Chirp",
+          "type": "cv_in"
+        },
+        {
+          "name": "VCA Decay",
+          "type": "cv_in"
+        },
+        {
+          "name": "Signal In",
+          "type": "audio_in"
+        },
+        {
+          "name": "Filter Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Hermetic Modular",
+      "name": "Capicola: Eurorack Time Stretcher & Pitch Shifter",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://hermeticmodular.com/modules/alchemy-lab/capicola",
+      "io_ports": [
+        {
+          "name": "In L",
+          "type": "audio_in"
+        },
+        {
+          "name": "In R",
+          "type": "audio_in"
+        },
+        {
+          "name": "J3",
+          "type": "gate_in"
+        },
+        {
+          "name": "J4",
+          "type": "cv_in"
+        },
+        {
+          "name": "J5",
+          "type": "cv_in"
+        },
+        {
+          "name": "J6",
+          "type": "cv_in"
+        },
+        {
+          "name": "J7",
+          "type": "gate_out"
+        },
+        {
+          "name": "J8",
+          "type": "cv_out"
+        },
+        {
+          "name": "Out L",
+          "type": "audio_out"
+        },
+        {
+          "name": "Out R",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Hermetic Modular",
+      "name": "Echoa: Eurorack Dual Delay & Reverb",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://hermeticmodular.com/modules/alchemy-lab/echoa",
+      "io_ports": [
+        {
+          "name": "In L",
+          "type": "audio_in"
+        },
+        {
+          "name": "In R",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV 3",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV 4",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV 5",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV 6",
+          "type": "cv_in"
+        },
+        {
+          "name": "Out L",
+          "type": "audio_out"
+        },
+        {
+          "name": "Out R",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Hexinverter Électronique",
+      "name": "Galilean Moons",
+      "hp": 18,
+      "source_kind": "manual",
+      "source_url": "https://data.hexinverter.net/GalileanMoons_USER_MANUAL_v102.pdf",
+      "io_ports": [
+        {
+          "name": "TRIG",
+          "type": "gate_in"
+        },
+        {
+          "name": "ATK CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "DEC CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "EG",
+          "type": "cv_out"
+        },
+        {
+          "name": "VCA IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "VCA CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT 1",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT 2",
+          "type": "audio_out"
+        },
+        {
+          "name": "XOR",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Hexinverter Électronique",
+      "name": "Mutant Bassdrum",
+      "hp": 13,
+      "source_kind": "manual",
+      "source_url": "https://data.hexinverter.net/hexinverter_MutantBassdrum_USER%20MANUAL.pdf",
+      "io_ports": [
+        {
+          "name": "DECAY CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "CLEAN",
+          "type": "audio_out"
+        },
+        {
+          "name": "PITCH CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "TRIG",
+          "type": "gate_in"
+        },
+        {
+          "name": "ACC",
+          "type": "cv_in"
+        },
+        {
+          "name": "DIST IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "DIST CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "DIST OUTPUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Hexinverter Électronique",
+      "name": "VCNO",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://hexinverter.net/vcno",
+      "io_ports": [
+        {
+          "name": "PITCH Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "CLOCK Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "NOISE",
+          "type": "audio_out"
+        },
+        {
+          "name": "GATE",
+          "type": "gate_out"
+        },
+        {
+          "name": "SCREECH",
+          "type": "audio_out"
+        },
+        {
+          "name": "SIZZLE",
+          "type": "audio_out"
+        },
+        {
+          "name": "TEAR",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Hexinverter Électronique",
+      "name": "vcNOIZ",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://hexinverter.net/vcnoiz",
+      "io_ports": [
+        {
+          "name": "Expo. response CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Linear response CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Clock input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Base frequency noise output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Sub octave /4 output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Sub octave /8 output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Base frequency DC coupled gate output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Internal clock output",
+          "type": "clock_out"
+        }
+      ]
+    },
+    {
+      "brand": "Infinite Digits",
+      "name": "EZEPTOCORE",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://infinitedigits.co/static/docs/ezeptocore/files/ezeptocore_v7.1.1.c6bf671c4492.pdf",
+      "io_ports": [
+        {
+          "name": "Amen Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Break Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Tunnel Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Clock Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Trigger Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Clock Output",
+          "type": "clock_out"
+        },
+        {
+          "name": "Reset Input",
+          "type": "gate_in"
+        }
+      ]
+    },
+    {
+      "brand": "Infrasonic Audio",
+      "name": "DISENTANGLER",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://shop.infrasonicaudio.com/products/disentangler/user-manual.pdf",
+      "io_ports": [
+        {
+          "name": "IN L",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN R",
+          "type": "audio_in"
+        },
+        {
+          "name": "MID OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "SIDE OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "MID IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "SIDE IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT L",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT R",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Intellijel",
+      "name": "Scales",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://intellijel.com/downloads/manuals/scales_manual_1.01_2021.05.11.pdf",
+      "io_ports": [
+        {
+          "name": "PITCH IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "TRIG IN",
+          "type": "gate_in"
+        },
+        {
+          "name": "SHIFT IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT A",
+          "type": "cv_out"
+        },
+        {
+          "name": "OUT B",
+          "type": "cv_out"
+        },
+        {
+          "name": "TRIG OUT",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Intellijel",
+      "name": "µVCA",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://intellijel.com/downloads/manuals/uvca-2_manual_2021.08.03.pdf",
+      "io_ports": [
+        {
+          "name": "CV A",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN A",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT A",
+          "type": "audio_out"
+        },
+        {
+          "name": "CV B",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN B",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT B",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Jolin",
+      "name": "KRONO",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://jolin.tech/modules/krono",
+      "io_ports": [
+        {
+          "name": "1A",
+          "type": "gate_out"
+        },
+        {
+          "name": "2A",
+          "type": "gate_out"
+        },
+        {
+          "name": "3A",
+          "type": "gate_out"
+        },
+        {
+          "name": "4A",
+          "type": "gate_out"
+        },
+        {
+          "name": "5A",
+          "type": "gate_out"
+        },
+        {
+          "name": "6A",
+          "type": "gate_out"
+        },
+        {
+          "name": "1B",
+          "type": "gate_out"
+        },
+        {
+          "name": "2B",
+          "type": "gate_out"
+        },
+        {
+          "name": "3B",
+          "type": "gate_out"
+        },
+        {
+          "name": "4B",
+          "type": "gate_out"
+        },
+        {
+          "name": "5B",
+          "type": "gate_out"
+        },
+        {
+          "name": "6B",
+          "type": "gate_out"
+        },
+        {
+          "name": "cv input",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "LZX Industries",
+      "name": "ESG3",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://lzxindustries.net/modules/esg3/manual",
+      "io_ports": [
+        {
+          "name": "Red in",
+          "type": "cv_in"
+        },
+        {
+          "name": "Green in",
+          "type": "cv_in"
+        },
+        {
+          "name": "Blue in",
+          "type": "cv_in"
+        },
+        {
+          "name": "CVBS",
+          "type": "cv_out"
+        },
+        {
+          "name": "Y or Green+Sync video out",
+          "type": "cv_out"
+        },
+        {
+          "name": "Pb or Blue video out",
+          "type": "cv_out"
+        },
+        {
+          "name": "Pr or Red video out",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Majella Audio",
+      "name": "MVCF-I",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://majella-audio.com/media/2020/01/MVCF-I_MANUAL_V1.0.pdf",
+      "io_ports": [
+        {
+          "name": "INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUTPUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "CUTOFF",
+          "type": "cv_in"
+        },
+        {
+          "name": "RESONANCE",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Bruxa",
+      "hp": 18,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/bruxa/bruxa-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Signal Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Blend CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Time Modulation CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Time Unity CV In",
+          "type": "cv_in"
+        },
+        {
+          "name": "Time CV In",
+          "type": "cv_in"
+        },
+        {
+          "name": "Decay CV In",
+          "type": "cv_in"
+        },
+        {
+          "name": "Filter CV In",
+          "type": "cv_in"
+        },
+        {
+          "name": "Absorb CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV Out",
+          "type": "cv_out"
+        },
+        {
+          "name": "Interference CV",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Ch.Svr",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/chsvr/chsvr-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Channel 1 Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Channel 1 Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Channel 2 Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Channel 2 Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Channel 3 A Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Channel 3 B Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Inverted SUM Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "SUM Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Contour",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/contour/contour-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Onset CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Decay CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "End of Onset (EON) Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "End of Contour (EOC) Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Mirrored Contour Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Contour Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Echophon",
+      "hp": 20,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/echophon/echophon-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Signal Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Mix CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Mix Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Feedback Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Feedback Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Freeze Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Depth CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Pitch 1 CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Pitch 2 CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Echo Clock Output",
+          "type": "clock_out"
+        },
+        {
+          "name": "Echo Time CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Tempo Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Feedback CV Input",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Erbe-Verb",
+      "hp": 20,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/erbe-verb/erbe-verb-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Signal Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Mix CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Left (Mono) Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Right Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Size CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Speed CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Pre-Delay CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Absorb CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Depth CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Decay CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Tilt CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Reverse Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Tempo Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "CV Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Function",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/function/function-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Signal Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Trigger Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Rise CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Both CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Fall CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Hang Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "End Of Rise Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "End Of Cycle Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Non-Inverted Signal Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Inverted Signal Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "LxD",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/lxd/lxd-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Signal Input CH1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Control Signal Input CH1",
+          "type": "cv_in"
+        },
+        {
+          "name": "STRIKE Input CH1",
+          "type": "gate_in"
+        },
+        {
+          "name": "Signal Output CH1",
+          "type": "audio_out"
+        },
+        {
+          "name": "Signal Input CH2",
+          "type": "audio_in"
+        },
+        {
+          "name": "Control Signal Input CH2",
+          "type": "cv_in"
+        },
+        {
+          "name": "STRIKE Input CH2",
+          "type": "gate_in"
+        },
+        {
+          "name": "Signal Output CH2",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "MMG",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/mmg/mmg-manual.pdf",
+      "io_ports": [
+        {
+          "name": "DC Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "AC Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Mode CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Strike Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Frequency CV Input 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "Frequency CV Input 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "Q CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "ACCENT Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Signal Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Optomix",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/optomix/optomix-manual.pdf",
+      "io_ports": [
+        {
+          "name": "CHannel 1 Signal INput",
+          "type": "audio_in"
+        },
+        {
+          "name": "CHannel 1 DAMP CV INput",
+          "type": "cv_in"
+        },
+        {
+          "name": "CHannel 1 CONTROL INput",
+          "type": "cv_in"
+        },
+        {
+          "name": "CHannel 1 Signal OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "CHannel 1 STRIKE INput",
+          "type": "gate_in"
+        },
+        {
+          "name": "CHannel 2 Signal INput",
+          "type": "audio_in"
+        },
+        {
+          "name": "CHannel 2 Control Signal INput",
+          "type": "cv_in"
+        },
+        {
+          "name": "CHannel 2 DAMP CV INput",
+          "type": "cv_in"
+        },
+        {
+          "name": "CHannel 2 Signal OUTput",
+          "type": "audio_out"
+        },
+        {
+          "name": "CHannel 2 STRIKE INput",
+          "type": "gate_in"
+        },
+        {
+          "name": "AUXiliary INput",
+          "type": "audio_in"
+        },
+        {
+          "name": "SUM OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Phonogene",
+      "hp": 20,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/phonogene/phonogene-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Signal Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Signal Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Sound On Sound CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Vari-Speed CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Organize CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Play Pulse Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Record Pulse Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Splice Pulse Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "End Of Splice Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Slide CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Gene Size CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Gene Shift Clock Input",
+          "type": "clock_in"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Pressure Points",
+      "hp": 20,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/pressure-points/pressure-points-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Channel 1 Pressure Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Channel 1 Gate Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Channel 2 Pressure Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Channel 2 Gate Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Channel 3 Pressure Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Channel 3 Gate Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Channel 4 Pressure Out/Combined Pressure Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Channel 4 Gate Out/Combined Gate Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Tuned Voltage Out X",
+          "type": "cv_out"
+        },
+        {
+          "name": "Tuned Voltage Out Y",
+          "type": "cv_out"
+        },
+        {
+          "name": "Tuned Voltage Out Z",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "PrssPnt",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/prsspnt/prsspnt-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Pressure Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Touch Gate Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Smooth Touch Function Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Toggled Gate Output",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "QPAS",
+      "hp": 18,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/qpas/qpas-manual.pdf",
+      "io_ports": [
+        {
+          "name": "L(Mono) Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "R Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "LP Outputs Left",
+          "type": "audio_out"
+        },
+        {
+          "name": "LP Outputs Right",
+          "type": "audio_out"
+        },
+        {
+          "name": "BP Outputs Left",
+          "type": "audio_out"
+        },
+        {
+          "name": "BP Outputs Right",
+          "type": "audio_out"
+        },
+        {
+          "name": "HP Outputs Left",
+          "type": "audio_out"
+        },
+        {
+          "name": "HP Outputs Right",
+          "type": "audio_out"
+        },
+        {
+          "name": "SP Outputs Left",
+          "type": "audio_out"
+        },
+        {
+          "name": "SP Outputs Right",
+          "type": "audio_out"
+        },
+        {
+          "name": "Level CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "FREQ1 CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "FREQ2 CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Radiate-L CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Radiate-R CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "!!¡¡ Inputs",
+          "type": "gate_in"
+        },
+        {
+          "name": "Q CV Input",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Rosie",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/rosie/rosie-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Channel A Signal Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel B Signal Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "FX Send output",
+          "type": "audio_out"
+        },
+        {
+          "name": "FX Return M",
+          "type": "audio_in"
+        },
+        {
+          "name": "FX Return ST",
+          "type": "audio_in"
+        },
+        {
+          "name": "Master Line Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "CUE Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "Wogglebug",
+      "hp": 10,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/wogglebug/wogglebug-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Smooth VCO Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Ring-Mod Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Woggle VCO Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Ego Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Stepped Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Influence Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "SMOOTH OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "Woggle CV OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "Speed/Chaos CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "External Clock Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Burst Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Clock Output",
+          "type": "clock_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "X-PAN",
+      "hp": 10,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/x-pan/x-pan-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Ch1A Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Ch1B Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "CH1 X-FADE CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Ch1 PAN CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Ch2A Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Ch2B Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "CH2 X-FADE CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Ch2 PAN CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Aux. Stereo VCA CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "L(Mono) Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "R Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Left Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Right Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "XOH",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/xoh/xoh-manual.pdf",
+      "io_ports": [
+        {
+          "name": "ChA Left Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "ChA Right Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "ChB Left Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "ChB Right Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Left Line Level Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Right Line Level Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Headphone Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "modDemix (Classic)",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/moddemix-classic/moddemix-classic-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Signal 1 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "Carrier/ CV 1 IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "Signal 1 OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "Signal 2 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "Signal 2 OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "Carrier/ CV 2 IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "SUM OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "AUXiliary INput",
+          "type": "audio_in"
+        }
+      ]
+    },
+    {
+      "brand": "Make Noise",
+      "name": "tELHARMONIC",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://www.makenoise-manuals.com/telharmonic/telharmonic-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Gate Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "FM Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "N Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "H Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "P Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Tonic CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Interval CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Degree CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "D-Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Centroid CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "H-Lock Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Flux CV Input",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Manikk",
+      "name": "DRM7",
+      "hp": 2,
+      "source_kind": "page",
+      "source_url": "https://manikk.com/product/drm7/",
+      "io_ports": [
+        {
+          "name": "PH",
+          "type": "gate_in"
+        },
+        {
+          "name": "PM",
+          "type": "gate_in"
+        },
+        {
+          "name": "PL",
+          "type": "gate_in"
+        },
+        {
+          "name": "TH",
+          "type": "gate_in"
+        },
+        {
+          "name": "TM",
+          "type": "gate_in"
+        },
+        {
+          "name": "TL",
+          "type": "gate_in"
+        },
+        {
+          "name": "BD",
+          "type": "gate_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Manikk",
+      "name": "Digital8",
+      "hp": 2,
+      "source_kind": "page",
+      "source_url": "https://manikk.com/product/digital8/",
+      "io_ports": [
+        {
+          "name": "1",
+          "type": "gate_out"
+        },
+        {
+          "name": "2",
+          "type": "gate_out"
+        },
+        {
+          "name": "3",
+          "type": "gate_out"
+        },
+        {
+          "name": "4",
+          "type": "gate_out"
+        },
+        {
+          "name": "5",
+          "type": "gate_out"
+        },
+        {
+          "name": "6",
+          "type": "gate_out"
+        },
+        {
+          "name": "7",
+          "type": "gate_out"
+        },
+        {
+          "name": "8",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "MidCentury Modular",
+      "name": "Lunar Delay",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://www.midcentury-modular.com/s/LunarDelay_UserManual_v2_1.pdf",
+      "io_ports": [
+        {
+          "name": "Audio Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Cutoff CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Rate CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Fdbk CV Input",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Modbap Modular",
+      "name": "HUE",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0597/8665/7952/files/Hue_Manual_1v0v1_rev2.pdf?v=1674152541",
+      "io_ports": [
+        {
+          "name": "Audio Input - Mono",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Output - Mono",
+          "type": "audio_out"
+        },
+        {
+          "name": "Filter CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Drive CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Tape CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Lo-Fi CV",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Modbap Modular",
+      "name": "Transit",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0597/8665/7952/files/Transit_Manual_1v0.pdf?v=1650989050",
+      "io_ports": [
+        {
+          "name": "Channel 1 Left Audio Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel 1 Right Audio Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel 1 Ducking Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Channel 2 Left Audio Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel 2 Right Audio Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel 2 Ducking Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Audio Left Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Audio Right Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Headphone Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Mosaic",
+      "name": "ADSR",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://www.mosaic1u.com/s/ADSR_Envelope-ea6m.pdf",
+      "io_ports": [
+        {
+          "name": "Gate Trigger",
+          "type": "gate_in"
+        },
+        {
+          "name": "Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Mosaic",
+      "name": "Bass Drum",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://www.mosaic1u.com/s/Bass_Drum-ean3.pdf",
+      "io_ports": [
+        {
+          "name": "TRIG",
+          "type": "gate_in"
+        },
+        {
+          "name": "Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Mosaic",
+      "name": "Four Channel Mixer",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://www.mosaic1u.com/s/Four_Channel_Mixer-mwcb.pdf",
+      "io_ports": [
+        {
+          "name": "Channel 1 Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel 2 Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel 3 Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel 4 Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Mix Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Mosaic",
+      "name": "Line In",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.mosaic1u.com/s/Line_In-k3st.pdf",
+      "io_ports": [
+        {
+          "name": "In Left",
+          "type": "audio_in"
+        },
+        {
+          "name": "In Right",
+          "type": "audio_in"
+        },
+        {
+          "name": "Out Left",
+          "type": "audio_out"
+        },
+        {
+          "name": "Signal Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Mosaic",
+      "name": "Line Out",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.mosaic1u.com/s/Line_Out-sxc8.pdf",
+      "io_ports": [
+        {
+          "name": "In Left",
+          "type": "audio_in"
+        },
+        {
+          "name": "In Right",
+          "type": "audio_in"
+        },
+        {
+          "name": "Out Left",
+          "type": "audio_out"
+        },
+        {
+          "name": "Signal Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Mosaic",
+      "name": "Random",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://www.mosaic1u.com/s/Random-pwd7.pdf",
+      "io_ports": [
+        {
+          "name": "Clock Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Gate Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Smooth Voltage Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Stepped Voltage Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Mosaic",
+      "name": "State Variable Filter",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://www.mosaic1u.com/s/SVF-j852.pdf",
+      "io_ports": [
+        {
+          "name": "Audio Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Freq CV In",
+          "type": "cv_in"
+        },
+        {
+          "name": "Res CV In",
+          "type": "cv_in"
+        },
+        {
+          "name": "Bandpass Out",
+          "type": "audio_out"
+        },
+        {
+          "name": "Lowpass Out",
+          "type": "audio_out"
+        },
+        {
+          "name": "Highpass Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Mosaic",
+      "name": "Tap",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://www.mosaic1u.com/s/Tap-pj84.pdf",
+      "io_ports": [
+        {
+          "name": "Out",
+          "type": "clock_out"
+        }
+      ]
+    },
+    {
+      "brand": "Motley Modular",
+      "name": "Skipper",
+      "hp": 2,
+      "source_kind": "page",
+      "source_url": "https://www.motleymodular.com/skipper/",
+      "io_ports": [
+        {
+          "name": "SEND",
+          "type": "audio_out"
+        },
+        {
+          "name": "RECEIVE",
+          "type": "audio_in"
+        }
+      ]
+    },
+    {
+      "brand": "Mutable Instruments",
+      "name": "Warps",
+      "hp": 10,
+      "source_kind": "manual",
+      "source_url": "https://pichenettes.github.io/mutable-instruments-documentation/modules/warps/downloads/warps_quickstart.pdf",
+      "io_ports": [
+        {
+          "name": "External carrier amplitude or internal oscillator frequency CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Modulator amplitude CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Algorithm CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Timbre CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Carrier (1) audio input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Modulator (2) audio input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Modulator output (1×2)",
+          "type": "audio_out"
+        },
+        {
+          "name": "Auxiliary output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "NANO Modules",
+      "name": "CEQ",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://nanoindustri.es/wp-content/uploads/2023/03/CEQ-Manual.pdf",
+      "io_ports": [
+        {
+          "name": "Stereo Inputs L",
+          "type": "audio_in"
+        },
+        {
+          "name": "Stereo Inputs R",
+          "type": "audio_in"
+        },
+        {
+          "name": "Stereo Outputs L",
+          "type": "audio_out"
+        },
+        {
+          "name": "Stereo Outputs R",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "NANO Modules",
+      "name": "FONT",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://nanoindustri.es/wp-content/uploads/2021/10/FONT-Manual.pdf",
+      "io_ports": [
+        {
+          "name": "CVF",
+          "type": "cv_in"
+        },
+        {
+          "name": "OCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "CVR",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "LP2",
+          "type": "audio_out"
+        },
+        {
+          "name": "BP2",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "NANO Modules",
+      "name": "ONA",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://nanoindustri.es/wp-content/uploads/2021/10/ONA-Manual.pdf",
+      "io_ports": [
+        {
+          "name": "FM",
+          "type": "cv_in"
+        },
+        {
+          "name": "OCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "SYNC",
+          "type": "gate_in"
+        },
+        {
+          "name": "PW",
+          "type": "cv_in"
+        },
+        {
+          "name": "Sine",
+          "type": "audio_out"
+        },
+        {
+          "name": "Triangle",
+          "type": "audio_out"
+        },
+        {
+          "name": "Sawtooth",
+          "type": "audio_out"
+        },
+        {
+          "name": "Pulse",
+          "type": "audio_out"
+        },
+        {
+          "name": "Complex 1",
+          "type": "audio_out"
+        },
+        {
+          "name": "Complex 2",
+          "type": "audio_out"
+        },
+        {
+          "name": "Sub -1 Octave",
+          "type": "audio_out"
+        },
+        {
+          "name": "Sub -2 Octave",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "NANO Modules",
+      "name": "ST·FONT",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://nanoindustri.es/wp-content/uploads/2024/11/STFONT-Manual.pdf",
+      "io_ports": [
+        {
+          "name": "L Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "R Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "L Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "R Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "DRIVE CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "VOCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "FREQ CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "MODE CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "RES CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "FREQ SPAN CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "MODE SPAN CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "RES SPAN CV",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "NIIO analog",
+      "name": "3-BIT",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.niioanalog.com/_files/ugd/8270f3_56b3756df9634cda94d193ee2cc966aa.pdf?index=true",
+      "io_ports": [
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "AM cv mod",
+          "type": "cv_in"
+        },
+        {
+          "name": "BIT cv mod",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Nakedboards",
+      "name": "LFO",
+      "hp": 14,
+      "source_kind": "page",
+      "source_url": "https://nakedboards.online/docs/lfo",
+      "io_ports": [
+        {
+          "name": "Mix in 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Mix in 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV input 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV input 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "Reset input 1",
+          "type": "gate_in"
+        },
+        {
+          "name": "Reset input 2",
+          "type": "gate_in"
+        },
+        {
+          "name": "Trigger output 1",
+          "type": "gate_out"
+        },
+        {
+          "name": "Trigger output 2",
+          "type": "gate_out"
+        },
+        {
+          "name": "LFO output 1",
+          "type": "cv_out"
+        },
+        {
+          "name": "LFO output 2",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Nekyia Circuits",
+      "name": "Ceremony",
+      "hp": 10,
+      "source_kind": "manual",
+      "source_url": "https://nekyiacircuits.com/wp-content/uploads/2026/02/Ceremony.pdf",
+      "io_ports": [
+        {
+          "name": "Signal Input 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Signal Input 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV Input to modulate Crossfader",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV Input to modulate FM amount",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV Input to modulate Resonance",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV Input to modulate Freq A",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV Input to modulate both Freq",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV Input to modulate Freq B",
+          "type": "cv_in"
+        },
+        {
+          "name": "VCA CV Input to modulate Output",
+          "type": "cv_in"
+        },
+        {
+          "name": "Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Nekyia Circuits",
+      "name": "Opal",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://nekyiacircuits.com/wp-content/uploads/2023/09/Opal.pdf",
+      "io_ports": [
+        {
+          "name": "Channel 1 input signal",
+          "type": "cv_in"
+        },
+        {
+          "name": "Channel 2 input signal",
+          "type": "cv_in"
+        },
+        {
+          "name": "Channel 3 input signal",
+          "type": "cv_in"
+        },
+        {
+          "name": "Output for bus χ",
+          "type": "cv_out"
+        },
+        {
+          "name": "Output for bus ψ",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Nekyia Circuits",
+      "name": "Sigil",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://nekyiacircuits.com/wp-content/uploads/2026/02/Sigil.pdf",
+      "io_ports": [
+        {
+          "name": "CV Input to turn On/Off Cycle",
+          "type": "cv_in"
+        },
+        {
+          "name": "Trigger or Slew Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "CV Input to modulate Rise time",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV Input to modulate Fall time",
+          "type": "cv_in"
+        },
+        {
+          "name": "End of Cycle Trigger Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Signal Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Nekyia Circuits",
+      "name": "Wand",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://nekyiacircuits.com/wp-content/uploads/2025/04/Wand.pdf",
+      "io_ports": [
+        {
+          "name": "α signal input",
+          "type": "audio_in"
+        },
+        {
+          "name": "β signal input",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV input for α/β crossfader",
+          "type": "cv_in"
+        },
+        {
+          "name": "γ signal input",
+          "type": "audio_in"
+        },
+        {
+          "name": "VCA CV input for crossfader level",
+          "type": "cv_in"
+        },
+        {
+          "name": "Sum Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Nonlinearcircuits",
+      "name": "Feague",
+      "hp": 10,
+      "source_kind": "page",
+      "source_url": "https://www.nonlinearcircuits.com/modules/p/feague",
+      "io_ports": [
+        {
+          "name": "SIGNAL",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "SYNC",
+          "type": "gate_in"
+        },
+        {
+          "name": "1V/OCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "0 degree output",
+          "type": "audio_out"
+        },
+        {
+          "name": "90 degree output",
+          "type": "audio_out"
+        },
+        {
+          "name": "180 degree output",
+          "type": "audio_out"
+        },
+        {
+          "name": "270 degree output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Nonlinearcircuits",
+      "name": "Serious Filter",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://www.nonlinearcircuits.com/modules/p/serious-filter",
+      "io_ports": [
+        {
+          "name": "IN1",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN2",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV1",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV2",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT BP",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT LP",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Orpho",
+      "name": "GLUT UND ASCHE",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://www.orpho.de/glutundasche/",
+      "io_ports": [
+        {
+          "name": "Signal IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Orpho",
+      "name": "PENTRIDON",
+      "hp": 10,
+      "source_kind": "page",
+      "source_url": "https://www.orpho.de/pentridon/",
+      "io_ports": [
+        {
+          "name": "g1 +",
+          "type": "cv_in"
+        },
+        {
+          "name": "gt -",
+          "type": "cv_in"
+        },
+        {
+          "name": "Signal In",
+          "type": "audio_in"
+        },
+        {
+          "name": "Signal Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Orpho",
+      "name": "VC-LFO",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://www.orpho.de/vc-lfo/",
+      "io_ports": [
+        {
+          "name": "Ausgang Dreieck",
+          "type": "cv_out"
+        },
+        {
+          "name": "Ausgang Rechteck",
+          "type": "cv_out"
+        },
+        {
+          "name": "Ausgang Sinus",
+          "type": "cv_out"
+        },
+        {
+          "name": "CV-Eingang",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Orpho",
+      "name": "alpha-t-drum",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://www.orpho.de/alpha-t-drum/",
+      "io_ports": [
+        {
+          "name": "TRIGGER",
+          "type": "gate_in"
+        },
+        {
+          "name": "VELOCITY/ACCENT",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Patching Panda",
+      "name": "PATTERNS",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://patchingpanda.com/wp-content/uploads/Patterns_manual.pdf",
+      "io_ports": [
+        {
+          "name": "Clock Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Output CH1",
+          "type": "gate_out"
+        },
+        {
+          "name": "Output CH2",
+          "type": "gate_out"
+        },
+        {
+          "name": "Reset Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Output CH3",
+          "type": "gate_out"
+        },
+        {
+          "name": "Output CH4",
+          "type": "gate_out"
+        },
+        {
+          "name": "CV Input Pattern",
+          "type": "cv_in"
+        },
+        {
+          "name": "Reset Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Clock Output",
+          "type": "clock_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Analog Replicator",
+      "hp": 16,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/analog-replicator",
+      "io_ports": [
+        {
+          "name": "INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "TIME CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "FEEDBACK (FBK) CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "MIX CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "DELAY OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "MIX OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Collapse",
+      "hp": 10,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/collapse",
+      "io_ports": [
+        {
+          "name": "INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "INT CV IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "CONT CV IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUTPUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Crush",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/crush",
+      "io_ports": [
+        {
+          "name": "SR CV IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "Mix CV IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Crush Out",
+          "type": "audio_out"
+        },
+        {
+          "name": "Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "DNA Symbiotic Waves",
+      "hp": 16,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/dna-symbiotic-waves",
+      "io_ports": [
+        {
+          "name": "1 V/O Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Balance CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Control CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Wave 1 Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Wave 2 Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Processor Mix Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Detect",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/detect",
+      "io_ports": [
+        {
+          "name": "Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Env Out",
+          "type": "cv_out"
+        },
+        {
+          "name": "Gate Out",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Dual VCA",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/dual-index",
+      "io_ports": [
+        {
+          "name": "CV IN 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT 1",
+          "type": "audio_out"
+        },
+        {
+          "name": "CV IN 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT 2",
+          "type": "audio_out"
+        },
+        {
+          "name": "MIX OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Filter",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/filter",
+      "io_ports": [
+        {
+          "name": "Resonance CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Frequency CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Lowpass Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Variable Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Highpass Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Bandpass Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Fltr",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/fltr",
+      "io_ports": [
+        {
+          "name": "Frequency CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Highpass Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Bandpass Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Lowpass Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Lifeforms 2+2 Mixer",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/lifeforms-22-mixer",
+      "io_ports": [
+        {
+          "name": "In 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Out 1",
+          "type": "audio_out"
+        },
+        {
+          "name": "In 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "Mix 1+2 Out",
+          "type": "audio_out"
+        },
+        {
+          "name": "In 3",
+          "type": "audio_in"
+        },
+        {
+          "name": "Out 3",
+          "type": "audio_out"
+        },
+        {
+          "name": "In 4",
+          "type": "audio_in"
+        },
+        {
+          "name": "Mix (3+4) Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Lifeforms Analog Replicator",
+      "hp": 16,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/lifeforms-analog-replicator",
+      "io_ports": [
+        {
+          "name": "INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "TIME CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "FEEDBACK (FBK) CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "MIX CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "DELAY OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "MIX OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Lifeforms Binary Filter",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/lifeforms-binary-filter",
+      "io_ports": [
+        {
+          "name": "Frequency CV In",
+          "type": "cv_in"
+        },
+        {
+          "name": "Resonance CV In",
+          "type": "cv_in"
+        },
+        {
+          "name": "Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Lowpass Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Bandpass Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Highpass Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Lifeforms Dual VCA",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/lifeforms-dual-vca",
+      "io_ports": [
+        {
+          "name": "CV In 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Out 1",
+          "type": "audio_out"
+        },
+        {
+          "name": "CV In 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "In 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "Out 2",
+          "type": "audio_out"
+        },
+        {
+          "name": "Mix Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Lifeforms Dynamic Impulse Filter",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/lifeforms-dynamic-impulse-filter",
+      "io_ports": [
+        {
+          "name": "Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Dynamics CV In",
+          "type": "cv_in"
+        },
+        {
+          "name": "Response Out",
+          "type": "cv_out"
+        },
+        {
+          "name": "Impulse Gate In",
+          "type": "gate_in"
+        },
+        {
+          "name": "Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Lifeforms Primary Oscillator",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/lifeforms-primary-oscillator",
+      "io_ports": [
+        {
+          "name": "Pitch Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "FM Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Sync Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Sine Wave Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Saw Wave Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Blade|Pulse CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Blade Wave Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Pulse Wave Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Fragments CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Fragments Wave Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Timbre CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Timbre Wave Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Lifeforms System Interface",
+      "hp": 24,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/lifeforms-system-interface",
+      "io_ports": [
+        {
+          "name": "Channel 1 Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel 2 Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel 3 Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel 4 Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel 5 Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Channel 6 Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Headphone Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Channel 1 Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Aux Send Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Aux Return Left Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Aux Return Right Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Bus Send Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Main Mix Left Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Main Mix Right Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Logic Banks",
+      "hp": 10,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/logic-banks",
+      "io_ports": [
+        {
+          "name": "X IN",
+          "type": "gate_in"
+        },
+        {
+          "name": "Y IN",
+          "type": "gate_in"
+        },
+        {
+          "name": "AND OUT",
+          "type": "gate_out"
+        },
+        {
+          "name": "NAND OUT",
+          "type": "gate_out"
+        },
+        {
+          "name": "OR OUT",
+          "type": "gate_out"
+        },
+        {
+          "name": "XOR OUT",
+          "type": "gate_out"
+        },
+        {
+          "name": "NOR OUT",
+          "type": "gate_out"
+        },
+        {
+          "name": "XNOR OUT",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "MIDI2",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/midi2",
+      "io_ports": [
+        {
+          "name": "GT1 Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "CV1 Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "GT2 Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "CV2 Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Sync Output",
+          "type": "clock_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Midi 3",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://pittsburghmodular.com/s/midi3-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Channel 1 Gate Out",
+          "type": "gate_out"
+        },
+        {
+          "name": "Channel 1 CV Out",
+          "type": "cv_out"
+        },
+        {
+          "name": "Channel 2 Gate Out",
+          "type": "gate_out"
+        },
+        {
+          "name": "Channel 2 CV Out",
+          "type": "cv_out"
+        },
+        {
+          "name": "CC Expression Out",
+          "type": "cv_out"
+        },
+        {
+          "name": "Velocity Expression Out",
+          "type": "cv_out"
+        },
+        {
+          "name": "CLOCK",
+          "type": "clock_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Sequencer",
+      "hp": 14,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/sequencer",
+      "io_ports": [
+        {
+          "name": "Clock Input (CLOCK)",
+          "type": "clock_in"
+        },
+        {
+          "name": "Reset Input (RESET)",
+          "type": "gate_in"
+        },
+        {
+          "name": "Hold Input (HOLD)",
+          "type": "gate_in"
+        },
+        {
+          "name": "Transpose Input (ADD)",
+          "type": "cv_in"
+        },
+        {
+          "name": "Outputs (OUT)",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Timetable",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://pittsburghmodular.com/s/Timetable_Manual.pdf",
+      "io_ports": [
+        {
+          "name": "Clock Input (IN)",
+          "type": "clock_in"
+        },
+        {
+          "name": "Mode CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Flip CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Reset CV Input (RST)",
+          "type": "gate_in"
+        },
+        {
+          "name": "CV Input (CV IN)",
+          "type": "cv_in"
+        },
+        {
+          "name": "1 - Clock Divider 1 Output 1",
+          "type": "gate_out"
+        },
+        {
+          "name": "2 - Clock Divider 1 Output 2",
+          "type": "gate_out"
+        },
+        {
+          "name": "3 - Clock Divider 1 Output 3",
+          "type": "gate_out"
+        },
+        {
+          "name": "4 - Clock Divider 1 Output 4",
+          "type": "gate_out"
+        },
+        {
+          "name": "CV1 - Control Voltage Output 1",
+          "type": "cv_out"
+        },
+        {
+          "name": "CV2 - Control Voltage Output 2",
+          "type": "cv_out"
+        },
+        {
+          "name": "CV3 - Control Voltage Output 3",
+          "type": "cv_out"
+        },
+        {
+          "name": "A - Clock Divider 2 Output 1",
+          "type": "gate_out"
+        },
+        {
+          "name": "B - Clock Divider 2 Output 2",
+          "type": "gate_out"
+        },
+        {
+          "name": "C - Clock Divider 2 Output 3",
+          "type": "gate_out"
+        },
+        {
+          "name": "D - Clock Divider 2 Output 4",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Toolbox",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/toolbox",
+      "io_ports": [
+        {
+          "name": "Noise Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Sample & Hold Voltage Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Sample & Hold Hold Clock Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Sample & Hold Voltage Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Voltage Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Voltage Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "VC Bend",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/vc-bend",
+      "io_ports": [
+        {
+          "name": "IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Verbtronic",
+      "hp": 10,
+      "source_kind": "page",
+      "source_url": "https://pittsburghmodular.com/verbtronic",
+      "io_ports": [
+        {
+          "name": "Mix CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Mode Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Verb Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Mix Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Qu-Bit Electronix",
+      "name": "Aurora",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://www.qubitelectronix.com/s/Aurora_v17-1.pdf",
+      "io_ports": [
+        {
+          "name": "Warp 1V/Oct CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Time CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Blur CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Reflect CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Mix CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Atmosphere CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Reverse Gate input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Freeze Gate input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Audio Input Left",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Input Right",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Output Left",
+          "type": "audio_out"
+        },
+        {
+          "name": "Audio Output Right",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Qu-Bit Electronix",
+      "name": "Data Bender",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://www.qubitelectronix.com/s/Data_Bender_v146-2.pdf",
+      "io_ports": [
+        {
+          "name": "Time CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Repeats CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Mix CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Bend CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Break CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Corrupt CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Bend Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Break Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Corrupt Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Freeze Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Clock Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Audio Input Left",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Input Right",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Output Left",
+          "type": "audio_out"
+        },
+        {
+          "name": "Audio Output Right",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Qu-Bit Electronix",
+      "name": "Mojave",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://www.qubitelectronix.com/s/mojave_manual-1-0-1.pdf",
+      "io_ports": [
+        {
+          "name": "Audio Input Left",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Input Right",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Output Left",
+          "type": "audio_out"
+        },
+        {
+          "name": "Audio Output Right",
+          "type": "audio_out"
+        },
+        {
+          "name": "Clock Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Gen Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Lock Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Freeze Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Mix CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Rate CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Distribute CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Structure CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Drift CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Gust CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Size CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Zone CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Speed CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Window CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Dune Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Qu-Bit Electronix",
+      "name": "Prism",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://www.qubitelectronix.com/s/QB_Prism_Manual-6j8x.pdf",
+      "io_ports": [
+        {
+          "name": "Cutoff Frequency CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "In 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "In 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "Out 1",
+          "type": "audio_out"
+        },
+        {
+          "name": "Out 2",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Rebel Technology",
+      "name": "Phoreo",
+      "hp": 10,
+      "source_kind": "page",
+      "source_url": "https://www.rebeltech.org/product/phoreo/",
+      "io_ports": [
+        {
+          "name": "PWM input",
+          "type": "clock_in"
+        },
+        {
+          "name": "PWM CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "PWM output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Multiplier input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Multiplier CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Multiplier output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Repeater input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Repeater CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Repeater output",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Rides in the Storm",
+      "name": "CON",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://framerusercontent.com/assets/iQWOoAUnwm8W6C8WRlvfuABlkE.pdf",
+      "io_ports": [
+        {
+          "name": "AUDIO IN A",
+          "type": "audio_in"
+        },
+        {
+          "name": "AUDIO IN B",
+          "type": "audio_in"
+        },
+        {
+          "name": "AUDIO OUT A",
+          "type": "audio_out"
+        },
+        {
+          "name": "AUDIO OUT B",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Rides in the Storm",
+      "name": "NGM",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://framerusercontent.com/assets/2RQsnMJNhNihmx0auGo10PRMCo.pdf",
+      "io_ports": [
+        {
+          "name": "A 1 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "A 2 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "A 3 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "A 4 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "A 5 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "A OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "B 1 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "B 2 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "B 3 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "B 4 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "B 5 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "B OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Rossum Electro-Music",
+      "name": "EVOLUTION Variable Character Ladder Filter",
+      "hp": 16,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0277/4548/4865/files/evolution_manual_011816-2.pdf?v=1787946493",
+      "io_ports": [
+        {
+          "name": "Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "1V/OCT CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "FREQ CV2 Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "FREQ CV3 Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Q CV2 Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Q CV1 Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "GENUS CV2 Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "GENUS CV1 Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "SPECIES CV2 Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "SPECIES CV1 Input",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Rossum Electro-Music",
+      "name": "MORPHEUS Stereo Morphing Z-Plane Filter",
+      "hp": 18,
+      "source_kind": "page",
+      "source_url": "https://www.rossum-electro.com/products/morpheus",
+      "io_ports": [
+        {
+          "name": "L audio input",
+          "type": "audio_in"
+        },
+        {
+          "name": "R audio input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Full Level Frequency CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Attenuverted Frequency CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Attenuverted Morph CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Attenuverted Transform/Distortion CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Increment",
+          "type": "gate_in"
+        },
+        {
+          "name": "Decrement",
+          "type": "gate_in"
+        },
+        {
+          "name": "Reset",
+          "type": "gate_in"
+        },
+        {
+          "name": "L audio output",
+          "type": "audio_out"
+        },
+        {
+          "name": "R audio output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Rossum Electro-Music",
+      "name": "PANHARMONIUM Mutating Spectral Resynthesizer",
+      "hp": 26,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0277/4548/4865/files/Panharm_manual_070419.pdf?v=1787946493",
+      "io_ports": [
+        {
+          "name": "1V/Oct input",
+          "type": "cv_in"
+        },
+        {
+          "name": "FM input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Fc CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "BW CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Blur CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Mix CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV1 input",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV2 input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Tap/Sync input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Left Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Right Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Left Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Right Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Slice Clock Output",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "ST Modular",
+      "name": "Catch",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://www.st-modular.de/modules/catch",
+      "io_ports": [
+        {
+          "name": "CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "CLOCK OUT",
+          "type": "clock_out"
+        },
+        {
+          "name": "TRIG IN",
+          "type": "gate_in"
+        },
+        {
+          "name": "C/OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "A/OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "ST Modular",
+      "name": "DRUM",
+      "hp": 3,
+      "source_kind": "page",
+      "source_url": "https://www.st-modular.de/modules/drum",
+      "io_ports": [
+        {
+          "name": "TRIGGER INPUT",
+          "type": "gate_in"
+        },
+        {
+          "name": "OUTPUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "ST Modular",
+      "name": "Emoo",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://www.st-modular.de/modules/emoo",
+      "io_ports": [
+        {
+          "name": "IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "ST Modular",
+      "name": "Hans",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://www.st-modular.de/modules/hans",
+      "io_ports": [
+        {
+          "name": "IN L",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN R",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT L",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT R",
+          "type": "audio_out"
+        },
+        {
+          "name": "CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "LFO Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "ST Modular",
+      "name": "Hapha",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://www.st-modular.de/modules/hapha",
+      "io_ports": [
+        {
+          "name": "CLK",
+          "type": "clock_in"
+        },
+        {
+          "name": "SER",
+          "type": "cv_in"
+        },
+        {
+          "name": "upper output",
+          "type": "gate_out"
+        },
+        {
+          "name": "lower output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "ST Modular",
+      "name": "SEND",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://www.st-modular.de/modules/send",
+      "io_ports": [
+        {
+          "name": "INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT L",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT R",
+          "type": "audio_out"
+        },
+        {
+          "name": "SEND A",
+          "type": "audio_out"
+        },
+        {
+          "name": "RETURN (L)",
+          "type": "audio_in"
+        },
+        {
+          "name": "RETURN (R)",
+          "type": "audio_in"
+        },
+        {
+          "name": "SEND B",
+          "type": "audio_out"
+        },
+        {
+          "name": "RETURN (L) lower",
+          "type": "audio_in"
+        },
+        {
+          "name": "RETURN (R) lower",
+          "type": "audio_in"
+        }
+      ]
+    },
+    {
+      "brand": "ST Modular",
+      "name": "Tricay",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://www.st-modular.de/modules/tricay",
+      "io_ports": [
+        {
+          "name": "TRIG 1",
+          "type": "gate_in"
+        },
+        {
+          "name": "TRIG 2",
+          "type": "gate_in"
+        },
+        {
+          "name": "TRIG 3",
+          "type": "gate_in"
+        },
+        {
+          "name": "OUT 1",
+          "type": "cv_out"
+        },
+        {
+          "name": "OUT 2",
+          "type": "cv_out"
+        },
+        {
+          "name": "OUT 3",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Schlappi Engineering",
+      "name": "BTFLD",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0549/4538/2479/files/btfld_manual_-_rough_draft_-_101624a.pdf?v=1744750336",
+      "io_ports": [
+        {
+          "name": "IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "INJECT",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT 8",
+          "type": "gate_out"
+        },
+        {
+          "name": "OUT 4",
+          "type": "gate_out"
+        },
+        {
+          "name": "OUT 2",
+          "type": "gate_out"
+        },
+        {
+          "name": "OUT 1",
+          "type": "gate_out"
+        },
+        {
+          "name": "STEPPED OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "SAW OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Shakmat",
+      "name": "Banshee Reach",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://shakmat.com/doc/br/BR-User_Manual.pdf",
+      "io_ports": [
+        {
+          "name": "V/Oct input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Linear Thru-zero FM input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Thru-zero PM input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Shape CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "PWM input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Sync input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Amount input",
+          "type": "cv_in"
+        },
+        {
+          "name": "SUB CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Pulse output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Saw output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Sine output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Vari output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Soundmachines",
+      "name": "t-generator",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.sound-machines.it/cms/wp-content/uploads/2019/04/T-GENERATOR-MANUAL-1.0.pdf",
+      "io_ports": [
+        {
+          "name": "RESET INPUT",
+          "type": "gate_in"
+        },
+        {
+          "name": "TRI",
+          "type": "audio_out"
+        },
+        {
+          "name": "SQU/MRP",
+          "type": "audio_out"
+        },
+        {
+          "name": "SIN",
+          "type": "audio_out"
+        },
+        {
+          "name": "PW CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "FOLD CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "TZFM INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "V/OCT",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Soundmachines",
+      "name": "t-quadstrip",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.sound-machines.it/cms/wp-content/uploads/2019/04/T-QUADSTRIP-MANUAL-1.0.pdf",
+      "io_ports": [
+        {
+          "name": "RES1-2 INPUT",
+          "type": "gate_in"
+        },
+        {
+          "name": "RES3-4 INPUT",
+          "type": "gate_in"
+        },
+        {
+          "name": "GATE 1",
+          "type": "gate_out"
+        },
+        {
+          "name": "GATE 2",
+          "type": "gate_out"
+        },
+        {
+          "name": "OUT 1",
+          "type": "cv_out"
+        },
+        {
+          "name": "OUT 2",
+          "type": "cv_out"
+        },
+        {
+          "name": "OUT 3",
+          "type": "cv_out"
+        },
+        {
+          "name": "OUT 4",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Soundmachines",
+      "name": "t-spectrum",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.sound-machines.it/cms/wp-content/uploads/2019/04/T-SPECTRUM-MANUAL-1.0.pdf",
+      "io_ports": [
+        {
+          "name": "RESET input",
+          "type": "gate_in"
+        },
+        {
+          "name": "MODE CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "DISTOUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "SPREAD CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "TILT CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "AUDIO INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "FREQ CV INPUT",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Sovage Engineering",
+      "name": "CHICANE",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://www.sovageengineering.com/product-page/chicane",
+      "io_ports": [
+        {
+          "name": "IN LEFT",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN RIGHT",
+          "type": "audio_in"
+        },
+        {
+          "name": "LEFT OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "RIGHT OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Sovage Engineering",
+      "name": "FAILLE TEMPORELLE",
+      "hp": 10,
+      "source_kind": "page",
+      "source_url": "https://www.sovageengineering.com/product-page/faille-temporelle",
+      "io_ports": [
+        {
+          "name": "IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "FEEDBACK",
+          "type": "cv_in"
+        },
+        {
+          "name": "PROXIMITY",
+          "type": "cv_in"
+        },
+        {
+          "name": "TIME",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN CV LEVEL",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Sovage Engineering",
+      "name": "LA REINE DU CHAOS",
+      "hp": 32,
+      "source_kind": "page",
+      "source_url": "https://www.sovageengineering.com/product-page/la-reine-du-chaos",
+      "io_ports": [
+        {
+          "name": "GATE",
+          "type": "gate_in"
+        },
+        {
+          "name": "TRIGATE",
+          "type": "gate_in"
+        },
+        {
+          "name": "PUNCH RESET for MOD 1 AND 2",
+          "type": "gate_in"
+        },
+        {
+          "name": "FM for MOD 1 AND 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "1V/OCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN CV ALTER.",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN EXPO.",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN LIN.",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN CV VCA BIAS",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN CV CLIPPING WAVE",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN CV CLIPPING WIDTH",
+          "type": "cv_in"
+        },
+        {
+          "name": "VOLTAGE OUTPUTS: EG1",
+          "type": "cv_out"
+        },
+        {
+          "name": "VOLTAGE OUTPUTS: EG 2",
+          "type": "cv_out"
+        },
+        {
+          "name": "VOLTAGE OUTPUTS: MOD 1",
+          "type": "cv_out"
+        },
+        {
+          "name": "VOLTAGE OUTPUTS: MOD 2",
+          "type": "cv_out"
+        },
+        {
+          "name": "MAIN OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Sovage Engineering",
+      "name": "OXYMORON",
+      "hp": 18,
+      "source_kind": "page",
+      "source_url": "https://www.sovageengineering.com/product-page/oxymoron",
+      "io_ports": [
+        {
+          "name": "IN CV FM 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN CV FM 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN CV FM 3",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN CV FM 4",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN CV FM 5",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN CV FM 6",
+          "type": "cv_in"
+        },
+        {
+          "name": "XV/OCT CH. A",
+          "type": "cv_in"
+        },
+        {
+          "name": "XV/OCT CH. B",
+          "type": "cv_in"
+        },
+        {
+          "name": "XV/OCT CH. C",
+          "type": "cv_in"
+        },
+        {
+          "name": "SQR 1",
+          "type": "cv_out"
+        },
+        {
+          "name": "SQR 2",
+          "type": "cv_out"
+        },
+        {
+          "name": "SQR 3",
+          "type": "cv_out"
+        },
+        {
+          "name": "SQR 4",
+          "type": "cv_out"
+        },
+        {
+          "name": "SQR 5",
+          "type": "cv_out"
+        },
+        {
+          "name": "SQR 6",
+          "type": "cv_out"
+        },
+        {
+          "name": "SINU. 1",
+          "type": "cv_out"
+        },
+        {
+          "name": "SINU. 2",
+          "type": "cv_out"
+        },
+        {
+          "name": "SINU. 3",
+          "type": "cv_out"
+        },
+        {
+          "name": "SINU. 4",
+          "type": "cv_out"
+        },
+        {
+          "name": "SINU. 5",
+          "type": "cv_out"
+        },
+        {
+          "name": "SINU. 6",
+          "type": "cv_out"
+        },
+        {
+          "name": "SQR CH. A",
+          "type": "cv_out"
+        },
+        {
+          "name": "SQR CH. B",
+          "type": "cv_out"
+        },
+        {
+          "name": "SQR CH. C",
+          "type": "cv_out"
+        },
+        {
+          "name": "SINU. CH. A",
+          "type": "cv_out"
+        },
+        {
+          "name": "SINU. CH. B",
+          "type": "cv_out"
+        },
+        {
+          "name": "SINU. CH. C",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Sovage Engineering",
+      "name": "PITI BOUCAN",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://www.sovageengineering.com/product-page/piti-boucan",
+      "io_ports": [
+        {
+          "name": "EXTERNAL INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "WHITE",
+          "type": "audio_out"
+        },
+        {
+          "name": "PINK",
+          "type": "audio_out"
+        },
+        {
+          "name": "FIRE",
+          "type": "audio_out"
+        },
+        {
+          "name": "HURRICANE",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Sovage Engineering",
+      "name": "TEINTE STEREO",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://www.sovageengineering.com/product-page/teinte-stereo",
+      "io_ports": [
+        {
+          "name": "IN L (M)",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN R",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT L",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT R",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Steady State Fate",
+      "name": "Entity Bass Drum Synthesizer",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0616/1206/4946/files/ssf-entity-bass-drum-synthesizer-manual.pdf?v=1651615505",
+      "io_ports": [
+        {
+          "name": "TRIGGER",
+          "type": "gate_in"
+        },
+        {
+          "name": "BODY CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "+ENV",
+          "type": "cv_out"
+        },
+        {
+          "name": "DUCK",
+          "type": "cv_out"
+        },
+        {
+          "name": "RISE CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "FALL CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "1V/OCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "FM CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "RING CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "AMP CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "SAT CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "A-MIX",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUTPUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "F-MIX",
+          "type": "audio_in"
+        }
+      ]
+    },
+    {
+      "brand": "Steady State Fate",
+      "name": "Impulse Dynamics",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0616/1206/4946/files/Impulse_Dynamics_manual_rev1.0.pdf?v=1716388716",
+      "io_ports": [
+        {
+          "name": "TRIG INPUT",
+          "type": "gate_in"
+        },
+        {
+          "name": "WIDTH CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "LEVEL CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "EXT IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "PULSE",
+          "type": "gate_out"
+        },
+        {
+          "name": "ENV",
+          "type": "cv_out"
+        },
+        {
+          "name": "STEP",
+          "type": "cv_out"
+        },
+        {
+          "name": "DYN OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Steady State Fate",
+      "name": "Quantum Rainbow 2",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0616/1206/4946/files/ssf-quantum-rainbow-2-manual.pdf?v=1651527648",
+      "io_ports": [
+        {
+          "name": "WHITE",
+          "type": "audio_out"
+        },
+        {
+          "name": "PINK",
+          "type": "audio_out"
+        },
+        {
+          "name": "RED",
+          "type": "audio_out"
+        },
+        {
+          "name": "GREY",
+          "type": "audio_out"
+        },
+        {
+          "name": "BLUE",
+          "type": "audio_out"
+        },
+        {
+          "name": "PURPLE",
+          "type": "audio_out"
+        },
+        {
+          "name": "QUANTA",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Steady State Fate",
+      "name": "Steady State Gate",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0616/1206/4946/files/SSG_manual_rev1.0.pdf?v=1668198513",
+      "io_ports": [
+        {
+          "name": "DECAY CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "FREQ CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "Q-FACTOR CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "TIMBRE CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "EXCITE",
+          "type": "gate_in"
+        },
+        {
+          "name": "SIGNAL INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "SIGNAL OUTPUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "ENVELOPE OUTPUT",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "System80",
+      "name": "860",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://system80.net/wp-content/uploads/2019/12/860_System80_user_guide.pdf",
+      "io_ports": [
+        {
+          "name": "Resonance Modulation",
+          "type": "cv_in"
+        },
+        {
+          "name": "Frequency Modulation Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Audio Input 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Input 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "Frequency Modulation Input 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "Audio Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "System80",
+      "name": "860 MK2 (grey)",
+      "hp": 10,
+      "source_kind": "manual",
+      "source_url": "https://system80.net/wp-content/uploads/2021/02/860MK2_user_guide_usl.pdf",
+      "io_ports": [
+        {
+          "name": "MOD 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "MOD 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "RES MOD",
+          "type": "cv_in"
+        },
+        {
+          "name": "IN 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Tall Dog",
+      "name": "µClouds SE",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.tall-dog.com/manuals/uClouds_SE_Manual_C.pdf",
+      "io_ports": [
+        {
+          "name": "IN L",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN R",
+          "type": "audio_in"
+        },
+        {
+          "name": "TRIGGER",
+          "type": "gate_in"
+        },
+        {
+          "name": "FREEZE",
+          "type": "gate_in"
+        },
+        {
+          "name": "POS",
+          "type": "cv_in"
+        },
+        {
+          "name": "DENS",
+          "type": "cv_in"
+        },
+        {
+          "name": "SIZE",
+          "type": "cv_in"
+        },
+        {
+          "name": "TEXT",
+          "type": "cv_in"
+        },
+        {
+          "name": "PITCH",
+          "type": "cv_in"
+        },
+        {
+          "name": "BLEND",
+          "type": "cv_in"
+        },
+        {
+          "name": "L",
+          "type": "audio_out"
+        },
+        {
+          "name": "R",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Tall Dog",
+      "name": "µRings SE",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.tall-dog.com/manuals/uRings_SE_Manual_B.pdf",
+      "io_ports": [
+        {
+          "name": "STRUM",
+          "type": "gate_in"
+        },
+        {
+          "name": "IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "V/OCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "FREQ CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "ODD",
+          "type": "audio_out"
+        },
+        {
+          "name": "EVEN",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Tall Dog",
+      "name": "µo_C SE",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.tall-dog.com/manuals/uo_C_SE_Manual_B.pdf",
+      "io_ports": [
+        {
+          "name": "TR1",
+          "type": "gate_in"
+        },
+        {
+          "name": "TR2",
+          "type": "gate_in"
+        },
+        {
+          "name": "TR3",
+          "type": "gate_in"
+        },
+        {
+          "name": "TR4",
+          "type": "gate_in"
+        },
+        {
+          "name": "CV1",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV2",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV3",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV4",
+          "type": "cv_in"
+        },
+        {
+          "name": "A",
+          "type": "cv_out"
+        },
+        {
+          "name": "B",
+          "type": "cv_out"
+        },
+        {
+          "name": "C",
+          "type": "cv_out"
+        },
+        {
+          "name": "D",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Teia",
+      "name": "RipWave",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://teiasynthesizers.com/wp-content/uploads/2025/06/Ripwave-manual.pdf",
+      "io_ports": [
+        {
+          "name": "Transform CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Sync Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "1 Volt per Octave Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Linear Frequency Modulation Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Variable Pulse Width Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Sine to Saturated Sine Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Triangle to Folded and Clipped Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Saw to Even/Odd Harmonics Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Tenderfoot Electronics",
+      "name": "Morse",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0042/6042/9935/files/MORSE_manual2025.pdf?v=1754896068",
+      "io_ports": [
+        {
+          "name": "AUDIO IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "GATE IN",
+          "type": "gate_in"
+        },
+        {
+          "name": "AUDIO OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "GATE OUT",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Thorn Audio",
+      "name": "thorn.audio/VCLFO",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://thorn.audio/vclfo",
+      "io_ports": [
+        {
+          "name": "Frequency input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Octave CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Sample and hold rate input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Gate output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Alternative waveform input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Waveform selection input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Waveform distortion input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Inverted output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Sync input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Sync mode input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Level input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "VBrazil Systems",
+      "name": "24dB LowPass VCF",
+      "hp": 20,
+      "source_kind": "page",
+      "source_url": "https://www.vbrazilsystems.com/24db-lowpass-vcf.html",
+      "io_ports": [
+        {
+          "name": "CV1",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV2",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV3",
+          "type": "cv_in"
+        },
+        {
+          "name": "LowPass 12dB",
+          "type": "audio_out"
+        },
+        {
+          "name": "LowPass 18dB",
+          "type": "audio_out"
+        },
+        {
+          "name": "LowPass 24dB",
+          "type": "audio_out"
+        },
+        {
+          "name": "Audio 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV do VCA",
+          "type": "cv_in"
+        },
+        {
+          "name": "Input de Audio",
+          "type": "audio_in"
+        },
+        {
+          "name": "Output de Audio",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Verbos Electronics",
+      "name": "Amp & Tone (2020 Version)",
+      "hp": 10,
+      "source_kind": "manual",
+      "source_url": "https://verboselectronics.com/tech-cards/AMP+&+TONE+Tech+Card.pdf",
+      "io_ports": [
+        {
+          "name": "Signal Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Signal output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Filter cutoff frequency c.v. input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Linear amplitude control c.v. input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Exponential amplitude control c.v. input",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Verbos Electronics",
+      "name": "Noise & Filter",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://verboselectronics.com/tech-cards/Noise+&+Filter+Tech+Card.pdf",
+      "io_ports": [
+        {
+          "name": "Noise Output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Filter input",
+          "type": "audio_in"
+        },
+        {
+          "name": "above 4.4kHz filter output",
+          "type": "audio_out"
+        },
+        {
+          "name": "630Hz-1.7kHz filter output",
+          "type": "audio_out"
+        },
+        {
+          "name": "1.7kHz-4.4kHz filter output",
+          "type": "audio_out"
+        },
+        {
+          "name": "below 630Hz filter output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "WMD",
+      "name": "Arpitecht: Triad",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://www.wmdevices.com/products/arpitecht-triad",
+      "io_ports": [
+        {
+          "name": "Note 1",
+          "type": "cv_out"
+        },
+        {
+          "name": "Note 2",
+          "type": "cv_out"
+        },
+        {
+          "name": "Note 3",
+          "type": "cv_out"
+        },
+        {
+          "name": "New",
+          "type": "gate_out"
+        },
+        {
+          "name": "Inv",
+          "type": "cv_in"
+        },
+        {
+          "name": "Triad",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "WMD",
+      "name": "Clutch",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://www.wmdevices.com/products/clutch",
+      "io_ports": [
+        {
+          "name": "CLSD",
+          "type": "gate_in"
+        },
+        {
+          "name": "OPEN",
+          "type": "gate_in"
+        },
+        {
+          "name": "CHOKE",
+          "type": "gate_in"
+        },
+        {
+          "name": "PITCH A",
+          "type": "cv_in"
+        },
+        {
+          "name": "A/B",
+          "type": "cv_in"
+        },
+        {
+          "name": "SRF A",
+          "type": "cv_in"
+        },
+        {
+          "name": "RELEASE",
+          "type": "cv_in"
+        },
+        {
+          "name": "VELOCITY",
+          "type": "cv_in"
+        },
+        {
+          "name": "FX PRM",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Wildfire Laboratories",
+      "name": "RUSTY HUM",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://www.wildfirelaboratories.com/s/RH-MAN.pdf",
+      "io_ports": [
+        {
+          "name": "CV IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "OUTPUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "ZanySignals",
+      "name": "Capture",
+      "hp": 9,
+      "source_kind": "manual",
+      "source_url": "https://cdn.prod.website-files.com/642b867eec49bb3d704bdad8/6540f9501ca901a6b8e30526_Manual%20Capture_EN.pdf",
+      "io_ports": [
+        {
+          "name": "Gate",
+          "type": "gate_in"
+        },
+        {
+          "name": "ADSR Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Inverted ADSR Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "ZanySignals",
+      "name": "LowBlow",
+      "hp": 23,
+      "source_kind": "manual",
+      "source_url": "https://cdn.prod.website-files.com/642b867eec49bb3d704bdad8/6540fc818b4edd04ea25d646_Manual%20LowBlow_EN.pdf",
+      "io_ports": [
+        {
+          "name": "CV del Tone",
+          "type": "cv_in"
+        },
+        {
+          "name": "Gate",
+          "type": "gate_in"
+        },
+        {
+          "name": "Weird",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV del CutOff",
+          "type": "cv_in"
+        },
+        {
+          "name": "LB (LowBlow)",
+          "type": "audio_out"
+        },
+        {
+          "name": "AUX",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "ZanySignals",
+      "name": "Shaking",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://cdn.prod.website-files.com/642b867eec49bb3d704bdad8/6540fff73c79e33b20989cc9_Manual%20Shaking_EN.pdf",
+      "io_ports": [
+        {
+          "name": "In1",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "In2",
+          "type": "audio_in"
+        },
+        {
+          "name": "Mix",
+          "type": "audio_out"
+        },
+        {
+          "name": "Shake",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "b:art instruments",
+      "name": "b:12",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://bartinstruments.com/cdn/shop/files/b_12_manual.pdf?v=1438107302207523764",
+      "io_ports": [
+        {
+          "name": "Input 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Input 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "Signal inversion output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Difference output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Sum output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Negated sum output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Absolute difference out",
+          "type": "audio_out"
+        },
+        {
+          "name": "Ring mod output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "b:art instruments",
+      "name": "b:14",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://bartinstruments.com/cdn/shop/files/b_14_manual.pdf?v=10725866251921060890",
+      "io_ports": [
+        {
+          "name": "Input 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Input 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "Input 3",
+          "type": "audio_in"
+        },
+        {
+          "name": "Input 4",
+          "type": "audio_in"
+        },
+        {
+          "name": "Output 1",
+          "type": "audio_out"
+        },
+        {
+          "name": "Output 2",
+          "type": "audio_out"
+        },
+        {
+          "name": "Output 3",
+          "type": "audio_out"
+        },
+        {
+          "name": "Output 4",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "b:art instruments",
+      "name": "b:15",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://bartinstruments.com/cdn/shop/files/b_15_manual.pdf?v=7231020941211189346",
+      "io_ports": [
+        {
+          "name": "Noise output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Signal input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Trigger input",
+          "type": "gate_in"
+        },
+        {
+          "name": "S&H output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Aux input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Inverted output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Neg block output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Neg mirror output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "b:art instruments",
+      "name": "b:16",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://bartinstruments.com/cdn/shop/files/b_16_manual.pdf?v=6255990071987023968",
+      "io_ports": [
+        {
+          "name": "Audio input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Cutoff CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Resonance CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Highpass output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Bandpass output",
+          "type": "audio_out"
+        },
+        {
+          "name": "Lowpass output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "jroo music machines",
+      "name": "loop",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://jroo.co/s/jroo-loop-documentation-latest.pdf",
+      "io_ports": [
+        {
+          "name": "record",
+          "type": "gate_in"
+        },
+        {
+          "name": "speed",
+          "type": "cv_in"
+        },
+        {
+          "name": "feedback",
+          "type": "cv_in"
+        },
+        {
+          "name": "dry/wet",
+          "type": "cv_in"
+        },
+        {
+          "name": "in 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "in 2",
+          "type": "audio_in"
+        },
+        {
+          "name": "out 1",
+          "type": "audio_out"
+        },
+        {
+          "name": "out 2",
+          "type": "audio_out"
+        }
+      ]
+    }
+  ]
+}

@@ -36,6 +36,7 @@ a2d11ef2b0629748f2a93ef451747546ec4f7a598aba03b12b8afd10f233aa38  data/synth-cat
 b8f980acb41e5eac5f776acb0228d4922eb7d1039fe507c516ae86a9d28f093f  data/synth-catalog/overlays/module-catalog-hp-v7.json
 0c93236b8b8f2d3b705c78de75ff429f1fde0c37ea760e9ebb52c679c6087421  data/synth-catalog/overlays/module-catalog-hp-v8.json
 59f4a1be016feafbf9c0aa4570cc702d152e59d7c70ba509ea03af44acdec9ee  data/synth-catalog/overlays/module-catalog-hp-v9.json
+9d37ec3945467db6264df02e65cb59badcfe11f65f4aa2b282008c4000b24bf1  data/synth-catalog/overlays/module-jacks-v1.json
 b3481d343fd90242bb8966e7cb21e8a158893ce6fd0f1f3860ca962390d92efc  data/synth-catalog/overlays/module-power-depth-v10.json
 9f78990cff194ae2b5e123da9fca4e2190ab0a32e23e005bcc6917391d88e620  data/synth-catalog/overlays/module-power-depth-v11.json
 717f9bc46e4210c08f155f10527e81a43a58e69049e3747d0b1886532365039d  data/synth-catalog/overlays/module-power-depth-v12.json
@@ -55,6 +56,7 @@ e928c2536761a5f8127f1b3a539c03d643b29f15d86ab91039084c6729d834ee  data/synth-cat
 3be3caf812d8407036398e11e4135825fa4a27a0d420831521b17a3230e895a3  data/synth-catalog/provenance/category-corrections-v5.json
 940bb7de2e227bcde31f96ac929d6170b5d89f24569bdf907034de02b822fe5e  data/synth-catalog/provenance/category-corrections-v6.json
 272338ad227ba06130f3c7743ab791e091d781f7c7fa21758c031d4cf29afb6f  data/synth-catalog/provenance/category-corrections-v7.json
+bfda4d045b11e7c57cd4a96dcce96bd30f249a80e9c9398a4f0ef9b97fa007ec  data/synth-catalog/provenance/category-corrections-v8.json
 7fc91721ce46f9407dc5b8f0f279ca593bb2e602495f694f72dc578a871284a6  data/synth-catalog/provenance/hp-footer-corrections-v1.json
 d9735aac5e5cb1af86d1651a85ff340c61f9cf1cbac1c70896a45be63560b581  data/synth-catalog/provenance/maker-corrections-v1.json
 6585e952d73ea04381de5308b9223102516b72ba9f7bf64cdc41b34be001aa3c  data/synth-catalog/provenance/maker-corrections-v2.json
@@ -63,6 +65,7 @@ d9735aac5e5cb1af86d1651a85ff340c61f9cf1cbac1c70896a45be63560b581  data/synth-cat
 d38e478bd84189a5924a4b9d571cca47b00fc2e1b993e72a1c3eb53b788e2ed9  data/synth-catalog/provenance/maker-corrections-v5.json
 14462ef53880e010dfb58b4ccec9c669323bd220a9a00b0444335af86ab21d0a  data/synth-catalog/provenance/maker-corrections-v6.json
 246b1a2af46bcbef4bb99d8799a1aa47e9da48d3352c06f9b8e50f9eaa58b2ef  data/synth-catalog/provenance/maker-corrections-v7.json
+32be1fd5ee76b9b819de8a7f68c75f79dbb34ad0bb1cf7a6287926821a0c1cd0  data/synth-catalog/provenance/maker-corrections-v8.json
 0bdcc9dd57840bdcf1a5432b30affea6e5d2cf8a9fafcdbb45dd37517964831b  data/synth-catalog/provenance/maker-crawl-v2-jumper-fix-v1.json
 89e5cf7189d199c6dce9bb808452f817059135c919f23c2a64d73b6ff2a820da  data/synth-catalog/provenance/maker-crawl-v2-rail-fix-v1.json
 3e1bec0d73a460aab9643d24cfa81d590826802d31a675f80dcc92ac61c4247a  data/synth-catalog/provenance/maker-review-v1.json

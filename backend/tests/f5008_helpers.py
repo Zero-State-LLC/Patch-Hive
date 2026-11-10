@@ -108,7 +108,6 @@ GOOD_GENERATE = {
 
 FE_SOURCES_OK = {
     "frontend/src/pages/Racks.tsx": "const r = await canonApi.listRigs({ limit: 50 });",
-    "frontend/src/pages/RackBuilder.tsx": "canonApi\n      .listRigs({ limit: 50 })",
 }
 
 

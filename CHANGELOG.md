@@ -4,6 +4,60 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.20](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.19...v0.3.0-alpha.20) (2026-11-10)
+
+
+### Added
+
+* **catalog:** load reviewed Module jack lists into empty io_ports ([#389](https://github.com/Zero-State-LLC/Patch-Hive/issues/389)) ([c3aa686](https://github.com/Zero-State-LLC/Patch-Hive/commit/c3aa6866fad8873d18ed53c812fd648c1ff6d8e0))
+* **catalog:** read Module jack lists from maker pages and manuals ([#387](https://github.com/Zero-State-LLC/Patch-Hive/issues/387)) ([daedcb5](https://github.com/Zero-State-LLC/Patch-Hive/commit/daedcb58292c449085cd34e4f8ba7958c7fbd117))
+* **catalog:** read Module jacks through OpenRouter and tighten the gate ([#388](https://github.com/Zero-State-LLC/Patch-Hive/issues/388)) ([58c0977](https://github.com/Zero-State-LLC/Patch-Hive/commit/58c0977870a484ce865e6b8e12f201aa98325f1d))
+* **evidence:** spec 009 T070b, five Commons whole-Rig cases in the corpus ([#377](https://github.com/Zero-State-LLC/Patch-Hive/issues/377)) ([a9594f2](https://github.com/Zero-State-LLC/Patch-Hive/commit/a9594f2964e54d9025d4de965a80e8f7a262498a))
+
+
+### Fixed
+
+* **catalog:** a storage service's 403 on robots.txt means no robots file (decision 66) ([#384](https://github.com/Zero-State-LLC/Patch-Hive/issues/384)) ([1f3aba7](https://github.com/Zero-State-LLC/Patch-Hive/commit/1f3aba7dd83a4c8675217ee5fe07a68f8dc4b4bc))
+* **catalog:** correct A-138m's width and six Analogue Systems types ([#379](https://github.com/Zero-State-LLC/Patch-Hive/issues/379)) ([50467ef](https://github.com/Zero-State-LLC/Patch-Hive/commit/50467ef845ec387bd473acd95dec0446c7df59b8))
+* **catalog:** treat "One moment, please" as a bot check and record the 2026-11-09 render ([#385](https://github.com/Zero-State-LLC/Patch-Hive/issues/385)) ([d59f692](https://github.com/Zero-State-LLC/Patch-Hive/commit/d59f69268459e50cc6567789838b1228a453badb))
+* **engine:** take a filter's lowpass output for generic audio (engine 1.3.0) ([#390](https://github.com/Zero-State-LLC/Patch-Hive/issues/390)) ([f955955](https://github.com/Zero-State-LLC/Patch-Hive/commit/f955955fa098712c7f438a1cde60ab87bfdc8fd5))
+
+
+### Documentation
+
+* **catalog:** record the A-138m and Analogue Systems loads ([#381](https://github.com/Zero-State-LLC/Patch-Hive/issues/381)) ([e08f5cb](https://github.com/Zero-State-LLC/Patch-Hive/commit/e08f5cbae51af663708606e910124310b75cd50c))
+* **catalog:** widen the maker access rule to manuals and pictures (decision 65) ([#383](https://github.com/Zero-State-LLC/Patch-Hive/issues/383)) ([8cc77ef](https://github.com/Zero-State-LLC/Patch-Hive/commit/8cc77ef6d0dda0812040aa6981c27f624987df2a))
+* **evidence:** record that the 226 rendered pages were deleted ([#386](https://github.com/Zero-State-LLC/Patch-Hive/issues/386)) ([c5e261a](https://github.com/Zero-State-LLC/Patch-Hive/commit/c5e261a768572dffecb4881944e257ff7397c730))
+* **evidence:** whole-Rig shot list and draft permission note ([#382](https://github.com/Zero-State-LLC/Patch-Hive/issues/382)) ([92c1024](https://github.com/Zero-State-LLC/Patch-Hive/commit/92c102439ba16a9a7a595ccde8bfd558b147f13b))
+* record the 0.3.0-alpha.19 deploy ([#380](https://github.com/Zero-State-LLC/Patch-Hive/issues/380)) ([5cecd49](https://github.com/Zero-State-LLC/Patch-Hive/commit/5cecd49ea3a7c1619a4159636f1b24e361eff0d1))
+
+## [0.3.0-alpha.19](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.18...v0.3.0-alpha.19) (2026-11-08)
+
+
+### Added
+
+* **evidence:** spec 009 T070a whole-rig evaluation corpus and harness ([#369](https://github.com/Zero-State-LLC/Patch-Hive/issues/369)) ([e1e03dd](https://github.com/Zero-State-LLC/Patch-Hive/commit/e1e03ddbd1c049a996b5f34a868da56bc453241f))
+* **frontend:** spec 009 T090 converge the journey's screens (D2 to D10) ([#370](https://github.com/Zero-State-LLC/Patch-Hive/issues/370)) ([dce0fcf](https://github.com/Zero-State-LLC/Patch-Hive/commit/dce0fcfd02f1d69e1c170bff54e022e15a1dee3c))
+* **frontend:** spec 009 T090 D11, a Case is optional on both paths ([#372](https://github.com/Zero-State-LLC/Patch-Hive/issues/372)) ([2d3d5b2](https://github.com/Zero-State-LLC/Patch-Hive/commit/2d3d5b2a3aeec97b4353bebb45c193d378365625))
+* **frontend:** spec 009 T090 D12, an export names its price before it's asked for ([#374](https://github.com/Zero-State-LLC/Patch-Hive/issues/374)) ([7a07fd0](https://github.com/Zero-State-LLC/Patch-Hive/commit/7a07fd09b7d666ddcc3185b0f9fb5d3397e97642))
+* **frontend:** spec 009 T090 D13, a real page of the book on the home page; story status ([#375](https://github.com/Zero-State-LLC/Patch-Hive/issues/375)) ([8618088](https://github.com/Zero-State-LLC/Patch-Hive/commit/8618088f324c2da97c4e63d74dffa01f7aa72900))
+* **frontend:** spec 009 T090 D14, remove the rig builder's per-Module photo step ([#373](https://github.com/Zero-State-LLC/Patch-Hive/issues/373)) ([14b7d8c](https://github.com/Zero-State-LLC/Patch-Hive/commit/14b7d8cffb8fabdb4f2e2c9afa446b4cb6d2bad1))
+* **spec-009:** a Rig can start from a photo, with no Case (T020) ([#359](https://github.com/Zero-State-LLC/Patch-Hive/issues/359)) ([0f7a379](https://github.com/Zero-State-LLC/Patch-Hive/commit/0f7a3794c4756eb952ba20fcedd3bae4b53a12e8))
+* **spec-009:** confirming a Reading places its Modules (T030) ([#361](https://github.com/Zero-State-LLC/Patch-Hive/issues/361)) ([25f13f2](https://github.com/Zero-State-LLC/Patch-Hive/commit/25f13f2ccd46ba425420b7aa4a39628f7dfb0184))
+* **spec-009:** NVIDIA reads a whole-Rig photo through the Clef adapter (T022) ([#365](https://github.com/Zero-State-LLC/Patch-Hive/issues/365)) ([d6246c1](https://github.com/Zero-State-LLC/Patch-Hive/commit/d6246c16312300b793066c26fd62566a1606865e))
+* **spec-009:** Readings and Sightings from a recorded answer (T021) ([#360](https://github.com/Zero-State-LLC/Patch-Hive/issues/360)) ([c1c0751](https://github.com/Zero-State-LLC/Patch-Hive/commit/c1c0751e0717caa85924ef82d1fff3aaf8b6b324))
+* **spec-009:** Retry and Retake, and confirming keeps uncovered rows (T031) ([#364](https://github.com/Zero-State-LLC/Patch-Hive/issues/364)) ([7152bb2](https://github.com/Zero-State-LLC/Patch-Hive/commit/7152bb25927249b1a7223675d9d4dade6cc7de25))
+* **spec-009:** say whether a host reads Rig photos (T040) ([#362](https://github.com/Zero-State-LLC/Patch-Hive/issues/362)) ([96ad4f3](https://github.com/Zero-State-LLC/Patch-Hive/commit/96ad4f3eb7b1989b486c264f44cbd0ea9107b1b7))
+* **spec-009:** the navigation holds the journey; catalog pages redirect home (T051) ([#367](https://github.com/Zero-State-LLC/Patch-Hive/issues/367)) ([ae77314](https://github.com/Zero-State-LLC/Patch-Hive/commit/ae77314e577e8017433fa05597da916cbfed5b2f))
+* **spec-009:** the photo journey's Photo and Reading screens (T050) ([#366](https://github.com/Zero-State-LLC/Patch-Hive/issues/366)) ([5936317](https://github.com/Zero-State-LLC/Patch-Hive/commit/59363174a69ee243b42899cbbfb1d01604b4b6bc))
+* **spec-009:** the staging walkthrough from a photo (T060a) ([#368](https://github.com/Zero-State-LLC/Patch-Hive/issues/368)) ([3f507fc](https://github.com/Zero-State-LLC/Patch-Hive/commit/3f507fc091612b0026b60f0a7e5c2585152bc608))
+
+
+### Documentation
+
+* record the 0.3.0-alpha.18 deploy ([#356](https://github.com/Zero-State-LLC/Patch-Hive/issues/356)) ([fb348b6](https://github.com/Zero-State-LLC/Patch-Hive/commit/fb348b66fa09794f569990cd4ee9868dc2e869f7))
+* **spec-009:** the photo journey's language, and Retry and Retake (T031) ([#363](https://github.com/Zero-State-LLC/Patch-Hive/issues/363)) ([6d7b804](https://github.com/Zero-State-LLC/Patch-Hive/commit/6d7b804764c0caff27c12dbd8e9c67b1b8caab3e))
+
 ## [0.3.0-alpha.18](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.17...v0.3.0-alpha.18) (2026-11-07)
 
 

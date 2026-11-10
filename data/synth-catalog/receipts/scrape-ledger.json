@@ -1,20 +1,20 @@
 {
-  "paid_fetches": 2869,
+  "paid_fetches": 3130,
   "credits_by_backend": {
-    "context_dev": 1411.0,
+    "context_dev": 1665.0,
     "firecrawl": 33.0
   },
   "calls_by_method": {
-    "free_http": 2828,
-    "skipped_no_key": 2475,
-    "robots_unavailable": 3037,
-    "cache": 32000,
-    "context_dev": 2833,
+    "free_http": 3450,
+    "skipped_no_key": 2486,
+    "robots_unavailable": 3082,
+    "cache": 32006,
+    "context_dev": 3094,
     "robots_disallowed": 127,
     "firecrawl": 36,
     "skipped_paid_cap": 1036,
     "blocked_url": 10,
     "robots_refused": 16
   },
-  "updated_at": "2026-11-06T08:19:15Z"
+  "updated_at": "2026-11-09T11:06:40Z"
 }

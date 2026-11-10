@@ -55,7 +55,7 @@ RETRY_STATUSES = {0, 429, 500, 502, 503, 504}
 # A 200 that is really a bot check. A refusal (spec 003 D7): recorded as a failed free fetch,
 # never parsed as content and never retried through a paid backend that renders or proxies.
 CHALLENGE = re.compile(
-    rb"(cf-chl-|challenge-platform|<title>\s*(?:Just a moment|Attention Required|Access denied|Are you a robot))", re.I
+    rb"(cf-chl-|challenge-platform|<title>\s*(?:Just a moment|One moment, please|Attention Required|Access denied|Are you a robot))", re.I
 )
 # The site said no (owner decision 3, 2026-11-04; spec 003 D7 and FR-008): recorded, never sent to a
 # paid backend. On a page, 429, 5xx and timeouts are load, not refusal, and stay eligible for a paid
@@ -64,6 +64,13 @@ CHALLENGE = re.compile(
 PAGE_REFUSAL_STATUSES = frozenset({401, 403, 451})
 ROBOTS_REFUSAL_STATUSES = frozenset({401, 403})
 REFUSAL_NOTES = frozenset({"refused", "challenge"})
+# A 403 on robots.txt can be a file-storage service's own error reply, which S3-style storage commonly
+# gives for a file that isn't there. That means no robots file (owner decision 66, 2026-11-09). Any other
+# 403 there stays a refusal, and a page's 403 always is one.
+STORAGE_ERROR_REPLY = re.compile(
+    rb"\s*(?:<\?xml[^>]*\?>\s*)?<Error>\s*<Code>(?:AccessDenied|MissingKey)</Code>"
+    rb'|\s*\{\s*"message"\s*:\s*"Missing Authentication Token"\s*\}\s*\Z'
+)
 RECEIPT_KEYS = ("url", "method", "status", "sha256", "timestamp")
 
 
@@ -250,7 +257,9 @@ def default_transport(request: HttpRequest) -> HttpResponse:
             headers = {k.lower(): v for k, v in resp.headers.items()}
             media = headers.get("content-type", "").split(";", 1)[0].strip().lower()
             # Some servers send no type at all; those are read, still size-bounded.
-            if media and media not in ALLOWED_CONTENT_TYPES:
+            # A robots.txt served as a generic file is still the site's rules, and must be read to obey them.
+            is_robots = request.url.split("?", 1)[0].endswith("/robots.txt") and media == "application/octet-stream"
+            if media and media not in ALLOWED_CONTENT_TYPES and not is_robots:
                 return _refused("MIME_NOT_ALLOWED", headers)
             body = _bounded_read(resp, headers)
             if body is None:
@@ -262,6 +271,11 @@ def default_transport(request: HttpRequest) -> HttpResponse:
         return HttpResponse(exc.code, payload, headers)
     except Exception:
         return HttpResponse(0, b"", {})
+
+
+def robots_file_absent(status: int, body: bytes) -> bool:
+    """True when a robots.txt answer means the host publishes no robots file."""
+    return status == 404 or (status == 403 and STORAGE_ERROR_REPLY.match(body) is not None)
 
 
 def parse_robots(text: str, user_agent: str, path: str) -> bool:
@@ -755,7 +769,7 @@ class CatalogScraper:
         if origin not in self._robots:
             robots_url = origin + "/robots.txt"
             status, body = self._free_get(robots_url, timeout)
-            if status == 404:
+            if robots_file_absent(status, body):
                 self._robots[origin] = ""
             elif status == 200:
                 self._robots[origin] = _decode(body)

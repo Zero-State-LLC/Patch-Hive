@@ -58,6 +58,38 @@ test.describe("the primary navigation", () => {
   });
 });
 
+test.describe("My Rigs", () => {
+  for (const role of ["User", "Admin"] as const) {
+    test(`lists only the ${role}'s own Rigs, and starts a new one from a photo`, async ({
+      page,
+    }) => {
+      await signIn(page, role);
+      const asked: URLSearchParams[] = [];
+      await page.route(
+        (url) => url.pathname.endsWith("/api/canon/rigs"),
+        (route) => {
+          asked.push(new URL(route.request().url()).searchParams);
+          return route.fulfill({ json: { total: 0, rigs: [] } });
+        },
+      );
+      await page.goto("/racks");
+
+      await expect(page.getByRole("heading", { level: 1, name: "My Rigs" })).toBeVisible();
+      await expect.poll(() => asked.length).toBeGreaterThan(0);
+      // Everyone else's public Rigs, and for an Admin everyone's, stay off this list.
+      expect(asked.every((params) => params.get("user_id") === "1")).toBe(true);
+      await expect(page.getByRole("link", { name: "New", exact: true })).toHaveAttribute(
+        "href",
+        "/rigs/new/photo",
+      );
+      await expect(page.getByRole("link", { name: "Photograph your first Rig" })).toHaveAttribute(
+        "href",
+        "/rigs/new/photo",
+      );
+    });
+  }
+});
+
 test.describe("the catalog pages it no longer has", () => {
   for (const path of [
     "/modules",

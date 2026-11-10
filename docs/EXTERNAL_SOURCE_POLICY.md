@@ -41,20 +41,17 @@ Official sources may still conflict across revisions. Conflicts must be retained
 
 #### Crawling official spec pages
 
-The owner decided this on 2026-11-04 (option C, `docs/evidence/OWNER_DECISIONS_2026-11-04.md`, with the options in [the decision brief](evidence/MAKER_PERMISSION_AND_PROXY_DECISION_2026-11-03.md)).
+The owner decided this on 2026-11-04 (option C, `docs/evidence/OWNER_DECISIONS_2026-11-04.md`, with the options in [the decision brief](evidence/MAKER_PERMISSION_AND_PROXY_DECISION_2026-11-03.md)) and widened it on 2026-11-08 (decision 65). The owner reports that most of the makers they contacted say this material is Creative Commons; those replies aren't in this repository.
 
-Official spec pages count as publication (`access_basis = official_publication`) for facts only: name, HP, power, depth and category. That holds only under these conditions:
+Official maker sites count as publication (`access_basis = official_publication`) for name, HP, power, depth and category, and for descriptions, manuals and pictures. That holds only under these conditions:
 
 - Maker-owned domains only.
-- robots.txt is honoured. If it cannot be read, that host is not fetched.
-- No copied descriptions or images.
+- robots.txt is honoured. If it cannot be read, that host is not fetched. A 403 that is a file-storage service's own error reply means the host has no robots.txt (decision 66).
+- Where a maker's licence sets conditions, such as credit, they apply.
 - A per-host delay between requests.
 - No route around a block. Spec 003 FR-008 and D7 define what counts as a refusal.
 
-Permission comes first, recorded as `maker_permission`, for:
-
-- anything beyond those facts, such as descriptions, images or manual content
-- a maker whose terms forbid automated access; until that maker says yes, set it to `unknown`
+Permission comes first, recorded as `maker_permission`, from a maker whose terms forbid automated access. Until that maker says yes, set it to `unknown`.
 
 **Opt-out.** A maker who asks to be left out is set to `unknown` under `permission_basis.brands` in `data/synth-catalog/maker-sources.json` and left out. The crawl does not fetch it, the fetch router refuses its known hosts, and the overlay builders give it no rows. Rows it already has in committed overlays do not change by themselves: removing them takes a retirement manifest (spec 003 D3). A contact address for these requests will follow once it exists.
 

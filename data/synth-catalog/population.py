@@ -29,6 +29,9 @@ CATALOG = Path(__file__).resolve().parent
 ROOT = CATALOG.parents[1]
 VERIFICATION_STATUSES = {"verified", "corrected", "flagged", "unverified"}
 POWER_FIELDS = ("power_12v_ma", "power_neg12v_ma", "power_5v_ma", "depth_mm")
+JACK_TYPES = frozenset(
+    {"audio_in", "audio_out", "cv_in", "cv_out", "gate_in", "gate_out", "clock_in", "clock_out"}
+)
 # The Module Category vocabulary. VIDEO and SYSTEM are the owner's decisions 5 and 14
 # (2026-11-04). A category overlay or correction naming anything else is a conflict.
 MODULE_CATEGORIES = frozenset(
@@ -345,6 +348,11 @@ def build_plan(conn: Connection, *, verification_path: Path | None = None) -> Pl
         for entry in _load_optional(retirement_path).get("rows") or []:
             _schedule_retirement(plan, catalog, modules, entry)
 
+    # After retirements, so a row retired in this plan gets no jacks.
+    for jacks_path in sorted((CATALOG / "overlays").glob("module-jacks-v*.json")):
+        for entry in _load_optional(jacks_path).get("entries") or []:
+            _schedule_jacks(plan, modules, entry)
+
     # After every fill, correction and retirement above, so it reads each row's final state.
     _schedule_module_type_sync(plan, catalog, modules)
     _schedule_access_basis(plan, catalog, modules, _load_optional(ACCESS_BASIS_OVERLAY))
@@ -398,6 +406,7 @@ PROVENANCE_MANIFESTS = (
     CATALOG / "provenance" / "maker-corrections-v5.json",
     CATALOG / "provenance" / "maker-corrections-v6.json",
     CATALOG / "provenance" / "maker-corrections-v7.json",
+    CATALOG / "provenance" / "maker-corrections-v8.json",
 )
 # Run after the category overlays and module inserts (see build_plan).
 CATEGORY_CORRECTION_MANIFESTS = (
@@ -410,6 +419,7 @@ CATEGORY_CORRECTION_MANIFESTS = (
     CATALOG / "provenance" / "hp-footer-corrections-v1.json",
     CATALOG / "provenance" / "category-corrections-v6.json",
     CATALOG / "provenance" / "category-corrections-v7.json",
+    CATALOG / "provenance" / "category-corrections-v8.json",
 )
 # A row's Module Category: module_catalog.category, and modules.module_type on the row the
 # patch engine reads. A manifest may only correct these, never null, flag or relabel them.
@@ -954,7 +964,7 @@ def _module_state(conn: Connection) -> dict[tuple[str, str], dict[str, Any]]:
     rows = conn.execute(
         text(
             "SELECT brand, name, hp, module_type, source, power_12v_ma, power_neg12v_ma, power_5v_ma, depth_mm, "
-            "verification_status, verification_source_url, status, needs_reverify, source_reference "
+            "verification_status, verification_source_url, status, needs_reverify, source_reference, io_ports "
             "FROM modules"
         )
     ).mappings()
@@ -2097,6 +2107,56 @@ def _schedule_power(
             "verification_source_url": _entry_verification(entry)[1],
         },
         kind="power_depth_overlay",
+    )
+
+
+def _jack_problem(entry: dict[str, Any]) -> str | None:
+    """Why a jack list can't be loaded, or None (spec 003 FR-041)."""
+    ports = entry.get("io_ports")
+    if not ports:
+        return "jacks_empty"
+    if not re.match(r"https?://", str(entry.get("source_url") or "")):
+        return "jacks_need_source"
+    names = [str(port.get("name") or "").strip() for port in ports]
+    if not all(names) or len(set(names)) != len(names):
+        return "jacks_bad_name"
+    if any(port.get("type") not in JACK_TYPES for port in ports):
+        return "jacks_bad_type"
+    return None
+
+
+def _schedule_jacks(
+    plan: Plan, modules: dict[tuple[str, str], dict[str, Any]], entry: dict[str, Any]
+) -> None:
+    """Fill an empty jack list from a reviewed overlay. A declared list is never overwritten."""
+    brand = (entry.get("brand") or "").strip()
+    name = (entry.get("name") or "").strip()
+    problem = _jack_problem(entry)
+    if problem:
+        plan.conflict(table="modules", brand=brand, name=name, reason=problem)
+        return
+    row = modules.get((brand, name))
+    if row is None or row.get("_duplicate") or row.get("status") == "tombstoned":
+        _bump(plan.unmatched, "module_jacks")
+        return
+    ports = entry["io_ports"]
+    if row.get("io_ports"):
+        if row["io_ports"] != ports:
+            plan.conflict(table="modules", brand=brand, name=name, reason="jacks_differ")
+        return
+    row["io_ports"] = ports
+    plan.add_update(
+        "modules_io_ports",
+        Op(
+            "fill_module_jacks",
+            """
+            UPDATE modules
+            SET io_ports = CAST(:io_ports AS json), updated_at = NOW()
+            WHERE brand = :brand AND name = :name AND status <> 'tombstoned'
+              AND CAST(io_ports AS jsonb) = CAST('[]' AS jsonb)
+            """,
+            {"brand": brand, "name": name, "io_ports": json.dumps(ports)},
+        ),
     )
 
 

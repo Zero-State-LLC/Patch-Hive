@@ -73,13 +73,28 @@ describe("Home", () => {
     expect(screen.queryByText("Product law")).not.toBeInTheDocument();
   });
 
-  it("shows an example reading of the demo rig, in words", () => {
+  it("shows an example reading of the demo rig, in words, listed as the Reading screen lists it", () => {
     renderHome();
     const example = screen.getByRole("list", { name: "An example reading" });
     const items = within(example).getAllByRole("listitem");
     expect(items).toHaveLength(3);
-    expect(items[0]).toHaveTextContent(/^Sure/);
-    expect(items[0]).toHaveTextContent(DEMO_RIG.modules[0].module?.name ?? "");
+    // The one to check comes first, then the rest by row and HP (spec 009).
+    expect(items[0]).toHaveTextContent(/^Check this/);
+    expect(items[0]).toHaveTextContent(DEMO_RIG.modules[1].module?.name ?? "");
+    expect(items[1]).toHaveTextContent(/^Sure/);
+    expect(items[1]).toHaveTextContent(DEMO_RIG.modules[0].module?.name ?? "");
+    expect(items[2]).toHaveTextContent(/^Sure/);
+    expect(items[2]).toHaveTextContent(DEMO_RIG.modules[2].module?.name ?? "");
+  });
+
+  it("shows a page of the book the example Rig's patches make, in words as well", () => {
+    renderHome();
+    const page = screen.getByRole("figure", { name: /A page of this Rig's Patch Book/ });
+    const image = within(page).getByRole("img");
+    // The real page, as the export prints it: the demo patch's own page of the book.
+    expect(image).toHaveAttribute("src", "/examples/patch-book-page.webp");
+    expect(image).toHaveAccessibleName(new RegExp(`page titled ${DEMO_PATCH.name}`));
+    expect(image).toHaveAccessibleName(/five cables in order/);
   });
 
   it("asks a signed-out visitor to sign in before photographing their Rig", () => {

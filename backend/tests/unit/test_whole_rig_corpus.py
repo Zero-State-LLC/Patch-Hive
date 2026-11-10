@@ -27,6 +27,7 @@ from tests.eval007_helpers import (
 )
 
 FIXTURES = Path(__file__).resolve().parents[3] / "fixtures" / "vision_eval" / "whole_rig"
+SHIPPED = FIXTURES.parent / "pilot-manifest.json"
 validate = load_pilot_validator()
 
 
@@ -44,6 +45,34 @@ def test_the_fixture_corpus_passes_every_case_check(manifest) -> None:
     assert report["identity_count"] == 4
     # Two photos are far from the 50 identities and eight cohorts admission needs.
     assert report["admission_status"] == "NOT_ADMITTED"
+
+
+def test_the_shipped_corpus_passes_every_case_check_and_is_not_yet_admitted() -> None:
+    report = validate(json.loads(SHIPPED.read_text()))
+
+    assert report["errors"] == []
+    assert report["unit"] == "whole_rig"
+    # The Commons cases hold 63 catalog Modules, and admission allows at most 100.
+    assert 63 <= report["identity_count"] <= 100
+    # Cohorts still to come from the owner's own Rig photos (T070b).
+    assert report["missing_required_cohorts"]
+    assert report["admission_status"] == "NOT_ADMITTED"
+
+
+def test_each_shipped_commons_case_can_be_fetched_and_credited() -> None:
+    cases = [case for case in json.loads(SHIPPED.read_text())["cases"] if "asset_source" in case]
+
+    assert len(cases) >= 5
+    for case in cases:
+        rights = case["rights_and_consent"]
+        assert rights["source_url"].startswith("https://commons.wikimedia.org/wiki/File:")
+        assert rights["author"] and rights["license"].startswith("CC BY")
+        assert rights["license_url"].startswith("https://creativecommons.org/licenses/")
+        assert case["asset_source"]["url"].startswith("https://upload.wikimedia.org/")
+        assert "?" not in case["asset_source"]["url"]
+        assert case["asset_source"]["file"] == f"{case['case_id']}.jpg"
+        # Research may draft a photo's labels; only the owner's check makes them ground truth.
+        assert case["reviewers"] == ["owner"]
 
 
 def _label(manifest: dict, index: int) -> dict:

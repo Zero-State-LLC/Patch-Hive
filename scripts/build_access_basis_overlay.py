@@ -28,7 +28,7 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "data" / "synth-catalog"))
 
-from catalog_scrape import USER_AGENT, parse_robots, permission_basis  # noqa: E402
+from catalog_scrape import USER_AGENT, parse_robots, permission_basis, robots_file_absent  # noqa: E402
 
 SOURCES = ROOT / "data" / "synth-catalog" / "maker-sources.json"
 OVERLAY = ROOT / "data" / "synth-catalog" / "overlays" / "access-basis-v1.json"
@@ -83,7 +83,7 @@ def read_robots(origin: str) -> tuple[int, str]:
             with urllib.request.urlopen(request, timeout=25) as response:
                 return response.status, response.read(500_000).decode("utf-8", "ignore")
         except urllib.error.HTTPError as exc:
-            return exc.code, ""
+            return exc.code, exc.read(500_000).decode("utf-8", "ignore")
         except (OSError, ValueError):
             continue
     return 0, ""
@@ -93,7 +93,7 @@ def robots_answer(answers: dict[str, tuple[int, str]], url: str) -> str | None:
     """None when robots.txt lets us read this page, otherwise why not."""
     parts = urlsplit(url)
     status, body = answers[f"{parts.scheme}://{parts.netloc}"]
-    if status == 404:
+    if robots_file_absent(status, body.encode("utf-8")):
         return None
     if status != 200:
         return f"robots_unavailable_{status}"

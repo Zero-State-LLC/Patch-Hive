@@ -6,6 +6,7 @@ import {
   dispositionTone,
   dispositionWords,
   initialDecision,
+  namePlaced,
   orderSightings,
   pastCase,
   readingReason,
@@ -142,6 +143,11 @@ describe("confirming", () => {
     });
   });
 
+  it("names the Case the owner chose, and leaves the Rig's own when none was chosen", () => {
+    expect(confirmBody({ a: kept }, [], 42).body.case_id).toBe(42);
+    expect(confirmBody({ a: kept }, []).body.case_id).toBeNull();
+  });
+
   it("names every Sighting still to decide", () => {
     const { undecided } = confirmBody(
       {
@@ -178,6 +184,23 @@ describe("a named Case", () => {
     expect(pastCase(placed, [84, 64])).toEqual(new Set(["past-end", "no-such-row"]));
     // With no Case, a row is as wide as what's on it.
     expect(pastCase(placed, null)).toEqual(new Set());
+  });
+});
+
+describe("naming what's in the way", () => {
+  it("names each Module with its row and HP, in the order shown", () => {
+    const placed = [
+      { key: "a", row: 0, startHp: 0, hp: 12, label: "Mutable Instruments Plaits" },
+      { key: "b", row: 0, startHp: 10, hp: 20, label: "Make Noise Maths" },
+      { key: "c", row: 1, startHp: 0, hp: 14, label: "Mutable Instruments Rings" },
+    ];
+
+    expect(namePlaced(placed, new Set(["b", "a"]))).toBe(
+      "Mutable Instruments Plaits (row 0, HP 0 to 12) and Make Noise Maths (row 0, HP 10 to 30)",
+    );
+    expect(namePlaced(placed, new Set(["a", "b", "c"]))).toBe(
+      "Mutable Instruments Plaits (row 0, HP 0 to 12), Make Noise Maths (row 0, HP 10 to 30) and Mutable Instruments Rings (row 1, HP 0 to 14)",
+    );
   });
 });
 

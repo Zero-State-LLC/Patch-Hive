@@ -1236,6 +1236,7 @@ class CommerceStatusResponse(BaseModel):
     plan_offers: list[CommercePlanResponse]
     subscription: CommerceSubscriptionResponse | None
     allowance: CommerceAllowanceResponse | None
+    export_cost: int
 
 
 @router.get("/commerce", response_model=CommerceStatusResponse)

@@ -124,46 +124,91 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(navigation.getByText("Leaderboards")).toHaveCount(0);
   });
 
-  test("photo evidence is keyboard reachable and requires explicit resolution", async ({
-    page,
-  }) => {
-    await page.goto("/racks/new");
-    await page.getByRole("button", { name: "Rig photo" }).setInputFiles({
-      name: "rig.jpg",
-      mimeType: "image/jpeg",
-      buffer: Buffer.from([0xff, 0xd8, 0xff, 0xd9]),
-    });
-    await page.getByRole("button", { name: "Detect modules" }).click();
-    await expect(page.getByRole("list", { name: "Ranked module candidates" })).toBeVisible();
-    const createRevision = page.getByRole("button", { name: "Create immutable rig revision" });
-    await expect(createRevision).toBeDisabled();
-    // Resolve every ranked candidate (confirm + reject) so the revision can be sealed.
-    await page.getByRole("button", { name: "Confirm match" }).first().click();
-    await page.getByRole("button", { name: "Reject" }).last().click();
-    await expect(createRevision).toBeEnabled();
-    await createRevision.click();
-    // This demo has no rig, so generation has nothing to accept.
-    const sealed = page.getByText(/Inventory revision sealed/i);
-    await expect(sealed).toBeVisible();
-    await expect(sealed).toContainText("not ready for generation");
-  });
-
-  test("export boundary explains zero-credit state", async ({ page }) => {
-    // A balance is an account's, so the zero-credit state is a signed-in one.
-    await signIn(page);
-    await page.goto("/rigs/1");
-    await page.getByRole("tab", { name: "Exports" }).click();
-    await expect(page.getByRole("button", { name: "Export PDF patch book" })).toBeDisabled();
-    await expect(page.getByText("Credits are required only for exports.")).toBeVisible();
-    await expect(page.getByText(/Each export is a patch book of this run/)).toBeVisible();
-  });
-
-  const allowance = (exports_used: number, export_cap: number) => ({
+  const commerce = (allowance: unknown = null) => ({
     test_mode: true,
     credit_offer: null,
     plan_offers: [],
     subscription: null,
-    allowance: { exports_used, export_cap, period_end: "2030-03-15T00:00:00Z" },
+    allowance,
+    export_cost: 3,
+  });
+  const allowance = (exports_used: number, export_cap: number) =>
+    commerce({ exports_used, export_cap, period_end: "2030-03-15T00:00:00Z" });
+
+  test("export boundary explains zero-credit state", async ({ page }) => {
+    // A balance is an account's, so the zero-credit state is a signed-in one.
+    await signIn(page);
+    await page.route("**/api/canon/commerce", (route) => route.fulfill({ json: commerce() }));
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+    await expect(page.getByRole("button", { name: "Export for 3 credits" })).toBeDisabled();
+    await expect(page.getByText("This export costs 3 credits, and you have 0.")).toBeVisible();
+    await expect(page.getByText(/Each export is a patch book of this run/)).toBeVisible();
+  });
+
+  test("an export names its price in credits before it's asked for", async ({ page }) => {
+    await signIn(page);
+    await page.route("**/api/canon/credits/balance", (route) =>
+      route.fulfill({ json: { balance: 41 } }),
+    );
+    await page.route("**/api/canon/commerce", (route) => route.fulfill({ json: commerce() }));
+    let asked = 0;
+    await page.route("**/api/canon/exports", (route) => {
+      if (route.request().method() !== "POST") return route.fallback();
+      asked += 1;
+      return route.fulfill({
+        status: 201,
+        json: { export_id: "export-credits-1", status: "queued", credit_cost: 3 },
+      });
+    });
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+
+    // The price is on the button and beside it, before anything is asked for.
+    const exportButton = page.getByRole("button", { name: "Export for 3 credits" });
+    await expect(exportButton).toBeEnabled();
+    await expect(exportButton).toHaveAccessibleDescription(
+      "This export costs 3 credits. You have 41, so 38 will be left.",
+    );
+    expect(asked).toBe(0);
+
+    await exportButton.click();
+    await expect.poll(() => asked).toBe(1);
+  });
+
+  test("with no price to show, an export waits", async ({ page }) => {
+    await signIn(page);
+    await page.route("**/api/canon/credits/balance", (route) =>
+      route.fulfill({ json: { balance: 41 } }),
+    );
+    await page.route("**/api/canon/commerce", (route) =>
+      route.fulfill({ status: 503, json: { detail: "unavailable" } }),
+    );
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+
+    await expect(page.getByRole("button", { name: "Export the Patch Book" })).toBeDisabled();
+    await expect(page.getByText("The export's price didn't load.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
+  });
+
+  test("the Style Studio names the export's price, and waits for enough credits", async ({
+    page,
+  }) => {
+    await signIn(page);
+    await page.route("**/api/canon/credits/balance", (route) =>
+      route.fulfill({ json: { balance: 2 } }),
+    );
+    await page.route("**/api/canon/commerce", (route) => route.fulfill({ json: commerce() }));
+    await page.goto(
+      `/rigs/1/patchbook-studio?source_run_id=gen-run-1&source_rig_revision_id=rig-rev-1&artifact_manifest_hash=${"a".repeat(64)}`,
+    );
+
+    const exportButton = page.getByRole("button", { name: "Export with recipe" });
+    await expect(exportButton).toHaveAccessibleDescription(
+      "This export costs 3 credits, and you have 2.",
+    );
+    await expect(exportButton).toBeDisabled();
   });
 
   test("a period allowance pays for an export with no credits", async ({ page }) => {
@@ -184,9 +229,11 @@ test.describe("PatchHive canonical workspace", () => {
 
     await expect(page.getByText("Exports this period")).toBeVisible();
     await expect(page.getByText("12 of 100", { exact: true })).toBeVisible();
-    await expect(page.getByText("Credits are required only for exports.")).toHaveCount(0);
-    const exportButton = page.getByRole("button", { name: "Export PDF patch book" });
+    const exportButton = page.getByRole("button", { name: "Export the Patch Book" });
     await expect(exportButton).toBeEnabled();
+    await expect(exportButton).toHaveAccessibleDescription(
+      "Your plan covers this export (12 of 100 used this period).",
+    );
 
     await exportButton.click();
     await expect(page.getByText(/counts toward this period's exports/)).toBeVisible();
@@ -205,7 +252,7 @@ test.describe("PatchHive canonical workspace", () => {
     );
     await page.goto("/rigs/1");
     await page.getByRole("tab", { name: "Exports" }).click();
-    const exportButton = page.getByRole("button", { name: "Export PDF patch book" });
+    const exportButton = page.getByRole("button", { name: "Export the Patch Book" });
     await expect(exportButton).toBeEnabled();
 
     // The page read 99 of 100, and another tab took the last one.
@@ -226,129 +273,9 @@ test.describe("PatchHive canonical workspace", () => {
   }) => {
     await page.goto("/rigs/1");
     await page.getByRole("tab", { name: "Exports" }).click();
-    await expect(page.getByRole("button", { name: "Export PDF patch book" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Export the Patch Book" })).toBeDisabled();
     await expect(page.getByText("Sign in to export. Only exports cost credits.")).toBeVisible();
     await expect(page.getByText("Available credits")).toHaveCount(0);
-  });
-
-  test("multi-photo fusion panel confirms representative and blocks conflict", async ({ page }) => {
-    await page.route("**/api/**/evidence/images**", async (route) => {
-      if (route.request().method() === "POST") {
-        await route.fulfill({
-          status: 201,
-          json: {
-            uploaded: [
-              { id: "img-a", rack_id: 1, content_sha256: "a".repeat(64) },
-              { id: "img-b", rack_id: 1, content_sha256: "b".repeat(64) },
-            ],
-            rejected: [],
-          },
-        });
-        return;
-      }
-      await route.fallback();
-    });
-    await page.route("**/api/**/evidence/candidates**", async (route) => {
-      await route.fulfill({
-        json: {
-          total: 2,
-          candidates: [
-            {
-              candidate_id: "cand-osc",
-              entity_type: "module",
-              manufacturer: "MockAudio",
-              model: "Oscillator A",
-              confidence: 0.91,
-              confidence_method: "mock",
-              alternative_candidates: [],
-              classification_status: "INFERRED",
-              evidence_id: "ev-1",
-              gallery_revision_id: "catalog-module-osc-a",
-            },
-            {
-              candidate_id: "cand-vca",
-              entity_type: "module",
-              manufacturer: "MockAudio",
-              model: "VCA B",
-              confidence: 0.55,
-              confidence_method: "mock",
-              alternative_candidates: [],
-              classification_status: "INFERRED",
-              evidence_id: "ev-2",
-              gallery_revision_id: "catalog-module-vca-b",
-            },
-          ],
-        },
-      });
-    });
-    await page.route("**/api/**/evidence/reconcile**", async (route) => {
-      await route.fulfill({
-        json: {
-          image_asset_ids: ["img-a", "img-b"],
-          image_count: 2,
-          fused_entities: [
-            {
-              fuse_id: "fuse-osc",
-              entity_key: "mockaudio|oscillator a",
-              manufacturer: "MockAudio",
-              model: "Oscillator A",
-              entity_type: "module",
-              observation_count: 2,
-              supporting_image_ids: ["img-a", "img-b"],
-              mean_confidence: 0.88,
-              max_confidence: 0.91,
-              conflict: false,
-              conflict_notes: [],
-              classification_status: "INFERRED",
-              representative_candidate_id: "cand-osc",
-            },
-            {
-              fuse_id: "fuse-conflict",
-              entity_key: "mockaudio|mystery",
-              manufacturer: "MockAudio",
-              model: "Mystery",
-              entity_type: "module",
-              observation_count: 2,
-              supporting_image_ids: ["img-a", "img-b"],
-              mean_confidence: 0.4,
-              max_confidence: 0.5,
-              conflict: true,
-              conflict_notes: ["label disagreement across images"],
-              classification_status: "INFERRED",
-              representative_candidate_id: "cand-vca",
-            },
-          ],
-          unmatched_candidate_ids: [],
-          conflict_count: 1,
-          status: "RECONCILED_WITH_CONFLICTS",
-          note: "Mock multi-photo fusion for e2e.",
-        },
-      });
-    });
-
-    await page.goto("/racks/1/edit");
-    await page.getByRole("button", { name: "Rig photo" }).setInputFiles([
-      {
-        name: "rig-a.jpg",
-        mimeType: "image/jpeg",
-        buffer: Buffer.from([0xff, 0xd8, 0xff, 0xd9]),
-      },
-      {
-        name: "rig-b.jpg",
-        mimeType: "image/jpeg",
-        buffer: Buffer.from([0xff, 0xd8, 0xff, 0xd9]),
-      },
-    ]);
-    await page.getByRole("button", { name: "Detect modules" }).click();
-    await expect(page.getByLabel("Multi-photo reconciliation")).toBeVisible();
-    await expect(page.getByLabel("Fused module entities")).toBeVisible();
-
-    const conflictRow = page.getByLabel("Resolve fused Mystery");
-    await expect(conflictRow.getByRole("button", { name: "Confirm fused match" })).toBeDisabled();
-
-    await page.getByRole("button", { name: "Confirm fused match" }).first().click();
-    await expect(page.getByText(/Applied confirmed to fused/i)).toBeVisible();
-    await expect(page.getByText("Status: confirmed").first()).toBeVisible();
   });
 
   test("rack builder edit shows dual-gate panel and power completeness", async ({ page }) => {
@@ -732,7 +659,7 @@ test.describe("PatchHive canonical workspace", () => {
   });
 
   /** Rig 7 on a two-row case, served from state the PUTs change, as the API would. */
-  async function mockMovableRig(page: Page) {
+  async function mockMovableRig(page: Page, { withCase = true } = {}) {
     const MODULES: Record<number, { name: string; hp: number }> = {
       10: { name: "Gamma", hp: 12 },
       11: { name: "Delta", hp: 6 },
@@ -747,7 +674,7 @@ test.describe("PatchHive canonical workspace", () => {
     const rig = () => ({
       id: 7,
       name: "Sim rack",
-      case_id: 10,
+      case_id: withCase ? 10 : null,
       user_id: 1,
       generation_seed: 1,
       modules: state.modules.map((m, i) => ({
@@ -761,17 +688,19 @@ test.describe("PatchHive canonical workspace", () => {
           ...MODULES[m.module_id],
         },
       })),
-      case: {
-        id: 10,
-        brand: "Sim Co",
-        name: "Sim 168",
-        total_hp: 168,
-        rows: 2,
-        hp_per_row: [84, 84],
-        power_12v_ma: 2000,
-        power_neg12v_ma: 1200,
-        power_5v_ma: 500,
-      },
+      case: withCase
+        ? {
+            id: 10,
+            brand: "Sim Co",
+            name: "Sim 168",
+            total_hp: 168,
+            rows: 2,
+            hp_per_row: [84, 84],
+            power_12v_ma: 2000,
+            power_neg12v_ma: 1200,
+            power_5v_ma: 500,
+          }
+        : null,
     });
     await page.route(RIG_7, async (route) => {
       const request = route.request();
@@ -867,6 +796,51 @@ test.describe("PatchHive canonical workspace", () => {
       { module_id: 10, row_index: 0, start_hp: 0 },
       { module_id: 11, row_index: 0, start_hp: 12 },
     ]);
+  });
+
+  test("rack builder places a Rig with no Case on open rows, with no row end", async ({ page }) => {
+    const puts = await mockMovableRig(page, { withCase: false });
+    await page.goto("/racks/7/edit");
+    await expect(page.locator('.placement-rail [data-module="11"]')).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(
+      page.getByText(/no Case named, so each row is as wide as the Modules on it/),
+    ).toBeVisible();
+    // Its one used row, and an empty one past it to place on.
+    await expect(page.getByText("18HP placed, no Case named")).toBeVisible();
+    await expect(page.getByText("0HP placed, no Case named")).toBeVisible();
+
+    await page.getByLabel("Select module to place").selectOption("11");
+    await page.getByLabel("Row index").fill("1");
+    await page.getByLabel("Start HP").fill("120");
+    await page.getByRole("button", { name: "Add placement" }).click();
+
+    await expect.poll(() => puts.length).toBe(1);
+    expect(puts[0]).toContainEqual(
+      expect.objectContaining({ module_id: 11, row_index: 1, start_hp: 120 }),
+    );
+  });
+
+  test("rack builder creates a Rig with no Case, for entering one by hand", async ({ page }) => {
+    await signIn(page);
+    let created: unknown = null;
+    await page.route(
+      (url) => url.pathname.replace(/\/$/, "").endsWith("/api/racks"),
+      async (route) => {
+        if (route.request().method() !== "POST") return route.fallback();
+        created = route.request().postDataJSON();
+        await route.fulfill({ status: 201, json: { id: 7 } });
+      },
+    );
+    await mockMovableRig(page, { withCase: false });
+    await page.goto("/racks/new");
+
+    await page.getByRole("checkbox", { name: "Go on without a Case" }).check();
+    await page.getByRole("button", { name: "Create empty rig" }).click();
+
+    await expect(page).toHaveURL(/\/racks\/7\/edit$/);
+    expect(created).toMatchObject({ case_id: null, modules: [] });
   });
 
   test("rack builder shows a blocked slot and never saves it", async ({ page }) => {
@@ -1123,6 +1097,9 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(
       page.getByRole("button", { name: "Generate patches (may be blocked)" }),
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: /Confirm inventory/i })).toBeVisible();
+    // The way to fix the Rig before generating; spec 009 names it as the Reading screen does.
+    await expect(
+      page.getByRole("link", { name: "Correct the layout" }).filter({ visible: true }).first(),
+    ).toHaveAttribute("href", "/racks/1/edit");
   });
 });

@@ -94,4 +94,7 @@ def commerce_status(
         "plan_offers": plan_offers,
         "subscription": subscription,
         "allowance": allowance,
+        # What one export costs in credits, set by the server (spec 004 FR-005), so it can be
+        # shown before the owner commits (spec 009 story 29). An allowance covers it instead.
+        "export_cost": int(app_settings.patchbook_export_cost),
     }

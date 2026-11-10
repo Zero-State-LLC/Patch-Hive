@@ -104,7 +104,18 @@ def test_with_the_flags_off_there_is_nothing_to_buy(client: TestClient, user: Us
         "plan_offers": [],
         "subscription": None,
         "allowance": None,
+        "export_cost": 3,
     }
+
+
+def test_it_names_the_price_of_an_export_before_one_is_asked_for(
+    client: TestClient, user: User, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Spec 009 story 29: the Rig screen shows what an export costs before the owner commits.
+    The server sets the price (spec 004 FR-005), so it says what it is."""
+    monkeypatch.setattr(settings, "patchbook_export_cost", 5)
+
+    assert _read(client, user)["export_cost"] == 5
 
 
 def test_open_checkout_offers_credits_and_priced_plans_only(

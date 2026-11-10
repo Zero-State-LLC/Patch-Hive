@@ -121,11 +121,11 @@ def test_missing_or_empty_corpus_fails_closed() -> None:
     assert not verify_corpus_freeze(None)
 
 
-def test_shipped_pilot_intake_shell_cannot_be_frozen() -> None:
-    shell = json.loads((REPO_ROOT / "fixtures/vision_eval/pilot-manifest.json").read_text())
+def test_shipped_pilot_manifest_cannot_be_frozen_until_admitted() -> None:
+    shipped = json.loads((REPO_ROOT / "fixtures/vision_eval/pilot-manifest.json").read_text())
     with pytest.raises(CorpusFreezeError) as exc:
-        freeze_corpus(shell)
-    assert exc.value.code == "CORPUS_EMPTY"
+        freeze_corpus(shipped)
+    assert exc.value.code == "ADMISSION_REJECTED"
 
 
 def test_missing_validator_fails_closed(tmp_path: Path) -> None:
