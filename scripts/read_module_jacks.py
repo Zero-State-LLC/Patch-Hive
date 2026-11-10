@@ -9,8 +9,9 @@ The run writes files only and never touches a database:
 
   plan      match Modules to crawled pages and pick each one's manual
   manuals   pull the picked PDFs from the private bucket and extract their text
-  submit    send two readings of every document as a Message Batch (the only step that spends)
+  submit    send two readings of every document as a Message Batch (spends)
   collect   fetch a finished batch
+  read      the same two readings through OpenRouter, in place of submit and collect (spends)
   decide    write the proposal, its hash and a review sample
 
 A Module is proposed only when both readings of one document call the list complete, agree on
@@ -28,7 +29,10 @@ Usage (repo root):
   python scripts/read_module_jacks.py submit --out RUN --dry-run
   python scripts/read_module_jacks.py submit --out RUN --max-usd 5 --limit 100
   python scripts/read_module_jacks.py collect --out RUN
+  python scripts/read_module_jacks.py read --out RUN --max-usd 1 --limit 100
   python scripts/read_module_jacks.py decide --out RUN
+
+`read` takes its key from OPENROUTER_API_KEY. `submit` and `collect` use the Anthropic SDK's login.
 """
 
 from __future__ import annotations
@@ -38,20 +42,30 @@ import collections
 import concurrent.futures as cf
 import gzip
 import hashlib
+import http.client
 import json
+import os
 import random
 import re
 import subprocess
 import sys
 import tarfile
+import threading
+import time
 import unicodedata
+import urllib.error
+import urllib.request
 from collections.abc import Iterable
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MODEL = "claude-haiku-5-5"
+# The same model, which the 2026-11-09 pilot checked by hand. A cheaper one would need a new check.
+OPENROUTER_MODEL = "anthropic/claude-haiku-5.5"
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+USER_AGENT = "PatchHive-jack-run/1.0 (https://patch-hive.com)"
 # Dollars per million tokens, input and output, for prompts of 100K tokens or fewer.
-PRICES = {"claude-haiku-5-5": (0.10, 0.50)}
+PRICES = {"claude-haiku-5-5": (0.10, 0.50), OPENROUTER_MODEL: (0.10, 0.50)}
 BATCH_DISCOUNT = 0.5
 # Both estimates err high. Haiku 5.5 counts more tokens per character than older models, and
 # its thinking is billed as output.
@@ -64,6 +78,8 @@ MAX_DOC_CHARS = 120_000
 MIN_DOC_CHARS = 200
 # PDF text comes out jumbled, so a quote's words may sit apart by this many words in total.
 QUOTE_SLACK = 40
+READ_RETRIES = 3
+RETRY_STATUSES = (0, 408, 429, 500, 502, 503, 504, 529)
 SAMPLE_SEED = 20261109
 SHOPS = {"Pusherman", "MachineRoom", "Found Sound", "Thonk"}
 JACK_TYPES = (
@@ -75,6 +91,19 @@ JACK_TYPES = (
     "gate_out",
     "clock_in",
     "clock_out",
+)
+# A later version can have different jacks: the test matched a "TB-EFA Rev2" page to a TB-EFA row.
+VERSION_AFTER_NAME = re.compile(r"\W*(?:mk\s*)?(?:i{2,3}|iv|v?\d+(?:\.\d+)?|rev\.?\s*\d+)\b", re.I)
+# Both readings can list one channel of a dual Module and call it complete, as with Mutable Streams.
+MANY_CHANNELS = re.compile(
+    r"\b(?:dual[- ]channel|dual dynamics|(?:two|2|three|3|four|4|six|6|eight|8)[- ](?:independent )?"
+    r"channels?|channels? (?:2|two|b)\b|second channel)",
+    re.I,
+)
+CHANNEL_MARK = re.compile(
+    r"(?:^|[\s_(/-])(?:\d+|[a-dlrxy]|i{1,3}|iv|left|right|ch\d*|channel|odd|even|top|bottom|upper|lower)"
+    r"(?:$|[\s_)/:-])",
+    re.I,
 )
 HP = re.compile(r"(?<![\d.])(\d{1,3})\s*hp\b", re.I)
 WORD = re.compile(r"[^\W\d_]+|\d+")
@@ -195,7 +224,9 @@ class Refused(Exception):
 
 
 def norm(text: str | None) -> str:
-    text = unicodedata.normalize("NFKD", text or "").encode("ascii", "ignore").decode().lower()
+    # Without this, a row named uVCA written with the micro sign would normalise to plain "vca".
+    text = (text or "").replace("\u00b5", "u").replace("\u03bc", "u")
+    text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower()
     return re.sub(r"[^a-z0-9]+", "", text)
 
 
@@ -234,12 +265,14 @@ def _resolve_brand(key: str, known: list[str]) -> str:
 
 
 def _opens_with(title: str, key: str) -> bool:
-    """True when a title opens with the whole name: "LFO" fits "LFO - Maker" but not "LFO2"."""
+    """True when a title opens with the whole name: "LFO" fits "LFO - Maker", not "LFO2" or "LFO II"."""
     seen = ""
     for index, char in enumerate(title):
         seen += norm(char)
         if len(seen) >= len(key):
-            return seen == key and not norm(title[index + 1 : index + 2])
+            if seen != key or norm(title[index + 1 : index + 2]):
+                return False
+            return not VERSION_AFTER_NAME.match(title[index + 1 :])
     return False
 
 
@@ -516,7 +549,7 @@ def request_for(row: dict, doc: dict, reading: str, model: str) -> dict:
     }
 
 
-def estimate_usd(requests: list[dict], model: str) -> float:
+def estimate_usd(requests: list[dict], model: str, discount: float = BATCH_DISCOUNT) -> float:
     if model not in PRICES:
         raise Refused("MODEL_NOT_PRICED", model)
     chars = sum(
@@ -526,7 +559,15 @@ def estimate_usd(requests: list[dict], model: str) -> float:
     full = (
         chars / CHARS_PER_TOKEN * price_in + len(requests) * OUTPUT_TOKENS_EACH * price_out
     ) / 1e6
-    return full * BATCH_DISCOUNT
+    return full * discount
+
+
+def largest_charge(request: dict, model: str) -> float:
+    """The most one request can cost, held against the cap while its answer is outstanding."""
+    params = request["params"]
+    chars = len(params["system"]) + len(params["messages"][0]["content"])
+    price_in, price_out = PRICES[model]
+    return (chars / CHARS_PER_TOKEN * price_in + MAX_OUTPUT_TOKENS * price_out) / 1e6
 
 
 def load_readings(out: Path) -> dict[str, dict]:
@@ -655,6 +696,179 @@ def command_collect(args: argparse.Namespace) -> int:
     return collect(args.out, _anthropic_client)
 
 
+# --- read ---------------------------------------------------------------------------------------
+
+
+class HttpFailure(Exception):
+    def __init__(self, status: int, detail: str) -> None:
+        super().__init__(f"HTTP {status}: {detail}")
+        self.status = status
+        self.detail = detail
+
+
+def post_openrouter(body: dict, key: str) -> dict:
+    request = urllib.request.Request(
+        OPENROUTER_URL,
+        data=json.dumps(body).encode(),
+        headers={
+            "Authorization": f"Bearer {key}",
+            "Content-Type": "application/json",
+            "User-Agent": USER_AGENT,
+        },
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=300) as response:  # nosec B310
+            return json.load(response)
+    except urllib.error.HTTPError as failure:
+        raise HttpFailure(failure.code, failure.read(300).decode(errors="replace")) from None
+    except (OSError, http.client.HTTPException, ValueError) as failure:
+        raise HttpFailure(0, str(failure)) from None
+
+
+def openrouter_body(request: dict) -> dict:
+    """A batch request in OpenRouter's format."""
+    params = request["params"]
+    return {
+        "model": params["model"],
+        "max_tokens": params["max_tokens"],
+        "messages": [{"role": "system", "content": params["system"]}, *params["messages"]],
+        "reasoning": {"effort": params["output_config"]["effort"]},
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {"name": "jack_reading", "strict": True, "schema": READING_SCHEMA},
+        },
+        # Without this, OpenRouter could route to a provider that ignores the schema.
+        "provider": {"require_parameters": True},
+        "usage": {"include": True},
+    }
+
+
+def _openrouter_record(key: str, response: dict, model: str) -> dict:
+    """One line of readings.jsonl, in the shape `decide` already reads."""
+    choice = (response.get("choices") or [{}])[0]
+    usage = response.get("usage") or {}
+    tokens = [usage.get("prompt_tokens") or 0, usage.get("completion_tokens") or 0]
+    price_in, price_out = PRICES[model]
+    usd = usage.get("cost")
+    record: dict = {
+        "custom_id": key,
+        "status": choice.get("finish_reason") or "no_answer",
+        "reading": None,
+        "usage": tokens,
+        "usd": (tokens[0] * price_in + tokens[1] * price_out) / 1e6 if usd is None else usd,
+    }
+    if record["status"] == "stop":
+        try:
+            record["reading"] = json.loads(choice["message"]["content"])
+        except (KeyError, TypeError, json.JSONDecodeError):
+            record["status"] = "unparsable"
+    return record
+
+
+def _read_one(request: dict, model: str, call, pause) -> dict:
+    key = request["custom_id"]
+    body = openrouter_body(request)
+    for attempt in range(READ_RETRIES + 1):
+        try:
+            return _openrouter_record(key, call(body), model)
+        except HttpFailure as failure:
+            # A bad key or an empty account fails every request the same way.
+            if failure.status in (401, 402, 403):
+                raise Refused("OPENROUTER_REFUSED", str(failure)) from None
+            if failure.status not in RETRY_STATUSES or attempt == READ_RETRIES:
+                return {
+                    "custom_id": key,
+                    "status": f"http_{failure.status}",
+                    "reading": None,
+                    "usage": [0, 0],
+                    "usd": 0,
+                }
+            pause(2**attempt)
+    raise AssertionError("unreachable")
+
+
+def read_documents(
+    out: Path,
+    *,
+    model: str,
+    max_usd: float | None,
+    limit: int | None,
+    dry_run: bool,
+    call,
+    workers: int = 8,
+    pause=time.sleep,
+) -> int:
+    rows = json.loads((out / "plan.json").read_text())
+    requests, counts = build_requests(rows, out, model, limit)
+    estimate = estimate_usd(requests, model, discount=1.0)
+    for reason, count in sorted(counts.items()):
+        print(f"{reason}: {count}")
+    print(f"requests: {len(requests)}\nestimated cost: ${estimate:.2f} (errs high)")
+    if dry_run:
+        return 0
+    if not requests:
+        raise Refused("NOTHING_TO_READ")
+    if max_usd is None or estimate > max_usd:
+        raise Refused("OVER_BUDGET", f"estimate ${estimate:.2f}, cap {max_usd}")
+
+    lock, stop = threading.Lock(), threading.Event()
+    statuses, tokens = collections.Counter(), [0, 0]
+    spent = reserved = 0.0
+
+    def work(request: dict) -> None:
+        nonlocal spent, reserved
+        hold = largest_charge(request, model)
+        with lock:
+            # Several requests are out at once, so what they could cost counts before it's charged.
+            if stop.is_set() or spent + reserved + hold > max_usd:
+                stop.set()
+                return
+            reserved += hold
+        try:
+            record = _read_one(request, model, call, pause)
+        except Refused:
+            stop.set()
+            raise
+        with lock:
+            reserved -= hold
+            handle.write(json.dumps(record) + "\n")
+            handle.flush()
+            statuses[record["status"]] += 1
+            tokens[0] += record["usage"][0]
+            tokens[1] += record["usage"][1]
+            spent += record["usd"]
+
+    with (out / "readings.jsonl").open("a") as handle:
+        try:
+            with cf.ThreadPoolExecutor(workers) as pool:
+                list(pool.map(work, requests))
+        finally:
+            sent = sum(statuses.values())
+            with (out / "spend.jsonl").open("a") as ledger:
+                entry = {"provider": "openrouter", "model": model, "requests": sent}
+                ledger.write(json.dumps({**entry, "tokens": tokens, "usd": round(spent, 4)}) + "\n")
+            print(f"read: {dict(statuses)}\ntokens in/out: {tokens}\nspent: ${spent:.2f}")
+    unsent = len(requests) - sent
+    if unsent:
+        print(f"stopped at the ${max_usd} cap with {unsent} requests unsent")
+        return 3
+    return 0
+
+
+def command_read(args: argparse.Namespace) -> int:
+    key = os.environ.get("OPENROUTER_API_KEY", "")
+    if not key and not args.dry_run:
+        raise Refused("NO_API_KEY", "OPENROUTER_API_KEY is not set")
+    return read_documents(
+        args.out,
+        model=args.model,
+        max_usd=args.max_usd,
+        limit=args.limit,
+        dry_run=args.dry_run,
+        call=lambda body: post_openrouter(body, key),
+    )
+
+
 # --- decide -------------------------------------------------------------------------------------
 
 
@@ -728,6 +942,8 @@ def decide_document(text: str, a: dict | None, b: dict | None) -> tuple[list[dic
     # The pilot's passive splitter, whose jacks work either way, came back as nine inputs.
     if not any(_shape(jack)[0] == "out" for jack in a["jacks"]):
         return None, "no_outputs"
+    if MANY_CHANNELS.search(text) and not any(CHANNEL_MARK.search(j["name"]) for j in a["jacks"]):
+        return None, "one_channel_of_many"
     reason = lists_agree(a["jacks"], b["jacks"])
     return (None, reason) if reason else (a["jacks"], "accepted")
 
@@ -847,6 +1063,14 @@ def main(argv: list[str] | None = None) -> int:
     fetch = commands.add_parser("collect")
     fetch.add_argument("--out", required=True, type=Path)
     fetch.set_defaults(run=command_collect)
+
+    read = commands.add_parser("read")
+    read.add_argument("--out", required=True, type=Path)
+    read.add_argument("--model", default=OPENROUTER_MODEL)
+    read.add_argument("--max-usd", type=float, help="refuse or stop at this many dollars")
+    read.add_argument("--limit", type=int, help="read a seeded sample of this many Modules")
+    read.add_argument("--dry-run", action="store_true")
+    read.set_defaults(run=command_read)
 
     choose = commands.add_parser("decide")
     choose.add_argument("--out", required=True, type=Path)

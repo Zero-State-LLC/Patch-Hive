@@ -10,7 +10,9 @@ Almost no catalog row has `io_ports` (2 of 3,379 public Modules on 2026-11-09), 
 
 A Module is proposed only when two differently worded readings of one document both call the list complete, agree on every jack, and quote text found in that document.
 
-Out of scope: running the paid step, which needs the owner's API credential and a spending cap, and loading any list. A load needs a reviewed PR and the owner's yes on its hashes.
+`read` does the same reading through OpenRouter, which the owner chose on 2026-11-09. It uses the same Haiku 5.5 model the pilot checked by hand. OpenRouter's price is the batch price doubled, so `read` also holds each request's largest possible charge against the cap before sending it.
+
+Out of scope: running the paid step, which needs the owner's API key and a spending cap, and loading any list. A load needs a reviewed PR and the owner's yes on its hashes.
 
 ## Affected users / systems
 
@@ -26,7 +28,7 @@ Catalog tooling only. No product, API or database change. Maker documents alread
 
 ## Open questions
 
-- How often the two readings agree isn't known until a first live batch. Run `--limit 100` first.
+- Whether to allow lists that both readings agree on when only one reading calls them complete. They would add coverage but are shakier. The readings are kept, so this can change without paying again.
 - What a load should write, and whether a list needs a provenance column, belongs to the load PR.
 
 ## Verified / assumed claims
@@ -37,7 +39,10 @@ Catalog tooling only. No product, API or database change. Maker documents alread
 | Replaying those readings through the gate accepts 19 lists, all complete by the blind reading, and blocks both wrong lists | `OBSERVED` | `decide` on the pilot's readings |
 | "Complete" means the document appears to cover every jack, not that it matches the physical panel | `NOT_COMPUTABLE` | No panels were checked |
 | Two differently worded readings catch random slips but not a mistake both make | `INFERRED` | Same model, same document |
-| The request format matches the live API | `INFERRED` | Written from the SDK docs; no live request has been sent |
+| `read` works against OpenRouter | `OBSERVED` | 6,356 readings on 2026-11-09, all usable, $3.87 in total |
+| The run proposes 230 of 2,514 Modules read | `OBSERVED` | `decide` on those readings |
+| 23 of 25 accepted lists checked by hand were right; the 2 others gave one channel of a dual Module and are now excluded | `OBSERVED` | Hand comparison with each document, reading only the jack-related lines of 15 of them |
+| `submit` and `collect` work against the Message Batches API | `NOT_COMPUTABLE` | No batch has been sent; tested with the API faked |
 
 ## Author / date
 
