@@ -4,6 +4,33 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.20](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.19...v0.3.0-alpha.20) (2026-11-10)
+
+
+### Added
+
+* **catalog:** load reviewed Module jack lists into empty io_ports ([#389](https://github.com/Zero-State-LLC/Patch-Hive/issues/389)) ([c3aa686](https://github.com/Zero-State-LLC/Patch-Hive/commit/c3aa6866fad8873d18ed53c812fd648c1ff6d8e0))
+* **catalog:** read Module jack lists from maker pages and manuals ([#387](https://github.com/Zero-State-LLC/Patch-Hive/issues/387)) ([daedcb5](https://github.com/Zero-State-LLC/Patch-Hive/commit/daedcb58292c449085cd34e4f8ba7958c7fbd117))
+* **catalog:** read Module jacks through OpenRouter and tighten the gate ([#388](https://github.com/Zero-State-LLC/Patch-Hive/issues/388)) ([58c0977](https://github.com/Zero-State-LLC/Patch-Hive/commit/58c0977870a484ce865e6b8e12f201aa98325f1d))
+* **evidence:** spec 009 T070b, five Commons whole-Rig cases in the corpus ([#377](https://github.com/Zero-State-LLC/Patch-Hive/issues/377)) ([a9594f2](https://github.com/Zero-State-LLC/Patch-Hive/commit/a9594f2964e54d9025d4de965a80e8f7a262498a))
+
+
+### Fixed
+
+* **catalog:** a storage service's 403 on robots.txt means no robots file (decision 66) ([#384](https://github.com/Zero-State-LLC/Patch-Hive/issues/384)) ([1f3aba7](https://github.com/Zero-State-LLC/Patch-Hive/commit/1f3aba7dd83a4c8675217ee5fe07a68f8dc4b4bc))
+* **catalog:** correct A-138m's width and six Analogue Systems types ([#379](https://github.com/Zero-State-LLC/Patch-Hive/issues/379)) ([50467ef](https://github.com/Zero-State-LLC/Patch-Hive/commit/50467ef845ec387bd473acd95dec0446c7df59b8))
+* **catalog:** treat "One moment, please" as a bot check and record the 2026-11-09 render ([#385](https://github.com/Zero-State-LLC/Patch-Hive/issues/385)) ([d59f692](https://github.com/Zero-State-LLC/Patch-Hive/commit/d59f69268459e50cc6567789838b1228a453badb))
+* **engine:** take a filter's lowpass output for generic audio (engine 1.3.0) ([#390](https://github.com/Zero-State-LLC/Patch-Hive/issues/390)) ([f955955](https://github.com/Zero-State-LLC/Patch-Hive/commit/f955955fa098712c7f438a1cde60ab87bfdc8fd5))
+
+
+### Documentation
+
+* **catalog:** record the A-138m and Analogue Systems loads ([#381](https://github.com/Zero-State-LLC/Patch-Hive/issues/381)) ([e08f5cb](https://github.com/Zero-State-LLC/Patch-Hive/commit/e08f5cbae51af663708606e910124310b75cd50c))
+* **catalog:** widen the maker access rule to manuals and pictures (decision 65) ([#383](https://github.com/Zero-State-LLC/Patch-Hive/issues/383)) ([8cc77ef](https://github.com/Zero-State-LLC/Patch-Hive/commit/8cc77ef6d0dda0812040aa6981c27f624987df2a))
+* **evidence:** record that the 226 rendered pages were deleted ([#386](https://github.com/Zero-State-LLC/Patch-Hive/issues/386)) ([c5e261a](https://github.com/Zero-State-LLC/Patch-Hive/commit/c5e261a768572dffecb4881944e257ff7397c730))
+* **evidence:** whole-Rig shot list and draft permission note ([#382](https://github.com/Zero-State-LLC/Patch-Hive/issues/382)) ([92c1024](https://github.com/Zero-State-LLC/Patch-Hive/commit/92c102439ba16a9a7a595ccde8bfd558b147f13b))
+* record the 0.3.0-alpha.19 deploy ([#380](https://github.com/Zero-State-LLC/Patch-Hive/issues/380)) ([5cecd49](https://github.com/Zero-State-LLC/Patch-Hive/commit/5cecd49ea3a7c1619a4159636f1b24e361eff0d1))
+
 ## [0.3.0-alpha.19](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.18...v0.3.0-alpha.19) (2026-11-08)
 
 
