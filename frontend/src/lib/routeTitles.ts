@@ -26,6 +26,7 @@ const ROUTE_TITLES: [pattern: string, title: string][] = [
   ["/admin/gallery", "Admin gallery"],
   ["/admin/runs", "Admin runs"],
   ["/admin/exports", "Admin exports"],
+  ["/admin/invites", "Admin invites"],
   ["/admin/leaderboards", "Admin leaderboards"],
   ["/admin", "Admin"],
 ];

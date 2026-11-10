@@ -466,8 +466,10 @@ export const authApi = {
   /** Revoke every session of the signed-in user, on every device. */
   logoutAll: () => api.post("/community/auth/logout-all", null, { withCredentials: true }),
 
-  register: (data: { username: string; email: string; password: string }) =>
+  register: (data: { username: string; email: string; password: string; invite_code?: string }) =>
     api.post<User>("/community/users", data),
+
+  signupOptions: () => api.get<{ invite_required: boolean }>("/community/auth/signup-options"),
 
   getUser: (id: number) => api.get<User>(`/community/users/${id}`),
 
@@ -759,7 +761,20 @@ export const monetizationApi = {
 };
 
 // Admin API
+export interface AdminInvite {
+  id: number;
+  credits: number;
+  note?: string | null;
+  created_at: string;
+  redeemed_at?: string | null;
+}
+
 export const adminApi = {
+  listInvites: () => api.get<{ invites: AdminInvite[] }>("/admin/invites"),
+
+  createInvite: (credits: number, note: string) =>
+    api.post<AdminInvite & { code: string }>("/admin/invites", { credits, note: note || null }),
+
   listUsers: (query?: string) =>
     api.get<AdminUserList>("/admin/users", { params: query ? { query } : undefined }),
 

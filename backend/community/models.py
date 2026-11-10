@@ -122,6 +122,24 @@ class Comment(Base):
     patch = relationship("Patch", back_populates="comments")
 
 
+class BetaInvite(Base):
+    """A one-use invite to the closed beta. Only the code's hash is stored, and redeeming it
+    creates the account and grants its credits in one transaction."""
+
+    __tablename__ = "beta_invites"
+
+    id = Column(Integer, primary_key=True)
+    code_hash = Column(String(64), nullable=False, unique=True)
+    credits = Column(Integer, nullable=False)
+    note = Column(String(200), nullable=True)
+    created_by = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    redeemed_by = Column(
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, unique=True
+    )
+    redeemed_at = Column(DateTime, nullable=True)
+
+
 class RefreshToken(Base):
     """A rotating refresh token (stored hashed). Each use replaces it with a new one in
     the same family; presenting a used token again revokes the whole family."""

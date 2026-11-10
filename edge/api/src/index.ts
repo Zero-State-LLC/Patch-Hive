@@ -39,6 +39,8 @@ const FLAG_VARS = [
   "ENABLE_PATCHBOOK_DESIGN_ENGINE",
   "ENABLE_CANON_EXPORT_FULFILLMENT",
   "ENABLE_INLINE_EXPORT_FULFILLMENT",
+  // The closed beta's door. Staging only, like every name in this list.
+  "ENABLE_INVITE_ONLY_SIGNUP",
   "ENABLE_PATCHBOOK_PUBLICATION_PROFILE",
   // Spec 009 T060a: staging reads Rig photos from recorded answers; production never does.
   "PHOTO_READING_PROVIDER",

@@ -2,9 +2,8 @@
 FastAPI routes for admin console operations.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import Optional
-from hashlib import sha256
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func
@@ -21,6 +20,9 @@ from admin.schemas import (
     AdminFunctionApprove,
     AdminGalleryRevision,
     AdminGalleryRevisionList,
+    AdminInviteCreate,
+    AdminInviteCreated,
+    AdminInviteList,
     AdminLeaderboardEntry,
     AdminModuleCreate,
     AdminModuleImport,
@@ -43,17 +45,19 @@ from canon.checkout import (
     StripeCheckoutProvider,
     resolve_unresolved_event,
 )
-from canon.models import CanonicalCreditLedgerEntryRecord, StripeEventRecordModel
+from canon.models import StripeEventRecordModel
 from canon.webhook_events import (
     COMMERCE_OPERATOR_ROLES,
     InvalidEventTransitionError,
     reject_unresolved_event,
 )
-from community.models import User
+from community import invites
+from community.models import BetaInvite, User
 from core import get_db
 from gallery.models import GalleryRevision
 from modules.models import Module
-from monetization.models import CreditsLedger, Export
+from monetization.grants import write_credit_grant
+from monetization.models import Export
 from runs.models import Run
 
 router = APIRouter()
@@ -185,6 +189,52 @@ def update_user_avatar(
     return user
 
 
+@router.get("/invites", response_model=AdminInviteList)
+def list_invites(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_read),
+):
+    """Beta invites, newest first. The codes themselves aren't stored."""
+    return {"invites": db.query(BetaInvite).order_by(BetaInvite.id.desc()).all()}
+
+
+@router.post("/invites", response_model=AdminInviteCreated, status_code=201)
+def create_invite(
+    payload: AdminInviteCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin_mutate),
+):
+    """Mint a one-use invite. The code appears in this reply and nowhere else."""
+    code = invites.new_code()
+    invite = BetaInvite(
+        code_hash=invites.code_hash(code),
+        credits=payload.credits,
+        note=payload.note,
+        created_by=current_user.id,
+    )
+    db.add(invite)
+    db.flush()
+    log_admin_action(
+        db,
+        actor=current_user,
+        action_type="invite.create",
+        target_type="invite",
+        target_id=str(invite.id),
+        delta_json={"credits": payload.credits},
+        reason=payload.note or "beta invite",
+    )
+    db.commit()
+    db.refresh(invite)
+    return {
+        "id": invite.id,
+        "credits": invite.credits,
+        "note": invite.note,
+        "created_at": invite.created_at,
+        "redeemed_at": invite.redeemed_at,
+        "code": code,
+    }
+
+
 @router.post("/users/{user_id}/credits/grant", status_code=201)
 def grant_user_credits(
     user_id: int,
@@ -200,31 +250,15 @@ def grant_user_credits(
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    entry = CreditsLedger(
-        user_id=user.id,
-        change_type="Grant",
-        credits_delta=payload.credits,
-        notes=payload.reason,
-    )
-    db.add(entry)
-
     # Stable, unique canonical grant id (append-only; retries must use a new reason/amount pair).
-    grant_key = f"admin-grant:{user.id}:{payload.credits}:{payload.reason}:{current_user.id}"
-    grant_id = f"grant-{sha256(grant_key.encode('utf-8')).hexdigest()[:24]}"
-    idempotency_key = f"admin-grant:{grant_id}"
-    existing_canon = db.get(CanonicalCreditLedgerEntryRecord, grant_id)
-    if existing_canon is None:
-        db.add(
-            CanonicalCreditLedgerEntryRecord(
-                id=grant_id,
-                user_id=user.id,
-                delta=int(payload.credits),
-                entry_type="grant",
-                idempotency_key=idempotency_key,
-                export_id=None,
-                created_at=datetime.now(timezone.utc),
-            )
-        )
+    grant_id = write_credit_grant(
+        db,
+        user_id=user.id,
+        credits=payload.credits,
+        reason=payload.reason,
+        grant_key=f"admin-grant:{user.id}:{payload.credits}:{payload.reason}:{current_user.id}",
+        key_prefix="admin-grant",
+    )
 
     log_admin_action(
         db,

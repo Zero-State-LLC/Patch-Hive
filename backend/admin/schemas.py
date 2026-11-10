@@ -5,7 +5,7 @@ Pydantic schemas for admin APIs.
 from datetime import datetime
 from typing import Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from modules.schemas import IOPort
 
@@ -41,6 +41,31 @@ class AdminAvatarUpdate(BaseModel):
 class AdminCreditsGrant(BaseModel):
     credits: int = Field(..., gt=0)
     reason: str
+
+
+class AdminInviteCreate(BaseModel):
+    credits: int = Field(..., gt=0, le=1000)
+    note: Optional[str] = Field(default=None, max_length=200)
+
+
+class AdminInviteResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    credits: int
+    note: Optional[str] = None
+    created_at: datetime
+    redeemed_at: Optional[datetime] = None
+
+
+class AdminInviteCreated(AdminInviteResponse):
+    """The only reply that carries the code: only its hash is stored."""
+
+    code: str
+
+
+class AdminInviteList(BaseModel):
+    invites: list[AdminInviteResponse]
 
 
 class AdminModuleCreate(BaseModel):
