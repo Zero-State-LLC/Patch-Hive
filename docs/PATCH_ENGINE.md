@@ -413,6 +413,10 @@ class PatchEngineConfig:
 
 ## Limitations
 
+### What changed in 1.3.0
+
+- A generic audio output on a Module with a declared lowpass jack now resolves to that jack, wherever it is listed. Before, it took the first audio output listed, which on some multimode filters was highpass or bandpass.
+
 ### What changed in 1.2.0
 
 - The same seed wires the same cables, and now writes different words: mechanism words are read from the cables, and intent lines say what the cables leave open.
@@ -422,7 +426,7 @@ class PatchEngineConfig:
 - A module fills one role in a patch (owner decision 36). A rack whose modules each hold one class gets the same patches as before.
 - `allow_feedback=false` also drops a patch whose route through other modules comes back to where it began.
 
-### Current Version (1.2.0)
+### Current Version (1.3.0)
 
 - **Port matching**: Uses generic port names ("Audio Out", "CV In")
   - Real modules have specific port names

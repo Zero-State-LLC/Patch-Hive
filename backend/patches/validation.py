@@ -53,6 +53,7 @@ KEYWORDS: Dict[str, Tuple[str, ...]] = {
     "V/Oct": ("oct", "pitch"),
     "FM In": ("fm",),
     "Cutoff CV": ("cut", "freq"),
+    "Audio Out": ("lowpass", "low-pass", "low pass", "lp"),
     "Noise Out": ("noise",),
     "Mix Out": ("mix", "sum"),
     "LFO Out": ("lfo",),

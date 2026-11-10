@@ -78,4 +78,4 @@ def test_a_server_error_fails_and_no_token_reaches_the_receipt() -> None:
 
 
 def test_the_expected_engine_version_comes_from_the_code() -> None:
-    assert check.expected_engine_version() == "1.2.0"
+    assert check.expected_engine_version() == "1.3.0"
