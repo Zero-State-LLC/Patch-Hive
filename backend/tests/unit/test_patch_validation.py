@@ -2,6 +2,8 @@
 
 from types import SimpleNamespace
 
+import pytest
+
 from core.ir import ConnectionIR, PatchGraphIR
 from patches.validation import drop_feedback_patches, resolve_and_validate
 
@@ -44,6 +46,31 @@ def test_generic_roles_resolve_to_declared_jacks():
 def test_keyword_preference_picks_the_pitch_input():
     patches, _ = resolve_and_validate([_patch((3, "LFO Out", 1, "V/Oct"))], MODULES)
     assert patches[0].connections[0].to_port == "V/Oct"
+
+
+def _audio_leaves_from(outputs: list[str]) -> str:
+    multimode = _module(5, "Multimode", [("In", "audio_in"), *((n, "audio_out") for n in outputs)])
+    patches, _ = resolve_and_validate(
+        [_patch((5, "Audio Out", 2, "Audio In"))], {**MODULES, multimode.id: multimode}
+    )
+    return patches[0].connections[0].from_port
+
+
+@pytest.mark.parametrize(
+    "outputs",
+    [
+        ["Highpass Output", "Bandpass Output", "Lowpass Output"],
+        ["HIGH-PASS", "BAND-PASS", "LOW-PASS"],
+        ["Band Out", "Low Pass Out"],
+        ["OUT BP", "OUT LP"],
+    ],
+)
+def test_an_audio_cable_leaves_a_multimode_filter_from_its_lowpass_jack(outputs):
+    assert _audio_leaves_from(outputs) == outputs[-1]
+
+
+def test_a_word_that_only_contains_low_is_not_a_lowpass_jack():
+    assert _audio_leaves_from(["Highpass Output", "below 630Hz filter output"]) == "Highpass Output"
 
 
 def test_modules_without_jacks_stay_generic_and_unresolved():
