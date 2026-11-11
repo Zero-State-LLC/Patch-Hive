@@ -157,3 +157,18 @@ The owner's yes on each load needs these two hashes:
 The plan hash covers every statement and its parameters, so both databases would receive the same writes. An apply refuses if the plan or the committed inputs have changed since, and this record isn't an input.
 
 The one difference between the databases is outside this plan: `catalog_value_archive` holds 6,235 rows on production and 6,351 on staging.
+
+## Loads
+
+The owner approved both hashes on 2026-11-10 and named the merge. #394 merged as `4bc6ef9`, with the same tree as the dry runs' branch. Both loads ran from that commit in `apply` mode on 2026-11-11 UTC, staging first, with `plan_hash` `0dd5d92289d863d27e22d214bdc0bb877dc04204bd39a9e016d1cf71af9ab1c0` and `inputs_hash` `9985cf9ad95de5e8786b95cf7ce9d66093bc17850ca2c85757b627a2be1ed97c`.
+
+| Database | Run | Result | `catalog_value_archive` |
+|---|---|---|---|
+| Staging | [42928848301](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42928848301) | 9 categories filled, 9 `module_type` values set, 0 conflicts, no destructive SQL | 6,351 to 6,360 |
+| Production | [42929315669](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/42929315669) | The same | 6,235 to 6,244 |
+
+On each host `catalog_load_runs` went from 2 to 3 and `catalog_load_changes` from 263 to 290. No other table's row count changed.
+
+Reading each host's public API afterwards, all 9 rows hold their category in both `/api/modules/catalog` and `/api/modules/`. Public rows with no category went from 280 to 271. Of the 226 Modules that declare jacks, 10 are still UNKNOWN: the rows left for the owner. Production's public catalog still has 3,383 rows, and none of them mentions ModularGrid.
+
+To undo a load, run `db-load.yml` with its run ID as `rollback_run_id`. No rollback has been run.
