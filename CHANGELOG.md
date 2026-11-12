@@ -4,6 +4,27 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.21](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.20...v0.3.0-alpha.21) (2026-11-12)
+
+
+### Added
+
+* **rig:** say how many of a Rig's Modules have jack names on file ([#397](https://github.com/Zero-State-LLC/Patch-Hive/issues/397)) ([816d2ff](https://github.com/Zero-State-LLC/Patch-Hive/commit/816d2ffa26ceab5f9cf9cb32f1101d5650d936d2))
+
+
+### Fixed
+
+* **catalog:** give nine Modules with jack lists a category ([#394](https://github.com/Zero-State-LLC/Patch-Hive/issues/394)) ([4bc6ef9](https://github.com/Zero-State-LLC/Patch-Hive/commit/4bc6ef931b3ff0c2695b435ba38a1c32e15b4899))
+* **engine:** take a declared jack only when its name settles it (engine 1.4.0) ([#395](https://github.com/Zero-State-LLC/Patch-Hive/issues/395)) ([d5201ec](https://github.com/Zero-State-LLC/Patch-Hive/commit/d5201ecd333b80696dae0000745269cf3d8feca1))
+* **patchbook:** say why a jack is generic when its list is on file ([#396](https://github.com/Zero-State-LLC/Patch-Hive/issues/396)) ([e362241](https://github.com/Zero-State-LLC/Patch-Hive/commit/e362241855c12e6efa4ac8b10e3fd469cc191508))
+
+
+### Documentation
+
+* bring the records up to date and plan slices N1–N10 ([#393](https://github.com/Zero-State-LLC/Patch-Hive/issues/393)) ([d1e6d14](https://github.com/Zero-State-LLC/Patch-Hive/commit/d1e6d14e0cccb91711476e2d0e47b84933886f4a))
+* **catalog:** record the N5 category loads ([#401](https://github.com/Zero-State-LLC/Patch-Hive/issues/401)) ([b31512a](https://github.com/Zero-State-LLC/Patch-Hive/commit/b31512a7a71bfe856e556096853fbc03f3d7965c))
+* record the 0.3.0-alpha.20 deploy and the Module jack loads ([#391](https://github.com/Zero-State-LLC/Patch-Hive/issues/391)) ([efa36e4](https://github.com/Zero-State-LLC/Patch-Hive/commit/efa36e4aae6fedb78c1c6edcef7d80e1b8813f70))
+
 ## [0.3.0-alpha.20](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.19...v0.3.0-alpha.20) (2026-11-10)
 
 

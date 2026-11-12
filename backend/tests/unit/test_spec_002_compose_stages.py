@@ -364,6 +364,38 @@ def test_generic_jack_names_are_named_as_generic():
     assert "Intellijel Polaris" in page_notes(library.items[0].compilation, library)[-1]
 
 
+@pytest.mark.parametrize(
+    "jacks, types, expected",
+    [
+        (
+            {"Signal A", "Signal B", "Level A", "Level B"},
+            {"audio_in", "cv_in"},
+            ["Intellijel Polaris: the jack names on file don't settle which one takes Audio In or CV In, so check the panel."],
+        ),
+        (
+            {"Out"},
+            {"audio_out"},
+            ["Intellijel Polaris: the jack list on file has no jack for Audio In or CV In, so check the panel."],
+        ),
+        (
+            {"Signal A", "Signal B"},
+            {"audio_in"},
+            [
+                "Intellijel Polaris: the jack names on file don't settle which one takes Audio In, so check the panel.",
+                "Intellijel Polaris: the jack list on file has no jack for CV In, so check the panel.",
+            ],
+        ),
+    ],
+)
+def test_a_note_says_why_a_role_on_a_listed_module_is_still_generic(jacks, types, expected):
+    """A module with jacks on file is not one whose names are missing."""
+    display = {**DISPLAY, "2": ModuleDisplay("Intellijel Polaris", frozenset(jacks), frozenset(types))}
+    library = replace(_library(), module_display=display)
+    notes = page_notes(library.items[0].compilation, library)
+    assert notes[-len(expected):] == expected
+    assert "Polaris" not in next(n for n in notes if n.startswith("Jack names are generic"))
+
+
 class _Recorder:
     """Stands in for the reportlab canvas and records what the pages draw."""
 
@@ -404,6 +436,13 @@ def _draw(monkeypatch, tmp_path, library, family=TemplateFamilyId.SIGNAL_MANUAL)
     monkeypatch.setattr(engine, "normalize_pdf_metadata", lambda b: b)
     compose_design_export_pack(library, _recipe(family), out_dir=tmp_path, export_id="e")
     return recorder
+
+
+def test_the_colophon_says_how_many_modules_have_jack_names(monkeypatch, tmp_path):
+    recorder = _draw(monkeypatch, tmp_path, _library())
+    last = max(p for p, _, _, _ in recorder.texts)
+    colophon = " ".join(t for p, _, _, t in recorder.texts if p == last)
+    assert "Jack names on file for 1 of 3 Modules in this book." in colophon
 
 
 def test_the_pdf_page_draws_the_diagram_names_and_warnings(monkeypatch, tmp_path):

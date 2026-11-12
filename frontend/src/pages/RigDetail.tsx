@@ -29,6 +29,12 @@ import type { CommerceAllowance, Patch, Rack, Run } from "@/types/api";
 
 type WorkspaceTab = "overview" | "patches" | "exports" | "gallery";
 
+function jackCoverage(modules: { module?: { io_ports?: unknown[] } | null }[]): string {
+  const named = modules.filter((m) => (m.module?.io_ports?.length ?? 0) > 0).length;
+  const count = `Jack names on file for ${named} of ${modules.length} Modules.`;
+  return named === modules.length ? count : `${count} Patch Books print role names for the rest.`;
+}
+
 function isWorkspaceTab(value: string | null): value is WorkspaceTab {
   return value === "overview" || value === "patches" || value === "exports" || value === "gallery";
 }
@@ -593,6 +599,7 @@ function RigDetail() {
                   <Link to={`/racks/${rigIdNum}/edit`}>Place modules</Link>
                 </p>
               )}
+              {rig.modules.length ? <p className="muted">{jackCoverage(rig.modules)}</p> : null}
             </section>
           ) : null}
 

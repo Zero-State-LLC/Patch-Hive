@@ -48,6 +48,7 @@ from export.patchbook.design.recipe import (
     recipe_hash,
 )
 from export.patchbook.pdf_meta import normalize_pdf_metadata
+from patches.validation import INPUT_ROLES, OUTPUT_ROLES
 
 
 class PreflightFailed(ValueError):
@@ -802,9 +803,19 @@ def operation_lines(compilation: Any, library: LoadedLibrary) -> list[str]:
     return steps
 
 
+def jack_coverage_lines(library: LoadedLibrary) -> list[str]:
+    """How much of the book names real jacks (spec 001 OQ-04), for its colophon. The cover has
+    no room to spare: at the largest body size its metadata already reaches the footer."""
+    modules = library.module_display.values()
+    if not modules:
+        return []
+    named = sum(1 for module in modules if module.declared_jacks)
+    return [f"Jack names on file for {named} of {len(modules)} Modules in this book."]
+
+
 def page_notes(compilation: Any, library: LoadedLibrary) -> list[str]:
     """What the page must warn about (FR-011, FR-013, FR-014): a feedback loop, each issue in
-    the validation report, and the modules whose jack names are generic roles."""
+    the validation report, and why any cable end still shows a generic role."""
     graph = compilation.patch_graph
     notes: list[str] = []
     looped = feedback_edge_ids(graph)
@@ -817,19 +828,42 @@ def page_notes(compilation: Any, library: LoadedLibrary) -> list[str]:
     for issue in compilation.validation_report.issues:
         if issue.message not in notes:
             notes.append(issue.message)
-    generic = sorted(
-        library.module_display[node.module_instance_id].label
-        for node in graph.nodes
-        if any(
-            port.label not in library.module_display[node.module_instance_id].declared_jacks
-            for port in node.ports
-        )
-    )
-    if generic:
+    return notes + _generic_jack_notes(graph, library)
+
+
+def _generic_jack_notes(graph: Any, library: LoadedLibrary) -> list[str]:
+    """Say why each generic role is on the page. A list on file changes what's true: the name
+    may be there but not settled by the list, or the list may have no such jack."""
+    role_types = {**OUTPUT_ROLES, **INPUT_ROLES}
+    no_list: set[str] = set()
+    unsettled: set[tuple[str, tuple[str, ...]]] = set()
+    missing: set[tuple[str, tuple[str, ...]]] = set()
+    for node in graph.nodes:
+        display = library.module_display[node.module_instance_id]
+        roles = sorted({p.label for p in node.ports if p.label not in display.declared_jacks})
+        if roles and not display.declared_jacks:
+            no_list.add(display.label)
+            continue
+        could_fit = [r for r in roles if display.declared_jack_types & set(role_types.get(r, ()))]
+        if could_fit:
+            unsettled.add((display.label, tuple(could_fit)))
+        if len(could_fit) < len(roles):
+            missing.add((display.label, tuple(r for r in roles if r not in could_fit)))
+    notes: list[str] = []
+    if no_list:
         notes.append(
-            f"Jack names are generic for {', '.join(generic)}: the real names aren't on file, "
-            "so check each panel."
+            f"Jack names are generic for {', '.join(sorted(no_list))}: the real names aren't on "
+            "file, so check each panel."
         )
+    notes += [
+        f"{label}: the jack names on file don't settle which one takes {' or '.join(roles)}, "
+        "so check the panel."
+        for label, roles in sorted(unsettled)
+    ]
+    notes += [
+        f"{label}: the jack list on file has no jack for {' or '.join(roles)}, so check the panel."
+        for label, roles in sorted(missing)
+    ]
     return notes
 
 
@@ -1232,6 +1266,7 @@ def _render_execution_pdf(
             f"Template family: {family.display_name}",
             f"Mode: {recipe.mode.value}",
             f"Layout algorithm: {family.layout_algorithm_id}",
+            *jack_coverage_lines(library),
         ],
         body_font,
         body_size,
