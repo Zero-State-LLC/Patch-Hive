@@ -1,0 +1,35 @@
+# Next
+
+**Updated:** 2026-11-12, after #393, #395, #396 and #397 merged. Main is `e362241`. Staging and production still run 0.3.0-alpha.20 (`88efb73`), so engine 1.4.0 and the jack notes aren't live yet.
+
+The plan is [docs/evidence/NEXT_SLICES_2026-11-10.md](../evidence/NEXT_SLICES_2026-11-10.md), N1–N10.
+
+## Waiting on the owner
+
+Each item is gated: a merge you name, or a yes for a deploy, migration, dispatch or load.
+
+1. **Release and deploy 0.3.0-alpha.21:** merge #392, then deploy staging and production. It ships engine 1.4.0 (N2), the Patch Book notes (N3) and the jack count (N4). It has no migrations.
+2. **N7, #336:** after the deploy, a staging dispatch of `staging-walkthrough.yml` with `checks: generated-export`. That closes the beta exit gap for a customer's own run.
+3. **N8, #398 (invite-only sign-up):** merge, run `db-migrate.yml` for staging and production (`20261110_beta_invites`), then deploy. Mint a code at `/admin/invites` before staging sign-up closes.
+4. **N9, #399:** merge. The VoiceOver, Safari and PDF pass in `docs/evidence/ACCESSIBILITY_PASS_BETA.md` is yours.
+5. **N10, #402:** merge, then `db-load.yml` dry runs on staging and production, and your yes on their hashes. It holds 38 hand-checked jack lists.
+6. **N6, #371:** merge when you're ready. Its checks pass.
+7. `enforce_admins` on `main` is still off. Restore it when merging is done:
+   `gh api -X POST repos/Zero-State-LLC/Patch-Hive/branches/main/protection/enforce_admins`
+
+## Verdicts
+
+- **N8 security review:** a read-only trace of the invite commit found no vulnerabilities at the required confidence. Two sign-ups racing for one code weren't tested against Postgres.
+- **N10 hand checks:** two samples of 25 lists, where only one reading called the document complete, found 20 and 18 complete. Only the 38 confirmed lists are proposed. The other 76 candidates stay out until checked.
+- **Loaded v1 lists flagged by N10's new gates:** QPAS, AVS-S&R-1, Pittsburgh Modular Sequencer and ACL Variable Sync VCO group several jacks under one name. Correcting a declared list needs a correction manifest, because the loader never overwrites one.
+
+## Next for the agent
+
+- After the alpha.21 deploy: record it, run the health and smoke checks, and run the staging generate check.
+- A correction for the four grouped v1 lists.
+- Catalog: Infrasonic Warp Core's width (4 HP on file, 12 HP in its manual), and three 1U tiles in the Eurorack catalog.
+- Reserve slice: spec 002 hardening, T038–T041.
+
+## Missing from this repo
+
+Your global instructions refer to a "Standing grant" section and to `FACTS.md`. Neither exists here yet, so the gates above follow your earlier instructions: merges you name, and an explicit yes for each deploy, migration, dispatch and load.
