@@ -1007,6 +1007,9 @@ def decide_module(
             return {
                 "module_id": row["module_id"],
                 "accepted": True,
+                # False when only one reading called the document complete: FR-041 then
+                # needs a hand check before the list can go into an overlay.
+                "both_full": a["coverage"] == "full" and b["coverage"] == "full",
                 "brand": row["brand"],
                 "name": row["name"],
                 "hp": row["hp"],
@@ -1095,8 +1098,9 @@ def write_overlay(
 ) -> int:
     """The loader's input. Quotes from makers' documents stay in the private proposal. A Module
     an ``earlier`` overlay already holds is left out, so each overlay adds only new lists, and
-    so is one a hand check in ``reviews`` didn't find complete. With ``reviewed_only``, only
-    the lists a hand check found complete go in."""
+    so is one a hand check in ``reviews`` didn't find complete. A list only one reading called
+    complete goes in only with a "complete" verdict, whatever the flags (FR-041). With
+    ``reviewed_only``, only the lists a hand check found complete go in."""
     raw = (out / "module-jacks.proposal.json").read_bytes()
     held = {
         (entry["brand"], entry["name"])
@@ -1115,7 +1119,9 @@ def write_overlay(
     entries, dropped = [], 0
     for item in json.loads(raw)["modules"]:
         key = (item["brand"], item["name"])
-        if key in held or (reviewed_only and verdicts.get(key) != "complete"):
+        # A proposal from before ``both_full`` was recorded came from the gate that needed both.
+        checked = verdicts.get(key) == "complete"
+        if key in held or ((reviewed_only or not item.get("both_full", True)) and not checked):
             continue
         ports = [
             {"name": clean_jack_name(port["name"]), "type": port["type"]}

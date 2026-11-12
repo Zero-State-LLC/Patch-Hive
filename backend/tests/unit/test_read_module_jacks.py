@@ -687,6 +687,7 @@ def test_a_complete_manual_is_proposed_with_its_source_and_quotes(tmp_path):
         {"name": "Out L", "type": "audio_out"},
     ]
     assert module["evidence"][0]["quote"] == "Gate In and Out L"
+    assert module["both_full"] is True
     assert "Maker Maths" in (tmp_path / "review-sample.md").read_text()
 
 
@@ -781,3 +782,26 @@ def test_a_plural_before_a_qualifier_is_one_jack(name):
 )
 def test_a_dual_modules_list_must_go_past_channel_one(names, reason):
     assert _decide_one("A dual channel module. Gate In and Out L", *names) == reason
+
+
+def test_a_list_only_one_reading_called_complete_needs_a_hand_check_whatever_the_flags(tmp_path):
+    """Spec 003 FR-041: the overlay refuses such a list until a review finds it complete."""
+    module = {"brand": "Maker", "hp": 4, "source_kind": "page", "source_url": "https://maker.test/m"}
+    ports = [{"name": "Out", "type": "audio_out"}]
+    proposal = {
+        "modules": [
+            {**module, "name": "Both", "both_full": True, "io_ports": ports},
+            {**module, "name": "One", "both_full": False, "io_ports": ports},
+            {**module, "name": "Checked", "both_full": False, "io_ports": ports},
+            {**module, "name": "Older", "io_ports": ports},
+        ]
+    }
+    (tmp_path / "module-jacks.proposal.json").write_text(json.dumps(proposal))
+    reviews = tmp_path / "reviews.json"
+    reviews.write_text(json.dumps({"reviews": [{"brand": "Maker", "name": "Checked", "verdict": "complete"}]}))
+    for kwargs in ({}, {"reviews": reviews}):
+        target = tmp_path / "overlay.json"
+        assert jacks.write_overlay(tmp_path, target, **kwargs) == 0
+        names = [entry["name"] for entry in json.loads(target.read_text())["entries"]]
+        assert "One" not in names and "Both" in names and "Older" in names
+        assert ("Checked" in names) is ("reviews" in kwargs)
