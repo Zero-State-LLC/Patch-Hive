@@ -72,15 +72,24 @@ KEYWORDS: Dict[str, Tuple[str, ...]] = {
     "Gate Out": ("gate", "trig"),
     "Gate In": ("gate", "trig"),
 }
-# Jacks that serve a side purpose, passed over when a main jack of the same kind exists.
+# Jacks that serve a side purpose. Among jacks a name already points to, the main one wins.
 SECONDARY = re.compile(
     r"(?<!non-)(?<!non )(?<![a-z])inv|mirror|(?<![a-z0-9])(?:neg|eoc|eor|end|send|return|thru(?![- ]?zero)|through"
     r"|headphone|feedback|aux|sub)"
 )
-# Channels are interchangeable, so a plain channel mark decides. These roles each have a
+# What makes "Inverted ADSR Output" a version of "ADSR Output".
+SIDE_WORDS = re.compile(r"\b(?:non-?)?inv(?:erted|erse)?\b|\bmirror(?:ed)?\b|\bneg(?:ative)?\b")
+# A name that says it is the module's output or input of that kind.
+PLAIN = re.compile(r"^(?:main |audio |signal )?(?:out|output|in|input)$")
+# Channels are interchangeable, so a plain channel mark decides. A digit is no channel when it
+# is part of a number or a voltage, as in "1.7kHz" or "1V/Oct". These roles each have a
 # specific job, and a channel mark says nothing about which input does it.
-FIRST_CHANNEL = re.compile(r"(?<![a-z0-9])(?:left|l|mono|a)(?![a-z0-9])|(?<![\d.])1(?![\d.])")
-SECOND_CHANNEL = re.compile(r"(?<![a-z0-9])(?:right|r|b)(?![a-z0-9])|(?<![\d.])2(?![\d.])")
+FIRST_CHANNEL = re.compile(
+    r"(?<![a-z0-9])(?:left|l|mono|a)(?![a-z0-9])|(?<![\d.])1(?![\d.])(?!\s?v(?:/|olt|\b))"
+)
+SECOND_CHANNEL = re.compile(
+    r"(?<![a-z0-9])(?:right|r|b)(?![a-z0-9])|(?<![\d.])2(?![\d.])(?!\s?v(?:/|olt|\b))"
+)
 NO_CHANNEL_ROLES = frozenset({"V/Oct", "FM In", "Cutoff CV"})
 
 
@@ -138,8 +147,8 @@ def _pick(
 ) -> Optional[Dict[str, str]]:
     """The jack this role means, or None when no name settles it (spec 001 FR-016)."""
     of_kind = [p for p in ports if p["type"] in accepted]
-    main = [p for p in of_kind if not SECONDARY.search(p["name"].lower())] or of_kind
-    free = [p for p in main if p["name"] not in taken]
+    # Main jacks first, each group in listing order.
+    free = sorted((p for p in of_kind if p["name"] not in taken), key=_is_side)
     for port in free:
         if port["name"] == role:
             return port
@@ -148,7 +157,27 @@ def _pick(
         matches = [p for p in free if pattern.search(p["name"].lower())]
         if matches:
             return _by_channel(role, matches) or matches[0]
-    return _by_channel(role, free) or (free[0] if len(main) == 1 and free else None)
+    plain = [p for p in free if PLAIN.match(p["name"].lower())]
+    if plain:
+        return plain[0]
+    # A channel mark names one of the main jacks. A side jack needs a name that points to it.
+    return _by_channel(role, [p for p in free if not _is_side(p)]) or _only_one(of_kind, free)
+
+
+def _is_side(port: Dict[str, str]) -> bool:
+    return bool(SECONDARY.search(port["name"].lower()))
+
+
+def _only_one(of_kind: List[Dict[str, str]], free: List[Dict[str, str]]) -> Optional[Dict[str, str]]:
+    """The only jack of its kind, counting a side jack that is a version of it, such as
+    "Inverted Signal Output" beside "Non-Inverted Signal Output". A side jack of something
+    else, such as "Inverted LFO1 Output" beside "ADSR Output", leaves it unsettled."""
+    main = [p for p in of_kind if not _is_side(p)]
+    if len(main) != 1 or main[0] not in free:
+        return None
+    core = SIDE_WORDS.sub("", main[0]["name"].lower()).split()
+    others = (p for p in of_kind if p is not main[0])
+    return main[0] if all(SIDE_WORDS.sub("", p["name"].lower()).split() == core for p in others) else None
 
 
 def resolve_and_validate(

@@ -118,7 +118,9 @@ def test_a_name_settles_which_input_takes_the_cable(role, inputs, expected):
     [
         ("Envelope Out", ["Mirrored Contour Output", "Contour Output"], "cv_out", "Contour Output"),
         ("Envelope Out", ["Inverted Signal Output", "Non-Inverted Signal Output"], "cv_out", "Non-Inverted Signal Output"),
-        ("LFO Out", ["Inverted output", "S&H output"], "cv_out", "S&H output"),
+        ("Envelope Out", ["Inverted ADSR Output", "ADSR Output"], "cv_out", "ADSR Output"),
+        ("LFO Out", ["Inverted LFO1 Output", "ADSR Output"], "cv_out", "Inverted LFO1 Output"),
+        ("Audio Out", ["Out", "Aux"], "audio_out", "Out"),
         ("CV Out", ["Channel 1 Pressure Output", "Tuned Voltage Out X"], "cv_out", "Tuned Voltage Out X"),
         ("Audio Out", ["Feedback Output", "Mix Output"], "audio_out", "Mix Output"),
         ("Audio Out", ["Sine", "Triangle", "Sawtooth"], "audio_out", "Sawtooth"),
@@ -168,6 +170,17 @@ def test_a_second_cable_of_a_role_takes_the_next_channel():
 def test_a_channel_mark_does_not_name_an_input_with_a_specific_job(role, inputs):
     cable, _ = _input_end(role, inputs)
     assert (cable.to_port, cable.port_status) == (role, "generic")
+
+
+def test_a_side_jack_of_something_else_leaves_the_main_jack_unsettled():
+    cable, _ = _output_end("CV Out", ["Inverted Ramp Output", "Gate Output"])
+    assert (cable.from_port, cable.port_status) == ("CV Out", "generic")
+
+
+@pytest.mark.parametrize("inputs", [["Voices CV Input", "1V/Oct Input", "Detune CV Input"], ["RATE CV", "1V/OCT"]])
+def test_a_voltage_is_not_a_channel_number(inputs):
+    cable, _ = _input_end("CV In", inputs)
+    assert (cable.to_port, cable.port_status) == ("CV In", "generic")
 
 
 def test_a_keyword_must_start_a_word():

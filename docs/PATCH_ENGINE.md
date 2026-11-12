@@ -417,7 +417,8 @@ class PatchEngineConfig:
 
 - A cable takes a declared jack only when its name settles it: the exact name, then a keyword, then a channel mark such as 1, A or Left, then the only jack of its kind. Before, anything else took the first free jack, so an FM cable could land on "Damp CV" with no warning.
 - With several jacks and no name to settle it, the cable keeps its generic role and the run reports `SEVERAL_JACKS_FIT`.
-- Side jacks such as an inverted or mirrored output, an FX send or a headphone output are passed over when a main jack of the same kind exists.
+- When a name points at both a main jack and a side jack, such as "Contour Output" and "Mirrored Contour Output", the main one wins. A side jack of something else never leaves an unrelated jack as the only one: beside "Inverted LFO1 Output", "ADSR Output" doesn't take an LFO cable.
+- A number in a voltage or frequency, such as "1V/Oct" or "1.7kHz", isn't a channel mark.
 - A keyword must start a word, so "amp" is not found in "Damp".
 
 ### What changed in 1.3.0
