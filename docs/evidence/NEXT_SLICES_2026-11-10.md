@@ -1,5 +1,7 @@
 # Next slices (2026-11-10)
 
+**Status 2026-11-12:** N1 (#393), N2 (#395), N3 (#396), N4 (#397) and N5 (#394, #401, loaded on both databases) are merged. N6 (#371), N7 (#336), N8 (#398), N9 (#399) and N10 (#402) are open. N2–N4 reach staging and production with 0.3.0-alpha.21 (#392). What waits on the owner is in [docs/handoff/NEXT.md](../handoff/NEXT.md).
+
 Planned after #391. Staging and production both run `88efb73` (0.3.0-alpha.20), with 224 Module jack lists loaded on both. The next milestone is the closed staging beta. Each slice is one PR. They use the prefix N because A, B and C already have two meanings in this repo's history.
 
 Of the 53 open spec tasks, 5 can be finished without the owner, and 43 wait on something only the owner or a third party can supply, such as Rig photos, an offline signature or counsel. So these slices come mostly from what a person would hit today, and from the beta exit list.
