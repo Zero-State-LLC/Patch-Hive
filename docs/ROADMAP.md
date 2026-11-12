@@ -178,10 +178,10 @@ Design: [evidence/DUAL_PATH_RETIREMENT_DESIGN.md](evidence/DUAL_PATH_RETIREMENT_
 
 ## Near-term sequence (next 2 weeks)
 
-Updated 2026-11-04; the staging drills (beta #4, #5), the accessibility pre-pass and the Playwright smoke (beta #8) are done.
+Updated 2026-11-10; the staging drills (beta #4, #5), the accessibility pre-pass and the Playwright smoke (beta #8) are done, and specs 001–004 are confirmed (decision 23).
 
-1. Accessibility: the human screen-reader and PDF pass (beta #6)  
-2. Owner confirms specs 001–004 (T001) so their plans and convergence can close  
+1. Slices N1–N10: [docs/evidence/NEXT_SLICES_2026-11-10.md](evidence/NEXT_SLICES_2026-11-10.md)  
+2. Accessibility: the human screen-reader and PDF pass (beta #6)  
 3. Spec 007 evaluation chain (corpus photos, run, approve, pin, sign), then pin the readiness docs (008 T050b)  
 4. Tag `0.3.0-beta.1` (a `Release-As` footer) only when the beta exit criteria pass  
 
