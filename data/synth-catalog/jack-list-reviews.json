@@ -1,0 +1,356 @@
+{
+  "schema": "jack-list-reviews/1",
+  "method": "each list compared by hand with the maker document it was read from",
+  "reviews": [
+    {
+      "brand": "2hp",
+      "name": "Sine",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-510N Synthishaper",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Bastl Instruments",
+      "name": "GrandPa",
+      "round": 1,
+      "verdict": "incomplete",
+      "reason": "one name stands for two trigger inputs"
+    },
+    {
+      "brand": "BeepBoop Electronics",
+      "name": "2hp CMP Comparator V2",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "BeepBoop Electronics",
+      "name": "LOFI uTape Scrubber",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "BeepBoop Electronics",
+      "name": "Tape-auto-mate expander V2",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Ge0sync Synth",
+      "name": "GS1-U",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Hexdevices",
+      "name": "Osiris",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Jolin",
+      "name": "ROSA",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Little Fish Audio",
+      "name": "Asymmetric Distortion",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Manikk",
+      "name": "ADSR Expander",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Manikk",
+      "name": "Outbreak Jr",
+      "round": 1,
+      "verdict": "complete",
+      "reason": "a TRS-MIDI input isn't a patch jack, so it is left off"
+    },
+    {
+      "brand": "Mosaic",
+      "name": "Clock",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Mosaic",
+      "name": "Mono Reverb",
+      "round": 1,
+      "verdict": "incomplete",
+      "reason": "the manual's Material, Size and Blend CV inputs are missing"
+    },
+    {
+      "brand": "Qu-Bit Electronix",
+      "name": "Nautilus",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Schlappi Engineering",
+      "name": "Cascade",
+      "round": 1,
+      "verdict": "incomplete",
+      "reason": "grouped names stand for stereo output pairs"
+    },
+    {
+      "brand": "Shakmat",
+      "name": "Bard Quartet",
+      "round": 1,
+      "verdict": "incomplete",
+      "reason": "one name stands for each of four channels' CV jacks"
+    },
+    {
+      "brand": "Signs Modular",
+      "name": "hvs",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Steady State Fate",
+      "name": "Ultra-Random Analog",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "TLM Audio",
+      "name": "BRAIDS (Mutable Instruments Braids Clone)",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Tenderfoot Electronics",
+      "name": "Tetrad",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Wildfire Laboratories",
+      "name": "SOVEREIGN",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "b:art instruments",
+      "name": "b:09",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "b:art instruments",
+      "name": "b:13",
+      "round": 1,
+      "verdict": "incomplete",
+      "reason": "channel 2's jacks are missing"
+    },
+    {
+      "brand": "selestium modular",
+      "name": "QUIVERER (M5)",
+      "round": 1,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "ACL",
+      "name": "Envelope X3",
+      "round": 2,
+      "verdict": "incomplete",
+      "reason": "the second and third envelopes' normal and inverted outputs are missing"
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-650 Echo Reverb",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Audiothingies",
+      "name": "CED",
+      "round": 2,
+      "verdict": "wrong",
+      "reason": "thru and sub are one jack, set by jumpers"
+    },
+    {
+      "brand": "BeepBoop Electronics",
+      "name": "2hp LPG V1 DIY KIT",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "BeepBoop Electronics",
+      "name": "Samsara",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "David Haillant",
+      "name": "Passive OR",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Feedback",
+      "name": "LFO-20",
+      "round": 2,
+      "verdict": "unclear",
+      "reason": "the page disagrees with itself about an inverted triangle output"
+    },
+    {
+      "brand": "Ge0sync Synth",
+      "name": "GS1-NR",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Hive Mind Synthesis",
+      "name": "IND",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Infrasonic Audio",
+      "name": "Warp Core",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Laine Modular",
+      "name": "Catena",
+      "round": 2,
+      "verdict": "unclear",
+      "reason": "the manual doesn't say whether one slew CV jack serves both channels"
+    },
+    {
+      "brand": "Likaon Instruments",
+      "name": "Drizzle",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Nonlinearcircuits",
+      "name": "Envelope follower",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Lifeforms Touch Controller",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Plankton Electronics",
+      "name": "ENVF",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Rides in the Storm",
+      "name": "L5D",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "ST Modular",
+      "name": "ADSR",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "ST Modular",
+      "name": "Cause & Effect",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "ST Modular",
+      "name": "Feed V2",
+      "round": 2,
+      "verdict": "incomplete",
+      "reason": "the processed send output is missing"
+    },
+    {
+      "brand": "SetonixSynth",
+      "name": "SkyWave Segmented VCO",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "Sovage Engineering",
+      "name": "BAGARRE",
+      "round": 2,
+      "verdict": "incomplete",
+      "reason": "one stereo channel stands for every channel"
+    },
+    {
+      "brand": "Sovage Engineering",
+      "name": "TEINTE 1U",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "VAV Synths",
+      "name": "X-Wave: Wave-Crosser (4HP)",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    },
+    {
+      "brand": "b:art instruments",
+      "name": "b:01 v2",
+      "round": 2,
+      "verdict": "incomplete",
+      "reason": "the second VCA's Gain CV is missing"
+    },
+    {
+      "brand": "b:art instruments",
+      "name": "b:10",
+      "round": 2,
+      "verdict": "complete",
+      "reason": ""
+    }
+  ]
+}
