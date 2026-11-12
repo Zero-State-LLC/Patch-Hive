@@ -3,7 +3,8 @@ import type { CSSProperties } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { canonApi, exportApi, patchApi, rackApi, runApi } from "@/lib/api";
 import { filenameFromDisposition, saveBlob } from "@/lib/download";
-import { useAuthStore } from "@/lib/store";
+import { useAuthStore, useReaderKey } from "@/lib/store";
+import { useMountedRef } from "@/lib/useMountedRef";
 import PatchRail from "@/components/PatchRail";
 import RigRail from "@/components/RigRail";
 import Tabs from "@/components/Tabs";
@@ -51,12 +52,19 @@ function gateTone(status?: string | null): "success" | "warning" | "danger" | "n
 }
 
 export default function RacksPage() {
+  return <Racks key={useReaderKey()} />;
+}
+
+function Racks() {
+  const mounted = useMountedRef();
   const [racks, setRacks] = useState<Rack[]>([]);
   const [rackTotal, setRackTotal] = useState(0);
   const [loadingMoreRigs, setLoadingMoreRigs] = useState(false);
   const [moreRigsError, setMoreRigsError] = useState<unknown>(null);
   // Users own their racks: only the owner can generate patches for one.
   const currentUserId = useAuthStore((st) => st.user?.id ?? null);
+  // Signed in, the list is the reader's own Rigs (spec 009 story 37); signed out, the shared ones.
+  const ownRigs = currentUserId ?? undefined;
   const [pdfDownloading, setPdfDownloading] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
   // The selected rig, tab and patch live in the URL (/racks/:rigId?tab=&patch=), so a view
@@ -157,7 +165,9 @@ export default function RacksPage() {
     setError(null);
     setListLoading(true);
     try {
-      const response = await canonApi.listRigs({ limit: RIG_PAGE_SIZE });
+      const response = await canonApi.listRigs({ limit: RIG_PAGE_SIZE, user_id: ownRigs });
+      // Past here the page may move to the reader's first rig, which the next reader can't open.
+      if (!mounted.current) return;
       const rows = response.data.rigs.map(rigSummaryToRack);
       setRacks(rows);
       setRackTotal(response.data.total ?? rows.length);
@@ -179,7 +189,11 @@ export default function RacksPage() {
     setLoadingMoreRigs(true);
     setMoreRigsError(null);
     try {
-      const response = await canonApi.listRigs({ skip: racks.length, limit: RIG_PAGE_SIZE });
+      const response = await canonApi.listRigs({
+        skip: racks.length,
+        limit: RIG_PAGE_SIZE,
+        user_id: ownRigs,
+      });
       const rows = response.data.rigs.map(rigSummaryToRack);
       // A rig created meanwhile shifts the pages, so one already shown is not added twice.
       setRacks((shown) => [
@@ -259,6 +273,8 @@ export default function RacksPage() {
     setPdfError(null);
     try {
       const res = await exportApi.downloadRackPdf(rackId);
+      // A file saved after sign-out would hand the last reader's PDF to whoever is here now.
+      if (!mounted.current) return;
       saveBlob(
         res.data,
         filenameFromDisposition(res.headers["content-disposition"], `rack_${rackId}.pdf`),
@@ -282,7 +298,7 @@ export default function RacksPage() {
       if (latestRuns[0]?.id) {
         await loadPatches(latestRuns[0].id);
       }
-      setActiveTab("patches");
+      if (mounted.current) setActiveTab("patches");
     } catch {
       setError("Patch generation failed. Please retry.");
     } finally {
@@ -322,13 +338,15 @@ export default function RacksPage() {
     <div className="split-workspace">
       <aside className="split-aside" aria-label="Rig list">
         <div className="split-aside-head">
-          <h1>Rigs</h1>
-          <Link className="button button-primary" to="/racks/new">
+          <h1>{ownRigs != null ? "My Rigs" : "Rigs"}</h1>
+          <Link className="button button-primary" to="/rigs/new/photo">
             New
           </Link>
         </div>
         <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
-          Rig-centric workspace. Each rig carries runs and patch libraries.
+          {ownRigs != null
+            ? "Your Rigs, newest first. Each keeps its runs and Patch Books."
+            : "Rigs people have shared, newest first."}
         </p>
         <div className="side-list">
           {listLoading ? <ListSkeleton label="Loading rigs…" /> : null}
@@ -373,8 +391,8 @@ export default function RacksPage() {
           {!listLoading && racks.length === 0 && !error ? (
             <div className="panel">
               <p className="status status-warning">No rigs yet.</p>
-              <Link className="button button-primary" to="/racks/new">
-                Create your first rig
+              <Link className="button button-primary" to="/rigs/new/photo">
+                Photograph your first Rig
               </Link>
             </div>
           ) : null}
@@ -425,15 +443,18 @@ export default function RacksPage() {
                   <div className="panel placement-cta" role="region" aria-label="Place modules">
                     <h3>This rig has no modules yet</h3>
                     <p className="muted">
-                      Place catalog modules by row and start HP, or prepare placeable rows from the
-                      module gallery first.
+                      Place catalog modules by row and start HP, or photograph the Rig and confirm
+                      what PatchHive reads.
                     </p>
                     <div className="page-hero-actions">
                       <Link className="button button-primary" to={`/racks/${selectedRack.id}/edit`}>
                         Place modules
                       </Link>
-                      <Link className="button button-secondary" to="/modules?hp=known">
-                        Browse placeable catalog
+                      <Link
+                        className="button button-secondary"
+                        to={`/rigs/${selectedRack.id}/photo`}
+                      >
+                        Photograph this Rig
                       </Link>
                     </div>
                   </div>
@@ -679,12 +700,9 @@ export default function RacksPage() {
                     <Link className="button button-secondary" to={`/racks/${selectedRack.id}/edit`}>
                       Place modules
                     </Link>
-                    <Link className="button button-secondary" to="/racks/new">
-                      Create rig
+                    <Link className="button button-secondary" to="/rigs/new/photo">
+                      New Rig
                     </Link>
-                    <button type="button" className="button button-quiet" disabled>
-                      Upload rig (soon)
-                    </button>
                   </div>
                   <p className="muted" style={{ marginBottom: 0, marginTop: "var(--space-3)" }}>
                     Generate once. Patches and exports open as tabs after a run exists. Placement
@@ -901,11 +919,9 @@ export default function RacksPage() {
         ) : (
           <div className="panel">
             <h2 style={{ marginTop: 0 }}>Select a rig to begin</h2>
-            <p className="muted">
-              Choose a rig from the list, or create a new one to confirm inventory.
-            </p>
-            <Link className="button button-primary" to="/racks/new">
-              New rig
+            <p className="muted">Choose a Rig from the list, or start a new one from a photo.</p>
+            <Link className="button button-primary" to="/rigs/new/photo">
+              New Rig
             </Link>
           </div>
         )}

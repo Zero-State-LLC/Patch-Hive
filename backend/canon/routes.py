@@ -35,6 +35,7 @@ from canon.subscriptions import (
     request_subscription_cancel,
     start_subscription_checkout,
 )
+from canon.commerce_status import commerce_status
 from canon.contracts import ExportRequest
 from canon.downloads import DownloadTokenError, issue_download_token, verify_download_token
 from canon.exports import (
@@ -348,7 +349,7 @@ class CanonRigSummary(BaseModel):
     rig_id: int
     rack_id: int
     user_id: int
-    case_id: int
+    case_id: int | None = None
     name: str | None = None
     name_suggested: str | None = None
     description: str | None = None
@@ -383,7 +384,7 @@ def _canon_rig_summary_from_rack(db: Session, rack: Any) -> CanonRigSummary:
         rig_id=int(rack.id),
         rack_id=int(rack.id),
         user_id=int(rack.user_id),
-        case_id=int(rack.case_id),
+        case_id=None if rack.case_id is None else int(rack.case_id),
         name=rack.name,
         name_suggested=rack.name_suggested,
         description=rack.description,
@@ -1199,6 +1200,53 @@ class SubscriptionCancelResponse(BaseModel):
     status: str
     cancel_at_period_end: bool
     current_period_end: datetime
+
+
+class CommercePlanResponse(BaseModel):
+    tier: str
+    credits_per_period: int
+    unlimited: bool
+    fair_use_exports_per_period: int | None
+
+
+class CommerceCreditOfferResponse(BaseModel):
+    price_cents: int
+    minimum_charge_cents: int
+    currency: str
+    max_credits: int
+
+
+class CommerceSubscriptionResponse(BaseModel):
+    plan: CommercePlanResponse | None
+    status: str
+    cancel_at_period_end: bool
+    current_period_end: datetime
+    can_cancel: bool
+
+
+class CommerceAllowanceResponse(BaseModel):
+    exports_used: int
+    export_cap: int
+    period_end: datetime
+
+
+class CommerceStatusResponse(BaseModel):
+    test_mode: bool
+    credit_offer: CommerceCreditOfferResponse | None
+    plan_offers: list[CommercePlanResponse]
+    subscription: CommerceSubscriptionResponse | None
+    allowance: CommerceAllowanceResponse | None
+    export_cost: int
+
+
+@router.get("/commerce", response_model=CommerceStatusResponse)
+def get_commerce_status(
+    current_user: User = Depends(require_auth),
+    db: Session = Depends(get_db),
+) -> dict[str, Any]:
+    """What this user can buy and what they hold. Offers appear only behind an open gate."""
+
+    return commerce_status(db, user_id=current_user.id, app_settings=settings)
 
 
 def get_subscription_provider() -> SubscriptionProvider:

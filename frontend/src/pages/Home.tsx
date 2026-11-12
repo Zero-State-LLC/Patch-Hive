@@ -1,8 +1,9 @@
 /**
  * Home — PatchHive brand-first fold (Cyber Hive / Zero State).
- * Hallmark: the brand beside the product itself, a real rig on its rail with one patch's cables,
- * then the path from rig to book. The rig is the golden demo seed, drawn by the workbench's own
- * rail; nothing here calls the API.
+ * Spec 009: a photo of the Rig in, a Patch Book out, so the one main action is "Photograph your
+ * Rig". Beside it, the product itself: a real rig on its rail with one patch's cables, then an
+ * example reading of the same rig and the path from photo to book. The rig is the golden demo
+ * seed, drawn by the workbench's own rail; nothing here calls the API.
  */
 import { Link } from "react-router-dom";
 import PatchRail from "@/components/PatchRail";
@@ -12,18 +13,45 @@ import { useAuthStore } from "@/lib/store";
 
 const path = [
   {
-    title: "Confirm the rig",
-    detail: "Place modules by hand or from a photo. Nothing joins the rig until you confirm it.",
+    title: "Photograph the Rig",
+    detail: "One photo of the whole Rig, or one per row for a big Case.",
   },
   {
-    title: "Generate patches",
-    detail: "Patches use only the modules you confirmed. The same rig gives the same patches.",
+    title: "Check the reading",
+    detail: "Fix anything PatchHive got wrong. Nothing joins the Rig until you confirm it.",
   },
   {
     title: "Export the book",
-    detail: "A PDF patch book of your patches. Credits are spent only on export.",
+    detail: "A PDF Patch Book of patches made from your Rig. Credits are spent only on export.",
   },
 ] as const;
+
+const PHOTO_STEP = "/rigs/new/photo";
+
+// An example reading of the demo rig's first Modules, in the words the Reading screen uses and
+// in its order: the one to check first, then the rest by row and HP.
+const EXAMPLE_WORDS = ["Sure", "Check this", "Sure"] as const;
+const example = DEMO_RIG.modules
+  .slice(0, EXAMPLE_WORDS.length)
+  .map((placed, index) => ({
+    words: EXAMPLE_WORDS[index],
+    name: `${placed.module?.brand ?? ""} ${placed.module?.name ?? ""}`.trim(),
+    row: placed.row_index,
+    from: placed.start_hp,
+    to: placed.start_hp + (placed.module?.hp ?? 0),
+  }))
+  .sort(
+    (a, b) =>
+      Number(a.words === "Sure") - Number(b.words === "Sure") || a.row - b.row || a.from - b.from,
+  );
+
+// The demo patch's own page of the book, as the export prints it: page 9 of PatchBook.pdf in the
+// seeded run's pack (composition 17b4977023a6, engine 0.3.0), rendered at 1000px wide. Re-make it
+// when the seed, the patch engine or the book's layout change: export the seeded run in-process
+// (as backend/tests/integration/test_008_f5_live.py does), find the patch's page in the pack's
+// pages/json, render that page of PatchBook.pdf, and save it as WebP.
+const BOOK_PAGE = "/examples/patch-book-page.webp";
+const BOOK_PAGE_ALT = `A Patch Book page titled ${DEMO_PATCH.name}: its cable diagram, the five cables in order, seven steps to play it, and a note that one Module's jack names are generic.`;
 
 const SIGNAL_NAMES = { audio: "Audio", cv: "CV", gate: "Gate" } as const;
 const signals = (Object.keys(SIGNAL_NAMES) as (keyof typeof SIGNAL_NAMES)[]).filter((signal) =>
@@ -41,23 +69,26 @@ export default function Home() {
             <p className="home-brand" id="home-brand">
               PatchHive
             </p>
-            <h1 className="home-headline">Confirm the rig. Export the book.</h1>
+            <h1 className="home-headline">A photo of your Rig in. A Patch Book out.</h1>
             <div className="home-cta">
               {isAuthenticated() ? (
-                <Link className="button button-primary" to="/racks">
-                  Open rigs
+                <>
+                  <Link className="button button-primary" to={PHOTO_STEP}>
+                    Photograph your Rig
+                  </Link>
+                  <Link className="button button-secondary" to="/racks">
+                    My Rigs
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  className="button button-primary"
+                  to="/login"
+                  state={ACCOUNTS_OPEN ? { from: PHOTO_STEP } : undefined}
+                >
+                  Photograph your Rig
                 </Link>
-              ) : ACCOUNTS_OPEN ? (
-                <Link className="button button-primary" to="/login">
-                  Sign in
-                </Link>
-              ) : null}
-              <Link
-                className={`button ${ACCOUNTS_OPEN ? "button-secondary" : "button-primary"}`}
-                to="/modules?hp=known"
-              >
-                Placeable modules
-              </Link>
+              )}
             </div>
           </div>
 
@@ -81,8 +112,42 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="home-example" aria-labelledby="home-example-title">
+        <h2 id="home-example-title">What you get</h2>
+        <div className="home-example__parts">
+          <div>
+            <h3>A reading of the Rig</h3>
+            <ol className="home-example__list" aria-label="An example reading">
+              {example.map((item) => (
+                <li key={item.name}>
+                  <span
+                    className={`status-chip status-chip--${item.words === "Sure" ? "success" : "warning"}`}
+                  >
+                    {item.words}
+                  </span>{" "}
+                  {item.name}, row {item.row}, HP {item.from} to {item.to}
+                </li>
+              ))}
+            </ol>
+          </div>
+          <figure className="home-example__page" aria-labelledby="home-example-page">
+            <img
+              src={BOOK_PAGE}
+              alt={BOOK_PAGE_ALT}
+              width={1000}
+              height={1294}
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption id="home-example-page">
+              A page of this Rig&apos;s Patch Book, as the export prints it: {DEMO_PATCH.name}.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
       <section className="home-path" aria-labelledby="home-path-title">
-        <h2 id="home-path-title">From rig to book</h2>
+        <h2 id="home-path-title">From photo to book</h2>
         <ol className="signal-chain">
           {path.map((step) => (
             <li key={step.title} className="signal-chain__stage" data-state="done">

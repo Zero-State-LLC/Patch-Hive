@@ -8,7 +8,10 @@ its ``Unresolved --operator_resolves--> Credited`` row is ``resolve_unresolved_e
 ``Rewarded --refund_processed--> Rewarded``. Machine C (subscription, T049) lives in
 canon/subscriptions.py; see its section below for how its rows map to ``invoice.paid``
 (research 2026-11-01 §3). The append-only section at the end asserts only what the code
-enforces; the gaps it lists are reported in specs/004-commerce/tasks.md (T010).
+enforces; the gaps it lists are reported in specs/004-commerce/tasks.md (T010). The last
+section covers what only a one-off probe checked at T001: an unresolved event followed by a
+good one (D3), an unknown code at signup (OQ-6), Machine C's first-event rows, and SC-001,
+SC-006 and SC-007.
 Machine A purchases here are provider-verified
 (``payment_verified=True``); an unverified one is refused before anything is written
 (illegal row, FR-033).
@@ -16,12 +19,19 @@ Machine A purchases here are provider-verified
 
 from __future__ import annotations
 
+import ast
 import json
+import secrets
+from datetime import datetime, timezone
+from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import text as sql_text
 from sqlalchemy.orm import Session
 
 from account.deletion import anonymize_user
+from account.services import generate_referral_code as account_referral_code
 from admin.models import AdminAuditLog
 from canon.checkout import (
     CheckoutUnavailableError,
@@ -29,6 +39,7 @@ from canon.checkout import (
     resolve_unresolved_event,
     start_credit_checkout,
 )
+from canon.entitlements import resolve_user_tier
 from canon.exports import ExportBoundaryError, credit_balance, receive_stripe_webhook
 from canon.models import (
     CanonicalAdminAuditEventRecord,
@@ -40,6 +51,11 @@ from canon.models import (
 from canon.subscriptions import request_subscription_cancel, start_subscription_checkout
 from canon.webhook_events import reject_unresolved_event
 from community.models import User
+from core import create_access_token
+from patches.models import Patch
+from patches.routes import generate_patches
+from patches.schemas import GeneratePatchesRequest
+from racks.models import Rack
 from tests.unit.test_commerce_credit_checkout import (
     FakeProvider,
     _deliver,
@@ -61,7 +77,12 @@ from tests.unit.test_commerce_subscriptions import _invoice as _c_invoice
 from tests.unit.test_commerce_subscriptions import _record as _c_record
 from tests.unit.test_commerce_subscriptions import _subscription as _c_subscription
 from monetization.models import CreditsLedger, Referral
-from monetization.referrals import REFERRAL_REWARD_CREDITS, create_referral, record_purchase
+from monetization.referrals import (
+    REFERRAL_REWARD_CREDITS,
+    create_referral,
+    generate_referral_code,
+    record_purchase,
+)
 
 NONE, PENDING, REWARDED = "NONE", "Pending", "Rewarded"
 
@@ -354,8 +375,138 @@ def test_b_unresolved_operator_rejects_grants_nothing(db_session: Session, pair)
     db_session.commit()
 
     assert record.status == "rejected"
-    assert _b_state(db_session, payment) == CHECKOUT_OPEN
+    assert _b_state(db_session, payment) == ABANDONED
     assert _purchase_entries(db_session) == 0
+
+
+def _rejected_b_checkout(db: Session, admin: User, payment: ProviderPaymentRecord) -> None:
+    _deliver(
+        db, "evt_b_rej", "checkout.session.completed", _session_object(payment, customer="cus_other")
+    )
+    record = db.get(StripeEventRecordModel, "evt_b_rej")
+    assert record.status == "unresolved"
+    reject_unresolved_event(
+        db, record, actor_user_id=admin.id, actor_role="Admin", reason="not ours"
+    )
+    db.commit()
+
+
+def test_b_rejected_checkout_refuses_a_later_verified_event(db_session: Session, pair):
+    """T001 D4: the rejection closes the checkout, so only an operator can look further."""
+    admin, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    _rejected_b_checkout(db_session, admin, payment)
+
+    later = _deliver(
+        db_session, "evt_b_late", "checkout.session.completed", _session_object(payment)
+    )
+
+    assert (later.record.status, later.record.reason_code) == (
+        "unresolved",
+        "PAYMENT_STATE_CONFLICT",
+    )
+    assert _b_state(db_session, payment) == ABANDONED
+    assert _purchase_entries(db_session) == 0
+    assert credit_balance(db_session, buyer.id) == 0
+
+
+def test_b_rejected_checkout_then_expired_is_a_duplicate(db_session: Session, pair):
+    admin, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    _rejected_b_checkout(db_session, admin, payment)
+
+    later = _deliver(
+        db_session,
+        "evt_b_late_exp",
+        "checkout.session.expired",
+        _session_object(payment, payment_status="unpaid"),
+    )
+
+    assert (later.record.status, later.record.reason_code) == (
+        "duplicate",
+        "CHECKOUT_ALREADY_CLOSED",
+    )
+    assert _b_state(db_session, payment) == ABANDONED
+
+
+def test_b_pending_checkout_rejected_is_abandoned(db_session: Session, pair):
+    admin, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    _deliver(
+        db_session,
+        "evt_b_wait",
+        "checkout.session.completed",
+        _session_object(payment, payment_status="unpaid"),
+    )
+    db_session.refresh(payment)
+    assert payment.status == "pending"
+    _deliver(
+        db_session,
+        "evt_b_pend_bad",
+        "checkout.session.async_payment_succeeded",
+        _session_object(payment, amount_total=1),
+    )
+    record = db_session.get(StripeEventRecordModel, "evt_b_pend_bad")
+    assert (record.status, record.reason_code) == ("unresolved", "AMOUNT_MISMATCH")
+
+    reject_unresolved_event(
+        db_session, record, actor_user_id=admin.id, actor_role="Admin", reason="wrong amount"
+    )
+    db_session.commit()
+
+    assert _b_state(db_session, payment) == ABANDONED
+    assert _purchase_entries(db_session) == 0
+
+
+def test_b_credited_checkout_keeps_its_credits_when_an_event_is_rejected(
+    db_session: Session, pair
+):
+    admin, buyer = pair
+    payment = _open_checkout(db_session, buyer, credits=30)
+    _deliver(db_session, "evt_b_paid_r", "checkout.session.completed", _session_object(payment))
+    _deliver(
+        db_session,
+        "evt_b_exp_r",
+        "checkout.session.expired",
+        _session_object(payment, payment_status="unpaid"),
+    )
+    record = db_session.get(StripeEventRecordModel, "evt_b_exp_r")
+    assert (record.status, record.reason_code) == ("unresolved", "PAYMENT_STATE_CONFLICT")
+
+    reject_unresolved_event(
+        db_session, record, actor_user_id=admin.id, actor_role="Admin", reason="stale"
+    )
+    db_session.commit()
+
+    assert record.status == "rejected"
+    assert _b_state(db_session, payment) == CREDITED
+    assert credit_balance(db_session, buyer.id) == 30
+
+
+def test_b_rejected_dispute_leaves_the_payment_as_it_is(db_session: Session, pair):
+    admin, buyer = pair
+    payment = _open_checkout(db_session, buyer, credits=30)
+    _deliver(db_session, "evt_b_paid_d", "checkout.session.completed", _session_object(payment))
+    _deliver(
+        db_session,
+        "evt_b_dispute",
+        "charge.dispute.created",
+        {
+            "id": "dp_reject",
+            "object": "dispute",
+            "payment_intent": f"pi_{payment.checkout_session_id}",
+        },
+    )
+    record = db_session.get(StripeEventRecordModel, "evt_b_dispute")
+    assert (record.status, record.reason_code) == ("unresolved", "DISPUTE_OPENED")
+
+    reject_unresolved_event(
+        db_session, record, actor_user_id=admin.id, actor_role="Admin", reason="won at the provider"
+    )
+    db_session.commit()
+
+    assert _b_state(db_session, payment) == CREDITED
+    assert credit_balance(db_session, buyer.id) == 30
 
 
 class _Retriever:
@@ -632,11 +783,11 @@ def test_a_rewarded_refund_processed_is_a_no_op(db_session: Session, pair):
 
 # --- Machine C: subscription (T049) ------------------------------------------------------
 #
-# Decided deviation from the table (not drift to fix): the period grant is triggered by ``invoice.paid``
-# (research 2026-11-01 §3, OQ-4 ``A_stripe_mapping``), not by ``subscription_created`` or
-# ``subscription_updated``, which only sync the record. So each "grant once" row is
-# encoded as: the subscription event grants nothing, and the paid invoice for the period
-# grants exactly once. ``operator_resolves`` is not supported for Machine C.
+# The table in spec.md grants on ``invoice.paid`` since the T001 correction (2026-11-04,
+# research 2026-11-01 §3, OQ-4 ``A_stripe_mapping``). ``subscription_created`` and
+# ``subscription_updated`` only sync the record, so each "grant once" row is encoded as: the
+# subscription event grants nothing, and the paid invoice for the period grants exactly
+# once. ``operator_resolves`` is not supported for Machine C.
 
 C_NONE, C_ACTIVE, C_NOT_ACTIVE = "NONE", "Active", "NotActive"
 C_CANCEL_SCHEDULED, C_CANCELED = "CancelScheduled", "Canceled"
@@ -1311,15 +1462,15 @@ def test_b_refund_for_a_subscription_invoice_payment_is_unresolved(
 
 # --- Append-only: what the code enforces (FR-008, FR-029, research R2) --------------------
 #
-# Enforced: the canonical ledger rejects UPDATE and DELETE with Postgres triggers
-# (migration ``20261029_ledger_append_only``, proved on Postgres by
-# ``tests/acceptance/test_ledger_append_only.py``); ledger idempotency keys, grant keys,
-# grant invoice ids and (subscription, period) pairs are unique; a stripe event id replayed
-# with a different payload is refused. SQLite, which this file runs on, has no triggers.
-# Not enforced anywhere (reported as gaps, not asserted): UPDATE and DELETE on the
-# ``Referral`` rows, the legacy ``credits_ledger``, ``subscription_period_grants`` and
-# ``stripe_event_records`` (whose status and reason code are written after intake by
-# design). The tests below show that the commerce code paths append and never rewrite.
+# Enforced: the canonical ledger, the legacy ledgers, the ``Referral`` rows and
+# ``subscription_period_grants`` reject UPDATE and DELETE with Postgres triggers (migrations
+# ``20261029_ledger_append_only`` and ``20261106_commerce_append_only``, proved on Postgres by
+# ``tests/acceptance/test_ledger_append_only.py`` and ``test_commerce_append_only.py``); ledger
+# idempotency keys, grant keys, grant invoice ids and (subscription, period) pairs are unique;
+# a stripe event id replayed with a different payload is refused. SQLite, which this file runs
+# on, has no triggers. Not enforced anywhere (reported as a gap, not asserted): UPDATE and
+# DELETE on ``stripe_event_records``, whose status and reason code are written after intake by
+# design. The tests below show that the commerce code paths append and never rewrite.
 
 
 def _ledger_rows(db: Session) -> dict[str, tuple]:
@@ -1499,3 +1650,500 @@ def test_append_only_migration_installs_ledger_triggers_on_postgres():
         ("DELETE", "canonical_credit_ledger"),
         ("UPDATE", "canonical_credit_ledger"),
     ]
+
+
+# --- What only a probe covered at T001 -----------------------------------------------------
+
+
+def test_b_a_later_verified_event_credits_past_an_unresolved_one(db_session: Session, pair):
+    """``Unresolved`` belongs to the event, not the checkout (T001 D3, FR-011): the provider
+    confirmed and the server's record agrees, so the first event stays as it was."""
+    _, buyer = pair
+    payment = _open_checkout(db_session, buyer)
+    _deliver(
+        db_session,
+        "evt_b_mismatch",
+        "checkout.session.completed",
+        _session_object(payment, customer="cus_other"),
+    )
+    first = db_session.get(StripeEventRecordModel, "evt_b_mismatch")
+    assert (first.status, first.reason_code) == ("unresolved", "CUSTOMER_MISMATCH")
+    assert _b_state(db_session, payment) == CHECKOUT_OPEN
+
+    good = _deliver(
+        db_session, "evt_b_agrees", "checkout.session.completed", _session_object(payment)
+    )
+
+    assert good.record.status == "processed"
+    assert _b_state(db_session, payment) == CREDITED
+    assert _purchase_entries(db_session) == 1
+    db_session.refresh(first)
+    assert (first.status, first.reason_code) == ("unresolved", "CUSTOMER_MISMATCH")
+
+
+def test_b_a_checkout_opened_before_the_flag_went_off_still_credits(db_session: Session, pair):
+    """The customer has paid, so a verified event still credits with the flag off, and it
+    only appends (T001 row 29, P6 AC3). The webhook reads no checkout flag."""
+    _, buyer = pair
+    from core import settings
+
+    assert settings.enable_credit_checkout is False
+    db_session.add(
+        CanonicalCreditLedgerEntryRecord(
+            id="grant-before-flag",
+            user_id=buyer.id,
+            delta=4,
+            entry_type="grant",
+            idempotency_key="grant:before-flag",
+            created_at=datetime.now(timezone.utc),
+        )
+    )
+    db_session.commit()
+    payment = _open_checkout(db_session, buyer)
+    before = _commerce_rows(db_session)["canonical_credit_ledger"]
+
+    _deliver(db_session, "evt_b_flag_off", "checkout.session.completed", _session_object(payment))
+
+    after = _commerce_rows(db_session)["canonical_credit_ledger"]
+    assert set(before) <= set(after)
+    assert len(after) == len(before) + 1
+    assert credit_balance(db_session, buyer.id) == 4 + payment.credits
+
+
+def _api_client(db: Session) -> TestClient:
+    from core import get_db
+    from main import app
+
+    def override_get_db():
+        yield db
+
+    app.dependency_overrides[get_db] = override_get_db
+    return TestClient(app)
+
+
+def _bearer(user: User) -> dict[str, str]:
+    token = create_access_token({"user_id": user.id, "username": user.username})
+    return {"Authorization": f"Bearer {token}"}
+
+
+def _signup(client: TestClient, name: str, code: str | None):
+    body = {"username": name, "email": f"{name}@example.com", "password": "correct horse battery"}
+    if code is not None:
+        body["referral_code"] = code
+    return client.post("/api/community/users", json=body)
+
+
+@pytest.mark.parametrize(
+    "referrals_on, status", [(True, 400), (False, 201)], ids=["referrals-on", "referrals-off"]
+)
+def test_a_none_signup_with_a_code_that_does_not_resolve(
+    db_session: Session, monkeypatch: pytest.MonkeyPatch, referrals_on: bool, status: int
+):
+    """OQ-6: with referrals on, the signup fails; with them off, the code is ignored. No
+    referral row either way."""
+    from core import settings
+    from main import app
+
+    monkeypatch.setattr(settings, "enable_referrals", referrals_on)
+    try:
+        response = _signup(_api_client(db_session), "newcomer", "NOT-A-CODE")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == status
+    if referrals_on:
+        assert response.json()["detail"] == "Invalid referral code"
+    user = db_session.query(User).filter_by(username="newcomer").first()
+    assert (user is None) is referrals_on
+    assert db_session.query(Referral).count() == 0
+    if user is not None:
+        assert user.referred_by is None
+
+
+@pytest.mark.parametrize("generator", [generate_referral_code, account_referral_code])
+def test_ec_6_a_colliding_referral_code_is_drawn_again(
+    db_session: Session, pair, monkeypatch: pytest.MonkeyPatch, generator
+):
+    referrer, _ = pair
+    referrer.referral_code = "TAKENCODE0"
+    db_session.commit()
+    draws = iter(["TAKENCODE0", "FRESHCODE0"])
+    monkeypatch.setattr(secrets, "token_urlsafe", lambda _size: next(draws))
+
+    assert generator(db_session) == "FRESHCODE0"
+
+
+@pytest.mark.parametrize("subscribes_first", [True, False], ids=["sub-first", "credits-first"])
+def test_ec_10_a_subscription_and_a_credit_purchase_reward_once(
+    db_session: Session, pair, c_prices, subscribes_first: bool
+):
+    """Both paths record a purchase; only the first of them can be the referral's."""
+    referrer, buyer = pair
+    create_referral(db_session, referrer=referrer, referred=buyer)
+    db_session.commit()
+    _c_customer(db_session, buyer)
+
+    def subscribe() -> None:
+        _c_deliver(
+            db_session,
+            "evt_ec10_sub",
+            "customer.subscription.created",
+            _c_subscription("sub_c", buyer.id),
+        )
+        _c_deliver(
+            db_session, "evt_ec10_inv", "invoice.paid", _c_invoice("in_ec10", "sub_c", buyer.id)
+        )
+
+    def buy_credits() -> None:
+        payment = _open_checkout(db_session, buyer)
+        _deliver(db_session, "evt_ec10_buy", "checkout.session.completed", _session_object(payment))
+
+    for step in (subscribe, buy_credits) if subscribes_first else (buy_credits, subscribe):
+        step()
+        assert _state(db_session, buyer) == REWARDED
+
+    assert db_session.query(CreditsLedger).filter_by(change_type="Purchase").count() == 2
+    assert _grants(db_session) == 1
+    assert credit_balance(db_session, referrer.id) == REFERRAL_REWARD_CREDITS
+
+
+@pytest.mark.parametrize(
+    "status, state",
+    [("active", C_ACTIVE), ("past_due", C_NOT_ACTIVE), ("incomplete", C_NOT_ACTIVE)],
+)
+def test_c_none_updated_first_creates_the_record_and_grants_nothing(
+    db_session: Session, pair, c_prices, status: str, state: str
+):
+    """EC-2: an update that arrives before the created event."""
+    _, buyer = pair
+    _c_customer(db_session, buyer)
+
+    intake = _c_deliver(
+        db_session,
+        "evt_c_up_first",
+        "customer.subscription.updated",
+        _c_subscription("sub_c", buyer.id, status=status),
+    )
+
+    assert intake.record.status == "processed"
+    assert _c_state(db_session) == state
+    assert _c_period_grants(db_session) == 0
+    assert credit_balance(db_session, buyer.id) == 0
+
+
+def test_c_none_deleted_first_creates_a_canceled_record(db_session: Session, pair, c_prices):
+    _, buyer = pair
+    _c_customer(db_session, buyer)
+
+    intake = _c_deliver(
+        db_session,
+        "evt_c_del_first",
+        "customer.subscription.deleted",
+        _c_subscription("sub_c", buyer.id, status="canceled"),
+    )
+
+    assert intake.record.status == "processed"
+    assert _c_state(db_session) == C_CANCELED
+    assert _c_period_grants(db_session) == 0
+
+
+def test_c_none_deleted_first_with_a_price_that_maps_to_no_tier_is_unresolved(
+    db_session: Session, pair, c_prices
+):
+    _, buyer = pair
+    _c_customer(db_session, buyer)
+    subscription = _c_subscription("sub_c", buyer.id, status="canceled")
+    subscription["items"]["data"][0]["price"]["id"] = "price_not_ours"
+
+    intake = _c_deliver(db_session, "evt_c_del_bad", "customer.subscription.deleted", subscription)
+
+    assert (intake.record.status, intake.record.reason_code) == ("unresolved", "PRICE_UNKNOWN")
+    assert _c_state(db_session) == C_NONE
+
+
+def test_c_cancel_scheduled_flag_cleared_returns_to_active(db_session: Session, pair, c_prices):
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_CANCEL_SCHEDULED)
+    before = _c_period_grants(db_session)
+
+    intake = _c_deliver(
+        db_session,
+        "evt_c_uncancel",
+        "customer.subscription.updated",
+        _c_subscription("sub_c", buyer.id, cancel=False),
+        created=TS + 60,
+    )
+
+    assert intake.record.status == "processed"
+    assert _c_state(db_session) == C_ACTIVE
+    assert _c_period_grants(db_session) == before
+
+
+@pytest.mark.parametrize(
+    "event_type",
+    [
+        "customer.subscription.created",
+        "customer.subscription.updated",
+        "customer.subscription.deleted",
+    ],
+)
+def test_c_canceled_later_subscription_events_are_duplicates(
+    db_session: Session, pair, c_prices, event_type: str
+):
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_ACTIVE)
+    _c_deliver(
+        db_session,
+        "evt_c_gone",
+        "customer.subscription.deleted",
+        _c_subscription("sub_c", buyer.id, status="canceled"),
+        created=TS + 60,
+    )
+    assert _c_state(db_session) == C_CANCELED
+
+    intake = _c_deliver(
+        db_session,
+        "evt_c_after",
+        event_type,
+        _c_subscription("sub_c", buyer.id),
+        created=TS + 120,
+    )
+
+    assert (intake.record.status, intake.record.reason_code) == (
+        "duplicate",
+        "SUBSCRIPTION_ALREADY_CANCELED",
+    )
+    assert _c_state(db_session) == C_CANCELED
+
+
+def test_c_invoice_payment_failed_is_stored_as_ignored(db_session: Session, pair, c_prices):
+    """It has no money effect; ``past_due`` arrives through ``customer.subscription.updated``."""
+    _, buyer = pair
+    _c_in_state(db_session, buyer, C_ACTIVE)
+    before = _c_snapshot(db_session)
+
+    intake = _c_deliver(
+        db_session,
+        "evt_c_pay_failed",
+        "invoice.payment_failed",
+        _c_invoice("in_failed", "sub_c", buyer.id, status="open", amount=0),
+    )
+
+    assert intake.record.status == "ignored"
+    assert intake.record.processed_at is not None
+    assert _c_snapshot(db_session) == before
+
+
+def _commerce_rows(db: Session) -> dict[str, list[tuple]]:
+    """Every column of every money and referral row, as stored."""
+    db.expire_all()
+    return {
+        table: [
+            tuple(row)
+            for row in db.execute(sql_text(f"SELECT * FROM {table} ORDER BY 1")).fetchall()
+        ]
+        for table in (
+            "canonical_credit_ledger",
+            "credits_ledger",
+            "referrals",
+            "subscription_period_grants",
+        )
+    }
+
+
+def test_sc_001_replaying_a_provider_sequence_gives_the_same_ledger(
+    db_session: Session, pair, c_prices
+):
+    referrer, buyer = pair
+    create_referral(db_session, referrer=referrer, referred=buyer)
+    db_session.commit()
+    _c_customer(db_session, buyer)
+    payment = _open_checkout(db_session, buyer, credits=30)
+    sequence = [
+        (_deliver, "evt_r_paid", "checkout.session.completed", _session_object(payment)),
+        (_deliver, "evt_r_refund", "charge.refunded", _charge_refunded(payment, 200)),
+        (
+            _c_deliver,
+            "evt_r_sub",
+            "customer.subscription.created",
+            _c_subscription("sub_c", buyer.id),
+        ),
+        (_c_deliver, "evt_r_inv", "invoice.paid", _c_invoice("in_r", "sub_c", buyer.id)),
+        (
+            _c_deliver,
+            "evt_r_end",
+            "customer.subscription.deleted",
+            _c_subscription("sub_c", buyer.id, status="canceled"),
+        ),
+    ]
+    for deliver, event_id, event_type, obj in sequence:
+        assert deliver(db_session, event_id, event_type, obj).duplicate is False
+    once = _commerce_rows(db_session)
+    assert once["canonical_credit_ledger"], "the sequence should have written ledger rows"
+
+    for deliver, event_id, event_type, obj in sequence:
+        assert deliver(db_session, event_id, event_type, obj).duplicate is True
+
+    assert _commerce_rows(db_session) == once
+
+
+COMMERCE_FREE_PACKAGES = (
+    "patches",
+    "runs",
+    "racks",
+    "patchhive",
+    "intelligence",
+    "ingest",
+    "gallery",
+    "publishing",
+    "leaderboards",
+    "core",
+)
+COMMERCE_MODULES = ("monetization", "canon.entitlements", "canon.checkout", "canon.subscriptions")
+
+
+def _imported_modules(tree: ast.AST) -> set[str]:
+    names: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            names.update(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module and not node.level:
+            names.add(node.module)
+            names.update(f"{node.module}.{alias.name}" for alias in node.names)
+    return names
+
+
+def test_sc_006_generation_packages_import_no_commerce_module():
+    """FR-034, the authority boundary: lazy imports inside a function count too."""
+    backend = Path(__file__).resolve().parents[2]
+    found = []
+    for package in COMMERCE_FREE_PACKAGES:
+        for source in (backend / package).rglob("*.py"):
+            for name in _imported_modules(ast.parse(source.read_text())):
+                if any(name == m or name.startswith(f"{m}.") for m in COMMERCE_MODULES):
+                    found.append(f"{source.relative_to(backend)}: {name}")
+    assert found == []
+
+
+def _generated(db: Session, rack: Rack, owner: User) -> list[tuple]:
+    answer = generate_patches(rack.id, GeneratePatchesRequest(seed=42), db=db, current_user=owner)
+    assert answer.generated_count > 0
+    patches = db.query(Patch).filter(Patch.run_id == answer.run_id).order_by(Patch.id).all()
+    return [
+        (
+            patch.name,
+            patch.category,
+            patch.description,
+            patch.connections,
+            patch.generation_seed,
+            patch.generation_version,
+            patch.engine_config,
+            patch.generation_ir_hash,
+        )
+        for patch in patches
+    ]
+
+
+def test_sc_006_generation_output_is_the_same_for_every_tier_and_balance(
+    db_session: Session, sample_user: User, sample_rack_basic: Rack, c_prices
+):
+    """FR-035: the same rack and seed give the same patches, whatever the owner has paid."""
+    owner = sample_user
+    baseline = _generated(db_session, sample_rack_basic, owner)
+    assert credit_balance(db_session, owner.id) == 0
+
+    db_session.add(
+        CanonicalCreditLedgerEntryRecord(
+            id="grant-sc006",
+            user_id=owner.id,
+            delta=500,
+            entry_type="grant",
+            idempotency_key="grant:sc006",
+            created_at=datetime.now(timezone.utc),
+        )
+    )
+    db_session.commit()
+    assert _generated(db_session, sample_rack_basic, owner) == baseline
+
+    _c_customer(db_session, owner)
+    for step, tier in enumerate(("core", "pro", "studio"), start=1):
+        _c_deliver(
+            db_session,
+            f"evt_sc006_{tier}",
+            "customer.subscription.updated",
+            _c_subscription("sub_c", owner.id, tier=tier),
+            created=TS + step,
+        )
+        _c_deliver(
+            db_session,
+            f"evt_sc006_inv_{tier}",
+            "invoice.paid",
+            _c_invoice(
+                f"in_{tier}",
+                "sub_c",
+                owner.id,
+                tier=tier,
+                start=P1 + step * MONTH,
+                end=P1 + (step + 1) * MONTH,
+            ),
+        )
+        assert resolve_user_tier(db_session, owner.id) == tier
+        assert _generated(db_session, sample_rack_basic, owner) == baseline
+
+    _c_deliver(
+        db_session,
+        "evt_sc006_end",
+        "customer.subscription.deleted",
+        _c_subscription("sub_c", owner.id, tier="studio", status="canceled"),
+        created=TS + 60,
+    )
+    assert resolve_user_tier(db_session, owner.id) == "free"
+    assert _generated(db_session, sample_rack_basic, owner) == baseline
+
+
+def test_sc_007_flags_off_leave_the_history_byte_identical_and_readable(
+    db_session: Session, pair, c_prices, monkeypatch: pytest.MonkeyPatch
+):
+    """P6 AC1 and AC3: every refusal writes nothing, and the balance still reads."""
+    from core import settings
+    from main import app
+
+    referrer, buyer = pair
+    create_referral(db_session, referrer=referrer, referred=buyer)
+    db_session.commit()
+    _c_customer(db_session, buyer)
+    payment = _open_checkout(db_session, buyer)
+    _deliver(db_session, "evt_sc007_paid", "checkout.session.completed", _session_object(payment))
+    _c_deliver(
+        db_session,
+        "evt_sc007_sub",
+        "customer.subscription.created",
+        _c_subscription("sub_c", buyer.id),
+    )
+    _c_deliver(
+        db_session, "evt_sc007_inv", "invoice.paid", _c_invoice("in_sc007", "sub_c", buyer.id)
+    )
+    before = _commerce_rows(db_session)
+    balance = credit_balance(db_session, buyer.id)
+    assert balance == payment.credits + 25
+    assert all(before.values()), before
+
+    monkeypatch.setattr(settings, "enable_credit_checkout", False)
+    monkeypatch.setattr(settings, "enable_subscription_checkout", False)
+    monkeypatch.setattr(settings, "enable_referrals", False)
+    client = _api_client(db_session)
+    headers = _bearer(buyer)
+    try:
+        credits = client.post("/api/canon/checkout/credits", json={"credits": 30}, headers=headers)
+        assert credits.status_code == 403
+        tier = client.post("/api/canon/checkout/subscription", json={"tier": "pro"}, headers=headers)
+        assert tier.status_code == 403
+        assert client.get("/api/me/referrals", headers=headers).status_code == 404
+        assert _signup(client, "latecomer", referrer.referral_code).status_code == 201
+        read = client.get("/api/canon/credits/balance", headers=headers)
+    finally:
+        app.dependency_overrides.clear()
+
+    assert read.status_code == 200 and read.json()["balance"] == balance
+    assert _commerce_rows(db_session) == before
+    assert db_session.query(User).filter_by(username="latecomer").one().referred_by is None

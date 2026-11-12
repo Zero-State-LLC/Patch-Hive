@@ -278,6 +278,7 @@ export interface RackModule extends RackModuleSpec {
     power_neg12v_ma?: number | null;
     power_5v_ma?: number | null;
     depth_mm?: number | null;
+    io_ports?: IOPort[];
     /** "tombstoned" when the catalog retired this module; it stays placed. */
     status?: string;
     tombstone_reason?: string | null;
@@ -291,7 +292,8 @@ export interface RackModule extends RackModuleSpec {
 export interface Rack {
   id: number;
   user_id: number;
-  case_id: number;
+  /** Null for a rig started from a photo, until its owner names a Case (spec 009). */
+  case_id: number | null;
   name: string;
   name_suggested?: string;
   description?: string;
@@ -405,6 +407,8 @@ export interface GeneratePatchesResponse {
   artifact_manifest_hash?: string | null;
   inventory_revision_id?: string | null;
   inventory_gate_code?: string | null;
+  // The condition that failed, on a NOT_COMPUTABLE answer; worded for logs, not people.
+  inventory_gate_messages?: string[] | null;
   generation_status?: string | null;
   validation?: GenerationValidation | null;
 }
@@ -484,6 +488,45 @@ export interface UserExportRecord {
   source?: "canon" | "legacy";
 }
 
+/** A paid plan's name stays in the data: the page says what a plan gives (COPY_COMPLIANCE.md). */
+export interface CommercePlan {
+  tier: string;
+  credits_per_period: number;
+  unlimited: boolean;
+  fair_use_exports_per_period: number | null;
+}
+
+export interface CommerceCreditOffer {
+  price_cents: number;
+  minimum_charge_cents: number;
+  currency: string;
+  max_credits: number;
+}
+
+export interface CommerceSubscription {
+  plan: CommercePlan | null;
+  status: string;
+  cancel_at_period_end: boolean;
+  current_period_end: string;
+  can_cancel: boolean;
+}
+
+export interface CommerceAllowance {
+  exports_used: number;
+  export_cap: number;
+  period_end: string;
+}
+
+export interface CommerceStatus {
+  test_mode: boolean;
+  credit_offer: CommerceCreditOffer | null;
+  plan_offers: CommercePlan[];
+  subscription: CommerceSubscription | null;
+  allowance: CommerceAllowance | null;
+  /** What one export costs in credits; the server sets it. */
+  export_cost: number;
+}
+
 export interface ReferralRecord {
   referred_user_id: string;
   status: string;
@@ -494,7 +537,8 @@ export interface ReferralSummary {
   referral_code: string;
   referral_link: string;
   pending_count: number;
-  earned_count: number;
+  rewarded_count: number;
+  earned_credits: number;
   recent_referrals: ReferralRecord[];
 }
 

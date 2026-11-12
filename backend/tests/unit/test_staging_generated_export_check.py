@@ -380,8 +380,8 @@ def test_a_book_that_did_not_pass_validation_fails(tmp_path: Path) -> None:
     assert _codes(_read(pack)) == {"BOOK_VALIDATION_NOT_PASSED"}
 
 
-def test_the_count_of_distinct_operation_texts_sees_identical_pages(tmp_path, monkeypatch) -> None:
-    """Identical Operation text isn't a failure here, but the receipt shows it."""
+def test_identical_operation_text_on_every_page_fails(tmp_path, monkeypatch) -> None:
+    """Steps come from each patch's own cables (#329), so one text everywhere is a regression."""
     monkeypatch.setattr(engine, "operation_lines", lambda *args: ["Power up."])
     two = [
         replace(_library().items[0], position=0),
@@ -391,6 +391,7 @@ def test_the_count_of_distinct_operation_texts_sees_identical_pages(tmp_path, mo
     report = _read(_pack(tmp_path, library))
     assert report["counts"]["patch_pages"] == 2
     assert report["counts"]["distinct_operation_texts"] == 1
+    assert "OPERATION_TEXT_REPEATED" in _codes(report)
 
 
 # --- the walkthrough: generate, export with test credits, download, read ----------

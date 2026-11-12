@@ -1,6 +1,6 @@
 ## Current next milestone — closed staging beta
 
-PatchHive remains late alpha (`v0.3.0-alpha`; 0.3.0-alpha.14 runs on staging and production since 2026-11-06) and production payments remain disabled. The next milestone is a closed staging beta. Done so far (2026-11-03): the Cyber Hive UI landed (#96, then the rail redesign and its follow-ups #215–#238), demo authentication matches the seed on staging (008 T030b), the Design Engine walkthrough passed on staging with flags on in test mode (008 T040b, #216), and the staging host is the Cloudflare pair (`staging.patch-hive.com`, `api-staging.patch-hive.com`). Remaining: pin the readiness docs to the walkthrough SHA (008 T050b, which waits on the signed spec 007 receipt) and pass the beta's staging exit criteria below. No calendar ship date is claimed.
+PatchHive remains late alpha (`v0.3.0-alpha`; 0.3.0-alpha.20 runs on staging and production since 2026-11-10) and production payments remain disabled. The next milestone is a closed staging beta. Done so far (2026-11-03): the Cyber Hive UI landed (#96, then the rail redesign and its follow-ups #215–#238), demo authentication matches the seed on staging (008 T030b), the Design Engine walkthrough passed on staging with flags on in test mode (008 T040b, #216), and the staging host is the Cloudflare pair (`staging.patch-hive.com`, `api-staging.patch-hive.com`). Remaining: pin the readiness docs to the walkthrough SHA (008 T050b, which waits on the signed spec 007 receipt) and pass the beta's staging exit criteria below. No calendar ship date is claimed.
 
 # PatchHive roadmap
 
@@ -26,7 +26,7 @@ Status vocabulary:
 |---|---|---|---|
 | `0.1.x` | historical prototype | early rig, patch, publishing, experimental surfaces | superseded / compatibility-only |
 | `0.2.x` | canon-aligned MVP | immutable rigs/runs, deterministic compiler, validation, canonical export/credit boundary | **COMPLETE on main** (not production released) |
-| `0.3.0-alpha` | Patch Book + VSI + Design Engine | one-page contracts, VSI P0, Style Studio / design packs (flags off) | **ACTIVE / late alpha** (`v0.3.0-alpha.14` deployed 2026-11-06) |
+| `0.3.0-alpha` | Patch Book + VSI + Design Engine | one-page contracts, VSI P0, Style Studio / design packs (flags off) | **ACTIVE / late alpha** (`v0.3.0-alpha.20` deployed 2026-11-10) |
 | `0.3.0-beta` | closed staging beta | named staging, Design Engine E2E, a11y protocol, dual-path thinning | **PLANNED** (released as `0.3.0-beta.1` when the beta exit criteria pass) |
 | `0.3.0-rc` | Patch Book release candidate | freeze SHA, full export matrix, concurrency/debit evidence | **PLANNED** |
 | `0.4.x` | production hardening | ops maturity, scanner, SLOs, support, payment readiness (still off) | **PLANNED** |
@@ -178,10 +178,10 @@ Design: [evidence/DUAL_PATH_RETIREMENT_DESIGN.md](evidence/DUAL_PATH_RETIREMENT_
 
 ## Near-term sequence (next 2 weeks)
 
-Updated 2026-11-04; the staging drills (beta #4, #5), the accessibility pre-pass and the Playwright smoke (beta #8) are done.
+Updated 2026-11-10; the staging drills (beta #4, #5), the accessibility pre-pass and the Playwright smoke (beta #8) are done, and specs 001–004 are confirmed (decision 23).
 
-1. Accessibility: the human screen-reader and PDF pass (beta #6)  
-2. Owner confirms specs 001–004 (T001) so their plans and convergence can close  
+1. Slices N1–N10: [docs/evidence/NEXT_SLICES_2026-11-10.md](evidence/NEXT_SLICES_2026-11-10.md)  
+2. Accessibility: the human screen-reader and PDF pass (beta #6)  
 3. Spec 007 evaluation chain (corpus photos, run, approve, pin, sign), then pin the readiness docs (008 T050b)  
 4. Tag `0.3.0-beta.1` (a `Release-As` footer) only when the beta exit criteria pass  
 

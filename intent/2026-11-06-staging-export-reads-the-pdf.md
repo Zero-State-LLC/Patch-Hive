@@ -20,7 +20,7 @@ Deep reads of built books found pages with no diagram, module names printed as d
 
 Unit tests build a small pack with each defect and fail on it.
 
-Out of scope: fixing any page, running the workflow on staging without the owner's go-ahead, merging, and deploying. No page diagram check and no failure for identical Operation text: neither is on the list above. The receipt counts distinct Operation texts so the second is visible.
+Out of scope: fixing any page, running the workflow on staging without the owner's go-ahead, merging, and deploying. No page diagram check: the PDF's text can't show whether a diagram was drawn. Identical Operation text on every page fails as `OPERATION_TEXT_REPEATED` (added 2026-11-12), because since #329 the steps come from each patch's own cables.
 
 ## Affected users / systems
 

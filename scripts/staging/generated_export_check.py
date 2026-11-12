@@ -246,6 +246,10 @@ def check_pack(pack: bytes, *, source_run_id: str) -> dict[str, Any]:
         cables_checked=cables_checked,
         distinct_operation_texts=len(operations),
     )
+    # Steps are written from each patch's own cables (#329), so one text on every page means
+    # they stopped being.
+    if len(patch_pages) > 1 and len(operations) == 1:
+        fail("OPERATION_TEXT_REPEATED")
     return done()
 
 

@@ -7,7 +7,6 @@ Login, registration, and profile remain available in the default MVP surface.
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.orm import Session
 
-from account.models import Referral
 from account.services import ensure_referral_code
 from core import get_db, get_password_hash, settings
 from core.security import burn_password_check, verify_and_update_password
@@ -72,21 +71,6 @@ def register_user(user: UserCreate, http_request: Request, db: Session = Depends
     db.refresh(db_user)
 
     ensure_referral_code(db, db_user)
-
-    if settings.enable_referrals and user.referral_code:
-        referrer = db.query(User).filter(User.referral_code == user.referral_code).first()
-        if referrer and referrer.id != db_user.id:
-            existing_referral = (
-                db.query(Referral).filter(Referral.referred_user_id == db_user.id).first()
-            )
-            if not existing_referral:
-                referral = Referral(
-                    referrer_user_id=referrer.id,
-                    referred_user_id=db_user.id,
-                    status="pending",
-                )
-                db.add(referral)
-                db.commit()
 
     return db_user
 

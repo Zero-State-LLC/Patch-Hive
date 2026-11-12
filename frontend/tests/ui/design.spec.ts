@@ -4,6 +4,7 @@
  * No backend: the API is mocked here, and anything not mocked answers 404, so a screen is
  * checked in its loaded, empty or error state.
  */
+import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { expect, test, type Page } from "@playwright/test";
 
@@ -231,6 +232,24 @@ async function mockApi(page: Page, { signedIn }: { signedIn: boolean }) {
     (route) => route.fulfill(json({ total: 1, rigs: [RIG_SUMMARY] })),
   );
   await page.route("**/api/canon/rigs/1", (route) => route.fulfill(json(RIG_DETAIL)));
+  // The owner's photos of rig 1, on its Rig screen: one kept photo, and no Reading still open.
+  await page.route("**/api/racks/1/evidence/images", (route) =>
+    route.fulfill(
+      json({
+        total: 1,
+        assets: [
+          {
+            id: "img-1",
+            created_at: "2026-01-01T00:00:00Z",
+            retention_expires_at: "2026-01-31T00:00:00Z",
+          },
+        ],
+      }),
+    ),
+  );
+  await page.route("**/api/racks/1/evidence/readings", (route) =>
+    route.fulfill(json({ readings: [] })),
+  );
   await page.route("**/api/canon/rigs/1/revisions", (route) =>
     route.fulfill(
       json({
@@ -339,6 +358,82 @@ async function mockBuilder(page: Page) {
   );
 }
 
+const RIG_PHOTO = readFileSync(new URL("./fixtures/rig-photo.jpg", import.meta.url));
+
+const sighting = (id: string, over: Record<string, unknown>) => ({
+  sighting_id: id,
+  box: { x: 0.0, y: 0.06, w: 0.12, h: 0.88 },
+  kind: "module",
+  row_index: 0,
+  start_hp: 0,
+  hp: 12,
+  candidates: [],
+  disposition: "unresolved",
+  ...over,
+});
+
+const READINGS = {
+  readings: [
+    {
+      reading_id: "read-1",
+      photo_id: "img-1",
+      status: "read",
+      reason_code: null,
+      provider: "recorded",
+      provider_version: "recorded-1",
+      first_row: 0,
+      last_row: 0,
+      created_at: STAMP,
+      completed_at: STAMP,
+      sightings: [
+        sighting("s-1", {
+          disposition: "auto_propose",
+          candidates: [{ module_id: 11, score: 0.95, brand: "Sim Co", name: "Oscillator", hp: 12 }],
+        }),
+        sighting("s-2", {
+          disposition: "user_review",
+          start_hp: 14,
+          hp: 10,
+          box: { x: 0.125, y: 0.06, w: 0.11, h: 0.88 },
+          candidates: [
+            { module_id: 12, score: 0.6, brand: "Sim Co", name: "Filter", hp: 10 },
+            { module_id: 14, score: 0.3, brand: "Sim Co", name: "Filter II", hp: 10 },
+          ],
+        }),
+        sighting("s-3", {
+          kind: "unknown",
+          start_hp: 30,
+          hp: 8,
+          box: { x: 0.25, y: 0.06, w: 0.11, h: 0.88 },
+        }),
+        sighting("s-4", {
+          kind: "blank_panel",
+          start_hp: 38,
+          hp: 4,
+          box: { x: 0.375, y: 0.06, w: 0.1, h: 0.88 },
+        }),
+      ],
+    },
+  ],
+};
+
+const photoReading = (available: boolean) => async (page: Page) => {
+  await page.route("**/api/evidence/photo-reading", (route) =>
+    route.fulfill(json({ available, reason: available ? null : "PROVIDER_DISABLED" })),
+  );
+};
+
+async function mockReading(page: Page) {
+  await page.route("**/api/racks/1/evidence/readings", (route) => route.fulfill(json(READINGS)));
+  await page.route("**/api/racks/1/evidence/images/img-1/content", (route) =>
+    route.fulfill({ body: RIG_PHOTO, contentType: "image/jpeg" }),
+  );
+}
+
+const RETIRED_LINKS = ["/modules", "/products", "/cases"]
+  .flatMap((path) => [`a[href="${path}"]`, `a[href^="${path}/"]`, `a[href^="${path}?"]`])
+  .join(", ");
+
 interface Screen {
   path: string;
   name: string;
@@ -356,15 +451,6 @@ const SCREENS: Screen[] = [
   { path: "/login", name: "sign in", signedIn: false },
   { path: "/privacy", name: "privacy notice", signedIn: false },
   { path: "/no-such-route", name: "not found", signedIn: false, signature: ".broken-patch" },
-  { path: "/modules", name: "modules", signedIn: true, signature: ".module-mockup" },
-  { path: "/cases", name: "cases", signedIn: true },
-  {
-    path: `/cases/${CASE_DETAIL.slug}`,
-    name: "case detail",
-    signedIn: true,
-    signature: ".capacity-rail",
-  },
-  { path: "/products", name: "products", signedIn: true },
   { path: "/patches", name: "patches", signedIn: true },
   { path: "/account", name: "account", signedIn: true },
   {
@@ -387,6 +473,37 @@ const SCREENS: Screen[] = [
     signature: ".patch-rail .patch-cable",
   },
   { path: "/rigs/1/patchbook-studio", name: "style studio", signedIn: true },
+  {
+    path: "/rigs/new/photo",
+    name: "photo",
+    signedIn: true,
+    signature: ".photo-guidance",
+    mock: photoReading(true),
+  },
+  {
+    path: "/rigs/new/photo",
+    name: "photo, reading closed",
+    signedIn: true,
+    signature: ".photo-closed",
+    mock: photoReading(false),
+  },
+  {
+    path: "/rigs/1/reading",
+    name: "reading",
+    signedIn: true,
+    signature: ".reading-photo__box",
+    mock: mockReading,
+  },
+  {
+    path: "/rigs/1/reading",
+    name: "reading, correcting the layout",
+    signedIn: true,
+    signature: ".rig-rail",
+    mock: mockReading,
+    open: async (page) => {
+      await page.getByRole("button", { name: "Correct the layout" }).click();
+    },
+  },
   // The one catalog case is chosen on load, so the builder opens on step 2.
   {
     path: "/racks/new",
@@ -508,11 +625,58 @@ for (const theme of ["dark", "light"] as const) {
 
           expect(await overflowing(page), "elements past the viewport").toEqual([]);
           expect(await axeViolations(page), "axe violations").toEqual([]);
+          // The catalog pages left the public routes (spec 009, decision 58): nothing links there.
+          await expect(page.locator(RETIRED_LINKS)).toHaveCount(0);
         });
       }
     });
   }
 }
+
+test.describe("the patch rail's cable layer", () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  async function openPatch(page: Page) {
+    const screen = SCREENS.find((s) => s.name === "patch detail") as Screen;
+    await mockApi(page, { signedIn: screen.signedIn });
+    await arrive(page, screen);
+    await expect(page.locator(".patch-rail .patch-cable").first()).toBeVisible();
+  }
+
+  // The page lays the rail out more than once, and the rail's measurement only catches up on the
+  // next frame. Reading both in one task sees what the guard above saw when it failed sometimes.
+  test("is never wider than its stage, even before the rail has measured again", async ({
+    page,
+  }) => {
+    await openPatch(page);
+    const widths = await page.evaluate(() => {
+      const stage = document.querySelector<HTMLElement>(".patch-rail__stage");
+      const layer = document.querySelector(".patch-rail__cables");
+      if (!stage || !layer) return null;
+      stage.style.width = "400px";
+      return {
+        layer: layer.getBoundingClientRect().width,
+        stage: stage.getBoundingClientRect().width,
+      };
+    });
+    expect(widths).toEqual({ layer: 400, stage: 400 });
+  });
+
+  test("draws at the stage's own scale, so plugs land on the faceplates", async ({ page }) => {
+    await openPatch(page);
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const stage = document.querySelector(".patch-rail__stage")?.getBoundingClientRect();
+          const box = document.querySelector<SVGSVGElement>(".patch-rail__cables")?.viewBox.baseVal;
+          return stage && box
+            ? [Math.round(box.width - stage.width), Math.round(box.height - stage.height)]
+            : null;
+        }),
+      )
+      .toEqual([0, 0]);
+  });
+});
 
 /** Every screen that reads data, reached signed in while the rest of the API is unreachable. */
 const API_DOWN: { path: string; name: string }[] = [
@@ -522,10 +686,6 @@ const API_DOWN: { path: string; name: string }[] = [
   { path: "/rigs/1/patchbook-studio", name: "style studio" },
   { path: "/racks/new", name: "rig builder, new" },
   { path: "/racks/1/edit", name: "rig builder, placement" },
-  { path: "/modules", name: "modules" },
-  { path: "/cases", name: "cases" },
-  { path: `/cases/${CASE_DETAIL.slug}`, name: "case detail" },
-  { path: "/products", name: "products" },
   { path: "/patches", name: "patches" },
   { path: "/account", name: "account" },
   { path: "/admin/users", name: "ops users" },
@@ -557,7 +717,7 @@ test.describe("privacy notice", () => {
 
   test("reads at 320 px with no horizontal scroll, and the footer reaches it", async ({ page }) => {
     await mockApi(page, { signedIn: false });
-    await page.goto("/modules");
+    await page.goto("/patches");
     await page.getByRole("contentinfo").getByRole("link", { name: "Privacy notice" }).click();
     await expect(page).toHaveURL(/\/privacy$/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Privacy notice");
@@ -686,7 +846,7 @@ test.describe("accessibility protocol pre-pass", () => {
 
   test("the skip link is the first tab stop and moves focus to the workspace", async ({ page }) => {
     await mockApi(page, { signedIn: false });
-    await page.goto("/modules");
+    await page.goto("/patches");
     await expect(page.locator("main")).toBeVisible();
     await page.keyboard.press("Tab");
     const skip = page.getByRole("link", { name: "Skip to workspace" });

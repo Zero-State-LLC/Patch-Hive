@@ -4,9 +4,11 @@ Port resolution and validation for generated patches (spec 001 FR-016, FR-017, F
 The engine wires generic roles ("Audio Out", "V/Oct", "Gate In"). Each cable end is
 resolved against the module's declared jacks (``Module.io_ports``):
 
-- The module declares jacks: the role maps to a declared jack of the right type, by
-  name first, then by keyword, then the first free one. The cable end becomes
-  ``declared``.
+- The module declares jacks: the role maps to a declared jack of the right type when
+  its name settles which one: the exact name, then a keyword, then a channel mark
+  (1, A, Left), then the only jack of its kind. The cable end becomes ``declared``.
+- Several jacks could take the cable and no name settles it: the generic name stays
+  and the cable end is ``generic``. A wrong jack with no warning is worse than a role.
 - The module declares no jacks (most catalog rows): the generic name stays and the
   cable end is ``generic``, an unresolved fact the UI can label as approximate.
 
@@ -15,14 +17,15 @@ Findings have three severities:
 - ``block``: a contradiction with what is on file. Any one fails the run
   (``validation_failed``) and nothing is saved: a module outside the confirmed
   inventory, or a declared jack used against its direction.
-- ``unresolved``: a jack that is not on file (spec 001 OQ-04): the module declares no
-  jacks, or no free jack of the needed type. Jack lists on file are often partial,
-  so a missing jack is not proof that it does not exist.
+- ``unresolved``: a jack that is not settled (spec 001 OQ-04): the module declares no
+  jacks, no free jack of the needed type, or several that could fit. Lists on file come
+  from documents and not panels, so a missing jack is not proof that it does not exist.
 - ``flag``: everything else worth noting, such as a feedback loop or an empty run.
 """
 
 from __future__ import annotations
 
+import re
 from dataclasses import asdict, dataclass, field, replace
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
@@ -49,14 +52,45 @@ INPUT_ROLES: Dict[str, Tuple[str, ...]] = {
     "V/Oct": ("cv_in",),
     "Gate In": ("gate_in", "trigger_in", "clock_in"),
 }
+# Each keyword must start a word, so "amp" is not found in "Damp".
 KEYWORDS: Dict[str, Tuple[str, ...]] = {
-    "V/Oct": ("oct", "pitch"),
-    "FM In": ("fm",),
-    "Cutoff CV": ("cut", "freq"),
-    "Noise Out": ("noise",),
-    "Mix Out": ("mix", "sum"),
-    "LFO Out": ("lfo",),
+    "V/Oct": ("oct", "voct", "v/o", "pitch"),
+    "FM In": ("fm", "tzfm", "frequency mod", "linear freq"),
+    "Cutoff CV": ("cut", "freq", "cf", "cvf", "filter", "mod"),
+    "CV In": ("vca", "level", "amp", "gain", "am ", "control"),
+    "Audio Out": (
+        "lowpass", "low-pass", "low pass", "lp", "main", "mix",
+        "saw", "ramp", "square", "pulse", "tri", "sin",
+    ),
+    "Audio In": ("audio", "signal", "main"),
+    "FX In": ("audio", "signal", "main"),
+    "Noise Out": ("noise", "white"),
+    "Mix Out": ("mix", "sum", "main"),
+    "LFO Out": ("lfo", "primary", "smooth", "tri", "sin"),
+    "Envelope Out": ("env", "contour", "adsr", "eg"),
+    "CV Out": ("pitch", "note", "freq", "tuned", "cv"),
+    "Gate Out": ("gate", "trig"),
+    "Gate In": ("gate", "trig"),
 }
+# Jacks that serve a side purpose. Among jacks a name already points to, the main one wins.
+SECONDARY = re.compile(
+    r"(?<!non-)(?<!non )(?<![a-z])inv|mirror|(?<![a-z0-9])(?:neg|eoc|eor|end|send|return|thru(?![- ]?zero)|through"
+    r"|headphone|feedback|aux|sub)"
+)
+# What makes "Inverted ADSR Output" a version of "ADSR Output".
+SIDE_WORDS = re.compile(r"\b(?:non-?)?inv(?:erted|erse)?\b|\bmirror(?:ed)?\b|\bneg(?:ative)?\b")
+# A name that says it is the module's output or input of that kind.
+PLAIN = re.compile(r"^(?:main |audio |signal )?(?:out|output|in|input)$")
+# Channels are interchangeable, so a plain channel mark decides. A digit is no channel when it
+# is part of a number or a voltage, as in "1.7kHz" or "1V/Oct". These roles each have a
+# specific job, and a channel mark says nothing about which input does it.
+FIRST_CHANNEL = re.compile(
+    r"(?<![a-z0-9])(?:left|l|mono|a)(?![a-z0-9])|(?<![\d.])1(?![\d.])(?!\s?v(?:/|olt|\b))"
+)
+SECOND_CHANNEL = re.compile(
+    r"(?<![a-z0-9])(?:right|r|b)(?![a-z0-9])|(?<![\d.])2(?![\d.])(?!\s?v(?:/|olt|\b))"
+)
+NO_CHANNEL_ROLES = frozenset({"V/Oct", "FM In", "Cutoff CV"})
 
 
 @dataclass(frozen=True)
@@ -96,18 +130,54 @@ def _declared(module: Any) -> List[Dict[str, str]]:
     return [p for p in ports if isinstance(p, dict) and p.get("name") and p.get("type")]
 
 
+def _by_channel(role: str, ports: List[Dict[str, str]]) -> Optional[Dict[str, str]]:
+    """The lowest channel still free: a second cable of a role moves on to the next channel."""
+    if role in NO_CHANNEL_ROLES:
+        return None
+    marks = (SECOND_CHANNEL, FIRST_CHANNEL) if role == "In 2" else (FIRST_CHANNEL, SECOND_CHANNEL)
+    for mark in marks:
+        for port in ports:
+            if mark.search(port["name"].lower()):
+                return port
+    return None
+
+
 def _pick(
     role: str, accepted: Tuple[str, ...], ports: List[Dict[str, str]], taken: set[str]
 ) -> Optional[Dict[str, str]]:
-    candidates = [p for p in ports if p["type"] in accepted and p["name"] not in taken]
-    for port in candidates:
+    """The jack this role means, or None when no name settles it (spec 001 FR-016)."""
+    of_kind = [p for p in ports if p["type"] in accepted]
+    # Main jacks first, each group in listing order.
+    free = sorted((p for p in of_kind if p["name"] not in taken), key=_is_side)
+    for port in free:
         if port["name"] == role:
             return port
     for keyword in KEYWORDS.get(role, ()):
-        for port in candidates:
-            if keyword in port["name"].lower():
-                return port
-    return candidates[0] if candidates else None
+        pattern = re.compile(rf"(?<![a-z0-9]){re.escape(keyword)}")
+        matches = [p for p in free if pattern.search(p["name"].lower())]
+        if matches:
+            return _by_channel(role, matches) or matches[0]
+    plain = [p for p in free if PLAIN.match(p["name"].lower())]
+    if plain:
+        return plain[0]
+    # A channel mark names one of the main jacks. A side jack needs a name that points to it.
+    return _by_channel(role, [p for p in free if not _is_side(p)]) or _only_one(of_kind, free)
+
+
+def _is_side(port: Dict[str, str]) -> bool:
+    return bool(SECONDARY.search(port["name"].lower()))
+
+
+def _only_one(of_kind: List[Dict[str, str]], free: List[Dict[str, str]]) -> Optional[Dict[str, str]]:
+    """The only jack of its kind, counting a side jack that is a version of it, such as
+    "Inverted Signal Output" beside "Non-Inverted Signal Output". A side jack of something
+    else, such as "Inverted LFO1 Output" beside "ADSR Output", leaves it unsettled."""
+    main = [p for p in of_kind if not _is_side(p)]
+    if len(main) != 1 or main[0] not in free:
+        return None
+    core = SIDE_WORDS.sub("", main[0]["name"].lower()).split()
+    others = (p for p in of_kind if p is not main[0])
+    return main[0] if all(SIDE_WORDS.sub("", p["name"].lower()).split() == core for p in others) else None
 
 
 def resolve_and_validate(
@@ -159,12 +229,15 @@ def resolve_and_validate(
                 taken = taken_inputs.setdefault(module_id, set()) if direction == "in" else set()
                 choice = _pick(port, accepted, ports, taken)
                 if choice is None:
-                    # Jack lists on file are often partial, so a missing jack is not
-                    # proof it does not exist: unresolved, not blocked.
-                    code = "INPUT_ALREADY_USED" if any(p["type"] in accepted for p in ports) else "PORT_TYPE_NOT_ON_FILE"
-                    report.add(
-                        Finding("unresolved", code, f"{module.name}: no free {'/'.join(accepted)} jack on file for '{port}'.", index)
-                    )
+                    # Lists on file come from documents, so a missing jack is not proof
+                    # it does not exist: unresolved, not blocked.
+                    of_kind = [p for p in ports if p["type"] in accepted]
+                    if any(p["name"] not in taken for p in of_kind):
+                        code, reason = "SEVERAL_JACKS_FIT", f"several jacks could take '{port}' and no name settles which"
+                    else:
+                        code = "INPUT_ALREADY_USED" if of_kind else "PORT_TYPE_NOT_ON_FILE"
+                        reason = f"no free {'/'.join(accepted)} jack on file for '{port}'"
+                    report.add(Finding("unresolved", code, f"{module.name}: {reason}.", index))
                     ends.append((port, "generic"))
                     continue
                 if direction == "in":

@@ -84,13 +84,10 @@ REQUIRED_GATE_ROUTES: tuple[tuple[str, str], ...] = (
     ("POST", "/api/canon/rigs/{rack_id}/evidence/confirmations"),
 )
 
-# Active inventory list pages that must read the canon alias (T020). The rig builder
-# lists rigs for its evidence picker, so it is one of them.
-REQUIRED_FE_LIST_PAGES: tuple[str, ...] = (
-    "frontend/src/pages/Racks.tsx",
-    "frontend/src/pages/Modules.tsx",
-    "frontend/src/pages/RackBuilder.tsx",
-)
+# Active inventory list pages that must read the canon alias (T020). The Modules page and
+# its rig picker left with spec 009 (decision 58), and the rig builder's evidence picker,
+# its only rig list, with the per-Module photo step (decision 63).
+REQUIRED_FE_LIST_PAGES: tuple[str, ...] = ("frontend/src/pages/Racks.tsx",)
 
 CANON_RIGS_PREFIX = "/api/canon/rigs"
 LEGACY_RACKS_PREFIX = "/api/racks"

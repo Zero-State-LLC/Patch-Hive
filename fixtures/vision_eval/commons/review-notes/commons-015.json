@@ -1,0 +1,209 @@
+{
+ "file": "commons-015.jpg",
+ "rows": 2,
+ "row_capacity_hp": [
+  null,
+  104
+ ],
+ "px_per_hp": [
+  39.1,
+  41.1
+ ],
+ "cohort_suggestions": [
+  "cable_obscured",
+  "unknown_open_set",
+  "revision_or_panel_variant",
+  "hard_negative"
+ ],
+ "labels": [
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 0,
+   "start_hp": 0,
+   "hp": 4,
+   "n": 1,
+   "confidence": "medium",
+   "observed": "4ms Company Row Power 30",
+   "evidence": "read 'ROW POWER 30' and 4ms logo; catalog has only 'ROW POWER 25' (id 35), a different number, so open_set (owner to judge whether 25 and 30 are one product)"
+  },
+  {
+   "kind": "module",
+   "maker": "Verbos Electronics",
+   "name": "Complex Oscillator",
+   "row_index": 0,
+   "start_hp": 4,
+   "hp": 32,
+   "n": 2,
+   "catalog_id": 1232,
+   "confidence": "high",
+   "evidence": "read 'Complex Oscillator' and 'Verbos Electronics' on panel; a patch cable crosses it but text is clear"
+  },
+  {
+   "kind": "module",
+   "maker": "Verbos Electronics",
+   "name": "Complex Oscillator",
+   "row_index": 0,
+   "start_hp": 36,
+   "hp": 32,
+   "n": 3,
+   "catalog_id": 1232,
+   "confidence": "high",
+   "evidence": "read 'Complex Oscillator' and 'Verbos Electronics'; a cable crosses the middle"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 0,
+   "start_hp": 68,
+   "hp": 30,
+   "n": 4,
+   "confidence": "medium",
+   "observed": "Verbos Electronics Voltage Multistage (original 8-stage, 30 HP)",
+   "evidence": "read 'Voltage Multistage' and 'Verbos Electronics'; 8 numbered stages (1-8) with a/b slider rows; 30 HP measured in the photo. Verbos's own page (verboselectronics.com/voltage-multistage-10) describes Voltage Multistage 10 as a 10-stage update of the original Voltage Multistage in the same 30 HP, so catalog 'Voltage Multistage 10' (id 3767) is not this 8-stage panel; 'Voltage Multistage 16' (id 1236) is 42 HP in the catalog. Hence open_set. Cables cross it"
+  },
+  {
+   "kind": "module",
+   "maker": "4ms Company",
+   "name": "4ms BUFF MULT",
+   "row_index": 0,
+   "start_hp": 98,
+   "hp": 3,
+   "n": 5,
+   "catalog_id": 4040,
+   "confidence": "high",
+   "evidence": "read 'BUFF MULT' and 4ms logo; 3 HP measured"
+  },
+  {
+   "kind": "blank_panel",
+   "row_index": 0,
+   "start_hp": 101,
+   "hp": 2,
+   "n": 6,
+   "confidence": "medium",
+   "evidence": "plain white strip with a top screw and a few small holes between Buff Mult and the case side; measures 2.1-2.4 HP. Could be a 3 HP blank (would make the row 104 HP like the lower one) or a case end filler rather than a panel"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 1,
+   "start_hp": 0,
+   "hp": 4,
+   "n": 7,
+   "confidence": "medium",
+   "observed": "4ms Company Row Power 30",
+   "evidence": "read 'ROW POWER 30' and 4ms logo; catalog has only 'ROW POWER 25' (id 35), a different number, so open_set (owner to judge whether 25 and 30 are one product)"
+  },
+  {
+   "kind": "module",
+   "maker": "4ms Company",
+   "name": "4ms SCM Breakout",
+   "row_index": 1,
+   "start_hp": 4,
+   "hp": 8,
+   "n": 8,
+   "catalog_id": 4039,
+   "confidence": "high",
+   "evidence": "read 'S.C.M. BREAKOUT'"
+  },
+  {
+   "kind": "module",
+   "maker": "4ms Company",
+   "name": "4ms Shuffling Clock Multiplier",
+   "row_index": 1,
+   "start_hp": 12,
+   "hp": 4,
+   "n": 9,
+   "catalog_id": 4037,
+   "confidence": "high",
+   "evidence": "read 'SHUFFLING CLOCK MULTIPLIER', 4 HP (not the 12 HP SCM Plus)"
+  },
+  {
+   "kind": "module",
+   "maker": "4ms Company",
+   "name": "4ms QCD Expander",
+   "row_index": 1,
+   "start_hp": 16,
+   "hp": 12,
+   "n": 10,
+   "catalog_id": 4031,
+   "confidence": "high",
+   "evidence": "read 'QCD EXPANDER'"
+  },
+  {
+   "kind": "module",
+   "maker": "4ms Company",
+   "name": "4ms QCD",
+   "row_index": 1,
+   "start_hp": 28,
+   "hp": 10,
+   "n": 11,
+   "catalog_id": 4030,
+   "confidence": "high",
+   "evidence": "read 'QUAD CLOCK DISTRIBUTOR'"
+  },
+  {
+   "kind": "module",
+   "maker": "4ms Company",
+   "name": "4ms QPLFO",
+   "row_index": 1,
+   "start_hp": 38,
+   "hp": 12,
+   "n": 12,
+   "catalog_id": 4032,
+   "confidence": "high",
+   "evidence": "read 'QUAD PING..LE LFO' (middle letters washed out by glare)"
+  },
+  {
+   "kind": "module",
+   "maker": "4ms Company",
+   "name": "4ms RCD Breakout",
+   "row_index": 1,
+   "start_hp": 50,
+   "hp": 4,
+   "n": 13,
+   "catalog_id": 4036,
+   "confidence": "high",
+   "evidence": "read 'R.C.D. BREAKOUT'"
+  },
+  {
+   "kind": "module",
+   "maker": "4ms Company",
+   "name": "4ms Rotating Clock Divider",
+   "row_index": 1,
+   "start_hp": 54,
+   "hp": 4,
+   "n": 14,
+   "catalog_id": 4035,
+   "confidence": "high",
+   "evidence": "read 'ROTATING CLOCK DIVIDER'"
+  },
+  {
+   "kind": "module",
+   "maker": "4ms Company",
+   "name": "4ms PEG",
+   "row_index": 1,
+   "start_hp": 58,
+   "hp": 20,
+   "n": 15,
+   "catalog_id": 4033,
+   "confidence": "high",
+   "evidence": "read 'PINGABLE ENVELOPE GENERATOR'"
+  },
+  {
+   "kind": "module",
+   "maker": "4ms Company",
+   "name": "4ms VCA Matrix",
+   "row_index": 1,
+   "start_hp": 78,
+   "hp": 26,
+   "n": 16,
+   "catalog_id": 4034,
+   "confidence": "high",
+   "evidence": "read 'VCA MATRIX'; two cables plugged at top-left"
+  }
+ ],
+ "catalog_hp_disagreements": [],
+ "excluded": "KOMA Elektronik FT201 box in the foreground, a red/orange synth and flight case behind the rig, and a speaker at right are not part of the case",
+ "notes": "Two stacked 4ms row cases, each powered by its own 4ms Row Power 30 at the left end. Lower row measures exactly 104 HP cheek to cheek and is full. Upper row: the panels sum to 101 HP plus a ~2 HP white strip (n6), so it measures ~103 HP; its capacity is left null because I can't tell whether the strip is a 2 HP blank, a 3 HP blank (which would make it 104 HP), or part of the case. The px_per_hp values are means; the photo has strong keystone (looking down), so each row's scale grows from top edge to bottom edge (row 0: 38.3 -> 39.9, row 1: 40.2 -> 42.1) and the overlay uses that sloped mapping. Two open_set calls the owner should confirm: Row Power 30 vs catalog ROW POWER 25, and the original 8-stage Voltage Multistage vs catalog Voltage Multistage 10 (per Verbos's own page a 10-stage update in the same 30 HP: near-identical name, width and look, so a good hard negative or a revision the owner may choose to map). All widths come from the photo. Commons description is just 'DSC00346', no module list."
+}

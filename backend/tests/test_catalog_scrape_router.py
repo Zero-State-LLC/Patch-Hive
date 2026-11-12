@@ -303,23 +303,39 @@ def test_free_fetch_unaffected_by_approval_gate(tmp_path):
     assert _paid_calls(transport) == []
 
 
-def test_committed_approvals_file_has_only_the_owner_approved_corpus_photo_entry():
-    """The committed file holds exactly the owner's 2026-11-02 approval (300 context.dev searches
-    for 007 corpus photos), with its baseline at the ledger totals of that day."""
+def test_committed_approvals_file_has_only_the_owner_approved_entries():
+    """The committed file holds exactly the owner's approvals: 300 context.dev searches for 007
+    corpus photos, baselined at the ledger totals of that day, and the 2026-11-09 maker render."""
     doc = json.loads((ROOT / "data" / "synth-catalog" / "receipts" / "fetch-approvals.json").read_text())
-    assert doc["entries"] == [
-        {
-            "id": "corpus-photos-2026-11",
-            "approver": "Daniel Meyer (owner; approved in chat 2026-11-02: 300 searches, context.dev)",
-            "approved_at": "2026-11-02T11:00:00Z",
-            "expires_at": "2026-11-30T23:59:59Z",
-            "brands": ["corpus-photos-2026-11"],
-            "cap_fetches": 300,
-            "cap_credits": 300,
-            "ledger_baseline_fetches": 2569,
-            "ledger_baseline_credits": 1149,
-        }
-    ]
+    corpus, render = doc["entries"]
+    assert corpus == {
+        "id": "corpus-photos-2026-11",
+        "approver": "Daniel Meyer (owner; approved in chat 2026-11-02: 300 searches, context.dev)",
+        "approved_at": "2026-11-02T11:00:00Z",
+        "expires_at": "2026-11-30T23:59:59Z",
+        "brands": ["corpus-photos-2026-11"],
+        "cap_fetches": 300,
+        "cap_credits": 300,
+        "ledger_baseline_fetches": 2569,
+        "ledger_baseline_credits": 1149,
+    }
+    assert render["id"] == "maker-render-2026-11"
+    assert render["approver"] == "Daniel Meyer (owner; approved in chat 2026-11-09: 500 credits, context.dev)"
+    assert (render["cap_fetches"], render["cap_credits"]) == (500, 500)
+    assert (render["ledger_baseline_fetches"], render["ledger_baseline_credits"]) == (2869, 1444)
+    assert len(render["brands"]) == 21
+
+
+def test_the_maker_render_approval_is_closed(tmp_path):
+    """The run was stopped after going past bot checks, so its unused credits can't be spent."""
+    import catalog_scrape as cs
+    from datetime import datetime, timezone
+
+    approvals = ROOT / "data" / "synth-catalog" / "receipts" / "fetch-approvals.json"
+    ledger = tmp_path / "ledger.json"
+    ledger.write_text(json.dumps({"paid_fetches": 3130, "credits_by_backend": {"context_dev": 1665, "firecrawl": 33}}))
+    now = datetime(2026, 11, 10, tzinfo=timezone.utc).timestamp()
+    assert not cs.check_paid_approval(approvals, ledger, ("ADDAC System",), now=now)[0]
 
 
 def test_parallel_reservations_cannot_overspend_the_approval(tmp_path):
@@ -600,6 +616,25 @@ def test_a_refused_connection_cannot_be_told_from_a_timeout(tmp_path, monkeypatc
     assert result.ok and result.receipt["method"] == "context_dev"
 
 
+ONE_MOMENT = (
+    b'<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf8">\n'
+    b'<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>One moment, please...</title>'
+)
+
+
+@pytest.mark.parametrize("render", [False, True])
+def test_a_one_moment_page_is_a_bot_check(tmp_path, paid_keys, render):
+    """It arrives with a 200, so without its title it reads as a thin page and gets rendered."""
+    transport = FakeTransport()
+    transport.routes[PAGE] = (200, ONE_MOMENT)
+    scraper = _would_pay(tmp_path, transport)
+    result = scraper.fetch(PAGE, render=render)
+    assert not result.ok and result.text is None
+    assert _paid_calls(transport) == []
+    assert scraper.paid_attempts == 0
+    assert scraper.receipts[-1].get("note") == "challenge"
+
+
 # ---- robots.txt fails closed: a host whose robots.txt cannot be read gets no fetch, free or paid ----
 
 ROBOTS = "https://ex.com/robots.txt"
@@ -665,6 +700,80 @@ def test_a_readable_robots_txt_keeps_paid_retries_for_load_on_the_page(tmp_path,
     transport.routes[CONTEXT_SCRAPE_URL] = (200, PAID_ANSWER)
     result = _scraper(tmp_path, transport, max_paid_fetches=1).fetch(PAGE)
     assert result.ok and result.receipt["method"] == "context_dev"
+
+
+# ---- A file-storage service's own 403 on robots.txt means no robots file (owner decision 66) ----
+
+S3_ACCESS_DENIED = (
+    b'<?xml version="1.0" encoding="UTF-8"?>\n'
+    b"<Error><Code>AccessDenied</Code><Message>Access Denied</Message></Error>"
+)
+CLOUDFRONT_MISSING_KEY = (
+    b'<?xml version="1.0" encoding="UTF-8"?>'
+    b"<Error><Code>MissingKey</Code><Message>Missing Key-Pair-Id query parameter or cookie value</Message></Error>"
+)
+API_GATEWAY_NO_ROUTE = b'{"message":"Missing Authentication Token"}'
+
+
+@pytest.mark.parametrize("reply", [S3_ACCESS_DENIED, CLOUDFRONT_MISSING_KEY, API_GATEWAY_NO_ROUTE])
+def test_a_storage_error_on_robots_txt_means_the_host_has_no_rules(tmp_path, reply):
+    transport = FakeTransport()
+    transport.routes[ROBOTS] = (403, reply)
+    transport.routes[PAGE] = (200, b"<html>12 HP</html>")
+    result = _scraper(tmp_path, transport).fetch(PAGE)
+    assert result.ok and result.receipt["method"] == "free_http"
+    assert [c.url for c in transport.calls] == [ROBOTS, PAGE]
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [
+        b"Forbidden",
+        b"no",
+        b"<!DOCTYPE html><html><body><h1>Access Denied</h1></body></html>",
+        b"<html><body><Error><Code>AccessDenied</Code></Error></body></html>",
+        b"<Error><Code>SignatureDoesNotMatch</Code></Error>",
+        b'{"message":"Forbidden"}',
+    ],
+)
+def test_any_other_403_on_robots_txt_stays_a_refusal(tmp_path, paid_keys, reply):
+    transport = FakeTransport()
+    transport.routes[ROBOTS] = (403, reply)
+    scraper = _would_pay(tmp_path, transport)
+    assert not scraper.fetch(PAGE).ok
+    assert _paid_calls(transport) == []
+    assert [c.url for c in transport.calls] == [ROBOTS]
+    assert [(r["method"], r.get("note")) for r in scraper.receipts] == [("robots_refused", "robots.txt answered 403")]
+
+
+def test_a_storage_error_only_counts_as_a_403(tmp_path, paid_keys):
+    transport = FakeTransport()
+    transport.routes[ROBOTS] = (401, S3_ACCESS_DENIED)
+    scraper = _would_pay(tmp_path, transport)
+    assert not scraper.fetch(PAGE).ok
+    assert [c.url for c in transport.calls] == [ROBOTS]
+    assert scraper.receipts[0]["method"] == "robots_refused"
+
+
+def test_the_access_basis_script_reads_robots_txt_the_same_way():
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from build_access_basis_overlay import robots_answer
+
+    url = "https://ex.com/p"
+    assert robots_answer({"https://ex.com": (403, S3_ACCESS_DENIED.decode())}, url) is None
+    assert robots_answer({"https://ex.com": (403, "Forbidden")}, url) == "robots_unavailable_403"
+
+
+def test_a_storage_error_on_a_page_stays_a_refusal(tmp_path, paid_keys):
+    """Only robots.txt reads this way. A file that answers 403 is still a site saying no."""
+    transport = FakeTransport()
+    transport.routes[ROBOTS] = (403, S3_ACCESS_DENIED)
+    transport.routes[PAGE] = (403, S3_ACCESS_DENIED)
+    scraper = _would_pay(tmp_path, transport)
+    result = scraper.fetch(PAGE)
+    assert not result.ok and result.text is None
+    assert _paid_calls(transport) == []
+    assert scraper.paid_attempts == 0
 
 
 # ---- The opt-out: a left-out maker's host is never fetched, whichever script or brand name asks ----

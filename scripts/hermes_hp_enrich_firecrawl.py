@@ -25,6 +25,10 @@ SOURCE_AUTHORITY_BY_CLASS = {
 }
 # Only official manufacturer pages and manuals are fetched (spec 003 D2, FR-004).
 ALLOWED_SOURCE_CLASSES = frozenset(SOURCE_AUTHORITY_BY_CLASS)
+# The router stopped before a paid backend. The page was never read, so this says nothing about it.
+PAID_REFUSALS = frozenset(
+    {"skipped_no_key", "skipped_paid_cap", "skipped_no_approval", "skipped_proxy_unapproved"}
+)
 
 HP_PATTERNS = [
     re.compile(r"\b(\d{1,2})\s*[Hh][Pp]\b"),
@@ -54,8 +58,22 @@ def _scraper(max_paid_fetches: int | None = None):
     return scraper
 
 
+class FetchRefused(Exception):
+    """A key or budget stop left this page unread."""
+
+    def __init__(self, method: str) -> None:
+        super().__init__(method)
+        self.method = method
+
+
 def scrape_markdown(url: str, timeout: int = 60) -> str:
-    result = _scraper().fetch(url, timeout=timeout)
+    scraper = _scraper()
+    seen = len(scraper.receipts)
+    result = scraper.fetch(url, timeout=timeout)
+    if not result.ok:
+        for receipt in scraper.receipts[seen:]:
+            if receipt["method"] in PAID_REFUSALS:
+                raise FetchRefused(receipt["method"])
     return result.text or ""
 
 
@@ -202,9 +220,15 @@ def process_one(target: dict, sleep_s: float) -> dict:
 
     # Cap attempts so long batches finish. Only official classes are ever fetched.
     candidates = [(u, k) for u, k in candidate_urls(brand, name) if k in ALLOWED_SOURCE_CLASSES]
+    refusal: str | None = None
     for url, kind in candidates[:6]:
-        md = scrape_markdown(url)
-        time.sleep(sleep_s)
+        try:
+            md = scrape_markdown(url)
+        except FetchRefused as exc:
+            refusal = refusal or exc.method
+            continue
+        finally:
+            time.sleep(sleep_s)
         if not md or len(md) < 80:
             continue
         # Reject search pages if any slip through
@@ -236,6 +260,25 @@ def process_one(target: dict, sleep_s: float) -> dict:
             "notes": f"source_class={kind}",
         }
 
+    if refusal:
+        # A key or budget stop is not a search that came up empty (FR-013), so --resume retries it.
+        return {
+            "brand": brand,
+            "name": name,
+            "slug": slug,
+            "hp": None,
+            "source_url": None,
+            "provenance": "NOT_COMPUTABLE",
+            "epistemic_status": "NOT_COMPUTABLE",
+            "source_authority": "UNKNOWN_SOURCE_AUTHORITY",
+            "admission_status": "EVIDENCE_ONLY",
+            "rights_status": "RIGHTS_UNKNOWN",
+            "status": "refused",
+            "refusal": refusal,
+            "access_basis": None,
+            "notes": f"not every candidate page was read: {refusal}",
+        }
+
     return {
         "brand": brand,
         "name": name,
@@ -251,6 +294,24 @@ def process_one(target: dict, sleep_s: float) -> dict:
         "access_basis": None,
         "notes": "no HP on candidate official manufacturer URLs",
     }
+
+
+def _write_results(path: Path, payload: dict, targets: list, results: list[dict[str, Any]]) -> None:
+    found = sum(1 for x in results if x.get("status") == "found" and x.get("hp"))
+    out = {
+        "batch": payload.get("batch", 1),
+        "generated_by": "hermes-firecrawl-scrape-pipeline",
+        "results": results,
+        "summary": {
+            "targets": len(targets),
+            "processed": len(results),
+            "found": found,
+            "not_found": sum(1 for x in results if x.get("status") == "not_found"),
+            "refused": sum(1 for x in results if x.get("status") == "refused"),
+        },
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -288,7 +349,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.resume and args.out.is_file():
         prev = json.loads(args.out.read_text(encoding="utf-8"))
         for r in prev.get("results") or []:
-            if r.get("slug"):
+            if r.get("slug") and r.get("status") != "refused":
                 done[r["slug"]] = r
         print(f"resume: {len(done)} already done")
 
@@ -305,27 +366,20 @@ def main(argv: list[str] | None = None) -> int:
             flush=True,
         )
         # checkpoint after each
-        found = sum(1 for x in results if x.get("status") == "found" and x.get("hp"))
-        out = {
-            "batch": payload.get("batch", 1),
-            "generated_by": "hermes-firecrawl-scrape-pipeline",
-            "results": results + [done[s] for s in done if s not in {x.get('slug') for x in results}],
-            "summary": {
-                "targets": len(targets),
-                "processed": len(results),
-                "found": found,
-                "not_found": len(results) - found,
-            },
-        }
-        # simplify: just write current results list (resume map handled above)
-        out["results"] = results
-        args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+        _write_results(args.out, payload, targets, results)
+
+    # A resumed run can end on rows it skipped, and those belong in the file too.
+    _write_results(args.out, payload, targets, results)
 
     found = sum(1 for r in results if r.get("status") == "found" and r.get("hp"))
     print(
         json.dumps(
-            {"targets": len(results), "found": found, "not_found": len(results) - found},
+            {
+                "targets": len(results),
+                "found": found,
+                "not_found": sum(1 for r in results if r.get("status") == "not_found"),
+                "refused": sum(1 for r in results if r.get("status") == "refused"),
+            },
             indent=2,
         )
     )

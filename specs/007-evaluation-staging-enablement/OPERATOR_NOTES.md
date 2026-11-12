@@ -35,8 +35,8 @@ The steps below name the library calls; the driver script (next section) runs th
    then call `freeze_corpus(manifest)`. It runs the governed validator
    (`scripts/validate_vision_pilot.py`) and refuses anything not
    `ADMITTED_FOR_BASELINE`, plus an independent cross-partition leakage check
-   (same image hash or case id in two partitions). The shipped intake shell has
-   zero cases and is rejected with `CORPUS_EMPTY`; that is expected.
+   (same image hash or case id in two partitions). The shipped manifest isn't
+   admitted yet, so it is rejected with `ADMISSION_REJECTED`; that is expected.
 2. Run baseline vs provider-assisted (T020). Produce `LabeledCorpusCase` rows for
    both conditions covering exactly the frozen case ids (same expected choice and
    cohort; vision rows must reference an image hash bound to that case), then call

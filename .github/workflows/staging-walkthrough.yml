@@ -6,8 +6,10 @@ name: Staging walkthrough
 # generated test image, calls decision-resolution and generates through the API. It then
 # generates another run, exports it with test credits and reads the pages of the PDF it
 # downloads. That pack stays in the job's memory: this repo is public, so never upload a
-# PDF or pack here. Each run makes new demo passwords that exist only in this job (masked,
-# never stored); the receipts hold statuses, codes, counts and hashes only.
+# PDF or pack here. The `photo` choice instead runs spec 009's walkthrough from a fixture
+# photo of a Rig, which staging reads from its recorded answer (backend/data/photo-readings).
+# Each run makes new demo passwords that exist only in this job (masked, never stored); the
+# receipts hold statuses, codes, counts and hashes only.
 on:
   workflow_dispatch:
     inputs:
@@ -16,7 +18,17 @@ on:
         required: true
         type: choice
         default: both
-        options: [both, walkthrough, evidence, generate, generated-export]
+        options: [both, walkthrough, evidence, generate, generated-export, photo]
+      photo:
+        description: The fixture photo of a Rig, for the photo walkthrough (spec 009 T060)
+        required: false
+        type: string
+        default: fixtures/photo-walkthrough/rig.jpg
+      rows:
+        description: The rows that photo covers, "0" or "0-1"
+        required: false
+        type: string
+        default: "0"
 
 permissions:
   contents: read
@@ -72,6 +84,12 @@ jobs:
       - name: Export a generated run and read its PDF
         if: ${{ !cancelled() && (inputs.checks == 'both' || inputs.checks == 'generated-export') }}
         run: python scripts/staging/generated_export_check.py --receipt-out generated-export-receipt.json
+      - name: Photo walkthrough (spec 009 T060)
+        if: ${{ !cancelled() && inputs.checks == 'photo' }}
+        env:
+          PHOTO: ${{ inputs.photo }}
+          ROWS: ${{ inputs.rows }}
+        run: python scripts/staging/photo_walkthrough.py --photo "$PHOTO" --rows "$ROWS" --receipt-out photo-walkthrough-receipt.json
       - name: Keep the receipts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -82,5 +100,6 @@ jobs:
             t060b-receipt.json
             generate-receipt.json
             generated-export-receipt.json
+            photo-walkthrough-receipt.json
           if-no-files-found: warn
           retention-days: 90

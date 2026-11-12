@@ -4,7 +4,7 @@ Rack validation — HP fit, format gate, power budget (fail-closed, no invent).
 
 from __future__ import annotations
 
-from typing import Iterable, List, Tuple
+from typing import Iterable, List, Optional, Tuple
 
 from sqlalchemy import func, inspect, text
 from sqlalchemy.orm import Session
@@ -121,9 +121,10 @@ def hp_needs_reverify(db: Session, module: Module) -> bool:
     row = db.execute(
         text(
             "SELECT 1 FROM catalog_value_archive f WHERE f.table_name = 'modules' "
-            "AND f.row_key = :key AND f.field = 'hp' AND f.action = 'flag' "
+            "AND f.row_key = :key AND f.field = 'hp' AND f.action = 'flag' AND f.rolled_back_run_id IS NULL "
             "AND NOT EXISTS (SELECT 1 FROM catalog_value_archive c WHERE c.table_name = 'modules' "
-            "AND c.row_key = :key AND c.field = 'hp' AND c.action = 'correct') LIMIT 1"
+            "AND c.row_key = :key AND c.field = 'hp' AND c.action = 'correct' "
+            "AND c.rolled_back_run_id IS NULL) LIMIT 1"
         ),
         {"key": f"{module.brand}::{module.name}"},
     ).first()
@@ -151,7 +152,7 @@ def placement_draws(
 
 
 def validate_rack_configuration(
-    db: Session, case_id: int, modules: List[RackModuleSpec]
+    db: Session, case_id: Optional[int], modules: List[RackModuleSpec]
 ) -> Tuple[bool, List[RackValidationError], List[RackValidationError]]:
     """
     Validate a rack configuration against case constraints.
@@ -172,18 +173,20 @@ def validate_rack_configuration(
       what the Case states; a placed SYSTEM module is an ``IN_RACK_SUPPLY_NOT_COUNTED`` warning.
     - powered is False and modules draw power → hard error.
     - Non-Eurorack format with any module placement → hard error (MVP placement is Eurorack-only).
+    - No Case (``case_id`` None, spec 009): a row is as wide as its modules, so only overlaps
+      are checked, and the power budget is ``POWER_UNSPECIFIED`` (unknown, never zero).
     """
     errors: List[RackValidationError] = []
     warnings: List[RackValidationError] = []
 
-    case = db.query(Case).filter(Case.id == case_id).first()
-    if not case:
+    case = db.query(Case).filter(Case.id == case_id).first() if case_id is not None else None
+    if case_id is not None and not case:
         errors.append(
             RackValidationError(field="case_id", message=f"Case with id {case_id} not found")
         )
         return False, errors, warnings
 
-    family = (case.format_family or "Eurorack").strip()
+    family = ((case.format_family if case else None) or "Eurorack").strip()
     if modules and family.lower() != "eurorack":
         errors.append(
             RackValidationError(
@@ -200,9 +203,9 @@ def validate_rack_configuration(
             )
         )
 
-    # Track HP usage per row (Eurorack layout)
+    # Each row's capacity (Eurorack layout); with no Case, rows have none.
     try:
-        hp_usage = {i: [False] * int(case.hp_per_row[i]) for i in range(case.rows)}
+        row_capacity = [int(case.hp_per_row[i]) for i in range(case.rows)] if case else None
     except (TypeError, IndexError, ValueError):
         errors.append(
             RackValidationError(
@@ -212,6 +215,7 @@ def validate_rack_configuration(
             )
         )
         return False, errors, warnings
+    occupied: dict[int, set[int]] = {}
 
     total_power_12v = 0
     total_power_neg12v = 0
@@ -248,7 +252,7 @@ def validate_rack_configuration(
             )
             continue
 
-        if module_spec.row_index >= case.rows:
+        if row_capacity is not None and module_spec.row_index >= len(row_capacity):
             errors.append(
                 RackValidationError(
                     field=f"modules[{idx}].row_index",
@@ -258,8 +262,8 @@ def validate_rack_configuration(
             )
             continue
 
-        row_hp = case.hp_per_row[module_spec.row_index]
-        if module_spec.start_hp + module.hp > row_hp:
+        row_hp = row_capacity[module_spec.row_index] if row_capacity is not None else None
+        if row_hp is not None and module_spec.start_hp + module.hp > row_hp:
             errors.append(
                 RackValidationError(
                     field=f"modules[{idx}].start_hp",
@@ -278,8 +282,9 @@ def validate_rack_configuration(
             )
             continue
 
+        taken = occupied.setdefault(module_spec.row_index, set())
         for hp in range(module_spec.start_hp, module_spec.start_hp + module.hp):
-            if hp_usage[module_spec.row_index][hp]:
+            if hp in taken:
                 errors.append(
                     RackValidationError(
                         field=f"modules[{idx}].start_hp",
@@ -292,7 +297,7 @@ def validate_rack_configuration(
                     )
                 )
                 break
-            hp_usage[module_spec.row_index][hp] = True
+            taken.add(hp)
 
         try:
             draws, _ = placement_draws(db, module, module_spec.power_config_id)
@@ -325,6 +330,31 @@ def validate_rack_configuration(
     any_draw = total_power_12v > 0 or total_power_neg12v > 0 or total_power_5v > 0
     any_unknown = any(unknown_draw.values())
     unknown_counts = {label: len(names) for label, names in unknown_draw.items()}
+    supply_warning = in_rack_supply_warning(placed)
+
+    if case is None:
+        # No Case: nothing states a budget, so the draws can't be held against one.
+        if any_draw or any_unknown:
+            warnings.append(
+                RackValidationError(
+                    field="power",
+                    message=(
+                        "No Case is named, so the power budget is unknown. "
+                        "Missing power stays missing — not assumed."
+                    ),
+                    details={
+                        "code": "POWER_UNSPECIFIED",
+                        "total_power_12v": total_power_12v,
+                        "total_power_neg12v": total_power_neg12v,
+                        "total_power_5v": total_power_5v,
+                        "unknown_draw_count": unknown_counts,
+                    },
+                )
+            )
+        if supply_warning:
+            warnings.append(supply_warning)
+        return len(errors) == 0, errors, warnings
+
     rails_known = (
         case.power_12v_ma is not None
         or case.power_neg12v_ma is not None
@@ -443,7 +473,6 @@ def validate_rack_configuration(
                 )
             )
 
-    supply_warning = in_rack_supply_warning(placed)
     if supply_warning:
         warnings.append(supply_warning)
 

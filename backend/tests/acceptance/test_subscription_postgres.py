@@ -297,7 +297,8 @@ def test_the_migration_refuses_to_downgrade_with_rows_and_round_trips_empty(
 
     engine = migrated_db.kw["bind"]
     with engine.begin() as conn:
-        conn.execute(text("DELETE FROM subscription_period_grants"))
+        # Period grants are append-only (20261106_commerce_append_only); only a truncate clears them.
+        conn.execute(text("TRUNCATE subscription_period_grants CASCADE"))
         conn.execute(text("DELETE FROM provider_subscriptions"))
     command.downgrade(config, "20261102_purchase_refunds")
     try:
@@ -314,5 +315,5 @@ def test_the_migration_refuses_to_downgrade_with_rows_and_round_trips_empty(
         command.upgrade(config, "head")
     with engine.connect() as conn:
         version = conn.execute(text("SELECT version_num FROM alembic_version")).scalar()
-    # Head is the T050 export fair-use revision, which revises this one.
-    assert version == "20261106_run_outcome_records"
+    # Head is a later revision that descends from this one.
+    assert version == "20261107_photo_readings"

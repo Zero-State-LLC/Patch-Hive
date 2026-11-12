@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import hashlib
 import os
+import re
 import uuid
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -17,10 +19,12 @@ from canon.models import (
     ClassificationEvidenceRecord,
     EvidenceDecisionRecord,
     ImageAssetRecord,
+    PhotoReadingRecord,
+    PhotoSightingRecord,
     SystemInventoryRevisionRecord,
 )
 from canon.visual_contracts import SystemInventoryRevision
-from core import get_db, settings
+from core import generate_rig_suggested_name, get_db, hash_string_to_seed, settings
 from core.storage import StorageError, get_file_store
 from evidence.images import (
     SignatureImageScanner,
@@ -29,6 +33,14 @@ from evidence.images import (
     prepare_image_evidence,
 )
 from evidence.cloud_provider import select_vision_provider
+from evidence.reading_confirm import ConfirmRefused, ReadingConfirmRequest, confirm_readings
+from evidence.readings import (
+    REPLACEABLE_STATUSES,
+    RETRYABLE_STATUSES,
+    move_readings,
+    photo_reading_closed_reason,
+    read_photo,
+)
 from evidence.vision_provider import (
     VisionProviderContext,
     bind_packet_to_evidence,
@@ -36,7 +48,9 @@ from evidence.vision_provider import (
 )
 from community.auth import require_auth
 from community.models import User
+from intelligence.evidence_images import ImageAccessDecision, image_access_decision
 from racks.access import owned_private_rack, private_rack
+from modules.models import Module
 from racks.models import Rack
 
 router = APIRouter()
@@ -74,10 +88,147 @@ class MultiImageUploadResponse(BaseModel):
     rejected: list[dict[str, str]] = Field(default_factory=list)
 
 
+class PhotoReadingCapability(BaseModel):
+    available: bool
+    # Why not, as a reason code, when it isn't.
+    reason: str | None = None
+
+
+class RigPhotoStartResponse(BaseModel):
+    rig_id: int
+    photo_id: str
+    reading_id: str
+
+
+class SightingResponse(BaseModel):
+    sighting_id: str
+    box: dict[str, float]
+    kind: str
+    row_index: int
+    start_hp: int
+    hp: int
+    candidates: list[dict[str, Any]]
+    disposition: str
+
+
+class PhotoReadingResponse(BaseModel):
+    reading_id: str
+    photo_id: str
+    status: str
+    reason_code: str | None = None
+    provider: str
+    provider_version: str | None = None
+    photo_sha256: str
+    policy_version: str
+    first_row: int
+    last_row: int
+    created_at: datetime
+    completed_at: datetime | None = None
+    sightings: list[SightingResponse]
+
+
+class PhotoReadingListResponse(BaseModel):
+    readings: list[PhotoReadingResponse]
+
+
 def _evidence_root() -> Path:
     root = Path(settings.export_dir) / "evidence"
     root.mkdir(parents=True, exist_ok=True)
     return root
+
+
+def _store_image_asset(
+    db: Session,
+    prepared: Any,
+    *,
+    rack_id: int,
+    user_id: int,
+    retention_days: int,
+    consent_provider_processing: bool,
+    now: datetime,
+) -> ImageAssetRecord:
+    """Make a prepared image's bytes durable, then record them as the rack's evidence.
+
+    Raises ``StorageError`` before recording anything when the bytes can't be kept.
+    """
+    storage_path = _evidence_root() / f"{prepared.sha256}.jpg"
+    if not storage_path.exists():
+        storage_path.write_bytes(prepared.content)
+    # Never record a path whose bytes are not durable.
+    get_file_store().persist(storage_path)
+    record = ImageAssetRecord(
+        id=f"img-{uuid.uuid4().hex[:20]}",
+        rack_id=rack_id,
+        user_id=user_id,
+        content_sha256=prepared.sha256,
+        media_type=prepared.media_type,
+        width=prepared.width,
+        height=prepared.height,
+        byte_length=len(prepared.content),
+        storage_path=str(storage_path),
+        retention_days=retention_days,
+        retention_expires_at=now + timedelta(days=retention_days),
+        consent_provider_processing=consent_provider_processing,
+        created_at=now,
+    )
+    db.add(record)
+    db.flush()
+    return record
+
+
+def _photo_rows(rows: str) -> tuple[int, int]:
+    """The rows a photo covers, first and last: "0", or "0-1" for rows 0 to 1."""
+    match = re.fullmatch(r"(\d+)(?:-(\d+))?", rows.strip())
+    if not match:
+        raise HTTPException(status_code=400, detail="ROWS_INVALID")
+    start = int(match.group(1))
+    end = int(match.group(2) or start)
+    if end < start:
+        raise HTTPException(status_code=400, detail="ROWS_INVALID")
+    return start, end
+
+
+# A photo in one of these is no longer stored, so nothing can read it again.
+PHOTO_GONE = frozenset(
+    {
+        ImageAccessDecision.ASSET_MISSING,
+        ImageAccessDecision.ASSET_DELETED,
+        ImageAccessDecision.RETENTION_EXPIRED,
+    }
+)
+
+
+def _photo_bytes(asset: ImageAssetRecord) -> bytes | None:
+    """A stored photo's bytes, or None once it has expired or been deleted. Bytes that aren't
+    the stored photo, or that went while it was read, are as good as gone. A store that can't
+    answer is a 503."""
+    if image_access_decision(asset, now=datetime.now(timezone.utc)) in PHOTO_GONE:
+        return None
+    path = Path(str(asset.storage_path))
+    try:
+        stored = get_file_store().ensure_local(path)
+    except StorageError as exc:
+        raise HTTPException(status_code=503, detail=exc.code) from None
+    try:
+        image = path.read_bytes() if stored else None
+    except FileNotFoundError:
+        return None
+    if image is None or hashlib.sha256(image).hexdigest() != str(asset.content_sha256):
+        return None
+    return image
+
+
+def _stored_photo(db: Session, reading: PhotoReadingRecord) -> tuple[ImageAssetRecord, bytes]:
+    """A Reading's stored photo and its bytes, refused with ``PHOTO_EXPIRED`` once it is gone:
+    a Reading never outlives its photo."""
+    asset = db.get(ImageAssetRecord, reading.image_asset_id)
+    if asset is None or (image := _photo_bytes(asset)) is None:
+        raise HTTPException(status_code=409, detail="PHOTO_EXPIRED")
+    return asset, image
+
+
+def _supersede(db: Session, reading_id: str, *, statuses: tuple[str, ...]) -> bool:
+    return move_readings(db, [reading_id], from_statuses=statuses, to="superseded") == 1
 
 
 def _asset_response(
@@ -127,7 +278,8 @@ async def upload_rack_evidence_images(
     """Upload one or more images as untrusted evidence for a rack.
 
     Images are re-encoded and metadata-stripped. Provider processing consent is
-    recorded; live cloud providers are not invoked — mock evidence only.
+    recorded; live cloud providers are not invoked. Mock evidence never runs in production:
+    there the photo is stored and nothing is read.
     """
     rack = owned_private_rack(db, rack_id, current_user)
     if not files:
@@ -148,7 +300,6 @@ async def upload_rack_evidence_images(
         allow_live_calls=False,
     )
     now = datetime.now(timezone.utc)
-    expires = now + timedelta(days=retention_days)
     user_id = int(rack.user_id)  # type: ignore[arg-type]
 
     for upload in files:
@@ -170,38 +321,26 @@ async def upload_rack_evidence_images(
                 )
                 continue
 
-            asset_id = f"img-{uuid.uuid4().hex[:20]}"
-            storage_name = f"{prepared.sha256}.jpg"
-            storage_path = _evidence_root() / storage_name
-            if not storage_path.exists():
-                storage_path.write_bytes(prepared.content)
-            # Never record a path whose bytes are not durable.
             try:
-                get_file_store().persist(storage_path)
+                record = _store_image_asset(
+                    db,
+                    prepared,
+                    rack_id=rack_id,
+                    user_id=user_id,
+                    retention_days=retention_days,
+                    consent_provider_processing=consent_provider_processing,
+                    now=now,
+                )
             except StorageError as exc:
                 rejected.append({"filename": filename, "reason": exc.code})
                 continue
-
-            record = ImageAssetRecord(
-                id=asset_id,
-                rack_id=rack_id,
-                user_id=user_id,
-                content_sha256=prepared.sha256,
-                media_type=prepared.media_type,
-                width=prepared.width,
-                height=prepared.height,
-                byte_length=len(prepared.content),
-                storage_path=str(storage_path),
-                retention_days=retention_days,
-                retention_expires_at=expires,
-                consent_provider_processing=consent_provider_processing,
-                created_at=now,
-            )
-            db.add(record)
-            db.flush()
+            asset_id = str(record.id)
 
             evidence_status = None
-            if run_vision_mock:
+            # The mock derives what it "sees" from the photo's hash, so production never runs it:
+            # there a Module nobody saw would be offered (decision 63). Staging keeps it for its
+            # checks on test cards (006 T060b).
+            if run_vision_mock and settings.environment.strip().lower() != "production":
                 packet = collect_evidence_packet(
                     provider,
                     VisionProviderContext(
@@ -247,6 +386,236 @@ async def upload_rack_evidence_images(
     return MultiImageUploadResponse(uploaded=uploaded, rejected=rejected)
 
 
+@router.get("/evidence/photo-reading", response_model=PhotoReadingCapability)
+def photo_reading_capability() -> PhotoReadingCapability:
+    """Whether this host reads Rig photos, and why not when it doesn't (spec 009). Read-only,
+    and open to anyone, so the Photo screen can offer manual entry instead."""
+    reason = photo_reading_closed_reason()
+    return PhotoReadingCapability(available=reason is None, reason=reason)
+
+
+@router.post("/evidence/rig-photos", response_model=RigPhotoStartResponse, status_code=201)
+async def start_rig_from_photo(
+    file: UploadFile = File(...),
+    rows: str = Form("0"),
+    rig_id: int | None = Form(None),
+    replaces_reading_id: str | None = Form(None),
+    retention_days: int = Form(DEFAULT_RETENTION_DAYS),
+    consent_provider_processing: bool = Form(False),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+) -> RigPhotoStartResponse:
+    """Start a Rig from a photo of it, or add a photo to the owner's Rig (spec 009).
+
+    With no ``rig_id`` this creates the Rig, with no Case, and stores the photo as its
+    evidence in one request. The photo is re-encoded, metadata-stripped, private, and
+    expires like every evidence image. ``rows`` names the rows it covers. The photo is read
+    at once, and ``reading_id`` names its Reading, ``read`` or ``failed``. A host that reads
+    no photos refuses before storing anything. A provider that sends the photo away reads it
+    only when ``consent_provider_processing`` says the owner agreed.
+
+    A Retake names the Rig's current Reading it replaces in ``replaces_reading_id``, and that
+    Reading becomes ``superseded``. A photo that names none is another photo of the Rig.
+    """
+    if photo_reading_closed_reason():
+        raise HTTPException(status_code=409, detail="PHOTO_READING_UNAVAILABLE")
+    covered = _photo_rows(rows)
+    if retention_days < 1 or retention_days > MAX_RETENTION_DAYS:
+        raise HTTPException(status_code=400, detail="RETENTION_DAYS_INVALID")
+    if replaces_reading_id is not None and rig_id is None:
+        raise HTTPException(status_code=400, detail="RETAKE_NEEDS_RIG")
+    rack = owned_private_rack(db, rig_id, current_user, label="Rig") if rig_id is not None else None
+    if replaces_reading_id is not None:
+        replaced = (
+            db.query(PhotoReadingRecord)
+            .filter(
+                PhotoReadingRecord.id == replaces_reading_id,
+                PhotoReadingRecord.rack_id == rig_id,
+            )
+            .first()
+        )
+        if replaced is None:
+            raise HTTPException(status_code=404, detail="READING_NOT_FOUND")
+        if replaced.status not in REPLACEABLE_STATUSES:
+            raise HTTPException(status_code=409, detail="READING_NOT_REPLACEABLE")
+
+    raw = await file.read()
+    try:
+        prepared = prepare_image_evidence(
+            raw,
+            declared_media_type=file.content_type,
+            scanner=SignatureImageScanner(),
+        )
+    except UnsafeImageError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from None
+    quality = assess_local_image_quality(prepared)
+    if not quality.accepted:
+        reason = quality.reasons[0] if quality.reasons else "QUALITY_REJECTED"
+        raise HTTPException(status_code=400, detail=reason)
+
+    if rack is None:
+        name = generate_rig_suggested_name([])
+        owner_id = int(current_user.id)  # type: ignore[arg-type]
+        rack = Rack(
+            user_id=owner_id,
+            case_id=None,
+            name=name,
+            name_suggested=name,
+            tags=[],
+            is_public=False,
+            generation_seed=hash_string_to_seed(f"rack-{owner_id}-photo-{prepared.sha256}"),
+        )
+        db.add(rack)
+        db.flush()
+    if replaces_reading_id is not None and not _supersede(
+        db, replaces_reading_id, statuses=REPLACEABLE_STATUSES
+    ):
+        raise HTTPException(status_code=409, detail="READING_NOT_REPLACEABLE")
+    try:
+        # The photo is the Rig owner's evidence, as on the existing upload.
+        record = _store_image_asset(
+            db,
+            prepared,
+            rack_id=int(rack.id),  # type: ignore[arg-type]
+            user_id=int(rack.user_id),  # type: ignore[arg-type]
+            retention_days=retention_days,
+            consent_provider_processing=consent_provider_processing,
+            now=datetime.now(timezone.utc),
+        )
+    except StorageError as exc:
+        db.rollback()
+        raise HTTPException(status_code=503, detail=exc.code) from None
+    reading = read_photo(
+        db,
+        asset=record,
+        photo_sha256=hashlib.sha256(raw).hexdigest(),
+        image=prepared.content,
+        rows=covered,
+    )
+    db.commit()
+    return RigPhotoStartResponse(
+        rig_id=int(rack.id),  # type: ignore[arg-type]
+        photo_id=str(record.id),
+        reading_id=str(reading.id),
+    )
+
+
+def _named_candidate(candidate: dict[str, Any], modules: dict[int, Module]) -> dict[str, Any]:
+    """A candidate with its Module's maker, name and width, so the Reading screen can offer it."""
+    module = modules.get(int(candidate["module_id"]))
+    return {
+        **candidate,
+        "brand": module.brand if module else None,
+        "name": module.name if module else None,
+        "hp": module.hp if module else None,
+    }
+
+
+@router.get("/racks/{rack_id}/evidence/readings", response_model=PhotoReadingListResponse)
+def list_rack_photo_readings(
+    rack_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+) -> PhotoReadingListResponse:
+    """The Rig's Readings, oldest first, each with its Sightings by row and HP (spec 009)."""
+    private_rack(db, rack_id, current_user, label="Rig")
+    readings = (
+        db.query(PhotoReadingRecord)
+        .filter(PhotoReadingRecord.rack_id == rack_id)
+        .order_by(PhotoReadingRecord.created_at.asc(), PhotoReadingRecord.id.asc())
+        .all()
+    )
+    sightings: dict[str, list[PhotoSightingRecord]] = {r.id: [] for r in readings}  # type: ignore[misc]
+    if readings:
+        for sighting in (
+            db.query(PhotoSightingRecord)
+            .filter(PhotoSightingRecord.reading_id.in_(list(sightings)))
+            .order_by(
+                PhotoSightingRecord.row_index.asc(),
+                PhotoSightingRecord.start_hp.asc(),
+                PhotoSightingRecord.position.asc(),
+            )
+        ):
+            sightings[str(sighting.reading_id)].append(sighting)
+    named = {
+        int(c["module_id"]) for found in sightings.values() for s in found for c in s.candidates
+    }
+    modules = {int(m.id): m for m in db.query(Module).filter(Module.id.in_(named))} if named else {}
+    return PhotoReadingListResponse(
+        readings=[
+            PhotoReadingResponse(
+                reading_id=str(r.id),
+                photo_id=str(r.image_asset_id),
+                status=str(r.status),
+                reason_code=r.reason_code,
+                provider=str(r.provider),
+                provider_version=r.provider_version,
+                photo_sha256=str(r.photo_sha256),
+                policy_version=str(r.policy_version),
+                first_row=int(r.first_row),  # type: ignore[arg-type]
+                last_row=int(r.last_row),  # type: ignore[arg-type]
+                created_at=r.created_at,
+                completed_at=r.completed_at,
+                sightings=[
+                    SightingResponse(
+                        sighting_id=str(s.id),
+                        box=dict(s.box),
+                        kind=str(s.kind),
+                        row_index=int(s.row_index),  # type: ignore[arg-type]
+                        start_hp=int(s.start_hp),  # type: ignore[arg-type]
+                        hp=int(s.hp),  # type: ignore[arg-type]
+                        candidates=[_named_candidate(c, modules) for c in s.candidates],
+                        disposition=str(s.disposition),
+                    )
+                    for s in sightings[str(r.id)]
+                ],
+            )
+            for r in readings
+        ]
+    )
+
+
+@router.post(
+    "/racks/{rack_id}/evidence/readings/{reading_id}/retry",
+    response_model=RigPhotoStartResponse,
+    status_code=201,
+)
+def retry_rack_photo_reading(
+    rack_id: int,
+    reading_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+) -> RigPhotoStartResponse:
+    """Read a ``failed`` Reading's stored photo again as a new Reading, and supersede the
+    failed one (spec 009). Once the photo has expired or been deleted, the owner retakes."""
+    owned_private_rack(db, rack_id, current_user, label="Rig")
+    reading = (
+        db.query(PhotoReadingRecord)
+        .filter(PhotoReadingRecord.id == reading_id, PhotoReadingRecord.rack_id == rack_id)
+        .first()
+    )
+    if reading is None:
+        raise HTTPException(status_code=404, detail="READING_NOT_FOUND")
+    if photo_reading_closed_reason():
+        raise HTTPException(status_code=409, detail="PHOTO_READING_UNAVAILABLE")
+    if reading.status not in RETRYABLE_STATUSES:
+        raise HTTPException(status_code=409, detail="READING_NOT_FAILED")
+    asset, image = _stored_photo(db, reading)
+    if not _supersede(db, reading_id, statuses=RETRYABLE_STATUSES):
+        raise HTTPException(status_code=409, detail="READING_NOT_FAILED")
+    fresh = read_photo(
+        db,
+        asset=asset,
+        photo_sha256=str(reading.photo_sha256),
+        image=image,
+        rows=(int(reading.first_row), int(reading.last_row)),
+    )
+    db.commit()
+    return RigPhotoStartResponse(
+        rig_id=rack_id, photo_id=str(reading.image_asset_id), reading_id=str(fresh.id)
+    )
+
+
 @router.get("/racks/{rack_id}/evidence/images", response_model=ImageAssetListResponse)
 @router.get(
     "/canon/rigs/{rack_id}/evidence/images",
@@ -267,6 +636,31 @@ def list_rack_evidence_images(
     return ImageAssetListResponse(
         total=len(rows),
         assets=[_asset_response(row) for row in rows],
+    )
+
+
+@router.get("/racks/{rack_id}/evidence/images/{asset_id}/content")
+def rack_evidence_image_content(
+    rack_id: int,
+    asset_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+) -> Response:
+    """The owner's photo, for the Reading screen (spec 009): private, and never cached. Gone
+    once it has expired or been deleted."""
+    owned_private_rack(db, rack_id, current_user, label="Rig")
+    record = (
+        db.query(ImageAssetRecord)
+        .filter(ImageAssetRecord.id == asset_id, ImageAssetRecord.rack_id == rack_id)
+        .first()
+    )
+    image = _photo_bytes(record) if record is not None else None
+    if record is None or image is None:
+        raise HTTPException(status_code=404, detail="PHOTO_NOT_FOUND")
+    return Response(
+        content=image,
+        media_type=str(record.media_type),
+        headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"},
     )
 
 
@@ -377,7 +771,7 @@ class ConfirmationBatchResponse(BaseModel):
     inventory_canonical_hash: str | None
     confirmed_count: int
     unresolved_candidate_ids: list[str]
-    # Generation's own gate answer for this Rig (owner decision 35, #283).
+    # Generation's own gate answer for this Rig (#283).
     ready_for_generation: bool
     modules_to_place: list[ModuleToPlaceOut]
 
@@ -563,7 +957,7 @@ class InventoryRevisionSummary(BaseModel):
     confirmed_count: int
     unresolved_count: int
     # Generation reads the Rig's placements, not a revision, so every summary carries the
-    # gate's one answer for the Rig as it is now (owner decision 35, #283).
+    # gate's one answer for the Rig as it is now (#283).
     ready_for_generation: bool
     canonical_hash: str | None = None
     created_by: str | None = None
@@ -803,7 +1197,8 @@ def confirm_rack_evidence_candidates(
     # ClassificationEvidenceRecord is append-only; inventory linkage is via
     # SystemInventoryRevisionRecord + candidate source_candidate_ids, not mutation.
     db.commit()
-    # A confirmation adds no placement; generation reads placements (owner decision 35, #283).
+    # A candidate has no position, so confirming it adds no placement; generation reads
+    # placements (#283). Confirming a Reading does place its Modules (decision 59).
     gate_report, _ = evaluate_rack_inventory_gate(db, rack)
     return ConfirmationBatchResponse(
         inventory_revision_id=inventory.inventory_revision_id,
@@ -812,6 +1207,53 @@ def confirm_rack_evidence_candidates(
         unresolved_candidate_ids=list(inventory.unresolved_candidate_ids),
         ready_for_generation=gate_report.ready,
         modules_to_place=_modules_to_place(db, rack, inventory),
+    )
+
+
+class ReadingConfirmResponse(BaseModel):
+    rig_revision_id: str
+    inventory_revision_id: str
+    ready_for_generation: bool
+    placements: list[dict[str, int]]
+    modules_to_place: list[ModuleToPlaceOut]
+    # Advisories on the layout, such as POWER_UNSPECIFIED when no Case states a budget.
+    warnings: list[dict[str, Any]] = Field(default_factory=list)
+
+
+@router.post(
+    "/racks/{rack_id}/evidence/readings/confirm",
+    response_model=ReadingConfirmResponse,
+    status_code=201,
+)
+def confirm_rack_photo_readings(
+    rack_id: int,
+    body: ReadingConfirmRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_auth),
+) -> ReadingConfirmResponse:
+    """Confirm the Rig's current Readings as its layout (spec 009).
+
+    The owner's final list becomes the Rig's placements, in one new Rig revision, and
+    readiness counts those positions. A refusal answers ``{"code", "modules"}`` and writes
+    nothing.
+    """
+    from patches.inventory_gate import evaluate_rack_inventory_gate
+
+    rack = owned_private_rack(db, rack_id, current_user, label="Rig")
+    try:
+        result = confirm_readings(db, rack, body, confirmed_by=f"user:{current_user.id}")
+    except ConfirmRefused as refused:
+        db.rollback()  # a refusal writes nothing, even after the Readings were claimed
+        raise HTTPException(status_code=refused.status_code, detail=refused.detail) from None
+    db.commit()
+    gate_report, _ = evaluate_rack_inventory_gate(db, rack)
+    return ReadingConfirmResponse(
+        rig_revision_id=result.rig_revision_id,
+        inventory_revision_id=result.inventory.inventory_revision_id,
+        ready_for_generation=gate_report.ready,
+        placements=result.placements,
+        modules_to_place=_modules_to_place(db, rack, result.inventory),
+        warnings=[w.model_dump() for w in result.warnings],
     )
 
 

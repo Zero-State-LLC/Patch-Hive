@@ -4,6 +4,8 @@
 **Date:** 2026-10-24  
 **Depends on:** Spec 005 (DecisionProvider + DecisionPolicy + DecisionPacket), constitution authority boundaries, Neon staging branch, existing Vite frontend + FastAPI backend.
 
+**Changed by [spec 009](../009-photo-to-patchbook/spec.md) (2026-11-07).** The NVIDIA prompt through the Clef adapter returns every Sighting in a whole-rig photo in one structured answer (009 T022). The adapter's fail-closed rules don't change.
+
 ## Problem
 
 PatchHive is late-alpha. The domain `patch-hive.com` is now on Cloudflare. Production deploy has not been performed. A public beta requires an edge frontend, a reachable API hostname, continued use of Neon, and a vision-capable classifier that stays inside the Spec 005 authority boundary.
@@ -105,7 +107,7 @@ Checked against `main` at 95ca9ee. Decision research is in [research.md](researc
 | FR-004 Clef as DecisionProvider | Implemented | Adapter state machine, flag default off (T020) [OBSERVED: backend/intelligence/clef_provider.py, core/config.py] |
 | FR-005 Policy ownership unchanged | Implemented | Guarded resolution applies `DecisionPolicy` (T060a) [OBSERVED: backend/intelligence/clef_resolution.py] |
 | FR-006 State machines | Partial | All three machines exist and pass tests [OBSERVED: tests/integration/test_006_edge_clef_state_machines.py, 2026-10-29 run]. `gates_pass` accepts any 64-hex SHA (R1); the Jev path skips the resolution machine (005 research R2) |
-| FR-007 Evaluation gate | Partial | Clef flag off by default and refused in production (#132). Corpus has 0 cases (007 T010b); the receipt is forgeable (007 research R1) |
+| FR-007 Evaluation gate | Partial | Clef flag off by default and refused in production (#132). The corpus isn't admitted yet; it has held 5 Commons cases since 2026-11-08 (007 T010b); the receipt is forgeable (007 research R1) |
 | Ops: deploy workflows (no FR) | Partial | No environment protection on production targets, a foreign workflow, an extra `actions: write`, an unrevoked R2 token on failure (R2–R5) [OBSERVED: .github/workflows/] |
 
 Counts: 5 Implemented, 2 Partial, 0 Missing.

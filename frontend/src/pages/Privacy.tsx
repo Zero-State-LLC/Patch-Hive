@@ -145,9 +145,10 @@ export default function PrivacyPage() {
             an operator starts it, so a file can stay after its period ends.
           </p>
           <p>
-            The API can delete one of your photos at once. Its file goes unless another stored
-            upload is the identical file. The site has no button for this yet. Deleting a rig
-            doesn&apos;t remove its photos, and the site has no button for that either.
+            You can delete one of your photos at once, from its Rig&apos;s page. Its file goes
+            unless another stored upload is the identical file, and its reading keeps only what was
+            read. Deleting a rig doesn&apos;t remove its photos, and the site has no button for that
+            yet.
           </p>
         </section>
 

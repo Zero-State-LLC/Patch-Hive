@@ -1,0 +1,399 @@
+{
+ "purpose": "Doepfer A-138m width and the 44 Analogue Systems rows (docs/evidence/CATALOG_A138M_ANALOGUE_SYSTEMS_2026-11-08.md)",
+ "paid_attempts": 0,
+ "robots_note": "www.analoguesystems.co.uk serves robots.txt as application/octet-stream, which the shared transport's page filter reports as no answer. For this one file the MIME filter was widened through CatalogScraper's transport argument so the scraper could parse it. Its rules allow every path read here. Pages kept the filter.",
+ "reads": [
+  {
+   "url": "https://doepfer.de/A138m.htm",
+   "ok": true,
+   "status": 200,
+   "method": "cache",
+   "sha256": "9d1fd0f51cbeb68575254f406e7aa425b1700b184b7c95a1bd37de0fcd73b0e3",
+   "timestamp": "2026-11-08T23:31:37Z"
+  },
+  {
+   "url": "https://doepfer.de/A138.htm",
+   "ok": true,
+   "status": 200,
+   "method": "cache",
+   "sha256": "4396a5deb97d0a7bd10fd044cc5e4c7ad8e861fd6622c1b99401a2f369575c19",
+   "timestamp": "2026-11-08T23:31:37Z"
+  },
+  {
+   "url": "https://doepfer.de/a138.htm",
+   "ok": true,
+   "status": 200,
+   "method": "cache",
+   "sha256": "4396a5deb97d0a7bd10fd044cc5e4c7ad8e861fd6622c1b99401a2f369575c19",
+   "timestamp": "2026-11-08T23:31:37Z"
+  },
+  {
+   "url": "https://doepfer.de/a100m_e.htm",
+   "ok": false,
+   "status": 300,
+   "method": "free_http",
+   "sha256": "28e3dfea2af67348dfc8b6e1d6bb57c240ce56c2b612799f5601cf5473e5ffc1",
+   "timestamp": "2026-11-08T23:31:39Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/previous_site/modules.htm",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "75602da161167afb892c44eef8b91fcdc7e5c1b47f108ee2304ddeeb6cd7b16d",
+   "timestamp": "2026-11-08T23:31:41Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules",
+   "ok": false,
+   "status": 404,
+   "method": "free_http",
+   "sha256": "a1499e4c7eacdccdf85ad17fa3301c36ef78d1e13974f17823b2a9e973e1c621",
+   "timestamp": "2026-11-08T23:31:42Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-100n",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "1d73ec95089e17645dbc5318060e899b1bc95af25b9e15c95b269bc638062f38",
+   "timestamp": "2026-11-08T23:31:43Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-180n",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "3b73bc51777d6dacdb5ab811fe839f8e9d7e90e6b9d08a115099faa8f7b95ca7",
+   "timestamp": "2026-11-08T23:31:44Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-35-processor",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "4501ae346709a962ef908e64b0184616876cb580321c079b5a9f72eeea220a52",
+   "timestamp": "2026-11-08T23:31:45Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-500n",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "c7c1339bbce7cc62da60d7c83b5c711f14d185753160618171adb5535a75d55c",
+   "timestamp": "2026-11-08T23:31:46Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-510n",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "791da1cf152dc489f4ae9f7eac666005f6813c0a1561fa364633cd668c3a618d",
+   "timestamp": "2026-11-08T23:31:47Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-60n",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "23b0965f11f54e627fe2580f9dd73039cdc4ebb3a0e7716adec1907883babac5",
+   "timestamp": "2026-11-08T23:31:48Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-610n",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "3850acd3be90e17baeca5d8a2fff66ab2e7cbd20e2374ef6326a7a7d2fd76e8e",
+   "timestamp": "2026-11-08T23:31:49Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-650-echo-reverb",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "c8f4ccf0abe343d1a51556f7d3657702cf062199c4747ce5a95e1faefbd8ce06",
+   "timestamp": "2026-11-08T23:31:50Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs100",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "635391dbcc3ace6472fae5b929f8c6f894926d666b5f0ddde8343a327cfa0018",
+   "timestamp": "2026-11-08T23:31:51Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs110",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "771da716a62d2f77b6e574a0933c07d5fbe058b69120490daf889c43f9c6ad80",
+   "timestamp": "2026-11-08T23:31:52Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs110n",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "0b99436920eedf38e322a4b8b2b1db8f61381f6436252e6b5e095a244bc3cd47",
+   "timestamp": "2026-11-08T23:31:53Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs120",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "8081de0096d040d5059c44d4de74dd13a05b3f74a6d5e2bd3b2015f28ac9cd6e",
+   "timestamp": "2026-11-08T23:31:54Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs160",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "a1bb793ada407857c03bdbf7dab43f065383144165da7654c6286afc73827bb4",
+   "timestamp": "2026-11-08T23:31:55Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs165",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "1b0da23bf9d14eb02c9c51855e0dee7dadde64068db06150ce5f7171d0d7de87",
+   "timestamp": "2026-11-08T23:31:56Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs180",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "3791519d73bd69dd004c054d2d6dba75913b8f8fee577902c4375d615f9415c9",
+   "timestamp": "2026-11-08T23:31:58Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs20",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "d4add492c90a98d11aa30a9d753a4ec5046a0d903d2b5fc7ed66b3bbd0aee328",
+   "timestamp": "2026-11-08T23:31:59Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs215",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "69cc1990ba39cf6e8b1a247912eb5c59a0f5f18551bb11110793dcd8b023f10f",
+   "timestamp": "2026-11-08T23:32:00Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs220",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "ac0a1194ad000008668a9c4f58b9e723328a4c663d2e2c30dd2b712cfe6e9d59",
+   "timestamp": "2026-11-08T23:32:01Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs240",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "3c30e685896d0cf6ad145ad1c92694ea42576e9592d1b15c3cf6da58f0adbc1c",
+   "timestamp": "2026-11-08T23:32:02Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs250",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "b93c2275c6c11b30c7f76a8c7abc06308d3ed57eabf6c9d502a255b9aa5146f7",
+   "timestamp": "2026-11-08T23:32:03Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs260",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "8c37e457630efd6f202a7c0c7a6b5d6aca41c60bb2328b3aa88f6a5c7792a47c",
+   "timestamp": "2026-11-08T23:32:04Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs270",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "43cb44d1b9ad446c6165cbd915e6101afd4e370b5d4dd2fcb74c4a5bb5bdd494",
+   "timestamp": "2026-11-08T23:32:05Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs280",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "71584a2e3ad89731978e1e055fbed02ef01224075cd95f0a867dded916fbbe8d",
+   "timestamp": "2026-11-08T23:32:06Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs290",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "44ef10b12b7e823faa1aceba4f84dfb9180c1739cacad7f0b20c37324315c01b",
+   "timestamp": "2026-11-08T23:32:07Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs295",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "79c0ff19cf1121d4388b601cb1eb95b71fd308d2543e2b13cfa3594adb5ed28d",
+   "timestamp": "2026-11-08T23:32:08Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs310",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "193c937e74a143366029fe63f7c230b2dfb9b4818da3d4a9d1528f6a470dc770",
+   "timestamp": "2026-11-08T23:32:09Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs340",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "19b647f51d786c75efbfab43ea7f43136cf1d1fe23a71c35d4a34201e281074b",
+   "timestamp": "2026-11-08T23:32:10Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs350",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "8bad05b94caa3bcf1ae301a0b2f9e83f81af041f42f122222f610a77b4490b0a",
+   "timestamp": "2026-11-08T23:32:11Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs35n",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "0c0ffd439003bc1f052655dc89db61e2b10254ed1464c262ade81d9f3ddfea85",
+   "timestamp": "2026-11-08T23:32:12Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs360",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "7694108ee1f7158766c3c332ffb2a1412bddd332d65dcb8d01b487801dcc19b1",
+   "timestamp": "2026-11-08T23:32:13Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs380",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "d4d0fae78093eb53c2728c9e95e2eaf1bfa58f65696003447ce491ab1de1b74c",
+   "timestamp": "2026-11-08T23:32:14Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs380n",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "59656a0196c2cbbec244482105fac42e12f9107fba5d14636affde2d040f456c",
+   "timestamp": "2026-11-08T23:32:15Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs390",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "34c19f4728acec53cb165b422209b7908129b85cf2693fc3e7ce3269f9941ca1",
+   "timestamp": "2026-11-08T23:32:17Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs420",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "77d484070eeb5ef63b7a501f35f85a8a006d431e2a90c59cf9eeb50f264dc162",
+   "timestamp": "2026-11-08T23:32:18Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs430",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "61ece237b78a70787c35a7a2f326b5c4cac8e404cda5a16d8992982af5ce8c2b",
+   "timestamp": "2026-11-08T23:32:19Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs440",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "a767bd67042bae068e1f5901be5e3307c7016e3843b14c71f53eb3b0f5691ebe",
+   "timestamp": "2026-11-08T23:32:20Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs500e",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "606d8949c9b1b4c6b50bd30e20594ee0bac96338f4ddb35d347c144a6cf69984",
+   "timestamp": "2026-11-08T23:32:21Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs510e",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "245d0534b0942930685c8431eece388663c92b100bae2fe2fe3657b037de5a05",
+   "timestamp": "2026-11-08T23:32:22Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs600",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "523d8574de5fcef1ed9e4eb21f044abc4593e50174ef530f39323bcbeb6208f5",
+   "timestamp": "2026-11-08T23:32:23Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs70",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "9d98c06349be1a75e869d3ff24558ce1b3c17f03f415a6a2a1422e2fe92bd526",
+   "timestamp": "2026-11-08T23:32:24Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs85",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "d4dc0d13ce78910d85ec6497c4c494bde20c971c4bdb1fc90e879de5a2b795df",
+   "timestamp": "2026-11-08T23:32:25Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs95e",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "b4489fa00833be0e305e5866fad50f50bb81ddc800946a87ef56aaf8dd0dacd1",
+   "timestamp": "2026-11-08T23:32:26Z"
+  },
+  {
+   "url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs95n",
+   "ok": true,
+   "status": 200,
+   "method": "free_http",
+   "sha256": "eac71b9961574b95acbf999c723cf38a2ce35bc3026db5fcca257251811a1db3",
+   "timestamp": "2026-11-08T23:32:27Z"
+  }
+ ]
+}

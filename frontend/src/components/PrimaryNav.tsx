@@ -28,13 +28,10 @@ export default function PrimaryNav({
 
   return (
     <nav ref={ref} className="primary-nav" aria-label="Primary navigation">
-      <NavLink to="/racks">Rigs</NavLink>
-      <NavLink to="/modules">Modules</NavLink>
-      <NavLink to="/products">Products</NavLink>
-      <NavLink to="/cases">Cases</NavLink>
+      <NavLink to="/racks">My Rigs</NavLink>
       <NavLink to="/patches">Patches</NavLink>
       {signedIn ? <NavLink to="/account">Account</NavLink> : null}
-      {canSeeAdmin ? <NavLink to="/admin">Ops</NavLink> : null}
+      {canSeeAdmin ? <NavLink to="/admin">Admin</NavLink> : null}
     </nav>
   );
 }

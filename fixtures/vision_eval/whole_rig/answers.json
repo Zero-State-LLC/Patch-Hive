@@ -1,0 +1,36 @@
+{
+  "catalog": [
+    {"module_id": 1, "maker": "Mutable Instruments", "name": "Plaits"},
+    {"module_id": 2, "maker": "Make Noise", "name": "Maths"},
+    {"module_id": 3, "maker": "Mutable Instruments", "name": "Rings"},
+    {"module_id": 4, "maker": "Expert Sleepers", "name": "Disting EX"}
+  ],
+  "answers": {
+    "rig-a": {
+      "provider_version": "fixture-v1",
+      "sightings": [
+        {"box": {"x": 0.0, "y": 0.0, "w": 0.12, "h": 0.5}, "kind": "module", "row_index": 0, "start_hp": 0, "hp": 12,
+         "candidates": [{"module_id": 1, "score": 0.95}]},
+        {"box": {"x": 0.13, "y": 0.0, "w": 0.2, "h": 0.5}, "kind": "module", "row_index": 0, "start_hp": 13, "hp": 20,
+         "candidates": [{"module_id": 2, "score": 0.7}, {"module_id": 3, "score": 0.2}]},
+        {"box": {"x": 0.32, "y": 0.0, "w": 0.04, "h": 0.5}, "kind": "blank_panel", "row_index": 0, "start_hp": 32, "hp": 4},
+        {"box": {"x": 0.4, "y": 0.0, "w": 0.1, "h": 0.5}, "kind": "not_eurorack", "row_index": 0, "start_hp": 40, "hp": 10},
+        {"box": {"x": 0.0, "y": 0.5, "w": 0.14, "h": 0.5}, "kind": "module", "row_index": 1, "start_hp": 0, "hp": 14,
+         "candidates": [{"module_id": 3, "score": 0.6}]},
+        {"box": {"x": 0.15, "y": 0.5, "w": 0.08, "h": 0.5}, "kind": "unknown", "row_index": 1, "start_hp": 15, "hp": 8},
+        {"box": {"x": 0.3, "y": 0.5, "w": 0.06, "h": 0.5}, "kind": "module", "row_index": 1, "start_hp": 30, "hp": 6,
+         "candidates": [{"module_id": 1, "score": 0.5}]}
+      ]
+    },
+    "rig-b": {
+      "provider_version": "fixture-v1",
+      "sightings": [
+        {"box": {"x": 0.0, "y": 0.0, "w": 0.14, "h": 1.0}, "kind": "module", "row_index": 0, "start_hp": 0, "hp": 14,
+         "candidates": [{"module_id": 3, "score": 0.92}]},
+        {"box": {"x": 0.36, "y": 0.0, "w": 0.12, "h": 1.0}, "kind": "module", "row_index": 0, "start_hp": 36, "hp": 12,
+         "candidates": [{"module_id": 1, "score": 0.9}]},
+        {"box": {"x": 0.6, "y": 0.0, "w": 0.04, "h": 1.0}, "kind": "module", "row_index": 0, "start_hp": 60, "hp": 4}
+      ]
+    }
+  }
+}

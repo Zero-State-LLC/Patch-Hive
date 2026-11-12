@@ -3,7 +3,6 @@
  * onto it, its power, batch placement, the placed list, and the dual-gate compatibility result.
  */
 import type { ComponentProps } from "react";
-import { Link } from "react-router-dom";
 import { RailSkeleton } from "@/components/Skeletons";
 import type { PackResult } from "@/lib/placementPack";
 import type { PowerSummary } from "@/lib/powerBudget";
@@ -233,16 +232,13 @@ export default function PlacementStep({
           </div>
         ) : null}
 
-        <div className="toolbar">
-          {canLoadModules ? (
+        {canLoadModules ? (
+          <div className="toolbar">
             <button type="button" className="button button-secondary" onClick={onLoadModules}>
               Materialize HP-known modules
             </button>
-          ) : null}
-          <Link className="button button-quiet" to="/modules?hp=known">
-            Browse placeable catalog
-          </Link>
-        </div>
+          </div>
+        ) : null}
         {loadNote ? (
           <p className="status" role="status">
             {loadNote}

@@ -3,6 +3,7 @@
  */
 import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from "axios";
 import type {
+  CommerceStatus,
   CatalogMaterializeResponse,
   CatalogModuleListResponse,
   CatalogModuleStats,
@@ -29,11 +30,6 @@ import type {
   User,
   CanonicalExportRecord,
   ReferralSummary,
-  RegistryCoverage,
-  RegistryManufacturerList,
-  RegistrySearchResult,
-  Manufacturer,
-  DeviceModel,
 } from "@/types/api";
 import type {
   AdminUserList,
@@ -95,6 +91,8 @@ export const moduleApi = {
     hp_min?: number;
     hp_max?: number;
     tag?: string;
+    /** Every word must appear in the maker or the name. */
+    q?: string;
   }) => api.get<ModuleListResponse>("/modules/", { params }),
 
   /** Lightweight research/curated catalog browse (module_catalog table). */
@@ -298,44 +296,7 @@ export const patchApi = {
     api.post<GeneratePatchesResponse>(`/patches/generate/${rackId}`, request),
 };
 
-// Visual evidence API (photo → candidates → confirmation → inventory)
-export interface EvidenceCandidate {
-  candidate_id: string;
-  entity_type: string;
-  manufacturer?: string | null;
-  model?: string | null;
-  confidence: number;
-  confidence_method: string;
-  alternative_candidates: string[];
-  classification_status: string;
-  evidence_id: string;
-  image_asset_id?: string | null;
-  gallery_revision_id?: string | null;
-  gallery_module_id?: string | null;
-  /** Optional, non-authoritative Decision Intelligence projection. */
-  decision_advisory?: {
-    disposition: "auto_propose" | "user_review" | "unresolved" | "escalate" | "reject";
-    provider?: string;
-    confidence?: number | null;
-    reason_codes?: string[];
-  } | null;
-}
-
-export interface EvidenceCandidateListResponse {
-  total: number;
-  candidates: EvidenceCandidate[];
-}
-
-export interface MultiImageUploadResponse {
-  uploaded: Array<{
-    id: string;
-    rack_id: number;
-    content_sha256: string;
-    evidence_status?: string | null;
-  }>;
-  rejected: Array<{ filename: string; reason: string }>;
-}
-
+// Visual evidence API: the Rig's confirmed inventory
 /** A photo-confirmed module not on the rig yet. `module_id` is null with no single catalog match. */
 export interface ModuleToPlace {
   instance_id: string;
@@ -343,15 +304,6 @@ export interface ModuleToPlace {
   manufacturer?: string | null;
   model?: string | null;
   module_id?: number | null;
-}
-
-export interface ConfirmationBatchResponse {
-  inventory_revision_id: string;
-  inventory_canonical_hash?: string | null;
-  confirmed_count: number;
-  unresolved_candidate_ids: string[];
-  ready_for_generation: boolean;
-  modules_to_place: ModuleToPlace[];
 }
 
 export interface InventoryRevisionSummary {
@@ -377,73 +329,125 @@ export interface InventoryRevisionListResponse {
 const evidencePath = (rigId: number, suffix: string) => `/canon/rigs/${rigId}/evidence/${suffix}`;
 
 export const evidenceApi = {
-  uploadImages: (
-    rackId: number,
-    files: File[],
-    options?: {
-      retention_days?: number;
-      consent_provider_processing?: boolean;
-      run_vision_mock?: boolean;
-    },
+  listInventory: (rackId: number) =>
+    api.get<InventoryRevisionListResponse>(evidencePath(rackId, "inventory")),
+};
+
+// Spec 009: a photo of the whole Rig in, its Reading out.
+export interface PhotoReadingCapability {
+  available: boolean;
+  /** Why not, as a reason code, when it isn't. */
+  reason: string | null;
+}
+
+export interface ReadingCandidate {
+  module_id: number;
+  score: number;
+  brand: string | null;
+  name: string | null;
+  hp: number | null;
+}
+
+export type SightingKind = "module" | "blank_panel" | "unknown" | "not_eurorack";
+export type SightingDisposition = "auto_propose" | "user_review" | "unresolved";
+
+export interface Sighting {
+  sighting_id: string;
+  /** Bounds in the photo, from 0 to 1. */
+  box: { x: number; y: number; w: number; h: number };
+  kind: SightingKind;
+  row_index: number;
+  start_hp: number;
+  hp: number;
+  candidates: ReadingCandidate[];
+  disposition: SightingDisposition;
+}
+
+export type ReadingStatus = "reading" | "read" | "failed" | "confirmed" | "superseded";
+
+export interface PhotoReading {
+  reading_id: string;
+  photo_id: string;
+  status: ReadingStatus;
+  reason_code: string | null;
+  provider: string;
+  provider_version: string | null;
+  first_row: number;
+  last_row: number;
+  created_at: string;
+  completed_at: string | null;
+  sightings: Sighting[];
+}
+
+/** A photo kept as a Rig's evidence, private to its owner. */
+export interface RigPhotoAsset {
+  id: string;
+  created_at: string;
+  retention_expires_at: string;
+}
+
+export interface RigPhotoStart {
+  rig_id: number;
+  photo_id: string;
+  reading_id: string;
+}
+
+export interface ReadingConfirmRequest {
+  items: { sighting_id: string; module_id: number; row_index: number; start_hp: number }[];
+  added: { module_id: number; row_index: number; start_hp: number }[];
+  excluded: string[];
+  case_id: number | null;
+}
+
+export interface ReadingConfirmResponse {
+  rig_revision_id: string;
+  inventory_revision_id: string;
+  ready_for_generation: boolean;
+  placements: { module_id: number; row_index: number; start_hp: number }[];
+}
+
+const readingsPath = (rigId: number, suffix = "") => `/racks/${rigId}/evidence/readings${suffix}`;
+
+export const photoApi = {
+  capability: () => api.get<PhotoReadingCapability>("/evidence/photo-reading"),
+
+  /** Start a Rig from a photo, or add one to `rigId`; a Retake names the Reading it replaces. */
+  start: (
+    file: File,
+    options: { rows: string; consent: boolean; rigId?: number; replacesReadingId?: string },
   ) => {
     const form = new FormData();
-    files.forEach((file) => form.append("files", file));
-    form.append("retention_days", String(options?.retention_days ?? 30));
-    form.append(
-      "consent_provider_processing",
-      String(options?.consent_provider_processing ?? false),
-    );
-    form.append("run_vision_mock", String(options?.run_vision_mock ?? true));
-    return api.post<MultiImageUploadResponse>(evidencePath(rackId, "images"), form, {
+    form.append("file", file);
+    form.append("rows", options.rows);
+    form.append("consent_provider_processing", String(options.consent));
+    if (options.rigId != null) form.append("rig_id", String(options.rigId));
+    if (options.replacesReadingId) form.append("replaces_reading_id", options.replacesReadingId);
+    return api.post<RigPhotoStart>("/evidence/rig-photos", form, {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },
 
-  listImages: (rackId: number) => api.get(evidencePath(rackId, "images")),
+  readings: (rigId: number) => api.get<{ readings: PhotoReading[] }>(readingsPath(rigId)),
 
-  listCandidates: (rackId: number) =>
-    api.get<EvidenceCandidateListResponse>(evidencePath(rackId, "candidates")),
+  /** The owner's photo, private: fetched with their session, then shown from memory. */
+  photo: (rigId: number, photoId: string) =>
+    api.get<Blob>(`/racks/${rigId}/evidence/images/${encodeURIComponent(photoId)}/content`, {
+      responseType: "blob",
+    }),
 
-  reconcile: (rackId: number) =>
-    api.get<{
-      image_asset_ids: string[];
-      image_count: number;
-      fused_entities: Array<{
-        fuse_id: string;
-        entity_key: string;
-        manufacturer?: string | null;
-        model?: string | null;
-        entity_type: string;
-        observation_count: number;
-        supporting_image_ids: string[];
-        mean_confidence: number;
-        max_confidence: number;
-        conflict: boolean;
-        conflict_notes: string[];
-        classification_status: string;
-        representative_candidate_id?: string | null;
-      }>;
-      unmatched_candidate_ids: string[];
-      conflict_count: number;
-      status: string;
-      note: string;
-    }>(evidencePath(rackId, "reconcile")),
+  /** The Rig's kept photos, newest first; a deleted one isn't listed. */
+  photos: (rigId: number) =>
+    api.get<{ total: number; assets: RigPhotoAsset[] }>(`/racks/${rigId}/evidence/images`),
 
-  confirm: (
-    rackId: number,
-    body: {
-      confirmed_by?: string;
-      decisions: Array<{
-        candidate_id: string;
-        status: string;
-        module_revision_id?: string | null;
-        notes?: string | null;
-      }>;
-    },
-  ) => api.post<ConfirmationBatchResponse>(evidencePath(rackId, "confirmations"), body),
+  /** Delete a photo now: its file goes, and its Reading keeps only what was read. */
+  deletePhoto: (rigId: number, photoId: string) =>
+    api.delete(`/racks/${rigId}/evidence/images/${encodeURIComponent(photoId)}`),
 
-  listInventory: (rackId: number) =>
-    api.get<InventoryRevisionListResponse>(evidencePath(rackId, "inventory")),
+  retry: (rigId: number, readingId: string) =>
+    api.post<RigPhotoStart>(readingsPath(rigId, `/${encodeURIComponent(readingId)}/retry`)),
+
+  confirm: (rigId: number, body: ReadingConfirmRequest) =>
+    api.post<ReadingConfirmResponse>(readingsPath(rigId, "/confirm"), body),
 };
 
 // Run API — list prefers canon alias; patches still legacy until dual-written.
@@ -505,6 +509,21 @@ export const canonApi = {
     api.get<RunListResponse>("/canon/runs", { params: { rig_id: rigId } }),
 
   getBalance: () => api.get<{ balance: number }>("/canon/credits/balance"),
+
+  /** What this user can buy and what they hold. Offers appear only while checkout is open. */
+  getCommerce: () => api.get<CommerceStatus>("/canon/commerce"),
+
+  startCreditCheckout: (credits: number) =>
+    api.post<{ checkout_url: string }>("/canon/checkout/credits", { credits }),
+
+  startPlanCheckout: (tier: string) =>
+    api.post<{ checkout_url: string }>("/canon/checkout/subscription", { tier }),
+
+  /** Ends the plan at the period end. Credits already granted stay. */
+  cancelPlan: () =>
+    api.post<{ cancel_at_period_end: boolean; current_period_end: string }>(
+      "/canon/subscription/cancel",
+    ),
 
   getCreditsSummary: () =>
     api.get<{
@@ -846,18 +865,6 @@ export const accountApi = {
    */
   deleteAccount: (password: string) =>
     api.delete<void>("/me", { data: { password }, withCredentials: true, timeout: 60_000 }),
-};
-
-// Registry / PDB API (Phase 2)
-export const registryApi = {
-  listManufacturers: (params?: { limit?: number; offset?: number }) =>
-    api.get<RegistryManufacturerList>("/registry/manufacturers", { params }),
-  search: (q: string, limit = 20, config?: Pick<AxiosRequestConfig, "signal">) =>
-    api.get<RegistrySearchResult>("/registry/search", { ...config, params: { q, limit } }),
-  getCoverage: () => api.get<RegistryCoverage>("/registry/coverage"),
-  getManufacturer: (slug: string) => api.get<Manufacturer>(`/registry/manufacturers/${slug}`),
-  listModelsForManufacturer: (slug: string) =>
-    api.get<{ models: DeviceModel[] }>(`/registry/manufacturers/${slug}/models`),
 };
 
 export default api;

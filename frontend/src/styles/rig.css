@@ -592,8 +592,24 @@ div.rack-row-map__block {
   display: grid;
   gap: var(--space-5);
 }
-.rig-placed {
+.rig-placed,
+.rig-photos {
   display: grid;
+  gap: var(--space-sm);
+}
+/* The owner's kept photos: when each goes, and a way to delete it now */
+.rig-photos__list {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rig-photos__list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
   gap: var(--space-sm);
 }
 /* Holds the title's line while the rig's name loads */
@@ -850,9 +866,12 @@ div.rack-row-map__block {
 .patch-rail .rack-row-map:not(:has(.rack-row-map__block)) {
   display: none;
 }
+/* Sized by the stage, not by its last measurement, so it can't outgrow the stage between frames. */
 .patch-rail__cables {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: var(--z-raised);
   overflow: visible;
   pointer-events: none;

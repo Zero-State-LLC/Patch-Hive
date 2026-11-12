@@ -1,6 +1,8 @@
 # 003: Catalog dataset pipeline (scrape, enrich, admit)
 
-Status: DRAFT (2026-10-16). Filled by Opus 5.5 via OpenRouter from the repo docs and code listed under Sources. Each claim is labeled `[OBSERVED: <file>]` or `[INFERRED]`. The operator must confirm every `[INFERRED]` item before planning.
+Status: CONFIRMED by an agent under the owner's delegation (T001, 2026-11-04), and converged with the code at T090 (2026-11-06). Written from the repo docs and code listed under Sources. Labels mark where a claim came from: `[OBSERVED: <file>]`, or `[INFERRED]` where the [T001 record](T001_CONFIRMATION_2026-11-04.md) classifies it.
+
+**Changed by [spec 009](../009-photo-to-patchbook/spec.md) (2026-11-07).** The catalog is now the reference a Reading matches against, and the search used to fix a misread Module. It is no longer a public product to browse: the Modules, Products and Cases pages leave the product (decision 58, [ADR-007](../../docs/adr/ADR-007-photo-first-product.md), superseding ADR-006). Nothing in this pipeline changes, and anonymous reads of the catalog API stay as decision 39 left them.
 
 ## Owner decisions (2026-10-27)
 
@@ -16,7 +18,7 @@ Recorded after the T001 review. These are confirmed and override the `[INFERRED]
   - The fetch job targets official manufacturer product pages and manuals (`access_basis = official_publication`).
   - Retailer pages (Perfect Circuit, Thomann and others) are allowed only as one-off manual lookups, recorded as `RETAILER_OBSERVED` (`access_basis = manual_research`). They are never canonical and never bulk-crawled.
   - ModularGrid is never fetched.
-  - **Update 2026-11-04 (`docs/evidence/OWNER_DECISIONS_2026-11-04.md`, option C).** `official_publication` covers facts only (name, HP, power, depth, category), under the conditions in [EXTERNAL_SOURCE_POLICY.md](../../docs/EXTERNAL_SOURCE_POLICY.md). A maker who opts out, or whose terms forbid automated access, is set to `unknown` and left out. Anything beyond facts needs the maker's permission first (`maker_permission`).
+  - **Update 2026-11-04 (`docs/evidence/OWNER_DECISIONS_2026-11-04.md`, option C).** `official_publication` covers facts only (name, HP, power, depth, category), under the conditions in [EXTERNAL_SOURCE_POLICY.md](../../docs/EXTERNAL_SOURCE_POLICY.md). A maker who opts out, or whose terms forbid automated access, is set to `unknown` and left out. **Update 2026-11-08 (decision 65).** `official_publication` also covers descriptions, manuals and pictures on a maker's own site, so they no longer need `maker_permission` first.
 
 ## Owner decisions (2026-10-28)
 
@@ -27,7 +29,7 @@ D3 and D6 were confirmed by the owner during the 2026-10-28 catalog work (#116, 
 - **D5 One loader.** The catalog loader (`data/synth-catalog/population.py`) is the only writer of catalog rows. `seed_catalog_from_synth.py` (both copies) is deleted: no automation ran it, it overwrote HP, category and source, and it invented defaults (HP 10, type VCO).
 - **D6 A crawl never takes another maker's homepage.** A brand whose resolved homepage another brand owns is refused before crawling (FR-037).
 - **D7 A refused site stays refused (2026-10-29).** Frap Tools' host accepts no TCP connection from the crawl network (ports 80 and 443, observed 2026-10-29), and Tiptop answers every request with a CAPTCHA. Neither is fetched through a paid renderer or proxy from another network. Both are excluded until the maker supplies data or access (research R3).
-  - **Update 2026-11-04 (`docs/evidence/OWNER_DECISIONS_2026-11-04.md`).** A page that answers 401, 403 or 451, and a robots.txt that answers 401 or 403, are refusals too and never reach a paid backend. On a page, 429, 5xx and timeouts are load, not refusal, and stay eligible for a paid retry. Stricter than that decision (added in #254): a robots.txt that gives any other answer but 200 or 404, or no answer, stops every fetch of that host for the run. A refused connection cannot be told from a timeout (the router sees status 0 for both). So on robots.txt either one stops the host, while on a page either one stays eligible for a paid retry. A host that refuses every connection stays excluded by name as well, as Frap is.
+  - **Update 2026-11-04 (`docs/evidence/OWNER_DECISIONS_2026-11-04.md`).** A page that answers 401, 403 or 451, and a robots.txt that answers 401 or 403, are refusals too and never reach a paid backend. On a page, 429, 5xx and timeouts are load, not refusal, and stay eligible for a paid retry. Stricter than that decision (added in #254): a robots.txt that gives any other answer but 200 or 404, or no answer, stops every fetch of that host for the run. A refused connection cannot be told from a timeout (the router sees status 0 for both). So on robots.txt either one stops the host, while on a page either one stays eligible for a paid retry. A host that refuses every connection stays excluded by name as well, as Frap is. **Changed 2026-11-09 (decision 66):** a 403 on robots.txt whose body is a file-storage service's own error reply counts as a 404, because the host has no robots file. Any other 401 or 403 there stays a refusal, and so does a page's 403.
 - **D8 Jumper-dependent power is stored per setting (2026-10-29).** A module whose draw depends on a jumper gets one +12 V / −12 V / +5 V set per setting, each with its source page (`power_configs`). The single draw columns stay unknown for it (FR-022). This is not implemented yet: the committed crawl keeps only one value per page, so the settings must be read from the maker pages again under an approved cap (research R4, R5; tasks T034, T035).
 
 ## Sources
@@ -42,7 +44,7 @@ D3 and D6 were confirmed by the owner during the 2026-10-28 catalog work (#116, 
 
 ## Summary
 
-PatchHive's curated catalog is small: 25 brands, 32 full-spec modules, and 7 cases [OBSERVED: backend/DATA_SOURCES.md]. Sealed research covers about 700 to 767 brands and 29 major brands in detail [OBSERVED: data/synth-catalog/PATCHHIVE_INTEGRATION.md]. Most Phase 2 rows have no HP [OBSERVED: backend/DATA_SOURCES.md].
+PatchHive's curated catalog is small: 25 brands, 32 full-spec modules, and 7 cases [OBSERVED: backend/DATA_SOURCES.md]. A scrape-derived seed (D1) names about 700 to 767 brands and 29 major brands in detail [OBSERVED: data/synth-catalog/PATCHHIVE_INTEGRATION.md]. Most Phase 2 rows have no HP [OBSERVED: backend/DATA_SOURCES.md].
 
 This feature grows the module and case catalog from external sources. It does the following:
 
@@ -60,43 +62,43 @@ The pipeline never invents a spec. A missing value stays null or `NOT_COMPUTABLE
 - Full rack placement needs HP. Sparse HP limits the catalog to discovery only [OBSERVED: backend/DATA_SOURCES.md].
 - Constitution principles 2, 3, 6, and 9 apply here. Evidence is not canon, unknown stays unknown, provenance is mandatory, and the pipeline fails closed at trust boundaries.
 
-## Implementation status (2026-11-03)
+## Implementation status (2026-11-06)
 
-First table for this spec. Checked against the code on `main` at 3688037 (0.3.0-alpha.6). Open gaps link to [research.md](research.md) and to the open tasks in [tasks.md](tasks.md) (T001, T002, T010, T031, T039, T090). Totals: 25 implemented, 12 partial, 2 missing.
+Checked against the code at T090, after 0.3.0-alpha.15, with #335, #340 and #338. Open gaps link to [research.md](research.md) and to the open tasks in [tasks.md](tasks.md) (T031, T039, T092). Totals: 32 implemented, 8 partial, 0 missing.
 
 | FR | Status | Evidence |
 |---|---|---|
 | FR-001 | Implemented | `--targets` file of `{brand, name, slug}` and `--limit` [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]. |
-| FR-002 | Partial | The job no longer needs credentials. It fetches through the shared router: free HTTP first, paid backends only when a key is set, else a `skipped_no_key` receipt [OBSERVED: data/synth-catalog/catalog_scrape.py] (#66). Only the maker crawl's model step needs `OPENROUTER_API_KEY` [OBSERVED: scripts/catalog_maker_crawl.py]. The FR text predates the router; amend it or add a refusal (see unsettled list). |
+| FR-002 | Implemented | Free HTTP first; paid backends only with a key, else a `skipped_no_key` receipt [OBSERVED: data/synth-catalog/catalog_scrape.py] (#66). A target left unread is `refused`, not `not_found`, and `--resume` retries it (#335) [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]. Only the maker crawl's model step needs `OPENROUTER_API_KEY` [OBSERVED: scripts/catalog_maker_crawl.py]. |
 | FR-003 | Implemented | A paid fetch needs an unexpired, in-cap entry in `receipts/fetch-approvals.json`, else `skipped_no_approval`; the maker crawl also checks before a non-dry-run (T040, OQ-3, #196) [OBSERVED: data/synth-catalog/catalog_scrape.py `_reserve_paid`, `check_paid_approval`; scripts/catalog_maker_crawl.py; backend/tests/test_catalog_scrape_router.py]. Free fetches are unchanged, so a free run still starts without an approval. |
 | FR-004 | Implemented | Only `official` candidate URLs, `candidates[:6]`, retailer fallback removed (T022, D2) [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] (#65). The crawler never fetches resellers [OBSERVED: scripts/catalog_maker_crawl.py header]. |
 | FR-005 | Implemented | Candidate lists contain no search URLs, and `catalogsearch`, `search_dir.html` and `/search?` URLs are skipped [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]. The crawler uses search only to resolve a brand homepage, never to extract values [INFERRED from scripts/catalog_maker_crawl.py]. |
 | FR-006 | Implemented | A page with no HP match returns `not_found` with `access_basis = None` [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]. Retailer values exist only as one-off lookups, `RETAILER_OBSERVED` [OBSERVED: data/synth-catalog/overlays/module-catalog-hp-retailer-v1.json] (#180). ModularGrid is on the router deny list [OBSERVED: catalog_scrape.py `DENY_HOSTS`]. |
 | FR-007 | Implemented | `extract_hp` reads up to 104, then `process_one` discards anything outside 1 to 42 [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]. |
-| FR-008 | Implemented | `--sleep` delay (default 0.35 s) and a per-host delay in the router. The tier defaults to `basic`; `PATCHHIVE_FIRECRAWL_PROXY` accepts `basic`, `stealth`, `auto` and rejects other values, and a non-basic tier needs an approvals entry naming it. A bot check, a 401, 403 or 451 page and a 401 or 403 robots.txt never reach a paid backend, including through `render`, which makes one free GET first. Any other robots.txt answer but 200 or 404, or none, stops the host for the run [OBSERVED: catalog_scrape.py `_wait`, `firecrawl_proxy_tier`, `_reserve_paid`, `_refusal`, `_robots_allow`, `fetch`; backend/tests/test_catalog_scrape_router.py] (#65, #254). |
+| FR-008 | Implemented | `--sleep` delay (default 0.35 s) and a per-host delay in the router. The tier defaults to `basic`; `PATCHHIVE_FIRECRAWL_PROXY` accepts `basic`, `stealth`, `auto` and rejects other values, and a non-basic tier needs an approvals entry naming it. A bot check, a 401, 403 or 451 page and a 401 or 403 robots.txt never reach a paid backend, including through `render`, which makes one free GET first. Any other robots.txt answer but 200 or 404, or none, stops the host for the run, except a 403 that is a file-storage service's own error reply, which counts as a 404 (decision 66) [OBSERVED: catalog_scrape.py `_wait`, `firecrawl_proxy_tier`, `_reserve_paid`, `_refusal`, `_robots_allow`, `fetch`; backend/tests/test_catalog_scrape_router.py] (#65, #254). |
 | FR-009 | Implemented | The results file is rewritten after each target; `--resume` skips slugs already present [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]. |
-| FR-010 | Partial | No explicit untrusted-content handling or injection test. The structure helps: page text is parsed deterministically, and a model-confirmed value is accepted only when it appears verbatim on the maker page [OBSERVED: scripts/catalog_maker_crawl.py `verbatim`]. The hermes script is pure regex [INFERRED]. |
-| FR-011 | Implemented | `default_transport`: content-type allowlist (`MIME_NOT_ALLOWED`), 10 MiB cap before and during read (`BODY_TOO_LARGE`), non-public redirects refused; paid API replies go through the same transport [OBSERVED: catalog_scrape.py, backend/tests/test_catalog_transport_limits.py] (#103). |
+| FR-010 | Implemented | Page text goes only in the model's user message, a model value needs a verbatim match, and the HP scrape is a regex [OBSERVED: scripts/catalog_maker_crawl.py `verbatim`, scripts/hermes_hp_enrich_firecrawl.py], with injection tests in `backend/tests/unit/test_003_untrusted_pages.py` (#335). See the threat model. |
+| FR-011 | Implemented | `default_transport`: content-type allowlist (`MIME_NOT_ALLOWED`, which also admits a robots.txt served as `application/octet-stream`), 10 MiB cap before and during read (`BODY_TOO_LARGE`), non-public redirects refused; paid API replies go through the same transport [OBSERVED: catalog_scrape.py, backend/tests/test_catalog_transport_limits.py] (#103). |
 | FR-012 | Implemented | Found rows carry `hp`, `source_url`, `provenance = OBSERVED`, `source_authority = MANUFACTURER_PRIMARY`, `admission_status = EVIDENCE_ONLY`, `rights_status = RIGHTS_UNKNOWN`, plus `access_basis = official_publication` [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]. Only `MANUFACTURER_PRIMARY` can now be produced (D2). |
 | FR-013 | Implemented | `hp = None`, `NOT_COMPUTABLE`, `status = not_found` [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]. |
-| FR-014 | Partial | No filter step in code. `*.filtered.json` files were produced outside the repo scripts [OBSERVED: data/synth-catalog/hermes-research/*.filtered.json, filter label `official_only_hp_1_42`]. The loader checks the equivalent per overlay: an HP entry needs a maker `https://` source (`hp_overlay_unsourced`), a retirement or correction needs an `https://` evidence page [OBSERVED: population.py `_hp_entry_sourced`, `_correction_problem`, `_schedule_retirement`] (#152, #198). It does not check the full provenance packet. |
-| FR-015 | Partial | Lead rows are tagged `access_basis = unknown` / `CATALOG_OBSERVED` (FR-033). No bulk-publication gate, because no surface is treated as bulk publication or bulk export [INFERRED: grep of backend/export and backend/modules]. Anonymous reads leave these rows out (FR-033); whether those reads count as bulk publication is with counsel (owner decision 39). The first-party importers copy the tags and nothing blocks on them. |
-| FR-016 | Partial | A disagreement with a stored value is a counted conflict (`conflicts_total`, first 50 listed) and the stored value is kept [OBSERVED: population.py `Plan.conflict`] (#103). The incoming observation is not stored, and no field is marked `CONFLICTED`. The spec itself says "in part". |
-| FR-017 | Missing | No code writes a residual file. Retry files exist from manual batches [OBSERVED: hermes-research/hp-enrichment-batch1-retry.json]. |
-| FR-018 | Partial | Files are versioned (`overlays/*-vN.json`, `provenance/maker-corrections-vN.json`), and `inputs_hash` covers every seed, overlay and provenance file, so an edit after review blocks the apply [OBSERVED: population.py `inputs_hash`] (#198). No per-file content hash is stored, and "never edit in place" is a review convention [INFERRED]. |
+| FR-014 | Implemented | `scripts/filter_fetch_results.py` excludes a row missing any field a fetch row records (#335). The loader also checks each overlay: an HP entry needs a maker `https://` source (`hp_overlay_unsourced`), and a retirement or correction an `https://` evidence page [OBSERVED: population.py `_hp_entry_sourced`]. The four older `*.filtered.json` files came from outside the repo scripts. |
+| FR-015 | Partial | Lead rows are tagged `access_basis = unknown` / `CATALOG_OBSERVED` (FR-033), and the filter excludes any basis other than `official_publication` (#335). No bulk-publication gate, because no surface is treated as bulk publication or bulk export [INFERRED: grep of backend/export and backend/modules]. Anonymous reads leave these rows out (FR-033); whether those reads count as bulk publication is with counsel (owner decision 39). |
+| FR-016 | Partial | The filter keeps rows that disagree and marks them `CONFLICTED` (#335) [OBSERVED: scripts/filter_fetch_results.py]. In the loader, a disagreement with a stored value is a counted conflict (`conflicts_total`, first 50 listed) and the stored value is kept [OBSERVED: population.py `Plan.conflict`] (#103). The loader does not store the incoming observation (T092). |
+| FR-017 | Implemented | `scripts/filter_fetch_results.py` writes a residual targets file for `not_found` and `refused` rows, in the format `--targets` reads (#335). |
+| FR-018 | Implemented | Files are versioned, `applied-inputs.sha256` records each input's SHA-256, a test fails if one changes, and receipts list each hash (#340) [OBSERVED: scripts/freeze_catalog_inputs.py, backend/tests/unit/test_003_applied_inputs.py]. `inputs_hash` also blocks an apply after an edit (#198). |
 | FR-019 | Implemented | `populate()` is a dry run unless `apply` is set, writes a receipt only if `receipt_path` is given, and the local script has `--dry-run` [OBSERVED: population.py `populate`, scripts/import_catalog_population.py]. The script's default `--receipt` path means it always writes one. |
-| FR-020 | Implemented | `db-load.yml`: dry run by default, apply needs the reviewed `plan_hash` and `inputs_hash` or writes nothing [OBSERVED: .github/workflows/db-load.yml, population.py `populate`, backend/tests/test_catalog_population.py] (#103, #198). Operator approval is a manual `workflow_dispatch` on a protected environment [INFERRED]. |
+| FR-020 | Implemented | `db-load.yml`: dry run by default, apply needs the reviewed `plan_hash` and `inputs_hash` or writes nothing [OBSERVED: .github/workflows/db-load.yml, population.py `populate`, backend/tests/test_catalog_population.py] (#103, #198). Approval is a manual `workflow_dispatch`. The environments have no protection rule until the owner sets 006 T101b (T001 row 12). |
 | FR-021 | Implemented | Catalog insert is `WHERE NOT EXISTS (slug)`; a same-slug row with another brand or name is an `identity_mismatch` conflict; modules insert is `WHERE NOT EXISTS (brand, name)` (OQ-6) [OBSERVED: population.py `_schedule_catalog`, `_schedule_module`]. |
 | FR-022 | Implemented | Loader fills nulls only; a full module without HP is a conflict (`hp_required`) [OBSERVED: population.py `_schedule_module`, `_schedule_fill`]. A jumper-dependent rail stays unknown and settings go in `power_configs` (D8, T034) [OBSERVED: population.py `_schedule_power_configs`, backend/racks/validation.py `placement_draws`] (#166). |
 | FR-023 | Partial | `source = SynthCatalogResearch` is set on both tables, and `modules.source_reference` is set. `module_catalog` has no `source_reference` column, so catalog rows carry the source name only [OBSERVED: population.py `_schedule_catalog`, backend/modules/catalog.py]. |
-| FR-024 | Partial | A stored HP is never overwritten except by a reviewed correction, and later HP overlays must cite a maker page [OBSERVED: population.py `_schedule_hp`, `_hp_entry_sourced`] (#132, #152). The unsourced v1 overlay still loads (`UNSOURCED_HP_OVERLAYS`) with `hp_source = legacy_unsourced` (T039 open: 17 rows). The admin `enrich/hp` endpoint copies HP from `MODULES_DATABASE` and `modules` [OBSERVED: backend/integrations/synth_catalog_importer.py]. |
+| FR-024 | Partial | A stored HP is never overwritten except by a reviewed correction, and later HP overlays must cite a maker page [OBSERVED: population.py `_schedule_hp`, `_hp_entry_sourced`] (#132, #152). The unsourced v1 overlay still loads (`UNSOURCED_HP_OVERLAYS`) with `hp_source = legacy_unsourced` (T039 open: 17 rows). |
 | FR-025 | Partial | `map_category` maps research categories and keeps `category_raw` in the seed; category overlay entries carry `basis` [OBSERVED: scripts/build_synth_catalog_seed.py, overlays/module-catalog-category-v1.json] (#115). The database has no field marking a category as inferred. |
 | FR-026 | Partial | Modules have no price or stock columns, and case prices live in `case_prices` [OBSERVED: backend/cases/models.py `CasePrice`]. `module_catalog.is_available` (default `available`) is a volatile availability field on the canonical row [OBSERVED: population.py `_schedule_catalog`]. |
 | FR-027 | Implemented | An HP overlay needs a maker source; retailer lookups only set `hp_source = retailer_observed` and never fill HP (FR-039) [OBSERVED: population.py `_schedule_hp_source_markers`, `_hp_entry_sourced`] (#132, #180). |
 | FR-028 | Implemented | A rerun plans nothing; the plan hash ignores the planning clock [OBSERVED: backend/tests/test_catalog_population.py `test_population_dry_run_then_apply_is_idempotent`; backend/tests/unit/test_spec_003_transitions.py `test_plan_hash_binds_the_reviewed_plan_and_ignores_the_clock`]. |
-| FR-029 | Partial | Cases load through the same `populate()` dry run, `plan_hash` and `inputs_hash` (insert-if-absent, fill-null, `validate_record`) [OBSERVED: population.py `plan_cases`, `case_receipt`, backend/integrations/case_catalog_populator.py] (#103). The filter, conflict and overlay-versioning FRs (FR-014 to FR-018) have no case equivalent. |
+| FR-029 | Implemented | Cases load through the same `populate()` dry run, `plan_hash` and `inputs_hash` (insert-if-absent, fill-null, `validate_record`) [OBSERVED: population.py `plan_cases`, `case_receipt`, backend/integrations/case_catalog_populator.py] (#103). |
 | FR-030 | Implemented | Receipts carry `run_id`, `started_at`, `finished_at`, `plan_hash`, `inputs_hash`, insert, update, unmatched and conflict counts [OBSERVED: population.py `populate`, `receipt_for`] (#103). |
-| FR-031 | Missing | No rollback path. `db-load.yml` takes a `pg_dump` before apply, then deletes it before upload, so only its size and checksum survive [OBSERVED: .github/workflows/db-load.yml]. The receipt has `run_id` but nothing restores by it. Corrections are archived in `catalog_value_archive`. |
+| FR-031 | Partial | `db-load.yml` with `rollback_run_id` retires what a run inserted and restores what it changed, through a dry run and a plan hash, and deletes nothing (decision 40, #340) [OBSERVED: data/synth-catalog/catalog_rollback.py, data/synth-catalog/load_runs.py, backend/tests/test_catalog_rollback.py]. Partial because case writes are reported, not undone, and `power_configs` and `manufacturers` rows stay in place: none of those tables has a retired state. Loads before migration `20261106_catalog_load_runs` recorded nothing and can't be rolled back. |
 | FR-032 | Implemented | Fetch output is `EVIDENCE_ONLY` and `build_plan` reads only seeds, overlays, provenance and the T034/T035 receipts, never `hermes-research/` results [OBSERVED: population.py `build_plan`]. Admission goes through a reviewed commit and an apply bound to the hashes. Process-backed [INFERRED]. |
 | FR-033 | Implemented | All 376 `catalog_modules` in the seed carry `unknown` / `CATALOG_OBSERVED` and none has a description (checked by parsing the seed) [OBSERVED: data/synth-catalog/seed-phase2-v1.json, backend/data/synth-catalog/seed-phase2-v1.json, backend/tests/unit/test_003_source_scope.py]. Columns from migration `20261027_catalog_lead_tags`; the UI marks leads "Unverified lead" [OBSERVED: frontend/src/pages/Modules.tsx] (#65). The 3 `full_spec_modules` keep descriptions: the seed notes call them hand-curated. The export clause has no surface to test [INFERRED]. Anonymous reads leave `unknown` rows out, a signed-in reader sees them, and a placed module keeps rendering [OBSERVED: `KNOWN_BASIS` and `MODULE_KNOWN_BASIS` in backend/modules/catalog.py, backend/tests/api/test_catalog_known_basis.py]. The load tags `CatalogCandidate` and `SynthCatalogResearch` rows that had no basis, and clears ModularGrid URLs from `modulargrid_url` and `modules.source_reference` (decisions 52 and 53) [OBSERVED: docs/evidence/CATALOG_ACCESS_BASIS_2026-11-05.md]. |
 | FR-034 | Partial | A lead's HP can be set only by a maker-cited overlay or correction [OBSERVED: population.py `_hp_entry_sourced`]. `_schedule_lead_promotions` moves a lead to `official_publication` / `MANUFACTURER_CONFIRMED` once a reviewed entry cites the maker's page, and archives the old values [OBSERVED: population.py, overlays/lead-promotions-v1.json, overlays/lead-promotions-v2.json]. 298 leads have no such entry yet (`docs/evidence/CATALOG_LEAD_PROMOTION_2026-11-05.md`, `docs/evidence/CATALOG_LEAD_SEARCH_2026-11-05.md`). |
@@ -106,12 +108,7 @@ First table for this spec. Checked against the code on `main` at 3688037 (0.3.0-
 | FR-038 | Implemented | `correct` action: needs `only_if_value`, `value` and an `https://` page; archive first; write only while the stored value equals `only_if_value`; HP band 1 to 84; clears `needs_reverify` (T033, T036) [OBSERVED: population.py `_correction_problem`, `_correct_row`, provenance/maker-corrections-v1.json to v6.json, backend/tests/test_catalog_corrections.py] (#125, #135). |
 | FR-039 | Implemented | `module-catalog-hp-retailer-v1.json` holds URL, quote and `RETAILER_OBSERVED`; a matching retailer value sets `retailer_observed`, a disagreement leaves `legacy_unsourced`; migration `20261030_catalog_hp_source` [OBSERVED: population.py `_schedule_hp_source_markers`, overlays/module-catalog-hp-retailer-v1.json, backend/tests/unit/test_hp_retailer_marker.py] (#180). |
 | FR-040 | Implemented | The brand record and every crawl row carry the basis, and an unlisted value is refused on load. A brand set to `unknown` is not resolved or crawled, the router refuses its known hosts for every script, and the overlay builders take the basis from `maker-sources.json` and leave that brand out [OBSERVED: catalog_scrape.py `permission_basis`, `left_out_hosts`, `_block_reason`; catalog_maker_crawl.py `resolve_brand`, `crawl_brand`; build_maker_overlays.py; build_reattribution.py; backend/tests/test_maker_crawl.py, test_build_maker_overlays.py, test_catalog_tombstones.py, test_catalog_scrape_router.py] (#254). An opt-out does not reach rows already in committed overlays: those need a retirement manifest (D3). No bulk-publication surface exists to gate yet (FR-015). |
-
-Not counted against an FR, for the owner at T001:
-
-- D5 ("one loader") does not hold in full. The admin importers (`/api/synth-catalog/import/*`, `/api/synth-catalog/enrich/hp`, `/api/modulargrid/import/*`) and `scripts/apply_hp_enrichment.py`, `scripts/apply_module_catalog_hp_overlay.py` and `scripts/apply_module_power_depth_overlay.py` still write catalog rows. The importer's `clear_existing` deletes `SynthCatalogResearch` modules, and it defaults a missing category or type to `UTIL` [OBSERVED: backend/integrations/synth_catalog_importer.py, backend/integrations/router.py].
-- FR-002 says the job refuses to start without credentials. The router deliberately runs free fetches first. Either amend the FR or add the refusal.
-- `receipts/fetch-approvals.json` holds one active entry (`corpus-photos-2026-11`). The T040 and open-question text that says no entry is committed is stale.
+| FR-041 | Implemented | `overlays/module-jacks-v*.json` fills `modules.io_ports` only while it is empty; a different stored list is a conflict and stays; a rollback restores the empty list [OBSERVED: population.py `_schedule_jacks`, backend/tests/test_module_jacks_load.py]. |
 
 ## Scope
 
@@ -120,9 +117,9 @@ In scope:
 - Building target batches of catalog rows that need enrichment, starting with HP [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - Scraping official manufacturer product pages and manuals for HP evidence (D2). The retailer fallback was removed in T022 (2026-10-27).
 - Writing raw, checkpointed result files that can resume [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
-- Filtering, overlay versioning, and residual retry batches [INFERRED].
+- Filtering, overlay versioning, and residual retry batches [OBSERVED: scripts/filter_fetch_results.py, scripts/freeze_catalog_inputs.py].
 - Running a dry-run admission with a receipt, followed by the real admission [OBSERVED: data/synth-catalog/README.md].
-- Admitting the sealed Synth Catalog Research seed into `module_catalog` and `modules` [OBSERVED: backend/DATA_SOURCES.md].
+- Admitting the Synth Catalog Research seed, as discovery leads (D1), into `module_catalog` and `modules` [OBSERVED: backend/DATA_SOURCES.md].
 - Filling null catalog HP from manufacturer-curated matches without overwriting non-null HP [OBSERVED: backend/DATA_SOURCES.md].
 - Running the same pipeline for the case catalog seed [INFERRED].
 
@@ -137,7 +134,7 @@ In scope:
 
 ## User stories
 
-### P1: Admit sealed research with a receipt [OBSERVED: data/synth-catalog/README.md]
+### P1: Admit the seed with a receipt [OBSERVED: data/synth-catalog/README.md]
 
 As the operator, I want to dry-run the Synth Catalog Research import and get a receipt before anything reaches the database. That way, I approve exactly what lands.
 
@@ -177,13 +174,13 @@ As a PatchHive user, I want every catalog value to trace back to a source. That 
 
 ### P2: Scrape HP evidence from product pages [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]
 
-As the operator, I want a batch job that collects HP evidence from official pages first and retailer pages second. That way, null HP rows gain sourced candidates.
+As the operator, I want a batch job that collects HP evidence from official pages. That way, null HP rows gain sourced candidates.
 
 **Scenario 1: Candidate ordering and attempt cap**
 
 - **Given** a targets file of `{brand, name, slug}` rows.
 - **When** the batch runs.
-- **Then** the job tries official URL patterns before retailer product-detail patterns, with at most 6 attempts per target.
+- **Then** the job tries official URL patterns only, with at most 6 attempts per target (D2).
 
 **Scenario 2: Search pages**
 
@@ -279,50 +276,49 @@ As the operator, I want case records (total HP, rows, power capacity) [OBSERVED:
 
 ## Workflows
 
-Status: INFERRED skeleton. Confirm before you plan.
+Confirmed at T001 (rows 23, 24).
 
 - Governing workflows (skills): anti-slop-code, production-systems, google-developer-style.
-- Owners: FORGE decomposes, a cloud agent implements, SCRIBE files the compact artifact, ADVERSARY reviews the threat model.
-- CI: reuse `.github/workflows/ci.yml` (jobs `backend` and `frontend`). Do not add a new CI path.
+- Owners: FORGE owns the plan and tasks, and a cloud agent implements (`Zero-State-LLC/agent-context` `DECISIONS.md`). Whoever reviews a PR that changes the fetch path also reviews it against the threat model below, and the owner merges.
+- CI: reuse `.github/workflows/ci.yml`. Do not add a new CI path.
 
 ## Stateful behavior
 
-The state machine is the per-batch lifecycle of a target batch. Each row in a batch also carries an evidence status, such as `OBSERVED`, `NOT_COMPUTABLE`, `CONFLICTED`, or `REJECTED`. Row statuses are attributes, not batch states.
+The batch table below describes the process, and no code holds these states: scripts and `db-load.yml` run the steps (OQ-9). Only the row lifecycle further down is enforced in code and encoded in tests. Each row in a batch also carries an evidence status, such as `OBSERVED`, `NOT_COMPUTABLE`, `CONFLICTED`, or `REJECTED`. Row statuses are attributes, not batch states.
 
 ### States
 
 | State | Meaning | Label |
 |---|---|---|
 | `TARGETED` | The targets file exists with `{brand, name, slug}` rows. | [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] |
-| `BLOCKED` | A fail-closed precondition is missing, such as credentials or budget approval. No request is sent. | [INFERRED] from the required-key exit in [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] |
+| `BLOCKED` | A paid backend has no key or approval. `catalog_maker_crawl.py` exits before sending anything; the other callers read what free fetches allow and record the stop (`status = refused`). | [OBSERVED: data/synth-catalog/catalog_scrape.py, scripts/catalog_maker_crawl.py] |
 | `FETCHING` | Scrape requests are in progress, with a checkpoint after each target. | [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] |
-| `RETRY_QUEUED` | The run was interrupted or failed. A partial results file and a residual set remain. | [INFERRED] |
+| `RETRY_QUEUED` | A key or budget stop left targets unread. The results file marks them `refused`, and `--resume` retries them. | [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] |
 | `RAW` | `*-results.json` is written for all targets. Every row is `EVIDENCE_ONLY`. | [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] |
-| `FILTERED` | `*.filtered.json` holds only rows with a complete provenance packet. | [INFERRED] |
-| `OVERLAY` | `overlays/*-vN.json` is an immutable, versioned proposal. | [INFERRED] |
+| `FILTERED` | `*.filtered.json` holds only rows with a complete provenance packet. | [OBSERVED: scripts/filter_fetch_results.py] |
+| `OVERLAY` | `overlays/*-vN.json` is a versioned proposal whose hash is frozen in `applied-inputs.sha256`. | [OBSERVED: scripts/freeze_catalog_inputs.py] |
+| `SEEDED` | A seed file is a discovery lead (D1), not research output that is sealed. It has no fetch or filter step. Its final wording follows counsel (T001 row 36). | [OBSERVED: data/synth-catalog/population.py `build_plan`] |
 | `RECEIPTED` | The dry-run receipt is written. The database is unchanged. | [OBSERVED: data/synth-catalog/README.md] |
 | `ADMITTED` | Rows are materialized into the database with provenance. | [OBSERVED: data/synth-catalog/README.md] |
-| `REJECTED` | The batch was declined or no row passed the filter. Nothing is admitted. | [INFERRED] |
 
-Initial state: `TARGETED`. Final states: `ADMITTED`, `REJECTED`.
+Initial states: `TARGETED`, `SEEDED`. Final state: `ADMITTED`. A batch that is declined, or has no row that passes, is simply not applied, and no record says so (OQ-9).
 
 ### Transitions
 
 | from | event | guard | to | effect |
 |---|---|---|---|---|
-| TARGETED | batch_built | targets file written AND budget approval recorded AND credentials present | FETCHING | Call Firecrawl/Hermes (paid, budget-gated) [INFERRED] |
-| TARGETED | preflight_failed | credentials missing OR no budget approval | BLOCKED | Exit before any request is sent [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] (key check); budget check [INFERRED] |
-| BLOCKED | preflight_cleared | credentials present AND budget approval recorded | TARGETED | None [INFERRED] |
+| TARGETED | batch_built | targets file written | FETCHING | Free fetches first. A paid backend needs a key and an unexpired approval (FR-002, FR-003) [OBSERVED: data/synth-catalog/catalog_scrape.py] |
+| TARGETED | preflight_failed | the maker crawl has no approval, or no model key | BLOCKED | Exit before any request is sent [OBSERVED: scripts/catalog_maker_crawl.py] |
+| BLOCKED | preflight_cleared | key and approval present | TARGETED | None [OBSERVED: scripts/catalog_maker_crawl.py] |
 | FETCHING | target_processed | more targets remain | FETCHING | Checkpoint the results file [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] |
 | FETCHING | results_written | all targets processed | RAW | Write `*-results.json` [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] |
-| FETCHING | fetch_failed | run interrupted or provider unavailable | RETRY_QUEUED | Keep the checkpoint and write a residual-N targets file [INFERRED] |
-| RETRY_QUEUED | resume | budget approval recorded AND credentials present | FETCHING | Skip slugs already in the results file [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] |
-| RAW | filter | at least one row has a complete provenance packet AND a known access basis | FILTERED | Write `*.filtered.json` and a residual-N targets file for `not_found` rows, and mark disagreements `CONFLICTED` [INFERRED] |
-| RAW | filter | no row passes | REJECTED | Write the rejection reasons [INFERRED] |
-| FILTERED | overlay_built | - | OVERLAY | Write `overlays/*-vN.json`, content-hashed [INFERRED] |
-| OVERLAY | admit_dry_run | receipt path provided | RECEIPTED | Write the receipt with no database change [OBSERVED: data/synth-catalog/README.md] |
+| FETCHING | fetch_refused | a key or budget stop left a target unread | RETRY_QUEUED | Record `status = refused` with the reason, and keep the checkpoint [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] |
+| RETRY_QUEUED | resume | `--resume` | FETCHING | Skip slugs already in the results file, except refused ones [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] |
+| RAW | filter | at least one row has a complete provenance packet AND a known access basis | FILTERED | Write `*.filtered.json` and a residual targets file for `not_found` and `refused` rows, and mark disagreements `CONFLICTED` [OBSERVED: scripts/filter_fetch_results.py] |
+| FILTERED | overlay_built | reviewed and committed | OVERLAY | Write `overlays/*-vN.json` and record its hash [OBSERVED: scripts/freeze_catalog_inputs.py] |
+| OVERLAY | admit_dry_run | - | RECEIPTED | Write the receipt with no database change [OBSERVED: data/synth-catalog/README.md] |
+| SEEDED | admit_dry_run | - | RECEIPTED | As above [OBSERVED: data/synth-catalog/population.py] |
 | RECEIPTED | admit | operator yes AND receipt binds the current overlay hash (Actions apply names the dry run's `plan_hash` and `inputs_hash`, FR-020) | ADMITTED | Materialize into the database: catalog dedupe by slug, full modules skip existing `(brand, name)`, and non-null HP is never overwritten [OBSERVED: data/synth-catalog/README.md] [OBSERVED: backend/DATA_SOURCES.md] |
-| RECEIPTED | operator_declined | operator no | REJECTED | Keep the receipt and overlay for audit [INFERRED] |
 
 ### Illegal transitions
 
@@ -332,31 +328,28 @@ Initial state: `TARGETED`. Final states: `ADMITTED`, `REJECTED`.
 - `TARGETED` or `RETRY_QUEUED` -> `FETCHING` without budget approval. [INFERRED]
 - `BLOCKED` -> `FETCHING` directly. [INFERRED]
 - `RECEIPTED` -> `ADMITTED` when the overlay changed after the receipt was written. [INFERRED]
-- `REJECTED` -> `ADMITTED`. [INFERRED]
+
 - `ADMITTED` -> any state that overwrites a non-null HP, except a reviewed correction (D4, FR-038). [OBSERVED: backend/DATA_SOURCES.md]
 - Any row with `access_basis` of `unknown` -> bulk publication. [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md]
 
 ```mermaid
 stateDiagram-v2
     [*] --> TARGETED
+    [*] --> SEEDED
+    SEEDED --> RECEIPTED: admit_dry_run
     TARGETED --> FETCHING: batch_built
     TARGETED --> BLOCKED: preflight_failed
     BLOCKED --> TARGETED: preflight_cleared
     FETCHING --> FETCHING: target_processed
     FETCHING --> RAW: results_written
-    FETCHING --> RETRY_QUEUED: fetch_failed
+    FETCHING --> RETRY_QUEUED: fetch_refused
     RETRY_QUEUED --> FETCHING: resume
-    RAW --> FILTERED: filter (rows pass)
-    RAW --> REJECTED: filter (none pass)
+    RAW --> FILTERED: filter
     FILTERED --> OVERLAY: overlay_built
     OVERLAY --> RECEIPTED: admit_dry_run
     RECEIPTED --> ADMITTED: admit
-    RECEIPTED --> REJECTED: operator_declined
     ADMITTED --> [*]
-    REJECTED --> [*]
 ```
-
-Sealed seed path: the Synth Catalog Research seed is already research output. It reuses the `OVERLAY` -> `RECEIPTED` -> `ADMITTED` steps, with the seed file acting as the overlay [INFERRED]. For confirmation, see Open questions.
 
 ### Row lifecycle (admitted rows)
 
@@ -372,7 +365,7 @@ Initial state: `LIVE`. Final state: `TOMBSTONED` (no un-tombstoning yet).
 
 | from | event | guard | to | effect |
 |---|---|---|---|---|
-| LIVE | flag | provenance manifest action `flag` or `null` on a NOT NULL field | FLAGGED | Archive the value; set `needs_reverify` |
+| LIVE | flag | provenance manifest action `flag`, or `null` on a nullable field (on a NOT NULL field it is refused as `not_nullable`, research R1) | FLAGGED | Archive the value; set `needs_reverify` |
 | FLAGGED | correct | correction entry matches the stored value (`only_if_value`) AND cites a maker page | LIVE | Archive the old value; write the new one; clear `needs_reverify` once every flagged field is corrected (research R8); an HP correction lifts the FR-035 block |
 | LIVE | correct | as above | LIVE | Archive the old value; write the new one |
 | LIVE | retire | retirement manifest names the row with a reason and evidence (an `https://` `evidence_url`; otherwise `retirement_needs_evidence`) | TOMBSTONED | Set `tombstoned_at` and reason (catalog), `status = tombstoned` (modules) |
@@ -393,30 +386,31 @@ Privacy: catalog data is public product specs. Keep any private source material 
 ### Targeting and fetch
 
 - **FR-001**: The fetch job MUST read targets from a file of `{brand, name, slug}` rows and MUST support a limit [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
-- **FR-002**: The fetch job MUST refuse to start without provider credentials [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
-- **FR-003**: The fetch job MUST NOT start or resume without a recorded budget approval [INFERRED].
+- **FR-002**: A paid backend MUST have provider credentials. Without them, the fetch job MUST read what free fetches allow and MUST record each target it could not read as `refused`, never as `not_found` [OBSERVED: data/synth-catalog/catalog_scrape.py, scripts/hermes_hp_enrich_firecrawl.py].
+- **FR-003**: A paid fetch MUST NOT start or resume without a recorded budget approval (OQ-3). Free fetches need none [OBSERVED: data/synth-catalog/catalog_scrape.py].
 - **FR-004**: The fetch job MUST fetch only official manufacturer product URLs and manuals, and MUST cap attempts at 6 per target (D2). It MUST NOT fetch retailer or community-catalog pages.
 - **FR-005**: The fetch job MUST NOT use or extract from search-result pages [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **FR-006**: The fetch job MUST record only values found on the official candidate pages for that target; a page with no HP match yields `not_found` with no `access_basis`. A retailer value MAY be recorded only from a one-off manual lookup, as `RETAILER_OBSERVED` with `access_basis = manual_research` (D2).
 - **FR-007**: The fetch job MUST discard extracted HP outside the band of 1 to 42 [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
-- **FR-008**: The fetch job MUST rate-limit requests with a delay between scrapes [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]. Paid fetches through Firecrawl use its `basic` proxy tier. A `stealth` or `auto` tier (`PATCHHIVE_FIRECRAWL_PROXY`) is used only under an unexpired `receipts/fetch-approvals.json` entry that covers the run's brands and names that tier (`proxy_tier`); without one the Firecrawl call is skipped and recorded (`skipped_no_approval`, or `skipped_proxy_unapproved` when no approvals file is set). A proxy changes where a fetch comes from, never what may be fetched: a page that answers with a bot check is recorded as a refusal and is never sent to a paid backend (D7). A page that answers 401, 403 or 451, and a robots.txt that answers 401 or 403, are refusals in the same way. A robots.txt that gives any other answer but 200 or 404, or no answer, stops every fetch of that host for the run, free or paid, with the reason recorded. context.dev documents no proxy option.
+- **FR-008**: The fetch job MUST rate-limit requests with a delay between scrapes [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py]. Paid fetches through Firecrawl use its `basic` proxy tier. A `stealth` or `auto` tier (`PATCHHIVE_FIRECRAWL_PROXY`) is used only under an unexpired `receipts/fetch-approvals.json` entry that covers the run's brands and names that tier (`proxy_tier`); without one the Firecrawl call is skipped and recorded (`skipped_no_approval`, or `skipped_proxy_unapproved` when no approvals file is set). A proxy changes where a fetch comes from, never what may be fetched: a page that answers with a bot check is recorded as a refusal and is never sent to a paid backend (D7). A page that answers 401, 403 or 451, and a robots.txt that answers 401 or 403, are refusals in the same way. A robots.txt that gives any other answer but 200 or 404, or no answer, stops every fetch of that host for the run, free or paid, with the reason recorded. context.dev documents no proxy option. A 403 on robots.txt whose body is a file-storage service's own error reply (an S3-style `AccessDenied` or `MissingKey` error, or `Missing Authentication Token`) means the host has no robots file and is treated as a 404 (decision 66).
 - **FR-009**: The fetch job MUST checkpoint results after each target and MUST support resume by slug [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **FR-010**: The pipeline MUST treat scraped page content as untrusted data, never as instructions [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
-- **FR-011**: The pipeline MUST validate MIME types, redirects, and content size of fetched pages [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md]. Implemented 2026-10-28 in the direct transport (`catalog_scrape.default_transport`): a content-type allowlist (pages, XML/sitemaps, JSON, text, gzip), a 10 MiB body cap checked before and while reading, and response headers kept. Refusals answer `x-patchhive-refused: MIME_NOT_ALLOWED` or `BODY_TOO_LARGE`.
+- **FR-011**: The pipeline MUST validate MIME types, redirects, and content size of fetched pages [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md]. Implemented 2026-10-28 in the direct transport (`catalog_scrape.default_transport`): a content-type allowlist (pages, XML/sitemaps, JSON, text, gzip), a 10 MiB body cap checked before and while reading, and response headers kept. Refusals answer `x-patchhive-refused: MIME_NOT_ALLOWED` or `BODY_TOO_LARGE`. A robots.txt served as `application/octet-stream` is read, because it is still the site's rules.
 
 ### Result rows
 
 - **FR-012**: Every found row MUST record `hp`, `source_url`, `provenance = OBSERVED`, and `source_authority` (`MANUFACTURER_PRIMARY`, `RETAILER_DISTRIBUTOR`, or `COMMUNITY_CATALOG`). It MUST also record `admission_status = EVIDENCE_ONLY` and `rights_status = RIGHTS_UNKNOWN` [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **FR-013**: Every unresolved row MUST record `hp = null`, `provenance = NOT_COMPUTABLE`, and `status = not_found`. The pipeline MUST NOT convert this absence into a negative fact [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] (constitution decision boundary).
 - **FR-040**: Every maker-crawl row MUST record `permission_basis`, from `maker-sources.json` (`permission_basis.default`, or the brand's own entry). `unknown`, which marks a maker who opted out or whose terms forbid automated access, blocks bulk publication (EXTERNAL_SOURCE_POLICY release gates). The crawl MUST NOT fetch such a maker, and the overlay builders MUST leave it out and MUST NOT give it an `official_publication` basis.
+- **FR-041**: A Module's `io_ports` MAY be filled only while empty, from a committed `overlays/module-jacks-v*.json` entry naming the maker document it came from. The loader MUST NOT overwrite a declared list. An entry MUST hold a complete list: the engine sends a cable to the first free jack of the right type, so a partial list can misroute it. Model readings stay evidence until they pass the filter in `scripts/read_module_jacks.py` and are admitted through a reviewed commit and an apply bound to its hashes (FR-032).
 
 ### Filter, overlay, and receipt
 
-- **FR-014**: The filter MUST exclude rows missing any field of the required provenance packet [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
+- **FR-014**: The filter MUST exclude rows missing any field of the provenance packet a fetch row records: `hp`, `source_url`, `provenance`, `source_authority`, `admission_status`, `rights_status` and `access_basis`. The full packet in `docs/EXTERNAL_SOURCE_POLICY.md` also names fields no fetch row holds yet, such as `license_status` and `content_hash`.
 - **FR-015**: The filter MUST block bulk publication of rows with an unknown or disputed access basis [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
 - **FR-016**: The filter MUST keep all conflicting observations and mark the field `CONFLICTED` [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md]. Implemented 2026-10-28 in part: every conflict is counted (`conflicts_total` in the receipt); the receipt lists the first 50.
-- **FR-017**: The filter MUST emit a residual targets file for unresolved rows [INFERRED].
-- **FR-018**: The pipeline MUST write overlays as versioned, content-hashed files and MUST NOT edit them in place [INFERRED].
+- **FR-017**: The filter MUST emit a residual targets file for unresolved rows [OBSERVED: scripts/filter_fetch_results.py].
+- **FR-018**: The pipeline MUST write overlays as versioned, content-hashed files and MUST NOT edit them in place [OBSERVED: data/synth-catalog/applied-inputs.sha256].
 - **FR-019**: A dry-run MUST write a receipt only when a receipt path is given and MUST NOT change the database [OBSERVED: data/synth-catalog/README.md].
 
 ### Admission
@@ -430,12 +424,12 @@ Privacy: catalog data is public product specs. Keep any private source material 
 - **FR-026**: The pipeline MUST store volatile commerce observations separately from canonical specs [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
 - **FR-027**: The pipeline MUST NOT treat retailer-only values for safety-critical or patch-validity fields as confirmed without official confirmation [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
 - **FR-028**: The same import files MUST produce the same database state [OBSERVED: backend/DATA_SOURCES.md].
-- **FR-029**: The case catalog seed MUST follow FR-014 through FR-028 [INFERRED].
+- **FR-029**: The case catalog seed MUST follow the admission requirements, FR-019 through FR-028. It has one seed file, so the filter and overlay requirements do not apply to it (T001 row 16).
 
 ### Observability, rollback, and authority
 
 - **FR-030**: Each import MUST record a run ID, timestamps, and imported, skipped, and processed counts [OBSERVED: backend/DATA_SOURCES.md]. Implemented 2026-10-28: receipts carry `run_id` (the Actions run), `started_at`, `finished_at`, `plan_hash`, `inputs_hash` (seeds, overlays, provenance, cases) and `conflicts_total`.
-- **FR-031**: Rollback MUST be possible per run, using the run ID and receipt, without deleting rows that predate the run [INFERRED].
+- **FR-031**: Rollback MUST be possible per run, using the run ID and receipt, without deleting rows that predate the run (decision 40). A rollback MUST retire what the run inserted and restore what it changed, and it deletes nothing (D3). A field changed since the run MUST be left alone and reported. Case tables have no retired state, so a run's case writes are reported, not undone [OBSERVED: data/synth-catalog/catalog_rollback.py].
 - **FR-033**: ModularGrid-derived catalog rows MUST carry `access_basis = unknown` and evidence status `CATALOG_OBSERVED`, MUST NOT carry ModularGrid-derived descriptions, and MUST be excluded from any bulk publication or export (D1). They MAY be listed one by one in the catalog UI to a signed-in reader, marked "Unverified lead" (owner decisions, 2026-10-27 and decision 39 of `docs/evidence/OWNER_DECISIONS_2026-11-04.md`). Anonymous reads of the catalog, the registry and `modules` MUST leave out rows whose `access_basis` is `unknown`, and any `modules` row with the same brand and name. A module already placed on a rack MUST keep rendering. A NULL `access_basis` is not `unknown` here. Whether catalog reads count as bulk publication is a question for counsel. The tags live on `module_catalog.access_basis` and `module_catalog.evidence_status` (migration `20261027_catalog_lead_tags`).
 - **FR-034**: A ModularGrid-derived row MUST become canonical only through manufacturer or manual confirmation recorded with its source URL (D1).
 - **FR-035**: Rack placement MUST refuse a module whose HP is flagged `needs_reverify` until it is re-verified (D1). The guard rejects with `MODULE_HP_NEEDS_REVERIFY` when the archive holds an `hp` row with action `flag`; a module whose HP was confirmed (`keep`) stays placeable.
@@ -454,7 +448,7 @@ Privacy: catalog data is public product specs. Keep any private source material 
 - **Residual targets file**: Unresolved rows queued for retry [INFERRED].
 - **Overlay**: A versioned proposal of catalog changes [INFERRED].
 - **Admission receipt**: The dry-run or import record that the operator approves [OBSERVED: data/synth-catalog/README.md].
-- **Synth catalog seed and sources packet**: The sealed research rows and their access-basis policy [OBSERVED: data/synth-catalog/README.md].
+- **Synth catalog seed and sources packet**: The seed's lead rows (D1) and their access-basis policy [OBSERVED: data/synth-catalog/README.md].
 - **Catalog row (`module_catalog`)**: A lightweight browse record [OBSERVED: backend/DATA_SOURCES.md].
 - **Full module (`modules`)**: A curated full-spec record [OBSERVED: backend/DATA_SOURCES.md].
 - **Case record**: Case HP, rows, and power capacity [OBSERVED: backend/DATA_SOURCES.md].
@@ -465,8 +459,8 @@ Privacy: catalog data is public product specs. Keep any private source material 
 - **SC-001**: Every admitted non-null HP, power, or depth value traces to a `source_url` or `source_reference` [OBSERVED: data/synth-catalog/README.md].
 - **SC-002**: No admission run changes a previously non-null HP [OBSERVED: backend/DATA_SOURCES.md].
 - **SC-003**: Two admissions of the same overlay produce the same database state, and the second run admits zero new rows [OBSERVED: backend/DATA_SOURCES.md].
-- **SC-004**: Every `ADMITTED` batch has a matching receipt and operator approval [INFERRED].
-- **SC-005**: No fetch request is sent in `BLOCKED` or without budget approval [INFERRED].
+- **SC-004**: Every applied batch has a lasting receipt in `catalog_load_runs`, bound to the reviewed `plan_hash` and `inputs_hash`. A protected environment for the approval is 006 T101b, which only the owner can set [OBSERVED: data/synth-catalog/load_runs.py].
+- **SC-005**: No paid fetch is sent without a key and a budget approval [OBSERVED: backend/tests/test_catalog_scrape_router.py].
 - **SC-006**: A resumed batch sends no request for a slug already present in the results file [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **SC-007**: Coverage claims bind to an exact registry snapshot and reference universe [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md]. Target coverage percentages are NOT_COMPUTABLE (see Open questions).
 
@@ -480,7 +474,7 @@ Privacy: catalog data is public product specs. Keep any private source material 
 - **Duplicate candidate URLs.** Remove duplicates while preserving order [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **Short or empty response.** A response shorter than 80 characters or a failed scrape moves to the next candidate [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **Slug collision.** Slugs are built from brand plus name and `module_catalog.slug` is globally unique, so the same module name under two brands gets two slugs. A row whose slug matches a stored row with a different brand or name is reported as an `identity_mismatch` conflict, not merged (OQ-6) [OBSERVED: data/synth-catalog/population.py].
-- **Mid-batch credential or budget failure.** The batch keeps its checkpoint and moves to `RETRY_QUEUED` [INFERRED].
+- **Mid-batch credential or budget failure.** The target is recorded as `refused`, the checkpoint stays, and `--resume` retries it [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py].
 - **Prompt injection.** Scraped markdown containing instruction-like text is never passed as trusted commands [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
 - **Phase 2 rows without HP.** These rows are admitted for discovery, but rack placement still needs HP later [OBSERVED: backend/DATA_SOURCES.md].
 
@@ -488,8 +482,24 @@ Privacy: catalog data is public product specs. Keep any private source material 
 
 - Provider credentials come from the environment and never enter the repo or logs [OBSERVED: scripts/hermes_hp_enrich_firecrawl.py] [OBSERVED: docs/EXTERNAL_SOURCE_POLICY.md].
 - Private source material stays out of the repo. Store row refs only [INFERRED].
-- ADVERSARY reviews the threat model, including untrusted page content, redirects, and payload size [INFERRED].
+- The threat model below covers untrusted page content, redirects and payload size.
 - The scraper and any model only propose. The deterministic filter and the operator dispose (constitution principles 4 and 5) [INFERRED].
+
+## Threat model
+
+Scoped to what the pipeline takes from outside the repo. The other columns of `module_catalog` are public product facts, so the concern is a wrong value reaching a Rig, or a fetch that shouldn't have happened.
+
+| Threat | What stops it | Test |
+|---|---|---|
+| A page tells a model or a script what to store | Page text only ever goes in the model's user message. A model value needs a verbatim match on the page. `extract_hp` is a regex with a band check. Nothing reads a fetch row as an instruction. | `backend/tests/unit/test_003_untrusted_pages.py` |
+| A page states a wrong value | Fetch rows stay `EVIDENCE_ONLY`, and the loader reads no fetch results. A value reaches the database only through a reviewed, committed overlay and an apply bound to its hashes. | `test_003_untrusted_pages.py`, `backend/tests/test_catalog_population.py` |
+| A redirect reaches a private host, or a page is huge or the wrong type | Public redirects only, a content-type allowlist and a 10 MiB cap, on free and paid replies alike. | `backend/tests/test_catalog_transport_limits.py` |
+| A site that refused us is reached another way | A 401, 403 or 451, a robots refusal and a bot check never go to a paid backend. Frap and Tiptop are never resolved (D7). | `backend/tests/test_catalog_scrape_router.py`, `backend/tests/test_maker_crawl.py` |
+| Spend beyond what was approved | A paid fetch needs a key and an unexpired approval naming the brand, within its cap. A non-basic proxy tier must be named too. | `test_catalog_scrape_router.py` |
+| An overlay changes after review | The apply names the reviewed `plan_hash` and `inputs_hash`, and an edited input fails a test. | `test_catalog_population.py`, `backend/tests/unit/test_003_applied_inputs.py` |
+| A writer bypasses the loader | `population.py` is the only writer (D5), and the admin import routes are gone. | `backend/tests/api/test_p0_security.py` |
+
+Not covered: a maker page that is itself wrong and looks right, which review has to catch, and the environment rule on who may start an apply (006 T101b).
 
 ## Open questions
 
@@ -509,7 +519,7 @@ Decisions and checks 2026-11-01 ([record](../../docs/evidence/JEV_DECISIONS_2026
 - OQ-12 (What file conventions do overlays, provenance manifests and receipts follow?): **Answered (checked 2026-11-01):** RESOLVED 2026-10-29: versioned files under overlays/, provenance/, receipts/; an applied version is never rewritten (FR-018, FR-036).
 - OQ-13 (How does the case seed pipeline behave and how many brands exist?): **Answered (checked 2026-11-01):** RESOLVED 2026-10-29: case seed imports via case_catalog_populator.import_records (insert-if-absent, fill-null; plan hash covers it, #103). Observed 703 registry manufacturers and 355 brands with live rows.
 
-- **OPEN (owner): the 221 unsourced v1 HP values.** Triage is recommended: re-source the 45 that match a maker page, hand-check and correct the 7 that disagree, mark the 169 unmatched as not maker-checked until looked up (research R7; tasks T038, T039).
+- **DECIDED (T038, decision 30): the unsourced v1 HP values.** The owner chose triage. 17 are still `legacy_unsourced`: retry maker pages by plain GET, then the owner's drafted emails, and with no reply in about 4 weeks they stay marked and T039 closes.
 
 - **PARTLY RESOLVED (2026-10-29): Fetch cost and budget.** Observed cost: the full v2 maker crawl used 2,569 paid fetches, about 1,116 context.dev and 33 Firecrawl credits (`receipts/scrape-ledger.json`); the T026 pass used 10 credits. Caps so far are approved in chat and written into `SCRAPING_ARCHITECTURE.md`. The approvals receipt the router checks before a paid fetch (FR-003) is `receipts/fetch-approvals.json` (T040); it ships with no active entries, so a new paid run needs an owner-approved entry committed first.
 - **RESOLVED (D2): Retailer scraping permission.** There is no automated retailer crawling. Retailer values come only from one-off manual lookups.
@@ -530,6 +540,6 @@ Decisions and checks 2026-11-01 ([record](../../docs/evidence/JEV_DECISIONS_2026
 - **RESOLVED (2026-10-29): Case pipeline behavior.** The loader imports `data/cases/seed-v1.json` through `integrations.case_catalog_populator.import_records`: insert-if-absent and fill-null, rejected records counted. The plan hash covers the case writes (FR-020; #103).
 - **NOT_COMPUTABLE: Roadmap targets.** `docs/PRODUCT_DATABASE_COMPLETENESS_ROADMAP.md` content was not in the excerpt. Coverage targets are unknown.
 - **RESOLVED (2026-10-29): Brand count.** Observed on prod: 703 registry manufacturers; 355 brands with live catalog rows after the tombstones.
-- **Seed path.** Confirm that the sealed seed enters at `OVERLAY`, or define a separate entry state.
-- **Verification ritual.** Confirm whether the "3-consecutive scrubbed runs" verification [OBSERVED: data/synth-catalog/PATCHHIVE_INTEGRATION.md] applies to every admission.
-- **Slug dedupe.** Confirm whether catalog dedupe should become `(brand, slug)` to avoid cross-brand collisions.
+- **ANSWERED (OQ-4): Seed path.** A seed has its own entry state, `SEEDED`.
+- **ANSWERED (OQ-5): Verification ritual.** A dry run, an apply bound to its `plan_hash`, and a rerun that changes nothing replace the three scrubbed runs.
+- **ANSWERED (OQ-6): Slug dedupe.** No change: a slug is built from brand plus name and is globally unique.

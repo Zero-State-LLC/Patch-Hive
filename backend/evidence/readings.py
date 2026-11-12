@@ -1,0 +1,494 @@
+"""Reading a Rig photo (spec 009): one provider answer, bounded, with each Sighting's
+disposition from the DecisionPolicy (spec 005).
+
+A provider answers with every Sighting in a photo at once. The answer is checked against
+``ProviderAnswer`` and its bounds before anything is kept. An answer that is missing,
+malformed or past a bound, a timeout, or a provider that is off ends the Reading ``failed``
+with a reason code and no Sightings. The provider never sets a disposition.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import re
+import unicodedata
+import uuid
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Literal, Protocol
+
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+from sqlalchemy.orm import Session
+
+from canon.models import ImageAssetRecord, PhotoReadingRecord, PhotoSightingRecord
+from core import settings
+from intelligence.contracts import (
+    ChoiceOption,
+    ChoiceRequest,
+    DecisionPacket,
+    DecisionPurpose,
+)
+from intelligence.policy import DecisionDisposition, DecisionPolicy, PolicyThresholds
+from modules.models import Module
+
+logger = logging.getLogger(__name__)
+
+MAX_CANDIDATES = 5
+MAX_SIGHTINGS = 200
+NONE_OF_ABOVE = "none_of_above"
+
+# A Reading is ``reading``, then ``read`` or ``failed``, then ``confirmed`` or ``superseded``.
+# A confirmation applies to the current ones; the other two are done.
+CURRENT_STATUSES = ("reading", "read", "failed")
+# A Retake replaces a Reading in one of these, and a Retry reads a failed one again.
+REPLACEABLE_STATUSES = ("read", "failed")
+RETRYABLE_STATUSES = ("failed",)
+# The policy's other dispositions (UNRESOLVED, ESCALATE, REJECT) all read as "unresolved".
+DISPOSITIONS = {
+    DecisionDisposition.AUTO_PROPOSE: "auto_propose",
+    DecisionDisposition.USER_REVIEW: "user_review",
+}
+
+
+class ReadingFailed(Exception):
+    """The photo could not be read; ``code`` is the Reading's reason code."""
+
+    def __init__(self, code: str) -> None:
+        super().__init__(code)
+        self.code = code
+
+
+class _Answer(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+
+class Box(_Answer):
+    """A Sighting's bounds, normalised to the photo."""
+
+    x: float = Field(ge=0, le=1)
+    y: float = Field(ge=0, le=1)
+    w: float = Field(gt=0, le=1)
+    h: float = Field(gt=0, le=1)
+
+    @model_validator(mode="after")
+    def _inside_the_photo(self) -> "Box":
+        if self.x + self.w > 1 + 1e-6 or self.y + self.h > 1 + 1e-6:
+            raise ValueError("box reaches past the photo")
+        return self
+
+
+# What a Sighting is; only a ``module`` names candidates.
+SightingKind = Literal["module", "blank_panel", "unknown", "not_eurorack"]
+
+
+class Candidate(_Answer):
+    module_id: int = Field(ge=1)
+    score: float = Field(ge=0, le=1)
+
+
+class SightingAnswer(_Answer):
+    box: Box
+    kind: SightingKind
+    row_index: int = Field(ge=0)
+    start_hp: int = Field(ge=0)
+    hp: int = Field(ge=1)
+    candidates: list[Candidate] = Field(default_factory=list)
+
+    def is_distribution(self) -> bool:
+        """Candidates are distinct, their scores add up to at most 1, and only a module
+        Sighting names any."""
+        ids = [c.module_id for c in self.candidates]
+        return (
+            len(ids) == len(set(ids))
+            and sum(c.score for c in self.candidates) <= 1 + 1e-6
+            and (self.kind == "module" or not self.candidates)
+        )
+
+
+class ProviderAnswer(_Answer):
+    """Every Sighting in one photo, as a provider answers (and as a recording keeps it)."""
+
+    provider_version: str = Field(min_length=1, max_length=64)
+    sightings: list[SightingAnswer]
+
+
+def _name_key(text: str) -> str:
+    # Letters in any script and digits count; case, spaces and punctuation don't.
+    return re.sub(r"[\W_]+", "", unicodedata.normalize("NFKC", text).casefold())
+
+
+class CatalogNames:
+    """Catalog Modules by maker and name, for a provider that names its candidates rather
+    than knowing their ids.
+
+    Case, spaces and punctuation are ignored. The name must be a Module's name, and the maker
+    its brand or the start of it (or the brand the start of the maker), so "Mutable" finds
+    "Mutable Instruments". A candidate matches only when exactly one Module fits: one that
+    fits two matches neither, so a candidate is never guessed.
+    """
+
+    def __init__(self, db: Session) -> None:
+        self._db = db
+        self._by_name: dict[str, list[tuple[str, int]]] | None = None
+
+    def module_id(self, maker: str, name: str) -> int | None:
+        maker_key, name_key = _name_key(maker), _name_key(name)
+        if not (maker_key and name_key):
+            return None
+        if self._by_name is None:
+            by_name: dict[str, list[tuple[str, int]]] = {}
+            for module_id, brand, model in self._db.query(
+                Module.id, Module.brand, Module.name
+            ).filter(Module.status != "tombstoned"):
+                by_name.setdefault(_name_key(model), []).append((_name_key(brand), int(module_id)))
+            self._by_name = by_name
+        fits = {
+            module_id
+            for brand, module_id in self._by_name.get(name_key, ())
+            if brand and (brand.startswith(maker_key) or maker_key.startswith(brand))
+        }
+        return fits.pop() if len(fits) == 1 else None
+
+
+# A provider that can't know catalog ids names each candidate by maker and name instead: NVIDIA,
+# or a recording made to fit any catalog. ``resolve_named_answer`` turns those names into ids.
+# How far past the photo's edge a box may reach and still be read as touching it.
+_EDGE = 0.02
+
+
+class NamedCandidate(_Answer):
+    maker: str = Field(min_length=1, max_length=100)
+    name: str = Field(min_length=1, max_length=200)
+    score: float = Field(ge=0, le=1)
+
+
+class NamedBox(_Answer):
+    """A box as the model gives it, before it is trimmed to the photo."""
+
+    x: float = Field(ge=0, le=1)
+    y: float = Field(ge=0, le=1)
+    w: float = Field(gt=0, le=1)
+    h: float = Field(gt=0, le=1)
+
+    def on_photo(self) -> Box:
+        if self.x + self.w > 1 + _EDGE or self.y + self.h > 1 + _EDGE:
+            raise ReadingFailed("ANSWER_MALFORMED")
+        return Box(x=self.x, y=self.y, w=min(self.w, 1 - self.x), h=min(self.h, 1 - self.y))
+
+
+class NamedSighting(_Answer):
+    box: NamedBox
+    kind: SightingKind
+    row_index: int = Field(ge=0)
+    start_hp: int = Field(ge=0)
+    hp: int = Field(ge=1)
+    candidates: list[NamedCandidate] = Field(default_factory=list)
+
+
+class NamedAnswer(_Answer):
+    sightings: list[NamedSighting]
+
+
+def resolve_named_answer(raw: object, catalog: CatalogNames, *, version: str) -> dict[str, object]:
+    """An answer that names its candidates, in ``ProviderAnswer``'s shape: checked against its
+    bounds before any name resolves, since dropping a name could hide a bad answer."""
+    try:
+        named = NamedAnswer.model_validate(raw)
+    except ValidationError:
+        raise ReadingFailed("ANSWER_MALFORMED") from None
+    if len(named.sightings) > MAX_SIGHTINGS:
+        raise ReadingFailed("TOO_MANY_SIGHTINGS")
+    if any(len(s.candidates) > MAX_CANDIDATES for s in named.sightings):
+        raise ReadingFailed("TOO_MANY_CANDIDATES")
+    sightings = []
+    for sighting in named.sightings:
+        if sum(c.score for c in sighting.candidates) > 1 + 1e-6 or (
+            sighting.kind != "module" and sighting.candidates
+        ):
+            raise ReadingFailed("ANSWER_MALFORMED")
+        scores: dict[int, float] = {}
+        for candidate in sighting.candidates:
+            module_id = catalog.module_id(candidate.maker, candidate.name)
+            if module_id is not None:
+                scores[module_id] = scores.get(module_id, 0.0) + candidate.score
+        sightings.append(
+            {
+                **sighting.model_dump(exclude={"box", "candidates"}),
+                "box": sighting.box.on_photo().model_dump(),
+                "candidates": [
+                    {"module_id": module_id, "score": min(score, 1.0)}
+                    for module_id, score in scores.items()
+                ],
+            }
+        )
+    return {"provider_version": version, "sightings": sightings}
+
+
+class PhotoProvider(Protocol):
+    name: str
+    # Whether reading sends the photo to someone else, which needs the owner's consent.
+    sends_photo: bool
+
+    def answer(
+        self, photo_sha256: str, image: bytes, *, rows: int, catalog: CatalogNames
+    ) -> object:
+        """Every Sighting in the photo, shaped as ``ProviderAnswer``. ``rows`` is how many
+        Rig rows the photo covers."""
+        ...
+
+
+def _names_candidates(data: object) -> bool:
+    """Whether a recorded answer names any candidate by maker and name rather than by id."""
+    if not isinstance(data, dict) or not isinstance(data.get("sightings"), list):
+        return False
+    return any(
+        isinstance(candidate, dict) and "maker" in candidate
+        for sighting in data["sightings"]
+        if isinstance(sighting, dict) and isinstance(sighting.get("candidates"), list)
+        for candidate in sighting["candidates"]
+    )
+
+
+class RecordedProvider:
+    """Replays answers saved as ``<photo sha256>.json`` in a directory, with no network."""
+
+    name = "recorded"
+    sends_photo = False
+
+    def __init__(self, directory: str) -> None:
+        if not directory or not Path(directory).is_dir():
+            raise ReadingFailed("RECORDINGS_NOT_CONFIGURED")
+        self.directory = directory
+
+    def answer(
+        self, photo_sha256: str, image: bytes, *, rows: int, catalog: CatalogNames
+    ) -> object:
+        path = Path(self.directory) / f"{photo_sha256}.json"
+        try:
+            text = path.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            raise ReadingFailed("RECORDING_MISSING") from None
+        except OSError:
+            raise ReadingFailed("RECORDING_UNREADABLE") from None
+        try:
+            data = json.loads(text)
+        except ValueError:
+            raise ReadingFailed("ANSWER_MALFORMED") from None
+        if not _names_candidates(data):
+            return data
+        # A recording that names its candidates by maker and name fits any catalog's ids.
+        body = dict(data)
+        version = body.pop("provider_version", None)
+        if not isinstance(version, str) or not version:
+            raise ReadingFailed("ANSWER_MALFORMED")
+        return resolve_named_answer(body, catalog, version=version)
+
+
+def configured_provider() -> PhotoProvider:
+    """The provider ``photo_reading_provider`` names, or the reason there is none."""
+    name = settings.photo_reading_provider
+    if name == "recorded":
+        return RecordedProvider(settings.photo_reading_recordings_dir)
+    if name == "nvidia":
+        # NVIDIA reads only behind the switch it shares with the Module-identity provider.
+        if not settings.enable_nvidia_provider:
+            raise ReadingFailed("PROVIDER_DISABLED")
+        if not settings.nvidia_api_key:
+            raise ReadingFailed("PROVIDER_NOT_CONFIGURED")
+        from evidence.nvidia_reading import NvidiaRigReader
+
+        return NvidiaRigReader(
+            enabled=True,
+            api_key=settings.nvidia_api_key,
+            model=settings.nvidia_model,
+            base_url=settings.nvidia_base_url,
+            timeout_seconds=settings.photo_reading_timeout_seconds,
+        )
+    raise ReadingFailed("PROVIDER_DISABLED")
+
+
+def photo_reading_closed_reason() -> str | None:
+    """Why this host reads no photos, as a reason code, or None when it reads them."""
+    try:
+        configured_provider()
+    except ReadingFailed as closed:
+        return closed.code
+    return None
+
+
+def check_answer(payload: object, *, rows: int) -> ProviderAnswer:
+    """The answer, if it parses and every Sighting is inside its bounds."""
+    try:
+        answer = ProviderAnswer.model_validate(payload)
+    except ValidationError:
+        raise ReadingFailed("ANSWER_MALFORMED") from None
+    if len(answer.sightings) > MAX_SIGHTINGS:
+        raise ReadingFailed("TOO_MANY_SIGHTINGS")
+    if any(len(s.candidates) > MAX_CANDIDATES for s in answer.sightings):
+        raise ReadingFailed("TOO_MANY_CANDIDATES")
+    if not all(s.is_distribution() for s in answer.sightings):
+        raise ReadingFailed("ANSWER_MALFORMED")
+    if any(s.row_index >= rows for s in answer.sightings):
+        raise ReadingFailed("ROW_OUTSIDE_PHOTO")
+    return answer
+
+
+def _check_catalog(db: Session, answer: ProviderAnswer) -> None:
+    named = {c.module_id for s in answer.sightings for c in s.candidates}
+    if not named:
+        return
+    known = {module_id for (module_id,) in db.query(Module.id).filter(Module.id.in_(named))}
+    if named - known:
+        raise ReadingFailed("CANDIDATE_NOT_IN_CATALOG")
+
+
+def _policy() -> DecisionPolicy:
+    return DecisionPolicy(
+        PolicyThresholds(
+            policy_version=settings.decision_policy_version,
+            auto_propose_at=settings.decision_auto_propose_at,
+            user_review_at=settings.decision_user_review_at,
+            probability_margin=settings.decision_probability_margin,
+        )
+    )
+
+
+def sighting_decision(
+    sighting: SightingAnswer,
+    *,
+    key: str,
+    provider: str,
+    provider_version: str,
+    photo_sha256: str,
+    now: datetime,
+) -> tuple[DecisionPacket, ChoiceRequest]:
+    """A Sighting's identity put to the policy: a choice among its candidates, closest first,
+    or none of them. A Sighting with no candidates selects none of them."""
+    ranked = sorted(sighting.candidates, key=lambda c: (-c.score, c.module_id))
+    request = ChoiceRequest(
+        request_id=key,
+        purpose=DecisionPurpose.module_identity,
+        evidence_hash=photo_sha256,
+        idempotency_key=key,
+        question="Which catalog Module is this Sighting?",
+        choices=tuple(ChoiceOption(choice_id=str(c.module_id)) for c in ranked)
+        + (ChoiceOption(choice_id=NONE_OF_ABOVE),),
+    )
+    probabilities = {str(c.module_id): c.score for c in ranked}
+    probabilities[NONE_OF_ABOVE] = max(0.0, 1.0 - sum(probabilities.values()))
+    top = ranked[0] if ranked else None
+    packet = DecisionPacket(
+        decision_id=key,
+        request_id=key,
+        provider=provider,
+        provider_version=provider_version,
+        evidence_hash=photo_sha256,
+        answer_type="choice",
+        selected_choice=str(top.module_id) if top else NONE_OF_ABOVE,
+        probabilities=probabilities,
+        confidence=top.score if top else None,
+        candidate_set_hash=request.candidate_set_hash(),
+        created_at=now,
+    )
+    return packet, request
+
+
+def move_readings(
+    db: Session, reading_ids: list[str], *, from_statuses: tuple[str, ...], to: str
+) -> int:
+    """Move the Readings still in ``from_statuses`` to ``to``, and say how many moved.
+
+    The update is conditional, so when two requests race for one Reading (a confirm and a
+    Retake, or two Retries) only one moves it, and the other sees it already moved.
+    """
+    return (
+        db.query(PhotoReadingRecord)
+        .filter(
+            PhotoReadingRecord.id.in_(reading_ids),
+            PhotoReadingRecord.status.in_(from_statuses),
+        )
+        .update({PhotoReadingRecord.status: to}, synchronize_session="fetch")
+    )
+
+
+def read_photo(
+    db: Session,
+    *,
+    asset: ImageAssetRecord,
+    photo_sha256: str,
+    image: bytes,
+    rows: tuple[int, int],
+    provider: PhotoProvider | None = None,
+) -> PhotoReadingRecord:
+    """Read one stored photo and keep its Reading, ``read`` or ``failed``.
+
+    ``photo_sha256`` is the file as uploaded, ``image`` its stored copy, and ``rows`` the
+    first and last Rig rows it covers. A provider failure fails the Reading; it never raises.
+    """
+    now = datetime.now(timezone.utc)
+    reading = PhotoReadingRecord(
+        id=f"read-{uuid.uuid4().hex[:20]}",
+        rack_id=asset.rack_id,
+        image_asset_id=asset.id,
+        user_id=asset.user_id,
+        status="reading",
+        provider=provider.name if provider else settings.photo_reading_provider,
+        photo_sha256=photo_sha256,
+        policy_version=settings.decision_policy_version,
+        first_row=rows[0],
+        last_row=rows[1],
+        created_at=now,
+    )
+    db.add(reading)
+    db.flush()
+
+    try:
+        source = provider or configured_provider()
+        if source.sends_photo and not asset.consent_provider_processing:
+            raise ReadingFailed("CONSENT_NOT_GRANTED")
+        count = rows[1] - rows[0] + 1
+        payload = source.answer(photo_sha256, image, rows=count, catalog=CatalogNames(db))
+        answer = check_answer(payload, rows=count)
+        _check_catalog(db, answer)
+    except ReadingFailed as failure:
+        reading.status, reading.reason_code = "failed", failure.code
+    except TimeoutError:
+        reading.status, reading.reason_code = "failed", "PROVIDER_TIMED_OUT"
+    except Exception:  # a provider bug fails the Reading closed, never the upload
+        logger.exception("photo reading %s failed", reading.id)
+        reading.status, reading.reason_code = "failed", "PROVIDER_ERROR"
+    else:
+        policy = _policy()
+        for position, sighting in enumerate(answer.sightings):
+            sighting_id = f"sight-{uuid.uuid4().hex[:20]}"
+            # A Sighting with no candidates abstains, so it stays unresolved.
+            result = policy.evaluate(
+                *sighting_decision(
+                    sighting,
+                    key=sighting_id,
+                    provider=reading.provider,
+                    provider_version=answer.provider_version,
+                    photo_sha256=photo_sha256,
+                    now=now,
+                )
+            )
+            db.add(
+                PhotoSightingRecord(
+                    id=sighting_id,
+                    reading_id=reading.id,
+                    position=position,
+                    box=sighting.box.model_dump(),
+                    kind=sighting.kind,
+                    row_index=rows[0] + sighting.row_index,
+                    start_hp=sighting.start_hp,
+                    hp=sighting.hp,
+                    candidates=[c.model_dump() for c in sighting.candidates],
+                    disposition=DISPOSITIONS.get(result.disposition, "unresolved"),
+                    policy_reason=result.reason_codes[0],
+                )
+            )
+        reading.status, reading.provider_version = "read", answer.provider_version
+    reading.completed_at = datetime.now(timezone.utc)
+    db.flush()
+    return reading

@@ -118,44 +118,154 @@ test.describe("PatchHive canonical workspace", () => {
   test("keeps historical social features out of active navigation", async ({ page }) => {
     await page.goto("/");
     const navigation = page.getByRole("navigation", { name: "Primary navigation" });
-    await expect(navigation.getByRole("link", { name: "Rigs" })).toBeVisible();
+    await expect(navigation.getByRole("link", { name: "My Rigs" })).toBeVisible();
     await expect(navigation.getByText("Feed")).toHaveCount(0);
     await expect(navigation.getByText("Publish")).toHaveCount(0);
     await expect(navigation.getByText("Leaderboards")).toHaveCount(0);
   });
 
-  test("photo evidence is keyboard reachable and requires explicit resolution", async ({
-    page,
-  }) => {
-    await page.goto("/racks/new");
-    await page.getByRole("button", { name: "Rig photo" }).setInputFiles({
-      name: "rig.jpg",
-      mimeType: "image/jpeg",
-      buffer: Buffer.from([0xff, 0xd8, 0xff, 0xd9]),
-    });
-    await page.getByRole("button", { name: "Detect modules" }).click();
-    await expect(page.getByRole("list", { name: "Ranked module candidates" })).toBeVisible();
-    const createRevision = page.getByRole("button", { name: "Create immutable rig revision" });
-    await expect(createRevision).toBeDisabled();
-    // Resolve every ranked candidate (confirm + reject) so the revision can be sealed.
-    await page.getByRole("button", { name: "Confirm match" }).first().click();
-    await page.getByRole("button", { name: "Reject" }).last().click();
-    await expect(createRevision).toBeEnabled();
-    await createRevision.click();
-    // This demo has no rig, so generation has nothing to accept.
-    const sealed = page.getByText(/Inventory revision sealed/i);
-    await expect(sealed).toBeVisible();
-    await expect(sealed).toContainText("not ready for generation");
+  const commerce = (allowance: unknown = null) => ({
+    test_mode: true,
+    credit_offer: null,
+    plan_offers: [],
+    subscription: null,
+    allowance,
+    export_cost: 3,
   });
+  const allowance = (exports_used: number, export_cap: number) =>
+    commerce({ exports_used, export_cap, period_end: "2030-03-15T00:00:00Z" });
 
   test("export boundary explains zero-credit state", async ({ page }) => {
     // A balance is an account's, so the zero-credit state is a signed-in one.
     await signIn(page);
+    await page.route("**/api/canon/commerce", (route) => route.fulfill({ json: commerce() }));
     await page.goto("/rigs/1");
     await page.getByRole("tab", { name: "Exports" }).click();
-    await expect(page.getByRole("button", { name: "Export PDF patch book" })).toBeDisabled();
-    await expect(page.getByText("Credits are required only for exports.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Export for 3 credits" })).toBeDisabled();
+    await expect(page.getByText("This export costs 3 credits, and you have 0.")).toBeVisible();
     await expect(page.getByText(/Each export is a patch book of this run/)).toBeVisible();
+  });
+
+  test("an export names its price in credits before it's asked for", async ({ page }) => {
+    await signIn(page);
+    await page.route("**/api/canon/credits/balance", (route) =>
+      route.fulfill({ json: { balance: 41 } }),
+    );
+    await page.route("**/api/canon/commerce", (route) => route.fulfill({ json: commerce() }));
+    let asked = 0;
+    await page.route("**/api/canon/exports", (route) => {
+      if (route.request().method() !== "POST") return route.fallback();
+      asked += 1;
+      return route.fulfill({
+        status: 201,
+        json: { export_id: "export-credits-1", status: "queued", credit_cost: 3 },
+      });
+    });
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+
+    // The price is on the button and beside it, before anything is asked for.
+    const exportButton = page.getByRole("button", { name: "Export for 3 credits" });
+    await expect(exportButton).toBeEnabled();
+    await expect(exportButton).toHaveAccessibleDescription(
+      "This export costs 3 credits. You have 41, so 38 will be left.",
+    );
+    expect(asked).toBe(0);
+
+    await exportButton.click();
+    await expect.poll(() => asked).toBe(1);
+  });
+
+  test("with no price to show, an export waits", async ({ page }) => {
+    await signIn(page);
+    await page.route("**/api/canon/credits/balance", (route) =>
+      route.fulfill({ json: { balance: 41 } }),
+    );
+    await page.route("**/api/canon/commerce", (route) =>
+      route.fulfill({ status: 503, json: { detail: "unavailable" } }),
+    );
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+
+    await expect(page.getByRole("button", { name: "Export the Patch Book" })).toBeDisabled();
+    await expect(page.getByText("The export's price didn't load.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
+  });
+
+  test("the Style Studio names the export's price, and waits for enough credits", async ({
+    page,
+  }) => {
+    await signIn(page);
+    await page.route("**/api/canon/credits/balance", (route) =>
+      route.fulfill({ json: { balance: 2 } }),
+    );
+    await page.route("**/api/canon/commerce", (route) => route.fulfill({ json: commerce() }));
+    await page.goto(
+      `/rigs/1/patchbook-studio?source_run_id=gen-run-1&source_rig_revision_id=rig-rev-1&artifact_manifest_hash=${"a".repeat(64)}`,
+    );
+
+    const exportButton = page.getByRole("button", { name: "Export with recipe" });
+    await expect(exportButton).toHaveAccessibleDescription(
+      "This export costs 3 credits, and you have 2.",
+    );
+    await expect(exportButton).toBeDisabled();
+  });
+
+  test("a period allowance pays for an export with no credits", async ({ page }) => {
+    await signIn(page);
+    await page.route("**/api/canon/commerce", (route) =>
+      route.fulfill({ json: allowance(12, 100) }),
+    );
+    await page.route("**/api/canon/exports", (route) =>
+      route.request().method() === "POST"
+        ? route.fulfill({
+            status: 201,
+            json: { export_id: "export-allowance-1", status: "queued", credit_cost: 0 },
+          })
+        : route.fallback(),
+    );
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+
+    await expect(page.getByText("Exports this period")).toBeVisible();
+    await expect(page.getByText("12 of 100", { exact: true })).toBeVisible();
+    const exportButton = page.getByRole("button", { name: "Export the Patch Book" });
+    await expect(exportButton).toBeEnabled();
+    await expect(exportButton).toHaveAccessibleDescription(
+      "Your plan covers this export (12 of 100 used this period).",
+    );
+
+    await exportButton.click();
+    await expect(page.getByText(/counts toward this period's exports/)).toBeVisible();
+  });
+
+  test("a used-up allowance says when it resets, and the API's refusal reads in words", async ({
+    page,
+  }) => {
+    await signIn(page);
+    let allowanceRead = allowance(99, 100);
+    await page.route("**/api/canon/commerce", (route) => route.fulfill({ json: allowanceRead }));
+    await page.route("**/api/canon/exports", (route) =>
+      route.request().method() === "POST"
+        ? route.fulfill({ status: 429, json: { detail: "FAIR_USE_CAP_REACHED" } })
+        : route.fallback(),
+    );
+    await page.goto("/rigs/1");
+    await page.getByRole("tab", { name: "Exports" }).click();
+    const exportButton = page.getByRole("button", { name: "Export the Patch Book" });
+    await expect(exportButton).toBeEnabled();
+
+    // The page read 99 of 100, and another tab took the last one.
+    await exportButton.click();
+    await expect(
+      page.getByText(/used this period's exports, so nothing was charged/),
+    ).toBeVisible();
+
+    allowanceRead = allowance(100, 100);
+    await page.reload();
+    await page.getByRole("tab", { name: "Exports" }).click();
+    await expect(exportButton).toBeDisabled();
+    await expect(page.getByText(/They reset on/)).toBeVisible();
   });
 
   test("export boundary asks a signed-out visitor to sign in, not to buy credits", async ({
@@ -163,253 +273,9 @@ test.describe("PatchHive canonical workspace", () => {
   }) => {
     await page.goto("/rigs/1");
     await page.getByRole("tab", { name: "Exports" }).click();
-    await expect(page.getByRole("button", { name: "Export PDF patch book" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Export the Patch Book" })).toBeDisabled();
     await expect(page.getByText("Sign in to export. Only exports cost credits.")).toBeVisible();
     await expect(page.getByText("Available credits")).toHaveCount(0);
-  });
-
-  test("multi-photo fusion panel confirms representative and blocks conflict", async ({ page }) => {
-    await page.route("**/api/**/evidence/images**", async (route) => {
-      if (route.request().method() === "POST") {
-        await route.fulfill({
-          status: 201,
-          json: {
-            uploaded: [
-              { id: "img-a", rack_id: 1, content_sha256: "a".repeat(64) },
-              { id: "img-b", rack_id: 1, content_sha256: "b".repeat(64) },
-            ],
-            rejected: [],
-          },
-        });
-        return;
-      }
-      await route.fallback();
-    });
-    await page.route("**/api/**/evidence/candidates**", async (route) => {
-      await route.fulfill({
-        json: {
-          total: 2,
-          candidates: [
-            {
-              candidate_id: "cand-osc",
-              entity_type: "module",
-              manufacturer: "MockAudio",
-              model: "Oscillator A",
-              confidence: 0.91,
-              confidence_method: "mock",
-              alternative_candidates: [],
-              classification_status: "INFERRED",
-              evidence_id: "ev-1",
-              gallery_revision_id: "catalog-module-osc-a",
-            },
-            {
-              candidate_id: "cand-vca",
-              entity_type: "module",
-              manufacturer: "MockAudio",
-              model: "VCA B",
-              confidence: 0.55,
-              confidence_method: "mock",
-              alternative_candidates: [],
-              classification_status: "INFERRED",
-              evidence_id: "ev-2",
-              gallery_revision_id: "catalog-module-vca-b",
-            },
-          ],
-        },
-      });
-    });
-    await page.route("**/api/**/evidence/reconcile**", async (route) => {
-      await route.fulfill({
-        json: {
-          image_asset_ids: ["img-a", "img-b"],
-          image_count: 2,
-          fused_entities: [
-            {
-              fuse_id: "fuse-osc",
-              entity_key: "mockaudio|oscillator a",
-              manufacturer: "MockAudio",
-              model: "Oscillator A",
-              entity_type: "module",
-              observation_count: 2,
-              supporting_image_ids: ["img-a", "img-b"],
-              mean_confidence: 0.88,
-              max_confidence: 0.91,
-              conflict: false,
-              conflict_notes: [],
-              classification_status: "INFERRED",
-              representative_candidate_id: "cand-osc",
-            },
-            {
-              fuse_id: "fuse-conflict",
-              entity_key: "mockaudio|mystery",
-              manufacturer: "MockAudio",
-              model: "Mystery",
-              entity_type: "module",
-              observation_count: 2,
-              supporting_image_ids: ["img-a", "img-b"],
-              mean_confidence: 0.4,
-              max_confidence: 0.5,
-              conflict: true,
-              conflict_notes: ["label disagreement across images"],
-              classification_status: "INFERRED",
-              representative_candidate_id: "cand-vca",
-            },
-          ],
-          unmatched_candidate_ids: [],
-          conflict_count: 1,
-          status: "RECONCILED_WITH_CONFLICTS",
-          note: "Mock multi-photo fusion for e2e.",
-        },
-      });
-    });
-
-    await page.goto("/racks/1/edit");
-    await page.getByRole("button", { name: "Rig photo" }).setInputFiles([
-      {
-        name: "rig-a.jpg",
-        mimeType: "image/jpeg",
-        buffer: Buffer.from([0xff, 0xd8, 0xff, 0xd9]),
-      },
-      {
-        name: "rig-b.jpg",
-        mimeType: "image/jpeg",
-        buffer: Buffer.from([0xff, 0xd8, 0xff, 0xd9]),
-      },
-    ]);
-    await page.getByRole("button", { name: "Detect modules" }).click();
-    await expect(page.getByLabel("Multi-photo reconciliation")).toBeVisible();
-    await expect(page.getByLabel("Fused module entities")).toBeVisible();
-
-    const conflictRow = page.getByLabel("Resolve fused Mystery");
-    await expect(conflictRow.getByRole("button", { name: "Confirm fused match" })).toBeDisabled();
-
-    await page.getByRole("button", { name: "Confirm fused match" }).first().click();
-    await expect(page.getByText(/Applied confirmed to fused/i)).toBeVisible();
-    await expect(page.getByText("Status: confirmed").first()).toBeVisible();
-  });
-
-  test("module gallery supports search filter and placement entry", async ({ page }) => {
-    const allModules = [
-      {
-        id: 1,
-        slug: "mockaudio-oscillator-a",
-        brand: "MockAudio",
-        name: "Oscillator A",
-        hp: 12,
-        category: "VCO",
-        is_available: "available",
-      },
-      {
-        id: 2,
-        slug: "otherbrand-filter-z",
-        brand: "OtherBrand",
-        name: "Filter Z",
-        hp: 8,
-        category: "VCF",
-        is_available: "available",
-      },
-    ];
-
-    // Single dispatcher — avoids route-order races between /catalog and /catalog/stats etc.
-    await page.route("**/api/modules/catalog**", async (route) => {
-      const url = new URL(route.request().url());
-      const path = url.pathname.replace(/\/+$/, "");
-      if (path.endsWith("/catalog/stats")) {
-        await route.fulfill({
-          json: {
-            total_modules: 2,
-            total_brands: 2,
-            total_categories: 2,
-            hp_stats: {
-              average: 10,
-              min: 8,
-              max: 12,
-              known: 2,
-              unknown: 0,
-              coverage_pct: 100,
-            },
-            availability: { available: 2, discontinued: 0 },
-          },
-        });
-        return;
-      }
-      if (path.endsWith("/catalog/brands")) {
-        await route.fulfill({
-          json: {
-            total: 2,
-            brands: [
-              { name: "MockAudio", module_count: 1 },
-              { name: "OtherBrand", module_count: 1 },
-            ],
-          },
-        });
-        return;
-      }
-      if (path.endsWith("/catalog/categories")) {
-        await route.fulfill({
-          json: {
-            total: 2,
-            categories: [
-              { name: "VCO", module_count: 1 },
-              { name: "VCF", module_count: 1 },
-            ],
-          },
-        });
-        return;
-      }
-      if (path.endsWith("/materialize") || path.includes("/materialize")) {
-        await route.fulfill({
-          json: {
-            status: "created",
-            catalog_slug: "otherbrand-filter-z",
-            module_id: 99,
-            module: {
-              id: 99,
-              brand: "OtherBrand",
-              name: "Filter Z",
-              hp: 8,
-              module_type: "VCF",
-              source: "ModuleCatalog",
-            },
-          },
-        });
-        return;
-      }
-      const search = (url.searchParams.get("search") || "").toLowerCase();
-      const modules = search
-        ? allModules.filter(
-            (m) => m.brand.toLowerCase().includes(search) || m.name.toLowerCase().includes(search),
-          )
-        : allModules;
-      await route.fulfill({
-        json: {
-          total: modules.length,
-          skip: 0,
-          limit: 48,
-          modules,
-        },
-      });
-    });
-    await page.goto("/modules");
-    await expect(page.getByRole("heading", { name: "Module gallery" })).toBeVisible();
-    await expect(page.getByLabel("Module filters")).toBeVisible({ timeout: 15000 });
-    await expect(page.getByLabel("Module catalog results")).toBeVisible();
-    await expect(page.getByText(/Showing 2 of 2 catalog modules/)).toBeVisible();
-    await page.getByRole("searchbox", { name: "Search modules" }).fill("Filter");
-    await expect(page.getByText(/Showing 1 of 1 catalog modules \(filtered\)/)).toBeVisible();
-    // Catalog cards use separate brand/name mockup faces (not a single "Brand — Name" string).
-    const filteredCard = page.getByLabel("Module: OtherBrand Filter Z, 8 HP, VCF");
-    await expect(filteredCard).toBeVisible();
-    await expect(filteredCard.getByText("OtherBrand", { exact: true })).toBeVisible();
-    await expect(filteredCard.getByText("Filter Z", { exact: true })).toBeVisible();
-    await expect(page.getByText("Oscillator A")).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Place on new rig" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Prepare for rig" }).first()).toBeVisible();
-
-    // Prepare for rig → materialize + navigate to rack create with module_id
-    await page.getByRole("button", { name: "Prepare for rig" }).first().click();
-    await page.waitForURL(/\/racks\/new\?module_id=99/);
-    await expect(page).toHaveURL(/module_id=99/);
   });
 
   test("rack builder edit shows dual-gate panel and power completeness", async ({ page }) => {
@@ -793,7 +659,7 @@ test.describe("PatchHive canonical workspace", () => {
   });
 
   /** Rig 7 on a two-row case, served from state the PUTs change, as the API would. */
-  async function mockMovableRig(page: Page) {
+  async function mockMovableRig(page: Page, { withCase = true } = {}) {
     const MODULES: Record<number, { name: string; hp: number }> = {
       10: { name: "Gamma", hp: 12 },
       11: { name: "Delta", hp: 6 },
@@ -808,7 +674,7 @@ test.describe("PatchHive canonical workspace", () => {
     const rig = () => ({
       id: 7,
       name: "Sim rack",
-      case_id: 10,
+      case_id: withCase ? 10 : null,
       user_id: 1,
       generation_seed: 1,
       modules: state.modules.map((m, i) => ({
@@ -822,17 +688,19 @@ test.describe("PatchHive canonical workspace", () => {
           ...MODULES[m.module_id],
         },
       })),
-      case: {
-        id: 10,
-        brand: "Sim Co",
-        name: "Sim 168",
-        total_hp: 168,
-        rows: 2,
-        hp_per_row: [84, 84],
-        power_12v_ma: 2000,
-        power_neg12v_ma: 1200,
-        power_5v_ma: 500,
-      },
+      case: withCase
+        ? {
+            id: 10,
+            brand: "Sim Co",
+            name: "Sim 168",
+            total_hp: 168,
+            rows: 2,
+            hp_per_row: [84, 84],
+            power_12v_ma: 2000,
+            power_neg12v_ma: 1200,
+            power_5v_ma: 500,
+          }
+        : null,
     });
     await page.route(RIG_7, async (route) => {
       const request = route.request();
@@ -864,6 +732,36 @@ test.describe("PatchHive canonical workspace", () => {
     );
     return puts;
   }
+
+  test("rack builder drops what the signed-in reader had when they sign out", async ({ page }) => {
+    await signIn(page);
+    await mockMovableRig(page);
+    await page.route("**/api/community/auth/logout", (route) => route.fulfill({ status: 204 }));
+    await page.route("**/api/modules/**", (route) => {
+      const signedIn = Boolean(route.request().headers()["authorization"]);
+      const row = (id: number, name: string) => ({
+        id,
+        brand: "Sim",
+        name,
+        hp: 6,
+        module_type: "UTIL",
+        power_12v_ma: 20,
+      });
+      const modules = signedIn ? [row(10, "Gamma"), row(77, "Lead only")] : [row(10, "Gamma")];
+      return route.fulfill({ json: { total: modules.length, modules } });
+    });
+    await page.goto("/racks/7/edit");
+    const picker = page.getByLabel("Select module to place");
+    await expect(picker.getByRole("option", { name: /Lead only/ })).toHaveCount(1);
+    await picker.selectOption("77");
+
+    await page.getByRole("button", { name: /Sign out/ }).click();
+
+    await expect(page.getByRole("button", { name: /Sign out/ })).toHaveCount(0);
+    await expect(picker.getByRole("option", { name: /Gamma/ })).toHaveCount(1);
+    await expect(picker.getByRole("option", { name: /Lead only/ })).toHaveCount(0);
+    await expect(picker).toHaveValue("");
+  });
 
   test("rack builder moves a placed module by keyboard, and Undo puts it back", async ({
     page,
@@ -898,6 +796,51 @@ test.describe("PatchHive canonical workspace", () => {
       { module_id: 10, row_index: 0, start_hp: 0 },
       { module_id: 11, row_index: 0, start_hp: 12 },
     ]);
+  });
+
+  test("rack builder places a Rig with no Case on open rows, with no row end", async ({ page }) => {
+    const puts = await mockMovableRig(page, { withCase: false });
+    await page.goto("/racks/7/edit");
+    await expect(page.locator('.placement-rail [data-module="11"]')).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(
+      page.getByText(/no Case named, so each row is as wide as the Modules on it/),
+    ).toBeVisible();
+    // Its one used row, and an empty one past it to place on.
+    await expect(page.getByText("18HP placed, no Case named")).toBeVisible();
+    await expect(page.getByText("0HP placed, no Case named")).toBeVisible();
+
+    await page.getByLabel("Select module to place").selectOption("11");
+    await page.getByLabel("Row index").fill("1");
+    await page.getByLabel("Start HP").fill("120");
+    await page.getByRole("button", { name: "Add placement" }).click();
+
+    await expect.poll(() => puts.length).toBe(1);
+    expect(puts[0]).toContainEqual(
+      expect.objectContaining({ module_id: 11, row_index: 1, start_hp: 120 }),
+    );
+  });
+
+  test("rack builder creates a Rig with no Case, for entering one by hand", async ({ page }) => {
+    await signIn(page);
+    let created: unknown = null;
+    await page.route(
+      (url) => url.pathname.replace(/\/$/, "").endsWith("/api/racks"),
+      async (route) => {
+        if (route.request().method() !== "POST") return route.fallback();
+        created = route.request().postDataJSON();
+        await route.fulfill({ status: 201, json: { id: 7 } });
+      },
+    );
+    await mockMovableRig(page, { withCase: false });
+    await page.goto("/racks/new");
+
+    await page.getByRole("checkbox", { name: "Go on without a Case" }).check();
+    await page.getByRole("button", { name: "Create empty rig" }).click();
+
+    await expect(page).toHaveURL(/\/racks\/7\/edit$/);
+    expect(created).toMatchObject({ case_id: null, modules: [] });
   });
 
   test("rack builder shows a blocked slot and never saves it", async ({ page }) => {
@@ -1005,244 +948,6 @@ test.describe("PatchHive canonical workspace", () => {
     ).toBeVisible();
     await expect(batchList.getByRole("checkbox")).toHaveCount(1);
     await expect(page.getByText("No modules match the filter.")).toHaveCount(0);
-  });
-
-  test("module gallery URL filters and status chips", async ({ page }) => {
-    const allModules = [
-      {
-        id: 1,
-        slug: "mockaudio-oscillator-a",
-        brand: "MockAudio",
-        name: "Oscillator A",
-        hp: 12,
-        category: "VCO",
-        source: "SynthCatalogResearch",
-        is_available: "available",
-      },
-      {
-        id: 2,
-        slug: "otherbrand-filter-z",
-        brand: "OtherBrand",
-        name: "Filter Z",
-        hp: 8,
-        category: "VCF",
-        source: "ModuleCatalog",
-        is_available: "available",
-      },
-    ];
-    await page.route("**/api/modules/**", async (route) => {
-      const url = new URL(route.request().url());
-      const path = url.pathname;
-      if (path.endsWith("/catalog/stats")) {
-        await route.fulfill({
-          json: {
-            total_modules: 2,
-            total_brands: 2,
-            total_categories: 2,
-            hp_stats: { average: 10, min: 8, max: 12, known: 2, unknown: 0, coverage_pct: 100 },
-            availability: { available: 2 },
-            by_source: { SynthCatalogResearch: 1, ModuleCatalog: 1 },
-          },
-        });
-        return;
-      }
-      if (path.endsWith("/catalog/brands")) {
-        await route.fulfill({
-          json: {
-            total: 2,
-            brands: [
-              { name: "MockAudio", module_count: 1 },
-              { name: "OtherBrand", module_count: 1 },
-            ],
-          },
-        });
-        return;
-      }
-      if (path.endsWith("/catalog/categories")) {
-        await route.fulfill({
-          json: {
-            total: 2,
-            categories: [
-              { name: "VCO", module_count: 1 },
-              { name: "VCF", module_count: 1 },
-            ],
-          },
-        });
-        return;
-      }
-      if (path.includes("/catalog")) {
-        await route.fulfill({
-          json: { total: allModules.length, skip: 0, limit: 48, modules: allModules },
-        });
-        return;
-      }
-      await route.continue();
-    });
-
-    await page.goto("/modules?hp=known");
-    await expect(page.getByRole("heading", { name: "Module gallery" })).toBeVisible();
-    await expect(page.getByLabel("Active filters")).toBeVisible();
-    await expect(page.getByText("HP known").first()).toBeVisible();
-    await expect(page.getByText("placeable").first()).toBeVisible();
-    await expect(page).toHaveURL(/hp=known/);
-    await expect(page.getByRole("button", { name: "Add to existing" }).first()).toBeVisible();
-  });
-
-  test("module add-to-existing opens rig picker after materialize", async ({ page }) => {
-    await page.route("**/api/modules/**", async (route) => {
-      const path = new URL(route.request().url()).pathname;
-      if (path.endsWith("/catalog/stats")) {
-        await route.fulfill({
-          json: {
-            total_modules: 1,
-            total_brands: 1,
-            total_categories: 1,
-            hp_stats: { average: 8, min: 8, max: 8, known: 1, unknown: 0, coverage_pct: 100 },
-            availability: { available: 1 },
-            by_source: { ModuleCatalog: 1 },
-          },
-        });
-        return;
-      }
-      if (path.endsWith("/catalog/brands")) {
-        await route.fulfill({
-          json: { total: 1, brands: [{ name: "OtherBrand", module_count: 1 }] },
-        });
-        return;
-      }
-      if (path.endsWith("/catalog/categories")) {
-        await route.fulfill({ json: { total: 1, categories: [{ name: "VCF", module_count: 1 }] } });
-        return;
-      }
-      if (path.includes("/materialize")) {
-        await route.fulfill({
-          json: {
-            status: "exists",
-            catalog_slug: "otherbrand-filter-z",
-            module_id: 42,
-            module: { id: 42, brand: "OtherBrand", name: "Filter Z", hp: 8, module_type: "VCF" },
-          },
-        });
-        return;
-      }
-      if (path.includes("/catalog")) {
-        await route.fulfill({
-          json: {
-            total: 1,
-            skip: 0,
-            limit: 48,
-            modules: [
-              {
-                id: 2,
-                slug: "otherbrand-filter-z",
-                brand: "OtherBrand",
-                name: "Filter Z",
-                hp: 8,
-                category: "VCF",
-                source: "ModuleCatalog",
-                is_available: "available",
-              },
-            ],
-          },
-        });
-        return;
-      }
-      await route.continue();
-    });
-    await page.route("**/api/racks/**", async (route) => {
-      if (route.request().method() === "GET") {
-        await route.fulfill({
-          json: {
-            total: 1,
-            racks: [{ id: 7, name: "Sim rack", case_id: 10, user_id: 1, modules: [] }],
-          },
-        });
-        return;
-      }
-      await route.continue();
-    });
-    // The picker lists rigs through the canon prefix: GET /canon/rigs?limit=50
-    await page.route("**/api/canon/rigs?**", async (route) => {
-      await route.fulfill({
-        json: {
-          total: 1,
-          rigs: [
-            {
-              rig_id: 7,
-              rack_id: 7,
-              user_id: 1,
-              case_id: 10,
-              name: "Sim rack",
-              name_suggested: null,
-              description: null,
-              tags: [],
-              is_public: false,
-              module_count: 0,
-              created_at: "2026-01-01T00:00:00Z",
-              updated_at: "2026-01-01T00:00:00Z",
-            },
-          ],
-        },
-      });
-    });
-
-    await page.goto("/modules?hp=known");
-    await page.getByRole("button", { name: "Add to existing" }).first().click();
-    await expect(page.getByLabel("Select existing rig")).toBeVisible({ timeout: 10000 });
-    await expect(page.getByRole("button", { name: "Open placement" })).toBeEnabled();
-    await page.getByRole("button", { name: "Open placement" }).click();
-    await page.waitForURL(/\/racks\/7\/edit\?module_id=42/);
-  });
-
-  test("cases catalog shows placeable chips and URL format filter", async ({ page }) => {
-    await page.route("**/api/cases/**", async (route) => {
-      const url = new URL(route.request().url());
-      const path = url.pathname;
-      if (path.includes("/stats") || path.endsWith("/catalog/stats")) {
-        await route.fulfill({
-          json: {
-            case_count: 1,
-            manufacturer_count: 1,
-            with_power_rails: 1,
-            with_depth: 1,
-            source_packet_count: 1,
-          },
-        });
-        return;
-      }
-      // case catalog list
-      await route.fulfill({
-        json: {
-          total: 1,
-          skip: 0,
-          limit: 200,
-          cases: [
-            {
-              slug: "sim-co-sim-84",
-              manufacturer: "Sim Co",
-              model: "Sim 84",
-              format_family: "eurorack",
-              production_status: "current",
-              powered: true,
-              primary_revision: {
-                revision_key: "default",
-                capacity_value: 84,
-                capacity_unit: "hp",
-                row_count: 1,
-                confidence: "observed",
-              },
-            },
-          ],
-        },
-      });
-    });
-
-    await page.goto("/cases?format=eurorack");
-    await expect(page.getByRole("heading", { name: "Cases" })).toBeVisible();
-    await expect(page.getByLabel("Case filters")).toBeVisible({ timeout: 15000 });
-    await expect(page.getByText("placeable").first()).toBeVisible();
-    await expect(page.getByText("powered").first()).toBeVisible();
-    await expect(page).toHaveURL(/format=eurorack/);
   });
 
   test("rig overview surfaces sealed inventory receipt", async ({ page }) => {
@@ -1392,6 +1097,9 @@ test.describe("PatchHive canonical workspace", () => {
     await expect(
       page.getByRole("button", { name: "Generate patches (may be blocked)" }),
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: /Confirm inventory/i })).toBeVisible();
+    // The way to fix the Rig before generating; spec 009 names it as the Reading screen does.
+    await expect(
+      page.getByRole("link", { name: "Correct the layout" }).filter({ visible: true }).first(),
+    ).toHaveAttribute("href", "/racks/1/edit");
   });
 });

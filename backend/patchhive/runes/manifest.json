@@ -174,19 +174,6 @@
     },
     {
       "assets": [
-        "assets/rune_import_modulargrid.svg"
-      ],
-      "category": "ingest",
-      "maps_to": "integrations.modulargrid_importer:import_all",
-      "name": "Import ModularGrid Catalog",
-      "provenance": {
-        "confidence": "curated",
-        "source": "modulargrid"
-      },
-      "rune_id": "411d5cb216bb78f1"
-    },
-    {
-      "assets": [
         "assets/rune_export_patch_pdf.svg"
       ],
       "category": "export",

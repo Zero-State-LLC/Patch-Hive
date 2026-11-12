@@ -7,9 +7,11 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import Hash from "@/components/Hash";
 import LoadFailure from "@/components/LoadFailure";
 import { canonApi } from "@/lib/api";
+import { exportOffer, exportRefusal } from "@/lib/commerce";
 import { failureKind } from "@/lib/loadError";
 import { shortHash } from "@/lib/format";
-import { useAuthStore } from "@/lib/store";
+import { useAuthStore, useReaderKey } from "@/lib/store";
+import { useMountedRef } from "@/lib/useMountedRef";
 import {
   ALL_INFLUENCE_IDS,
   ARTISTIC_MODES,
@@ -20,6 +22,7 @@ import {
   type StyleWeights,
   type TemplateFamilyId,
 } from "@/types/patchbookDesign";
+import type { CommerceAllowance } from "@/types/api";
 
 type ServerRecipe = {
   id: string;
@@ -83,6 +86,11 @@ type BridgeFields = {
 };
 
 export default function PatchBookStyleStudioPage() {
+  return <PatchBookStyleStudio key={useReaderKey()} />;
+}
+
+function PatchBookStyleStudio() {
+  const mounted = useMountedRef();
   const { rigId } = useParams<{ rigId: string }>();
   const [search] = useSearchParams();
   const bridge: BridgeFields | null = useMemo(() => {
@@ -99,6 +107,12 @@ export default function PatchBookStyleStudioPage() {
   const [status, setStatus] = useState("");
   const [previewing, setPreviewing] = useState(false);
   const [exporting, setExporting] = useState(false);
+  // What an export costs and what pays for it, so the price shows before the owner commits
+  // (spec 009 story 29).
+  const signedIn = useAuthStore((st) => st.isAuthenticated());
+  const [credits, setCredits] = useState<number | null>(null);
+  const [allowance, setAllowance] = useState<CommerceAllowance | null>(null);
+  const [exportCost, setExportCost] = useState<number | null>(null);
   const [preview, setPreview] = useState<{
     resolved_recipe: Record<string, unknown>;
     resolution_events: Array<{ code: string; message: string; field?: string | null }>;
@@ -136,6 +150,8 @@ export default function PatchBookStyleStudioPage() {
         return;
       }
       const blob = await res.blob();
+      // A file saved after sign-out would hand the last reader's book to whoever is here now.
+      if (!mounted.current) return;
       const objectUrl = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = objectUrl;
@@ -167,6 +183,29 @@ export default function PatchBookStyleStudioPage() {
   useEffect(() => {
     void refreshServerLibrary();
   }, [refreshServerLibrary]);
+
+  const refreshPrice = useCallback(() => {
+    if (!signedIn) return;
+    canonApi
+      .getBalance()
+      .then((response) => mounted.current && setCredits(response.data.balance))
+      .catch(() => mounted.current && setCredits(null));
+    canonApi
+      .getCommerce()
+      .then((response) => {
+        if (!mounted.current) return;
+        setAllowance(response.data.allowance);
+        setExportCost(response.data.export_cost ?? null);
+      })
+      .catch(() => {
+        if (!mounted.current) return;
+        setAllowance(null);
+        setExportCost(null);
+      });
+  }, [signedIn, mounted]);
+
+  useEffect(refreshPrice, [refreshPrice]);
+  const offer = exportOffer({ allowance, credits, cost: exportCost });
 
   const setWeight = (key: keyof StyleWeights, value: number) => {
     setRecipe((r) => ({
@@ -230,16 +269,12 @@ export default function PatchBookStyleStudioPage() {
       });
       setLastExportId(created.data.export_id);
       setStatus(`Export ${shortHash(created.data.export_id)} requested (${created.data.status}).`);
+      refreshPrice();
       if (created.data.status === "succeeded") {
         // Auto-offer download path in status; user clicks buttons below
       }
     } catch (error: unknown) {
-      const apiError = error as { response?: { data?: { detail?: string }; status?: number } };
-      if (apiError.response?.status === 402) {
-        setStatus("Not enough credits for this export. Nothing was charged.");
-      } else {
-        setStatus(apiError.response?.data?.detail || "Export failed");
-      }
+      setStatus(exportRefusal(error));
     } finally {
       setExporting(false);
     }
@@ -508,6 +543,8 @@ export default function PatchBookStyleStudioPage() {
                       <button
                         className="button button-quiet"
                         type="button"
+                        disabled={exporting || !offer.canExport}
+                        aria-describedby="studio-export-price"
                         onClick={() => {
                           void (async () => {
                             if (!bridge) {
@@ -528,16 +565,9 @@ export default function PatchBookStyleStudioPage() {
                               setStatus(
                                 `Export ${shortHash(created.data.export_id)} requested (${created.data.status}), styled with “${entry.name}”.`,
                               );
+                              refreshPrice();
                             } catch (error: unknown) {
-                              const apiError = error as {
-                                response?: { data?: { detail?: string }; status?: number };
-                              };
-                              setStatus(
-                                apiError.response?.status === 402
-                                  ? "Not enough credits for this export. Nothing was charged."
-                                  : apiError.response?.data?.detail ||
-                                      "The export failed. Nothing was charged.",
-                              );
+                              setStatus(exportRefusal(error));
                             } finally {
                               setExporting(false);
                             }
@@ -615,12 +645,20 @@ export default function PatchBookStyleStudioPage() {
             <button
               className="button button-primary"
               type="button"
-              disabled={!bridge || exporting}
+              disabled={!bridge || exporting || !offer.canExport}
+              aria-describedby="studio-export-price"
               onClick={() => void handleExport()}
             >
               {exporting ? "Exporting…" : "Export with recipe"}
             </button>
           </div>
+          <p
+            id="studio-export-price"
+            className={offer.canExport ? "muted" : "status status-warning"}
+            role="status"
+          >
+            {signedIn ? offer.price : "Sign in to export. Only exports cost credits."}
+          </p>
           {!bridge ? (
             <div className="notice" role="status">
               <p className="status status-warning">

@@ -1,0 +1,207 @@
+{
+ "file": "commons-121.jpg",
+ "rows": 1,
+ "row_capacity_hp": [
+  null
+ ],
+ "px_per_hp": [
+  48.7
+ ],
+ "cohort_suggestions": [
+  "clear_front_panel",
+  "cable_obscured",
+  "partial_occlusion",
+  "unknown_open_set",
+  "revision_or_panel_variant"
+ ],
+ "labels": [
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 0,
+   "start_hp": 0,
+   "hp": 8,
+   "n": 1,
+   "confidence": "high",
+   "evidence": "read 'CENTRE DE CONTRÔLE', 'MIDI' and, lower on the same panel, 'SOURCE D'ENERGIE'; no catalog row (the catalog's SOURCE D'ENERGIE is a separate power module, not this panel); measured 0.0..7.8 HP",
+   "observed": "Eowave Centre de Contrôle (MIDI interface with power inlet)"
+  },
+  {
+   "kind": "module",
+   "maker": "Eowave",
+   "name": "TITAN",
+   "row_index": 0,
+   "start_hp": 8,
+   "hp": 5,
+   "n": 2,
+   "catalog_id": 1946,
+   "confidence": "high",
+   "evidence": "read 'TITAN Oscillateur discret'; measured 7.8..12.7 HP"
+  },
+  {
+   "kind": "module",
+   "maker": "Eowave",
+   "name": "TITAN",
+   "row_index": 0,
+   "start_hp": 13,
+   "hp": 5,
+   "n": 3,
+   "catalog_id": 1946,
+   "confidence": "high",
+   "evidence": "read 'TITAN Oscillateur discret'; measured 12.7..17.6 HP"
+  },
+  {
+   "kind": "module",
+   "maker": "Eowave",
+   "name": "TITAN",
+   "row_index": 0,
+   "start_hp": 18,
+   "hp": 5,
+   "n": 4,
+   "catalog_id": 1946,
+   "confidence": "high",
+   "evidence": "read 'TITAN Oscillateur discret' (partly behind grey cable); right edge read at the bottom rail; measured 17.6..22.6 HP"
+  },
+  {
+   "kind": "module",
+   "maker": "Eowave",
+   "name": "SOMMATEUR",
+   "row_index": 0,
+   "start_hp": 23,
+   "hp": 5,
+   "n": 5,
+   "catalog_id": 1947,
+   "confidence": "medium",
+   "evidence": "read '…MMATEUR …UATEUR' (Sommateur-Atténuateur; title partly behind cables; ENT 1/2/3, SORTIE ATTÉN.); catalog row 'SOMMATEUR' has no description and may be the later Sommateur X6 mixer; measured 22.6..27.5 HP"
+  },
+  {
+   "kind": "module",
+   "maker": "Eowave",
+   "name": "MAGNETOSPHERE",
+   "row_index": 0,
+   "start_hp": 28,
+   "hp": 10,
+   "n": 6,
+   "catalog_id": 771,
+   "confidence": "high",
+   "evidence": "read 'MAGNÉTOSPHÈRE Filtre discret passe-bas 24 dB'; 10 HP, so the original, not the 5 HP MK2 row; measured 27.6..37.6 HP"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 0,
+   "start_hp": 38,
+   "hp": 5,
+   "n": 7,
+   "confidence": "high",
+   "evidence": "read 'A.D. Amplification discrète'; no catalog row among the 30 Eowave rows; measured 37.6..42.6 HP",
+   "observed": "Eowave A.D. (Amplification discrète)"
+  },
+  {
+   "kind": "module",
+   "maker": "Eowave",
+   "name": "RAYONNEMENT",
+   "row_index": 0,
+   "start_hp": 43,
+   "hp": 5,
+   "n": 8,
+   "catalog_id": 773,
+   "confidence": "high",
+   "evidence": "read 'RAYONNEMENT'; measured 42.6..47.6 HP"
+  },
+  {
+   "kind": "module",
+   "maker": "Eowave",
+   "name": "RAYONNEMENT",
+   "row_index": 0,
+   "start_hp": 48,
+   "hp": 5,
+   "n": 9,
+   "catalog_id": 773,
+   "confidence": "high",
+   "evidence": "read 'RAYONNEMENT'; measured 47.6..52.6 HP"
+  },
+  {
+   "kind": "module",
+   "open_set": true,
+   "row_index": 0,
+   "start_hp": 53,
+   "hp": 5,
+   "n": 10,
+   "confidence": "high",
+   "evidence": "read 'GERMANIA 241'; no catalog row among the 30 Eowave rows; measured 52.7..57.5 HP",
+   "observed": "Eowave Germania 241"
+  },
+  {
+   "kind": "module",
+   "maker": "Eowave",
+   "name": "SOMMATEUR",
+   "row_index": 0,
+   "start_hp": 58,
+   "hp": 5,
+   "n": 11,
+   "catalog_id": 1947,
+   "confidence": "medium",
+   "evidence": "read 'SOMMATEUR ATTÉNUATEUR'; same catalog-variant doubt as n=5; measured 57.6..62.6 HP"
+  },
+  {
+   "kind": "module",
+   "row_index": 0,
+   "start_hp": 63,
+   "hp": 3,
+   "n": 12,
+   "confidence": "low",
+   "evidence": "black 3 HP panel with 8 unlabelled jacks in two groups of 4 (looks like a passive multiple); no text or logo; measured 62.8..65.8 HP Owner's call 2026-11-08: no maker or name, so it is labelled as not in the catalog.",
+   "open_set": true,
+   "observed": "unmarked 3 HP passive multiple (8 jacks, no maker or name)"
+  },
+  {
+   "kind": "module",
+   "maker": "Eowave",
+   "name": "ZONE B.F",
+   "row_index": 0,
+   "start_hp": 66,
+   "hp": 5,
+   "n": 13,
+   "catalog_id": 1950,
+   "confidence": "high",
+   "evidence": "read 'ZONE B.F. Basses fréquences' (OBF1/OBF2, vitesse/forme); measured 66.0..71.2 HP"
+  },
+  {
+   "kind": "module",
+   "maker": "Eowave",
+   "name": "EO-310",
+   "row_index": 0,
+   "start_hp": 71,
+   "hp": 5,
+   "n": 14,
+   "catalog_id": 770,
+   "confidence": "high",
+   "evidence": "read 'EO-310 SENSOR SIGNAL PROCESSOR'; measured 71.3..76.2 HP"
+  },
+  {
+   "kind": "module",
+   "maker": "Eowave",
+   "name": "EO-311",
+   "row_index": 0,
+   "start_hp": 76,
+   "hp": 3,
+   "n": 15,
+   "catalog_id": 1952,
+   "confidence": "medium",
+   "evidence": "read 'EO-31…' (last digit behind a cable) and 'SENSOR TO CV', 'sensor' jacks, eowave logo; 3 HP matches catalog EO-311; measured 76.2..79.2 HP"
+  },
+  {
+   "kind": "blank_panel",
+   "row_index": 0,
+   "start_hp": 79,
+   "hp": 5,
+   "n": 16,
+   "confidence": "high",
+   "evidence": "black 5 HP panel carrying only the large 'eowave' logo; no controls; measured 79.2..84.0 HP"
+  }
+ ],
+ "catalog_hp_disagreements": [],
+ "excluded": "other gear around the case (a 4-channel box and a black unit at the top edge, a clear dish, loose cables, a sensor strip at the right edge); no other Eurorack row is in frame",
+ "notes": "One 3U row shot from above at an angle (keystoned and slightly rotated). Measurements were made on a perspective-rectified copy (4 corners: panel row TL 447,1095 / TR 4440,1107 / BL 322,2280 / BR 4490,2360 in original pixels); px_per_hp 48.7 is in that rectified frame (about 46-51 px/HP in the original, varying across the frame). Scale is photo-derived: the sixteen panels sum to exactly 84 HP at 48.7 px/HP, the 5 HP Eowave screw offset (7.5 mm) and panel-height bounds agree, and every Eowave catalog width matched here (TITAN 5, SOMMATEUR 5, MAGNETOSPHERE 10, RAYONNEMENT 5, ZONE B.F 5, EO-310 5, EO-311 3) agrees with the photo, so there are no catalog HP disagreements in this photo. Panels fill HP 0-84 with no gaps; about 1 HP of empty rail (a sliding nut is visible) sits between the logo blank and the right case wall, so row capacity is left null (84 occupied, roughly 85 to the wall). Measured start positions all land within 0.4 HP of an integer except Centre/Titan boundary (7.8) and the 3 HP panels (62.9, 76.2); none is ambiguous. Cables hide the Titan-3/Sommateur seam at the top (read at the bottom rail), the end of the EO-31x title, and part of the first Sommateur title. Commons gives no module list for this photo (description is just 'Eowave_system'), so identities come from panel text only."
+}

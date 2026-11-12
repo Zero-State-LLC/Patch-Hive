@@ -16,7 +16,7 @@ const api = vi.hoisted(() => ({
     getReferrals: vi.fn(),
   },
   authApi: { getMe: vi.fn(), updateProfile: vi.fn() },
-  canonApi: { createDownloadToken: vi.fn() },
+  canonApi: { createDownloadToken: vi.fn(), getCommerce: vi.fn() },
 }));
 
 vi.mock("@/lib/api", () => api);
@@ -33,11 +33,20 @@ const USER = {
   updated_at: "2026-01-01T00:00:00Z",
 };
 
+const NOTHING_ON_OFFER = {
+  test_mode: true,
+  credit_offer: null,
+  plan_offers: [],
+  subscription: null,
+  allowance: null,
+};
+
 beforeEach(() => {
   useAuthStore.getState().setAuth(USER, "token");
   api.authApi.getMe.mockResolvedValue({ data: USER });
   api.accountApi.getCredits.mockResolvedValue({ data: { balance: 3, entries: [] } });
   api.accountApi.getExports.mockResolvedValue({ data: [] });
+  api.canonApi.getCommerce.mockResolvedValue({ data: NOTHING_ON_OFFER });
   api.accountApi.getReferrals.mockRejectedValue(new Error("off"));
 });
 

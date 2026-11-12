@@ -11,7 +11,8 @@ from core.database import Base
 
 
 class CreditLedgerEntry(Base):
-    """Credit ledger entry for a user."""
+    """A retired credit ledger. Nothing reads or writes it now; spending and the balance use
+    the canonical ledger (spec 004 FR-009). The table stays so any old rows are kept."""
 
     __tablename__ = "credit_ledger_entries"
 
@@ -47,10 +48,9 @@ class ExportRecord(Base):
 
 
 class AccountReferral(Base):
-    """Legacy account-dashboard referral projection.
-
-    This is deliberately isolated from the canonical append-only ``referrals``
-    ledger owned by :mod:`monetization.models`.
+    """A retired account-dashboard referral projection. Nothing reads or writes it now; the
+    summary comes from the append-only ``referrals`` rows owned by :mod:`monetization.models`
+    (spec 004 FR-031). The table stays so any old rows are kept.
     """
 
     __tablename__ = "account_referrals"

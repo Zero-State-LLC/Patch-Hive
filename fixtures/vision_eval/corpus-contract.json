@@ -31,9 +31,16 @@
     "none_of_above_allowed",
     "decision_packet"
   ],
+  "units": {
+    "module": "A photo of one Module. The default when a manifest names no unit.",
+    "whole_rig": "A photo of a whole Rig, labelled with every Module and Blank Panel on it (spec 009)."
+  },
+  "whole_rig_case_fields": ["rows", "labels"],
+  "whole_rig_label_fields": ["kind", "row_index", "start_hp", "hp", "maker", "name", "open_set"],
   "notes": [
     "Device Registry supplies candidate identity vocabulary but is not ground truth by itself.",
     "Synthetic fixtures may validate CI and contracts but may not set production thresholds.",
-    "Locked-test cases may not tune prompts, models, ranking policy, or thresholds."
+    "Locked-test cases may not tune prompts, models, ranking policy, or thresholds.",
+    "A whole-rig case carries rows and labels in place of ground_truth_inventory and the decision identity fields."
   ]
 }

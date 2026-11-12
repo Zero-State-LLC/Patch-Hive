@@ -29,6 +29,39 @@
       "cap_credits": 300,
       "ledger_baseline_fetches": 2569,
       "ledger_baseline_credits": 1149
+    },
+    {
+      "id": "maker-render-2026-11",
+      "approver": "Daniel Meyer (owner; approved in chat 2026-11-09: 500 credits, context.dev)",
+      "approved_at": "2026-11-09T10:30:00Z",
+      "expires_at": "2026-11-09T12:00:00Z",
+      "brands": [
+        "ADDAC System",
+        "Synthrotek",
+        "333modules",
+        "Iron Ether",
+        "Antumbra",
+        "Après le bip",
+        "Aqa Elektrix",
+        "Broken Silicon",
+        "Bubblesound Instruments",
+        "Encore Electronics",
+        "Fancyyyyy",
+        "Future Sound Systems",
+        "MengQiMusic",
+        "MH Eurorack",
+        "omsonic",
+        "Prok Modular",
+        "Scopic Modular",
+        "Seaside Modular",
+        "Seismic Industries",
+        "Stereoping",
+        "Synthwerks"
+      ],
+      "cap_fetches": 500,
+      "cap_credits": 500,
+      "ledger_baseline_fetches": 2869,
+      "ledger_baseline_credits": 1444
     }
   ]
 }

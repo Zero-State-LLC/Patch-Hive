@@ -2,20 +2,28 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import worker from "./index";
-import { APP_ROUTES, isAppRoute, looksLikeFile } from "./routes";
+import { APP_ROUTES, RETIRED_ROUTES, isAppRoute, isRetired, looksLikeFile } from "./routes";
 
 const appTsx = readFileSync(resolve(__dirname, "../src/App.tsx"), "utf8");
 
 describe("edge routes", () => {
-  it("mirrors every client route in App.tsx", () => {
+  it("mirrors every client route in App.tsx, pages and retired ones alike", () => {
     const declared = [...appTsx.matchAll(/<Route path="([^"]+)"/g)]
       .map((m) => m[1])
       .filter((p) => p !== "*");
-    expect([...APP_ROUTES].sort()).toEqual(declared.sort());
+    expect([...APP_ROUTES, ...RETIRED_ROUTES].sort()).toEqual(declared.sort());
+  });
+
+  it("knows the catalog pages are retired, not pages", () => {
+    for (const path of ["/modules", "/products", "/cases", "/cases/eurorack-104", "/modules/"]) {
+      expect(isRetired(path)).toBe(true);
+      expect(isAppRoute(path)).toBe(false);
+    }
+    expect(isRetired("/admin/modules")).toBe(false);
   });
 
   it("matches client routes with parameters", () => {
-    expect(isAppRoute("/cases/eurorack-104")).toBe(true);
+    expect(isAppRoute("/rigs/12/reading")).toBe(true);
     expect(isAppRoute("/racks/12/edit")).toBe(true);
     expect(isAppRoute("/racks/12/edit/x")).toBe(false);
     expect(isAppRoute("/privacy")).toBe(true);
@@ -39,8 +47,31 @@ const env = (asset?: Response) => ({ ASSETS: { fetch: async () => asset ?? shell
 
 describe("edge worker", () => {
   it("serves the shell with 200 for a client route", async () => {
-    const res = await worker.fetch(new Request("https://patch-hive.com/modules"), env());
+    const res = await worker.fetch(new Request("https://patch-hive.com/patches"), env());
     expect(res.status).toBe(200);
+  });
+
+  it("sends an old catalog link to the home page for good", async () => {
+    for (const path of ["/modules?hp=known", "/products", "/cases/eurorack-104"]) {
+      const res = await worker.fetch(new Request(`https://patch-hive.com${path}`), env());
+      expect(res.status).toBe(301);
+      expect(res.headers.get("location")).toBe("https://patch-hive.com/");
+    }
+    // From www too, in one hop.
+    const www = await worker.fetch(new Request("https://www.patch-hive.com/cases"), env());
+    expect(www.headers.get("location")).toBe("https://patch-hive.com/");
+  });
+
+  it("lists no retired route in the sitemap", () => {
+    const sitemap = readFileSync(resolve(__dirname, "../public/sitemap.xml"), "utf8");
+    const paths = [...sitemap.matchAll(/<loc>https:\/\/patch-hive\.com([^<]*)<\/loc>/g)].map(
+      (m) => m[1] || "/",
+    );
+    expect(paths.length).toBeGreaterThan(0);
+    for (const path of paths) {
+      expect(isRetired(path)).toBe(false);
+      expect(isAppRoute(path)).toBe(true);
+    }
   });
 
   it("serves the shell with 200 for the privacy notice", async () => {
@@ -71,8 +102,8 @@ describe("edge worker", () => {
   });
 
   it("redirects www to the apex", async () => {
-    const res = await worker.fetch(new Request("https://www.patch-hive.com/cases"), env());
+    const res = await worker.fetch(new Request("https://www.patch-hive.com/patches"), env());
     expect(res.status).toBe(301);
-    expect(res.headers.get("location")).toBe("https://patch-hive.com/cases");
+    expect(res.headers.get("location")).toBe("https://patch-hive.com/patches");
   });
 });

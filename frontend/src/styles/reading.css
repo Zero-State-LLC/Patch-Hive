@@ -1,0 +1,325 @@
+/* —— Spec 009: the photo journey. Photo, Reading, and the home page's example reading —— */
+
+/* —— Photo —— */
+.photo-form,
+.photo-closed {
+  display: grid;
+  gap: var(--space-md);
+  max-width: 44rem;
+}
+.photo-guidance {
+  margin: 0;
+  font-size: var(--text-lead);
+  color: var(--color-ink);
+}
+.photo-rows {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-sm) var(--space-md);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.photo-rows legend {
+  padding: 0;
+  font-weight: 600;
+}
+.photo-rows > .muted {
+  flex-basis: 100%;
+  margin: 0;
+}
+/* A checkbox with its words beside it: photo consent, and going on without a Case */
+.photo-consent,
+.case-optional {
+  display: flex;
+  align-items: start;
+  gap: var(--space-xs);
+  color: var(--color-ink);
+}
+.photo-consent input,
+.case-optional input {
+  margin-top: 0.2em;
+  accent-color: var(--color-accent);
+}
+
+/* —— Reading —— */
+.reading-step {
+  display: grid;
+  gap: var(--space-lg);
+}
+.reading {
+  display: grid;
+  gap: var(--space-md);
+}
+.reading__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.reading__head h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.reading__failed {
+  display: grid;
+  gap: var(--space-sm);
+}
+.reading__body {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: start;
+  gap: var(--space-lg);
+}
+@media (max-width: 860px) {
+  .reading__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The photo, with the reading's boxes drawn where each thing was seen. */
+.reading-photo {
+  position: relative;
+  margin: 0;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-paper-2);
+}
+.reading-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.reading-photo--loading {
+  aspect-ratio: 4 / 3;
+}
+.reading-photo__box {
+  position: absolute;
+  border: 2px solid var(--color-success);
+  border-radius: var(--radius-sm);
+}
+.reading-photo__box[data-tone="warning"] {
+  border-color: var(--color-warning);
+}
+.reading-photo__box[data-tone="danger"] {
+  border-color: var(--color-error);
+}
+.reading-photo__box[data-tone="neutral"] {
+  border-style: dashed;
+  border-color: var(--color-muted);
+}
+.reading-photo__number {
+  position: absolute;
+  top: var(--space-3xs);
+  left: var(--space-3xs);
+  min-width: 1.5rem;
+  padding: 0 var(--space-3xs);
+  border-radius: var(--radius-sm);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.5rem;
+  text-align: center;
+}
+.reading-photo__gone {
+  margin: 0;
+}
+
+/* The same Sightings, as a list that works by keyboard and screen reader. */
+.sightings {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sighting {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: var(--color-paper);
+}
+.sighting.is-clashing {
+  border-color: var(--color-error);
+}
+.sighting.is-out {
+  opacity: 0.72;
+}
+.sighting__number {
+  align-self: start;
+  min-width: 1.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-paper-3);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.75rem;
+  text-align: center;
+}
+.sighting__body {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.sighting__body p {
+  margin: 0;
+}
+.sighting__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  overflow-wrap: anywhere;
+}
+.sighting__choices {
+  display: grid;
+  gap: var(--space-3xs);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.sighting__choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: var(--hit-target);
+  color: var(--color-ink);
+}
+.sighting__choice input {
+  accent-color: var(--color-accent);
+}
+.sighting__layout .field,
+.add-module .field--num {
+  max-width: 8rem;
+}
+
+.catalog-search {
+  display: grid;
+  gap: var(--space-3xs);
+}
+.catalog-search__state:empty {
+  display: none;
+}
+.catalog-search__state {
+  margin: 0;
+}
+.catalog-search__results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.catalog-search__hp {
+  margin-left: var(--space-xs);
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+}
+
+.add-module {
+  display: grid;
+  gap: var(--space-sm);
+}
+.add-module h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.add-module p {
+  margin: 0;
+}
+.added-list {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.added-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+}
+.added-list li.is-clashing {
+  border-color: var(--color-error);
+}
+.reading-confirm {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-sm);
+}
+.reading-confirm .rig-rail {
+  justify-self: stretch;
+}
+.reading-confirm p {
+  margin: 0;
+}
+
+/* —— Home: an example reading of the demo rig —— */
+.home-example {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--gutter) 0;
+}
+.home-example h2 {
+  margin: 0 0 var(--space-md);
+  font-size: var(--text-xl);
+}
+.home-example__list {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-md);
+}
+.home-example__list li {
+  overflow-wrap: anywhere;
+}
+/* The reading beside a page of the book it makes, stacked on a narrow screen */
+.home-example__parts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--space-xl);
+  align-items: start;
+}
+.home-example h3 {
+  margin: 0 0 var(--space-sm);
+  font-size: var(--text-md);
+}
+.home-example__page {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+}
+.home-example__page img {
+  display: block;
+  width: 100%;
+  max-width: 32rem;
+  height: auto;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+}
+.home-example__page figcaption {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+/* The Rig's Case, named on the Reading screen if the owner knows it */
+.case-picker {
+  display: grid;
+  gap: var(--space-xs);
+}

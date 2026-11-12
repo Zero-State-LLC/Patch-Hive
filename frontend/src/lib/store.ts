@@ -57,9 +57,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ user, token });
   },
 
-  setUser: (user) => set({ user }),
+  // Only refreshes the account already held: a profile answer that lands after sign-out must not
+  // put its reader back, or replace whoever signed in since.
+  setUser: (user) => set((state) => (state.token && state.user?.id === user.id ? { user } : state)),
 
   clear: () => set({ user: null, token: null }),
 
   isAuthenticated: () => !!get().token,
 }));
+
+/**
+ * Who's reading, as a React key. Signing out stays on the current page, so a page holding an
+ * account's data keys itself on this: a change of reader starts it over, nothing the last reader
+ * had stays on screen, and an answer still on its way lands nowhere. A token renewal brings back
+ * the same account, so it changes nothing.
+ */
+export const useReaderKey = () => useAuthStore((state) => state.user?.id ?? "signed-out");

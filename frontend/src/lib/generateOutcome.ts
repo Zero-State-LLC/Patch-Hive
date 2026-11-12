@@ -1,10 +1,5 @@
 import type { GeneratePatchesResponse } from "@/types/api";
 
-/** Why the inventory gate stopped a run, in words. Unknown codes fall back to the general hint. */
-const GATE_REASONS: Record<string, string> = {
-  NO_CONFIRMED_MODULES: "this rig has no confirmed modules yet",
-};
-
 /** The message shown when a generate call produced no patches, or null when it did. */
 export function describeEmptyGeneration(body: GeneratePatchesResponse): string | null {
   const status = body.generation_status ?? "OK";
@@ -17,12 +12,12 @@ export function describeEmptyGeneration(body: GeneratePatchesResponse): string |
       ? `Nothing was saved: the generated patches broke these rules. ${lines.join(" ")}`
       : "Nothing was saved: the generated patches didn't pass the rig's rules.";
   }
+  // The API answers NOT_COMPUTABLE for one reason only: nothing on the Rig is confirmed.
   if (status === "NOT_COMPUTABLE") {
-    const reason = body.inventory_gate_code ? GATE_REASONS[body.inventory_gate_code] : undefined;
-    return `No patches could be generated${reason ? `: ${reason}` : ""}. Confirm inventory modules, then retry.`;
+    return "No patches yet: nothing on this Rig is confirmed. Confirm a reading of its photo, or place its Modules by hand, then generate again.";
   }
   if (count === 0) {
-    return "No patch rule fits this rack.";
+    return "No patch rule fits the Modules on this Rig.";
   }
   return null;
 }

@@ -21,6 +21,9 @@ interface CaseStepProps {
   onSelectCatalog: (slug: string | null) => void;
   selectedCaseId: number | null;
   onSelectLegacy: (id: number | null) => void;
+  /** The owner goes on with no Case, so each row is as wide as what's on it (spec 009). */
+  withoutCase: boolean;
+  onWithoutCase: (without: boolean) => void;
   selectedCatalogCase: CatalogCaseListItem | null;
   selectedLegacyCase: Case | null;
   compatNote: string | null;
@@ -63,6 +66,8 @@ export default function CaseStep({
   onSelectCatalog,
   selectedCaseId,
   onSelectLegacy,
+  withoutCase,
+  onWithoutCase,
   selectedCatalogCase,
   selectedLegacyCase,
   compatNote,
@@ -81,10 +86,10 @@ export default function CaseStep({
     <>
       <section className="builder-step" aria-labelledby="case-step-title">
         <div className="builder-step__head">
-          <h2 id="case-step-title">Choose a case</h2>
+          <h2 id="case-step-title">Choose a case, if you know it</h2>
           <p className="muted">
-            Only Eurorack cases take placements. Other formats stay in the{" "}
-            <Link to="/cases">case catalog</Link>.
+            Only Eurorack cases take placements. Without one, each row is as wide as the Modules on
+            it.
           </p>
         </div>
 
@@ -149,6 +154,16 @@ export default function CaseStep({
             </label>
           </div>
 
+          <label className="case-optional" htmlFor="case-optional">
+            <input
+              id="case-optional"
+              type="checkbox"
+              checked={withoutCase}
+              onChange={(e) => onWithoutCase(e.target.checked)}
+            />
+            <span>Go on without a Case</span>
+          </label>
+
           {selectedCatalogCase ? (
             <div className="stat-row case-summary">
               <div className="stat-block">
@@ -190,16 +205,13 @@ export default function CaseStep({
             <LoadFailure what="The case list" error={casesError} onRetry={onRetryCases} />
           ) : !casesLoading && catalogCases.length === 0 && legacyCases.length === 0 ? (
             <p className="status status-warning">
-              No Eurorack cases available.{" "}
+              No Eurorack cases available.
               {import.meta.env.DEV ? (
                 <>
-                  Import <code>data/cases/seed-v1.json</code> via the catalog populator, or
-                  open{" "}
+                  {" "}
+                  Import <code>data/cases/seed-v1.json</code> via the catalog populator.
                 </>
-              ) : (
-                "Open "
-              )}
-              <Link to="/cases">Cases</Link>.
+              ) : null}
             </p>
           ) : null}
 

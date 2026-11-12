@@ -12,6 +12,7 @@
   "candidate": "free fetch was blocked or inconclusive; the crawl must see the brand on the page before using it",
   "robots_disallowed": "the maker's robots.txt disallows our crawler; never fetched",
   "rejected": "the domain no longer belongs to the maker",
+  "refused": "the maker's host refuses our crawler's connections (D7); never fetched, never routed through a paid backend",
   "challenged": "the maker's site answers our crawler with a bot challenge (CAPTCHA); never fetched, never routed through a paid proxy to get past it"
  },
  "extra_brands": [
@@ -424,6 +425,11 @@
    "status": "candidate",
    "note": "free check inconclusive (robots_unavailable None); the run confirms the brand on the page before crawling"
   },
+  "Frap Tools": {
+   "homepage": "https://frap.tools/",
+   "status": "refused",
+   "note": "2026-10-29: the host accepts no TCP connection from the crawl network on ports 80 and 443 (D7)."
+  },
   "Tiptop Audio": {
    "homepage": "https://tiptopaudio.com/",
    "status": "challenged",
@@ -493,11 +499,25 @@
    "homepage": "https://www.doepfer.de/",
    "kind": "listing",
    "entries": [
+    "/a100.htm",
+    "/a100n_e.htm",
+    "/a100s_e.htm",
     "/a100p_e.htm",
-    "/a100_man/a100m_e.htm"
+    "/a100z_e.htm",
+    "/new_e.htm"
    ],
-   "product": "^/a1\\d\\d[^/]*\\.htm$",
-   "exclude": "^/a100(e|p_e|s_e|n_e|z_e|_mc|_systems_e|_diy_kits|r_hr|_custom)\\.htm$"
+   "product": "(?i)^/a1\\d\\d[^/]*\\.htm$",
+   "exclude": "^/a100(e|p_e|s_e|n_e|z_e|_mc|_systems_e|_diy_kits|r_hr|_custom)\\.htm$",
+   "max_pages": 700
+  },
+  "Analogue Systems": {
+   "homepage": "https://www.analoguesystems.co.uk/",
+   "kind": "listing",
+   "entries": [
+    "/index.php"
+   ],
+   "product": "(?i)^/index\\.php/as-modules/[^/]+$",
+   "max_pages": 200
   },
   "Endorphin.es": {
    "homepage": "https://www.endorphin.es/",
@@ -528,14 +548,6 @@
    ],
    "product": "^/[a-z0-9]+\\.html$",
    "exclude": "(firmware|manual|demos|content|compatibility|accessories|plugins|hardware|overview|breakout|news|index)"
-  },
-  "Frap Tools": {
-   "homepage": "https://frap.tools/",
-   "kind": "squarespace",
-   "collections": [
-    "/modules",
-    "/shop"
-   ]
   },
   "Intellijel": {
    "homepage": "https://intellijel.com/",

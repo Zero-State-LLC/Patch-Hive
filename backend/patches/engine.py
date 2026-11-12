@@ -29,6 +29,7 @@ from core import (
     settings,
 )
 from modules.models import Module
+from racks.layout import rack_row_widths
 from racks.models import Rack, RackModule
 
 # How an intent line names each generic control input the rules wire.
@@ -758,8 +759,12 @@ def build_rack_state_ir(db: Session, rack: Rack) -> RackStateIR:
 
     # Get case info
     case = db.query(Case).filter(Case.id == rack.case_id).first()
-    case_hp = case.total_hp if case else 104
-    case_rows = case.rows if case else 1
+    if case:
+        case_hp, case_rows = case.total_hp, case.rows
+    else:
+        # No Case (spec 009): the rows are as wide as their Modules.
+        rows = rack_row_widths(db, None, rack_modules)
+        case_hp, case_rows = sum(rows), len(rows)
 
     return RackStateIR(
         rack_id=rack.id,

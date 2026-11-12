@@ -1,0 +1,206 @@
+{
+ "batch": "category-corrections-v8",
+ "policy": "Reviewed corrections (spec 003 D4, FR-038). Each field names the wrong value it replaces (only_if_value), the new value and the maker page that states it. The old value is archived first; a value changed since review is left alone. Nothing is deleted. Each row is corrected in module_catalog and in modules, because the patch engine reads modules.module_type.",
+ "decided": "2026-11-08: owner decisions 1 and 18 (docs/evidence/OWNER_DECISIONS_2026-11-04.md). Pages read by plain GET on 2026-11-08.",
+ "flag_reverify": false,
+ "rows": [
+  {
+   "table": "module_catalog",
+   "slug": "analogue-systems-rs-20",
+   "brand": "Analogue Systems",
+   "name": "RS-20",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "LFO",
+     "value": "FX",
+     "evidence_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs20",
+     "source_tag": "category-corrections-v8: \"ring modulator\" on https://www.analoguesystems.co.uk/index.php/as-modules/rs20; \"ring mod\" on https://www.analoguesystems.co.uk/previous_site/modules.htm; LFO came from the crawl's keyword \"modulat\"",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Analogue Systems",
+   "name": "RS-20",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "LFO",
+     "value": "FX",
+     "evidence_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs20",
+     "source_tag": "category-corrections-v8: \"ring modulator\" on https://www.analoguesystems.co.uk/index.php/as-modules/rs20; \"ring mod\" on https://www.analoguesystems.co.uk/previous_site/modules.htm; LFO came from the crawl's keyword \"modulat\"",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "analogue-systems-rs-70",
+   "brand": "Analogue Systems",
+   "name": "RS-70",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "ENV",
+     "value": "UTIL",
+     "evidence_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs70",
+     "source_tag": "category-corrections-v8: \"inverter\" on https://www.analoguesystems.co.uk/index.php/as-modules/rs70; \"Pre-amp, inverter\" on https://www.analoguesystems.co.uk/previous_site/modules.htm; ENV came from the crawl's keyword \"slew\"",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Analogue Systems",
+   "name": "RS-70",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "ENV",
+     "value": "UTIL",
+     "evidence_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs70",
+     "source_tag": "category-corrections-v8: \"inverter\" on https://www.analoguesystems.co.uk/index.php/as-modules/rs70; \"Pre-amp, inverter\" on https://www.analoguesystems.co.uk/previous_site/modules.htm; ENV came from the crawl's keyword \"slew\"",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "analogue-systems-rs-85",
+   "brand": "Analogue Systems",
+   "name": "RS-85",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "LFO",
+     "evidence_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs85",
+     "source_tag": "category-corrections-v8: \"VC-LFO\" on https://www.analoguesystems.co.uk/index.php/as-modules/rs85; \"Extended LFO\" on https://www.analoguesystems.co.uk/previous_site/modules.htm; VCO came from the crawl's keyword \"oscillat\"",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Analogue Systems",
+   "name": "RS-85",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "VCO",
+     "value": "LFO",
+     "evidence_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs85",
+     "source_tag": "category-corrections-v8: \"VC-LFO\" on https://www.analoguesystems.co.uk/index.php/as-modules/rs85; \"Extended LFO\" on https://www.analoguesystems.co.uk/previous_site/modules.htm; VCO came from the crawl's keyword \"oscillat\"",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "analogue-systems-rs-380",
+   "brand": "Analogue Systems",
+   "name": "RS-380",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SAMP",
+     "value": "LFO",
+     "evidence_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs380",
+     "source_tag": "category-corrections-v8: \"LFO\" on https://www.analoguesystems.co.uk/index.php/as-modules/rs380; \"LFO\" on https://www.analoguesystems.co.uk/previous_site/modules.htm; SAMP came from the crawl's keyword \"sampl\", from \"sample and hold\"",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Analogue Systems",
+   "name": "RS-380",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SAMP",
+     "value": "LFO",
+     "evidence_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs380",
+     "source_tag": "category-corrections-v8: \"LFO\" on https://www.analoguesystems.co.uk/index.php/as-modules/rs380; \"LFO\" on https://www.analoguesystems.co.uk/previous_site/modules.htm; SAMP came from the crawl's keyword \"sampl\", from \"sample and hold\"",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "analogue-systems-rs-380n",
+   "brand": "Analogue Systems",
+   "name": "RS-380N",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "SAMP",
+     "value": "LFO",
+     "evidence_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs380n",
+     "source_tag": "category-corrections-v8: \"LFO\" on https://www.analoguesystems.co.uk/index.php/as-modules/rs380n; SAMP came from the crawl's keyword \"sampl\", from \"sample & hold\"",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Analogue Systems",
+   "name": "RS-380N",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "SAMP",
+     "value": "LFO",
+     "evidence_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs380n",
+     "source_tag": "category-corrections-v8: \"LFO\" on https://www.analoguesystems.co.uk/index.php/as-modules/rs380n; SAMP came from the crawl's keyword \"sampl\", from \"sample & hold\"",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "module_catalog",
+   "slug": "analogue-systems-rs-610n-dual-ring-modulator",
+   "brand": "Analogue Systems",
+   "name": "RS-610N Dual Ring Modulator",
+   "fields": [
+    {
+     "field": "category",
+     "action": "correct",
+     "only_if_value": "LFO",
+     "value": "FX",
+     "evidence_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-610n",
+     "source_tag": "category-corrections-v8: \"ring modulators\" on https://www.analoguesystems.co.uk/index.php/as-modules/rs-610n; LFO came from the crawl's keyword \"modulat\"",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  },
+  {
+   "table": "modules",
+   "brand": "Analogue Systems",
+   "name": "RS-610N Dual Ring Modulator",
+   "fields": [
+    {
+     "field": "module_type",
+     "action": "correct",
+     "only_if_value": "LFO",
+     "value": "FX",
+     "evidence_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-610n",
+     "source_tag": "category-corrections-v8: \"ring modulators\" on https://www.analoguesystems.co.uk/index.php/as-modules/rs-610n; LFO came from the crawl's keyword \"modulat\"",
+     "maker_check": "maker_page_reviewed"
+    }
+   ]
+  }
+ ]
+}
