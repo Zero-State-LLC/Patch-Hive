@@ -802,6 +802,16 @@ def operation_lines(compilation: Any, library: LoadedLibrary) -> list[str]:
     return steps
 
 
+def jack_coverage_lines(library: LoadedLibrary) -> list[str]:
+    """How much of the book names real jacks (spec 001 OQ-04), for its colophon. The cover has
+    no room to spare: at the largest body size its metadata already reaches the footer."""
+    modules = library.module_display.values()
+    if not modules:
+        return []
+    named = sum(1 for module in modules if module.declared_jacks)
+    return [f"Jack names on file for {named} of {len(modules)} Modules in this book."]
+
+
 def page_notes(compilation: Any, library: LoadedLibrary) -> list[str]:
     """What the page must warn about (FR-011, FR-013, FR-014): a feedback loop, each issue in
     the validation report, and the modules whose jack names are generic roles."""
@@ -1232,6 +1242,7 @@ def _render_execution_pdf(
             f"Template family: {family.display_name}",
             f"Mode: {recipe.mode.value}",
             f"Layout algorithm: {family.layout_algorithm_id}",
+            *jack_coverage_lines(library),
         ],
         body_font,
         body_size,

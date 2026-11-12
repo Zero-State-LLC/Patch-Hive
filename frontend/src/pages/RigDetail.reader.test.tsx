@@ -134,6 +134,32 @@ afterEach(() => {
   useAuthStore.getState().clear();
 });
 
+describe("what a rig says about its jack names", () => {
+  const placed = (id: number, ports: { name: string; type: string }[]) => ({
+    id,
+    rack_id: RIG_ID,
+    module_id: id,
+    row_index: 0,
+    start_hp: id * 4,
+    module: { id, brand: "Maker", name: `Module ${id}`, hp: 4, module_type: "VCO", io_ports: ports },
+  });
+
+  it("counts the Modules with jack names on file", async () => {
+    signIn();
+    const modules = [placed(1, [{ name: "Out", type: "audio_out" }]), placed(2, []), placed(3, [])];
+    api.canonApi.getRig.mockImplementation(ownerOnly({ ...RIG, modules }));
+    renderPage();
+    expect(await screen.findByText(/Jack names on file for 1 of 3 Modules\./)).toBeTruthy();
+  });
+
+  it("says nothing about jacks on an empty rig", async () => {
+    signIn();
+    renderPage();
+    await screen.findByText("Private rig");
+    expect(screen.queryByText(/Jack names on file/)).toBeNull();
+  });
+});
+
 describe("a change of reader on a rig's workspace", () => {
   it("drops the rig, its runs, its photos and the reader's credits on sign-out, and asks again", async () => {
     signIn();

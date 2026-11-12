@@ -278,6 +278,7 @@ export interface RackModule extends RackModuleSpec {
     power_neg12v_ma?: number | null;
     power_5v_ma?: number | null;
     depth_mm?: number | null;
+    io_ports?: IOPort[];
     /** "tombstoned" when the catalog retired this module; it stays placed. */
     status?: string;
     tombstone_reason?: string | null;

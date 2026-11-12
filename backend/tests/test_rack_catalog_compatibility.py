@@ -103,6 +103,18 @@ def wired_rack(db_session: Session) -> Rack:
     return rack
 
 
+def test_a_rig_read_carries_each_modules_jacks(
+    client: TestClient, wired_rack: Rack, db_session: Session
+) -> None:
+    placement = db_session.query(RackModule).filter_by(rack_id=wired_rack.id).one()
+    module = db_session.query(Module).filter_by(id=placement.module_id).one()
+    module.io_ports = [{"name": "Out", "type": "audio_out"}]
+    wired_rack.is_public = True
+    db_session.commit()
+    body = client.get(f"/api/racks/{wired_rack.id}").json()
+    assert body["modules"][0]["module"]["io_ports"] == [{"name": "Out", "type": "audio_out"}]
+
+
 def test_rack_compatibility_endpoint(client: TestClient, wired_rack: Rack) -> None:
     resp = client.get(f"/api/racks/{wired_rack.id}/compatibility")
     assert resp.status_code == 200

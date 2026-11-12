@@ -406,6 +406,13 @@ def _draw(monkeypatch, tmp_path, library, family=TemplateFamilyId.SIGNAL_MANUAL)
     return recorder
 
 
+def test_the_colophon_says_how_many_modules_have_jack_names(monkeypatch, tmp_path):
+    recorder = _draw(monkeypatch, tmp_path, _library())
+    last = max(p for p, _, _, _ in recorder.texts)
+    colophon = " ".join(t for p, _, _, t in recorder.texts if p == last)
+    assert "Jack names on file for 1 of 3 Modules in this book." in colophon
+
+
 def test_the_pdf_page_draws_the_diagram_names_and_warnings(monkeypatch, tmp_path):
     recorder = _draw(monkeypatch, tmp_path, _library())
     page = 1  # after the cover
