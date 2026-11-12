@@ -26,13 +26,13 @@
 
 The threat model's remaining gaps. They gate T033, and none has any effect while publishing is off. Its SVG escaping item is done (#280), and its rate limit on the report route is done (#197, T037).
 
-- [ ] T038 Lengthen the random slug part to at least 96 bits, or add a separate random token for unlisted links (threat model P1).
+- [x] T038 Lengthen the random slug part to at least 96 bits, or add a separate random token for unlisted links (threat model P1). Done 2026-11-12: `publishing/utils.py` `unique_slug` adds 24 hex characters from `secrets` and cuts the title part so the slug fits its 160-character column.
   - depends_on: []
-- [ ] T039 Send `X-Robots-Tag: noindex` on unlisted reads and `Cache-Control: no-store` on read and download, so removal takes effect (threat model P2).
+- [x] T039 Send `X-Robots-Tag: noindex` on unlisted reads and `Cache-Control: no-store` on read and download, so removal takes effect (threat model P2). Done 2026-11-12: `publishing/routes.py` sends `no-store` on every read, download and 404, and `noindex` on unlisted ones.
   - depends_on: []
-- [ ] T040 Add a rate limit to `/p/*` and the gallery. Add `Content-Disposition: attachment` and `X-Content-Type-Options: nosniff` to downloads, and decide on signed or short-lived download URLs (threat model P1, P4).
+- [x] T040 Add a rate limit to `/p/*` and the gallery. Add `Content-Disposition: attachment` and `X-Content-Type-Options: nosniff` to downloads, and decide on signed or short-lived download URLs (threat model P1, P4). Done 2026-11-12: 120 reads a minute per address on `/p/*` and the gallery (`PUBLICATION_RATE_LIMIT`), and downloads are `nosniff` attachments. Decided: no signed URLs, because a published book is meant for anyone with its link, an unlisted link's 96-bit token is its secret, and `no-store` stops a removed one being served.
   - depends_on: []
-- [ ] T041 Validate `cover_image_url` as an `https` URL on an allowlist, or drop the field (threat model P5).
+- [x] T041 Validate `cover_image_url` as an `https` URL on an allowlist, or drop the field (threat model P5). Done 2026-11-12: `publishing/schemas.py` accepts only `https` on a host in `settings.publication_cover_hosts` (default `patch-hive.com` and its subdomains), with no credentials.
   - depends_on: []
 
 ## Gap closure (2026-10-29)
