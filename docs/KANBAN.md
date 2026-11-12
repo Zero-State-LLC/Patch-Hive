@@ -2,9 +2,9 @@
 
 Mirror of [org Project #8 "Patch-Hive"](https://github.com/orgs/Zero-State-LLC/projects/8). The project is the source of truth. Regenerate this file with `gh project item-list 8 --owner Zero-State-LLC`.
 
-Columns (Status): Backlog → Ready → In progress → In review → Done. Spec tasks are titled `[NNN Txxx]`; Ready means every `depends_on` is done (`just spec-dag`). Slices are described in [docs/evidence/NEXT_SLICES_2026-10-28.md](evidence/NEXT_SLICES_2026-10-28.md); decision research is in each spec's `research.md` (001–008, 2026-10-29). Gap-closure tasks added on 2026-10-29 (001 T030–T034, 002 T030–T036, 003 T036–T039, 004 T040–T051, 005 T080–T085, 006 T100–T104, 007 T080–T083, 008 T070–T072) are in the spec `tasks.md` files and not yet on the board.
+Columns (Status): Backlog → Ready → In progress → In review → Done. Spec tasks are titled `[NNN Txxx]`; Ready means every `depends_on` is done (`just spec-dag`). Slices are described in [docs/evidence/NEXT_SLICES_2026-11-10.md](evidence/NEXT_SLICES_2026-11-10.md) and [the 2026-10-28 list](evidence/NEXT_SLICES_2026-10-28.md); decision research is in each spec's `research.md` (001–008, 2026-10-29). Gap-closure tasks added on 2026-10-29 (001 T030–T034, 002 T030–T036, 003 T036–T039, 004 T040–T051, 005 T080–T085, 006 T100–T104, 007 T080–T083, 008 T070–T072) are in the spec `tasks.md` files and not yet on the board.
 
-Snapshot: 2026-11-04 (after #259–#261 and the staging receipts), 159 items.
+Snapshot: 2026-11-10 (after #391), 159 items.
 
 ## Backlog
 
@@ -16,37 +16,20 @@ Snapshot: 2026-11-04 (after #259–#261 and the staging receipts), 159 items.
 - [005 T070 = 007 T050b+T085] Enable provider in staging after approval
 - [005] Close Spec Kit gaps (Workflows section, transitions table)
 - [triage] Review personal-only branches with unmerged work
-- [001 T002] Write plan.md (rig intelligence)
-- [001 T010] Encode transitions table as tests (rig intelligence)
-- [001 T090] Converge code against spec (rig intelligence)
-- [002 T002] Write plan.md (patch-book publishing)
-- [002 T010] Encode transitions table as tests (patch-book publishing)
-- [002 T090] Converge code against spec (patch-book publishing)
-- [003 T002] Write plan.md (catalog dataset pipeline)
-- [003 T010] Encode transitions table as tests (catalog dataset pipeline)
-- [003 T090] Converge code against spec (catalog dataset pipeline)
-- [004 T002] Write plan.md (commerce)
-- [004 T010] Encode transitions table as tests (commerce)
-- [004 T090] Converge code against spec (commerce)
 - [006 T060b] Verify the decision-provider path on Neon-backed staging
 - [007 T020b = 005 T061d] Run baseline vs provider-assisted evaluation on frozen corpus
 - [decision] Maker permission metadata and stealth proxy sign-off
-- [003 T031] Classify the 632 live untagged rows: free offline pass first, paid only for the remainder
-- [catalog] Resolve the 20 live rows whose tags point to two categories
+- [003 T031] Classify the 280 live rows with no category: paid only under an approved cap
+- [catalog] Resolve the 6 live rows whose tags point to two categories
 
 ## Ready
 
-- [001 T001] Confirm rig intelligence spec
-- [002 T001] Confirm patch-book publishing spec
-- [003 T001] Confirm catalog dataset pipeline spec
-- [004 T001] Confirm commerce spec
 - [007 T010b = 005 T061c] Promote rights-cleared cases and freeze corpus SHA
 - [ops] VirusTotal reanalysis and the nine vendor false-positive reports (frontend is deployed)
 - [ops] Rotate context.dev and OpenRouter API keys
 - [ops] Add PROJECT_TOKEN so new PRs reach Project #8
 - [ops] Real sign-up on production (operator)
 - [ops] Decide repo visibility vs the Actions budget
-- [003 T035] Scoped re-fetch of ~45 jumper-dependent pages (needs a cap: ~20–50 context.dev credits)
 
 ## In progress
 
@@ -181,3 +164,20 @@ _None._
 - [#131](https://github.com/Zero-State-LLC/Patch-Hive/pull/131) fix(runs): every run ends terminal, rerun is gated, referral rewards are spendable
 - [#132](https://github.com/Zero-State-LLC/Patch-Hive/pull/132) fix: HP overlays must cite a maker page; production refuses decision providers
 - [#133](https://github.com/Zero-State-LLC/Patch-Hive/pull/133) fix(export): wrap legacy PDF text; switch off the legacy patch book
+- [001 T002] Write plan.md (rig intelligence)
+- [001 T010] Encode transitions table as tests (rig intelligence)
+- [001 T090] Converge code against spec (rig intelligence)
+- [002 T002] Write plan.md (patch-book publishing)
+- [002 T010] Encode transitions table as tests (patch-book publishing)
+- [002 T090] Converge code against spec (patch-book publishing)
+- [003 T002] Write plan.md (catalog dataset pipeline)
+- [003 T010] Encode transitions table as tests (catalog dataset pipeline)
+- [003 T090] Converge code against spec (catalog dataset pipeline)
+- [004 T002] Write plan.md (commerce)
+- [004 T010] Encode transitions table as tests (commerce)
+- [004 T090] Converge code against spec (commerce)
+- [001 T001] Confirm rig intelligence spec
+- [002 T001] Confirm patch-book publishing spec
+- [003 T001] Confirm catalog dataset pipeline spec
+- [004 T001] Confirm commerce spec
+- [003 T035] Scoped re-fetch of ~45 jumper-dependent pages (needs a cap: ~20–50 context.dev credits)
