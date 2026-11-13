@@ -8,7 +8,13 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@/lib/api", () => ({ authApi: { login: vi.fn(), register: vi.fn() } }));
+vi.mock("@/lib/api", () => ({
+  authApi: {
+    login: vi.fn(),
+    register: vi.fn(),
+    signupOptions: vi.fn(async () => ({ data: { invite_required: false } })),
+  },
+}));
 
 import LoginPage from "./Login";
 import PrivacyPage from "./Privacy";

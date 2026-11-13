@@ -17,6 +17,7 @@ All flags are environment variables parsed case-insensitively by backend setting
 | `ENABLE_CANON_EXPORT_FULFILLMENT` | `false` | Worker/path that composes PDF pack after debit (closes queued-forever gap) |
 | `ENABLE_INLINE_EXPORT_FULFILLMENT` | `false` | After debit commit, fulfill synchronously on request thread (tests/dev) |
 | `ENABLE_PATCHBOOK_PUBLICATION_PROFILE` | `false` | Multi-page publication + artistic dual-artifact packs |
+| `ENABLE_INVITE_ONLY_SIGNUP` | `false` | Sign-up needs a one-use invite, minted at `/admin/invites`, which adds test credits to the new account. On in the staging Worker only; production never receives it. |
 | `REQUIRE_SEALED_GENERATED_PATCHES` | `false` | Path A only — fail if no `GeneratedPatchRecord` (post dual-write cutover) |
 | `DESIGN_ENGINE_DEFAULT_TIER` | `core` | Server-side presentation tier until entitlements exist (not client-spoofable) |
 | `EXPORT_FULFILL_MAX_ATTEMPTS` | `5` | Max fulfillment claims before compensate |

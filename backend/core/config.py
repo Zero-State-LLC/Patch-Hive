@@ -62,6 +62,8 @@ class Settings(BaseSettings):
     enable_legacy_publishing: bool = False
     enable_legacy_leaderboards: bool = False
     enable_referrals: bool = False
+    # Sign-up needs a one-use invite. Staging only: production never receives this flag.
+    enable_invite_only_signup: bool = False
     # Deprecated, ignored. Declared only so an existing .env that still names
     # ENABLE_LEGACY_REFERRALS loads instead of failing extra_forbidden. Nothing reads it.
     enable_legacy_referrals: bool = False

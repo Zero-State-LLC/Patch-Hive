@@ -27,6 +27,9 @@ class UserCreate(UserBase):
     referral_code: Optional[str] = Field(
         default=None, description="Optional code from a referrer during signup."
     )
+    invite_code: Optional[str] = Field(
+        default=None, max_length=64, description="Needed while sign-up is invite-only."
+    )
 
 
 class UserUpdate(BaseModel):

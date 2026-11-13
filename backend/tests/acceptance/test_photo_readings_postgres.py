@@ -93,4 +93,4 @@ def test_the_migration_round_trips_empty_and_refuses_while_a_reading_exists(
     assert {"photo_readings", "photo_sightings"} <= _tables(engine)
     with engine.connect() as conn:
         version = conn.execute(text("SELECT version_num FROM alembic_version")).scalar()
-    assert version == "20261107_photo_readings"
+    assert version == "20261110_beta_invites"

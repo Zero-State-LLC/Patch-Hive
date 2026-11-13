@@ -12,7 +12,7 @@ from core import get_db, get_password_hash, settings
 from core.security import burn_password_check, verify_and_update_password
 from monetization.referrals import create_referral, generate_referral_code
 
-from . import login_guard, sessions
+from . import invites, login_guard, sessions
 from .auth import require_auth
 from .models import User
 from .schemas import (
@@ -27,11 +27,19 @@ from .schemas import (
 router = APIRouter()
 
 
+@router.get("/auth/signup-options")
+def signup_options() -> dict[str, bool]:
+    """What the sign-up form must ask for."""
+    return {"invite_required": settings.enable_invite_only_signup}
+
+
 @router.post("/users", response_model=UserResponse, status_code=201)
 def register_user(user: UserCreate, http_request: Request, db: Session = Depends(get_db)):
     """Register a new user."""
     if not login_guard.allow_registration(login_guard.client_address(http_request)):
         raise HTTPException(status_code=429, detail="TOO_MANY_SIGNUPS")
+    if settings.enable_invite_only_signup:
+        invites.require_unused(db, user.invite_code)
     # One reply for a taken username or email, so sign-up does not reveal which emails
     # have accounts.
     taken = (
@@ -62,6 +70,8 @@ def register_user(user: UserCreate, http_request: Request, db: Session = Depends
     )
     db.add(db_user)
     db.flush()
+    if settings.enable_invite_only_signup:
+        invites.redeem(db, user.invite_code, db_user)
     if referrer:
         try:
             create_referral(db, referrer=referrer, referred=db_user)
