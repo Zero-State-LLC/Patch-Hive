@@ -31,6 +31,19 @@ The misses were mostly a missing second channel or extra CV jacks the document d
 - Hexdevices Osiris, Mosaic Clock and Mosaic Mono Reverb are 1U tiles.
 - No reading used a trigger or clock type. Trigger and clock jacks came back as gates, which the engine accepts for every gate role.
 
+## Loads
+
+Dry runs on 2026-11-12 UTC, from `3a05733`, planned the same change on both databases: 38 `modules_io_ports` fills, 0 conflicts, no inserts and no destructive SQL. Both printed `plan_hash` `35bbeeb171a8c538041c9a00734bb4b05667e97159ba96e0c4ba4c4804ba6b91` and `inputs_hash` `1c0ec6f1e50f819403d1c371033a965e5603977889c717158a6ae362a43b524a` (staging [43328047069](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43328047069), production [43328052883](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43328052883)). The catalog inputs and the load scripts didn't change between that commit and `main`.
+
+| Database | Run | Commit | Result |
+|---|---|---|---|
+| Staging | [43363219819](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43363219819), 2026-11-13 UTC | `7c7e53f` | 38 lists filled, 0 conflicts, no inserts, no destructive SQL |
+| Production | not run | | waits on the owner's yes on the hashes above |
+
+On staging `catalog_load_runs` went from 3 to 4 and `catalog_load_changes` from 290 to 328, one change per list. No other table's row count changed. Read afterwards, staging's public `/api/modules` has 3,379 rows, 264 of them declare jacks, and it serves all 38 v2 lists and all 224 v1 lists exactly as the overlays have them.
+
+To undo the staging load, run `db-load.yml` on staging with `rollback_run_id` 43363219819, which restores the 38 empty lists.
+
 ## Files
 
 | File | SHA-256 |
@@ -39,4 +52,4 @@ The misses were mostly a missing second channel or extra CV jacks the document d
 | `data/synth-catalog/jack-list-reviews.json` | `625db3f2987647f54017b435587d52d83422fa540b77aa423318569de4417c82` |
 | Private proposal, with the quote behind every jack (not in this repository) | `f5d3337eeeca849950ff8201f1e42444103a44e1ea5cdcd14832654b608202b5` |
 
-The loader fills `io_ports` only where it's empty, and a list that differs from a stored one is reported as a conflict and left alone. A load needs the owner's yes on its plan and inputs hashes.
+The loader fills `io_ports` only where it's empty, and a list that differs from a stored one is reported as a conflict and left alone (spec 003 FR-041). Each load needs the owner's yes on its plan and inputs hashes, except on staging, where the standing grant covers it.
