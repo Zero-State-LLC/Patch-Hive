@@ -4,6 +4,31 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.22](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.21...v0.3.0-alpha.22) (2026-11-13)
+
+
+### Added
+
+* **auth:** invite-only sign-up with test credits for the closed beta ([#398](https://github.com/Zero-State-LLC/Patch-Hive/issues/398)) ([a2a044e](https://github.com/Zero-State-LLC/Patch-Hive/commit/a2a044ec2405c206aaf82e7d0dfe948ab6043f06))
+* **catalog:** propose 38 hand-checked jack lists from kept readings ([#402](https://github.com/Zero-State-LLC/Patch-Hive/issues/402)) ([46113a9](https://github.com/Zero-State-LLC/Patch-Hive/commit/46113a9ebee3a2f5bbba986758ab2fca467b5d8c))
+
+
+### Fixed
+
+* **publishing:** close spec 002's slug, caching, download and cover gaps (T038–T041) ([#405](https://github.com/Zero-State-LLC/Patch-Hive/issues/405)) ([b5bf4db](https://github.com/Zero-State-LLC/Patch-Hive/commit/b5bf4db14fb0a9769d9aa4756d973c923a5cd986))
+
+
+### Operations
+
+* **staging:** export a generated run and read the pages of its PDF ([#336](https://github.com/Zero-State-LLC/Patch-Hive/issues/336)) ([7c7e53f](https://github.com/Zero-State-LLC/Patch-Hive/commit/7c7e53f043268406090cc7b76d5f61656be0519d))
+
+
+### Documentation
+
+* add standing grant for agents ([#400](https://github.com/Zero-State-LLC/Patch-Hive/issues/400)) ([ce774f0](https://github.com/Zero-State-LLC/Patch-Hive/commit/ce774f061062e1978cc56eba5cbb271d7509c0b4))
+* record the 0.3.0-alpha.21 deploy and hand off slices N1–N10 ([#403](https://github.com/Zero-State-LLC/Patch-Hive/issues/403)) ([5f25055](https://github.com/Zero-State-LLC/Patch-Hive/commit/5f250559f465019f744b2ac237bc7be397549e0c))
+* record the N10 jack-list loads and the N7 and N10 merges ([#406](https://github.com/Zero-State-LLC/Patch-Hive/issues/406)) ([143f5df](https://github.com/Zero-State-LLC/Patch-Hive/commit/143f5df6ef5b7fd74ee2addbdfdd8d071580da8a))
+
 ## [0.3.0-alpha.21](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.20...v0.3.0-alpha.21) (2026-11-12)
 
 
