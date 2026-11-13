@@ -60,6 +60,8 @@ class Settings(BaseSettings):
     # Canonical scope gates. Historical surfaces are off unless explicitly enabled.
     enable_legacy_social: bool = False
     enable_legacy_publishing: bool = False
+    # Hosts a publication's cover image may come from (spec 002 T041), each with its subdomains.
+    publication_cover_hosts: list[str] = ["patch-hive.com"]
     enable_legacy_leaderboards: bool = False
     enable_referrals: bool = False
     # Sign-up needs a one-use invite. Staging only: production never receives this flag.

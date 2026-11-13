@@ -4,8 +4,24 @@ Pydantic schemas for publishing endpoints.
 
 from datetime import datetime
 from typing import Literal, Optional
+from urllib.parse import urlsplit
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+from core.config import settings
+
+
+def _cover_url(value: Optional[str]) -> Optional[str]:
+    """An https image on an allowed host, or nothing (spec 002 T041). Anything else could be a
+    tracking pixel, a downgrade to http, or a script URL in a careless client."""
+    if value is None or not value.strip():
+        return None
+    parts = urlsplit(value.strip())
+    host = (parts.hostname or "").lower()
+    allowed = any(host == h or host.endswith(f".{h}") for h in settings.publication_cover_hosts)
+    if parts.scheme != "https" or not allowed or parts.username or parts.password:
+        raise ValueError("cover_image_url must be an https address on an allowed host")
+    return value.strip()
 
 
 class ExportCreate(BaseModel):
@@ -42,6 +58,11 @@ class PublicationCreate(BaseModel):
     allow_remix: bool
     cover_image_url: Optional[str] = None
 
+    @field_validator("cover_image_url")
+    @classmethod
+    def _check_cover(cls, value: Optional[str]) -> Optional[str]:
+        return _cover_url(value)
+
 
 class PublicationUpdate(BaseModel):
     """Update publication request."""
@@ -52,6 +73,11 @@ class PublicationUpdate(BaseModel):
     allow_download: Optional[bool] = None
     allow_remix: Optional[bool] = None
     cover_image_url: Optional[str] = None
+
+    @field_validator("cover_image_url")
+    @classmethod
+    def _check_cover(cls, value: Optional[str]) -> Optional[str]:
+        return _cover_url(value)
     status: Optional[Literal["published", "hidden"]] = None
 
 

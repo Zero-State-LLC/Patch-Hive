@@ -408,3 +408,94 @@ class TestPublishingAPI:
         assert client.post(f"/api/p/{pub['slug']}/report", json={"reason": "spam"}).status_code == 404
         assert client.post(f"/api/admin/publications/{pub['id']}/remove", json=reason, headers=mod).status_code == 200
         assert client.post(f"/api/admin/publications/{pub['id']}/remove", json=reason, headers=mod).status_code == 409
+
+
+# --- spec 002 T038–T041: slugs, caching, indexing, downloads, rate limits, covers ---
+
+
+def _published(db_session: Session, owner: User, case, tmp_path, **kwargs) -> Publication:
+    rack = Rack(user_id=owner.id, name="Rack", case_id=case.id)
+    db_session.add(rack)
+    db_session.commit()
+    export = _create_export(db_session, owner, _create_patch(db_session, rack), None)
+    pdf = tmp_path / "book.pdf"
+    pdf.write_bytes(b"%PDF-1.4 test")
+    export.artifact_urls = {**export.artifact_urls, "pdf": str(pdf)}
+    db_session.commit()
+    return _create_publication(db_session, export, owner, **kwargs)
+
+
+def test_a_slugs_random_part_is_96_bits_and_fits_the_column():
+    from publishing.utils import slugify_title, unique_slug
+
+    slug = unique_slug(slugify_title("x" * 200))
+    token = slug.rsplit("-", 1)[1]
+    assert len(token) == 24 and int(token, 16) >= 0
+    assert len(slug) <= 160
+    assert unique_slug("a") != unique_slug("a")
+
+
+@pytest.mark.parametrize(("visibility", "noindex"), [("unlisted", True), ("public", False)])
+def test_a_read_is_never_cached_and_an_unlisted_one_is_not_indexed(
+    client: TestClient, db_session: Session, sample_user: User, sample_case, tmp_path, visibility, noindex
+):
+    publication = _published(db_session, sample_user, sample_case, tmp_path, visibility=visibility)
+    response = client.get(f"/api/p/{publication.slug}")
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-store"
+    assert (response.headers.get("x-robots-tag") == "noindex") is noindex
+
+
+def test_a_download_is_an_attachment_that_cannot_be_sniffed_or_cached(
+    client: TestClient, db_session: Session, sample_user: User, sample_case, tmp_path
+):
+    publication = _published(db_session, sample_user, sample_case, tmp_path)
+    response = client.get(f"/api/p/{publication.slug}/download/pdf")
+    assert response.status_code == 200
+    assert response.headers["content-disposition"].startswith("attachment")
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["cache-control"] == "no-store"
+
+
+def test_a_missing_publication_is_not_cached_either(client: TestClient):
+    response = client.get("/api/p/no-such-slug")
+    assert response.status_code == 404
+    assert response.headers["cache-control"] == "no-store"
+
+
+@pytest.mark.parametrize("path", ["/api/p/no-such-slug", "/api/gallery/publications"])
+def test_public_reads_are_rate_limited_per_address(client: TestClient, monkeypatch, path):
+    import publishing.routes as routes
+    from community import login_guard
+
+    login_guard.reset_attempts()
+    monkeypatch.setattr(routes, "READ_ATTEMPTS", 3)
+    codes = [client.get(path, headers={"x-forwarded-for": "198.51.100.9"}).status_code for _ in range(4)]
+    login_guard.reset_attempts()
+    assert codes[-1] == 429 and 429 not in codes[:3]
+
+
+@pytest.mark.parametrize(
+    ("url", "ok"),
+    [
+        ("https://patch-hive.com/covers/a.png", True),
+        ("https://assets.patch-hive.com/a.png", True),
+        ("http://patch-hive.com/a.png", False),
+        ("https://tracker.example/pixel.gif", False),
+        ("https://patch-hive.com.evil.example/a.png", False),
+        ("javascript:alert(1)", False),
+        ("data:image/png;base64,AAAA", False),
+        ("https://user:pass@patch-hive.com/a.png", False),
+    ],
+)
+def test_a_cover_image_must_be_https_on_an_allowed_host(url, ok):
+    from pydantic import ValidationError
+
+    from publishing.schemas import PublicationCreate
+
+    body = {"export_id": 1, "title": "T", "allow_download": True, "allow_remix": False, "cover_image_url": url}
+    if ok:
+        assert PublicationCreate(**body).cover_image_url == url
+    else:
+        with pytest.raises(ValidationError):
+            PublicationCreate(**body)
