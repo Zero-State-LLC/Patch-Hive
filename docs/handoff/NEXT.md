@@ -2,7 +2,7 @@
 
 The current hand-off: the latest review verdict and the next work order. Whoever finishes a slice or a review overwrites this file. Read it at the start of a session.
 
-**Updated:** 2026-11-13 UTC. Staging runs 0.3.0-alpha.22 (`098126b`) and production runs 0.3.0-alpha.21 (`e38a9ec`). #371 merged after the tag and goes out with the next release (#408).
+**Updated:** 2026-11-13 UTC. Staging and production both run 0.3.0-alpha.22 (`098126b`), and only staging requires an invite to sign up. #371 merged after the tag and goes out with the next release (#408).
 
 The plan is [docs/evidence/NEXT_SLICES_2026-11-10.md](../evidence/NEXT_SLICES_2026-11-10.md), N1–N10. All ten are merged.
 
@@ -11,28 +11,24 @@ The plan is [docs/evidence/NEXT_SLICES_2026-11-10.md](../evidence/NEXT_SLICES_20
 Each item is gated: a merge you name, or a yes for a deploy, migration, dispatch or load.
 
 1. **Mint invites on staging.** Staging sign-up is closed now. Mint codes at `/admin/invites` for the beta's testers. Each code works once and adds its test credits to the new account.
-2. **Alpha.22 on production** needs your yes. One summary:
-   - **What changes:**
-     - Migration `20261110_beta_invites` adds one empty table.
-     - The API and frontend move to `098126b`. That brings the publishing hardening (#405), which tightens slugs, caching, downloads and cover URLs while publishing stays off, and the invite code.
-     - Production sets no `ENABLE_INVITE_ONLY_SIGNUP`, so its sign-up stays open and the form shows no code field.
-   - **Staging result:**
-     - Migration run [43391485007](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43391485007).
-     - `/health/ready` reports 0.3.0-alpha.22 with `database: ok`.
-     - Smoke passes 10/10 (run [43392083297](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43392083297)).
-     - The generate check (run [43392196504](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43392196504)) and the generated-export check (run [43392310766](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43392310766)) pass.
-     - Sign-up without a valid code gets 403 `INVITE_REQUIRED`.
-   - **Rollback:**
-     - Roll the Workers back to API `160de78a` and frontend `cc4b0ec6`.
-     - The new table is unused by alpha.21, so it can stay, or `alembic downgrade 20261107_photo_readings` drops it.
-3. **N9:** the VoiceOver, Safari and PDF pass in `docs/evidence/ACCESSIBILITY_PASS_BETA.md` is yours. The beta's accessibility exit criterion stays open until it's logged.
-4. **#408 (release 0.3.0-alpha.23, carrying #371):** merge right before the next deploy.
-5. **Merging:** main requires a code owner's approval and the repository has auto-merge turned off, so every merge is an admin bypass and needs your words each time. `enforce_admins` on `main` is still off. Restore it when merging is done:
+2. **N9:** the VoiceOver, Safari and PDF pass in `docs/evidence/ACCESSIBILITY_PASS_BETA.md` is yours. The beta's accessibility exit criterion stays open until it's logged.
+3. **#408 (release 0.3.0-alpha.23, carrying #371):** merge right before the next deploy.
+4. **Merging:** main requires a code owner's approval and the repository has auto-merge turned off, so every merge is an admin bypass and needs your words each time. `enforce_admins` on `main` is still off. Restore it when merging is done:
    `gh api -X POST repos/Zero-State-LLC/Patch-Hive/branches/main/protection/enforce_admins`
 
 ## Verdicts
 
+- **Alpha.22 on production (2026-11-13, on your yes):**
+  - Migration run [43393727403](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43393727403).
+  - API `178c19eb` and frontend `d608e2ac`. The bundle points only at the production API.
+  - Health reports 0.3.0-alpha.22 with `database: ok`, and smoke passes 10/10 (run [43394115279](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43394115279)).
+  - Sign-up stays open (`invite_required: false`).
+  - The public API still serves all 3,379 Modules, with the 224 + 38 loaded jack lists exactly as committed.
+  - Rollback: API `160de78a` and frontend `cc4b0ec6`. The invites table is unused there and can stay.
 - **Alpha.22 on staging (2026-11-13):**
+  - Migration run [43391485007](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43391485007).
+  - Smoke passes 10/10 (run [43392083297](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43392083297)).
+  - The generate check (run [43392196504](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43392196504)) and the generated-export check (run [43392310766](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43392310766)) pass.
   - API Worker `749ed7ac` and frontend `a831fdf1`. The bundle points only at the staging API.
   - Every check was dispatched from the tag `v0.3.0-alpha.22`.
   - The export check read 4 PDF pages, 2 patch pages and 2 distinct Operation texts.
