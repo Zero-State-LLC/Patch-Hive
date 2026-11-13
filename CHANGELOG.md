@@ -4,6 +4,19 @@ All notable changes to PatchHive are documented here.
 
 This project follows [Semantic Versioning](docs/VERSIONING.md) beginning with the adoption of the formal release policy. From 0.3.0-alpha.3 on, release-please writes new entries from Conventional Commit PR titles; do not add an Unreleased section by hand. Historical entries are reconstructed from repository evidence and are labeled as retroactive classifications rather than invented release tags.
 
+## [0.3.0-alpha.23](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.22...v0.3.0-alpha.23) (2026-11-13)
+
+
+### Added
+
+* **frontend:** per-page head, link preview, favicon set and admin loading states ([#371](https://github.com/Zero-State-LLC/Patch-Hive/issues/371)) ([8694b49](https://github.com/Zero-State-LLC/Patch-Hive/commit/8694b4908cda702609d1f9248bcc329414e9fddc))
+
+
+### Documentation
+
+* record 0.3.0-alpha.22 on staging and production ([#409](https://github.com/Zero-State-LLC/Patch-Hive/issues/409)) ([1bf22c0](https://github.com/Zero-State-LLC/Patch-Hive/commit/1bf22c0d8a5caca17b5967262e27d0a8293e2408))
+* record the N8, N9 and spec 002 hardening merges ([#407](https://github.com/Zero-State-LLC/Patch-Hive/issues/407)) ([1e28742](https://github.com/Zero-State-LLC/Patch-Hive/commit/1e287426a1b9bb2fe6b849655486a054056a36b0))
+
 ## [0.3.0-alpha.22](https://github.com/Zero-State-LLC/Patch-Hive/compare/v0.3.0-alpha.21...v0.3.0-alpha.22) (2026-11-13)
 
 
