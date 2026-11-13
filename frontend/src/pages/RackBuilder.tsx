@@ -153,7 +153,9 @@ function RackBuilder() {
   const [placementError, setPlacementError] = useState("");
   const [rackCompat, setRackCompat] = useState<RackCompat | null>(null);
   const [batchNote, setBatchNote] = useState("");
+  const [catalogSyncing, setCatalogSyncing] = useState(false);
   const [moduleMaterializeNote, setModuleMaterializeNote] = useState("");
+  const [modulesMaterializing, setModulesMaterializing] = useState(false);
   const [moduleQuery, setModuleQuery] = useState("");
   /** Multi-select for batch place (module ids). */
   const [batchSelectedIds, setBatchSelectedIds] = useState<number[]>([]);
@@ -709,6 +711,7 @@ function RackBuilder() {
 
   const materializeAllEurorack = async () => {
     setBatchNote("");
+    setCatalogSyncing(true);
     try {
       const res = await caseCatalogApi.materializeBatch({ format_family: "eurorack" });
       const b = res.data;
@@ -720,11 +723,14 @@ function RackBuilder() {
       setLegacyCases(legacy.data.cases ?? []);
     } catch {
       setBatchNote("Bulk sync failed. Check that the catalog seed is imported.");
+    } finally {
+      setCatalogSyncing(false);
     }
   };
 
   const materializeHpKnownModules = async () => {
     setModuleMaterializeNote("");
+    setModulesMaterializing(true);
     try {
       const res = await moduleApi.materializeCatalogBatch({
         hp_known_only: true,
@@ -740,6 +746,8 @@ function RackBuilder() {
       setModuleMaterializeNote(
         "Loading HP-known modules failed. Check that the research catalog is imported and the API is up.",
       );
+    } finally {
+      setModulesMaterializing(false);
     }
   };
 
@@ -884,6 +892,7 @@ function RackBuilder() {
             onRemove={removePlacement}
             compat={rackCompat}
             canLoadModules={canBulkMaterialize}
+            loadingModules={modulesMaterializing}
             onLoadModules={() => void materializeHpKnownModules()}
             loadNote={moduleMaterializeNote}
           />
@@ -931,6 +940,7 @@ function RackBuilder() {
             onCreate={() => void createRigFromCase()}
             error={createError}
             canSyncCatalog={canBulkMaterialize}
+            syncing={catalogSyncing}
             syncNote={batchNote}
             onSyncCatalog={() => void materializeAllEurorack()}
           />

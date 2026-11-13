@@ -12,12 +12,14 @@ function Shell({ start }: { start: string }) {
         <Link to="/patches">Patches</Link>
         <Link to="/patches#filters">Filters</Link>
         <Link to="/racks/2">Second rig</Link>
+        <Link to="/account">Account</Link>
       </nav>
       <main id="main-content" tabIndex={-1}>
         <Routes>
           <Route path="/racks" element={<p>Rigs screen</p>} />
           <Route path="/racks/:rigId" element={<p>Rigs screen, one rig chosen</p>} />
           <Route path="/patches" element={<p>Patches screen</p>} />
+          <Route path="/account" element={<p>Account screen</p>} />
         </Routes>
       </main>
     </MemoryRouter>
@@ -28,11 +30,16 @@ let scrollTo: ReturnType<typeof vi.spyOn>;
 
 beforeEach(() => {
   scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+  document.head.innerHTML = '<meta name="description" content="" />';
 });
 
 afterEach(() => {
   vi.restoreAllMocks();
 });
+
+const description = () =>
+  document.querySelector('meta[name="description"]')?.getAttribute("content");
+const canonical = () => document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href;
 
 describe("RouteEffects", () => {
   it("names the first screen without moving focus", () => {
@@ -78,5 +85,20 @@ describe("RouteEffects", () => {
     expect(document.title).toBe("Rigs, PatchHive");
     expect(scrollTo).not.toHaveBeenCalled();
     expect(link).toHaveFocus();
+  });
+
+  it("describes each screen, and keeps a canonical link on public pages only", async () => {
+    const user = userEvent.setup();
+    render(<Shell start="/racks" />);
+    expect(description()).toBe("Rig-centric workspace. Each rig carries runs and patch libraries.");
+    expect(canonical()).toBeUndefined();
+
+    await user.click(screen.getByRole("link", { name: "Patches" }));
+    await waitFor(() => expect(canonical()).toBe("https://patch-hive.com/patches"));
+    expect(description()).toMatch(/^Generated patches constrained to confirmed inventory/);
+
+    await user.click(screen.getByRole("link", { name: "Account" }));
+    await waitFor(() => expect(canonical()).toBeUndefined());
+    expect(description()).toMatch(/^PatchHive is free to explore/);
   });
 });

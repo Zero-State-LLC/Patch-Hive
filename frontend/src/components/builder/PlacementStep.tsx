@@ -65,6 +65,7 @@ interface PlacementStepProps {
   compat: RackCompat | null;
   /** Admin and Ops only: load full records for every catalog module with known HP. */
   canLoadModules: boolean;
+  loadingModules: boolean;
   onLoadModules: () => void;
   loadNote: string;
 }
@@ -108,6 +109,7 @@ export default function PlacementStep({
   onRemove,
   compat,
   canLoadModules,
+  loadingModules,
   onLoadModules,
   loadNote,
 }: PlacementStepProps) {
@@ -234,8 +236,13 @@ export default function PlacementStep({
 
         {canLoadModules ? (
           <div className="toolbar">
-            <button type="button" className="button button-secondary" onClick={onLoadModules}>
-              Materialize HP-known modules
+            <button
+              type="button"
+              className="button button-secondary"
+              onClick={onLoadModules}
+              disabled={loadingModules}
+            >
+              {loadingModules ? "Materializing…" : "Materialize HP-known modules"}
             </button>
           </div>
         ) : null}
