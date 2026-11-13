@@ -257,7 +257,7 @@ These run after the four rules above. Each draws from its own generator (`seed +
 | Voice through an effect | VCO, VCA, effect | Texture-FX | `seed + 9000` |
 | Two oscillators into a mixer | 2 VCOs, mixer | Utility | `seed + 9500` |
 
-Port names are still generic ("Audio Out", "Gate In"): most modules have no jack data on file (spec 001 OQ-04).
+A cable names a Module's real jack when its list is on file and the name settles which jack. Otherwise it keeps a generic role ("Audio Out", "Gate In"). 226 of the 3,379 public Modules declare jacks (spec 001 OQ-04).
 
 ## Deterministic Naming
 
@@ -413,6 +413,14 @@ class PatchEngineConfig:
 
 ## Limitations
 
+### What changed in 1.4.0
+
+- A cable takes a declared jack only when its name settles it: the exact name, then a keyword, then a channel mark such as 1, A or Left, then the only jack of its kind. Before, anything else took the first free jack, so an FM cable could land on "Damp CV" with no warning.
+- With several jacks and no name to settle it, the cable keeps its generic role and the run reports `SEVERAL_JACKS_FIT`.
+- When a name points at both a main jack and a side jack, such as "Contour Output" and "Mirrored Contour Output", the main one wins. A side jack of something else never leaves an unrelated jack as the only one: beside "Inverted LFO1 Output", "ADSR Output" doesn't take an LFO cable.
+- A number in a voltage or frequency, such as "1V/Oct" or "1.7kHz", isn't a channel mark.
+- A keyword must start a word, so "amp" is not found in "Damp".
+
 ### What changed in 1.3.0
 
 - A generic audio output on a Module with a declared lowpass jack now resolves to that jack, wherever it is listed. Before, it took the first audio output listed, which on some multimode filters was highpass or bandpass.
@@ -426,11 +434,11 @@ class PatchEngineConfig:
 - A module fills one role in a patch (owner decision 36). A rack whose modules each hold one class gets the same patches as before.
 - `allow_feedback=false` also drops a patch whose route through other modules comes back to where it began.
 
-### Current Version (1.3.0)
+### Current Version (1.4.0)
 
-- **Port matching**: Uses generic port names ("Audio Out", "CV In")
-  - Real modules have specific port names
-  - Future: Port name mapping database
+- **Port matching**: Real jack names where a list is on file and the name settles the jack, generic roles ("Audio Out", "CV In") everywhere else
+  - Lists come from makers' documents and have not been checked against panels
+  - Future: More jack lists
 
 - **Signal validation**: No electrical/spec validation
   - Assumes all connections are electrically valid
@@ -453,9 +461,8 @@ class PatchEngineConfig:
 ## Future Enhancements
 
 ### Phase 2
-- **Port name database**: Accurate port mapping for real modules
+- **More jack lists**: Real names for more of the catalog
 - **Multi-voice patches**: Polyphonic configurations
-- **Feedback loop detection**: Safe feedback routing
 - **Constraint solver**: Optimize patch creation with constraints
 
 ### Phase 3

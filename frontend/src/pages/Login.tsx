@@ -2,7 +2,7 @@
  * Auth gate — PatchHive Cyber Hive / Zero State.
  * Sign in or create an account with accessible, token-aligned UI.
  */
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Tabs from "@/components/Tabs";
 import { authApi } from "@/lib/api";
@@ -36,6 +36,7 @@ function returnPath(state: unknown): string | null {
 const AUTH_ERRORS: Record<string, string> = {
   USERNAME_OR_EMAIL_TAKEN: "That username or email is already in use.",
   TOO_MANY_SIGNUPS: "Too many sign-ups from this network. Try again in a few minutes.",
+  INVITE_REQUIRED: "That invite code isn't valid or has already been used.",
 };
 
 export default function LoginPage() {
@@ -51,6 +52,23 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [inviteRequired, setInviteRequired] = useState(false);
+  const [inviteCode, setInviteCode] = useState("");
+
+  useEffect(() => {
+    let live = true;
+    authApi
+      .signupOptions()
+      .then((res) => {
+        if (live) setInviteRequired(res.data.invite_required);
+      })
+      .catch(() => {
+        // The server still refuses a sign-up with no code, and that reply shows the field.
+      });
+    return () => {
+      live = false;
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +77,12 @@ export default function LoginPage() {
 
     try {
       if (mode === "register") {
-        await authApi.register({ username, email, password });
+        await authApi.register({
+          username,
+          email,
+          password,
+          ...(inviteRequired ? { invite_code: inviteCode } : {}),
+        });
       }
       const res = await authApi.login({ username, password });
       setAuth(res.data.user, res.data.access_token);
@@ -68,6 +91,7 @@ export default function LoginPage() {
       const apiError = err as { response?: { data?: { detail?: string | { msg?: string }[] } } };
       const detail = apiError.response?.data?.detail;
       if (typeof detail === "string") {
+        if (detail === "INVITE_REQUIRED") setInviteRequired(true);
         setError(AUTH_ERRORS[detail] ?? detail);
       } else if (Array.isArray(detail)) {
         setError(detail.map((d) => d.msg || "Validation error").join(" "));
@@ -169,6 +193,21 @@ export default function LoginPage() {
                     autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={submitting}
+                  />
+                </label>
+              ) : null}
+
+              {mode === "register" && inviteRequired ? (
+                <label className="field" htmlFor={`${formId}-invite`}>
+                  Invite code
+                  <input
+                    id={`${formId}-invite`}
+                    name="invite"
+                    autoComplete="off"
+                    value={inviteCode}
+                    onChange={(e) => setInviteCode(e.target.value)}
                     required
                     disabled={submitting}
                   />

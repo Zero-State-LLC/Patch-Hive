@@ -58,6 +58,11 @@ const ROUTE_TITLES: [pattern: string, title: string, description: string][] = [
     "Grant, revoke or clear export access, each change logged with a reason.",
   ],
   [
+    "/admin/invites",
+    "Admin invites",
+    "One-use codes for the closed beta. Each adds test credits.",
+  ],
+  [
     "/admin/leaderboards",
     "Admin leaderboards",
     "Community ranking surfaces when feature flags allow.",

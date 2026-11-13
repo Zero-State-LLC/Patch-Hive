@@ -23,7 +23,7 @@ These checks run in `frontend/tests/ui/design.spec.ts`, against a mocked API:
 
 - **Design guard:** every screen, in both themes, at 1440 and 375 px. It runs axe (colour contrast included), checks that nothing sits past the viewport, and checks each screen's signature drawing. An "API down" sweep confirms every data screen shows an alert, never a blank page.
 - **Protocol pre-pass**, covering steps 3 and 5 of the manual protocol:
-  - **Screens:** home, sign in, modules, cases, patches, account, rig detail and the rig builder.
+  - **Screens:** home, sign in, patches, account, rig detail, the rig builder, photo and reading.
   - **Reflow:** checked at 320 CSS px and at 640 (a 1280 px window at 200% zoom). Nothing may scroll the page sideways.
   - **Focus:** the first tab stops show a visible focus ring.
   - **Skip link:** it is the first tab stop and moves focus to the workspace.
@@ -40,7 +40,7 @@ Copy this table into `docs/evidence/ACCESSIBILITY_PASS_<date>.md` for each relea
 | --- | --- | --- | --- | --- |
 | 1. Keyboard-only flows | Chrome, no pointer | | | create rig, photo review, run selection, patch inspection, export |
 | 2a. VoiceOver | Safari, macOS | | | landmarks, headings, forms, status announcements, tabs, cable table |
-| 2b. NVDA | Firefox, Windows | | | same as 2a |
+| 2b. NVDA | Firefox, Windows | | | same as 2a; release candidate only (decision 22) |
 | 3. Zoom and reflow | 200% zoom; 320 px | | | automated pre-pass PASS on CI; confirm by eye |
 | 4. Contrast and monochrome | both themes, greyscale | | | cable classes still tell apart |
 | 5. Reduced motion | OS setting on | | | automated pre-pass PASS on CI |
@@ -54,4 +54,4 @@ Severity classes:
 | **S2** | the task completes with real difficulty (wrong order, missing announcement, contrast below AA) | fix before beta exit |
 | **S3** | friction or polish (verbose labels, redundant stops) | tracked |
 
-Status (2026-11-03): the automated coverage above passes on `main`. The manual pass (steps 1, 2, 4 and 6) has not been run, so its results are still `NOT_COMPUTABLE`.
+Status (2026-11-10): the automated coverage above passes on `main`. The manual pass (steps 1, 2a, 4 and 6) has not been run, so its results are still `NOT_COMPUTABLE`. To exit beta, VoiceOver with Safari and the PDF reading-order check are enough (decision 22). The log to fill in is [docs/evidence/ACCESSIBILITY_PASS_BETA.md](evidence/ACCESSIBILITY_PASS_BETA.md).

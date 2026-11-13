@@ -11,7 +11,7 @@ import zipfile
 from datetime import datetime, timedelta
 from typing import Literal, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
@@ -50,6 +50,26 @@ ARTIFACT_TYPES = {"pdf", "svg", "zip"}
 # Spec 002 OQ-13: reports stay open to anonymous readers, so cap them per client address.
 REPORT_ATTEMPTS = 10
 REPORT_WINDOW_SECONDS = 3600
+# Public reads per address (spec 002 T040): plenty for a reader, slow for a crawler.
+READ_ATTEMPTS = 120
+READ_WINDOW_SECONDS = 60
+# A removed or hidden publication must stop being served at once, so nothing is cached (T039).
+NO_STORE = {"Cache-Control": "no-store"}
+
+
+def _limit_reads(request: Request, bucket: str) -> None:
+    if not login_guard.allow_attempt(
+        login_guard.client_address(request),
+        bucket=bucket,
+        limit=READ_ATTEMPTS,
+        window_seconds=READ_WINDOW_SECONDS,
+    ):
+        raise HTTPException(status_code=429, detail="PUBLICATION_RATE_LIMIT", headers=NO_STORE)
+
+
+def _read_headers(publication: Publication) -> dict[str, str]:
+    # An unlisted link is shared by hand, so it must not end up in a search index (T039).
+    return NO_STORE if publication.visibility == "public" else {**NO_STORE, "X-Robots-Tag": "noindex"}
 
 
 def _ensure_export_dir() -> None:
@@ -344,15 +364,17 @@ def list_publications(
 
 
 @router.get("/p/{slug}", response_model=PublicationPublicResponse)
-def get_publication(slug: str, db: Session = Depends(get_db)):
+def get_publication(slug: str, request: Request, response: Response, db: Session = Depends(get_db)):
     """Get a public publication by slug."""
+    _limit_reads(request, "publication-read")
     publication = (
         db.query(Publication)
         .filter(Publication.slug == slug, Publication.status == "published")
         .first()
     )
     if not publication:
-        raise HTTPException(status_code=404, detail="Publication not found")
+        raise HTTPException(status_code=404, detail="Publication not found", headers=NO_STORE)
+    response.headers.update(_read_headers(publication))
 
     export = publication.export
     publisher = publication.publisher
@@ -392,9 +414,13 @@ def get_publication(slug: str, db: Session = Depends(get_db)):
 def download_publication_artifact(
     slug: str,
     artifact_type: str,
+    request: Request,
     db: Session = Depends(get_db),
 ):
-    """Download publication artifact if allowed."""
+    """Download publication artifact if allowed. Signed or short-lived URLs aren't used: a
+    published book is meant to be read by anyone with its link, an unlisted link's 96-bit
+    token is its secret, and no-store stops a removed one being served (T040)."""
+    _limit_reads(request, "publication-read")
     if artifact_type not in ARTIFACT_TYPES:
         raise HTTPException(status_code=404, detail="Artifact type not found")
 
@@ -413,11 +439,18 @@ def download_publication_artifact(
     if not artifact_path or not os.path.exists(artifact_path):
         raise HTTPException(status_code=404, detail="Artifact not found")
 
-    return FileResponse(artifact_path)
+    # An attachment with a fixed type can't open as a page on this origin (T040).
+    return FileResponse(
+        artifact_path,
+        filename=f"{publication.slug}.{artifact_type}",
+        content_disposition_type="attachment",
+        headers={**_read_headers(publication), "X-Content-Type-Options": "nosniff"},
+    )
 
 
 @router.get("/gallery/publications", response_model=GalleryResponse)
 def list_gallery(
+    request: Request,
     limit: int = Query(20, ge=1, le=50),
     cursor: Optional[str] = None,
     export_type: Optional[Literal["patch", "rack"]] = None,
@@ -425,6 +458,7 @@ def list_gallery(
     db: Session = Depends(get_db),
 ):
     """List public publications for gallery."""
+    _limit_reads(request, "gallery")
     query = (
         db.query(Publication)
         .filter(Publication.status == "published", Publication.visibility == "public")

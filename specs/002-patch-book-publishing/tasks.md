@@ -26,13 +26,13 @@
 
 The threat model's remaining gaps. They gate T033, and none has any effect while publishing is off. Its SVG escaping item is done (#280), and its rate limit on the report route is done (#197, T037).
 
-- [ ] T038 Lengthen the random slug part to at least 96 bits, or add a separate random token for unlisted links (threat model P1).
+- [x] T038 Lengthen the random slug part to at least 96 bits, or add a separate random token for unlisted links (threat model P1). Done 2026-11-12: `publishing/utils.py` `unique_slug` adds 24 hex characters from `secrets` and cuts the title part so the slug fits its 160-character column.
   - depends_on: []
-- [ ] T039 Send `X-Robots-Tag: noindex` on unlisted reads and `Cache-Control: no-store` on read and download, so removal takes effect (threat model P2).
+- [x] T039 Send `X-Robots-Tag: noindex` on unlisted reads and `Cache-Control: no-store` on read and download, so removal takes effect (threat model P2). Done 2026-11-12: `publishing/routes.py` sends `no-store` on every read, download and 404, and `noindex` on unlisted ones.
   - depends_on: []
-- [ ] T040 Add a rate limit to `/p/*` and the gallery. Add `Content-Disposition: attachment` and `X-Content-Type-Options: nosniff` to downloads, and decide on signed or short-lived download URLs (threat model P1, P4).
+- [x] T040 Add a rate limit to `/p/*` and the gallery. Add `Content-Disposition: attachment` and `X-Content-Type-Options: nosniff` to downloads, and decide on signed or short-lived download URLs (threat model P1, P4). Done 2026-11-12: 120 reads a minute per address on `/p/*` and the gallery (`PUBLICATION_RATE_LIMIT`), and downloads are `nosniff` attachments. Decided: no signed URLs, because a published book is meant for anyone with its link, an unlisted link's 96-bit token is its secret, and `no-store` stops a removed one being served.
   - depends_on: []
-- [ ] T041 Validate `cover_image_url` as an `https` URL on an allowlist, or drop the field (threat model P5).
+- [x] T041 Validate `cover_image_url` as an `https` URL on an allowlist, or drop the field (threat model P5). Done 2026-11-12: `publishing/schemas.py` accepts only `https` on a host in `settings.publication_cover_hosts` (default `patch-hive.com` and its subdomains), with no credentials.
   - depends_on: []
 
 ## Gap closure (2026-10-29)
@@ -60,3 +60,5 @@ The threat model's remaining gaps. They gate T033, and none has any effect while
   - depends_on: [T010, T030, T031, T032, T034, T035, T036, T037]
 - [x] T091 Write each page's operation steps for its own patch. Done 2026-11-06. At 0.3.0-alpha.14, a run generated through the API printed the same five lines on all 14 pages, and the seeded demo's run, which has no sealed rows, repeated the cables with 25 padding lines across 11 of its 14 pages and printed a module id from the sixth cable on. Steps now come from each patch's cables while composing (`operation_lines`), tested in `backend/tests/unit/test_spec_002_compose_stages.py`.
   - depends_on: [T090]
+- [x] T092 Read the printed pages of a run generated through the API on staging. Code done 2026-11-06: `scripts/staging/generated_export_check.py` in `.github/workflows/staging-walkthrough.yml`, tested in `backend/tests/unit/test_staging_generated_export_check.py`. Done 2026-11-12: dispatch [43328058772](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43328058772) passed on staging at 0.3.0-alpha.21, the export loaded as `generated_patches`, and its 4 pages showed no failure.
+  - depends_on: [T091]

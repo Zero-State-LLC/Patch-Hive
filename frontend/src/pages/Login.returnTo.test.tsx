@@ -7,7 +7,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const api = vi.hoisted(() => ({
-  authApi: { login: vi.fn(), register: vi.fn() },
+  authApi: { login: vi.fn(), register: vi.fn(), signupOptions: vi.fn() },
 }));
 
 vi.mock("@/lib/api", () => api);
@@ -44,6 +44,7 @@ async function signIn() {
 
 beforeEach(() => {
   api.authApi.login.mockReset();
+  api.authApi.signupOptions.mockResolvedValue({ data: { invite_required: false } });
   api.authApi.login.mockResolvedValue({ data: { user: USER, access_token: "token" } });
 });
 

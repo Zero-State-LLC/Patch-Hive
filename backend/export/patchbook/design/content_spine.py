@@ -57,6 +57,7 @@ class ModuleDisplay:
 
     label: str
     declared_jacks: frozenset[str] = frozenset()
+    declared_jack_types: frozenset[str] = frozenset()
 
 
 @dataclass(frozen=True)
@@ -131,13 +132,11 @@ def _rig_modules(session: Session, rig: Any) -> dict[str, ModuleDisplay]:
     ids = [int(entry["module_id"]) for entry in entries if str(entry.get("module_id")).isdigit()]
     display: dict[str, ModuleDisplay] = {}
     for module in session.query(Module).filter(Module.id.in_(ids)).all():
-        jacks = frozenset(
-            str(port.get("name"))
-            for port in (module.io_ports or [])
-            if isinstance(port, dict) and port.get("name")
-        )
+        ports = [p for p in (module.io_ports or []) if isinstance(p, dict) and p.get("name")]
         display[str(module.id)] = ModuleDisplay(
-            label=f"{module.brand} {module.name}", declared_jacks=jacks
+            label=f"{module.brand} {module.name}",
+            declared_jacks=frozenset(str(p["name"]) for p in ports),
+            declared_jack_types=frozenset(str(p.get("type")) for p in ports),
         )
     return display
 

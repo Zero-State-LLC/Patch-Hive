@@ -18,6 +18,7 @@ export const APP_ROUTES = [
   "/privacy",
   "/admin",
   "/admin/users",
+  "/admin/invites",
   "/admin/modules",
   "/admin/gallery",
   "/admin/runs",

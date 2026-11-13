@@ -1,0 +1,1284 @@
+{
+  "schema": "module-jacks/1",
+  "proposal_sha256": "f5d3337eeeca849950ff8201f1e42444103a44e1ea5cdcd14832654b608202b5",
+  "entries": [
+    {
+      "brand": "2hp",
+      "name": "Sine",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://www.twohp.com/s/2hp_SINE.pdf",
+      "io_ports": [
+        {
+          "name": "Fold",
+          "type": "cv_in"
+        },
+        {
+          "name": "Blend",
+          "type": "cv_in"
+        },
+        {
+          "name": "V/Oct",
+          "type": "cv_in"
+        },
+        {
+          "name": "Sub",
+          "type": "audio_out"
+        },
+        {
+          "name": "Out",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-510N Synthishaper",
+      "hp": 18,
+      "source_kind": "page",
+      "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-510n",
+      "io_ports": [
+        {
+          "name": "CV-IN DECAY",
+          "type": "cv_in"
+        },
+        {
+          "name": "GATE-IN",
+          "type": "gate_in"
+        },
+        {
+          "name": "OUT A",
+          "type": "cv_out"
+        },
+        {
+          "name": "OUT B",
+          "type": "cv_out"
+        },
+        {
+          "name": "SIG-IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "SIG-OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Analogue Systems",
+      "name": "RS-650 Echo Reverb",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://www.analoguesystems.co.uk/index.php/as-modules/rs-650-echo-reverb",
+      "io_ports": [
+        {
+          "name": "CV-IN FIXED",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV-IN VARY",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV-IN MIX",
+          "type": "cv_in"
+        },
+        {
+          "name": "INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUTPUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "BeepBoop Electronics",
+      "name": "2hp CMP Comparator V2",
+      "hp": 2,
+      "source_kind": "page",
+      "source_url": "https://beepboopelectronics.co.uk/product/2hp-cmp-comparator-v2/",
+      "io_ports": [
+        {
+          "name": "IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "output",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "BeepBoop Electronics",
+      "name": "2hp LPG V1 DIY KIT",
+      "hp": 2,
+      "source_kind": "page",
+      "source_url": "https://beepboopelectronics.co.uk/product/2hp-lpg-v1-diy-kit/",
+      "io_ports": [
+        {
+          "name": "IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "CV",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "BeepBoop Electronics",
+      "name": "LOFI uTape Scrubber",
+      "hp": 2,
+      "source_kind": "page",
+      "source_url": "https://beepboopelectronics.co.uk/product/lofi-utape-scrubber/",
+      "io_ports": [
+        {
+          "name": "input",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "audio output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "BeepBoop Electronics",
+      "name": "Samsara",
+      "hp": 2,
+      "source_kind": "page",
+      "source_url": "https://beepboopelectronics.co.uk/product/samsara-bipolar-cv-controller/",
+      "io_ports": [
+        {
+          "name": "CV output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "BeepBoop Electronics",
+      "name": "Tape-auto-mate expander V2",
+      "hp": 2,
+      "source_kind": "page",
+      "source_url": "https://beepboopelectronics.co.uk/product/tape-auto-mate-expander-v2/",
+      "io_ports": [
+        {
+          "name": "INVERTED EOC",
+          "type": "gate_out"
+        },
+        {
+          "name": "EOC (End of cycle)",
+          "type": "gate_out"
+        },
+        {
+          "name": "TAP TEMPO CLK OUT",
+          "type": "clock_out"
+        },
+        {
+          "name": "TAP TEMPO INV CLK OUT",
+          "type": "clock_out"
+        }
+      ]
+    },
+    {
+      "brand": "David Haillant",
+      "name": "Passive OR",
+      "hp": 2,
+      "source_kind": "page",
+      "source_url": "https://www.davidhaillant.com/passive-or-2hp/",
+      "io_ports": [
+        {
+          "name": "Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "A",
+          "type": "gate_in"
+        },
+        {
+          "name": "B",
+          "type": "gate_in"
+        },
+        {
+          "name": "C",
+          "type": "gate_in"
+        }
+      ]
+    },
+    {
+      "brand": "Ge0sync Synth",
+      "name": "GS1-NR",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://geosyncsynth.com/2022/08/09/gs1-nr/",
+      "io_ports": [
+        {
+          "name": "X",
+          "type": "audio_in"
+        },
+        {
+          "name": "Y",
+          "type": "audio_in"
+        },
+        {
+          "name": "Cross Mod",
+          "type": "audio_out"
+        },
+        {
+          "name": "White Noise",
+          "type": "audio_out"
+        },
+        {
+          "name": "Pink Noise",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Ge0sync Synth",
+      "name": "GS1-U",
+      "hp": 8,
+      "source_kind": "page",
+      "source_url": "https://geosyncsynth.com/2023/07/08/gs1-u/",
+      "io_ports": [
+        {
+          "name": "X",
+          "type": "audio_in"
+        },
+        {
+          "name": "Y",
+          "type": "audio_in"
+        },
+        {
+          "name": "Cross Mod",
+          "type": "audio_out"
+        },
+        {
+          "name": "White Noise",
+          "type": "audio_out"
+        },
+        {
+          "name": "Pink Noise",
+          "type": "audio_out"
+        },
+        {
+          "name": "Gate In",
+          "type": "gate_in"
+        },
+        {
+          "name": "Gate Out",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Hexdevices",
+      "name": "Osiris",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://www.hexdevices.com/product/osiris/",
+      "io_ports": [
+        {
+          "name": "Mono Input",
+          "type": "audio_in"
+        },
+        {
+          "name": "CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Left",
+          "type": "audio_out"
+        },
+        {
+          "name": "Right",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Hive Mind Synthesis",
+      "name": "IND",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://hivemindsynthesis.com/shop/p/ind-indicator-megabit",
+      "io_ports": [
+        {
+          "name": "input",
+          "type": "audio_in"
+        },
+        {
+          "name": "output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Infrasonic Audio",
+      "name": "Warp Core",
+      "hp": 4,
+      "source_kind": "manual",
+      "source_url": "https://shop.infrasonicaudio.com/products/warp-core/user-manual.pdf",
+      "io_ports": [
+        {
+          "name": "WARP A CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "WARP B CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "V/OCT CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "PM AMT CV INPUT",
+          "type": "cv_in"
+        },
+        {
+          "name": "EXT PM INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "0° OUTPUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "90° OUTPUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Jolin",
+      "name": "ROSA",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://jolin.tech/s/rosa_how_to.pdf",
+      "io_ports": [
+        {
+          "name": "IN1",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN2",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN3",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN4",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT1",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT2",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT3",
+          "type": "audio_out"
+        },
+        {
+          "name": "OUT4",
+          "type": "audio_out"
+        },
+        {
+          "name": "CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "KNEE CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "SHUT input",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Likaon Instruments",
+      "name": "Drizzle",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://likaoninstruments.com/product/drizzle/",
+      "io_ports": [
+        {
+          "name": "ROOT CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "CLK",
+          "type": "clock_in"
+        },
+        {
+          "name": "RST",
+          "type": "gate_in"
+        },
+        {
+          "name": "BURST 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "BURST 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "GATE OUT",
+          "type": "gate_out"
+        },
+        {
+          "name": "POST CLK",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Little Fish Audio",
+      "name": "Asymmetric Distortion",
+      "hp": 7,
+      "source_kind": "page",
+      "source_url": "https://www.littlefishaudio.co.uk/products/modules/asymmetric-distortion",
+      "io_ports": [
+        {
+          "name": "signal input",
+          "type": "audio_in"
+        },
+        {
+          "name": "signal output",
+          "type": "audio_out"
+        },
+        {
+          "name": "symmetry input",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Manikk",
+      "name": "ADSR Expander",
+      "hp": 2,
+      "source_kind": "page",
+      "source_url": "https://manikk.com/product/adsr-expander/",
+      "io_ports": [
+        {
+          "name": "Jack 1",
+          "type": "gate_out"
+        },
+        {
+          "name": "Jack 2",
+          "type": "gate_out"
+        },
+        {
+          "name": "Jack 3",
+          "type": "gate_out"
+        },
+        {
+          "name": "Jack 4",
+          "type": "gate_out"
+        },
+        {
+          "name": "Jack 5",
+          "type": "gate_out"
+        },
+        {
+          "name": "Jack 6",
+          "type": "gate_out"
+        },
+        {
+          "name": "Jack 7",
+          "type": "gate_out"
+        },
+        {
+          "name": "Jack 8",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Manikk",
+      "name": "Outbreak Jr",
+      "hp": 2,
+      "source_kind": "page",
+      "source_url": "https://manikk.com/product/outbreak-jr/",
+      "io_ports": [
+        {
+          "name": "PITCH",
+          "type": "cv_out"
+        },
+        {
+          "name": "VELOCITY",
+          "type": "cv_out"
+        },
+        {
+          "name": "X",
+          "type": "cv_out"
+        },
+        {
+          "name": "Y",
+          "type": "cv_out"
+        },
+        {
+          "name": "MODWHEEL",
+          "type": "cv_out"
+        },
+        {
+          "name": "GATE",
+          "type": "gate_out"
+        },
+        {
+          "name": "CLK",
+          "type": "clock_out"
+        }
+      ]
+    },
+    {
+      "brand": "Mosaic",
+      "name": "Clock",
+      "hp": 8,
+      "source_kind": "manual",
+      "source_url": "https://www.mosaic1u.com/s/Clock-93a3.pdf",
+      "io_ports": [
+        {
+          "name": "Hold Gate In",
+          "type": "gate_in"
+        },
+        {
+          "name": "CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Clock Output",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Nonlinearcircuits",
+      "name": "Envelope follower",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://www.nonlinearcircuits.com/modules/p/4hp-envelope-follower",
+      "io_ports": [
+        {
+          "name": "1/4\"",
+          "type": "audio_in"
+        },
+        {
+          "name": "3.5mm input",
+          "type": "audio_in"
+        },
+        {
+          "name": "pre-amp output",
+          "type": "audio_out"
+        },
+        {
+          "name": "envelope output",
+          "type": "cv_out"
+        },
+        {
+          "name": "gate output",
+          "type": "gate_out"
+        }
+      ]
+    },
+    {
+      "brand": "Pittsburgh Modular",
+      "name": "Lifeforms Touch Controller",
+      "hp": 38,
+      "source_kind": "manual",
+      "source_url": "https://pittsburghmodular.com/s/Touch-Controller-Manual.pdf",
+      "io_ports": [
+        {
+          "name": "Scan Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Reset Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Step Input",
+          "type": "clock_in"
+        },
+        {
+          "name": "Left Gate Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Left CV A Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Left CV B Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Left Y-Axis Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Right Gate Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "Right CV A Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Right CV B Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Right Y-Axis Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "All Gate Output",
+          "type": "gate_out"
+        },
+        {
+          "name": "All CV A Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "All CV B Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "All Y-Axis Output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Plankton Electronics",
+      "name": "ENVF",
+      "hp": 2,
+      "source_kind": "page",
+      "source_url": "https://www.planktonelectronics.com/store/envf/",
+      "io_ports": [
+        {
+          "name": "input",
+          "type": "audio_in"
+        },
+        {
+          "name": "normal output",
+          "type": "cv_out"
+        },
+        {
+          "name": "inverted output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "Qu-Bit Electronix",
+      "name": "Nautilus",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://www.qubitelectronix.com/s/Nautilus_v1-2-1.pdf",
+      "io_ports": [
+        {
+          "name": "Mix CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Clock In",
+          "type": "gate_in"
+        },
+        {
+          "name": "Resolution CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Feedback CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Sensors CV Input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Dispersal CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Reversal CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Chroma CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Depth CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Freeze Gate input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Purge gate input",
+          "type": "gate_in"
+        },
+        {
+          "name": "Sonar Output",
+          "type": "cv_out"
+        },
+        {
+          "name": "Audio Input Left",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Input Right",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio Output Left",
+          "type": "audio_out"
+        },
+        {
+          "name": "Audio Output Right",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Rides in the Storm",
+      "name": "L5D",
+      "hp": 6,
+      "source_kind": "page",
+      "source_url": "https://rides-in-the-storm.de/zh/modules/l5d",
+      "io_ports": [
+        {
+          "name": "Key",
+          "type": "cv_in"
+        },
+        {
+          "name": "Resonance",
+          "type": "cv_in"
+        },
+        {
+          "name": "Envelope",
+          "type": "cv_in"
+        },
+        {
+          "name": "Exponential FM",
+          "type": "cv_in"
+        },
+        {
+          "name": "Linear FM",
+          "type": "cv_in"
+        },
+        {
+          "name": "Audio input",
+          "type": "audio_in"
+        },
+        {
+          "name": "Audio output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "ST Modular",
+      "name": "ADSR",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://www.st-modular.de/modules/adsr",
+      "io_ports": [
+        {
+          "name": "Gate Input",
+          "type": "gate_in"
+        },
+        {
+          "name": "RTRG input",
+          "type": "gate_in"
+        },
+        {
+          "name": "regular output",
+          "type": "cv_out"
+        },
+        {
+          "name": "inverted output",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "ST Modular",
+      "name": "Cause & Effect",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://www.st-modular.de/modules/cause-%26-effect",
+      "io_ports": [
+        {
+          "name": "READ IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "LIMIT CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "R GATE",
+          "type": "gate_out"
+        },
+        {
+          "name": "HOLD IN",
+          "type": "cv_in"
+        },
+        {
+          "name": "HOLD OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "H GATE",
+          "type": "gate_in"
+        },
+        {
+          "name": "SW GATE",
+          "type": "gate_in"
+        },
+        {
+          "name": "IN A",
+          "type": "audio_in"
+        },
+        {
+          "name": "IN B",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "SetonixSynth",
+      "name": "SkyWave Segmented VCO",
+      "hp": 14,
+      "source_kind": "manual",
+      "source_url": "https://www.setonixsynth.com/s/SkyWave-user-manual_v01.pdf",
+      "io_ports": [
+        {
+          "name": "V/Oct",
+          "type": "cv_in"
+        },
+        {
+          "name": "FM/PM",
+          "type": "cv_in"
+        },
+        {
+          "name": "Osc. Sync",
+          "type": "gate_in"
+        },
+        {
+          "name": "PWM",
+          "type": "cv_in"
+        },
+        {
+          "name": "Wave CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Level CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "Seq. Clock",
+          "type": "clock_in"
+        },
+        {
+          "name": "Seq. Reset",
+          "type": "gate_in"
+        },
+        {
+          "name": "Sine",
+          "type": "audio_out"
+        },
+        {
+          "name": "SkyWave",
+          "type": "audio_out"
+        },
+        {
+          "name": "Osc. Clock",
+          "type": "clock_out"
+        }
+      ]
+    },
+    {
+      "brand": "Signs Modular",
+      "name": "hvs",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://signsmodular.com/hvs.html",
+      "io_ports": [
+        {
+          "name": "v/oct cv input",
+          "type": "cv_in"
+        },
+        {
+          "name": "overtone output of x2",
+          "type": "cv_out"
+        },
+        {
+          "name": "overtone output of x3",
+          "type": "cv_out"
+        },
+        {
+          "name": "overtone output of x5",
+          "type": "cv_out"
+        },
+        {
+          "name": "overtone output of x7",
+          "type": "cv_out"
+        },
+        {
+          "name": "overtone output of x9",
+          "type": "cv_out"
+        },
+        {
+          "name": "overtone output of x11",
+          "type": "cv_out"
+        },
+        {
+          "name": "overtone output of x13",
+          "type": "cv_out"
+        },
+        {
+          "name": "overtone output of x15",
+          "type": "cv_out"
+        },
+        {
+          "name": "Additional cv input",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Sovage Engineering",
+      "name": "TEINTE 1U",
+      "hp": 12,
+      "source_kind": "page",
+      "source_url": "https://www.sovageengineering.com/product-page/teinte-1u",
+      "io_ports": [
+        {
+          "name": "IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Steady State Fate",
+      "name": "Ultra-Random Analog",
+      "hp": 10,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0616/1206/4946/files/ssf-ultra-random-analog-manual.pdf?v=1651535546",
+      "io_ports": [
+        {
+          "name": "SAMPLE INPUT-A",
+          "type": "cv_in"
+        },
+        {
+          "name": "SAMPLE OUT-A",
+          "type": "cv_out"
+        },
+        {
+          "name": "SAMPLE INPUT-B",
+          "type": "cv_in"
+        },
+        {
+          "name": "SAMPLE OUT-B",
+          "type": "cv_out"
+        },
+        {
+          "name": "TOGGLE A/B OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "MAIN CLOCK OUT",
+          "type": "clock_out"
+        },
+        {
+          "name": "CLK FM",
+          "type": "cv_in"
+        },
+        {
+          "name": "EXT CLK",
+          "type": "clock_in"
+        },
+        {
+          "name": "R-PULSE",
+          "type": "gate_out"
+        },
+        {
+          "name": "R-PULSE DENSITY",
+          "type": "cv_in"
+        },
+        {
+          "name": "OPTO-INTEGRATOR input",
+          "type": "cv_in"
+        },
+        {
+          "name": "OPTO-INT OUT",
+          "type": "cv_out"
+        },
+        {
+          "name": "OPTO CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "R-FLUX",
+          "type": "cv_out"
+        },
+        {
+          "name": "R-FLUX INFLUENCE",
+          "type": "cv_in"
+        },
+        {
+          "name": "R-FLUX PROBABILITY",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "TLM Audio",
+      "name": "BRAIDS (Mutable Instruments Braids Clone)",
+      "hp": 16,
+      "source_kind": "page",
+      "source_url": "https://www.tlm-audio.com/product-page/braids",
+      "io_ports": [
+        {
+          "name": "Trigger input",
+          "type": "gate_in"
+        },
+        {
+          "name": "CV input (1V/oct.)",
+          "type": "cv_in"
+        },
+        {
+          "name": "Exponential FM CV input, with attenuverter",
+          "type": "cv_in"
+        },
+        {
+          "name": "Timbre CV input with attenuverter",
+          "type": "cv_in"
+        },
+        {
+          "name": "Color CV input",
+          "type": "cv_in"
+        },
+        {
+          "name": "Audio output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "Tenderfoot Electronics",
+      "name": "Tetrad",
+      "hp": 20,
+      "source_kind": "manual",
+      "source_url": "https://cdn.shopify.com/s/files/1/0042/6042/9935/files/TETRAD_manual2025.pdf?v=1754896077",
+      "io_ports": [
+        {
+          "name": "V/OCT",
+          "type": "cv_in"
+        },
+        {
+          "name": "TRIG",
+          "type": "gate_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "OSC NUM",
+          "type": "gate_in"
+        },
+        {
+          "name": "SHAPE",
+          "type": "gate_in"
+        },
+        {
+          "name": "FM",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV 3",
+          "type": "cv_in"
+        },
+        {
+          "name": "CV 4",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "VAV Synths",
+      "name": "X-Wave: Wave-Crosser (4HP)",
+      "hp": 4,
+      "source_kind": "page",
+      "source_url": "https://vavsynths.com/products/x-wave",
+      "io_ports": [
+        {
+          "name": "SIGNAL 1 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "SIGNAL 2 IN",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "+ DETECT IN",
+          "type": "cv_in"
+        }
+      ]
+    },
+    {
+      "brand": "Wildfire Laboratories",
+      "name": "SOVEREIGN",
+      "hp": 6,
+      "source_kind": "manual",
+      "source_url": "https://www.wildfirelaboratories.com/s/sov-MAN.pdf",
+      "io_ports": [
+        {
+          "name": "INPUT",
+          "type": "audio_in"
+        },
+        {
+          "name": "OUTPUT",
+          "type": "audio_out"
+        },
+        {
+          "name": "TUNE CV",
+          "type": "cv_in"
+        },
+        {
+          "name": "FEEDBACK LOOP SEND",
+          "type": "audio_out"
+        },
+        {
+          "name": "FEEDBACK LOOP RETURN",
+          "type": "audio_in"
+        }
+      ]
+    },
+    {
+      "brand": "b:art instruments",
+      "name": "b:09",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://bartinstruments.com/cdn/shop/files/b_09_manual.pdf?v=2812865148416850004",
+      "io_ports": [
+        {
+          "name": "Input 1",
+          "type": "audio_in"
+        },
+        {
+          "name": "Output 1",
+          "type": "audio_out"
+        },
+        {
+          "name": "Input A",
+          "type": "audio_in"
+        },
+        {
+          "name": "Input B",
+          "type": "audio_in"
+        },
+        {
+          "name": "Crossfader Output",
+          "type": "audio_out"
+        }
+      ]
+    },
+    {
+      "brand": "b:art instruments",
+      "name": "b:10",
+      "hp": 2,
+      "source_kind": "manual",
+      "source_url": "https://bartinstruments.com/cdn/shop/files/b_10_manual.pdf?v=12043421755200662003",
+      "io_ports": [
+        {
+          "name": "Input 1",
+          "type": "cv_in"
+        },
+        {
+          "name": "Output 1",
+          "type": "cv_out"
+        },
+        {
+          "name": "Input 2",
+          "type": "cv_in"
+        },
+        {
+          "name": "Output 2",
+          "type": "cv_out"
+        }
+      ]
+    },
+    {
+      "brand": "selestium modular",
+      "name": "QUIVERER (M5)",
+      "hp": 12,
+      "source_kind": "manual",
+      "source_url": "https://modular.selestium.net/modules/quiverer_m5/QUIVERER_M5_manual.pdf",
+      "io_ports": [
+        {
+          "name": "output",
+          "type": "audio_out"
+        },
+        {
+          "name": "input",
+          "type": "audio_in"
+        }
+      ]
+    }
+  ]
+}

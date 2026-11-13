@@ -17,6 +17,7 @@ e05ff891e9d47a5204a8897b195029934453fc8a3be3c20be898fad7040a7521  data/synth-cat
 3fb8574cfcc33f7a4ae3685d9ee36dc6c4d8d4fcb68d79beabe2f9d130c4bd56  data/synth-catalog/overlays/maker-review-v1.json
 845d30baece88737f62d774338cce9ef1af6f0164f4cd15c2843e140cdf248f9  data/synth-catalog/overlays/module-catalog-category-v1.json
 5190ee7f3f0291160e3c29c59e242185bf8f4c4129eecc5f1213e5792be465ba  data/synth-catalog/overlays/module-catalog-category-v10.json
+0be015e1353a17b7f1269a956b25037cba8f6b29dd6172f000b30404433b706c  data/synth-catalog/overlays/module-catalog-category-v11.json
 a7ef7e810386939f3e50060213a5a172ea9315697b8bd746000fdcd57f112a36  data/synth-catalog/overlays/module-catalog-category-v2.json
 2787a527781f9d02925ac2adaef2c22377f44a0216f15b70aa60d6534b5b8d5b  data/synth-catalog/overlays/module-catalog-category-v3.json
 7c4e378c2abdeb161e0370dd27e6dd576809810d29c7935be1e33e4cff5322d4  data/synth-catalog/overlays/module-catalog-category-v4.json
@@ -37,6 +38,7 @@ b8f980acb41e5eac5f776acb0228d4922eb7d1039fe507c516ae86a9d28f093f  data/synth-cat
 0c93236b8b8f2d3b705c78de75ff429f1fde0c37ea760e9ebb52c679c6087421  data/synth-catalog/overlays/module-catalog-hp-v8.json
 59f4a1be016feafbf9c0aa4570cc702d152e59d7c70ba509ea03af44acdec9ee  data/synth-catalog/overlays/module-catalog-hp-v9.json
 9d37ec3945467db6264df02e65cb59badcfe11f65f4aa2b282008c4000b24bf1  data/synth-catalog/overlays/module-jacks-v1.json
+0947dc1ad2dfb0133bb63312f507b134757c0eaffff4d06e2e9ae5ba7fdfe7d2  data/synth-catalog/overlays/module-jacks-v2.json
 b3481d343fd90242bb8966e7cb21e8a158893ce6fd0f1f3860ca962390d92efc  data/synth-catalog/overlays/module-power-depth-v10.json
 9f78990cff194ae2b5e123da9fca4e2190ab0a32e23e005bcc6917391d88e620  data/synth-catalog/overlays/module-power-depth-v11.json
 717f9bc46e4210c08f155f10527e81a43a58e69049e3747d0b1886532365039d  data/synth-catalog/overlays/module-power-depth-v12.json

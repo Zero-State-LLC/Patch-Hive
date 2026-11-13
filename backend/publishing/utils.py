@@ -1,7 +1,12 @@
 """Utilities for publishing layer."""
 
 import re
-import uuid
+import secrets
+
+# 96 random bits (spec 002 T038), so a crawler can't guess an unlisted link. The column
+# holds 160 characters, so a long title is cut to fit.
+SLUG_TOKEN_BYTES = 12
+SLUG_LENGTH = 160
 
 
 def slugify_title(title: str) -> str:
@@ -10,5 +15,5 @@ def slugify_title(title: str) -> str:
 
 
 def unique_slug(base: str) -> str:
-    suffix = uuid.uuid4().hex[:8]
-    return f"{base}-{suffix}"
+    token = secrets.token_hex(SLUG_TOKEN_BYTES)
+    return f"{base[: SLUG_LENGTH - len(token) - 1].rstrip('-') or 'publication'}-{token}"

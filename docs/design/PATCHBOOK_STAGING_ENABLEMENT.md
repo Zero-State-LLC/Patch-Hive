@@ -19,6 +19,8 @@ To deploy, run `cd edge/api && npx wrangler deploy --env staging` from a checkou
 
 To verify, dispatch `.github/workflows/staging-walkthrough.yml`. It seeds per-run demo users, runs `scripts/staging/design_engine_walkthrough.py` against `api-staging.patch-hive.com`, reads the server's flags from `GET /api/admin/ops/runtime-flags`, and keeps the receipt. The first pass was on 2026-11-03 (run 41557808902, #216).
 
+The same workflow then runs `scripts/staging/generated_export_check.py`, which takes the path a customer takes: it generates a run through the API, exports it with test credits, downloads the zip and reads the pages of `PatchBook.pdf` inside the job. It fails if the export didn't load as `generated_patches`, if the PDF's page count differs from `validation/book.json`, if a patch page is missing Construction or Operation, if a page prints `UNKNOWN`, `NOT_COMPUTABLE`, a phase tag, "verify prior connection" or a raw port id, or if a module isn't printed by its brand and name from `pages/json`. This repo is public, so the pack stays in the job's memory and the receipt holds statuses, counts and hashes only. Dispatch it alone with `checks: generated-export`.
+
 The local Docker path below remains for development.
 
 ## Automated walkthrough (recommended)

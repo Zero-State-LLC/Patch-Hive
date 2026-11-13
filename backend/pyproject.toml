@@ -1,6 +1,6 @@
 [project]
 name = "patchhive-backend"
-version = "0.3.0-alpha.20"
+version = "0.3.0-alpha.21"
 description = "PatchHive Backend - Eurorack system design and patch exploration API"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -40,6 +40,12 @@ dev = [
     "pip-audit==2.10.1",
     "cyclonedx-bom==7.3.0",
     "bandit==1.9.4",
+    "pypdf==6.21.4",
+]
+# Reads a downloaded PatchBook.pdf in scripts/staging/generated_export_check.py. The API never
+# reads a PDF, so this stays out of its dependencies and requirements.txt.
+staging-check = [
+    "pypdf==6.21.4",
 ]
 
 [build-system]

@@ -92,6 +92,7 @@
         "ENABLE_PATCHBOOK_DESIGN_ENGINE": "true",
         "ENABLE_CANON_EXPORT_FULFILLMENT": "true",
         "ENABLE_INLINE_EXPORT_FULFILLMENT": "true",
+        "ENABLE_INVITE_ONLY_SIGNUP": "true",
         "ENABLE_PATCHBOOK_PUBLICATION_PROFILE": "false",
         // Spec 009 T060a: staging reads a Rig photo by replaying its recorded answer, shipped
         // in the image from backend/data/photo-readings. No photo leaves PatchHive.

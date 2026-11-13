@@ -316,4 +316,4 @@ def test_the_migration_refuses_to_downgrade_with_rows_and_round_trips_empty(
     with engine.connect() as conn:
         version = conn.execute(text("SELECT version_num FROM alembic_version")).scalar()
     # Head is a later revision that descends from this one.
-    assert version == "20261107_photo_readings"
+    assert version == "20261110_beta_invites"

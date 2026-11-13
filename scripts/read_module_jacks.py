@@ -112,6 +112,19 @@ MANY_PARTS = re.compile(
     re.I,
 )
 DESCRIPTION_CHARS = 800
+# A name that stands for several jacks: one ending in a plural, such as "Trigger inputs" or
+# "Outputs (OUT)", or one joining numbers, such as "FM 1&2 input". "LP Outputs Left" is one jack.
+GROUPED_NAME = re.compile(
+    r"\b(?:inputs|outputs|ins|outs|jacks|sockets)\s*(?:\([^)]*\))?\s*$|\d\s?&\s?\d", re.I
+)
+# Channel marks for the first channel and for any later one. "1 Volt" and "1V" are no channel.
+FIRST_CHANNEL = re.compile(
+    r"(?:^|[\s_(/-])(?:ch(?:annel)?\s?)?(?:1|a|l|left)(?!\s?v(?:/|olt|\b))(?:$|[\s_)/:-])", re.I
+)
+LATER_CHANNEL = re.compile(
+    r"(?:^|[\s_(/-])(?:ch(?:annel)?\s?)?(?:[2-9]\d*|1\d+|[b-d]|r|right|ii|iii|iv)(?:$|[\s_)/:-])",
+    re.I,
+)
 CHANNEL_MARK = re.compile(
     r"(?:^|[\s_(/-])(?:\d+|[a-dlrxy]|i{1,3}|iv|left|right|ch\d*|channel|odd|even|top|bottom|upper|lower)"
     r"(?:$|[\s_)/:-])",
@@ -936,11 +949,16 @@ def lists_agree(a: list[dict], b: list[dict]) -> str | None:
     return "different_type" if same_name else "different_names"
 
 
-def decide_document(text: str, a: dict | None, b: dict | None) -> tuple[list[dict] | None, str]:
-    """The jacks to propose from one document, or None and the reason it fell short."""
+def decide_document(
+    text: str, a: dict | None, b: dict | None, *, one_full: bool = False
+) -> tuple[list[dict] | None, str]:
+    """The jacks to propose from one document, or None and the reason it fell short. With
+    ``one_full``, one reading calling the document complete is enough when both readings
+    list the same jacks (spec 003 FR-041)."""
     if a is None or b is None:
         return None, "reading_missing"
-    if a["coverage"] != "full" or b["coverage"] != "full":
+    full = [reading["coverage"] == "full" for reading in (a, b)]
+    if not (any(full) if one_full else all(full)):
         return None, "not_complete"
     if not a["jacks"] or not b["jacks"]:
         return None, "no_jacks"
@@ -954,14 +972,26 @@ def decide_document(text: str, a: dict | None, b: dict | None) -> tuple[list[dic
     # The pilot's passive splitter, whose jacks work either way, came back as nine inputs.
     if not any(_shape(jack)[0] == "out" for jack in a["jacks"]):
         return None, "no_outputs"
+    if any(GROUPED_NAME.search(jack["name"]) for jack in a["jacks"] + b["jacks"]):
+        return None, "grouped_names"
     many = MANY_CHANNELS.search(text) or MANY_PARTS.search(text[:DESCRIPTION_CHARS])
-    if many and not any(CHANNEL_MARK.search(j["name"]) for j in a["jacks"]):
+    names = [jack["name"] for jack in a["jacks"]]
+    if many and not any(CHANNEL_MARK.search(name) for name in names):
+        return None, "one_channel_of_many"
+    # A list that marks the first channel and nothing later holds one channel, as with b:13.
+    if (
+        many
+        and any(FIRST_CHANNEL.search(name) for name in names)
+        and not any(LATER_CHANNEL.search(name) for name in names)
+    ):
         return None, "one_channel_of_many"
     reason = lists_agree(a["jacks"], b["jacks"])
     return (None, reason) if reason else (a["jacks"], "accepted")
 
 
-def decide_module(row: dict, out: Path, readings: dict[str, dict]) -> dict:
+def decide_module(
+    row: dict, out: Path, readings: dict[str, dict], *, one_full: bool = False
+) -> dict:
     """The Module's outcome. A manual is tried before the page, as the fuller source."""
     outcome: dict = {"module_id": row["module_id"], "accepted": False, "reasons": {}}
     docs, dropped = documents(row, out)
@@ -971,12 +1001,15 @@ def decide_module(row: dict, out: Path, readings: dict[str, dict]) -> dict:
             (readings.get(custom_id(row["module_id"], doc["kind"], r)) or {}).get("reading")
             for r in PROMPTS
         )
-        jacks, reason = decide_document(doc["text"], a, b)
+        jacks, reason = decide_document(doc["text"], a, b, one_full=one_full)
         outcome["reasons"][doc["kind"]] = reason
         if jacks is not None:
             return {
                 "module_id": row["module_id"],
                 "accepted": True,
+                # False when only one reading called the document complete: FR-041 then
+                # needs a hand check before the list can go into an overlay.
+                "both_full": a["coverage"] == "full" and b["coverage"] == "full",
                 "brand": row["brand"],
                 "name": row["name"],
                 "hp": row["hp"],
@@ -1011,12 +1044,14 @@ def _review_sample(accepted: list[dict], size: int) -> str:
     return "\n".join(lines)
 
 
-def decide(out: Path, sample: int) -> int:
+def decide(out: Path, sample: int, *, one_full: bool = False) -> int:
     rows = json.loads((out / "plan.json").read_text())
     readings = load_readings(out)
     wanted = {key.split("-", 1)[0] for key in readings}
     outcomes = [
-        decide_module(row, out, readings) for row in rows if f"m{row['module_id']}" in wanted
+        decide_module(row, out, readings, one_full=one_full)
+        for row in rows
+        if f"m{row['module_id']}" in wanted
     ]
     accepted = [item for item in outcomes if item["accepted"]]
     proposal = json.dumps(
@@ -1044,7 +1079,7 @@ def decide(out: Path, sample: int) -> int:
 
 
 def command_decide(args: argparse.Namespace) -> int:
-    return decide(args.out, args.sample)
+    return decide(args.out, args.sample, one_full=args.one_full)
 
 
 def clean_jack_name(name: str) -> str:
@@ -1053,11 +1088,41 @@ def clean_jack_name(name: str) -> str:
     return re.sub(r"\s+(?:jacks?|sockets?)$", "", name, flags=re.I) or name
 
 
-def write_overlay(out: Path, target: Path) -> int:
-    """The loader's input. Quotes from makers' documents stay in the private proposal."""
+def write_overlay(
+    out: Path,
+    target: Path,
+    *,
+    earlier: list[Path] = (),
+    reviews: Path | None = None,
+    reviewed_only: bool = False,
+) -> int:
+    """The loader's input. Quotes from makers' documents stay in the private proposal. A Module
+    an ``earlier`` overlay already holds is left out, so each overlay adds only new lists, and
+    so is one a hand check in ``reviews`` didn't find complete. A list only one reading called
+    complete goes in only with a "complete" verdict, whatever the flags (FR-041). With
+    ``reviewed_only``, only the lists a hand check found complete go in."""
     raw = (out / "module-jacks.proposal.json").read_bytes()
+    held = {
+        (entry["brand"], entry["name"])
+        for path in earlier
+        for entry in json.loads(path.read_text(encoding="utf-8"))["entries"]
+    }
+    verdicts = (
+        {}
+        if reviews is None
+        else {
+            (item["brand"], item["name"]): item["verdict"]
+            for item in json.loads(reviews.read_text(encoding="utf-8"))["reviews"]
+        }
+    )
+    held |= {key for key, verdict in verdicts.items() if verdict != "complete"}
     entries, dropped = [], 0
     for item in json.loads(raw)["modules"]:
+        key = (item["brand"], item["name"])
+        # A proposal from before ``both_full`` was recorded came from the gate that needed both.
+        checked = verdicts.get(key) == "complete"
+        if key in held or ((reviewed_only or not item.get("both_full", True)) and not checked):
+            continue
         ports = [
             {"name": clean_jack_name(port["name"]), "type": port["type"]}
             for port in item["io_ports"]
@@ -1088,7 +1153,13 @@ def write_overlay(out: Path, target: Path) -> int:
 
 
 def command_overlay(args: argparse.Namespace) -> int:
-    return write_overlay(args.out, args.to)
+    return write_overlay(
+        args.out,
+        args.to,
+        earlier=args.earlier,
+        reviews=args.reviews,
+        reviewed_only=args.reviewed_only,
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1132,11 +1203,25 @@ def main(argv: list[str] | None = None) -> int:
     choose = commands.add_parser("decide")
     choose.add_argument("--out", required=True, type=Path)
     choose.add_argument("--sample", type=int, default=40)
+    choose.add_argument(
+        "--one-full",
+        action="store_true",
+        help="accept when one reading calls the document complete and both list the same jacks",
+    )
     choose.set_defaults(run=command_decide)
 
     overlay = commands.add_parser("overlay")
     overlay.add_argument("--out", required=True, type=Path)
     overlay.add_argument("--to", required=True, type=Path)
+    overlay.add_argument(
+        "--earlier", type=Path, nargs="*", default=[], help="leave out Modules these overlays hold"
+    )
+    overlay.add_argument(
+        "--reviews", type=Path, help="leave out Modules a hand check didn't find complete"
+    )
+    overlay.add_argument(
+        "--reviewed-only", action="store_true", help="keep only lists a hand check found complete"
+    )
     overlay.set_defaults(run=command_overlay)
 
     args = parser.parse_args(argv)

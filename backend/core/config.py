@@ -60,8 +60,12 @@ class Settings(BaseSettings):
     # Canonical scope gates. Historical surfaces are off unless explicitly enabled.
     enable_legacy_social: bool = False
     enable_legacy_publishing: bool = False
+    # Hosts a publication's cover image may come from (spec 002 T041), each with its subdomains.
+    publication_cover_hosts: list[str] = ["patch-hive.com"]
     enable_legacy_leaderboards: bool = False
     enable_referrals: bool = False
+    # Sign-up needs a one-use invite. Staging only: production never receives this flag.
+    enable_invite_only_signup: bool = False
     # Deprecated, ignored. Declared only so an existing .env that still names
     # ENABLE_LEGACY_REFERRALS loads instead of failing extra_forbidden. Nothing reads it.
     enable_legacy_referrals: bool = False
@@ -112,7 +116,7 @@ class Settings(BaseSettings):
     decision_routing_target: str = ""
 
     # Patch Engine
-    patch_engine_version: str = "1.3.0"
+    patch_engine_version: str = "1.4.0"
     # Compatibility alias used by some call sites / older tests.
     generation_version: str = "1.0.0"
     max_patches_per_generation: int = 20
