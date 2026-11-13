@@ -3,11 +3,13 @@ name: Staging walkthrough
 # Manual only, staging only (008 T030b/T040b, 006 T060b). Seeds the golden demo into
 # the Neon staging branch, checks the seeded sign-in, runs the Design Engine
 # walkthrough against api-staging.patch-hive.com with test payments, then uploads one
-# generated test image, calls decision-resolution and generates through the API. The
-# `photo` choice instead runs spec 009's walkthrough from a fixture photo of a Rig, which
-# staging reads from its recorded answer (backend/data/photo-readings). Each run makes new
-# demo passwords that exist only in this job (masked, never stored); the receipts hold
-# statuses, codes and hashes only.
+# generated test image, calls decision-resolution and generates through the API. It then
+# generates another run, exports it with test credits and reads the pages of the PDF it
+# downloads. That pack stays in the job's memory: this repo is public, so never upload a
+# PDF or pack here. The `photo` choice instead runs spec 009's walkthrough from a fixture
+# photo of a Rig, which staging reads from its recorded answer (backend/data/photo-readings).
+# Each run makes new demo passwords that exist only in this job (masked, never stored); the
+# receipts hold statuses, codes, counts and hashes only.
 on:
   workflow_dispatch:
     inputs:
@@ -16,7 +18,7 @@ on:
         required: true
         type: choice
         default: both
-        options: [both, walkthrough, evidence, generate, photo]
+        options: [both, walkthrough, evidence, generate, generated-export, photo]
       photo:
         description: The fixture photo of a Rig, for the photo walkthrough (spec 009 T060)
         required: false
@@ -53,7 +55,7 @@ jobs:
           cache: pip
       - name: Install backend
         working-directory: backend
-        run: python -m pip install -e .
+        run: python -m pip install -e '.[staging-check]'
       - name: Demo passwords for this run
         run: |
           for name in PATCHHIVE_DEMO_USER_PASSWORD PATCHHIVE_DEMO_ADMIN_PASSWORD; do
@@ -79,6 +81,9 @@ jobs:
       - name: A real generate through the API
         if: ${{ !cancelled() && (inputs.checks == 'both' || inputs.checks == 'generate') }}
         run: python scripts/staging/generate_check.py --receipt-out generate-receipt.json
+      - name: Export a generated run and read its PDF
+        if: ${{ !cancelled() && (inputs.checks == 'both' || inputs.checks == 'generated-export') }}
+        run: python scripts/staging/generated_export_check.py --receipt-out generated-export-receipt.json
       - name: Photo walkthrough (spec 009 T060)
         if: ${{ !cancelled() && inputs.checks == 'photo' }}
         env:
@@ -94,6 +99,7 @@ jobs:
             design-walkthrough-receipt.json
             t060b-receipt.json
             generate-receipt.json
+            generated-export-receipt.json
             photo-walkthrough-receipt.json
           if-no-files-found: warn
           retention-days: 90
