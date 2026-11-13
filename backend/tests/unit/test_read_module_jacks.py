@@ -687,6 +687,7 @@ def test_a_complete_manual_is_proposed_with_its_source_and_quotes(tmp_path):
         {"name": "Out L", "type": "audio_out"},
     ]
     assert module["evidence"][0]["quote"] == "Gate In and Out L"
+    assert module["both_full"] is True
     assert "Maker Maths" in (tmp_path / "review-sample.md").read_text()
 
 
@@ -717,3 +718,90 @@ def test_the_proposal_hash_is_stable_across_reruns(tmp_path):
     first = (tmp_path / "module-jacks.proposal.json").read_bytes()
     assert jacks.decide(tmp_path, sample=5) == 0
     assert (tmp_path / "module-jacks.proposal.json").read_bytes() == first
+
+
+@pytest.mark.parametrize(
+    ("coverages", "one_full", "reason"),
+    [
+        (("full", "partial"), True, "accepted"),
+        (("partial", "full"), True, "accepted"),
+        (("full", "partial"), False, "not_complete"),
+        (("partial", "partial"), True, "not_complete"),
+    ],
+)
+def test_one_complete_reading_is_enough_only_when_asked_for(coverages, one_full, reason):
+    """Spec 003 FR-041: the two readings must still list the same jacks."""
+    text = "Gate In and Out L"
+    first, second = (
+        _reading(_jack("Gate In", "gate_in"), _jack("Out L", "audio_out"), coverage=c) for c in coverages
+    )
+    assert jacks.decide_document(text, first, second, one_full=one_full)[1] == reason
+
+
+def test_one_complete_reading_still_needs_the_same_jacks():
+    text = "Gate In and Out L"
+    first = _reading(_jack("Gate In", "gate_in"), _jack("Out L", "audio_out"))
+    second = _reading(_jack("Gate In", "gate_in"), coverage="partial")
+    assert jacks.decide_document(text, first, second, one_full=True) == (None, "different_count")
+
+
+def test_an_overlay_leaves_out_modules_an_earlier_one_holds(tmp_path):
+    module = {"brand": "Maker", "hp": 4, "source_kind": "page", "source_url": "https://maker.test/m"}
+    ports = [{"name": "Out", "type": "audio_out"}]
+    proposal = {"modules": [{**module, "name": "Old", "io_ports": ports}, {**module, "name": "New", "io_ports": ports}]}
+    (tmp_path / "module-jacks.proposal.json").write_text(json.dumps(proposal))
+    earlier = tmp_path / "v1.json"
+    earlier.write_text(json.dumps({"entries": [{**module, "name": "Old", "io_ports": ports}]}))
+    target = tmp_path / "v2.json"
+    assert jacks.write_overlay(tmp_path, target, earlier=[earlier]) == 0
+    assert [entry["name"] for entry in json.loads(target.read_text())["entries"]] == ["New"]
+
+
+def _decide_one(text: str, *names_and_types: tuple[str, str]) -> str:
+    reading = _reading(*(_jack(name, kind) for name, kind in names_and_types))
+    return jacks.decide_document(text, reading, reading)[1]
+
+
+@pytest.mark.parametrize("name", ["Trigger inputs", "Outputs (OUT)", "FM 1&2 input", "CASCADE EQ/CH OUTPUTS"])
+def test_a_name_that_stands_for_several_jacks_is_refused(name):
+    assert _decide_one("Gate In and Out L", (name, "gate_in"), ("Out", "audio_out")) == "grouped_names"
+
+
+@pytest.mark.parametrize("name", ["LP Outputs Left", "CV Inputs: Frequency", "Stereo Inputs L"])
+def test_a_plural_before_a_qualifier_is_one_jack(name):
+    assert _decide_one("Gate In and Out L", (name, "cv_in"), ("Out", "audio_out")) == "accepted"
+
+
+@pytest.mark.parametrize(
+    ("names", "reason"),
+    [
+        ((("Input 1", "audio_in"), ("Output 1", "audio_out")), "one_channel_of_many"),
+        ((("Input CH1", "audio_in"), ("Output CH1", "audio_out"), ("Output CH2", "audio_out")), "accepted"),
+        ((("1 Volt per Octave Input", "cv_in"), ("Sine Output", "audio_out")), "accepted"),
+    ],
+)
+def test_a_dual_modules_list_must_go_past_channel_one(names, reason):
+    assert _decide_one("A dual channel module. Gate In and Out L", *names) == reason
+
+
+def test_a_list_only_one_reading_called_complete_needs_a_hand_check_whatever_the_flags(tmp_path):
+    """Spec 003 FR-041: the overlay refuses such a list until a review finds it complete."""
+    module = {"brand": "Maker", "hp": 4, "source_kind": "page", "source_url": "https://maker.test/m"}
+    ports = [{"name": "Out", "type": "audio_out"}]
+    proposal = {
+        "modules": [
+            {**module, "name": "Both", "both_full": True, "io_ports": ports},
+            {**module, "name": "One", "both_full": False, "io_ports": ports},
+            {**module, "name": "Checked", "both_full": False, "io_ports": ports},
+            {**module, "name": "Older", "io_ports": ports},
+        ]
+    }
+    (tmp_path / "module-jacks.proposal.json").write_text(json.dumps(proposal))
+    reviews = tmp_path / "reviews.json"
+    reviews.write_text(json.dumps({"reviews": [{"brand": "Maker", "name": "Checked", "verdict": "complete"}]}))
+    for kwargs in ({}, {"reviews": reviews}):
+        target = tmp_path / "overlay.json"
+        assert jacks.write_overlay(tmp_path, target, **kwargs) == 0
+        names = [entry["name"] for entry in json.loads(target.read_text())["entries"]]
+        assert "One" not in names and "Both" in names and "Older" in names
+        assert ("Checked" in names) is ("reviews" in kwargs)

@@ -19,7 +19,13 @@ from catalog_rollback import rollback  # noqa: E402
 from population import Plan, _schedule_jacks, assert_safe_sql, populate  # noqa: E402
 from tests.test_catalog_population import _admin, _migrate, _recreate  # noqa: E402
 
-OVERLAY = json.loads((CATALOG / "overlays" / "module-jacks-v1.json").read_text(encoding="utf-8"))
+OVERLAYS = {
+    version: json.loads((CATALOG / "overlays" / f"module-jacks-{version}.json").read_text(encoding="utf-8"))
+    for version in ("v1", "v2")
+}
+# v1: both readings called the document complete. v2: one did, both listed the same jacks, and a
+# hand check against the document found the list complete.
+REVIEWED = {"v1": 224, "v2": 38}
 PORTS = [{"name": "Gate In", "type": "gate_in"}, {"name": "Out", "type": "audio_out"}]
 DB_NAME = "patchhive_jacks_test"
 
@@ -48,25 +54,39 @@ def _plan_for(entry: dict, row: dict | None) -> Plan:
 # --- the committed overlay ---
 
 
-def test_the_overlay_has_the_reviewed_lists_and_no_quotes():
-    entries = OVERLAY["entries"]
-    assert len(entries) == 224
-    assert len(OVERLAY["proposal_sha256"]) == 64
+@pytest.mark.parametrize("version", sorted(OVERLAYS))
+def test_the_overlay_has_the_reviewed_lists_and_no_quotes(version):
+    entries = OVERLAYS[version]["entries"]
+    assert len(entries) == REVIEWED[version]
+    assert len(OVERLAYS[version]["proposal_sha256"]) == 64
     assert len({(e["brand"], e["name"]) for e in entries}) == len(entries)
     assert not any({"quote", "evidence"} & set(e) for e in entries)
 
 
-def test_every_overlay_entry_passes_the_loaders_checks():
-    assert [e["name"] for e in OVERLAY["entries"] if population._jack_problem(e)] == []
+@pytest.mark.parametrize("version", sorted(OVERLAYS))
+def test_every_overlay_entry_passes_the_loaders_checks(version):
+    assert [e["name"] for e in OVERLAYS[version]["entries"] if population._jack_problem(e)] == []
 
 
-def test_every_overlay_list_has_an_output():
+@pytest.mark.parametrize("version", sorted(OVERLAYS))
+def test_every_overlay_list_has_an_output(version):
     no_output = [
         e["name"]
-        for e in OVERLAY["entries"]
+        for e in OVERLAYS[version]["entries"]
         if not any(port["type"].endswith("_out") for port in e["io_ports"])
     ]
     assert no_output == []
+
+
+def test_every_v2_list_passed_a_hand_check():
+    reviews = json.loads((CATALOG / "jack-list-reviews.json").read_text(encoding="utf-8"))["reviews"]
+    complete = {(r["brand"], r["name"]) for r in reviews if r["verdict"] == "complete"}
+    assert [e["name"] for e in OVERLAYS["v2"]["entries"] if (e["brand"], e["name"]) not in complete] == []
+
+
+def test_no_module_is_in_two_overlays():
+    keys = [(e["brand"], e["name"]) for o in OVERLAYS.values() for e in o["entries"]]
+    assert len(keys) == len(set(keys))
 
 
 # --- the plan ---
