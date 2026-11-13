@@ -1,6 +1,6 @@
 # Next slices (2026-11-10)
 
-**Status 2026-11-13 UTC:** N1 (#393), N2 (#395), N3 (#396), N4 (#397), N5 (#394, #401, loaded on both databases), N7 (#336) and N10 (#402, loaded on staging) are merged. N6 (#371), N8 (#398) and N9 (#399) are open. N2–N4 reach staging and production with 0.3.0-alpha.21 (#392). What waits on the owner is in [docs/handoff/NEXT.md](../handoff/NEXT.md).
+**Status 2026-11-13 UTC:** N1 (#393), N2 (#395), N3 (#396), N4 (#397), N5 (#394, #401, loaded on both databases), N7 (#336) and N10 (#402, loaded on both databases) are merged. N6 (#371), N8 (#398) and N9 (#399) are open. N2–N4 reach staging and production with 0.3.0-alpha.21 (#392). What waits on the owner is in [docs/handoff/NEXT.md](../handoff/NEXT.md).
 
 Planned after #391. Staging and production both run `88efb73` (0.3.0-alpha.20), with 224 Module jack lists loaded on both. The next milestone is the closed staging beta. Each slice is one PR. They use the prefix N because A, B and C already have two meanings in this repo's history.
 

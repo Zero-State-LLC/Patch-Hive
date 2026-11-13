@@ -38,11 +38,11 @@ Dry runs on 2026-11-12 UTC, from `3a05733`, planned the same change on both data
 | Database | Run | Commit | Result |
 |---|---|---|---|
 | Staging | [43363219819](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43363219819), 2026-11-13 UTC | `7c7e53f` | 38 lists filled, 0 conflicts, no inserts, no destructive SQL |
-| Production | not run | | waits on the owner's yes on the hashes above |
+| Production | [43364697251](https://github.com/Zero-State-LLC/Patch-Hive/actions/runs/43364697251), 2026-11-13 UTC, on the owner's yes | `7c7e53f` | 38 lists filled, 0 conflicts, no inserts, no destructive SQL |
 
-On staging `catalog_load_runs` went from 3 to 4 and `catalog_load_changes` from 290 to 328, one change per list. No other table's row count changed. Read afterwards, staging's public `/api/modules` has 3,379 rows, 264 of them declare jacks, and it serves all 38 v2 lists and all 224 v1 lists exactly as the overlays have them.
+On each host `catalog_load_runs` went from 3 to 4 and `catalog_load_changes` from 290 to 328, one change per list. No other table's row count changed. Read afterwards, each host's public `/api/modules` has 3,379 rows, 264 of them declare jacks, and it serves all 38 v2 lists and all 224 v1 lists exactly as the overlays have them.
 
-To undo the staging load, run `db-load.yml` on staging with `rollback_run_id` 43363219819, which restores the 38 empty lists.
+To undo a load, run `db-load.yml` on that database with its run ID as `rollback_run_id` (43363219819 on staging, 43364697251 on production), which restores the 38 empty lists. No rollback has been run.
 
 ## Files
 
