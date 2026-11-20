@@ -232,6 +232,11 @@ export default function PrivacyPage() {
               fonts.gstatic.com, so your browser sends those requests to Google.
             </li>
             <li>
+              <strong>Google Analytics 4</strong>: on patch-hive.com, the site&apos;s script loads
+              Google&apos;s gtag from www.googletagmanager.com and sends page-view measurements to
+              Google using measurement ID G-HZYF55H53T. It doesn&apos;t load on any other hostname.
+            </li>
+            <li>
               <strong>GitHub</strong>: an operator can run a manual restore drill that copies the
               production database to a temporary GitHub Actions runner. The copy stays on the runner
               and is deleted after the drill.
@@ -261,6 +266,9 @@ export default function PrivacyPage() {
             <li>
               Your browser&apos;s local storage holds your theme choice, a hint about whether
               you&apos;re signed in, and any style recipes you save.
+            </li>
+            <li>
+              On patch-hive.com, Google&apos;s Analytics tag sets its own cookies in the browser.
             </li>
             <li>The short-lived access token stays in the page&apos;s memory only.</li>
           </ul>

@@ -4,13 +4,13 @@ import { contentSecurityPolicy, securityHeaders } from "./headers";
 describe("security headers", () => {
   it("lets each frontend reach only its own API", () => {
     expect(contentSecurityPolicy("patch-hive.com")).toContain(
-      "connect-src 'self' https://api.patch-hive.com https://cloudflareinsights.com;",
+      "connect-src 'self' https://api.patch-hive.com https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com;",
     );
     expect(contentSecurityPolicy("staging.patch-hive.com")).toContain(
-      "connect-src 'self' https://api-staging.patch-hive.com https://cloudflareinsights.com;",
+      "connect-src 'self' https://api-staging.patch-hive.com https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com;",
     );
     expect(contentSecurityPolicy("unknown.example")).toContain(
-      "connect-src 'self' https://cloudflareinsights.com;",
+      "connect-src 'self' https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com;",
     );
   });
 
@@ -18,8 +18,10 @@ describe("security headers", () => {
     const csp = contentSecurityPolicy("patch-hive.com");
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).toContain("object-src 'none'");
-    // Only same-origin scripts and Cloudflare's analytics beacon; never 'unsafe-inline'.
-    expect(csp).toContain("script-src 'self' https://static.cloudflareinsights.com;");
+    // Same-origin scripts, Cloudflare's analytics beacon and Google Tag Manager; never 'unsafe-inline'.
+    expect(csp).toContain(
+      "script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com;",
+    );
     expect(csp).not.toMatch(/script-src[^;]*unsafe-inline/);
   });
 
