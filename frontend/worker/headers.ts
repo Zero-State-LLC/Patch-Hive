@@ -14,16 +14,25 @@ const API_ORIGINS: Record<string, string> = {
 const ANALYTICS_SCRIPT = "https://static.cloudflareinsights.com";
 const ANALYTICS_REPORT = "https://cloudflareinsights.com";
 
+// Google Analytics 4: public/ga.js injects the tag on patch-hive.com only. The tag
+// loads from Google Tag Manager and reports to Google Analytics.
+const GA_SCRIPT = "https://www.googletagmanager.com";
+const GA_CONNECT = [
+  "https://*.google-analytics.com",
+  "https://*.analytics.google.com",
+  "https://*.googletagmanager.com",
+].join(" ");
+
 export function contentSecurityPolicy(hostname: string): string {
   const api = API_ORIGINS[hostname] ?? "";
   return [
     "default-src 'self'",
-    `script-src 'self' ${ANALYTICS_SCRIPT}`,
+    `script-src 'self' ${ANALYTICS_SCRIPT} ${GA_SCRIPT}`,
     // Inline style attributes are used by React components; fonts come from Google.
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https:",
-    `connect-src 'self'${api ? ` ${api}` : ""} ${ANALYTICS_REPORT}`,
+    `connect-src 'self'${api ? ` ${api}` : ""} ${ANALYTICS_REPORT} ${GA_CONNECT}`,
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",

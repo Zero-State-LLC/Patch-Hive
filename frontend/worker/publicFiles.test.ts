@@ -95,6 +95,19 @@ describe("robots.txt", () => {
   });
 });
 
+describe("analytics loader", () => {
+  it("references a same-origin script that loads GA4 only on the production host", () => {
+    expect(indexHtml).toContain('<script src="/ga.js"></script>');
+    expect(indexHtml).not.toContain("googletagmanager.com");
+    const ga = read("ga.js").toString("utf8");
+    expect(ga).toContain('location.hostname === "patch-hive.com"');
+    expect(ga).toContain("https://www.googletagmanager.com/gtag/js?id=");
+    expect(ga).toContain("G-HZYF55H53T");
+    expect(ga).toContain('window.gtag("js"');
+    expect(ga).toContain('window.gtag("config", GA_MEASUREMENT_ID)');
+  });
+});
+
 describe("icons and manifest", () => {
   it("links every icon and the manifest from index.html", () => {
     for (const href of [

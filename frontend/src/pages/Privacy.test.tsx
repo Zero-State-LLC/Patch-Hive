@@ -113,6 +113,17 @@ describe("PrivacyPage", () => {
 
     expect(screen.getByText(/on production, photos go to none today/)).toBeVisible();
   });
+
+  it("discloses Google Analytics 4 on the production host only", () => {
+    renderNotice();
+
+    const ga = screen.getByText(/measurement ID G-HZYF55H53T/);
+    expect(ga).toHaveTextContent("Google Analytics 4");
+    expect(ga).toHaveTextContent("patch-hive.com");
+    expect(ga).toHaveTextContent("www.googletagmanager.com");
+    expect(ga).toHaveTextContent(/doesn.t load on any other hostname/);
+    expect(screen.getByText(/Google.s Analytics tag sets its own cookies/)).toBeVisible();
+  });
 });
 
 describe("the sign-up form", () => {
